@@ -37,7 +37,7 @@ class PinnedAppsCleanupHandlerBrowserTest
     // Pin the app.
     controller()->CreateAppItem(
         std::make_unique<AppShortcutShelfItemController>(ash::ShelfID(app_id)),
-        ash::STATUS_CLOSED, /*pinned=*/true, /*title=*/base::EmptyString16());
+        ash::STATUS_CLOSED, /*pinned=*/true, /*title=*/std::u16string());
 
     return app_id;
   }

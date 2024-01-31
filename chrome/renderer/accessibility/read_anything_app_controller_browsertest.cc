@@ -223,7 +223,7 @@ class ReadAnythingAppControllerTest : public ChromeRenderViewTest {
   }
 
   void OnActiveAXTreeIDChanged(const ui::AXTreeID& tree_id) {
-    OnActiveAXTreeIDChanged(tree_id, GURL::EmptyGURL());
+    OnActiveAXTreeIDChanged(tree_id, GURL());
   }
 
   void OnActiveAXTreeIDChanged(const ui::AXTreeID& tree_id,

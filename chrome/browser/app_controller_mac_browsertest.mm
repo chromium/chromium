@@ -96,7 +96,7 @@
 
 namespace {
 
-GURL g_open_shortcut_url = GURL::EmptyGURL();
+GURL g_open_shortcut_url;
 
 // Instructs the NSApp's delegate to open |url|.
 void SendOpenUrlToAppController(const GURL& url) {

@@ -321,7 +321,7 @@ TEST_F(PasswordCheckManagerTest, CorrectlyCreatesUIStructForAppCredentials) {
   EXPECT_THAT(manager().GetCompromisedCredentials(),
               UnorderedElementsAre(
                   ExpectCompromisedCredentialForUI(
-                      kUsername1, u"App (com.example.app)", GURL::EmptyGURL(),
+                      kUsername1, u"App (com.example.app)", GURL(),
                       "com.example.app", std::nullopt, InsecureType::kLeaked),
                   ExpectCompromisedCredentialForUI(
                       kUsername2, u"Example App", GURL(kExampleCom),

@@ -108,7 +108,7 @@ class SyncSessionsRouterTabHelperBrowserTest : public InProcessBrowserTest {
   }
 
   void RemoveLanguageDetectionObserver() {
-    observer_.SetInterestedURL(GURL::EmptyGURL());
+    observer_.SetInterestedURL(GURL());
     ChromeTranslateClient* chrome_translate_client =
         ChromeTranslateClient::FromWebContents(web_contents());
     if (!chrome_translate_client) {

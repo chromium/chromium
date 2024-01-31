@@ -92,7 +92,7 @@ FileSuggestData CreateFileSuggestionWithJustification(
       FileSuggestionType::kDriveFile, path,
       app_list::GetJustificationString(
           justification_type, timestamp,
-          user_info ? user_info->display_name : base::EmptyString()),
+          user_info ? user_info->display_name : std::string()),
       primary_timestamp, secondary_timestamp, /*new_score=*/std::nullopt);
 }
 

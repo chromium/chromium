@@ -77,7 +77,7 @@ PriceTrackingBubbleDialogView::PriceTrackingBubbleDialogView(
                                      base::DoNothing()));
     auto body_text = l10n_util::GetStringFUTF16(
         IDS_OMNIBOX_TRACK_PRICE_DIALOG_DESCRIPTION_FIRST_RUN,
-        folder_name.value_or(base::EmptyString16()));
+        folder_name.value_or(std::u16string()));
     body_label_ = AddChildView(CreateBodyLabel(body_text));
   } else if (type == PriceTrackingBubbleDialogView::Type::TYPE_NORMAL) {
     SetTitle(

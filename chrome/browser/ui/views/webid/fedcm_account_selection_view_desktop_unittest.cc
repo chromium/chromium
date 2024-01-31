@@ -228,7 +228,7 @@ class FedCmAccountSelectionViewDesktopTest : public ChromeViewsTestBase {
       bool has_login_status_mismatch = false) {
     std::vector<content::IdentityRequestAccount> accounts;
     for (const auto& account_info : account_infos) {
-      accounts.emplace_back(account_info.first, "", "", "", GURL::EmptyGURL(),
+      accounts.emplace_back(account_info.first, "", "", "", GURL(),
                             /*login_hints=*/std::vector<std::string>(),
                             /*domain_hints=*/std::vector<std::string>(),
                             account_info.second);

@@ -253,7 +253,7 @@ ash::ShelfID CreateAppShortcutItem(const ash::ShelfID& shelf_id) {
 
   return controller->CreateAppItem(
       std::make_unique<AppShortcutShelfItemController>(shelf_id),
-      ash::STATUS_CLOSED, /*pinned=*/true, /*title=*/base::EmptyString16());
+      ash::STATUS_CLOSED, /*pinned=*/true, /*title=*/std::u16string());
 }
 
 // A class that waits for the child removal to occur on a parent view.

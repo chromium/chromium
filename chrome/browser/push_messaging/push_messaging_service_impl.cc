@@ -366,7 +366,7 @@ void PushMessagingServiceImpl::OnMessage(const std::string& app_id,
     std::optional<PushMessagingAppIdentifier> refresh_identifier =
         refresher_.FindActiveAppIdentifier(app_id);
     if (!refresh_identifier) {
-      DeliverMessageCallback(app_id, GURL::EmptyGURL(),
+      DeliverMessageCallback(app_id, GURL(),
                              /*service_worker_registration_id=*/-1, message,
                              /*did_enqueue_message=*/false,
                              blink::mojom::PushEventStatus::UNKNOWN_APP_ID);
@@ -626,7 +626,7 @@ void PushMessagingServiceImpl::DeliverMessageCallback(
         PushMessagingAppIdentifier::FindByAppId(profile_, app_id);
     UnsubscribeInternal(
         unsubscribe_reason,
-        app_identifier.is_null() ? GURL::EmptyGURL() : app_identifier.origin(),
+        app_identifier.is_null() ? GURL() : app_identifier.origin(),
         app_identifier.is_null()
             ? -1 /* kInvalidServiceWorkerRegistrationId */
             : app_identifier.service_worker_registration_id(),
@@ -1052,8 +1052,7 @@ void PushMessagingServiceImpl::SubscribeEndWithError(
     RegisterCallback callback,
     blink::mojom::PushRegistrationStatus status) {
   SubscribeEnd(std::move(callback), std::string() /* subscription_id */,
-               GURL::EmptyGURL() /* endpoint */,
-               std::nullopt /* expiration_time */,
+               GURL() /* endpoint */, std::nullopt /* expiration_time */,
                std::vector<uint8_t>() /* p256dh */,
                std::vector<uint8_t>() /* auth */, status);
 }
@@ -1139,10 +1138,10 @@ void PushMessagingServiceImpl::GetSubscriptionInfo(
           profile_, origin, service_worker_registration_id);
 
   if (app_identifier.is_null()) {
-    std::move(callback).Run(
-        false /* is_valid */, GURL::EmptyGURL() /*endpoint*/,
-        std::nullopt /* expiration_time */, std::vector<uint8_t>() /* p256dh */,
-        std::vector<uint8_t>() /* auth */);
+    std::move(callback).Run(false /* is_valid */, GURL() /*endpoint*/,
+                            std::nullopt /* expiration_time */,
+                            std::vector<uint8_t>() /* p256dh */,
+                            std::vector<uint8_t>() /* auth */);
     return;
   }
 
@@ -1174,10 +1173,10 @@ void PushMessagingServiceImpl::DidValidateSubscription(
     SubscriptionInfoCallback callback,
     bool is_valid) {
   if (!is_valid) {
-    std::move(callback).Run(
-        false /* is_valid */, GURL::EmptyGURL() /* endpoint */,
-        std::nullopt /* expiration_time */, std::vector<uint8_t>() /* p256dh */,
-        std::vector<uint8_t>() /* auth */);
+    std::move(callback).Run(false /* is_valid */, GURL() /* endpoint */,
+                            std::nullopt /* expiration_time */,
+                            std::vector<uint8_t>() /* p256dh */,
+                            std::vector<uint8_t>() /* auth */);
     return;
   }
 
@@ -1742,8 +1741,8 @@ void PushMessagingServiceImpl::OnOldSubscriptionExpired(
   // After unsubscribing, the refresher will get notified.
   UnsubscribeInternal(
       blink::mojom::PushUnregistrationReason::REFRESH_FINISHED,
-      GURL::EmptyGURL() /* origin */, -1 /* service_worker_registration_id */,
-      app_id, sender_id,
+      GURL() /* origin */, -1 /* service_worker_registration_id */, app_id,
+      sender_id,
       base::BindOnce(&UnregisterCallbackToClosure,
                      base::BindOnce(&PushMessagingRefresher::OnUnsubscribed,
                                     refresher_.GetWeakPtr(), app_id)));

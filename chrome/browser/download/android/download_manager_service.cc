@@ -147,7 +147,7 @@ ScopedJavaLocalRef<jobject> DownloadManagerService::CreateJavaDownloadInfo(
   base::TimeDelta time_delta;
   bool time_remaining_known = item->TimeRemaining(&time_delta);
   GURL original_url = item->GetOriginalUrl().SchemeIs(url::kDataScheme)
-                          ? GURL::EmptyGURL()
+                          ? GURL()
                           : item->GetOriginalUrl();
   content::BrowserContext* browser_context =
       content::DownloadItemUtils::GetBrowserContext(item);

@@ -50,8 +50,10 @@ const int kMaxSuggestionSize = kMaxSuggestionIndex + 1;
 const int kNoneHighlighted = -1;
 
 std::string ReadEmojiDataFromFile() {
-  if (!base::DirectoryExists(base::FilePath(ime::kBundledInputMethodsDirPath)))
-    return base::EmptyString();
+  if (!base::DirectoryExists(
+          base::FilePath(ime::kBundledInputMethodsDirPath))) {
+    return std::string();
+  }
 
   std::string emoji_data;
   base::FilePath::StringType path(ime::kBundledInputMethodsDirPath);

@@ -217,10 +217,9 @@ void SystemInfoCardProvider::OnMemoryUsageUpdated(bool create_result,
     SearchProvider::Results new_results;
     DCHECK(memory_timer_);
     new_results.emplace_back(std::make_unique<MemoryAnswerResult>(
-        profile_, last_query_, /*url_path=*/base::EmptyString(),
-        diagnostics_icon_, relevance_,
-        /*title=*/base::EmptyString16(), description,
-        accessibility_label_details,
+        profile_, last_query_, /*url_path=*/std::string(), diagnostics_icon_,
+        relevance_,
+        /*title=*/std::u16string(), description, accessibility_label_details,
         SystemInfoAnswerResult::SystemInfoCategory::kDiagnostics,
         SystemInfoAnswerResult::SystemInfoCardType::kMemory, answer_card_info,
         base::BindRepeating(&SystemInfoCardProvider::UpdateMemoryUsage,
@@ -308,9 +307,8 @@ void SystemInfoCardProvider::OnCpuUsageUpdated(bool create_result,
     SearchProvider::Results new_results;
     DCHECK(cpu_usage_timer_);
     new_results.emplace_back(std::make_unique<CpuAnswerResult>(
-        profile_, last_query_, /*url_path=*/base::EmptyString(),
-        diagnostics_icon_, relevance_, title, description,
-        accessibility_label_details,
+        profile_, last_query_, /*url_path=*/std::string(), diagnostics_icon_,
+        relevance_, title, description, accessibility_label_details,
         SystemInfoAnswerResult::SystemInfoCategory::kDiagnostics,
         SystemInfoAnswerResult::SystemInfoCardType::kCPU, answer_card_info,
         base::BindRepeating(&SystemInfoCardProvider::UpdateCpuUsage,
@@ -393,9 +391,9 @@ void SystemInfoCardProvider::OnBatteryInfoUpdated(
   answer_card_info.SetExtraDetails(battery_health_info);
   SearchProvider::Results new_results;
   new_results.emplace_back(std::make_unique<BatteryAnswerResult>(
-      profile_, last_query_, /*url_path=*/base::EmptyString(),
-      diagnostics_icon_, relevance_,
-      /*title=*/base::EmptyString16(), new_battery_health->GetPowerTime(),
+      profile_, last_query_, /*url_path=*/std::string(), diagnostics_icon_,
+      relevance_,
+      /*title=*/std::u16string(), new_battery_health->GetPowerTime(),
       accessibility_label_details,
       SystemInfoAnswerResult::SystemInfoCategory::kDiagnostics,
       SystemInfoAnswerResult::SystemInfoCardType::kBattery, answer_card_info));
@@ -530,7 +528,7 @@ void SystemInfoCardProvider::CreateStorageAnswerCard() {
   SearchProvider::Results new_results;
   new_results.emplace_back(std::make_unique<SystemInfoAnswerResult>(
       profile_, last_query_, kStorageSubpagePath, os_settings_icon_, relevance_,
-      /*title=*/base::EmptyString16(), description, accessibility_label_details,
+      /*title=*/std::u16string(), description, accessibility_label_details,
       SystemInfoAnswerResult::SystemInfoCategory::kSettings,
       SystemInfoAnswerResult::SystemInfoCardType::kStorage, answer_card_info));
   SwapResults(&new_results);

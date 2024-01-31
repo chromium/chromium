@@ -47,8 +47,7 @@ void CaptivePortalView::NavigationStateChanged(
   // detection will be done on the Chrome side.
   GURL url = source->GetLastCommittedURL();
   // Note, `url` will be empty for "client3.google.com/generate_204" page.
-  if (!redirected_ && url != GURL::EmptyGURL() &&
-      url != GURL(CaptivePortalStartURL())) {
+  if (!redirected_ && url != GURL() && url != GURL(CaptivePortalStartURL())) {
     redirected_ = true;
     proxy_->OnRedirected(network_name_);
   }

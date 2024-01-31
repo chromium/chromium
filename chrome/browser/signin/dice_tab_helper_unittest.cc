@@ -40,8 +40,8 @@ class DiceTabHelperTest : public ChromeRenderViewHostTestHarness {
     simulator->Start();
     helper->InitializeSigninFlow(
         signin_url_, access_point, reason,
-        signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO,
-        GURL::EmptyGURL(), /*record_signin_started_metrics=*/true,
+        signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO, GURL(),
+        /*record_signin_started_metrics=*/true,
         DiceTabHelper::EnableSyncCallback(),
         DiceTabHelper::OnSigninHeaderReceived(),
         DiceTabHelper::ShowSigninErrorCallback());
@@ -155,7 +155,7 @@ TEST_F(DiceTabHelperTest, SigninPrimaryAccountMetrics) {
       signin_url_, signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS,
       signin_metrics::Reason::kSigninPrimaryAccount,
       signin_metrics::PromoAction::PROMO_ACTION_NEW_ACCOUNT_NO_EXISTING_ACCOUNT,
-      GURL::EmptyGURL(), /*record_signin_started_metrics=*/true,
+      GURL(), /*record_signin_started_metrics=*/true,
       DiceTabHelper::EnableSyncCallback(),
       DiceTabHelper::OnSigninHeaderReceived(),
       DiceTabHelper::ShowSigninErrorCallback());
@@ -190,7 +190,7 @@ TEST_F(DiceTabHelperTest, SigninPrimaryAccountMetrics) {
   dice_tab_helper->InitializeSigninFlow(
       signin_url_, signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS,
       signin_metrics::Reason::kSigninPrimaryAccount,
-      signin_metrics::PromoAction::PROMO_ACTION_WITH_DEFAULT, GURL::EmptyGURL(),
+      signin_metrics::PromoAction::PROMO_ACTION_WITH_DEFAULT, GURL(),
       /*record_signin_started_metrics=*/true,
       DiceTabHelper::EnableSyncCallback(),
       DiceTabHelper::OnSigninHeaderReceived(),
@@ -215,7 +215,7 @@ TEST_F(DiceTabHelperTest, SigninPrimaryAccountMetrics) {
   dice_tab_helper->InitializeSigninFlow(
       signin_url_, signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS,
       signin_metrics::Reason::kSigninPrimaryAccount,
-      signin_metrics::PromoAction::PROMO_ACTION_WITH_DEFAULT, GURL::EmptyGURL(),
+      signin_metrics::PromoAction::PROMO_ACTION_WITH_DEFAULT, GURL(),
       /*record_signin_started_metrics=*/false,
       DiceTabHelper::EnableSyncCallback(),
       DiceTabHelper::OnSigninHeaderReceived(),
@@ -250,7 +250,7 @@ TEST_F(DiceTabHelperTest, AddSecondaryAccountMetrics) {
       signin_url_, signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS,
       signin_metrics::Reason::kAddSecondaryAccount,
       signin_metrics::PromoAction::PROMO_ACTION_NEW_ACCOUNT_NO_EXISTING_ACCOUNT,
-      GURL::EmptyGURL(), /*record_signin_started_metrics=*/true,
+      GURL(), /*record_signin_started_metrics=*/true,
       DiceTabHelper::EnableSyncCallback(),
       DiceTabHelper::OnSigninHeaderReceived(),
       DiceTabHelper::ShowSigninErrorCallback());

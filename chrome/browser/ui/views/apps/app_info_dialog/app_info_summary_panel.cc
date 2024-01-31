@@ -301,7 +301,7 @@ std::vector<GURL> AppInfoSummaryPanel::GetLicenseUrls() const {
     DCHECK(imported_module);
 
     GURL about_page = extensions::ManifestURL::GetAboutPage(imported_module);
-    if (about_page != GURL::EmptyGURL()) {
+    if (about_page != GURL()) {
       license_urls.push_back(about_page);
     }
   }

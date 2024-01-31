@@ -443,13 +443,13 @@ TEST_F(
       ash::prefs::kAccessibilitySpokenFeedbackEnabled, true);
   InitEmojiSuggestionWindow();
   InitEmojiButton();
-  emoji_button_.announce_string = base::EmptyString16();
+  emoji_button_.announce_string.clear();
 
   controller_->SetAssistiveWindowProperties(emoji_window_);
   controller_->SetButtonHighlighted(emoji_button_, true);
   task_environment()->RunUntilIdle();
 
-  accessibility_view_->VerifyAnnouncement(base::EmptyString16());
+  accessibility_view_->VerifyAnnouncement(std::u16string());
 }
 
 TEST_F(AssistiveWindowControllerTest,
@@ -480,7 +480,7 @@ TEST_F(
   controller_->SetButtonHighlighted(emoji_button_, true);
   task_environment()->RunUntilIdle();
 
-  accessibility_view_->VerifyAnnouncement(base::EmptyString16());
+  accessibility_view_->VerifyAnnouncement(std::u16string());
 }
 
 }  // namespace input_method

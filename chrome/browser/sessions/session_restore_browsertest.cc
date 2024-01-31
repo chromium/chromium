@@ -2915,8 +2915,7 @@ IN_PROC_BROWSER_TEST_F(MultiOriginSessionRestoreTest, RestoreInitialEntry) {
     content::WebContentsAddedObserver popup_observer;
     ASSERT_TRUE(ExecJs(tab1, "window.open('/nocontent')"));
     old_popup = popup_observer.GetWebContents();
-    EXPECT_EQ(GURL::EmptyGURL(),
-              old_popup->GetPrimaryMainFrame()->GetLastCommittedURL());
+    EXPECT_EQ(GURL(), old_popup->GetPrimaryMainFrame()->GetLastCommittedURL());
     EXPECT_EQ(main_origin,
               old_popup->GetPrimaryMainFrame()->GetLastCommittedOrigin());
     EXPECT_TRUE(

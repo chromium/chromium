@@ -46,8 +46,9 @@ const char kNotificationShownActionName[] =
 GURL GetURLToOpen(const std::string& allowed_host) {
   // When a match pattern containing * (e.g. *.google.*) is allowlisted, return
   // an empty URL because we can't know which URL to open.
-  if (allowed_host.find('*') != std::string::npos)
-    return GURL::EmptyGURL();
+  if (allowed_host.find('*') != std::string::npos) {
+    return GURL();
+  }
 
   // Constructs a URL that the user can open, defaulting to HTTPS.
   GURL url = GURL(base::StrCat(

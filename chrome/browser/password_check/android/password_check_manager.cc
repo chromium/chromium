@@ -258,7 +258,7 @@ CompromisedCredentialForUI PasswordCheckManager::MakeUICredential(
     // In case no affiliated_web_realm could be obtained we should not have an
     // associated url for android credential.
     credential_facet.url = credential.GetAffiliatedWebRealm().empty()
-                               ? GURL::EmptyGURL()
+                               ? GURL()
                                : GURL(credential.GetAffiliatedWebRealm());
 
   } else {

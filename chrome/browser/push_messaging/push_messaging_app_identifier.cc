@@ -237,7 +237,7 @@ PushMessagingAppIdentifier::PushMessagingAppIdentifier(
     const PushMessagingAppIdentifier& other) = default;
 
 PushMessagingAppIdentifier::PushMessagingAppIdentifier()
-    : origin_(GURL::EmptyGURL()), service_worker_registration_id_(-1) {}
+    : origin_(GURL()), service_worker_registration_id_(-1) {}
 
 PushMessagingAppIdentifier::PushMessagingAppIdentifier(
     const std::string& app_id,

@@ -256,8 +256,7 @@ void DocumentsProviderRootManager::NotifyRootAdded(const RootInfo& info) {
   for (auto& observer : observer_list_) {
     observer.OnDocumentsProviderRootAdded(
         info.authority, info.root_id, info.document_id, info.title,
-        info.summary,
-        !info.icon.empty() ? EncodeIconAsUrl(info.icon) : GURL::EmptyGURL(),
+        info.summary, !info.icon.empty() ? EncodeIconAsUrl(info.icon) : GURL(),
         !info.supports_create, info.mime_types);
   }
 }

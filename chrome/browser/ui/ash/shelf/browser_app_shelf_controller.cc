@@ -154,9 +154,8 @@ void BrowserAppShelfController::CreateOrUpdateShelfItem(
   std::unique_ptr<ash::ShelfItemDelegate> delegate =
       shelf_item_factory_->CreateShelfItemDelegateForAppId(id.app_id);
   std::unique_ptr<ash::ShelfItem> new_item =
-      shelf_item_factory_->CreateShelfItemForApp(
-          id, status, ash::TYPE_APP,
-          /*title=*/base::EmptyString16());
+      shelf_item_factory_->CreateShelfItemForApp(id, status, ash::TYPE_APP,
+                                                 /*title=*/std::u16string());
   model_->AddAt(model_->item_count(), *new_item, std::move(delegate));
 }
 

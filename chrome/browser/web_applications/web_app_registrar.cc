@@ -602,8 +602,9 @@ bool WebAppRegistrar::IsTabbedWindowModeEnabled(
 GURL WebAppRegistrar::GetAppNewTabUrl(const webapps::AppId& app_id) const {
   if (IsTabbedWindowModeEnabled(app_id)) {
     auto* web_app = GetAppById(app_id);
-    if (!web_app)
-      return GURL::EmptyGURL();
+    if (!web_app) {
+      return GURL();
+    }
 
     if (web_app->tab_strip()) {
       std::optional<GURL> url = web_app->tab_strip().value().new_tab_button.url;
@@ -1404,7 +1405,7 @@ base::flat_set<ScopeExtensionInfo> WebAppRegistrar::GetValidatedScopeExtensions(
 
 GURL WebAppRegistrar::GetAppManifestUrl(const webapps::AppId& app_id) const {
   auto* web_app = GetAppById(app_id);
-  return web_app ? web_app->manifest_url() : GURL::EmptyGURL();
+  return web_app ? web_app->manifest_url() : GURL();
 }
 
 base::Time WebAppRegistrar::GetAppLastBadgingTime(

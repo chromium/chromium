@@ -271,7 +271,7 @@ class WebApkInstallerBrowserTest : public AndroidBrowserTest {
     std::string primary_icon_data = "data3";
     std::string splash_icon_data = "data4";
 
-    webapps::ShortcutInfo info(GURL::EmptyGURL());
+    webapps::ShortcutInfo info{GURL()};
 
     return webapps::BuildProtoInBackground(
         info, info.manifest_id, primary_icon_data, splash_icon_data,
