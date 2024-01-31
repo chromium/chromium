@@ -21,6 +21,7 @@
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
+#include "build/buildflag.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/clipboard/clipboard_buffer.h"
 #include "ui/base/clipboard/clipboard_constants.h"
@@ -266,7 +267,8 @@ class CopyPasteOnlyClipboardTest : public WaylandClipboardTestBase {
 // Wayland{Pointer,Keyboard,Touch}, Serial tracker and WaylandClipboard.
 //
 // Regression test for https://crbug.com/1282220.
-TEST_P(WaylandClipboardTest, WriteToClipboard) {
+// TODO(crbug.com/1522253): Flaky test.
+TEST_P(WaylandClipboardTest, DISABLED_WriteToClipboard) {
   const base::RepeatingClosure send_input_event_closures[]{
       // Mouse button press
       base::BindLambdaForTesting([&]() {
