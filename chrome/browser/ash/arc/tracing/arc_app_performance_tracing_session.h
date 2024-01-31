@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <optional>
+#include <vector>
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
@@ -27,7 +28,8 @@ class Surface;
 namespace arc {
 
 struct PerfTraceResult {
-  double fps, perceived_fps, present_deviation, render_quality;
+  double fps, commit_deviation, perceived_fps, present_deviation,
+      render_quality;
 };
 
 using TicksNowCallback = base::RepeatingCallback<base::TimeTicks()>;
@@ -63,8 +65,11 @@ class ArcAppPerformanceTracingSession : public exo::SurfaceObserver {
   // was called.
   base::TimeDelta timer_delay_for_testing() const;
 
-  bool TracingActive() const;
+  bool tracing_active() const { return tracing_active_; }
   const aura::Window* window() const { return window_; }
+
+  // Returns whether |present_frames_| is non-empty.
+  bool HasPresentFrames() const;
 
   // Schedules tracing with a delay and for specific amount of time. If
   // |tracing_period| is 0 then it means manual tracing and |Finish|
@@ -122,9 +127,11 @@ class ArcAppPerformanceTracingSession : public exo::SurfaceObserver {
   // Traces and records frame timing.
   std::optional<PresentFramesTracer> frames_;
 
-  // Number of commits that occurred during the trace. This count will include
-  // frames that were not presented by exo e.g. as a result of late commit.
-  uint32_t commit_count_;
+  // Times at which frames were recorded.
+  std::vector<base::TimeTicks> frame_times_;
+
+  // Indicates that tracing is in active state.
+  bool tracing_active_ = false;
 
   TicksNowCallback ticks_now_callback_;
 

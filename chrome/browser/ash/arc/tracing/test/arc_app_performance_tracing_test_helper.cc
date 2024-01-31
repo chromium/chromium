@@ -61,7 +61,8 @@ ArcAppPerformanceTracingTestHelper::GetTracingSession() {
 
 void ArcAppPerformanceTracingTestHelper::FireTimerForTesting() {
   DCHECK(GetTracingSession());
-  DCHECK(GetTracingSession()->TracingActive());
+  DCHECK(GetTracingSession()->tracing_active());
+  DCHECK(GetTracingSession()->HasPresentFrames());
   GetTracingSession()->FireTimerForTesting();
 }
 
@@ -69,7 +70,8 @@ void ArcAppPerformanceTracingTestHelper::PlaySequence(
     exo::Surface* surface,
     const std::vector<base::TimeDelta>& deltas) {
   DCHECK(GetTracingSession());
-  DCHECK(GetTracingSession()->TracingActive());
+  DCHECK(GetTracingSession()->tracing_active());
+  DCHECK(GetTracingSession()->HasPresentFrames());
   Commit(surface, PresentType::kSuccessful);
   for (const base::TimeDelta& delta : deltas) {
     ticks_now_ += delta;
