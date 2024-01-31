@@ -110,8 +110,9 @@ int64_t ConvertTimespecToMicros(const struct timespec& ts) {
 int64_t ConvertTimespecResultToMicros(uint32_t tv_sec_hi,
                                       uint32_t tv_sec_lo,
                                       uint32_t tv_nsec) {
-  base::CheckedNumeric<int64_t> result =
-      (static_cast<int64_t>(tv_sec_hi) << 32) + tv_sec_lo;
+  base::CheckedNumeric<int64_t> result(tv_sec_hi);
+  result <<= 32;
+  result += tv_sec_lo;
   result *= base::Time::kMicrosecondsPerSecond;
   result += (tv_nsec / base::Time::kNanosecondsPerMicrosecond);
   return result.ValueOrDie();
