@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <string_view>
 #include <utility>
 
 #include "base/base_switches.h"
@@ -692,7 +693,7 @@ bool CastContentBrowserClient::IsBufferingEnabled() {
 
 std::optional<service_manager::Manifest>
 CastContentBrowserClient::GetServiceManifestOverlay(
-    base::StringPiece service_name) {
+    std::string_view service_name) {
   if (service_name == ServiceManagerContext::kBrowserServiceName) {
     return GetCastContentBrowserOverlayManifest();
   }

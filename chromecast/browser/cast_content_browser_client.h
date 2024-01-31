@@ -8,6 +8,7 @@
 #include <map>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/task/sequenced_task_runner.h"
@@ -168,7 +169,7 @@ class CastContentBrowserClient
       const service_manager::Identity& identity,
       mojo::PendingReceiver<service_manager::mojom::Service>* receiver);
   virtual std::optional<service_manager::Manifest> GetServiceManifestOverlay(
-      base::StringPiece service_name);
+      std::string_view service_name);
   std::vector<service_manager::Manifest> GetExtraServiceManifests();
   std::vector<std::string> GetStartupServices();
 

@@ -4,6 +4,8 @@
 
 #include "chromecast/browser/webui/cast_webui_message_handler.h"
 
+#include <string_view>
+
 #include "base/logging.h"
 
 namespace chromecast {
@@ -22,7 +24,7 @@ void CastWebUIMessageHandler::OnJavascriptDisallowed() {
 }
 
 void CastWebUIMessageHandler::CallJavascriptFunction(
-    base::StringPiece function,
+    std::string_view function,
     base::span<const base::ValueView> args) {
   AllowJavascript();
   javascript_called_ = true;
