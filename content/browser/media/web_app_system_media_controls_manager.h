@@ -39,6 +39,7 @@ enum class WebAppSystemMediaControlsEvent {
 // received by the WebAppSystemmediaControlsManager.
 class WebAppSystemMediaControlsManagerObserver {
  public:
+  virtual void OnBrowserAdded() {}
   virtual void OnWebAppAdded(base::UnguessableToken request_id) {}
 };
 

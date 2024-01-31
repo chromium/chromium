@@ -383,10 +383,8 @@ void AudioFocusManager::MaybeUpdateActiveSession() {
   AudioFocusRequest* active = nullptr;
 
   for (auto& row : base::Reversed(audio_focus_stack_)) {
-    if (!row->info()->is_controllable ||
-        row->info()->ignore_for_active_session) {
+    if (!row->info()->is_controllable)
       continue;
-    }
 
     active = row.get();
     break;

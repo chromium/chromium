@@ -96,6 +96,15 @@ class MediaKeysListenerManagerImpl
     media_keys_listener_ = std::move(media_keys_listener);
   }
 
+  // Creates everything for the browser's connection to the system media
+  // controls. If already created, this method will rebind existing bookkeeping
+  // to point at the new active media session. This pattern is not ideal, as
+  // WebAppSystemMediaControlsManager is the class that is receiving
+  // onFocusGained and realizing it is not related to web apps, and calling us
+  // back here to create the browser stuff. crbug.com/1502981 covers reworking
+  // this.
+  void SetBrowserActiveMediaRequestId(base::UnguessableToken request_id);
+
  private:
   // ListeningData tracks which delegates are listening to a particular key. We
   // track the ActiveMediaSessionController separately from the other listeners

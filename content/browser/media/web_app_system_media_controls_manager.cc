@@ -93,7 +93,7 @@ void WebAppSystemMediaControlsManager::OnFocusGained(
   base::UnguessableToken request_id = maybe_id.value();
   DVLOG(1) << "WebAppSystemMediaControlsManager::OnFocusGained, "
               "request id = "
-           << request_id;
+           << request_id.ToString();
 
   // Get the web contents associated with the request_id
   content::WebContents* web_contents =
@@ -114,8 +114,22 @@ void WebAppSystemMediaControlsManager::OnFocusGained(
       web_contents->GetDelegate()->ShouldUseInstancedSystemMediaControls() ||
       always_assume_web_app_for_testing_;
   if (!is_web_contents_for_web_app) {
-    // Non-webapp updates are handled by media_keys_listener_manager_impl and do
-    // not need any intervention from us here.
+    // TODO(crbug.com/1502981) this is the only place we have the request_id for
+    // the browser's controls, but logically doesn't make a ton of sense to do
+    // browser handling in here. This bug tracks investigating moving it
+    // somewhere else.
+
+    MediaKeysListenerManagerImpl* media_keys_listener_manager_impl =
+        BrowserMainLoop::GetInstance()->media_keys_listener_manager();
+    DCHECK(media_keys_listener_manager_impl);
+    media_keys_listener_manager_impl->SetBrowserActiveMediaRequestId(
+        request_id);
+
+    // notify test observers we added the browser.
+    if (test_observer_) {
+      test_observer_->OnBrowserAdded();
+    }
+
     return;
   }
 
