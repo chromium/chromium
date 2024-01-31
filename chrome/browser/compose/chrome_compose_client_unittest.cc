@@ -469,6 +469,9 @@ TEST_F(ChromeComposeClientTest, TestCompose) {
       compose::kComposeSessionEventCounts,
       compose::ComposeSessionEventTypes::kInsertClicked, 1);
 
+  histograms().ExpectBucketCount("Compose.Session.EvalLocation",
+                                 compose::SessionEvalLocation::kServer, 1);
+
   NavigateAndCommitActiveTab(GURL("about:blank"));
 
   // Check page level UKM metrics.
@@ -527,6 +530,50 @@ TEST_F(ChromeComposeClientTest, TestCompose) {
               ukm::builders::Compose_SessionProgress::kInsertedResultsName, 1),
           testing::Pair(ukm::builders::Compose_SessionProgress::kCanceledName,
                         0)));
+}
+
+TEST_F(ChromeComposeClientTest, TestComposeServerAndOnDeviceResponses) {
+  ShowDialogAndBindMojo();
+  base::test::TestFuture<compose::mojom::ComposeResponsePtr> test_future;
+  BindComposeFutureToOnResponseReceived(test_future);
+  page_handler()->Compose("", false);
+
+  compose::mojom::ComposeResponsePtr result = test_future.Take();
+  EXPECT_EQ(compose::mojom::ComposeStatus::kOk, result->status);
+  EXPECT_EQ("Cucumbers", result->result);
+  EXPECT_FALSE(result->on_device_evaluation_used);
+
+  // Simulate rewrite, serviced by on-device model.
+  EXPECT_CALL(session(), ExecuteModel(_, _))
+      .WillOnce(testing::WithArg<1>(testing::Invoke(
+          [&](optimization_guide::
+                  OptimizationGuideModelExecutionResultStreamingCallback
+                      callback) {
+            std::move(callback).Run(OptimizationGuideStreamingResult(
+                ComposeResponse(true, "Tomatoes"), true,
+                /*provided_by_on_device=*/true));
+          })));
+
+  page_handler()->Rewrite(nullptr);
+
+  // Simulate insert call from Compose dialog.
+  page_handler()->AcceptComposeResult(base::NullCallback());
+  client_page_handler()->CloseUI(compose::mojom::CloseReason::kInsertButton);
+  FlushMojo();
+
+  histograms().ExpectBucketCount("Compose.Session.EvalLocation",
+                                 compose::SessionEvalLocation::kMixed, 1);
+}
+
+TEST_F(ChromeComposeClientTest, TestComposeEmptySession) {
+  ShowDialogAndBindMojo();
+  base::test::TestFuture<compose::mojom::ComposeResponsePtr> test_future;
+  BindComposeFutureToOnResponseReceived(test_future);
+  client_page_handler()->CloseUI(compose::mojom::CloseReason::kInsertButton);
+  FlushMojo();
+
+  histograms().ExpectBucketCount("Compose.Session.EvalLocation",
+                                 compose::SessionEvalLocation::kNone, 1);
 }
 
 TEST_F(ChromeComposeClientTest, TestComposeShowContextMenu) {

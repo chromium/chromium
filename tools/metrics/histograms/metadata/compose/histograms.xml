@@ -192,6 +192,16 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Compose.Session.EvalLocation"
+    enum="ComposeSessionEvalLocation" expires_after="2024-06-29">
+  <owner>harringtond@chromium.org</owner>
+  <owner>chrome-compose-frontend@google.com</owner>
+  <summary>
+    Reports the location where the compose response was evaluated. Logged at the
+    end of each Compose session.
+  </summary>
+</histogram>
+
 <histogram name="Compose.Session.FRE.Disclaimer.CloseReason"
     enum="ComposeFirstRunSessionCloseReasonType" expires_after="2024-06-30">
   <owner>cuianthony@chromium.org</owner>

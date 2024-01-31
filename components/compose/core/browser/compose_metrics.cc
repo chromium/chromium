@@ -289,15 +289,25 @@ void LogComposeMSBBSessionDialogShownCount(ComposeMSBBSessionCloseReason reason,
 void LogComposeSessionCloseMetrics(ComposeSessionCloseReason reason,
                                    const ComposeSessionEvents& session_events) {
   base::UmaHistogramEnumeration(kComposeSessionCloseReason, reason);
+
+  SessionEvalLocation session_eval_location;
   std::optional<EvalLocation> eval_location;
-  if (session_events.server_responses > 0 &&
+  if (session_events.server_responses == 0 &&
       session_events.on_device_responses == 0) {
+    session_eval_location = SessionEvalLocation::kNone;
+  } else if (session_events.server_responses > 0 &&
+             session_events.on_device_responses > 0) {
+    session_eval_location = SessionEvalLocation::kMixed;
+  } else if (session_events.server_responses > 0) {
     eval_location = EvalLocation::kServer;
-  }
-  if (session_events.on_device_responses > 0 &&
-      session_events.server_responses == 0) {
+    session_eval_location = SessionEvalLocation::kServer;
+  } else {
     eval_location = EvalLocation::kOnDevice;
+    session_eval_location = SessionEvalLocation::kOnDevice;
   }
+
+  base::UmaHistogramEnumeration("Compose.Session.EvalLocation",
+                                session_eval_location);
 
   if (eval_location) {
     base::UmaHistogramEnumeration(

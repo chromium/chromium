@@ -101,6 +101,13 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Session was closed while waiting for a response"/>
 </enum>
 
+<enum name="ComposeSessionEvalLocation">
+  <int value="0" label="None"/>
+  <int value="1" label="Server only"/>
+  <int value="2" label="On-device only"/>
+  <int value="3" label="Mixed - server and on-device"/>
+</enum>
+
 <enum name="ComposeSessionEventTypes">
   <int value="0" label="Dialog Shown"/>
   <int value="1" label="FRE Shown"/>
