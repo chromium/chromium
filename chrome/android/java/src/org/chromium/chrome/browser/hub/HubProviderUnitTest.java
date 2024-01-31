@@ -57,8 +57,11 @@ public class HubProviderUnitTest {
     private final ObservableSupplierImpl<Tab> mTabSupplierMock = new ObservableSupplierImpl<>();
     private final ObservableSupplierImpl<TabModel> mTabModelSupplier =
             new ObservableSupplierImpl<>();
+    private final ObservableSupplierImpl<DisplayButtonData> mReferenceButtonDataSupplier =
+            new ObservableSupplierImpl<>();
 
     @Mock private Callback<HubManager> mHubManagerCallback;
+    @Mock private DisplayButtonData mReferenceButtonData;
     @Mock private TabModel mTabModel;
     @Mock private TabModelSelector mTabModelSelector;
     @Mock private Pane mMockTabSwitcherPane;
@@ -79,9 +82,16 @@ public class HubProviderUnitTest {
         when(mTabModelSelector.getCurrentTabModelSupplier()).thenReturn(mTabModelSupplier);
         mTabModelSupplier.set(mTabModel);
 
+        mReferenceButtonDataSupplier.set(mReferenceButtonData);
         when(mMockTabSwitcherPane.getPaneId()).thenReturn(PaneId.TAB_SWITCHER);
+        when(mMockTabSwitcherPane.getReferenceButtonDataSupplier())
+                .thenReturn(mReferenceButtonDataSupplier);
         when(mMockIncognitoTabSwitcherPane.getPaneId()).thenReturn(PaneId.INCOGNITO_TAB_SWITCHER);
+        when(mMockIncognitoTabSwitcherPane.getReferenceButtonDataSupplier())
+                .thenReturn(mReferenceButtonDataSupplier);
         when(mMockBookmarksPane.getPaneId()).thenReturn(PaneId.BOOKMARKS);
+        when(mMockBookmarksPane.getReferenceButtonDataSupplier())
+                .thenReturn(mReferenceButtonDataSupplier);
 
         when(mTabModelSelector.getCurrentTabSupplier()).thenReturn(mTabSupplierMock);
         when(mTabModelSelector.getCurrentModelTabCountSupplier()).thenReturn(mTabCountSupplier);

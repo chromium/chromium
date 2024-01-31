@@ -67,6 +67,7 @@ public class HubManagerImplUnitTest {
     @Mock private MenuOrKeyboardActionController mMenuOrKeyboardActionController;
     @Mock private SnackbarManager mSnackbarManager;
     @Mock private MenuButtonCoordinator mMenuButtonCoordinator;
+    @Mock private DisplayButtonData mReferenceButtonData;
 
     private final ObservableSupplierImpl<Tab> mTabSupplier = new ObservableSupplierImpl<>();
     private final ObservableSupplierImpl<DisplayButtonData> mReferenceButtonDataSupplier =
@@ -79,6 +80,7 @@ public class HubManagerImplUnitTest {
 
     @Before
     public void setUp() {
+        mReferenceButtonDataSupplier.set(mReferenceButtonData);
         when(mTabSwitcherPane.getPaneId()).thenReturn(PaneId.TAB_SWITCHER);
         when(mTabSwitcherPane.getReferenceButtonDataSupplier())
                 .thenReturn(mReferenceButtonDataSupplier);
