@@ -33,6 +33,12 @@ source_set("test_support") {
   sources = [
     "fake_observable_boolean.h",
     "fake_observable_boolean.mm",
+    "first_run_test_util.h",
+    "first_run_test_util.mm",
   ]
-  deps = [ ":utils" ]
+  deps = [
+    ":utils",
+    "//base",
+    "//ios/chrome/browser/first_run/model",
+  ]
 }

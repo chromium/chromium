@@ -82,3 +82,21 @@ source_set("eg2_tests") {
   ]
   frameworks = [ "UIKit.framework" ]
 }
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "metrics_unittest.mm" ]
+  deps = [
+    ":omnibox_position_ui",
+    "//base/test:test_support",
+    "//components/prefs",
+    "//components/prefs:test_support",
+    "//components/segmentation_platform/embedder/default_model",
+    "//components/segmentation_platform/public",
+    "//components/segmentation_platform/public:test_support",
+    "//components/sync_device_info",
+    "//components/sync_device_info:test_support",
+    "//ios/chrome/browser/shared/model/utils:test_support",
+    "//testing/gtest",
+  ]
+}
