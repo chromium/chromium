@@ -1884,6 +1884,8 @@ component("ash") {
     "system/notification_center/views/conversation_notification_view.h",
     "system/notification_center/views/message_center_scroll_bar.cc",
     "system/notification_center/views/message_center_scroll_bar.h",
+    "system/notification_center/views/message_view_container.cc",
+    "system/notification_center/views/message_view_container.h",
     "system/notification_center/views/notification_center_view.cc",
     "system/notification_center/views/notification_center_view.h",
     "system/notification_center/views/notification_list_view.cc",

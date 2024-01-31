@@ -424,12 +424,11 @@ NotificationListView::NotificationListView(
 
 NotificationListView::~NotificationListView() = default;
 
-// Used when `NotificationCenterController` is disabled.
 void NotificationListView::Init() {
+  CHECK(!features::IsNotificationCenterControllerEnabled());
   Init(message_center_utils::GetSortedNotificationsWithOwnView());
 }
 
-// Used when `NotificationCenterController` is enabled.
 void NotificationListView::Init(
     const std::vector<message_center::Notification*>& notifications) {
   for (auto* notification : notifications) {
@@ -605,6 +604,19 @@ bool NotificationListView::IsAnimatingExpandOrCollapseContainer(
       << view->GetClassName() << " is not a " << kMessageViewContainerClassName;
   const MessageViewContainer* message_view_container = AsMVC(view);
   return message_view_container == expand_or_collapsing_container_;
+}
+
+void NotificationListView::OnNotificationSlidOut() {
+  DeleteRemovedNotifications();
+
+  // |message_center_view_| can be null in tests.
+  if (message_center_view_) {
+    message_center_view_->OnNotificationSlidOut();
+  }
+
+  state_ = State::MOVE_DOWN;
+  UpdateBounds();
+  StartAnimation();
 }
 
 void NotificationListView::ChildPreferredSizeChanged(views::View* child) {
@@ -838,19 +850,6 @@ void NotificationListView::OnNotificationRemoved(const std::string& id,
   if (!child->is_slid_out()) {
     child->SlideOutAndClose();
   }
-}
-
-void NotificationListView::OnNotificationSlidOut() {
-  DeleteRemovedNotifications();
-
-  // |message_center_view_| can be null in tests.
-  if (message_center_view_) {
-    message_center_view_->OnNotificationSlidOut();
-  }
-
-  state_ = State::MOVE_DOWN;
-  UpdateBounds();
-  StartAnimation();
 }
 
 void NotificationListView::OnNotificationUpdated(const std::string& id) {

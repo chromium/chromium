@@ -47,9 +47,11 @@ NotificationCenterView::NotificationCenterView()
       scroller_(new views::ScrollView()),
       notification_list_view_(new NotificationListView(this)) {
   notification_list_view_tracker_.SetView(notification_list_view_);
-  notification_list_view_tracker_.SetIsDeletingCallback(
-      base::BindOnce(&NotificationCenterView::ClearNotificationListViewPtr,
-                     base::Unretained(this)));
+  notification_list_view_tracker_.SetIsDeletingCallback(base::BindOnce(
+      [](raw_ptr<NotificationListView>& notification_list_view) {
+        notification_list_view = nullptr;
+      },
+      std::ref(notification_list_view_)));
 
   auto* scroll_bar = new MessageCenterScrollBar();
   scroll_bar->SetInsets(kScrollBarInsets);
@@ -64,23 +66,42 @@ NotificationCenterView::~NotificationCenterView() {
   scroller_->RemoveObserver(this);
 }
 
-// Used when `NotificationCenterController` is disabled.
 void NotificationCenterView::Init() {
+  CHECK(!features::IsNotificationCenterControllerEnabled());
   notification_list_view_->Init();
   AddChildViews();
 }
 
-// Used when `NotificationCenterController` is enabled.
 void NotificationCenterView::Init(
     const std::vector<message_center::Notification*>& notifications) {
+  CHECK(features::IsNotificationCenterControllerEnabled() &&
+        !features::AreOngoingProcessesEnabled());
   notification_list_view_->Init(notifications);
   AddChildViews();
 }
 
-void NotificationCenterView::AddChildViews() {
+void NotificationCenterView::Init(
+    const std::vector<message_center::Notification*>& unpinned_notifications,
+    std::unique_ptr<views::View> pinned_notification_list_view) {
+  CHECK(features::AreOngoingProcessesEnabled());
+  notification_list_view_->Init(unpinned_notifications);
+
+  AddChildViews(std::move(pinned_notification_list_view));
+}
+
+void NotificationCenterView::AddChildViews(
+    std::unique_ptr<views::View> pinned_notification_list_view) {
   // TODO(crbug.com/1247455): Be able to do
   // SetContentsLayerType(LAYER_NOT_DRAWN).
-  auto scroller_contents_view = std::make_unique<views::BoxLayoutView>();
+  auto scroller_contents_view =
+      views::Builder<views::BoxLayoutView>()
+          .SetOrientation(views::BoxLayout::Orientation::kVertical)
+          .SetBetweenChildSpacing(kMessageCenterPadding)
+          .Build();
+  if (features::AreOngoingProcessesEnabled()) {
+    scroller_contents_view->AddChildView(
+        std::move(pinned_notification_list_view));
+  }
   scroller_contents_view->AddChildView(notification_list_view_);
   scroller_->SetContents(std::move(scroller_contents_view));
   // Need to set the transparent background explicitly, since ScrollView has
@@ -181,10 +202,6 @@ void NotificationCenterView::ConfigureMessageView(
 
 void NotificationCenterView::OnViewBoundsChanged(views::View* observed_view) {
   UpdateNotificationBar();
-}
-
-void NotificationCenterView::ClearNotificationListViewPtr() {
-  notification_list_view_ = nullptr;
 }
 
 void NotificationCenterView::OnContentsScrolled() {
