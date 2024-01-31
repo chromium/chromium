@@ -18,6 +18,9 @@ DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(ASH_EXPORT,
                                           kAppListBubbleViewElementId);
 
 DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(ASH_EXPORT,
+                                          kAssistantDialogPlateElementId);
+
+DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(ASH_EXPORT,
                                           kBluetoothFeatureTileToggleElementId);
 
 DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(ASH_EXPORT, kCalendarViewElementId);

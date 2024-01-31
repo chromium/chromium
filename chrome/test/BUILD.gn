@@ -1070,6 +1070,7 @@ if (is_chromeos && is_chromeos_device) {
     }
     if (is_chromeos_ash) {
       sources += [
+        "../browser/ash/assistant/assistant_integration_test.cc",
         "../browser/ash/bluetooth/bluetooth_integration_test.cc",
         "../browser/ash/child_accounts/web_approvals_integration_test.cc",
         "../browser/ash/external_metrics_integration_test.cc",
@@ -1116,6 +1117,7 @@ if (is_chromeos && is_chromeos_device) {
         "//chrome/test/base/chromeos/crosier/helper:common",
         "//chromeos/ash/components/standalone_browser",
         "//chromeos/ash/components/standalone_browser:test_support",
+        "//chromeos/ash/services/assistant/public/cpp",
         "//chromeos/services/machine_learning/public/cpp",
       ]
 

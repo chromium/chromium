@@ -7,6 +7,7 @@
 #include <string_view>
 #include <utility>
 
+#include "ash/ash_element_identifiers.h"
 #include "ash/assistant/model/assistant_interaction_model.h"
 #include "ash/assistant/model/assistant_ui_model.h"
 #include "ash/assistant/ui/assistant_ui_constants.h"
@@ -41,6 +42,7 @@
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
+#include "ui/views/view_class_properties.h"
 
 namespace ash {
 
@@ -109,6 +111,7 @@ AssistantDialogPlate::AssistantDialogPlate(AssistantViewDelegate* delegate)
                                   ->query_history()
                                   .GetIterator()) {
   SetID(AssistantViewID::kDialogPlate);
+  SetProperty(views::kElementIdentifierKey, kAssistantDialogPlateElementId);
   InitLayout();
 
   assistant_controller_observation_.Observe(AssistantController::Get());
