@@ -89,23 +89,16 @@ public class CronetLibraryLoader {
                 }
             }
             CronetLibraryLoaderJni.get().nativeInit();
-            if (!libAlreadyLoaded) {
-                String implVersion = ImplVersion.getCronetVersion();
-                if (!implVersion.equals(CronetLibraryLoaderJni.get().getCronetVersion())) {
-                    throw new RuntimeException(
-                            String.format(
-                                    "Expected Cronet version number %s, "
-                                            + "actual version number %s.",
-                                    implVersion, CronetLibraryLoaderJni.get().getCronetVersion()));
-                }
-                Log.i(
-                        TAG,
-                        "Cronet version: %s, arch: %s",
-                        implVersion,
-                        System.getProperty("os.arch"));
-                setNativeLoggingLevel();
-                sWaitForLibLoad.open();
+            String implVersion = ImplVersion.getCronetVersion();
+            if (!implVersion.equals(CronetLibraryLoaderJni.get().getCronetVersion())) {
+                throw new RuntimeException(
+                        String.format(
+                                "Expected Cronet version number %s, " + "actual version number %s.",
+                                implVersion, CronetLibraryLoaderJni.get().getCronetVersion()));
             }
+            Log.i(TAG, "Cronet version: %s, arch: %s", implVersion, System.getProperty("os.arch"));
+            setNativeLoggingLevel();
+            sWaitForLibLoad.open();
             sInitialized = true;
         }
     }
@@ -228,12 +221,6 @@ public class CronetLibraryLoader {
      */
     @CalledByNative
     private static void ensureInitializedFromNative() {
-        // Called by native, so native library is already loaded.
-        // It is possible that loaded native library is not regular
-        // "libcronet.xyz.so" but test library that statically links
-        // native code like "libcronet_unittests.so".
-        sWaitForLibLoad.open();
-
         // The application context must already be initialized
         // using ContextUtils.initApplicationContext().
         Context applicationContext = ContextUtils.getApplicationContext();
