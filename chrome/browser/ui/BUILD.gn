@@ -1661,6 +1661,8 @@ static_library("ui") {
       "webui/commander/commander_handler.h",
       "webui/commander/commander_ui.cc",
       "webui/commander/commander_ui.h",
+      "webui/commerce/product_specifications_ui.cc",
+      "webui/commerce/product_specifications_ui.h",
       "webui/commerce/shopping_insights_side_panel_ui.cc",
       "webui/commerce/shopping_insights_side_panel_ui.h",
       "webui/commerce/shopping_list_context_menu_controller.cc",

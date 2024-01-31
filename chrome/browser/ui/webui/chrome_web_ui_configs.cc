@@ -15,6 +15,7 @@
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/webui/bookmarks/bookmarks_ui.h"
+#include "chrome/browser/ui/webui/commerce/product_specifications_ui.h"
 #include "chrome/browser/ui/webui/downloads/downloads_ui.h"
 #include "chrome/browser/ui/webui/history/history_ui.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
@@ -53,6 +54,8 @@ void RegisterChromeWebUIConfigs() {
 
 #if !BUILDFLAG(IS_ANDROID)
   map.AddWebUIConfig(std::make_unique<BookmarksUIConfig>());
+  map.AddWebUIConfig(
+      std::make_unique<commerce::ProductSpecificationsUIConfig>());
   map.AddWebUIConfig(std::make_unique<DownloadsUIConfig>());
   map.AddWebUIConfig(std::make_unique<HistoryUIConfig>());
 #endif  // !BUILDFLAG(IS_ANDROID)

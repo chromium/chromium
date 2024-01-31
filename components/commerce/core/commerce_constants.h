@@ -10,6 +10,12 @@ namespace commerce {
 // The host for the commerce internals page.
 extern const char kChromeUICommerceInternalsHost[];
 
+// The host for compare.
+extern const char kChromeUICompareHost[];
+
+// The URL for compare.
+extern const char kChromeUICompareUrl[];
+
 // The host for the shopping insights side panel page.
 extern const char kChromeUIShoppingInsightsSidePanelHost[];
 
