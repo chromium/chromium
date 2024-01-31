@@ -10,7 +10,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/views/web_apps/isolated_web_apps/fake_pref_observer.h"
 #include "chrome/browser/ui/views/web_apps/isolated_web_apps/installability_checker.h"
 #include "chrome/browser/ui/views/web_apps/isolated_web_apps/isolated_web_app_installer_coordinator.h"
@@ -94,14 +93,8 @@ class IsolatedWebAppInstallerBrowserTest : public WebAppControllerBrowserTest {
   webapps::AppId app_id_;
 };
 
-// TODO(https://crbug.com/1523116): Fix memory leak on ChromiumOS ASan.
-#if BUILDFLAG(IS_CHROMEOS_ASH) && defined(MEMORY_SANITIZER)
-#define MAYBE_ValidBundleInstallAndLaunch DISABLED_ValidBundleInstallAndLaunch
-#else
-#define MAYBE_ValidBundleInstallAndLaunch ValidBundleInstallAndLaunch
-#endif
 IN_PROC_BROWSER_TEST_F(IsolatedWebAppInstallerBrowserTest,
-                       MAYBE_ValidBundleInstallAndLaunch) {
+                       ValidBundleInstallAndLaunch) {
   base::ScopedAllowBlockingForTesting allow_blocking;
 
   base::FilePath bundle_path = BuildBundleAndWrite(

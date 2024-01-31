@@ -15,7 +15,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/version.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/test/pixel_test_configuration_mixin.h"
@@ -67,8 +66,6 @@ const TestParam kTestParam[] = {
     {.test_suffix = "ShowMetadata", .step = Step::kShowMetadata},
     {.test_suffix = "Install", .step = Step::kInstall},
     {.test_suffix = "Success", .step = Step::kInstallSuccess},
-// TODO(https://crbug.com/1523116): Fix memory leak on ChromiumOS ASan.
-#if !(BUILDFLAG(IS_CHROMEOS_ASH) && defined(MEMORY_SANITIZER))
     {.test_suffix = "InvalidBundle",
      .step = Step::kGetMetadata,
      .dialog = IsolatedWebAppInstallerModel::BundleInvalidDialog{}},
@@ -90,7 +87,6 @@ const TestParam kTestParam[] = {
     {.test_suffix = "InstallationError",
      .step = Step::kInstall,
      .dialog = IsolatedWebAppInstallerModel::InstallationFailedDialog{}},
-#endif  // !(BUILDFLAG(IS_CHROMEOS_ASH) && defined(MEMORY_SANITIZER))
 };
 
 SignedWebBundleMetadata CreateTestMetadata() {
