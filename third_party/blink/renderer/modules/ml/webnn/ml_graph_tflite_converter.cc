@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_conv_2d_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_elu_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_leaky_relu_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_pad_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_pool_2d_options.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_activation.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_utils.h"
@@ -94,9 +95,16 @@ uint32_t GetOperatorCodeIndex(tflite::BuiltinOperator code,
   return operator_code_index;
 }
 
+// Holds tflite padding mode and the explicit padding if needed.
+struct TfLitePadding {
+  tflite::Padding mode;
+  // The explicit paddings are used to create TfLite Pad operator.
+  absl::optional<Vector<uint32_t>> paddings;
+};
+
 // Helper to get tflite padding mode for convolution 2d or pooling 2d.
 template <typename OptionsType>
-base::expected<tflite::Padding, String> GetTfLitePaddingMode(
+base::expected<TfLitePadding, String> GetTfLitePaddingMode(
     const OptionsType* options,
     const webnn::Size2d<uint32_t>& input,
     const webnn::Size2d<uint32_t>& filter,
@@ -111,7 +119,7 @@ base::expected<tflite::Padding, String> GetTfLitePaddingMode(
       const auto explicit_padding = options->getPaddingOr(no_padding);
       CHECK_EQ(explicit_padding.size(), 4u);
       if (explicit_padding == no_padding) {
-        return tflite::Padding_VALID;
+        return TfLitePadding{.mode = tflite::Padding_VALID};
       } else {
         // Convert the explicit padding to tflite same padding mode, throw
         // exception if the calculated padding with kSameUpper are not the same
@@ -128,10 +136,10 @@ base::expected<tflite::Padding, String> GetTfLitePaddingMode(
             padding_height->begin, padding_height->end, padding_width->begin,
             padding_width->end};
         if (explicit_padding == upper_padding) {
-          return tflite::Padding_SAME;
+          return TfLitePadding{.mode = tflite::Padding_SAME};
         } else {
-          return base::unexpected(
-              "The explicit padding are not supported in tflite.");
+          return TfLitePadding{.mode = tflite::Padding_VALID,
+                               .paddings = explicit_padding};
         }
       }
     }
@@ -139,7 +147,7 @@ base::expected<tflite::Padding, String> GetTfLitePaddingMode(
       // Tflite same padding is the additional ending padding of the spatial
       // input dimensions by default.
       // https://www.tensorflow.org/api_docs/python/tf/nn#same_padding
-      return tflite::Padding_SAME;
+      return TfLitePadding{.mode = tflite::Padding_SAME};
     case V8MLAutoPad::Enum::kSameLower:
       // The values in the padding array are ignored, so we don't need to
       // calculate if it's tflite same padding.
@@ -184,29 +192,108 @@ GetActivationFunctionType(const MLActivation* ml_activation) {
   return activation;
 }
 
+template <typename T>
+struct TensorInfo {
+  tflite::TensorType type;
+  Vector<int32_t> dimensions;
+  Vector<T> values;
+};
+
 template <typename DataType>
-uint32_t SerializeZeroBiasBuffer(V8MLOperandDataType::Enum data_type,
-                                 uint32_t output_channels,
-                                 flatbuffers::FlatBufferBuilder& builder,
-                                 Vector<BufferOffset>& buffers,
-                                 Vector<TensorOffset>& tensors) {
+int32_t SerializeTensorWithBuffer(const TensorInfo<DataType>& tensor_info,
+                                  flatbuffers::FlatBufferBuilder& builder,
+                                  Vector<BufferOffset>& buffers,
+                                  Vector<TensorOffset>& tensors) {
   // Create `tflite::Buffer` for the empty tensors.
   const auto buffer_index = base::checked_cast<uint32_t>(buffers.size());
-  const std::vector<DataType> empty_data(output_channels);
+  const auto& tensor_data = tensor_info.values;
   buffers.emplace_back(tflite::CreateBuffer(
       builder,
-      builder.CreateVector(reinterpret_cast<const uint8_t*>(empty_data.data()),
-                           empty_data.size() * sizeof(DataType))));
+      builder.CreateVector(reinterpret_cast<const uint8_t*>(tensor_data.data()),
+                           tensor_data.size() * sizeof(DataType))));
 
-  // Create `tflite::Tensor` with the output channels and the index of buffer.
+  // Create `tflite::Tensor` with the dimensions and the index of buffer.
   const int32_t tensor_index = base::checked_cast<int32_t>(tensors.size());
-  const auto dimensions = builder.CreateVector<int32_t>(
-      {base::checked_cast<int32_t>(output_channels)});
-  const auto operand_type = BlinkOperandTypeToTFLite(data_type);
+  const auto dimensions = builder.CreateVector<int32_t>(tensor_info.dimensions);
   tensors.emplace_back(tflite::CreateTensor(builder, std::move(dimensions),
-                                            operand_type, buffer_index));
+                                            tensor_info.type, buffer_index));
 
   return tensor_index;
+}
+
+base::expected<int32_t, String> SerializeExplicitPad(
+    const MLOperand* input_operand,
+    const int32_t input_tensor_index,
+    const Vector<uint32_t>& paddings,
+    flatbuffers::FlatBufferBuilder& builder,
+    Vector<OperatorCodeOffset>& operator_codes,
+    Vector<OperatorOffset>& operators,
+    Vector<BufferOffset>& buffers,
+    Vector<TensorOffset>& tensors) {
+  // WebNN explicit padding is in [beginning_height, ending_height,
+  // beginning_width, ending_width] sequence.
+  const auto padding_rank = paddings.size();
+  CHECK_EQ(padding_rank, 4u);
+
+  // TfLite padding is an integer tensor array filled with pre and post padding.
+  // For NHWC input layout, the sequence will be [[0, 0], [beginning_height,
+  // ending_height], [beginning_width, ending_width], [0, 0]].
+  Vector<int32_t> tflite_paddings(padding_rank);
+  tflite_paddings.InsertAt(tflite_paddings.begin() + 2, paddings.data(),
+                           paddings.size());
+
+  // The shape of padding is [n, 2], where n is the rank of input as described
+  // here https://www.tensorflow.org/mlir/tfl_ops#tflmirror_pad_tflmirrorpadop.
+  const Vector<int32_t> paddings_shape{
+      {base::checked_cast<int32_t>(padding_rank), 2}};
+  const TensorInfo<int32_t> paddings_info = {.type = tflite::TensorType_INT32,
+                                             .dimensions = paddings_shape,
+                                             .values = tflite_paddings};
+  const auto padding_tensor_index = SerializeTensorWithBuffer<int32_t>(
+      paddings_info, builder, buffers, tensors);
+
+  // Create `tflite::Tensor` for the output operand of explicit padding operator
+  // with the dimensions and data type.
+  const Vector<uint32_t>& input_shape = input_operand->Dimensions();
+  CHECK_EQ(input_shape.size(), 4u);
+  Vector<int32_t> output_shape;
+  output_shape.reserve(padding_rank);
+  for (size_t i = 0; i < padding_rank; ++i) {
+    auto checked_dimension = base::MakeCheckedNum<int32_t>(input_shape[i]);
+    // Calculate output height with padding beginning and ending height.
+    if (i == 1) {
+      checked_dimension +=
+          base::MakeCheckedNum<int32_t>(paddings[0]) + paddings[1];
+    } else if (i == 2) {
+      // Calculate output width with padding beginning and ending width.
+      checked_dimension +=
+          base::MakeCheckedNum<int32_t>(paddings[2]) + paddings[3];
+    }
+    if (!checked_dimension.IsValid()) {
+      return base::unexpected("The input dimension or padding is too large.");
+    }
+    output_shape.push_back(checked_dimension.ValueOrDie());
+  }
+
+  const tflite::TensorType input_tensor_type =
+      BlinkOperandTypeToTFLite(input_operand->DataType());
+  const int32_t output_tensor_index =
+      base::checked_cast<int32_t>(tensors.size());
+  tensors.emplace_back(tflite::CreateTensor(
+      builder, builder.CreateVector<int32_t>(output_shape), input_tensor_type));
+
+  // Create `tflite::Operator` with the tensor index of inputs and outputs
+  // operand. The type of operation is determined by the index of the operator
+  // code.
+  std::array<int32_t, 2> op_inputs = {input_tensor_index, padding_tensor_index};
+  const auto operator_code_index = GetOperatorCodeIndex(
+      tflite::BuiltinOperator_PAD, builder, operator_codes);
+  const std::array<int32_t, 1> op_outputs = {output_tensor_index};
+  operators.emplace_back(tflite::CreateOperator(
+      builder, operator_code_index, builder.CreateVector<int32_t>(op_inputs),
+      builder.CreateVector<int32_t>(op_outputs)));
+
+  return output_tensor_index;
 }
 
 base::expected<OperatorOffset, String> SerializeConv2d(
@@ -214,6 +301,7 @@ base::expected<OperatorOffset, String> SerializeConv2d(
     const MLOperator* conv2d,
     flatbuffers::FlatBufferBuilder& builder,
     Vector<OperatorCodeOffset>& operator_codes,
+    Vector<OperatorOffset>& operators,
     Vector<BufferOffset>& buffers,
     Vector<TensorOffset>& tensors) {
   const int32_t input_index =
@@ -298,6 +386,19 @@ base::expected<OperatorOffset, String> SerializeConv2d(
     return base::unexpected(padding_mode.error());
   }
 
+  // Insert a Pad operator before TfLite Conv2d if needed for explicit padding.
+  absl::optional<int32_t> explicit_pad_index;
+  const auto& explicit_padding = padding_mode->paddings;
+  if (explicit_padding) {
+    const auto serialization_result = SerializeExplicitPad(
+        input, input_index, explicit_padding.value(), builder, operator_codes,
+        operators, buffers, tensors);
+    if (!serialization_result.has_value()) {
+      return base::unexpected(serialization_result.error());
+    }
+    explicit_pad_index = serialization_result.value();
+  }
+
   tflite::BuiltinOperator operator_kind;
   tflite::BuiltinOptions builtin_options_type = tflite::BuiltinOptions_NONE;
   flatbuffers::Offset<void> builtin_options = 0;
@@ -305,7 +406,7 @@ base::expected<OperatorOffset, String> SerializeConv2d(
     const uint32_t depth_multiplier = 1;
     operator_kind = tflite::BuiltinOperator_DEPTHWISE_CONV_2D;
     builtin_options = tflite::CreateDepthwiseConv2DOptions(
-                          builder, padding_mode.value(), stride_size2d.width,
+                          builder, padding_mode->mode, stride_size2d.width,
                           stride_size2d.height, depth_multiplier, activation,
                           dilation_size2d.width, dilation_size2d.height)
                           .Union();
@@ -313,7 +414,7 @@ base::expected<OperatorOffset, String> SerializeConv2d(
   } else {
     operator_kind = tflite::BuiltinOperator_CONV_2D;
     builtin_options = tflite::CreateConv2DOptions(
-                          builder, padding_mode.value(), stride_size2d.width,
+                          builder, padding_mode->mode, stride_size2d.width,
                           stride_size2d.height, activation,
                           dilation_size2d.width, dilation_size2d.height)
                           .Union();
@@ -335,11 +436,17 @@ base::expected<OperatorOffset, String> SerializeConv2d(
     if (input->DataType() != V8MLOperandDataType::Enum::kFloat32) {
       return base::unexpected("The data type of input is not supported.");
     }
-    bias_index = SerializeZeroBiasBuffer<float>(
-        input->DataType(), output_channels, builder, buffers, tensors);
+    const TensorInfo<float> zero_buffer_info = {
+        .type = BlinkOperandTypeToTFLite(input->DataType()),
+        .dimensions = {base::checked_cast<int32_t>(output_channels)},
+        .values = Vector<float>(output_channels)};
+    bias_index = SerializeTensorWithBuffer<float>(zero_buffer_info, builder,
+                                                  buffers, tensors);
   }
-  const std::vector<int32_t> op_inputs = {input_index, filter_index,
-                                          bias_index};
+
+  const std::vector<int32_t> op_inputs = {
+      explicit_pad_index ? explicit_pad_index.value() : input_index,
+      filter_index, bias_index};
   const std::vector<int32_t> op_outputs = {output_index};
   return tflite::CreateOperator(builder, operator_code_index,
                                 builder.CreateVector<int32_t>(op_inputs),
@@ -398,11 +505,109 @@ OperatorOffset SerializeElementWiseBinary(
       builder.CreateVector<int32_t>(operator_outputs));
 }
 
+base::expected<OperatorOffset, String> SerializePad(
+    const OperandToIndexMap& operand_to_index_map,
+    const MLOperator* pad,
+    flatbuffers::FlatBufferBuilder& builder,
+    Vector<OperatorCodeOffset>& operator_codes,
+    Vector<BufferOffset>& buffers,
+    Vector<TensorOffset>& tensors) {
+  const MLPadOperator* pad_operator = static_cast<const MLPadOperator*>(pad);
+  const int32_t input_index =
+      GetOperatorInputIndex(pad_operator, operand_to_index_map);
+  const int32_t output_index =
+      GetOperatorOutputIndex(pad_operator, operand_to_index_map);
+
+  // Paddings is an integer tensor array filled with pre and post padding.
+  const Vector<uint32_t>& pre_paddings = pad_operator->BeginningPadding();
+  const Vector<uint32_t>& post_paddings = pad_operator->EndingPadding();
+  CHECK_EQ(pre_paddings.size(), post_paddings.size());
+  Vector<int32_t> paddings(pre_paddings.size() + post_paddings.size());
+  for (size_t i = 0; i < pre_paddings.size(); ++i) {
+    auto checked_pre_padding = base::MakeCheckedNum<int32_t>(pre_paddings[i]);
+    auto checked_post_padding = base::MakeCheckedNum<int32_t>(post_paddings[i]);
+    if (!checked_pre_padding.IsValid() || !checked_post_padding.IsValid()) {
+      return base::unexpected("The padding is too large.");
+    }
+    paddings[i * 2] = checked_pre_padding.ValueOrDie();
+    paddings[i * 2 + 1] = checked_post_padding.ValueOrDie();
+  }
+
+  // The shape of padding is [n, 2], where n is the rank of input as described
+  // here https://www.tensorflow.org/mlir/tfl_ops#tflmirror_pad_tflmirrorpadop.
+  const Vector<int32_t> paddings_shape{
+      {base::checked_cast<int32_t>(pre_paddings.size()), 2}};
+  const TensorInfo<int32_t> paddings_info = {.type = tflite::TensorType_INT32,
+                                             .dimensions = paddings_shape,
+                                             .values = paddings};
+  const auto paddings_index = SerializeTensorWithBuffer<int32_t>(
+      paddings_info, builder, buffers, tensors);
+
+  // Create the inputs of operator with the index of input and paddings, the
+  // index of padding value will be pushed back into the vector if the padding
+  // mode is Constant.
+  std::vector<int32_t> op_inputs = {input_index, paddings_index};
+  const MLPadOptions* options =
+      static_cast<const MLPadOptions*>(pad_operator->Options());
+  CHECK(options);
+  tflite::BuiltinOptions builtin_options_type = tflite::BuiltinOptions_NONE;
+  flatbuffers::Offset<void> builtin_options = 0;
+  tflite::BuiltinOperator operator_code;
+  switch (options->mode().AsEnum()) {
+    case blink::V8MLPaddingMode::Enum::kReflection: {
+      operator_code = tflite::BuiltinOperator_MIRROR_PAD;
+      builtin_options_type = tflite::BuiltinOptions_MirrorPadOptions;
+      builtin_options =
+          CreateMirrorPadOptions(builder, tflite::MirrorPadMode_REFLECT)
+              .Union();
+      break;
+    }
+    case blink::V8MLPaddingMode::Enum::kSymmetric: {
+      operator_code = tflite::BuiltinOperator_MIRROR_PAD;
+      builtin_options_type = tflite::BuiltinOptions_MirrorPadOptions;
+      builtin_options =
+          CreateMirrorPadOptions(builder, tflite::MirrorPadMode_SYMMETRIC)
+              .Union();
+      break;
+    }
+    case blink::V8MLPaddingMode::Enum::kConstant: {
+      operator_code = tflite::BuiltinOperator_PADV2;
+      builtin_options = tflite::CreatePadV2Options(builder).Union();
+      float padding_value = options->value();
+      const TensorInfo<float> padding_value_info = {
+          .type = tflite::TensorType_FLOAT32,
+          .dimensions = {1},
+          .values = {padding_value}};
+      const auto padding_value_index = SerializeTensorWithBuffer<float>(
+          padding_value_info, builder, buffers, tensors);
+      op_inputs.push_back(padding_value_index);
+      break;
+    }
+    case blink::V8MLPaddingMode::Enum::kEdge:
+      return base::unexpected(
+          "The edge padding mode is not supported in tflite schema.");
+  }
+
+  // Create `tflite::Operator` with the tensor index of inputs and outputs
+  // operand. The type of operation is determined by the index of the operator
+  // code.
+  const auto operator_code_index =
+      GetOperatorCodeIndex(operator_code, builder, operator_codes);
+  const std::array<int32_t, 1> op_outputs = {output_index};
+  return tflite::CreateOperator(builder, operator_code_index,
+                                builder.CreateVector<int32_t>(op_inputs),
+                                builder.CreateVector<int32_t>(op_outputs),
+                                builtin_options_type, builtin_options);
+}
+
 base::expected<OperatorOffset, String> SerializePool2d(
     const OperandToIndexMap& operand_to_index_map,
     const MLOperator* pool2d,
     flatbuffers::FlatBufferBuilder& builder,
-    Vector<OperatorCodeOffset>& operator_codes) {
+    Vector<OperatorCodeOffset>& operator_codes,
+    Vector<OperatorOffset>& operators,
+    Vector<BufferOffset>& buffers,
+    Vector<TensorOffset>& tensors) {
   const int32_t input_index =
       GetOperatorInputIndex(pool2d, operand_to_index_map);
   const int32_t output_index =
@@ -464,6 +669,18 @@ base::expected<OperatorOffset, String> SerializePool2d(
   if (!padding_mode.has_value()) {
     return base::unexpected(padding_mode.error());
   }
+  // Insert a Pad operator before TfLite Pool2d if needed for explicit padding.
+  absl::optional<int32_t> explicit_pad_index;
+  const auto& explicit_padding = padding_mode->paddings;
+  if (explicit_padding) {
+    const auto serialization_result = SerializeExplicitPad(
+        input, input_index, explicit_padding.value(), builder, operator_codes,
+        operators, buffers, tensors);
+    if (!serialization_result.has_value()) {
+      return base::unexpected(serialization_result.error());
+    }
+    explicit_pad_index = serialization_result.value();
+  }
 
   tflite::BuiltinOperator operator_kind;
   switch (pool2d->Kind()) {
@@ -478,7 +695,7 @@ base::expected<OperatorOffset, String> SerializePool2d(
   }
 
   const auto pool_2d_options = CreatePool2DOptions(
-      builder, padding_mode.value(), stride_size2d.width, stride_size2d.height,
+      builder, padding_mode->mode, stride_size2d.width, stride_size2d.height,
       filter_size2d.width, filter_size2d.height,
       tflite::ActivationFunctionType_NONE);
 
@@ -487,7 +704,8 @@ base::expected<OperatorOffset, String> SerializePool2d(
   // code.
   const auto operator_code_index =
       GetOperatorCodeIndex(operator_kind, builder, operator_codes);
-  const std::vector<int32_t> op_inputs = {input_index};
+  const std::vector<int32_t> op_inputs = {
+      explicit_pad_index ? explicit_pad_index.value() : input_index};
   const std::vector<int32_t> op_outputs = {output_index};
   return tflite::CreateOperator(
       builder, operator_code_index, builder.CreateVector<int32_t>(op_inputs),
@@ -704,7 +922,7 @@ base::expected<void, String> MLGraphTfLiteConverter::SerializeOperation(
     case MLOperator::OperatorKind::kConv2d: {
       const auto conv2d_result =
           SerializeConv2d(operand_to_index_map, op, builder_, operator_codes_,
-                          buffers_, tensors_);
+                          operators_, buffers_, tensors_);
       // Some conv2d attributes are not supported in tflite schema.
       if (!conv2d_result.has_value()) {
         return base::unexpected(conv2d_result.error());
@@ -791,11 +1009,22 @@ base::expected<void, String> MLGraphTfLiteConverter::SerializeOperation(
       operator_offset = SerializeLeakyRelu(operand_to_index_map, op, builder_,
                                            operator_codes_);
       break;
+    case MLOperator::OperatorKind::kPad: {
+      const auto pad_result = SerializePad(operand_to_index_map, op, builder_,
+                                           operator_codes_, buffers_, tensors_);
+      // The Edge padding model is not supported in tflite schema.
+      if (!pad_result.has_value()) {
+        return base::unexpected(pad_result.error());
+      }
+      operator_offset = pad_result.value();
+      break;
+    }
     case MLOperator::OperatorKind::kAveragePool2d:
       [[fallthrough]];
     case MLOperator::OperatorKind::kMaxPool2d: {
       const auto pool2d_result =
-          SerializePool2d(operand_to_index_map, op, builder_, operator_codes_);
+          SerializePool2d(operand_to_index_map, op, builder_, operator_codes_,
+                          operators_, buffers_, tensors_);
       // Some pool2d attributes are not supported in tflite schema.
       if (!pool2d_result.has_value()) {
         return base::unexpected(pool2d_result.error());

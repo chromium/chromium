@@ -2020,6 +2020,16 @@ _CONFIG = [
     },
     {
         'paths': [
+            'third_party/blink/renderer/modules/ml/webnn/ml_graph_tflite_converter.cc',
+            'third_party/blink/renderer/modules/ml/webnn/ml_graph_test_model_loader.cc',
+        ],
+        'allowed': [
+            'flatbuffers::.+',
+            'tflite::.+',
+        ]
+    },
+    {
+        'paths': [
             'third_party/blink/renderer/modules/ad_auction/',
             'third_party/blink/renderer/modules/shared_storage/',
         ],
