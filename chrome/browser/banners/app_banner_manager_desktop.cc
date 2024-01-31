@@ -133,8 +133,7 @@ bool AppBannerManagerDesktop::IsRelatedNonWebAppInstalled(
   const std::u16string& platform = *related_app.platform;
 
   if (base::EqualsASCII(platform, kPlatformChromeWebStore)) {
-    return extension_registry_->GetExtensionById(
-               id, extensions::ExtensionRegistry::ENABLED) != nullptr;
+    return extension_registry_->enabled_extensions().Contains(id);
   }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
