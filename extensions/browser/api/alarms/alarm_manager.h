@@ -18,7 +18,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
-#include "base/timer/timer.h"
+#include "base/timer/wall_clock_timer.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
@@ -246,7 +246,7 @@ class AlarmManager : public BrowserContextKeyedAPI,
       extension_registry_observation_{this};
 
   // The timer for this alarm manager.
-  base::OneShotTimer timer_;
+  base::WallClockTimer timer_;
 
   // A map of our pending alarms, per extension.
   // Invariant: None of the AlarmLists are empty.

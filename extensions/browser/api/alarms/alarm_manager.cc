@@ -352,8 +352,7 @@ void AlarmManager::ReadFromStorage(const std::string& extension_id,
 
 void AlarmManager::SetNextPollTime(const base::Time& time) {
   next_poll_time_ = time;
-  timer_.Start(FROM_HERE, std::max(base::Seconds(0), time - clock_->Now()),
-               this, &AlarmManager::PollAlarms);
+  timer_.Start(FROM_HERE, time, this, &AlarmManager::PollAlarms);
 }
 
 void AlarmManager::ScheduleNextPoll() {
