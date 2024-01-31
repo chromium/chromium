@@ -226,8 +226,7 @@ void AutofillBottomSheetTabHelper::DetachPasswordListenersForAllFrames(
 void AutofillBottomSheetTabHelper::DetachPaymentsListeners(
     const std::string& frame_id,
     bool refocus) {
-  // Verify that the payments bottom sheet feature is enabled
-  if (!base::FeatureList::IsEnabled(kIOSPaymentsBottomSheet) || !web_state_) {
+  if (!web_state_) {
     return;
   }
 
@@ -242,11 +241,6 @@ void AutofillBottomSheetTabHelper::DetachPaymentsListeners(
 
 void AutofillBottomSheetTabHelper::DetachPaymentsListenersForAllFrames(
     bool refocus) {
-  // Verify that the payments bottom sheet feature is enabled
-  if (!base::FeatureList::IsEnabled(kIOSPaymentsBottomSheet)) {
-    return;
-  }
-
   for (auto& registered_renderer_ids : registered_payments_renderer_ids_) {
     DetachListenersForFrame(registered_renderer_ids.first,
                             registered_renderer_ids.second, refocus);
@@ -311,9 +305,6 @@ void AutofillBottomSheetTabHelper::OnFieldTypesDetermined(
     autofill::AutofillManager& manager,
     autofill::FormGlobalId form_id,
     FieldTypeSource source) {
-  if (!base::FeatureList::IsEnabled(kIOSPaymentsBottomSheet)) {
-    return;
-  }
   autofill::FormStructure* form_structure = manager.FindCachedFormById(form_id);
   if (!form_structure || !form_structure->IsCompleteCreditCardForm()) {
     return;

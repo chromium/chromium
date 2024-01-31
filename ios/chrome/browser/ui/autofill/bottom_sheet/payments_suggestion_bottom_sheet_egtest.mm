@@ -89,7 +89,6 @@ BOOL WaitForKeyboardToAppear() {
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
-  config.features_enabled.push_back(kIOSPaymentsBottomSheet);
   config.features_enabled.push_back(
       autofill::features::kAutofillEnableVirtualCards);
   return config;
