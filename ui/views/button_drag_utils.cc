@@ -44,14 +44,14 @@ class ScopedWidget {
 
   ~ScopedWidget() {
     if (widget_)
-      widget_->CloseNow();
+      widget_.ExtractAsDangling()->CloseNow();
   }
 
   views::Widget* operator->() const { return widget_; }
   views::Widget* get() const { return widget_; }
 
  private:
-  raw_ptr<views::Widget, DanglingUntriaged> widget_;
+  raw_ptr<views::Widget> widget_;
 };
 
 void SetURLAndDragImage(const GURL& url,
