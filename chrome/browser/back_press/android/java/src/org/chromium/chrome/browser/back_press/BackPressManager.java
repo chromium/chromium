@@ -83,7 +83,6 @@ public class BackPressManager implements Destroyable {
             new OnBackPressedCallback(false) {
                 private BackPressHandler mActiveHandler;
                 private BackEventCompat mLastBackEvent;
-                private boolean mIsBackProgressedCalled;
 
                 @SuppressLint("WrongConstant") // Suppress mLastCalledHandlerType assignment warning
                 @Override
@@ -96,8 +95,7 @@ public class BackPressManager implements Destroyable {
                     // This means this back is triggered by a gesture rather than the back button.
                     if (mLastBackEvent != null
                             && mLastCalledHandlerType != -1
-                            && mIsGestureNavEnabledSupplier.get()
-                            && mIsBackProgressedCalled) {
+                            && mIsGestureNavEnabledSupplier.get()) {
                         BackPressMetrics.recordBackPressFromEdge(
                                 mLastCalledHandlerType, mLastBackEvent.getSwipeEdge());
 
@@ -106,11 +104,9 @@ public class BackPressManager implements Destroyable {
                                     mLastBackEvent.getSwipeEdge());
                         }
                     }
-                    assert mIsGestureNavEnabledSupplier.get() == mIsBackProgressedCalled
-                            : "Inequality: is back progressed called " + mIsBackProgressedCalled;
+
                     mActiveHandler = null;
                     mLastBackEvent = null;
-                    mIsBackProgressedCalled = false;
                 }
 
                 // Following methods are only triggered on API 34+.
@@ -128,12 +124,10 @@ public class BackPressManager implements Destroyable {
                     mActiveHandler.handleOnBackCancelled();
                     mActiveHandler = null;
                     mLastBackEvent = null;
-                    mIsBackProgressedCalled = false;
                 }
 
                 @Override
                 public void handleOnBackProgressed(@NonNull BackEventCompat backEvent) {
-                    mIsBackProgressedCalled = true;
                     if (mActiveHandler == null) return;
                     mActiveHandler.handleOnBackProgressed(backEvent);
                 }
