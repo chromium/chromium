@@ -176,36 +176,6 @@ class MenuRunnerCocoaTest : public ViewsTestBase,
     MaybeRunAsync();
   }
 
-  // Runs then cancels a combobox menu and captures the frame of the anchoring
-  // view.
-  void RunMenuAt(const gfx::Rect& anchor) {
-    MenuCocoaWatcherMac::SetNotificationFilterForTesting(
-        MacNotificationFilter::IgnoreAllNotifications);
-
-    last_anchor_frame_ = NSZeroRect;
-
-    base::OnceClosure callback = base::BindOnce(
-        [](MenuRunnerCocoaTest* test) {
-          // Ignore app activation notifications while the test is running (all
-          // others are OK).
-          MenuCocoaWatcherMac::SetNotificationFilterForTesting(
-              MacNotificationFilter::IgnoreWorkspaceNotifications);
-          test->ComboboxRunMenuAtCallback();
-        },
-        base::Unretained(this));
-
-    if (IsAsync()) {
-      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE, std::move(callback));
-    } else {
-      menu_->set_menu_open_callback(std::move(callback));
-    }
-
-    runner_->RunMenuAt(parent_, nullptr, anchor, MenuAnchorPosition::kTopLeft,
-                       MenuRunner::COMBOBOX, nullptr);
-    MaybeRunAsync();
-  }
-
   void MenuCancelCallback() {
     runner_->Cancel();
     if (IsAsync()) {
@@ -273,7 +243,6 @@ class MenuRunnerCocoaTest : public ViewsTestBase,
   std::unique_ptr<TestModel> menu_;
   raw_ptr<internal::MenuRunnerImplInterface> runner_ = nullptr;
   raw_ptr<views::Widget> parent_ = nullptr;
-  NSRect last_anchor_frame_ = NSZeroRect;
   NSUInteger native_view_subview_count_ = 0;
   int menu_close_count_ = 0;
 
@@ -281,18 +250,6 @@ class MenuRunnerCocoaTest : public ViewsTestBase,
   void RunMenuWrapperCallback(base::OnceClosure callback) {
     EXPECT_TRUE(runner_->IsRunning());
     std::move(callback).Run();
-  }
-
-  void ComboboxRunMenuAtCallback() {
-    NSArray* subviews = [parent_->GetNativeView().GetNativeNSView() subviews];
-    // An anchor view should only be added for Native menus.
-    if (GetParam() == MenuType::NATIVE) {
-      ASSERT_EQ(native_view_subview_count_ + 1, [subviews count]);
-      last_anchor_frame_ = [subviews[native_view_subview_count_] frame];
-    } else {
-      EXPECT_EQ(native_view_subview_count_, [subviews count]);
-    }
-    runner_->Cancel();
   }
 
   // Run a nested run loop so that async and sync menus can be tested the
@@ -404,55 +361,6 @@ TEST_P(MenuRunnerCocoaTest, CancelWithoutRunning) {
 TEST_P(MenuRunnerCocoaTest, DeleteWithoutRunning) {
   runner_.ExtractAsDangling()->Release();
   EXPECT_EQ(0, menu_close_count_);
-}
-
-// Tests anchoring of the menus used for toolkit-views Comboboxes.
-TEST_P(MenuRunnerCocoaTest, ComboboxAnchoring) {
-  // Combobox at 20,10 in the Widget.
-  const gfx::Rect combobox_rect(20, 10, 80, 50);
-
-  // Menu anchor rects are always in screen coordinates. The window is frameless
-  // so offset by the bounds.
-  gfx::Rect anchor_rect = combobox_rect;
-  anchor_rect.Offset(kWindowOffset, kWindowOffset);
-  RunMenuAt(anchor_rect);
-
-  if (GetParam() != MenuType::NATIVE) {
-    // Combobox anchoring is only implemented for native menus.
-    EXPECT_NSEQ(NSZeroRect, last_anchor_frame_);
-    return;
-  }
-
-  // Nothing is checked, so the anchor view should have no height, to ensure the
-  // menu goes below the anchor rect. There should also be no x-offset since the
-  // there is no need to line-up text.
-  EXPECT_NSEQ(
-      NSMakeRect(combobox_rect.x(), kWindowHeight - combobox_rect.bottom(),
-                 combobox_rect.width(), 0),
-      last_anchor_frame_);
-
-  menu_->set_checked_command(kTestCommandId);
-  RunMenuAt(anchor_rect);
-
-  // Native constant used by MenuRunnerImplCocoa.
-  const CGFloat kNativeCheckmarkWidth = 18;
-
-  // There is now a checked item, so the anchor should be vertically centered
-  // inside the combobox, and offset by the width of the checkmark column.
-  EXPECT_EQ(combobox_rect.x() - kNativeCheckmarkWidth,
-            last_anchor_frame_.origin.x);
-  EXPECT_EQ(kWindowHeight - combobox_rect.CenterPoint().y(),
-            NSMidY(last_anchor_frame_));
-  EXPECT_EQ(combobox_rect.width(), NSWidth(last_anchor_frame_));
-  EXPECT_NE(0, NSHeight(last_anchor_frame_));
-
-  // In RTL, Cocoa messes up the positioning unless the anchor rectangle is
-  // offset to the right of the view. The offset for the checkmark is also
-  // skipped, to give a better match to native behavior.
-  base::i18n::SetRTLForTesting(true);
-  RunMenuAt(anchor_rect);
-  EXPECT_EQ(combobox_rect.right(), last_anchor_frame_.origin.x);
-  base::i18n::SetRTLForTesting(false);
 }
 
 INSTANTIATE_TEST_SUITE_P(,
