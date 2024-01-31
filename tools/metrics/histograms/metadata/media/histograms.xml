@@ -3464,7 +3464,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.GetDisplayMedia.RequiresUserActivationResult"
-    enum="GetDisplayMediaTransientActivation" expires_after="2024-03-14">
+    enum="GetDisplayMediaTransientActivation" expires_after="2025-03-14">
   <owner>eladalon@chromium.org</owner>
   <owner>fbeaufort@chromium.org</owner>
   <owner>hendrich@chromium.org</owner>
