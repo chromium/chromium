@@ -20,6 +20,7 @@
 #include "media/base/media_switches.h"
 #include "media/ffmpeg/ffmpeg_common.h"
 #include "media/ffmpeg/ffmpeg_decoding_loop.h"
+#include "media/formats/mpeg/mpeg1_audio_stream_parser.h"
 
 namespace media {
 
@@ -220,6 +221,32 @@ bool AudioFileReader::ReadPacket(AVPacket* output_packet) {
       av_packet_unref(output_packet);
       continue;
     }
+
+    if (!IsMp3File()) {
+      return true;
+    }
+
+    // FFmpeg may return garbage packets for MP3 stream containers, so we need
+    // to drop these to avoid decoder errors. The ffmpeg team maintains that
+    // this behavior isn't ideal, but have asked for a significant refactoring
+    // of the AVParser infrastructure to fix this, which is overkill for now.
+    // See http://crbug.com/794782.
+
+    // MP3 packets may be zero-padded according to ffmpeg, so trim until we
+    // have the packet.
+    uint8_t* packet_end = output_packet->data + output_packet->size;
+    uint8_t* header_start = output_packet->data;
+    while (header_start < packet_end && !*header_start) {
+      ++header_start;
+    }
+
+    if (packet_end - header_start < MPEG1AudioStreamParser::kHeaderSize ||
+        !MPEG1AudioStreamParser::ParseHeader(nullptr, nullptr, header_start,
+                                             nullptr)) {
+      av_packet_unref(output_packet);
+      continue;
+    }
+
     return true;
   }
   return false;
@@ -310,6 +337,11 @@ bool AudioFileReader::OnNewFrame(
 
   (*total_frames) += frames_read;
   return true;
+}
+
+bool AudioFileReader::IsMp3File() {
+  return glue_->container() ==
+         container_names::MediaContainerName::kContainerMP3;
 }
 
 bool AudioFileReader::SeekForTesting(base::TimeDelta seek_time) {
