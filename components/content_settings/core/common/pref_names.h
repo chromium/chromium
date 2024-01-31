@@ -75,8 +75,6 @@ inline constexpr char kManagedDefaultLocalFontsSetting[] =
     "profile.managed_default_content_settings.local_fonts";
 inline constexpr char kManagedDefaultThirdPartyStoragePartitioningSetting[] =
     "profile.managed_default_content_settings.third_party_storage_partitioning";
-inline constexpr char kManagedDefaultMidi[] =
-    "profile.managed_default_content_settings.midi";
 
 // Preferences that are exclusively used to store managed content settings
 // patterns.
@@ -160,10 +158,6 @@ inline constexpr char kManagedLocalFontsBlockedForUrls[] =
     "profile.managed_local_fonts_blocked_for_urls";
 inline constexpr char kManagedThirdPartyStoragePartitioningBlockedForOrigins[] =
     "profile.managed_third_party_storage_partitioning_blocked_for_origins";
-inline constexpr char kManagedMidiAllowedForUrls[] =
-    "profile.managed_midi_allowed_for_urls";
-inline constexpr char kManagedMidiBlockedForUrls[] =
-    "profile.managed_midi_blocked_for_urls";
 
 // Boolean indicating whether the quiet UI is enabled for notification
 // permission requests. This and kEnableNotificationCPSS can't both be true

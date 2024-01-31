@@ -1946,9 +1946,6 @@ chromium-metrics-reviews@google.com.
   <int value="1125" label="ArcVmDataMigrationStrategy"/>
   <int value="1126" label="AccessibilityPerformanceFilteringAllowed"/>
   <int value="1127" label="RemoteAccessHostAllowEnterpriseFileTransfer"/>
-  <int value="1128" label="DefaultMidiSetting"/>
-  <int value="1129" label="MidiAllowedForUrls"/>
-  <int value="1130" label="MidiBlockedForUrls"/>
   <int value="1131" label="GlanceablesEnabled"/>
   <int value="1132" label="DeviceAuthenticationURLBlocklist"/>
   <int value="1133" label="DeviceAuthenticationURLAllowlist"/>
