@@ -70,17 +70,14 @@ export class SettingsPrivacyHubSubpage extends SettingsPrivacyHubSubpageBase {
 
       cameraSubLabel_: String,
 
-      /**
-       * The list of connected cameras.
-       */
-      camerasConnected_: {
+      connectedCameraNames_: {
         type: Array,
         value: [],
       },
 
       isCameraListEmpty_: {
         type: Boolean,
-        computed: 'computeIsCameraListEmpty_(camerasConnected_)',
+        computed: 'computeIsCameraListEmpty_(connectedCameraNames_)',
       },
 
       isHatsSurveyEnabled_: {
@@ -91,17 +88,14 @@ export class SettingsPrivacyHubSubpage extends SettingsPrivacyHubSubpageBase {
         },
       },
 
-      /**
-       * The list of connected microphones.
-       */
-      microphonesConnected_: {
+      connectedMicrophoneNames_: {
         type: Array,
         value: [],
       },
 
       isMicListEmpty_: {
         type: Boolean,
-        computed: 'computeIsMicListEmpty_(microphonesConnected_)',
+        computed: 'computeIsMicListEmpty_(connectedMicrophoneNames_)',
       },
 
       microphoneHardwareToggleActive_: {
@@ -195,12 +189,12 @@ export class SettingsPrivacyHubSubpage extends SettingsPrivacyHubSubpageBase {
   private cameraFallbackMechanismEnabled_: boolean;
   private cameraRowSubtext_: string;
   private cameraSubLabel_: string;
-  private camerasConnected_: string[];
+  private connectedCameraNames_: string[];
   private isCameraListEmpty_: boolean;
   private isMicListEmpty_: boolean;
   private isHatsSurveyEnabled_: boolean;
   private microphoneRowSubtext_: string;
-  private microphonesConnected_: string[];
+  private connectedMicrophoneNames_: string[];
   private microphoneHardwareToggleActive_: boolean;
   private shouldDisableMicrophoneToggle_: boolean;
   private cameraSwitchForceDisabled_: boolean;
@@ -264,14 +258,14 @@ export class SettingsPrivacyHubSubpage extends SettingsPrivacyHubSubpageBase {
    * @return Whether the list of cameras displayed in this page is empty.
    */
   private computeIsCameraListEmpty_(): boolean {
-    return this.camerasConnected_.length === 0;
+    return this.connectedCameraNames_.length === 0;
   }
 
   /**
    * @return Whether the list of microphones displayed in this page is empty.
    */
   private computeIsMicListEmpty_(): boolean {
-    return this.microphonesConnected_.length === 0;
+    return this.connectedMicrophoneNames_.length === 0;
   }
 
   private setMicrophoneHardwareToggleState_(enabled: boolean): void {
@@ -308,18 +302,18 @@ export class SettingsPrivacyHubSubpage extends SettingsPrivacyHubSubpageBase {
 
   private updateMediaDeviceLists_(): void {
     MediaDevicesProxy.getMediaDevices().enumerateDevices().then((devices) => {
-      const connectedCameras: string[] = [];
-      const connectedMicrophones: string[] = [];
+      const connectedCameraNames: string[] = [];
+      const connectedMicrophoneNames: string[] = [];
       devices.forEach((device) => {
         if (device.kind === 'videoinput') {
-          connectedCameras.push(device.label);
+          connectedCameraNames.push(device.label);
         } else if (
             device.kind === 'audioinput' && device.deviceId !== 'default') {
-          connectedMicrophones.push(device.label);
+          connectedMicrophoneNames.push(device.label);
         }
       });
-      this.camerasConnected_ = connectedCameras;
-      this.microphonesConnected_ = connectedMicrophones;
+      this.connectedCameraNames_ = connectedCameraNames;
+      this.connectedMicrophoneNames_ = connectedMicrophoneNames;
     });
   }
 

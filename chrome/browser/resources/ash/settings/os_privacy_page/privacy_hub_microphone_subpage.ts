@@ -66,20 +66,17 @@ export class SettingsPrivacyHubMicrophoneSubpage extends
         value: [],
       },
 
-      /**
-       * The list of microphones connected to the device.
-       */
-      connectedMicrophones_: {
+      connectedMicrophoneNames_: {
         type: Array,
         value: [],
       },
 
       /**
-       * Indicates whether `connectedMicrophones_` is empty.
+       * Indicates whether `connectedMicrophoneNames_` is empty.
        */
       isMicListEmpty_: {
         type: Boolean,
-        computed: 'computeIsMicListEmpty_(connectedMicrophones_)',
+        computed: 'computeIsMicListEmpty_(connectedMicrophoneNames_)',
       },
 
       /**
@@ -104,7 +101,7 @@ export class SettingsPrivacyHubMicrophoneSubpage extends
   private appList_: App[];
   private appPermissionsObserverReceiver_: AppPermissionsObserverReceiver|null;
   private browserProxy_: PrivacyHubBrowserProxy;
-  private connectedMicrophones_: string[];
+  private connectedMicrophoneNames_: string[];
   private isMicListEmpty_: boolean;
   private microphoneHardwareToggleActive_: boolean;
   private mojoInterfaceProvider_: AppPermissionsHandlerInterface;
@@ -183,21 +180,21 @@ export class SettingsPrivacyHubMicrophoneSubpage extends
   }
 
   private async updateMicrophoneList_(): Promise<void> {
-    const connectedMicrophones: string[] = [];
+    const connectedMicrophoneNames: string[] = [];
     const devices: MediaDeviceInfo[] =
         await MediaDevicesProxy.getMediaDevices().enumerateDevices();
 
     devices.forEach((device) => {
       if (device.kind === 'audioinput' && device.deviceId !== 'default') {
-        connectedMicrophones.push(device.label);
+        connectedMicrophoneNames.push(device.label);
       }
     });
 
-    this.connectedMicrophones_ = connectedMicrophones;
+    this.connectedMicrophoneNames_ = connectedMicrophoneNames;
   }
 
   private computeIsMicListEmpty_(): boolean {
-    return this.connectedMicrophones_.length === 0;
+    return this.connectedMicrophoneNames_.length === 0;
   }
 
   private computeOnOffText_(): string {

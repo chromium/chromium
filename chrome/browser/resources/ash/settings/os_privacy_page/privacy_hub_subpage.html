@@ -31,7 +31,8 @@
         </div>
       </template>
       <template is="dom-if" if="[[!isCameraListEmpty_]]" restamp>
-        <template id="cameraList" is="dom-repeat" items="[[camerasConnected_]]">
+        <template id="cameraList" is="dom-repeat"
+            items="[[connectedCameraNames_]]">
           <div class="list-item">
             [[item]]
           </div>
@@ -99,7 +100,7 @@
         <template
             id="micList"
             is="dom-repeat"
-            items="[[microphonesConnected_]]">
+            items="[[connectedMicrophoneNames_]]">
           <div class="list-item">
             [[item]]
           </div>

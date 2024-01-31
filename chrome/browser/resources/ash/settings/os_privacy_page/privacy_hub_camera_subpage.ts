@@ -64,14 +64,14 @@ export class SettingsPrivacyHubCameraSubpage extends
         value: [],
       },
 
-      connectedCameras_: {
+      connectedCameraNames_: {
         type: Array,
         value: [],
       },
 
       isCameraListEmpty_: {
         type: Boolean,
-        computed: 'computeIsCameraListEmpty_(connectedCameras_)',
+        computed: 'computeIsCameraListEmpty_(connectedCameraNames_)',
       },
 
       /**
@@ -107,7 +107,7 @@ export class SettingsPrivacyHubCameraSubpage extends
   private cameraAccessStateText_: string;
   private cameraFallbackMechanismEnabled_: boolean;
   private cameraSwitchForceDisabled_: boolean;
-  private connectedCameras_: string[];
+  private connectedCameraNames_: string[];
   private isCameraListEmpty_: boolean;
   private mojoInterfaceProvider_: AppPermissionsHandlerInterface;
   private shouldDisableCameraToggle_: boolean;
@@ -213,21 +213,21 @@ export class SettingsPrivacyHubCameraSubpage extends
   }
 
   private async updateCameraList_(): Promise<void> {
-    const connectedCameras: string[] = [];
+    const connectedCameraNames: string[] = [];
     const devices: MediaDeviceInfo[] =
         await MediaDevicesProxy.getMediaDevices().enumerateDevices();
 
     devices.forEach((device) => {
       if (device.kind === 'videoinput') {
-        connectedCameras.push(device.label);
+        connectedCameraNames.push(device.label);
       }
     });
 
-    this.connectedCameras_ = connectedCameras;
+    this.connectedCameraNames_ = connectedCameraNames;
   }
 
   private computeIsCameraListEmpty_(): boolean {
-    return this.connectedCameras_.length === 0;
+    return this.connectedCameraNames_.length === 0;
   }
 
   private computeOnOffText_(): string {
