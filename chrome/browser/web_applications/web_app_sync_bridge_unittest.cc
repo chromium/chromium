@@ -5,6 +5,8 @@
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 
 #include <memory>
+#include <optional>
+#include <string>
 #include <vector>
 
 #include "base/barrier_closure.h"
@@ -42,6 +44,8 @@
 #include "components/sync/protocol/web_app_specifics.pb.h"
 #include "components/sync/test/mock_model_type_change_processor.h"
 #include "components/webapps/browser/install_result_code.h"
+#include "components/webapps/browser/installable/installable_metrics.h"
+#include "components/webapps/browser/uninstall_result_code.h"
 #include "components/webapps/common/web_app_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -1034,13 +1038,16 @@ TEST_F(WebAppSyncBridgeTest, CommitUpdate_UpdateSyncApp) {
 }
 
 TEST_F(WebAppSyncBridgeTest, CommitUpdate_DeleteSyncApp) {
-  AppsList sync_apps = CreateAppsList("https://example.com/", 10);
+  const int kNumApps = 5;
+  AppsList sync_apps = CreateAppsList("https://example.com/", kNumApps);
   Registry registry;
   InsertAppsListIntoRegistry(&registry, sync_apps);
   database_factory().WriteRegistry(registry);
   StartWebAppProvider();
 
-  EXPECT_CALL(processor(), Put(_, _, _)).Times(0);
+  // Put() is called kNumApps times, since UninstallWebApp() calls Put() to
+  // update the `is_uninstalling` field.
+  EXPECT_CALL(processor(), Put(_, _, _)).Times(kNumApps);
   ON_CALL(processor(), Delete(_, _))
       .WillByDefault([&](const std::string& storage_key,
                          syncer::MetadataChangeList* metadata) {
@@ -1050,16 +1057,10 @@ TEST_F(WebAppSyncBridgeTest, CommitUpdate_DeleteSyncApp) {
         registry.erase(storage_key);
       });
 
-  base::test::TestFuture<bool> future;
-  {
-    ScopedRegistryUpdate update =
-        sync_bridge().BeginUpdate(future.GetCallback());
-
-    for (const std::unique_ptr<WebApp>& app : sync_apps) {
-      update->DeleteApp(app->app_id());
-    }
-  }
-  EXPECT_TRUE(future.Take());
+  base::test::TestFuture<const std::optional<std::string>&> final_callback;
+  fake_provider().scheduler().UninstallAllUserInstalledWebApps(
+      webapps::WebappUninstallSource::kSync, final_callback.GetCallback());
+  EXPECT_TRUE(final_callback.Wait());
 
   EXPECT_TRUE(sync_apps.empty());
   EXPECT_TRUE(IsRegistryEqual(registrar_registry(), registry,
