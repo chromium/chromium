@@ -108,7 +108,7 @@ public class TabGridDialogView extends FrameLayout {
     private int mParentHeight;
     private int mParentWidth;
     private int mBackgroundDrawableColor;
-    private int mUngroupBarStatus = UngroupBarStatus.HIDE;
+    private @UngroupBarStatus int mUngroupBarStatus = UngroupBarStatus.HIDE;
     private int mUngroupBarBackgroundColor;
     private int mUngroupBarHoveredBackgroundColor;
     @ColorInt private int mUngroupBarTextColor;
@@ -856,9 +856,9 @@ public class TabGridDialogView extends FrameLayout {
      * Update the ungroup bar based on {@code status}.
      *
      * @param status The status in {@link TabGridDialogView.UngroupBarStatus} that the ungroup bar
-     *         should be updated to.
+     *     should be updated to.
      */
-    void updateUngroupBar(int status) {
+    void updateUngroupBar(@UngroupBarStatus int status) {
         if (status == mUngroupBarStatus) return;
         switch (status) {
             case UngroupBarStatus.SHOW:
