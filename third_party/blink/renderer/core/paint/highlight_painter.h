@@ -258,9 +258,9 @@ class CORE_EXPORT HighlightPainter {
       const AppliedTextDecoration* decoration_override);
   LineRelativeRect LineRelativeWorldRect(
       const HighlightOverlay::HighlightRange&);
-  void ClipToPartDecorations(const LineRelativeRect&);
   LineRelativeRect LocalRectInWritingModeSpace(unsigned from,
                                                unsigned to) const;
+  void ClipToPartDecorations(const LineRelativeRect& part_rect);
   void PaintDecorationsExceptLineThrough(
       const HighlightOverlay::HighlightPart&);
   void PaintDecorationsExceptLineThrough(const HighlightOverlay::HighlightPart&,

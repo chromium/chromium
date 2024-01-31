@@ -89,19 +89,9 @@ void TextDecorationPainter::UpdateDecorationInfo(
   }
 }
 
-gfx::RectF TextDecorationPainter::ExpandRectForDecorations(
+gfx::RectF TextDecorationPainter::ExpandRectForSVGDecorations(
     const LineRelativeRect& rect) {
-  // Whether it’s best to clip to selection rect on both axes or only inline
-  // depends on the situation, but the latter can improve the appearance of
-  // decorations. For example, we often paint overlines entirely past the
-  // top edge of selection rect, and wavy underlines have similar problems.
-  //
-  // Sadly there’s no way to clip to a rect of infinite height, so for now,
-  // let’s clip to selection rect plus its height both above and below. This
-  // should be enough to avoid clipping most decorations in the wild.
-  //
-  // TODO(dazabani@igalia.com): take text-underline-offset and other
-  // text-decoration properties into account?
+  // Until SVG text has correct InkOverflow, we need to hack it.
   gfx::RectF clip_rect{rect};
   clip_rect.set_y(clip_rect.y() - clip_rect.height());
   clip_rect.set_height(3 * clip_rect.height());
@@ -116,8 +106,17 @@ void TextDecorationPainter::Begin(const FragmentItem& text_item, Phase phase) {
   clip_rect_.reset();
 
   if (decoration_info_ && UNLIKELY(selection_)) {
-    clip_rect_.emplace(
-        ExpandRectForDecorations(selection_->LineRelativeSelectionRect()));
+    if (UNLIKELY(text_item.IsSvgText())) {
+      clip_rect_.emplace(
+          ExpandRectForSVGDecorations(selection_->LineRelativeSelectionRect()));
+    } else {
+      const LineRelativeRect selection_rect =
+          selection_->LineRelativeSelectionRect();
+      const PhysicalRect& ink_overflow_rect = text_item.InkOverflowRect();
+      clip_rect_.emplace(selection_rect.offset.line_left, ink_overflow_rect.Y(),
+                         selection_rect.size.inline_size,
+                         ink_overflow_rect.Height());
+    }
   }
 
   step_ = kExcept;

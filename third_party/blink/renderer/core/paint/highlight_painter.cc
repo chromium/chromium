@@ -1071,6 +1071,13 @@ LineRelativeRect HighlightPainter::LocalRectInWritingModeSpace(
   DCHECK_NE(from_info, edges_info_.end());
   DCHECK_NE(to_info, edges_info_.end());
 
+  // This rect is used for 2 purposes: To set the offset and width for
+  // text decoration painting, and the set the clip. The former uses the
+  // offset and width, but not height, and the offset should be the
+  // fragment offset. The latter uses offset and size, but the offset should
+  // be the corner of the painted region. Return the origin for text decorations
+  // and the height for clipping, then update the offset for clipping in the
+  // calling code.
   const LayoutUnit height = fragment_item_.InkOverflowRect().Height();
   if (from_info->x > to_info->x) {
     return {{to_info->x, LayoutUnit{}}, {from_info->x - to_info->x, height}};
@@ -1080,8 +1087,12 @@ LineRelativeRect HighlightPainter::LocalRectInWritingModeSpace(
 
 void HighlightPainter::ClipToPartDecorations(
     const LineRelativeRect& part_rect) {
-  const gfx::RectF clip_rect =
-      TextDecorationPainter::ExpandRectForDecorations(part_rect);
+  gfx::RectF clip_rect{part_rect};
+  if (UNLIKELY(fragment_item_.IsSvgText())) {
+    clip_rect = TextDecorationPainter::ExpandRectForSVGDecorations(part_rect);
+  } else {
+    clip_rect.Offset(0, fragment_item_.InkOverflowRect().Y());
+  }
   paint_info_.context.Clip(clip_rect);
 }
 
@@ -1127,9 +1138,6 @@ void HighlightPainter::PaintDecorationsExceptLineThrough(
     // highlight, but clip it to the range of the part.
     const LineRelativeRect decoration_rect =
         LineRelativeWorldRect(decoration.range);
-    const LineRelativeRect part_rect = part.range != decoration.range
-                                           ? LineRelativeWorldRect(part.range)
-                                           : decoration_rect;
 
     absl::optional<TextDecorationInfo> decoration_info{};
     decoration_painter_.UpdateDecorationInfo(decoration_info, fragment_item_,
@@ -1138,6 +1146,9 @@ void HighlightPainter::PaintDecorationsExceptLineThrough(
 
     if (!state_saver.Saved()) {
       state_saver.Save();
+      const LineRelativeRect part_rect = part.range != decoration.range
+                                             ? LineRelativeWorldRect(part.range)
+                                             : decoration_rect;
       ClipToPartDecorations(part_rect);
     }
 
@@ -1194,9 +1205,6 @@ void HighlightPainter::PaintDecorationsOnlyLineThrough(
     // highlight, but clip it to the range of the part.
     const LineRelativeRect decoration_rect =
         LineRelativeWorldRect(decoration.range);
-    const LineRelativeRect part_rect = part.range != decoration.range
-                                           ? LineRelativeWorldRect(part.range)
-                                           : decoration_rect;
 
     absl::optional<TextDecorationInfo> decoration_info{};
     decoration_painter_.UpdateDecorationInfo(decoration_info, fragment_item_,
@@ -1205,6 +1213,9 @@ void HighlightPainter::PaintDecorationsOnlyLineThrough(
 
     if (!state_saver.Saved()) {
       state_saver.Save();
+      const LineRelativeRect part_rect = part.range != decoration.range
+                                             ? LineRelativeWorldRect(part.range)
+                                             : decoration_rect;
       ClipToPartDecorations(part_rect);
     }
 

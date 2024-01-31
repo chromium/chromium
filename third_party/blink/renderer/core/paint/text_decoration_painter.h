@@ -61,9 +61,10 @@ class CORE_EXPORT TextDecorationPainter {
 
   const InlinePaintContext* InlineContext() const { return inline_context_; }
 
-  // Expand a (selection) rect to be suitable for clipping without affecting
-  // decorations. This is currently an approximation.
-  static gfx::RectF ExpandRectForDecorations(const LineRelativeRect&);
+  // Expand a rect to be suitable for clipping without affecting
+  // decorations. This is currently an approximation only used for SVG
+  // because SVG does not have correct InkOverflow.
+  static gfx::RectF ExpandRectForSVGDecorations(const LineRelativeRect&);
 
  private:
   enum Step { kBegin, kExcept, kOnly };
