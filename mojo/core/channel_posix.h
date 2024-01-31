@@ -115,9 +115,13 @@ class ChannelPosix : public Channel,
   // The socket over which to communicate.
   base::ScopedFD socket_;
 
-  // These watchers must only be accessed on the IO thread.
-  std::unique_ptr<base::MessagePumpForIO::FdWatchController> read_watcher_;
-  std::unique_ptr<base::MessagePumpForIO::FdWatchController> write_watcher_;
+  // These watchers must only be accessed on the IO thread. These are locked for
+  // allowing concurrent nullptr checking the unique_ptr but not dereferencing
+  // outside of the `io_task_runner_`.
+  std::unique_ptr<base::MessagePumpForIO::FdWatchController> read_watcher_
+      GUARDED_BY(write_lock_);
+  std::unique_ptr<base::MessagePumpForIO::FdWatchController> write_watcher_
+      GUARDED_BY(write_lock_);
 
   base::circular_deque<base::ScopedFD> incoming_fds_;
 

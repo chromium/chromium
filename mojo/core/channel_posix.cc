@@ -208,17 +208,17 @@ bool ChannelPosix::GetReadPlatformHandlesForIpcz(
 }
 
 void ChannelPosix::StartOnIOThread() {
-  DCHECK(!read_watcher_);
-  DCHECK(!write_watcher_);
-  read_watcher_ =
-      std::make_unique<base::MessagePumpForIO::FdWatchController>(FROM_HERE);
   base::CurrentThread::Get()->AddDestructionObserver(this);
-  write_watcher_ =
+  base::AutoLock lock(write_lock_);
+  DCHECK(!read_watcher_);
+  read_watcher_ =
       std::make_unique<base::MessagePumpForIO::FdWatchController>(FROM_HERE);
   base::CurrentIOThread::Get()->WatchFileDescriptor(
       socket_.get(), true /* persistent */, base::MessagePumpForIO::WATCH_READ,
       read_watcher_.get(), this);
-  base::AutoLock lock(write_lock_);
+  DCHECK(!write_watcher_);
+  write_watcher_ =
+      std::make_unique<base::MessagePumpForIO::FdWatchController>(FROM_HERE);
   FlushOutgoingMessagesNoLock();
 }
 
@@ -318,7 +318,10 @@ void ChannelPosix::OnFileCanReadWithoutBlocking(int fd) {
            total_bytes_read < kMaxBatchReadCapacity && next_read_size > 0);
   if (read_error) {
     // Stop receiving read notifications.
-    read_watcher_.reset();
+    {
+      base::AutoLock lock(write_lock_);
+      read_watcher_.reset();
+    }
     if (validation_error)
       OnError(Error::kReceivedMalformedData);
     else
@@ -486,6 +489,7 @@ void ChannelPosix::OnWriteError(Error error) {
   }());
 
   if (error == Error::kDisconnected) {
+    base::AutoLock lock(write_lock_);
     // If we can't write because the pipe is disconnected then continue
     // reading to fetch any in-flight messages, relying on end-of-stream to
     // signal the actual disconnection.
