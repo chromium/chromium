@@ -34,6 +34,8 @@
 
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
+
+#include "base/win/win_util.h"
 #endif
 
 #if BUILDFLAG(IS_FUCHSIA)
@@ -107,8 +109,7 @@ std::string SerializeSharedMemoryRegionMetadata(
 
   // Tell the child process the name of the HANDLE and whether to handle can
   // be inherited ('i') or must be duplicate from the parent process ('p').
-  uintptr_t uintptr_handle = reinterpret_cast<uintptr_t>(handle);
-  base::StrAppend(&serialized, {base::NumberToString(uintptr_handle),
+  base::StrAppend(&serialized, {NumberToString(win::HandleToUint32(handle)),
                                 (launch_options->elevated ? ",p," : ",i,")});
 #elif BUILDFLAG(IS_APPLE)
   // In the receiving child, the handle is looked up using the rendezvous key.
@@ -191,7 +192,7 @@ UnsafeSharedMemoryRegion DeserializeSharedMemoryRegionMetadata(
   // Windows, where it can be 'i' or 'p' to indicate that the handle is
   // inherited or must be obtained from the parent.
 #if BUILDFLAG(IS_WIN)
-  HANDLE handle = reinterpret_cast<HANDLE>(shmem_handle);
+  HANDLE handle = win::Uint32ToHandle(checked_cast<uint32_t>(shmem_handle));
   if (tokens[1] == "p") {
     DCHECK(IsCurrentProcessElevated());
     // LaunchProcess doesn't have a way to duplicate the handle, but this
