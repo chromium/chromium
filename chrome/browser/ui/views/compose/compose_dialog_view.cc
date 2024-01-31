@@ -55,12 +55,27 @@ DEFINE_ELEMENT_IDENTIFIER_VALUE(kComposeWebviewElementId);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(ComposeDialogView, kComposeDialogId);
 
 // static
-gfx::Rect ComposeDialogView::CalculateBubbleBounds(gfx::Rect screen_work_area,
-                                                   const gfx::Size& widget_size,
-                                                   gfx::Rect anchor_bounds) {
+gfx::Rect ComposeDialogView::CalculateBubbleBounds(
+    gfx::Rect screen_work_area,
+    gfx::Size widget_size,
+    gfx::Rect anchor_bounds,
+    std::optional<gfx::Rect> parent_bounds) {
+  // Widget can't be smaller than a minimum size.
+  widget_size.SetToMax({kComposeMaxDialogWidthPx, kComposeMinDialogHeightPx});
+
   // We don't want to render anything within `padding` pixels of the edge of the
   // screen work area.
   screen_work_area.Inset(kComposeDialogWorkAreaPadding);
+
+  // If the param to stay in the window bounds is true, and the window is large
+  // enough, use that as the work area instead.
+  if (compose::GetComposeConfig().stay_in_window_bounds &&
+      parent_bounds.has_value()) {
+    if ((widget_size.width() <= parent_bounds->width() &&
+         widget_size.height() <= parent_bounds->height())) {
+      screen_work_area = parent_bounds.value();
+    }
+  }
 
   // We don't want to render anything within `padding` pixels of the edge of the
   // anchor rect.  But we will if we have to (due to AdjustToFit below).
@@ -153,14 +168,20 @@ void ComposeDialogView::OnBeforeBubbleWidgetInit(
 }
 
 gfx::Rect ComposeDialogView::GetBubbleBounds() {
-  const gfx::Size widget_size =
-      BubbleDialogDelegateView::GetBubbleBounds().size();
+  gfx::Size widget_size = BubbleDialogDelegateView::GetBubbleBounds().size();
+
+  std::optional<gfx::Rect> parent_bounds;
+  if (GetWidget()->parent()) {
+    parent_bounds = GetWidget()->parent()->GetWindowBoundsInScreen();
+  }
+
   display::Display display =
       display::Screen::GetScreen()->GetDisplayNearestView(
           GetAnchorView()->GetWidget()->GetNativeView());
   gfx::Rect screen_work_area = display.work_area();
 
-  return CalculateBubbleBounds(screen_work_area, widget_size, anchor_bounds_);
+  return CalculateBubbleBounds(screen_work_area, widget_size, anchor_bounds_,
+                               parent_bounds);
 }
 
 bool ComposeDialogView::HandleContextMenu(
