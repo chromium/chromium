@@ -6,13 +6,19 @@
 #define CHROMEOS_ASH_COMPONENTS_HEATMAP_HEATMAP_PALM_DETECTOR_H_
 
 #include "chromeos/ash/components/heatmap/heatmap_ml_agent.h"
+#include "chromeos/services/machine_learning/public/mojom/heatmap_palm_rejection.mojom.h"
+#include "chromeos/services/machine_learning/public/mojom/machine_learning_service.mojom.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "ui/ozone/public/palm_detector.h"
 
 namespace ash {
 
 // A class that detects whether there is a palm in the given heatmap data calls
 // a provided callback method with the detection result.
-class HeatmapPalmDetector : public ui::PalmDetector {
+class HeatmapPalmDetector
+    : public ui::PalmDetector,
+      chromeos::machine_learning::mojom::HeatmapPalmRejectionClient {
  public:
   HeatmapPalmDetector();
   ~HeatmapPalmDetector() override;
@@ -20,12 +26,31 @@ class HeatmapPalmDetector : public ui::PalmDetector {
   // ui::PalmDetector:
   void DetectPalm(const std::vector<double>& data,
                   DetectionDoneCallback callback) override;
+  void Start(DeviceId device, std::string_view path) override;
+  DetectionResult GetDetectionResult() const override;
+
+  // chromeos::machine_learning::mojom::HeatmapPalmRejectionClient
+  void OnHeatmapProcessedEvent(
+      chromeos::machine_learning::mojom::HeatmapProcessedEventPtr event)
+      override;
 
  private:
+  void OnLoadHeatmapPalmRejection(
+      chromeos::machine_learning::mojom::LoadHeatmapPalmRejectionResult result);
+
+  void OnConnectionError();
+
   void OnExecuteDone(DetectionDoneCallback callback,
                      std::optional<double> result);
 
+  bool is_palm_ = false;
+
   std::unique_ptr<HeatmapMlAgent> ml_agent_;
+
+  mojo::Remote<chromeos::machine_learning::mojom::MachineLearningService>
+      ml_service_;
+  mojo::Receiver<chromeos::machine_learning::mojom::HeatmapPalmRejectionClient>
+      client_;
 
   base::WeakPtrFactory<HeatmapPalmDetector> weak_factory_{this};
 };

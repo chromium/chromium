@@ -727,9 +727,16 @@ void FakeServiceConnectionImpl::HandleHeatmapPalmRejectionCall(
     mojom::MachineLearningService::LoadHeatmapPalmRejectionCallback callback) {
   if (load_heatmap_palm_rejection_result_ ==
       mojom::LoadHeatmapPalmRejectionResult::OK) {
-    heatmap_palm_rejection_client_remotes_.Add(std::move(client));
+    heatmap_palm_rejection_client_ = mojo::Remote(std::move(client));
   }
   std::move(callback).Run(load_heatmap_palm_rejection_result_);
+}
+
+void FakeServiceConnectionImpl::SendHeatmapPalmRejectionEvent(
+    mojom::HeatmapProcessedEventPtr event) {
+  if (heatmap_palm_rejection_client_.is_bound()) {
+    heatmap_palm_rejection_client_->OnHeatmapProcessedEvent(std::move(event));
+  }
 }
 
 void FakeServiceConnectionImpl::HandleAnnotateRawImageCall(

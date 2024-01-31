@@ -72,5 +72,23 @@ TEST_F(HeatmapPalmDetectorTest, ReturnsNoPalmOnInvalidData) {
   EXPECT_TRUE(callback_done);
 }
 
+TEST_F(HeatmapPalmDetectorTest, StartsService) {
+  HeatmapPalmDetector detector;
+  EXPECT_FALSE(detector.IsReady());
+  detector.Start(HeatmapPalmDetector::DeviceId::kRex, "/dev/hidraw0");
+  task_environment_.RunUntilIdle();
+  EXPECT_TRUE(detector.IsReady());
+  EXPECT_EQ(detector.GetDetectionResult(),
+            HeatmapPalmDetector::DetectionResult::kNoPalm);
+
+  auto palm_event =
+      chromeos::machine_learning::mojom::HeatmapProcessedEvent::New();
+  palm_event->is_palm = true;
+  fake_service_connection_.SendHeatmapPalmRejectionEvent(std::move(palm_event));
+  task_environment_.RunUntilIdle();
+  EXPECT_EQ(detector.GetDetectionResult(),
+            HeatmapPalmDetector::DetectionResult::kPalm);
+}
+
 }  // namespace
 }  // namespace ash

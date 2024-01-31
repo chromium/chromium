@@ -212,6 +212,8 @@ class COMPONENT_EXPORT(CHROMEOS_MLSERVICE) FakeServiceConnectionImpl
   // Sets the output of `model_loader::mojom::Model::Compute`.
   void SetOutputWebPlatformModelCompute(
       std::optional<base::flat_map<std::string, std::vector<uint8_t>>> output);
+  // Sends the event to `heatmap_palm_rejection_client_`.
+  void SendHeatmapPalmRejectionEvent(mojom::HeatmapProcessedEventPtr event);
 
   // Call SetOutputValue() before Execute() to set the output tensor.
   void SetOutputValue(const std::vector<int64_t>& shape,
@@ -458,8 +460,8 @@ class COMPONENT_EXPORT(CHROMEOS_MLSERVICE) FakeServiceConnectionImpl
       web_platform_model_receivers_;
   mojo::ReceiverSet<mojom::ImageContentAnnotator> image_annotator_receivers_;
   mojo::RemoteSet<mojom::SodaClient> soda_client_remotes_;
-  mojo::RemoteSet<mojom::HeatmapPalmRejectionClient>
-      heatmap_palm_rejection_client_remotes_;
+  mojo::Remote<mojom::HeatmapPalmRejectionClient>
+      heatmap_palm_rejection_client_;
   mojom::TensorPtr output_tensor_;
   mojom::LoadHandwritingModelResult load_handwriting_model_result_;
   mojom::LoadHandwritingModelResult load_web_platform_handwriting_model_result_;
