@@ -4444,7 +4444,7 @@ void ChromeContentBrowserClient::GetAdditionalFileSystemBackends(
   DCHECK(external_mount_points);
   auto backend = std::make_unique<ash::FileSystemBackend>(
       Profile::FromBrowserContext(browser_context),
-      std::make_unique<ash::file_system_provider::BackendDelegate>(),
+      ash::file_system_provider::BackendDelegate::MakeUnique(),
       std::make_unique<ash::MTPFileSystemBackendDelegate>(
           storage_partition_path),
       std::make_unique<arc::ArcContentFileSystemBackendDelegate>(),
