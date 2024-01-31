@@ -1,0 +1,280 @@
+This is a testharness.js-based test.
+Found 138 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] tr with display: contents, within table with display: flex, has row role
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_role is not a function"
+[FAIL] tr with display: contents, within table with role=table with display: flex, has row role
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_role is not a function"
+[FAIL] tr with display: contents, within table with role=grid with display: flex, has row role
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_role is not a function"
+[FAIL] ul with display: contents, as child of div with display: grid, has list role
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_role is not a function"
+[FAIL] header with display: contents has banner role
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_role is not a function"
+[FAIL] main with display: contents has main role
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_role is not a function"
+[FAIL] footer with display: contents has contentinfo role
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_role is not a function"
+[FAIL] search with display: contents has search role
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_role is not a function"
+[FAIL] div with role banner and display: contents has banner role
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_role is not a function"
+[FAIL] div with role main and display: contents has main role
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_role is not a function"
+[FAIL] div with role contentinfo and display: contents has contentinfo role
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_role is not a function"
+[FAIL] ul with role list and display: contents (child li has display: contents) has list role
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_role is not a function"
+[FAIL] ul with role list and display: contents has list role
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_role is not a function"
+[FAIL] ol with role list and display: contents has list role (child li has display: contents)
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_role is not a function"
+[FAIL] ol with role list and display: contents has list role
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_role is not a function"
+[FAIL] div with list role and display: contents has list role
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_role is not a function"
+[FAIL] div with list role and display: contents has list role (child div with listitem role has display: contents)
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_role is not a function"
+[FAIL] table with role table and display: contents has table role
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_role is not a function"
+[FAIL] tr in table with role table and display: contents has row role
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_role is not a function"
+[FAIL] div with role table with display: contents has table role
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_role is not a function"
+[FAIL] div with role rowgroup in div with role table, both with display: contents, has rowgroup role
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_role is not a function"
+[FAIL] div with role grid with display: contents has grid role
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_role is not a function"
+[FAIL] div with role rowgroup in div with role grid, both with display: contents, has rowgroup role
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_role is not a function"
+[FAIL] table with role treegrid and display: contents has treegrid role
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_role is not a function"
+[FAIL] div with role treegrid and display: contents has treegrid role
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_role is not a function"
+[FAIL] ul with role tree and display: contents has tree role
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_role is not a function"
+[FAIL] Label: button with display: contents is labelled via referenced hidden span
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] Label: link with display: contents is labelled via aria-labelledby
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] Label: nav with display: contents is labelled via aria-labelledby
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] Label: button with display: contents is labelled via aria-label
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] Label: div with role group with display: contents is labelled via aria-label
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] Label: button with display: contents is labelled via label for/id association
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] Label: g element with display: contents, as child of svg, is labelled via title element
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] Label: link with display: contents is labelled via name from contents
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] Label: button with display: contents is labelled via name from contents
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] Label: h3 with display: contents is labelled via name from contents
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] Label: button with display: contents has button role
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] Label: button with explicit button role and display: contents has button role
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] Label: div with button role and display: contents has button role
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] Label: div with button role, tabindex=0 and display: contents has button role
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] Label: th as child of tr with display: contents, within table with display: flex, has columnheader role
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] Label: td as child of tr with display: contents, within table with display: flex, has cell role
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] Label: th as child of tr with display: contents, within table with role=table with display: flex, has columnheader role
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] Label: td as child of tr with display: contents, within table with role=table with display: flex, has cell role
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] Label: th as child of tr with display: contents, within table with role=grid with display: flex, has columnheader role
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] Label: td (no explicit role) as child of tr with display: contents, within table with role=grid with display: flex, has gridcell role
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] Label: listitem within ul with display: contents, as child of div with display: grid, has listitem role
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] Label: h3 with display: contents has heading role
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] Label: div with heading role, aria-level=3 and display: contents has heading role
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] Label: span with heading role, aria-level=1 and display: contents has heading role
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] Label: nav with display: contents and aria-label has navigation role
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] Label: aside with display: contents and aria-label has complementary role
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] Label: form with display: contents has form role
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] Label: section with aria-label and display: contents has region role
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] Label: div with role navigation, aria-label and display: contents has navigation role
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] Label: div with role complementary, aria-label and display: contents has complementary role
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] Label: div with role form, aria-label and display: contents has form role
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] Label: div with role search and display: contents has search role
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] Label: div with role region, aria-label and display: contents has region role
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] Label: link with display: contents has link role
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] Label: link with explicit link role and display: contents has link role
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] Label: div with link role and display: contents has link role
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] Label: div with link role, tabindex=0 and display: contents has link role
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] Label: li as child of ul with role list, both with display: contents, has listitem role
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] Label: li, as child of ul with role list and display: contents, has listitem role
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] Label: li with display: contents, as child of ul with role list, has listitem role
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] Label: li as child of ol with role list, both with display: contents, has listitem role
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] Label: li, as child of ol with role list and display: contents, has listitem role
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] Label: li with display: contents, as child of ol with role list, has listitem role
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] Label: div with listitem role, as child of div with display: contents, has listitem role
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] Label: div with listitem role (as child of div with list role), both with display: contents, has listitem role
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] Label: div with listitem role with display: contents, as child of div with list role, has listitem role
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] Label: td within tr both with display: contents, in table with role table and display: contents, has columnheader role
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] Label: td within tr in table with role table, all with display: contents, has cell role
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] Label: div with role columnheader with display: contents, in div with role rowgroup within div with table role both with display: contents, has columnheader role
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] Label: th within table with role grid, both with display: contents, has columnheader role
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] Label: td within table with role grid, both with display: contents, has gridcell role
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] Label: div with role columnheader with display: contents, in div with role rowgroup within div with grid role both with display: contents, has rowgroup role
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] Label: div with gridcell role and display: contents, within div with role row contained in a div with role grid both with display: contents, has gridcell role
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] Label: li with role treeitem and display: contents, within ul with role tree and display: contents, has treeitem role
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] Label: li with role treeitem and display: contents, within ul with role=group (within ul with role tree and display: contents), has treeitem role
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] Role: button with display: contents is labelled via referenced hidden span
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_role is not a function"
+[FAIL] Role: link with display: contents is labelled via aria-labelledby
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_role is not a function"
+[FAIL] Role: nav with display: contents is labelled via aria-labelledby
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_role is not a function"
+[FAIL] Role: button with display: contents is labelled via aria-label
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_role is not a function"
+[FAIL] Role: div with role group with display: contents is labelled via aria-label
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_role is not a function"
+[FAIL] Role: button with display: contents is labelled via label for/id association
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_role is not a function"
+[FAIL] Role: g element with display: contents, as child of svg, is labelled via title element
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_role is not a function"
+[FAIL] Role: link with display: contents is labelled via name from contents
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_role is not a function"
+[FAIL] Role: button with display: contents is labelled via name from contents
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_role is not a function"
+[FAIL] Role: h3 with display: contents is labelled via name from contents
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_role is not a function"
+[FAIL] Role: button with display: contents has button role
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_role is not a function"
+[FAIL] Role: button with explicit button role and display: contents has button role
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_role is not a function"
+[FAIL] Role: div with button role and display: contents has button role
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_role is not a function"
+[FAIL] Role: div with button role, tabindex=0 and display: contents has button role
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_role is not a function"
+[FAIL] Role: th as child of tr with display: contents, within table with display: flex, has columnheader role
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_role is not a function"
+[FAIL] Role: td as child of tr with display: contents, within table with display: flex, has cell role
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_role is not a function"
+[FAIL] Role: th as child of tr with display: contents, within table with role=table with display: flex, has columnheader role
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_role is not a function"
+[FAIL] Role: td as child of tr with display: contents, within table with role=table with display: flex, has cell role
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_role is not a function"
+[FAIL] Role: th as child of tr with display: contents, within table with role=grid with display: flex, has columnheader role
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_role is not a function"
+[FAIL] Role: td (no explicit role) as child of tr with display: contents, within table with role=grid with display: flex, has gridcell role
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_role is not a function"
+[FAIL] Role: listitem within ul with display: contents, as child of div with display: grid, has listitem role
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_role is not a function"
+[FAIL] Role: h3 with display: contents has heading role
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_role is not a function"
+[FAIL] Role: div with heading role, aria-level=3 and display: contents has heading role
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_role is not a function"
+[FAIL] Role: span with heading role, aria-level=1 and display: contents has heading role
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_role is not a function"
+[FAIL] Role: nav with display: contents and aria-label has navigation role
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_role is not a function"
+[FAIL] Role: aside with display: contents and aria-label has complementary role
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_role is not a function"
+[FAIL] Role: form with display: contents has form role
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_role is not a function"
+[FAIL] Role: section with aria-label and display: contents has region role
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_role is not a function"
+[FAIL] Role: div with role navigation, aria-label and display: contents has navigation role
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_role is not a function"
+[FAIL] Role: div with role complementary, aria-label and display: contents has complementary role
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_role is not a function"
+[FAIL] Role: div with role form, aria-label and display: contents has form role
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_role is not a function"
+[FAIL] Role: div with role search and display: contents has search role
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_role is not a function"
+[FAIL] Role: div with role region, aria-label and display: contents has region role
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_role is not a function"
+[FAIL] Role: link with display: contents has link role
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_role is not a function"
+[FAIL] Role: link with explicit link role and display: contents has link role
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_role is not a function"
+[FAIL] Role: div with link role and display: contents has link role
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_role is not a function"
+[FAIL] Role: div with link role, tabindex=0 and display: contents has link role
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_role is not a function"
+[FAIL] Role: li as child of ul with role list, both with display: contents, has listitem role
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_role is not a function"
+[FAIL] Role: li, as child of ul with role list and display: contents, has listitem role
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_role is not a function"
+[FAIL] Role: li with display: contents, as child of ul with role list, has listitem role
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_role is not a function"
+[FAIL] Role: li as child of ol with role list, both with display: contents, has listitem role
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_role is not a function"
+[FAIL] Role: li, as child of ol with role list and display: contents, has listitem role
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_role is not a function"
+[FAIL] Role: li with display: contents, as child of ol with role list, has listitem role
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_role is not a function"
+[FAIL] Role: div with listitem role, as child of div with display: contents, has listitem role
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_role is not a function"
+[FAIL] Role: div with listitem role (as child of div with list role), both with display: contents, has listitem role
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_role is not a function"
+[FAIL] Role: div with listitem role with display: contents, as child of div with list role, has listitem role
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_role is not a function"
+[FAIL] Role: td within tr both with display: contents, in table with role table and display: contents, has columnheader role
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_role is not a function"
+[FAIL] Role: td within tr in table with role table, all with display: contents, has cell role
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_role is not a function"
+[FAIL] Role: div with role columnheader with display: contents, in div with role rowgroup within div with table role both with display: contents, has columnheader role
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_role is not a function"
+[FAIL] Role: th within table with role grid, both with display: contents, has columnheader role
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_role is not a function"
+[FAIL] Role: td within table with role grid, both with display: contents, has gridcell role
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_role is not a function"
+[FAIL] Role: div with role columnheader with display: contents, in div with role rowgroup within div with grid role both with display: contents, has rowgroup role
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_role is not a function"
+[FAIL] Role: div with gridcell role and display: contents, within div with role row contained in a div with role grid both with display: contents, has gridcell role
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_role is not a function"
+[FAIL] Role: li with role treeitem and display: contents, within ul with role tree and display: contents, has treeitem role
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_role is not a function"
+[FAIL] Role: li with role treeitem and display: contents, within ul with role=group (within ul with role tree and display: contents), has treeitem role
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_role is not a function"
+[FAIL] div with display: contents has generic role
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_role is not a function"
+[FAIL] span with display: contents has generic role
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_role is not a function"
+Harness: the test ran to completion.
+

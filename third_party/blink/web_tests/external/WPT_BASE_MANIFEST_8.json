@@ -133,6 +133,13 @@
        {}
       ]
      ],
+     "aria-owns-presentation.html": [
+      "138625a1534faca65cb00ff3d615dc4fb3fc080b",
+      [
+       null,
+       {}
+      ]
+     ],
      "aria-owns-reparent.html": [
       "2eaceb66f6957b0240a4f02b0c23b74e8ca4921a",
       [
@@ -311734,6 +311741,12 @@
       "7f2bab2748888967344c729032f6869d665b56b3",
       []
      ],
+     "accessibility": {
+      "display-contents-role-and-label-expected.txt": [
+       "f957a4a44eeb290c6e3ef499017e194e65bde5ed",
+       []
+      ]
+     },
      "display-contents-alignment-001-ref.html": [
       "595aa7f7e5b9bb3d0c2da3afc6ae7d6ae733e241",
       []
@@ -330660,6 +330673,10 @@
      ],
      "no-red-ref.html": [
       "061454fb67a67b9b5b1d62b2603731da3988a3d9",
+      []
+     ],
+     "scroll-margin-visibility-check-expected.txt": [
+      "b2aa701578a6053b70afae1938bcda84cdf881bb",
       []
      ],
      "scroll-snap-root-001-ref.html": [
@@ -371650,6 +371667,10 @@
         "df683c3c64f4de11c49c14b9dc53cc4165dff4a7",
         []
        ],
+       "popover-top-layer-nesting.js": [
+        "ace10b3f7bc47f32c04ad1435e1d2eb28f3ec3a0",
+        []
+       ],
        "popover-utils.js": [
         "bfc1f89ec1003bfaeca1a7aea115140858a85717",
         []
@@ -394245,7 +394266,7 @@
       []
      ],
      "aria-utils.js": [
-      "a281bec1783466dc0286e1add5ef6a7d57b72c47",
+      "9daee1b5e063fe7354ada8d32614248fb048134a",
       []
      ],
      "manual.css": [
@@ -446504,6 +446525,17 @@
      ]
     },
     "css-display": {
+     "accessibility": {
+      "display-contents-role-and-label.html": [
+       "4a06d0ff5bf212648185c45f15c173c9437cfbc8",
+       [
+        null,
+        {
+         "testdriver": true
+        }
+       ]
+      ]
+     },
      "animations": {
       "display-interpolation.html": [
        "6bf3dcc5a4bdd212906abcd213a47ea58944d7ae",
@@ -446618,6 +446650,17 @@
        {}
       ]
      ],
+     "focus": {
+      "display-contents-focus.html": [
+       "8f1e2c5c9017c199df2eb45ae1d2f3e7daa69c14",
+       [
+        null,
+        {
+         "testdriver": true
+        }
+       ]
+      ]
+     },
      "inheritance.html": [
       "bfd072651cb6ec82cca7d9be5b6768afbc39fca0",
       [
@@ -503144,6 +503187,15 @@
      [
       null,
       {}
+     ]
+    ],
+    "revoke-nested-fenced-frame-navigation.https.html": [
+     "bcbe766864229f641fcabb99ddad06b7fce8ea99",
+     [
+      null,
+      {
+       "timeout": "long"
+      }
      ]
     ],
     "sandbox-attribute.https.html": [
@@ -575415,7 +575467,7 @@
        ]
       ],
       "popover-attribute-basic.html": [
-       "13108949cb3c5e97f79245578e4af0871dfbf738",
+       "2af3bbc137f1a0883921fb025ac548f1a0ec740c",
        [
         null,
         {
@@ -575724,6 +575776,33 @@
       ],
       "popover-top-layer-interactions.html": [
        "6d050ed99bb10e26113020dc6f582b7b9a8ada6f",
+       [
+        null,
+        {
+         "testdriver": true
+        }
+       ]
+      ],
+      "popover-top-layer-nesting-anchor.tentative.html": [
+       "4520ab05770404bb5e2a8492157dc502af6a1dd1",
+       [
+        null,
+        {
+         "testdriver": true
+        }
+       ]
+      ],
+      "popover-top-layer-nesting-hints.tentative.html": [
+       "4ec1f49bda9fbd2f61a1e0bc7a719de1143699e8",
+       [
+        null,
+        {
+         "testdriver": true
+        }
+       ]
+      ],
+      "popover-top-layer-nesting.tentative.html": [
+       "a0b3b60b72b55431ee86897fbe8970507950d905",
        [
         null,
         {
