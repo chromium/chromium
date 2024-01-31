@@ -1367,12 +1367,16 @@ bool VideoResourceUpdater::WriteYUVPixelsPerPlaneToPerTexture(
 
   // Data downshifting is needed if the resource bit depth is not enough.
   const bool needs_bit_downshifting = bits_per_channel > resource_bit_depth;
+  // Data upshifting is needed if bits_per_channel is more than 8 i.e. 10/12 bit
+  // but resource bit depth is higher.
+  const bool needs_bit_upshifting =
+      bits_per_channel > 8 && bits_per_channel < resource_bit_depth;
   // We need to convert the incoming data if we're transferring to half float,
   // if the need a bit downshift or if the strides need to be reconciled.
   const bool needs_conversion =
       plane_si_format == viz::SinglePlaneFormat::kLUMINANCE_F16 ||
       plane_si_format == viz::SinglePlaneFormat::kR_F16 ||
-      needs_bit_downshifting;
+      needs_bit_downshifting || needs_bit_upshifting;
 
   constexpr size_t kDefaultUnpackRowLength = 0;
   GLuint unpack_row_length = kDefaultUnpackRowLength;
@@ -1436,6 +1440,14 @@ bool VideoResourceUpdater::WriteYUVPixelsPerPlaneToPerTexture(
           reinterpret_cast<const uint16_t*>(video_frame->data(plane_index)),
           video_stride_bytes / 2, upload_pixels_.get(), upload_image_stride,
           scale, bytes_per_row, resource_size_pixels.height());
+    } else if (needs_bit_upshifting) {
+      CHECK_EQ(resource_bit_depth, 16u);
+      libyuv::ConvertToMSBPlane_16(
+          reinterpret_cast<const uint16_t*>(video_frame->data(plane_index)),
+          video_stride_bytes / 2,
+          reinterpret_cast<uint16_t*>(upload_pixels_.get()),
+          upload_image_stride / 2, resource_size_pixels.width(),
+          resource_size_pixels.height(), bits_per_channel);
     } else {
       NOTREACHED();
     }

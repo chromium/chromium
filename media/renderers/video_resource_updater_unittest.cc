@@ -558,6 +558,7 @@ TEST_F(VideoResourceUpdaterTestWithR16, HighBitFrame) {
   VideoFrameExternalResources resources =
       updater->CreateExternalResourcesFromVideoFrame(video_frame);
   EXPECT_EQ(VideoFrameResourceType::YUV, resources.type);
+  EXPECT_EQ(resources.bits_per_channel, 10u);
 
   // Max 10-bit values as read by a sampler.
   EXPECT_NEAR(resources.multiplier, 1.0, 0.0001);
@@ -568,6 +569,7 @@ TEST_F(VideoResourceUpdaterTestWithR16, HighBitFrame) {
   VideoFrameExternalResources resources2 =
       updater->CreateExternalResourcesFromVideoFrame(video_frame);
   EXPECT_EQ(VideoFrameResourceType::YUV, resources2.type);
+  EXPECT_EQ(resources2.bits_per_channel, 10u);
   EXPECT_NEAR(resources2.multiplier, 1.0, 0.0001);
   EXPECT_NEAR(resources2.offset, 0.0, 0.1);
 }
