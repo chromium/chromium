@@ -3660,7 +3660,8 @@ crbug.com/807110 [ Release Win ] external/wpt/media-source/mediasource-config-ch
 crbug.com/807110 [ Release Win ] external/wpt/media-source/mediasource-config-change-mp4-v-bitrate.html [ Failure Pass Timeout ]
 crbug.com/807110 [ Release Win ] external/wpt/media-source/mediasource-config-change-mp4-v-framerate.html [ Failure Pass Timeout ]
 # Failure and Pass for crbug.com/807110 and Timeout for crbug.com/727252.
-crbug.com/727252 external/wpt/media-source/mediasource-endofstream.html [ Failure Pass Timeout ]
+crbug.com/727252 [ Debug ] external/wpt/media-source/mediasource-endofstream.html [ Failure Pass Timeout ]
+crbug.com/727252 [ Release ] external/wpt/media-source/mediasource-endofstream.html [ Failure Pass Timeout ]
 crbug.com/807110 external/wpt/media-source/mediasource-sequencemode-append-buffer.html [ Failure Pass ]
 crbug.com/794338 media/video-rotation.html [ Failure Pass ]
 
@@ -4756,7 +4757,6 @@ crbug.com/1249176 [ Mac11-arm64 ] compositing/overflow/rotate-then-clip.html [ F
 crbug.com/1249176 [ Mac12-arm64 ] compositing/overflow/rotate-then-clip.html [ Failure ]
 crbug.com/1249176 [ Mac11-arm64 ] media/video-replaces-poster.html [ Crash Failure Pass Timeout ]
 crbug.com/1249176 [ Mac12-arm64 ] media/video-replaces-poster.html [ Crash Failure Pass Timeout ]
-crbug.com/1249176 [ Mac11-arm64 ] media/controls/overflow-menu-focus.html [ Failure Pass ]
 crbug.com/1249176 [ Mac12-arm64 ] media/controls/overflow-menu-focus.html [ Failure Pass ]
 
 # Failures that surfaced on the mac12-arm64 waterfall
@@ -6658,7 +6658,7 @@ crbug.com/626703 external/wpt/webauthn/public-key-credential-to-json.https.windo
 crbug.com/626703 external/wpt/clipboard-apis/async-promise-write-blobs-read-blobs.https.html [ Failure Pass ]
 crbug.com/1519053 external/wpt/webnn/pad.https.any.html [ Crash Pass ]
 crbug.com/1519053 external/wpt/webnn/pad.https.any.worker.html [ Crash Pass ]
-crbug.com/1519053 external/wpt/webnn/softmax.https.any.html [ Crash Pass ]
+crbug.com/1519053 [ Release Win11-arm64 ] external/wpt/webnn/softmax.https.any.html [ Crash Pass ]
 crbug.com/1519053 external/wpt/webnn/softmax.https.any.worker.html [ Crash Pass ]
 
 # Gardener: 2024-01-19
