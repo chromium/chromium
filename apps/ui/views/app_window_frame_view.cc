@@ -248,7 +248,7 @@ gfx::Size AppWindowFrameView::CalculatePreferredSize() const {
 }
 
 void AppWindowFrameView::Layout() {
-  NonClientFrameView::Layout();
+  LayoutSuperclass<NonClientFrameView>(this);
 
   if (!draw_frame_)
     return;
