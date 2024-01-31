@@ -462,6 +462,8 @@ void Mp4MuxerDelegate::BuildVideoFragment(std::string encoded_data,
 
   // Add sample data to the data box.
   AddDataToMdat(*fragment, *video_track_index_, encoded_data);
+
+  MaybeFlushForStartup();
 }
 
 void Mp4MuxerDelegate::AddAudioFrame(
@@ -495,6 +497,8 @@ void Mp4MuxerDelegate::AddAudioFrame(
   last_audio_time_ = timestamp;
 
   BuildAudioFragment(encoded_data);
+
+  MaybeFlushForStartup();
 }
 
 void Mp4MuxerDelegate::BuildAudioTrack(
@@ -574,12 +578,7 @@ bool Mp4MuxerDelegate::Flush() {
     return false;
   }
 
-  size_t written_offset = 0;
-  // Build and write `FTYP` box.
-  mp4::writable_boxes::FileType mp4_file_type_box;
-  BuildFileTypeBox(mp4_file_type_box);
-  Mp4FileTypeBoxWriter file_type_box_writer(*context_, mp4_file_type_box);
-  written_offset += file_type_box_writer.WriteAndFlush();
+  size_t written_offset = MaybeFlushForStartup();
 
   // Finish movie box and write.
   BuildMovieBox();
@@ -648,6 +647,19 @@ bool Mp4MuxerDelegate::Flush() {
   Reset();
 
   return true;
+}
+
+size_t Mp4MuxerDelegate::MaybeFlushForStartup() {
+  if (written_file_type_box_size_.has_value()) {
+    return *written_file_type_box_size_;
+  }
+
+  // Build and write `FTYP` box.
+  mp4::writable_boxes::FileType mp4_file_type_box;
+  BuildFileTypeBox(mp4_file_type_box);
+  Mp4FileTypeBoxWriter file_type_box_writer(*context_, mp4_file_type_box);
+  written_file_type_box_size_ = file_type_box_writer.WriteAndFlush();
+  return *written_file_type_box_size_;
 }
 
 void Mp4MuxerDelegate::BuildFileTypeBox(
@@ -778,6 +790,8 @@ void Mp4MuxerDelegate::Reset() {
   start_audio_time_ = base::TimeTicks();
   last_video_time_ = base::TimeTicks();
   last_audio_time_ = base::TimeTicks();
+
+  written_file_type_box_size_.reset();
 }
 
 int Mp4MuxerDelegate::GetNextTrackIndex() {

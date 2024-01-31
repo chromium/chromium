@@ -13,6 +13,7 @@
 #include "base/files/memory_mapped_file.h"
 #include "base/path_service.h"
 #include "base/strings/string_piece.h"
+#include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "media/base/media_tracks.h"
 #include "media/base/mock_media_log.h"
@@ -142,38 +143,28 @@ TEST_F(Mp4MuxerDelegateTest, AddVideoFrame) {
   std::vector<uint8_t> moov_written_data;
   std::vector<uint8_t> first_moof_written_data;
   std::vector<uint8_t> second_moof_written_data;
-
   int callback_count = 0;
-  Mp4MuxerDelegate delegate(base::BindRepeating(
-      [](base::OnceClosure run_loop_quit,
-         std::vector<uint8_t>* total_written_data,
-         std::vector<uint8_t>* moov_written_data,
-         std::vector<uint8_t>* first_moof_written_data,
-         std::vector<uint8_t>* second_moof_written_data, int* callback_count,
-         base::StringPiece mp4_data_string) {
+  Mp4MuxerDelegate delegate(
+      base::BindLambdaForTesting([&](base::StringPiece mp4_data_string) {
         std::copy(mp4_data_string.begin(), mp4_data_string.end(),
-                  std::back_inserter(*total_written_data));
+                  std::back_inserter(total_written_data));
 
-        ++(*callback_count);
-        switch (*callback_count) {
+        switch (++callback_count) {
           case 2:
             std::copy(mp4_data_string.begin(), mp4_data_string.end(),
-                      std::back_inserter(*moov_written_data));
+                      std::back_inserter(moov_written_data));
             break;
           case 3:
             std::copy(mp4_data_string.begin(), mp4_data_string.end(),
-                      std::back_inserter(*first_moof_written_data));
+                      std::back_inserter(first_moof_written_data));
             break;
           case 4:
             std::copy(mp4_data_string.begin(), mp4_data_string.end(),
-                      std::back_inserter(*second_moof_written_data));
-
-            // Quit.
-            std::move(run_loop_quit).Run();
+                      std::back_inserter(second_moof_written_data));
+            run_loop.Quit();
+            break;
         }
-      },
-      run_loop.QuitClosure(), &total_written_data, &moov_written_data,
-      &first_moof_written_data, &second_moof_written_data, &callback_count));
+      }));
 
   std::vector<uint8_t> video_codec_description;
   PopulateAVCDecoderConfiguration(video_codec_description);
@@ -466,30 +457,23 @@ TEST_F(Mp4MuxerDelegateTest, AddAudioFrame) {
 
   // Default Mp4MuxerDelegate with default max default audio duration of
   // 5 seconds.
-  Mp4MuxerDelegate delegate(base::BindRepeating(
-      [](base::OnceClosure run_loop_quit,
-         std::vector<uint8_t>* total_written_data,
-         std::vector<uint8_t>* moov_written_data,
-         std::vector<uint8_t>* first_moof_written_data, int* callback_count,
-         base::StringPiece mp4_data_string) {
+  Mp4MuxerDelegate delegate(
+      base::BindLambdaForTesting([&](base::StringPiece mp4_data_string) {
         std::copy(mp4_data_string.begin(), mp4_data_string.end(),
-                  std::back_inserter(*total_written_data));
+                  std::back_inserter(total_written_data));
 
-        ++(*callback_count);
-        switch (*callback_count) {
+        switch (++callback_count) {
           case 2:
             std::copy(mp4_data_string.begin(), mp4_data_string.end(),
-                      std::back_inserter(*moov_written_data));
+                      std::back_inserter(moov_written_data));
             break;
           case 3:
             std::copy(mp4_data_string.begin(), mp4_data_string.end(),
-                      std::back_inserter(*first_moof_written_data));
+                      std::back_inserter(first_moof_written_data));
             // Quit.
-            std::move(run_loop_quit).Run();
+            run_loop.Quit();
         }
-      },
-      run_loop.QuitClosure(), &total_written_data, &moov_written_data,
-      &first_moof_written_data, &callback_count));
+      }));
 
   std::vector<uint8_t> audio_codec_description;
   PopulateAacAdts(audio_codec_description);
@@ -698,32 +682,23 @@ TEST_F(Mp4MuxerDelegateTest, AudioOnlyNewFragmentCreation) {
 
   int callback_count = 0;
   Mp4MuxerDelegate delegate(
-      base::BindRepeating(
-          [](base::OnceClosure run_loop_quit,
-             std::vector<uint8_t>* total_written_data,
-             std::vector<uint8_t>* third_moof_written_data, int* callback_count,
-             base::StringPiece mp4_data_string) {
+      base::BindLambdaForTesting([&](base::StringPiece mp4_data_string) {
+        std::copy(mp4_data_string.begin(), mp4_data_string.end(),
+                  std::back_inserter(total_written_data));
+
+        switch (++callback_count) {
+          case 1:
+          case 2:
+          case 3:
+          case 4:
+            // DO Nothing.
+            break;
+          case 5:
             std::copy(mp4_data_string.begin(), mp4_data_string.end(),
-                      std::back_inserter(*total_written_data));
-
-            ++(*callback_count);
-            switch (*callback_count) {
-              case 1:
-              case 2:
-              case 3:
-              case 4:
-                // DO Nothing.
-                break;
-              case 5:
-                std::copy(mp4_data_string.begin(), mp4_data_string.end(),
-                          std::back_inserter(*third_moof_written_data));
-
-                // Quit.
-                std::move(run_loop_quit).Run();
-            }
-          },
-          run_loop.QuitClosure(), &total_written_data, &third_moof_written_data,
-          &callback_count),
+                      std::back_inserter(third_moof_written_data));
+            run_loop.Quit();
+        }
+      }),
       base::Milliseconds(300));
 
   std::vector<uint8_t> audio_codec_description;
@@ -829,36 +804,29 @@ TEST_F(Mp4MuxerDelegateTest, AudioAndVideoAddition) {
 
   int callback_count = 0;
   Mp4MuxerDelegate delegate(
-      base::BindRepeating(
-          [](base::OnceClosure run_loop_quit,
-             std::vector<uint8_t>* total_written_data,
-             std::vector<uint8_t>* third_moof_written_data,
-             std::vector<uint8_t>* fourth_moof_written_data,
-             int* callback_count, base::StringPiece mp4_data_string) {
-            std::copy(mp4_data_string.begin(), mp4_data_string.end(),
-                      std::back_inserter(*total_written_data));
+      base::BindLambdaForTesting([&](base::StringPiece mp4_data_string) {
+        std::copy(mp4_data_string.begin(), mp4_data_string.end(),
+                  std::back_inserter(total_written_data));
 
-            ++(*callback_count);
-            switch (*callback_count) {
-              case 1:
-              case 2:
-              case 3:
-              case 4:
-                // DO Nothing.
-                break;
-              case 5:
-                std::copy(mp4_data_string.begin(), mp4_data_string.end(),
-                          std::back_inserter(*third_moof_written_data));
-                break;
-              case 6:
-                std::copy(mp4_data_string.begin(), mp4_data_string.end(),
-                          std::back_inserter(*fourth_moof_written_data));
-                // Quit.
-                std::move(run_loop_quit).Run();
-            }
-          },
-          run_loop.QuitClosure(), &total_written_data, &third_moof_written_data,
-          &fourth_moof_written_data, &callback_count),
+        ++callback_count;
+        switch (callback_count) {
+          case 1:
+          case 2:
+          case 3:
+          case 4:
+            // DO Nothing.
+            break;
+          case 5:
+            std::copy(mp4_data_string.begin(), mp4_data_string.end(),
+                      std::back_inserter(third_moof_written_data));
+            break;
+          case 6:
+            std::copy(mp4_data_string.begin(), mp4_data_string.end(),
+                      std::back_inserter(fourth_moof_written_data));
+            // Quit.
+            run_loop.Quit();
+        }
+      }),
       base::Milliseconds(300));
 
   std::vector<uint8_t> code_description;
@@ -1038,41 +1006,31 @@ TEST_F(Mp4MuxerDelegateTest, MfraBoxOnAudioAndVideoAddition) {
 
   int callback_count = 0;
   Mp4MuxerDelegate delegate(
-      base::BindRepeating(
-          [](base::OnceClosure run_loop_quit,
-             std::vector<uint8_t>* total_written_data,
-             std::vector<uint8_t>* third_moof_written_data,
-             std::vector<uint8_t>* fourth_moof_written_data,
-             std::vector<uint8_t>* mfra_written_data, int* callback_count,
-             base::StringPiece mp4_data_string) {
-            std::copy(mp4_data_string.begin(), mp4_data_string.end(),
-                      std::back_inserter(*total_written_data));
+      base::BindLambdaForTesting([&](base::StringPiece mp4_data_string) {
+        std::copy(mp4_data_string.begin(), mp4_data_string.end(),
+                  std::back_inserter(total_written_data));
 
-            ++(*callback_count);
-            switch (*callback_count) {
-              case 1:
-              case 2:
-              case 3:
-              case 4:
-                // DO Nothing.
-                break;
-              case 5:
-                std::copy(mp4_data_string.begin(), mp4_data_string.end(),
-                          std::back_inserter(*third_moof_written_data));
-                break;
-              case 6:
-                std::copy(mp4_data_string.begin(), mp4_data_string.end(),
-                          std::back_inserter(*fourth_moof_written_data));
-                break;
-              case 7:
-                std::copy(mp4_data_string.begin(), mp4_data_string.end(),
-                          std::back_inserter(*mfra_written_data));
-                // Quit.
-                std::move(run_loop_quit).Run();
-            }
-          },
-          run_loop.QuitClosure(), &total_written_data, &third_moof_written_data,
-          &fourth_moof_written_data, &mfra_written_data, &callback_count),
+        switch (++callback_count) {
+          case 1:
+          case 2:
+          case 3:
+          case 4:
+            // DO Nothing.
+            break;
+          case 5:
+            std::copy(mp4_data_string.begin(), mp4_data_string.end(),
+                      std::back_inserter(third_moof_written_data));
+            break;
+          case 6:
+            std::copy(mp4_data_string.begin(), mp4_data_string.end(),
+                      std::back_inserter(fourth_moof_written_data));
+            break;
+          case 7:
+            std::copy(mp4_data_string.begin(), mp4_data_string.end(),
+                      std::back_inserter(mfra_written_data));
+            run_loop.Quit();
+        }
+      }),
       base::Milliseconds(300));
 
   std::vector<uint8_t> audio_codec_description;
@@ -1219,30 +1177,22 @@ TEST_F(Mp4MuxerDelegateTest, VideoAndAudioAddition) {
 
   int callback_count = 0;
   Mp4MuxerDelegate delegate(
-      base::BindRepeating(
-          [](base::OnceClosure run_loop_quit,
-             std::vector<uint8_t>* total_written_data,
-             std::vector<uint8_t>* first_moof_written_data, int* callback_count,
-             base::StringPiece mp4_data_string) {
-            std::copy(mp4_data_string.begin(), mp4_data_string.end(),
-                      std::back_inserter(*total_written_data));
+      base::BindLambdaForTesting([&](base::StringPiece mp4_data_string) {
+        std::copy(mp4_data_string.begin(), mp4_data_string.end(),
+                  std::back_inserter(total_written_data));
 
-            ++(*callback_count);
-            switch (*callback_count) {
-              case 1:
-              case 2:
-                // Do nothing.
-                break;
-              case 3:
-                std::copy(mp4_data_string.begin(), mp4_data_string.end(),
-                          std::back_inserter(*first_moof_written_data));
-                // Quit.
-                std::move(run_loop_quit).Run();
-                break;
-            }
-          },
-          run_loop.QuitClosure(), &total_written_data, &first_moof_written_data,
-          &callback_count),
+        switch (++callback_count) {
+          case 1:
+          case 2:
+            // Do nothing.
+            break;
+          case 3:
+            std::copy(mp4_data_string.begin(), mp4_data_string.end(),
+                      std::back_inserter(first_moof_written_data));
+            run_loop.Quit();
+            break;
+        }
+      }),
       base::Milliseconds(300));
 
   std::vector<uint8_t> audio_codec_description;
@@ -1370,35 +1320,26 @@ TEST_F(Mp4MuxerDelegateTest, AudioVideoAndAudioVideoFragment) {
 
   int callback_count = 0;
   Mp4MuxerDelegate delegate(
-      base::BindRepeating(
-          [](base::OnceClosure run_loop_quit,
-             std::vector<uint8_t>* total_written_data,
-             std::vector<uint8_t>* first_moof_written_data,
-             std::vector<uint8_t>* second_moof_written_data,
-             int* callback_count, base::StringPiece mp4_data_string) {
-            std::copy(mp4_data_string.begin(), mp4_data_string.end(),
-                      std::back_inserter(*total_written_data));
+      base::BindLambdaForTesting([&](base::StringPiece mp4_data_string) {
+        std::copy(mp4_data_string.begin(), mp4_data_string.end(),
+                  std::back_inserter(total_written_data));
 
-            ++(*callback_count);
-            switch (*callback_count) {
-              case 1:
-              case 2:
-                // DO Nothing.
-                break;
-              case 3:
-                std::copy(mp4_data_string.begin(), mp4_data_string.end(),
-                          std::back_inserter(*first_moof_written_data));
-                break;
-              case 4:
-                std::copy(mp4_data_string.begin(), mp4_data_string.end(),
-                          std::back_inserter(*second_moof_written_data));
-                // Quit.
-                std::move(run_loop_quit).Run();
-                break;
-            }
-          },
-          run_loop.QuitClosure(), &total_written_data, &first_moof_written_data,
-          &second_moof_written_data, &callback_count),
+        switch (++callback_count) {
+          case 1:
+          case 2:
+            // DO Nothing.
+            break;
+          case 3:
+            std::copy(mp4_data_string.begin(), mp4_data_string.end(),
+                      std::back_inserter(first_moof_written_data));
+            break;
+          case 4:
+            std::copy(mp4_data_string.begin(), mp4_data_string.end(),
+                      std::back_inserter(second_moof_written_data));
+            run_loop.Quit();
+            break;
+        }
+      }),
       base::Milliseconds(300));
 
   std::vector<uint8_t> audio_codec_description;

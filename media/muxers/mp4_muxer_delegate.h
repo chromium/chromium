@@ -108,6 +108,11 @@ class MEDIA_EXPORT Mp4MuxerDelegate : public Mp4MuxerDelegateInterface {
   void Reset();
   void LogBoxInfo() const;
 
+  // The `MaybeFlushForStartup` function will be called to write the file
+  // type box when the first frame is added, which makes `onstart` event
+  // fired. It will return the size of the file type box.
+  size_t MaybeFlushForStartup();
+
   std::unique_ptr<Mp4MuxerContext> context_;
   Muxer::WriteDataCB write_callback_;
 
@@ -136,6 +141,9 @@ class MEDIA_EXPORT Mp4MuxerDelegate : public Mp4MuxerDelegateInterface {
   int audio_sample_rate_ = 0;
 
   base::TimeDelta max_audio_only_fragment_duration_;
+
+  // Flush for startup is only called once.
+  absl::optional<size_t> written_file_type_box_size_;
 
   Muxer::WriteDataCB write_data_callback_ GUARDED_BY_CONTEXT(sequence_checker_);
 
