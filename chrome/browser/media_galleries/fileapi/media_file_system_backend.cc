@@ -95,8 +95,7 @@ void AttemptAutoMountOnUIThread(
     extensions::ExtensionRegistry* extension_registry =
         extensions::ExtensionRegistry::Get(profile);
     const extensions::Extension* extension =
-        extension_registry->GetExtensionById(
-            storage_domain, extensions::ExtensionRegistry::ENABLED);
+        extension_registry->enabled_extensions().GetByID(storage_domain);
     std::string expected_mount_prefix =
         MediaFileSystemBackend::ConstructMountName(
             profile->GetPath(), storage_domain, kInvalidMediaGalleryPrefId);
