@@ -182,6 +182,10 @@
     "META": {"sizes": {"includes": [50]}},
     "includes": [2640],
   },
+  "chrome/browser/resources/chromeos/seal/resources.grd": {
+    "META": {"sizes": {"includes": [50]}},
+    "includes": [2650],
+  },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/chromeos/parent_access/resources.grd": {
     "META": {"sizes": {"includes": [50],}},
     "includes": [2660],
