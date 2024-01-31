@@ -14,6 +14,8 @@
 #include "base/values.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/screen_ai/screen_ai_service_router.h"
+#include "chrome/browser/screen_ai/screen_ai_service_router_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_controller.h"
@@ -32,11 +34,6 @@
 #include "ui/accessibility/ax_mode.h"
 #include "ui/accessibility/ax_tree_update.h"
 #include "url/gurl.h"
-
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-#include "chrome/browser/screen_ai/screen_ai_service_router.h"
-#include "chrome/browser/screen_ai/screen_ai_service_router_factory.h"
-#endif
 
 using read_anything::mojom::ReadAnythingTheme;
 using read_anything::mojom::UntrustedPage;
@@ -204,7 +201,6 @@ ReadAnythingUntrustedPageHandler::ReadAnythingUntrustedPageHandler(
         highlightGranularity);
   }
 
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
   if (features::IsReadAnythingWithScreen2xEnabled()) {
     screen_ai::ScreenAIServiceRouterFactory::GetForBrowserContext(
         browser_->profile())
@@ -214,7 +210,7 @@ ReadAnythingUntrustedPageHandler::ReadAnythingUntrustedPageHandler(
                 &ReadAnythingUntrustedPageHandler::OnScreenAIServiceInitialized,
                 weak_factory_.GetWeakPtr()));
   }
-#endif
+
   OnActiveWebContentsChanged();
 }
 
@@ -434,7 +430,6 @@ void ReadAnythingUntrustedPageHandler::OnSidePanelControllerDestroyed() {
 // screen_ai::ScreenAIInstallState::Observer:
 ///////////////////////////////////////////////////////////////////////////////
 
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 void ReadAnythingUntrustedPageHandler::OnScreenAIServiceInitialized(
     bool successful) {
   DCHECK(features::IsReadAnythingWithScreen2xEnabled());
@@ -442,7 +437,6 @@ void ReadAnythingUntrustedPageHandler::OnScreenAIServiceInitialized(
     page_->ScreenAIServiceReady();
   }
 }
-#endif
 
 ///////////////////////////////////////////////////////////////////////////////
 // TabStripModelObserver:

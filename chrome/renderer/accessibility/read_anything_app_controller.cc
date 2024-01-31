@@ -639,11 +639,9 @@ void ReadAnythingAppController::OnSettingsRestoredFromPrefs(
   }
 }
 
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 void ReadAnythingAppController::ScreenAIServiceReady() {
   distiller_->ScreenAIServiceReady(GetRenderFrame());
 }
-#endif
 
 gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
     v8::Isolate* isolate) {

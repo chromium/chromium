@@ -9,19 +9,16 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
-#include "components/services/screen_ai/buildflags/buildflags.h"
+#include "components/services/screen_ai/public/mojom/screen_ai_service.mojom.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
+
 #include "ui/accessibility/ax_node_id_forward.h"
 #include "ui/accessibility/ax_tree_id.h"
 #include "ui/accessibility/ax_tree_update_forward.h"
-
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-#include "base/memory/weak_ptr.h"
-#include "components/services/screen_ai/public/mojom/screen_ai_service.mojom.h"
-#include "mojo/public/cpp/bindings/remote.h"
-#endif
 
 namespace content {
 class RenderFrame;
@@ -67,9 +64,7 @@ class AXTreeDistiller {
                        const ui::AXTreeUpdate& snapshot,
                        const ukm::SourceId ukm_source_id);
 
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
   void ScreenAIServiceReady(content::RenderFrame* render_frame);
-#endif
 
  private:
   // Distills the AXTree via a rules-based algorithm. Results are added to
@@ -82,7 +77,6 @@ class AXTreeDistiller {
                           base::TimeDelta elapsed_time,
                           bool success);
 
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
   // Passes |snapshot| to the Screen2x ML model, which identifes the main
   // content nodes and calls |ProcessScreen2xResult()| on completion.
   // |content_node_ids_algorithm| are the content nodes identified by the
@@ -115,7 +109,6 @@ class AXTreeDistiller {
   void RecordMergedMetrics(const ukm::SourceId ukm_source_id,
                            base::TimeDelta elapsed_time,
                            bool success);
-#endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
   // TODO(crbug.com/1266555): Ensure this is called even if ScreenAIService is
   // disconnected.
@@ -123,13 +116,11 @@ class AXTreeDistiller {
 
   std::unique_ptr<ukm::MojoUkmRecorder> ukm_recorder_;
 
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
   // The remote of the Screen2x main content extractor. The receiver lives in
   // the utility process.
   mojo::Remote<screen_ai::mojom::Screen2xMainContentExtractor>
       main_content_extractor_;
   base::WeakPtrFactory<AXTreeDistiller> weak_ptr_factory_{this};
-#endif
 };
 
 #endif  // CHROME_RENDERER_ACCESSIBILITY_AX_TREE_DISTILLER_H_

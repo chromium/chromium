@@ -18,7 +18,6 @@
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_model.h"
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_side_panel_controller.h"
 #include "chrome/common/accessibility/read_anything.mojom.h"
-#include "components/services/screen_ai/buildflags/buildflags.h"
 #include "content/public/browser/ax_event_notification_details.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -207,9 +206,7 @@ class ReadAnythingUntrustedPageHandler
                           ui::AXActionHandlerObserver>
       ax_action_handler_observer_{this};
 
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
   void OnScreenAIServiceInitialized(bool successful);
-#endif
 
   base::WeakPtrFactory<ReadAnythingUntrustedPageHandler> weak_factory_{this};
 };
