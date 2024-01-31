@@ -50,6 +50,14 @@ void CustomStateSet::Trace(Visitor* visitor) const {
 }
 
 void CustomStateSet::add(const String& value, ExceptionState& exception_state) {
+  if (RuntimeEnabledFeatures::CSSCustomStateNewSyntaxEnabled()) {
+    if (!list_.Contains(value)) {
+      list_.push_back(value);
+    }
+    InvalidateStyle();
+    return;
+  }
+
   // https://wicg.github.io/custom-state-pseudo-class/#dom-customstateset-add
 
   // 1. If value does not match to <dashed-ident>, then throw a "SyntaxError"
@@ -127,6 +135,7 @@ void CustomStateSet::InvalidateStyle() const {
   // performance in documents with various custom state pseudo classes by
   // having blink::InvalidationSet for each of states.
   element_->PseudoStateChanged(CSSSelector::kPseudoState);
+  element_->PseudoStateChanged(CSSSelector::kPseudoStateDeprecatedSyntax);
 }
 
 }  // namespace blink

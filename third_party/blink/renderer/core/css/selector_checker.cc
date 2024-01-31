@@ -1921,9 +1921,15 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
         return false;
       }
       return !element.GetDocument().GetPage()->GetFocusController().IsActive();
-    case CSSSelector::kPseudoState: {
+    case CSSSelector::kPseudoStateDeprecatedSyntax: {
+      CHECK(RuntimeEnabledFeatures::CSSCustomStateDeprecatedSyntaxEnabled());
       return element.DidAttachInternals() &&
              element.EnsureElementInternals().HasState(selector.Value());
+    }
+    case CSSSelector::kPseudoState: {
+      CHECK(RuntimeEnabledFeatures::CSSCustomStateNewSyntaxEnabled());
+      return element.DidAttachInternals() &&
+             element.EnsureElementInternals().HasState(selector.Argument());
     }
     case CSSSelector::kPseudoHorizontal:
     case CSSSelector::kPseudoVertical:

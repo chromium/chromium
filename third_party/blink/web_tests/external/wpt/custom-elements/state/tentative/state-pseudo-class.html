@@ -11,7 +11,7 @@
 #state-and-part:state(outerFoo)::part(inner) {
   opacity: 0.25;
 }
-:state(--\)escaped\ state) {}
+:state( \(escaped\ state  ) {}
 </style>
 <body>
 <script>
@@ -61,21 +61,28 @@ test(() => {
 }, ':state() parsing passes');
 
 test(() => {
+  assert_throws_dom('SyntaxError', () => { document.querySelector(':state'); });
+  assert_throws_dom('SyntaxError', () => { document.querySelector(':state('); });
+  assert_throws_dom('SyntaxError', () => { document.querySelector(':state()'); });
+  assert_throws_dom('SyntaxError', () => { document.querySelector(':state(=)'); });
+  assert_throws_dom('SyntaxError', () => { document.querySelector(':state(name=value)'); });
+  assert_throws_dom('SyntaxError', () => { document.querySelector(':state( foo bar)'); });
+  assert_throws_dom('SyntaxError', () => { document.querySelector(':state(16px)'); });
+}, ':state() parsing failures');
+
+test(() => {
   assert_throws_dom('SyntaxError', () => { document.querySelector(':--('); });
   assert_throws_dom('SyntaxError', () => { document.querySelector(':--()'); });
-  assert_throws_dom('SyntaxError', () => { document.querySelector(':state()'); });
   assert_throws_dom('SyntaxError', () => { document.querySelector(':--)'); });
   assert_throws_dom('SyntaxError', () => { document.querySelector(':--='); });
   assert_throws_dom('SyntaxError', () => { document.querySelector(':--name=value'); });
-  assert_throws_dom('SyntaxError', () => { document.querySelector(':state(--name=value'); });
-  assert_throws_dom('SyntaxError', () => { document.querySelector(':state(--name=value)'); });
-}, ':state() parsing failures');
+}, 'deprecated :--state parsing failures');
 
 test(() => {
   assert_equals(document.styleSheets[0].cssRules[1].cssText,
       '#state-and-part::part(inner):state(innerFoo) { opacity: 0.5; }');
   assert_equals(document.styleSheets[0].cssRules[3].selectorText,
-      ':state(--\\)escaped\\ state)');
+      ':state(\\(escaped\\ state)');
 }, ':state(foo) serialization');
 
 test(() => {
@@ -112,13 +119,13 @@ test(() => {
   let inner = outer.innerElement;
   let innerStates = inner.i.states;
 
-  innerStates.add(':state(innerFoo)');
+  innerStates.add('innerFoo');
   assert_equals(getComputedStyle(inner).opacity, '0.5',
-      '::part() followed by :state(innerFoo)');
+      '::part() followed by :state()');
   innerStates.delete('innerFoo');
   innerStates.add('innerfoo');
   assert_equals(getComputedStyle(inner).opacity, '0',
-      ':state(foo) matching should be case-sensitive');
+      ':state() matching should be case-sensitive');
   innerStates.delete('innerfoo');
 
   outer.i.states.add('outerFoo');

@@ -852,6 +852,23 @@
       status: "experimental",
     },
     {
+      // This flag controls whether the deprecated :--foo syntax is enabled. It
+      // is being replaced by :state(foo), which is controlled by the
+      // CSSCustomStateNewSyntax flag.
+      // TODO(crbug.com/1514397): Remove this when the feature is fully launched.
+      name: "CSSCustomStateDeprecatedSyntax",
+      status: "stable",
+    },
+    {
+      // This flag controls whether the :state(foo) pseudo-class for custom
+      // elements is enabled. It is a rename of :--foo, which is being
+      // deprecated and is controlled by the CSSCustomStateDeprecatedSyntax
+      // flag.
+      // TODO(crbug.com/1514397): Remove this when the deprecation is done.
+      name: "CSSCustomStateNewSyntax",
+      status: "experimental",
+    },
+    {
       name: "CSSDisplayAnimation",
       status: "stable",
     },

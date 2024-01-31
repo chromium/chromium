@@ -2627,5 +2627,31 @@
     "args": ["--disable-features=StylableSelect"],
     "expires": "Oct 1, 2024",
     "owners": ["jarhar@chromium.org", "masonf@chromium.org"]
+  },
+  "css-custom-state-deprecated-syntax-enabled is the configuration that is",
+  "currently shipping to stable.",
+  {
+    "prefix": "css-custom-state-only-deprecated-syntax",
+    "platforms": ["Linux", "Mac", "Win"],
+    "args": ["--enable-features=CSSCustomStateDeprecatedSyntax",
+             "--disable-features=CSSCustomStateNewSyntax"],
+    "expires": "Dec 1, 2024",
+    "owners": ["jarhar@chromium.org", "dom-dev@chromium.org"],
+    "bases": [
+      "external/wpt/custom-elements/state",
+      "external/wpt/custom-state-pseudo-class"
+    ]
+  },
+  {
+    "prefix": "css-custom-state-only-new-syntax",
+    "platforms": ["Linux", "Mac", "Win"],
+    "args": ["--disable-features=CSSCustomStateDeprecatedSyntax",
+             "--enable-features=CSSCustomStateNewSyntax"],
+    "expires": "Dec 1, 2024",
+    "owners": ["jarhar@chromium.org", "dom-dev@chromium.org"],
+    "bases": [
+      "external/wpt/custom-elements/state",
+      "external/wpt/custom-state-pseudo-class"
+    ]
   }
 ]

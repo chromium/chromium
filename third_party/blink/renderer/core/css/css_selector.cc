@@ -401,6 +401,7 @@ PseudoId CSSSelector::GetPseudoId(PseudoType type) {
     case kPseudoSpatialNavigationFocus:
     case kPseudoStart:
     case kPseudoState:
+    case kPseudoStateDeprecatedSyntax:
     case kPseudoTarget:
     case kPseudoTrue:
     case kPseudoUnknown:
@@ -575,6 +576,7 @@ const static NameToPseudoStruct kPseudoTypeWithArgumentsMap[] = {
     {"nth-of-type", CSSSelector::kPseudoNthOfType},
     {"part", CSSSelector::kPseudoPart},
     {"slotted", CSSSelector::kPseudoSlotted},
+    {"state", CSSSelector::kPseudoState},
     {"view-transition-group", CSSSelector::kPseudoViewTransitionGroup},
     {"view-transition-image-pair", CSSSelector::kPseudoViewTransitionImagePair},
     {"view-transition-new", CSSSelector::kPseudoViewTransitionNew},
@@ -623,6 +625,11 @@ CSSSelector::PseudoType CSSSelector::NameToPseudoType(
 
   if (match->type == CSSSelector::kPseudoPlaying &&
       !RuntimeEnabledFeatures::CSSPseudoPlayingPausedEnabled()) {
+    return CSSSelector::kPseudoUnknown;
+  }
+
+  if (match->type == CSSSelector::kPseudoState &&
+      !RuntimeEnabledFeatures::CSSCustomStateNewSyntaxEnabled()) {
     return CSSSelector::kPseudoUnknown;
   }
 
@@ -713,7 +720,7 @@ void CSSSelector::UpdatePseudoType(const AtomicString& value,
   PseudoType pseudo_type = CSSSelectorParser::ParsePseudoType(
       lower_value, has_arguments, context.GetDocument());
   SetPseudoType(pseudo_type);
-  SetValue(pseudo_type == kPseudoState ? value : lower_value);
+  SetValue(pseudo_type == kPseudoStateDeprecatedSyntax ? value : lower_value);
 
   switch (GetPseudoType()) {
     case kPseudoAfter:
@@ -853,6 +860,7 @@ void CSSSelector::UpdatePseudoType(const AtomicString& value,
     case kPseudoSingleButton:
     case kPseudoStart:
     case kPseudoState:
+    case kPseudoStateDeprecatedSyntax:
     case kPseudoTarget:
     case kPseudoTrue:
     case kPseudoUnknown:
@@ -952,7 +960,7 @@ bool CSSSelector::SerializeSimpleSelector(StringBuilder& builder) const {
   } else if (match_ == kPseudoClass || match_ == kPagePseudoClass) {
     if (GetPseudoType() == kPseudoUnparsed) {
       builder.Append(Value());
-    } else if (GetPseudoType() != kPseudoState &&
+    } else if (GetPseudoType() != kPseudoStateDeprecatedSyntax &&
                GetPseudoType() != kPseudoParent &&
                GetPseudoType() != kPseudoTrue) {
       builder.Append(':');
@@ -999,6 +1007,7 @@ bool CSSSelector::SerializeSimpleSelector(StringBuilder& builder) const {
       }
       case kPseudoDir:
       case kPseudoLang:
+      case kPseudoState:
         builder.Append('(');
         SerializeIdentifier(Argument(), builder);
         builder.Append(')');
@@ -1007,7 +1016,7 @@ bool CSSSelector::SerializeSimpleSelector(StringBuilder& builder) const {
       case kPseudoNot:
         DCHECK(SelectorList());
         break;
-      case kPseudoState:
+      case kPseudoStateDeprecatedSyntax:
         builder.Append(':');
         SerializeIdentifier(SerializingValue(), builder);
         break;

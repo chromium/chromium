@@ -8,7 +8,7 @@ This is a testharness.js-based test.
 [FAIL] :state(foo) and other pseudo classes
   Failed to execute 'add' on 'CustomStateSet': The specified value 'foo' must start with '--'.
 [FAIL] :state(foo) and ::part()
-  Failed to execute 'add' on 'CustomStateSet': The specified value ':state(innerFoo)' must start with '--'.
+  Failed to execute 'add' on 'CustomStateSet': The specified value 'innerFoo' must start with '--'.
 [FAIL] :state(foo) and :host()
   Failed to execute 'add' on 'CustomStateSet': The specified value 'dotted' must start with '--'.
 Harness: the test ran to completion.

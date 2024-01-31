@@ -13,8 +13,10 @@
 #include "third_party/blink/renderer/core/css/parser/css_parser_observer.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token_stream.h"
 #include "third_party/blink/renderer/core/css/style_sheet_contents.h"
+#include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/core/frame/deprecation/deprecation.h"
+#include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
@@ -847,7 +849,28 @@ CSSSelector::PseudoType CSSSelectorParser::ParsePseudoType(
     return CSSSelector::PseudoType::kPseudoBlinkInternalElement;
   }
   if (name.StartsWith("--")) {
-    return CSSSelector::PseudoType::kPseudoState;
+    String custom_name = name.GetString().Substring(2);
+    if (RuntimeEnabledFeatures::CSSCustomStateDeprecatedSyntaxEnabled()) {
+      if (document) {
+        // TODO(crbug.com/1514397): Add DevTools deprecations here as well
+        document->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
+            mojom::ConsoleMessageSource::kDeprecation,
+            mojom::ConsoleMessageLevel::kError,
+            "Custom state pseudo classes are changing from \":--" +
+                custom_name + "\" to \":state(" + custom_name +
+                ")\" soon. See more"
+                " here: https://github.com/w3c/csswg-drafts/issues/4805"));
+      }
+      return CSSSelector::PseudoType::kPseudoStateDeprecatedSyntax;
+    } else if (document) {
+      document->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
+          mojom::ConsoleMessageSource::kDeprecation,
+          mojom::ConsoleMessageLevel::kError,
+          "Custom state pseudo classes have been changed from \":--" +
+              custom_name + "\" to \":state(" + custom_name +
+              ")\". See more here: "
+              "https://github.com/w3c/csswg-drafts/issues/4805"));
+    }
   }
 
   return CSSSelector::PseudoType::kPseudoUnknown;
@@ -969,7 +992,8 @@ bool IsPseudoClassValidAfterPseudoElement(
       return pseudo_class == CSSSelector::kPseudoWindowInactive;
     case CSSSelector::kPseudoPart:
       return IsUserActionPseudoClass(pseudo_class) ||
-             pseudo_class == CSSSelector::kPseudoState;
+             pseudo_class == CSSSelector::kPseudoState ||
+             pseudo_class == CSSSelector::kPseudoStateDeprecatedSyntax;
     case CSSSelector::kPseudoWebKitCustomElement:
     case CSSSelector::kPseudoBlinkInternalElement:
     case CSSSelector::kPseudoFileSelectorButton:
@@ -1511,7 +1535,10 @@ bool CSSSelectorParser::ConsumePseudo(CSSParserTokenRange& range) {
       output_.push_back(std::move(selector));
       return true;
     }
-    case CSSSelector::kPseudoDir: {
+    case CSSSelector::kPseudoDir:
+    case CSSSelector::kPseudoState: {
+      CHECK(selector.GetPseudoType() != CSSSelector::kPseudoState ||
+            RuntimeEnabledFeatures::CSSCustomStateNewSyntaxEnabled());
       const CSSParserToken& ident = block.ConsumeIncludingWhitespace();
       if (ident.GetType() != kIdentToken || !block.AtEnd()) {
         return false;
@@ -2241,6 +2268,9 @@ static void RecordUsageAndDeprecationsOneSelector(
       break;
     case CSSSelector::kPseudoHas:
       feature = WebFeature::kCSSSelectorPseudoHas;
+      break;
+    case CSSSelector::kPseudoState:
+      feature = WebFeature::kCSSSelectorPseudoState;
       break;
     default:
       break;

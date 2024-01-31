@@ -4155,7 +4155,6 @@ enum WebFeature {
   kStorageAccessAPI_requestStorageAccess_BeyondCookies_cookies = 4791,
   kVisualViewportScrollEndFired = 4792,
   kAttributionReportingCrossAppWebSupportHeader = 4793,
-
   kV8Element_AriaActiveDescendantElement_AttributeGetter = 4794,
   kV8Element_AriaActiveDescendantElement_AttributeSetter = 4795,
   kV8Element_AriaControlsElements_AttributeGetter = 4796,
@@ -4188,6 +4187,7 @@ enum WebFeature {
   kV8ElementInternals_AriaLabelledByElements_AttributeSetter = 4823,
   kV8ElementInternals_AriaOwnsElements_AttributeGetter = 4824,
   kV8ElementInternals_AriaOwnsElements_AttributeSetter = 4825,
+  kCSSSelectorPseudoState = 4826,
 
   kIdentityDigitalCredentials = 4826,
 

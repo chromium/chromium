@@ -1,6 +1,6 @@
 <!DOCTYPE html>
-<script src="/resources/testharness.js"></script>
-<script src="/resources/testharnessreport.js"></script>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
 <script>
 class TestElement extends HTMLElement {
   constructor() {
@@ -27,8 +27,8 @@ test(() => {
 test(() => {
   let i = (new TestElement()).internals;
   assert_throws_js(TypeError, () => { i.states.supports('foo'); });
-  i.states.add(''); // should not throw.
-  i.states.add('--a\tb'); // should not throw.
+  assert_throws_dom('SyntaxError', () => { i.states.add(''); });
+  assert_throws_dom('SyntaxError', () => { i.states.add('--a\tb'); });
 }, 'CustomStateSet behavior of ElementInternals.states: Exceptions');
 
 test(() => {
