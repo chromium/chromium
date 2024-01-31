@@ -19,6 +19,7 @@ import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import androidx.annotation.IntDef;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.fragment.app.Fragment;
@@ -295,7 +296,7 @@ public abstract class SyncConsentFragmentBase extends Fragment
                 }
                 if (!settingsClicked) {
                     UnifiedConsentServiceBridge.setUrlKeyedAnonymizedDataCollectionEnabled(
-                            Profile.getLastUsedRegularProfile(), true);
+                            profile, true);
                     syncService.setInitialSyncFeatureSetupComplete(
                             SyncFirstSetupCompleteSource.BASIC_FLOW);
                 }
@@ -327,7 +328,7 @@ public abstract class SyncConsentFragmentBase extends Fragment
                                 callback.run();
                                 return;
                             }
-                            Profile profile = Profile.getLastUsedRegularProfile();
+                            Profile profile = getProfile();
                             SigninManager signinManager =
                                     IdentityServicesProvider.get().getSigninManager(profile);
                             signinManager.signinAndEnableSync(
@@ -357,7 +358,7 @@ public abstract class SyncConsentFragmentBase extends Fragment
         if (arguments.containsKey(ARGUMENT_CHILD_ACCOUNT_STATUS)) {
             mIsChild = arguments.getBoolean(ARGUMENT_CHILD_ACCOUNT_STATUS);
         } else {
-            mIsChild = Profile.getLastUsedRegularProfile().isChild();
+            mIsChild = getProfile().isChild();
         }
 
         @SigninFlowType
@@ -389,9 +390,7 @@ public abstract class SyncConsentFragmentBase extends Fragment
                         : ProfileDataCache.createWithDefaultImageSizeAndNoBadge(requireContext());
         mProfileDataCache.addObserver(mProfileDataCacheObserver);
 
-        IdentityServicesProvider.get()
-                .getSigninManager(Profile.getLastUsedRegularProfile())
-                .addSignInStateObserver(this);
+        IdentityServicesProvider.get().getSigninManager(getProfile()).addSignInStateObserver(this);
 
         // By default this is set to true so that when system back button is pressed user action
         // is recorded in onDestroy().
@@ -404,7 +403,7 @@ public abstract class SyncConsentFragmentBase extends Fragment
     public void onDestroy() {
         super.onDestroy();
         IdentityServicesProvider.get()
-                .getSigninManager(Profile.getLastUsedRegularProfile())
+                .getSigninManager(getProfile())
                 .removeSignInStateObserver(this);
         mProfileDataCache.removeObserver(mProfileDataCacheObserver);
         if (mConfirmSyncDataStateMachine != null) {
@@ -526,16 +525,15 @@ public abstract class SyncConsentFragmentBase extends Fragment
     }
 
     private WindowAndroid getWindowAndroid() {
-        SyncConsentDelegate syncConsentDelegate = getDelegate();
-        assert syncConsentDelegate != null;
-
-        return syncConsentDelegate.getWindowAndroid();
+        return getDelegate().getWindowAndroid();
     }
 
-    /** Can be overridden to return a {@link SyncConsentDelegate}. */
-    protected SyncConsentDelegate getDelegate() {
-        return null;
+    private Profile getProfile() {
+        return getDelegate().getProfile();
     }
+
+    /** Provides a {@link SyncConsentDelegate} for external dependencies. */
+    protected abstract @NonNull SyncConsentDelegate getDelegate();
 
     @Override
     public void setView(View view) {
@@ -598,7 +596,7 @@ public abstract class SyncConsentFragmentBase extends Fragment
     public void onSignedIn() {
         final CoreAccountInfo primaryAccount =
                 IdentityServicesProvider.get()
-                        .getIdentityManager(Profile.getLastUsedRegularProfile())
+                        .getIdentityManager(getProfile())
                         .getPrimaryAccountInfo(ConsentLevel.SIGNIN);
         mIsSignedInWithoutSync =
                 mSigninAccessPoint == SigninAccessPoint.START_PAGE && primaryAccount != null;
@@ -884,8 +882,7 @@ public abstract class SyncConsentFragmentBase extends Fragment
                         if (getActivity().isDestroyed()) return;
 
                         SigninManager signinManager =
-                                IdentityServicesProvider.get()
-                                        .getSigninManager(Profile.getLastUsedRegularProfile());
+                                IdentityServicesProvider.get().getSigninManager(getProfile());
                         signinManager.runAfterOperationInProgress(
                                 () -> {
                                     if (wipeData) {
@@ -917,7 +914,7 @@ public abstract class SyncConsentFragmentBase extends Fragment
                 new ConfirmSyncDataStateMachine(
                         new ConfirmSyncDataStateMachineDelegate(
                                 requireContext(), getChildFragmentManager(), mModalDialogManager),
-                        UserPrefs.get(Profile.getLastUsedRegularProfile())
+                        UserPrefs.get(getProfile())
                                 .getString(Pref.GOOGLE_SERVICES_LAST_SYNCING_USERNAME),
                         mSelectedAccountEmail,
                         listener);
@@ -985,8 +982,7 @@ public abstract class SyncConsentFragmentBase extends Fragment
         super.onResume();
         mAccountManagerFacade.addObserver(this);
         final IdentityManager identityManager =
-                IdentityServicesProvider.get()
-                        .getIdentityManager(Profile.getLastUsedRegularProfile());
+                IdentityServicesProvider.get().getIdentityManager(getProfile());
 
         final CoreAccountInfo primaryAccount =
                 identityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN);
