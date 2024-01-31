@@ -235,6 +235,7 @@ export {OsSettingsSearchPageElement} from './os_search_page/os_search_page.js';
 export {SearchAndAssistantSettingsCardElement} from './os_search_page/search_and_assistant_settings_card.js';
 export {SettingsSearchEngineElement} from './os_search_page/search_engine.js';
 export {SearchEngine, SearchEnginesBrowserProxy, SearchEnginesBrowserProxyImpl, SearchEnginesInfo} from './os_search_page/search_engines_browser_proxy.js';
+export {ManagedFootnoteElement} from './os_settings_main/managed_footnote.js';
 export {OsSettingsMainElement} from './os_settings_main/os_settings_main.js';
 export {OsSettingsMenuItemElement} from './os_settings_menu/menu_item.js';
 export {OsSettingsMenuElement} from './os_settings_menu/os_settings_menu.js';
