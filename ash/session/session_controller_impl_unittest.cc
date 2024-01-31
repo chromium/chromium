@@ -353,8 +353,6 @@ TEST_F(SessionControllerImplTest, GetLoginStateForActiveSession) {
       {user_manager::UserType::kChild, LoginStatus::CHILD},
       {user_manager::UserType::kArcKioskApp, LoginStatus::KIOSK_APP},
       {user_manager::UserType::kWebKioskApp, LoginStatus::KIOSK_APP}
-      // TODO(jamescook): Add USER_TYPE_ACTIVE_DIRECTORY if we add a status for
-      // it.
   };
 
   for (const auto& test_case : kTestCases) {

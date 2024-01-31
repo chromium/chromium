@@ -103,7 +103,7 @@ std::unique_ptr<UserCloudPolicyManagerAsh> CreateUserCloudPolicyManagerAsh(
   //   |UserCloudPolicyManagerAsh| is created here.
   // - For device-local accounts, policy is provided by
   //   |DeviceLocalAccountPolicyService|.
-  // For non-enterprise accounts only for users with type USER_TYPE_CHILD
+  // For non-enterprise accounts only for users with type kChild
   //   |UserCloudPolicyManagerAsh| is created here.
   // All other user types do not have user policy.
   const AccountId& account_id = user->GetAccountId();

@@ -225,7 +225,7 @@ bool IsActiveUser(const AccountId& account_id) {
   return session && session->user_info.account_id == account_id;
 }
 
-// Returns the type of the user with the specified |id| or USER_TYPE_REGULAR.
+// Returns the type of the user with the specified |id| or kRegular.
 user_manager::UserType GetUserType(const AccountId& id) {
   const UserSession* user_session =
       Shell::Get()->session_controller()->GetUserSessionByAccountId(id);

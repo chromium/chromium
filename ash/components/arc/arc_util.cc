@@ -321,9 +321,9 @@ bool IsArcAllowedForUser(const user_manager::User* user) {
   // - Active directory users;
   // - ARC kiosk session;
   // - Public Session users;
-  //   USER_TYPE_ARC_KIOSK_APP check is compatible with IsArcKioskMode()
+  //   kUserTypeArcKioskApp check is compatible with IsArcKioskMode()
   //   above because ARC kiosk user is always the primary/active user of a
-  //   user session. The same for USER_TYPE_PUBLIC_ACCOUNT.
+  //   user session. The same for kPublicAccount.
   if (!user->HasGaiaAccount() && !user->IsActiveDirectoryUser() &&
       user->GetType() != user_manager::UserType::kArcKioskApp &&
       user->GetType() != user_manager::UserType::kPublicAccount) {

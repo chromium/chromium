@@ -74,7 +74,7 @@ bool IsKnownUser(const AccountId& account_id) {
   return user_manager::UserManager::Get()->IsKnownUser(account_id);
 }
 
-// Returns the type of the user with the specified |id| or USER_TYPE_REGULAR.
+// Returns the type of the user with the specified |id| or kRegular.
 user_manager::UserType GetUserType(const AccountId& id) {
   if (user_manager::UserManager::IsInitialized()) {
     if (auto* user = user_manager::UserManager::Get()->FindUser(id))
