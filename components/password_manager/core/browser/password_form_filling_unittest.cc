@@ -761,7 +761,7 @@ TEST(PasswordFormFillDataTest, RendererIDs) {
   FormData form_data;
   form_data.host_frame = autofill::LocalFrameToken(
       base::UnguessableToken::CreateForTesting(98765, 43210));
-  form_data.unique_renderer_id = FormRendererId(42);
+  form_data.renderer_id = FormRendererId(42);
   form_data.is_form_tag = true;
   form_on_page.form_data = form_data;
   form_on_page.username_element_renderer_id = FieldRendererId(123);
@@ -772,7 +772,7 @@ TEST(PasswordFormFillDataTest, RendererIDs) {
   PasswordFormFillData result = CreatePasswordFormFillData(
       form_on_page, {}, preferred_match, page_origin, true);
 
-  EXPECT_EQ(form_data.unique_renderer_id, result.form_renderer_id);
+  EXPECT_EQ(form_data.renderer_id, result.form_renderer_id);
   EXPECT_EQ(form_on_page.username_element_renderer_id,
             result.username_element_renderer_id);
   EXPECT_EQ(form_on_page.password_element_renderer_id,
@@ -798,7 +798,7 @@ TEST(PasswordFormFillDataTest, NoPasswordElement) {
   preferred_match.match_type = PasswordForm::MatchType::kExact;
 
   FormData form_data;
-  form_data.unique_renderer_id = FormRendererId(42);
+  form_data.renderer_id = FormRendererId(42);
   form_data.is_form_tag = true;
   form_on_page.form_data = form_data;
 

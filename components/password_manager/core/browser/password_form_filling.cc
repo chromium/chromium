@@ -278,7 +278,7 @@ PasswordFormFillData CreatePasswordFormFillData(
     bool wait_for_username) {
   PasswordFormFillData result;
 
-  result.form_renderer_id = form_on_page.form_data.unique_renderer_id;
+  result.form_renderer_id = form_on_page.form_data.renderer_id;
   result.url = form_on_page.url;
   result.wait_for_username = wait_for_username;
 

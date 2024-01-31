@@ -349,7 +349,7 @@ bool IsFieldInSignificantFields(const SignificantFields& significant_fields,
 bool DoesPredictionCorrespondToField(
     const FormFieldData& field,
     const PasswordFieldPrediction& prediction) {
-  return field.unique_renderer_id == prediction.renderer_id;
+  return field.renderer_id == prediction.renderer_id;
 }
 
 // Returns the first element of |fields| which corresponds to |prediction|, or
@@ -724,8 +724,7 @@ std::vector<const FormFieldData*> GetRelevantPasswords(
   // Step 5: remove the field parsed as username, if needed.
   if (username && username->IsPasswordInputElement()) {
     base::EraseIf(filtered, [username](const ProcessedField* processed_field) {
-      return processed_field->field->unique_renderer_id ==
-             username->unique_renderer_id;
+      return processed_field->field->renderer_id == username->renderer_id;
     });
   }
 
@@ -804,10 +803,10 @@ const FormFieldData* FindUsernameFieldBaseHeuristics(
   return focusable_username ? focusable_username : username;
 }
 
-// A helper to return a |field|'s unique_renderer_id or
+// A helper to return a |field|'s renderer_id or
 // a null renderer ID if |field| is null.
 autofill::FieldRendererId ExtractUniqueId(const FormFieldData* field) {
-  return field ? field->unique_renderer_id : autofill::FieldRendererId();
+  return field ? field->renderer_id : autofill::FieldRendererId();
 }
 
 // Tries to find the username and password fields in |processed_fields| based
@@ -877,7 +876,7 @@ void ParseUsingBaseHeuristics(
     for (auto it = processed_fields.begin(); it != processed_fields.end();
          ++it) {
       if ((it->is_password || it->is_predicted_as_password) &&
-          base::Contains(password_ids, it->field->unique_renderer_id)) {
+          base::Contains(password_ids, it->field->renderer_id)) {
         first_relevant_password = it;
         break;
       }
@@ -910,14 +909,14 @@ void SetFields(const SignificantFields& significant_fields,
     password_form->username_element = significant_fields.username->name;
     password_form->username_value = GetFieldValue(*significant_fields.username);
     password_form->username_element_renderer_id =
-        significant_fields.username->unique_renderer_id;
+        significant_fields.username->renderer_id;
   }
 
   if (significant_fields.password) {
     password_form->password_element = significant_fields.password->name;
     password_form->password_value = GetFieldValue(*significant_fields.password);
     password_form->password_element_renderer_id =
-        significant_fields.password->unique_renderer_id;
+        significant_fields.password->renderer_id;
   }
 
   if (significant_fields.new_password) {
@@ -925,7 +924,7 @@ void SetFields(const SignificantFields& significant_fields,
     password_form->new_password_value =
         GetFieldValue(*significant_fields.new_password);
     password_form->new_password_element_renderer_id =
-        significant_fields.new_password->unique_renderer_id;
+        significant_fields.new_password->renderer_id;
   }
 
   if (significant_fields.confirmation_password) {
@@ -935,7 +934,7 @@ void SetFields(const SignificantFields& significant_fields,
     password_form->confirmation_password_element =
         significant_fields.confirmation_password->name;
     password_form->confirmation_password_element_renderer_id =
-        significant_fields.confirmation_password->unique_renderer_id;
+        significant_fields.confirmation_password->renderer_id;
   }
 }
 
@@ -987,7 +986,7 @@ std::vector<ProcessedField> ProcessFields(
       if (insertion.second) {
         // There was no such element in |seen_values|.
         all_alternative_fields->emplace_back(
-            AlternativeElement::Value(field_value), field.unique_renderer_id,
+            AlternativeElement::Value(field_value), field.renderer_id,
             AlternativeElement::Name(field.name));
       }
     }
@@ -1023,7 +1022,7 @@ bool GetMayUsePrefilledPlaceholder(
     return false;
 
   autofill::FieldRendererId username_id =
-      significant_fields.username->unique_renderer_id;
+      significant_fields.username->renderer_id;
   for (const PasswordFieldPrediction& prediction : form_predictions->fields) {
     if (prediction.renderer_id == username_id)
       return prediction.may_use_prefilled_placeholder;
@@ -1255,7 +1254,7 @@ const FormFieldData* FindUsernameInPredictions(
     auto iter = base::ranges::find_if(
         processed_fields, [&](const ProcessedField& processed_field) {
           return !IsNotUsernameField(processed_field) &&
-                 (processed_field.field->unique_renderer_id == predicted_id) &&
+                 (processed_field.field->renderer_id == predicted_id) &&
                  MatchesInteractability(processed_field, username_max);
         });
     if (iter != processed_fields.end()) {

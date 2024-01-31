@@ -302,7 +302,7 @@ bool PasswordFormManager::DoesManage(
   if (driver != driver_.get())
     return false;
   CHECK(observed_form());
-  return observed_form()->unique_renderer_id == form_renderer_id;
+  return observed_form()->renderer_id == form_renderer_id;
 }
 
 bool PasswordFormManager::IsEqualToSubmittedForm(
@@ -650,11 +650,11 @@ void PasswordFormManager::UpdateStateOnUserInput(
     FormRendererId form_id,
     FieldRendererId field_id,
     const std::u16string& field_value) {
-  DCHECK(observed_form()->unique_renderer_id == form_id);
+  DCHECK(observed_form()->renderer_id == form_id);
   // Update the observed field value.
   auto modified_field = base::ranges::find_if(
       mutable_observed_form()->fields, [&field_id](const FormFieldData& field) {
-        return field.unique_renderer_id == field_id;
+        return field.renderer_id == field_id;
       });
   if (modified_field == mutable_observed_form()->fields.end())
     return;
@@ -684,7 +684,7 @@ void PasswordFormManager::ProvisionallySaveFieldDataManagerInfo(
     const PasswordManagerDriver* driver) {
   bool data_found = false;
   for (FormFieldData& field : mutable_observed_form()->fields) {
-    FieldRendererId field_id = field.unique_renderer_id;
+    FieldRendererId field_id = field.renderer_id;
     if (!field_data_manager.HasFieldData(field_id))
       continue;
     field.user_input = field_data_manager.GetUserInput(field_id);
@@ -896,7 +896,7 @@ bool PasswordFormManager::ProvisionallySave(
     const PasswordManagerDriver* driver,
     const base::LRUCache<PossibleUsernameFieldIdentifier, PossibleUsernameData>*
         possible_usernames) {
-  DCHECK(DoesManage(submitted_form.unique_renderer_id, driver));
+  DCHECK(DoesManage(submitted_form.renderer_id, driver));
   auto [parsed_submitted_form, in_form_username_detection_method] =
       ParseFormAndMakeLogging(submitted_form, FormDataParser::Mode::kSaving);
   RecordMetricOnReadonly(parser_.readonly_status(), !!parsed_submitted_form,
@@ -1032,12 +1032,12 @@ void PasswordFormManager::FillNow() {
   if (observed_password_form->is_new_password_reliable && !IsBlocklisted()) {
     driver_->FormEligibleForGenerationFound({
 #if BUILDFLAG(IS_IOS)
-      .form_renderer_id = observed_password_form->form_data.unique_renderer_id,
+        .form_renderer_id = observed_password_form->form_data.renderer_id,
 #endif
-      .new_password_renderer_id =
-          observed_password_form->new_password_element_renderer_id,
-      .confirmation_password_renderer_id =
-          observed_password_form->confirmation_password_element_renderer_id,
+        .new_password_renderer_id =
+            observed_password_form->new_password_element_renderer_id,
+        .confirmation_password_renderer_id =
+            observed_password_form->confirmation_password_element_renderer_id,
     });
   }
 
@@ -1065,7 +1065,7 @@ void PasswordFormManager::OnGeneratedPasswordAccepted(
   // Find the generating element to update its value. The parser needs a non
   // empty value.
   auto it = base::ranges::find(form_data.fields, generation_element_id,
-                               &FormFieldData::unique_renderer_id);
+                               &FormFieldData::renderer_id);
   // The parameters are coming from the renderer and can't be trusted.
   if (it == form_data.fields.end())
     return;
@@ -1089,7 +1089,7 @@ bool PasswordFormManager::ObservedFormHasField(int driver_id,
   }
   CHECK(observed_form());
   for (const auto& field : observed_form()->fields) {
-    if (field.unique_renderer_id == field_id) {
+    if (field.renderer_id == field_id) {
       LogUsingPossibleUsername(client_, /*is_used*/ false, "Same form");
       return true;
     }
@@ -1600,7 +1600,7 @@ bool HasObservedFormChanged(const FormData& form_data,
     const FormFieldData& lhs_field = lhs.fields[i];
     const FormFieldData& rhs_field = rhs.fields[i];
 
-    if (lhs_field.unique_renderer_id != rhs_field.unique_renderer_id) {
+    if (lhs_field.renderer_id != rhs_field.renderer_id) {
       differences_bitmask |= PasswordFormMetricsRecorder::kRendererFieldIDs;
     }
 

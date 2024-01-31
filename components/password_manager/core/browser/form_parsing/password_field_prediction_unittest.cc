@@ -95,7 +95,7 @@ TEST(FormPredictionsTest, ConvertToFormPredictions) {
       autofill_predictions;
   for (size_t i = 0; i < std::size(test_fields); ++i) {
     FormFieldData field;
-    field.unique_renderer_id = autofill::FieldRendererId(i + 1000);
+    field.renderer_id = autofill::FieldRendererId(i + 1000);
     field.name = ASCIIToUTF16(test_fields[i].name);
     field.form_control_type = test_fields[i].form_control_type;
 
@@ -169,7 +169,7 @@ TEST(FormPredictionsTest, ConvertToFormPredictions_SynthesiseConfirmation) {
         autofill_predictions;
     for (size_t i = 0; i < test_form.size(); ++i) {
       FormFieldData field;
-      field.unique_renderer_id = autofill::FieldRendererId(i + 1000);
+      field.renderer_id = autofill::FieldRendererId(i + 1000);
       field.name = ASCIIToUTF16(test_form[i].name);
       field.form_control_type = test_form[i].form_control_type;
 
@@ -235,7 +235,7 @@ TEST(FormPredictionsTest, ConvertToFormPredictions_OverrideFlagPropagated) {
 
   FormData form;
   FormFieldData single_username_field;
-  single_username_field.unique_renderer_id = autofill::FieldRendererId(1000);
+  single_username_field.renderer_id = autofill::FieldRendererId(1000);
   form.fields.push_back(single_username_field);
 
   base::flat_map<FieldGlobalId, AutofillType::ServerPrediction>
@@ -250,7 +250,7 @@ TEST(FormPredictionsTest, ConvertToFormPredictions_OverrideFlagPropagated) {
   expected_result.driver_id = driver_id;
   expected_result.form_signature = CalculateFormSignature(form);
   expected_result.fields.push_back(
-      {single_username_field.unique_renderer_id,
+      {single_username_field.renderer_id,
        CalculateFieldSignatureForField(single_username_field),
        autofill::SINGLE_USERNAME, /*may_use_prefilled_placeholder=*/false,
        /*is_override=*/true});

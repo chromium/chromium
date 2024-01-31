@@ -180,8 +180,8 @@ void CheckField(const std::vector<FormFieldData>& fields,
     return;
   }
 
-  auto field_it = base::ranges::find(fields, renderer_id,
-                                     &FormFieldData::unique_renderer_id);
+  auto field_it =
+      base::ranges::find(fields, renderer_id, &FormFieldData::renderer_id);
   ASSERT_TRUE(field_it != fields.end())
       << "Could not find a field with renderer ID " << renderer_id;
 
@@ -203,7 +203,7 @@ testing::Message DescribeFormData(const FormData& form_data) {
     result << "type="
            << autofill::FormControlTypeToString(field.form_control_type)
            << ", name=" << field.name << ", value=" << field.value
-           << ", unique id=" << field.unique_renderer_id.value() << "\n";
+           << ", unique id=" << field.renderer_id.value() << "\n";
   }
   return result;
 }
@@ -251,7 +251,7 @@ FormFieldData CreateField(FormControlType type, std::u16string value) {
   FormFieldData field;
   field.form_control_type = type;
   field.value = std::move(value);
-  field.unique_renderer_id = autofill::test::MakeFieldRendererId();
+  field.renderer_id = autofill::test::MakeFieldRendererId();
   return field;
 }
 
@@ -291,7 +291,7 @@ class FormParserTest : public testing::Test {
     for (const FieldDataDescription& field_description : test_case.fields) {
       FormFieldData field;
       const autofill::FieldRendererId renderer_id = GetUniqueId();
-      field.unique_renderer_id = renderer_id;
+      field.renderer_id = renderer_id;
       field.id_attribute = StampUniqueSuffix(u"html_id");
       if (field_description.name == kNonimportantValue) {
         field.name = StampUniqueSuffix(u"html_name");
@@ -334,7 +334,7 @@ class FormParserTest : public testing::Test {
             static_cast<size_t>(field_description.predicted_username);
         if (form_data.username_predictions.size() <= index)
           form_data.username_predictions.resize(index + 1);
-        form_data.username_predictions[index] = field.unique_renderer_id;
+        form_data.username_predictions[index] = field.renderer_id;
       }
     }
     // Fill unused ranks in predictions with fresh IDs to check that those are
@@ -3078,8 +3078,8 @@ TEST_F(FormParserTest, FindUsernameInPredictions_SkipPrediction) {
   // Add predictions for "email" and "id" fields. The "email" is in
   // front of "id", indicating "email" is more reliable.
   const std::vector<autofill::FieldRendererId> predictions = {
-      form_data.fields[1].unique_renderer_id,  // email
-      form_data.fields[2].unique_renderer_id,  // id
+      form_data.fields[1].renderer_id,  // email
+      form_data.fields[2].renderer_id,  // id
   };
 
   // Now search the username field. The username field is supposed to
@@ -3407,7 +3407,7 @@ TEST_F(FormParserTest, BaseHeuristicsFindUsernameFieldWithStoredUsername) {
   EXPECT_EQ(password_form->username_value, kUsername);
   EXPECT_TRUE(password_form->HasUsernameElement());
   EXPECT_EQ(password_form->username_element_renderer_id,
-            form_data.fields[0].unique_renderer_id);
+            form_data.fields[0].renderer_id);
 }
 
 }  // namespace
