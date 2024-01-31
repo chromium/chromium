@@ -71,6 +71,7 @@ class MockPage : public tab_search::mojom::Page {
   MOCK_METHOD(void, TabUpdated, (tab_search::mojom::TabUpdateInfoPtr));
   MOCK_METHOD(void, TabsRemoved, (tab_search::mojom::TabsRemovedInfoPtr));
   MOCK_METHOD(void, TabSearchTabIndexChanged, (int32_t));
+  MOCK_METHOD(void, TabOrganizationEnabledChanged, (bool));
 };
 
 void ExpectNewTab(const tab_search::mojom::Tab* tab,
@@ -164,6 +165,8 @@ class TabSearchPageHandlerTest : public BrowserWithTestWindowTest {
     browser4_.reset();
     browser5_.reset();
     web_contents_.reset();
+    // Ensure destructor is called
+    handler_ = nullptr;
     BrowserWithTestWindowTest::TearDown();
   }
 
