@@ -6,8 +6,21 @@
 
 load("@builtin//path.star", "path")
 load("@builtin//struct.star", "module")
+load("./android.star", "android")
 load("./clang_all.star", "clang_all")
 load("./clang_code_coverage_wrapper.star", "clang_code_coverage_wrapper")
+
+# TODO: b/323091468 - Propagate target android ABI and android SDK version
+# from GN, and remove remove hardcoded filegroups.
+android_archs = [
+    "aarch64-linux-android",
+    "arm-linux-androideabi",
+    "i686-linux-android",
+    "riscv64-linux-android",
+    "x86_64-linux-android",
+]
+
+android_versions = list(range(21, 35))
 
 def __filegroups(ctx):
     fg = {
@@ -40,6 +53,15 @@ def __filegroups(ctx):
             "includes": ["*"],
         },
     }
+    if android.enabled(ctx):
+        for arch in android_archs:
+            for ver in android_versions:
+                group = "third_party/android_toolchain/ndk/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/lib/%s/%d:link" % (arch, ver)
+                fg[group] = {
+                    "type": "glob",
+                    "includes": ["*"],
+                }
+
     fg.update(clang_all.filegroups(ctx))
     return fg
 

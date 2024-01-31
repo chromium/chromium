@@ -94,6 +94,7 @@ def __use_large_b289968566(ctx, step_config):
         r.update(rule)
         r["name"] += "/b289968566/exit-137"
         r["action_outs"] = exit137_list
+
         # use `_large` variant of platform if it doesn't use default platform,
         # i.e. mac/win case.
         if "platform_ref" in r:
