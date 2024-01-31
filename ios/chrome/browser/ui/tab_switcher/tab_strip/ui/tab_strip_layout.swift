@@ -84,22 +84,19 @@ class TabStripLayout: UICollectionViewFlowLayout {
     -> UICollectionViewLayoutAttributes?
   {
     guard
-      let attributes: UICollectionViewLayoutAttributes =
-        self
-        .layoutAttributesForItem(at: itemIndexPath)
+      let attributes: UICollectionViewLayoutAttributes = super
+        .initialLayoutAttributesForAppearingItem(at: itemIndexPath),
+      let selectedAttributes: UICollectionViewLayoutAttributes = layoutAttributesForSelectedCell(
+        layoutAttributes: attributes)
     else { return nil }
 
-    if indexPathsOfInsertingItems.contains(itemIndexPath) {
-      // Animate the appearing item by starting it with zero opacity and
-      // translated down by its height.
-      attributes.alpha = 0
-      attributes.transform = CGAffineTransform(
-        translationX: 0,
-        y: attributes.frame.size.height
-      )
-    }
-
-    return attributes
+    // Animate the appearing item by starting it with zero opacity and
+    // translated down by its height.
+    selectedAttributes.alpha = 0
+    selectedAttributes.transform = CGAffineTransform(
+      translationX: 0,
+      y: attributes.frame.size.height)
+    return selectedAttributes
   }
 
   override func finalLayoutAttributesForDisappearingItem(at itemIndexPath: IndexPath)
@@ -107,9 +104,9 @@ class TabStripLayout: UICollectionViewFlowLayout {
   {
     guard
       let attributes: UICollectionViewLayoutAttributes =
-        self
-        .layoutAttributesForItem(at: itemIndexPath)
+        self.layoutAttributesForItem(at: itemIndexPath)
     else { return nil }
+
     if indexPathsOfDeletingItems.contains(itemIndexPath) {
       // Animate the disappearing item by fading it out and translating it down
       // by its height.
