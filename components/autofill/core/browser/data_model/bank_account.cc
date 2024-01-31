@@ -19,32 +19,15 @@ BankAccount::BankAccount(int64_t instrument_id,
                          std::u16string_view bank_name,
                          std::u16string_view account_number_suffix,
                          AccountType account_type)
-    : PaymentInstrument(instrument_id, nickname, display_icon_url),
-      bank_name_(bank_name),
+    : bank_name_(bank_name),
       account_number_suffix_(account_number_suffix),
-      account_type_(account_type) {
-  // This is hardcoded since BankAccounts are only supported for the Pix payment
-  // rails. When this condition changes, the supported payment rails would need
-  // to be added and retrieved from the autofill table.
-  AddPaymentRail(PaymentInstrument::PaymentRail::kPix);
-}
+      account_type_(account_type),
+      payment_instrument_(instrument_id,
+                          nickname,
+                          display_icon_url,
+                          DenseSet<PaymentInstrument::PaymentRail>(
+                              {PaymentInstrument::PaymentRail::kPix})) {}
 
 BankAccount::~BankAccount() = default;
-
-PaymentInstrument::InstrumentType BankAccount::GetInstrumentType() const {
-  return PaymentInstrument::InstrumentType::kBankAccount;
-}
-
-bool BankAccount::AddToDatabase(PaymentsAutofillTable* database) const {
-  return database->AddMaskedBankAccount(*this);
-}
-
-bool BankAccount::UpdateInDatabase(PaymentsAutofillTable* database) const {
-  return database->UpdateMaskedBankAccount(*this);
-}
-
-bool BankAccount::DeleteFromDatabase(PaymentsAutofillTable* database) const {
-  return database->RemoveMaskedBankAccount(*this);
-}
 
 }  // namespace autofill
