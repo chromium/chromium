@@ -5996,7 +5996,7 @@ TEST_F(BidderWorkletTest, ReportWinIsForAdditionalBid) {
 
 TEST_F(BidderWorkletTest, ReportWinReportingId) {
   const char kScriptBody[] = R"(
-    sendReportTo("https://example.org/?" +
+    sendReportTo("https://example.test/?" +
                  browserSignals.interestGroupName + "/" +
                  browserSignals.buyerReportingId + "/" +
                  browserSignals.buyerAndSellerReportingId);
@@ -6005,17 +6005,17 @@ TEST_F(BidderWorkletTest, ReportWinReportingId) {
   reporting_id_field_ = mojom::ReportingIdField::kInterestGroupName;
   RunReportWinWithFunctionBodyExpectingResult(
       kScriptBody,
-      GURL("https://example.org/?reporting_id/undefined/undefined"));
+      GURL("https://example.test/?reporting_id/undefined/undefined"));
 
   reporting_id_field_ = mojom::ReportingIdField::kBuyerReportingId;
   RunReportWinWithFunctionBodyExpectingResult(
       kScriptBody,
-      GURL("https://example.org/?undefined/reporting_id/undefined"));
+      GURL("https://example.test/?undefined/reporting_id/undefined"));
 
   reporting_id_field_ = mojom::ReportingIdField::kBuyerAndSellerReportingId;
   RunReportWinWithFunctionBodyExpectingResult(
       kScriptBody,
-      GURL("https://example.org/?undefined/undefined/reporting_id"));
+      GURL("https://example.test/?undefined/undefined/reporting_id"));
 }
 
 TEST_F(BidderWorkletTest, ReportWinDataVersion) {
@@ -6520,8 +6520,8 @@ TEST_F(BidderWorkletTest, BasicV8Debug) {
     return (candidate_method && *candidate_method == "Debugger.scriptParsed");
   };
 
-  const char kUrl1[] = "http://example.com/first.js";
-  const char kUrl2[] = "http://example.org/second.js";
+  const char kUrl1[] = "http://example.test/first.js";
+  const char kUrl2[] = "http://example2.test/second.js";
 
   AddJavascriptResponse(&url_loader_factory_, GURL(kUrl1),
                         CreateBasicGenerateBidScript());
@@ -6655,8 +6655,8 @@ TEST_F(BidderWorkletTest, BasicDevToolsDebug) {
   std::string bid_script = CreateGenerateBidScript(
       R"({ad: ["ad"], bid: this.global_bid ? this.global_bid : 1,
           render:"https://response.test/"})");
-  const char kUrl1[] = "http://example.com/first.js";
-  const char kUrl2[] = "http://example.org/second.js";
+  const char kUrl1[] = "http://example.test/first.js";
+  const char kUrl2[] = "http://example2.test/second.js";
 
   AddJavascriptResponse(&url_loader_factory_, GURL(kUrl1), bid_script);
   AddJavascriptResponse(&url_loader_factory_, GURL(kUrl2), bid_script);
@@ -6731,7 +6731,7 @@ TEST_F(BidderWorkletTest, BasicDevToolsDebug) {
   ASSERT_TRUE(hit_breakpoints1);
   ASSERT_EQ(1u, hit_breakpoints1->size());
   ASSERT_TRUE((*hit_breakpoints1)[0].is_string());
-  EXPECT_EQ("1:0:0:http://example.com/first.js",
+  EXPECT_EQ("1:0:0:http://example.test/first.js",
             (*hit_breakpoints1)[0].GetString());
   std::string* callframe_id1 = breakpoint_hit1.value.GetDict()
                                    .FindDict("params")
@@ -6780,7 +6780,7 @@ TEST_F(BidderWorkletTest, BasicDevToolsDebug) {
   ASSERT_TRUE(hit_breakpoints2);
   ASSERT_EQ(1u, hit_breakpoints2->size());
   ASSERT_TRUE((*hit_breakpoints2)[0].is_string());
-  EXPECT_EQ("1:0:0:http://example.org/second.js",
+  EXPECT_EQ("1:0:0:http://example2.test/second.js",
             (*hit_breakpoints2)[0].GetString());
 
   // Go ahead and resume w/o messing with anything.
@@ -6795,7 +6795,7 @@ TEST_F(BidderWorkletTest, BasicDevToolsDebug) {
 }
 
 TEST_F(BidderWorkletTest, InstrumentationBreakpoints) {
-  const char kUrl[] = "http://example.com/bid.js";
+  const char kUrl[] = "http://example.test/bid.js";
 
   AddJavascriptResponse(
       &url_loader_factory_, GURL(kUrl),
@@ -6880,7 +6880,7 @@ TEST_F(BidderWorkletTest, InstrumentationBreakpoints) {
 TEST_F(BidderWorkletTest, UnloadWhilePaused) {
   // Make sure things are cleaned up properly if the worklet is destroyed while
   // paused on a breakpoint.
-  const char kUrl[] = "http://example.com/bid.js";
+  const char kUrl[] = "http://example.test/bid.js";
 
   AddJavascriptResponse(
       &url_loader_factory_, GURL(kUrl),
@@ -7489,21 +7489,21 @@ TEST_F(BidderWorkletBiddingAndScoringDebugReportingAPIEnabledTest,
 
 TEST_F(BidderWorkletTest, ReportWinRegisterAdBeacon) {
   base::flat_map<std::string, GURL> expected_ad_beacon_map = {
-      {"click", GURL("https://click.example.com/")},
-      {"view", GURL("https://view.example.com/")},
+      {"click", GURL("https://click.example.test/")},
+      {"view", GURL("https://view.example.test/")},
   };
   RunReportWinWithFunctionBodyExpectingResult(
       R"(registerAdBeacon({
-        'click': "https://click.example.com/",
-        'view': "https://view.example.com/",
+        'click': "https://click.example.test/",
+        'view': "https://view.example.test/",
       }))",
       /*expected_report_url=*/std::nullopt, expected_ad_beacon_map);
 
   // Don't call twice.
   RunReportWinWithFunctionBodyExpectingResult(
       R"(registerAdBeacon({
-        'click': "https://click.example.com/",
-        'view': "https://view.example.com/",
+        'click': "https://click.example.test/",
+        'view': "https://view.example.test/",
       });
       registerAdBeacon())",
       /*expected_report_url=*/std::nullopt,
@@ -7516,8 +7516,8 @@ TEST_F(BidderWorkletTest, ReportWinRegisterAdBeacon) {
   // If called twice and the error is caught, use the first result.
   RunReportWinWithFunctionBodyExpectingResult(
       R"(registerAdBeacon({
-           'click': "https://click.example.com/",
-           'view': "https://view.example.com/",
+           'click': "https://click.example.test/",
+           'view': "https://view.example.test/",
          });
          try { registerAdBeacon() }
          catch (e) {})",
@@ -7528,8 +7528,8 @@ TEST_F(BidderWorkletTest, ReportWinRegisterAdBeacon) {
       R"(try { registerAdBeacon() }
          catch (e) {}
          registerAdBeacon({
-           'click': "https://click.example.com/",
-           'view': "https://view.example.com/",
+           'click': "https://click.example.test/",
+           'view': "https://view.example.test/",
          }))",
       /*expected_report_url=*/std::nullopt, expected_ad_beacon_map);
 
@@ -7556,22 +7556,22 @@ TEST_F(BidderWorkletTest, ReportWinRegisterAdBeacon) {
   // OK if parameter attributes are not strings
   RunReportWinWithFunctionBodyExpectingResult(
       R"(registerAdBeacon({
-        'click': "https://click.example.com/",
-        1: "https://view.example.com/",
+        'click': "https://click.example.test/",
+        1: "https://view.example.test/",
       }))",
       /*expected_report_url=*/std::nullopt,
       /*expected_ad_beacon_map=*/
-      {{"click", GURL("https://click.example.com/")},
-       {"1", GURL("https://view.example.com/")}},
+      {{"click", GURL("https://click.example.test/")},
+       {"1", GURL("https://view.example.test/")}},
       /*expected_ad_macro_map=*/{},
       /*expected_pa_requests=*/{}, {});
 
   // ... but keys must be convertible to strings
   RunReportWinWithFunctionBodyExpectingResult(
       R"(let map = {
-           'click': "https://click.example.com/"
+           'click': "https://click.example.test/"
          }
-         map[Symbol('a')] = "https://view.example.com/";
+         map[Symbol('a')] = "https://view.example.test/";
          registerAdBeacon(map))",
       /*expected_report_url=*/std::nullopt,
       /*expected_ad_beacon_map=*/{},
@@ -7583,34 +7583,34 @@ TEST_F(BidderWorkletTest, ReportWinRegisterAdBeacon) {
   // Error if invalid reporting URL
   RunReportWinWithFunctionBodyExpectingResult(
       R"(registerAdBeacon({
-        'click': "https://click.example.com/",
-        'view': "gopher://view.example.com/",
+        'click': "https://click.example.test/",
+        'view': "gopher://view.example.test/",
       }))",
       /*expected_report_url=*/std::nullopt,
       /*expected_ad_beacon_map=*/{},
       /*expected_ad_macro_map=*/{},
       /*expected_pa_requests=*/{},
       {"https://url.test/:11 Uncaught TypeError: registerAdBeacon(): invalid "
-       "reporting url for key 'view': 'gopher://view.example.com/'."});
+       "reporting url for key 'view': 'gopher://view.example.test/'."});
 
   // Error if not trustworthy reporting URL
   RunReportWinWithFunctionBodyExpectingResult(
       R"(registerAdBeacon({
         'click': "https://127.0.0.1/",
-        'view': "http://view.example.com/",
+        'view': "http://view.example.test/",
       }))",
       /*expected_report_url=*/std::nullopt,
       /*expected_ad_beacon_map=*/{},
       /*expected_ad_macro_map=*/{},
       /*expected_pa_requests=*/{},
       {"https://url.test/:11 Uncaught TypeError: registerAdBeacon(): invalid "
-       "reporting url for key 'view': 'http://view.example.com/'."});
+       "reporting url for key 'view': 'http://view.example.test/'."});
 
   // Error if invalid "reserved.*" reporting event type
   RunReportWinWithFunctionBodyExpectingResult(
       R"(registerAdBeacon({
-        'click': "https://click.example.com/",
-        'reserved.bogus': "https://view.example.com/",
+        'click': "https://click.example.test/",
+        'reserved.bogus': "https://view.example.test/",
       }))",
       /*expected_report_url=*/std::nullopt,
       /*expected_ad_beacon_map=*/{},
@@ -8834,10 +8834,10 @@ TEST_F(BidderWorkletTest, KAnonRerun) {
 }
 
 TEST_F(BidderWorkletTest, IsKAnonURL) {
-  const GURL kUrl1("https://example.com/1");
-  const GURL kUrl2("https://example.org/2");
-  const GURL kUrl3("https://example.gov/3");
-  const GURL kUrl4("https://example.gov/4");
+  const GURL kUrl1("https://example.test/1");
+  const GURL kUrl2("https://example2.test/2");
+  const GURL kUrl3("https://example3.test/3");
+  const GURL kUrl4("https://example3.test/4");
   mojom::BidderWorkletNonSharedParamsPtr params =
       mojom::BidderWorkletNonSharedParams::New();
   url::Origin owner = url::Origin::Create(interest_group_bidding_url_);
@@ -8864,10 +8864,10 @@ TEST_F(BidderWorkletTest, IsKAnonURL) {
 }
 
 TEST_F(BidderWorkletTest, IsKAnonResult) {
-  const GURL kUrl1("https://example.com/1");
-  const GURL kUrl2("https://example.org/2");
-  const GURL kUrl3("https://example.gov/3");
-  const GURL kUrl4("https://example.gov/4");
+  const GURL kUrl1("https://example.test/1");
+  const GURL kUrl2("https://example2.test/2");
+  const GURL kUrl3("https://example3.test/3");
+  const GURL kUrl4("https://example3.test/4");
   mojom::BidderWorkletNonSharedParamsPtr params =
       mojom::BidderWorkletNonSharedParams::New();
   url::Origin owner = url::Origin::Create(interest_group_bidding_url_);

@@ -2787,14 +2787,14 @@ TEST_F(SellerWorkletTest, ReportResultRenderUrl) {
 TEST_F(SellerWorkletTest, ReportResultRegisterAdBeacon) {
   bid_ = 5;
   base::flat_map<std::string, GURL> expected_ad_beacon_map = {
-      {"click", GURL("https://click.example.com/")},
-      {"view", GURL("https://view.example.com/")},
+      {"click", GURL("https://click.example.test/")},
+      {"view", GURL("https://view.example.test/")},
   };
   RunReportResultCreatedScriptExpectingResult(
       R"(5)",
       R"(registerAdBeacon({
-        'click': "https://click.example.com/",
-        'view': "https://view.example.com/",
+        'click': "https://click.example.test/",
+        'view': "https://view.example.test/",
       }))",
       /*expected_signals_for_winner=*/"5",
       /*expected_report_url=*/std::nullopt, expected_ad_beacon_map);
@@ -2803,8 +2803,8 @@ TEST_F(SellerWorkletTest, ReportResultRegisterAdBeacon) {
   RunReportResultCreatedScriptExpectingResult(
       R"(5)",
       R"(registerAdBeacon({
-        'click': "https://click.example.com/",
-        'view': "https://view.example.com/",
+        'click': "https://click.example.test/",
+        'view': "https://view.example.test/",
       });
       sendReportTo(browserSignals.renderURL))",
       /*expected_signals_for_winner=*/"5",
@@ -2815,8 +2815,8 @@ TEST_F(SellerWorkletTest, ReportResultRegisterAdBeacon) {
       R"(5)",
       R"(sendReportTo(browserSignals.renderURL);
       registerAdBeacon({
-        'click': "https://click.example.com/",
-        'view': "https://view.example.com/",
+        'click': "https://click.example.test/",
+        'view': "https://view.example.test/",
       }))",
       /*expected_signals_for_winner=*/"5",
       /*expected_report_url=*/browser_signal_render_url_,
@@ -2826,8 +2826,8 @@ TEST_F(SellerWorkletTest, ReportResultRegisterAdBeacon) {
   RunReportResultCreatedScriptExpectingResult(
       R"(5)",
       R"(registerAdBeacon({
-        'click': "https://click.example.com/",
-        'view': "https://view.example.com/",
+        'click': "https://click.example.test/",
+        'view': "https://view.example.test/",
       });
       registerAdBeacon())",
       /*expected_signals_for_winner=*/{},
@@ -2841,8 +2841,8 @@ TEST_F(SellerWorkletTest, ReportResultRegisterAdBeacon) {
   RunReportResultCreatedScriptExpectingResult(
       R"(5)",
       R"(registerAdBeacon({
-           'click': "https://click.example.com/",
-           'view': "https://view.example.com/",
+           'click': "https://click.example.test/",
+           'view': "https://view.example.test/",
          });
          try { registerAdBeacon() }
          catch (e) {})",
@@ -2855,8 +2855,8 @@ TEST_F(SellerWorkletTest, ReportResultRegisterAdBeacon) {
       R"(try { registerAdBeacon() }
          catch (e) {}
          registerAdBeacon({
-           'click': "https://click.example.com/",
-           'view': "https://view.example.com/",
+           'click': "https://click.example.test/",
+           'view': "https://view.example.test/",
          }))",
       /*expected_signals_for_winner=*/"5",
       /*expected_report_url=*/std::nullopt, expected_ad_beacon_map);
@@ -2885,15 +2885,15 @@ TEST_F(SellerWorkletTest, ReportResultRegisterAdBeacon) {
   RunReportResultCreatedScriptExpectingResult(
       R"(5)",
       R"(registerAdBeacon({
-        'click': "https://click.example.com/",
-        1: "https://view.example.com/",
+        'click': "https://click.example.test/",
+        1: "https://view.example.test/",
       }))",
       /*expected_signals_for_winner=*/"5",
       /*expected_report_url=*/std::nullopt,
       /*expected_ad_beacon_map=*/
       {
-          {"click", GURL("https://click.example.com/")},
-          {"1", GURL("https://view.example.com/")},
+          {"click", GURL("https://click.example.test/")},
+          {"1", GURL("https://view.example.test/")},
       },
       /*expected_pa_requests=*/{}, {});
 
@@ -2901,9 +2901,9 @@ TEST_F(SellerWorkletTest, ReportResultRegisterAdBeacon) {
   RunReportResultCreatedScriptExpectingResult(
       R"(5)",
       R"(let map = {
-           'click': "https://click.example.com/"
+           'click': "https://click.example.test/"
          }
-         map[Symbol('a')] = "https://view.example.com/";
+         map[Symbol('a')] = "https://view.example.test/";
          registerAdBeacon(map))",
       /*expected_signals_for_winner=*/{},
       /*expected_report_url=*/std::nullopt,
@@ -2916,36 +2916,36 @@ TEST_F(SellerWorkletTest, ReportResultRegisterAdBeacon) {
   RunReportResultCreatedScriptExpectingResult(
       R"(5)",
       R"(registerAdBeacon({
-        'click': "https://click.example.com/",
-        'view': "gopher://view.example.com/",
+        'click': "https://click.example.test/",
+        'view': "gopher://view.example.test/",
       }))",
       /*expected_signals_for_winner=*/{},
       /*expected_report_url=*/std::nullopt,
       /*expected_ad_beacon_map=*/{},
       /*expected_pa_requests=*/{},
       {"https://url.test/:10 Uncaught TypeError: registerAdBeacon(): invalid "
-       "reporting url for key 'view': 'gopher://view.example.com/'."});
+       "reporting url for key 'view': 'gopher://view.example.test/'."});
 
   // Error if not trustworthy reporting URL
   RunReportResultCreatedScriptExpectingResult(
       R"(5)",
       R"(registerAdBeacon({
         'click': "https://127.0.0.1/",
-        'view': "http://view.example.com/",
+        'view': "http://view.example.test/",
       }))",
       /*expected_signals_for_winner=*/{},
       /*expected_report_url=*/std::nullopt,
       /*expected_ad_beacon_map=*/{},
       /*expected_pa_requests=*/{},
       {"https://url.test/:10 Uncaught TypeError: registerAdBeacon(): invalid "
-       "reporting url for key 'view': 'http://view.example.com/'."});
+       "reporting url for key 'view': 'http://view.example.test/'."});
 
   // Error if invalid "reserved.*" reporting event type
   RunReportResultCreatedScriptExpectingResult(
       R"(5)",
       R"(registerAdBeacon({
         'click': "https://127.0.0.1/",
-        'reserved.bogus': "https://view.example.com/",
+        'reserved.bogus': "https://view.example.test/",
       }))",
       /*expected_signals_for_winner=*/{},
       /*expected_report_url=*/std::nullopt,
@@ -3014,20 +3014,20 @@ TEST_F(SellerWorkletTest, ReportResultHighestScoringOtherBidCurrency) {
 TEST_F(SellerWorkletTest, ReportResultAuctionConfigParam) {
   // Empty AuctionAdConfig, with nothing filled in, except the seller and
   // decision logic URL.
-  decision_logic_url_ = GURL("https://example.com/auction.js");
+  decision_logic_url_ = GURL("https://example.test/auction.js");
   RunReportResultCreatedScriptExpectingResult(
       "auctionConfig", /*extra_code=*/std::string(),
-      R"({"seller":"https://example.com",)"
-      R"("decisionLogicURL":"https://example.com/auction.js",)"
-      R"("decisionLogicUrl":"https://example.com/auction.js"})",
+      R"({"seller":"https://example.test",)"
+      R"("decisionLogicURL":"https://example.test/auction.js",)"
+      R"("decisionLogicUrl":"https://example.test/auction.js"})",
       /*expected_report_url=*/std::nullopt);
 
   // Everything filled in but component auctions (can't include component
   // auctions and non-empty interestGroupBuyers, so test those cases
   // separately).
-  decision_logic_url_ = GURL("https://example.com/auction.js");
+  decision_logic_url_ = GURL("https://example.test/auction.js");
   trusted_scoring_signals_url_ =
-      GURL("https://example.com/scoring_signals.json");
+      GURL("https://example.test/scoring_signals.json");
   auction_ad_config_non_shared_params_.interest_group_buyers = {
       url::Origin::Create(GURL("https://buyer1.com")),
       url::Origin::Create(GURL("https://another-buyer.com"))};
@@ -3070,7 +3070,7 @@ TEST_F(SellerWorkletTest, ReportResultAuctionConfigParam) {
   blink::AuctionConfig::BuyerCurrencies buyer_currencies;
   buyer_currencies.per_buyer_currencies.emplace();
   buyer_currencies.per_buyer_currencies
-      .value()[url::Origin::Create(GURL("https://example.ca"))] =
+      .value()[url::Origin::Create(GURL("https://ca.test"))] =
       blink::AdCurrency::From("CAD");
   buyer_currencies.all_buyers_currency = blink::AdCurrency::From("USD");
   auction_ad_config_non_shared_params_.buyer_currencies =
@@ -3083,11 +3083,11 @@ TEST_F(SellerWorkletTest, ReportResultAuctionConfigParam) {
       {"signals_d", 0}};
 
   const char kExpectedJson1[] =
-      R"({"seller":"https://example.com",
-          "decisionLogicURL":"https://example.com/auction.js",
-          "decisionLogicUrl":"https://example.com/auction.js",
-          "trustedScoringSignalsURL":"https://example.com/scoring_signals.json",
-          "trustedScoringSignalsUrl":"https://example.com/scoring_signals.json",
+      R"({"seller":"https://example.test",
+          "decisionLogicURL":"https://example.test/auction.js",
+          "decisionLogicUrl":"https://example.test/auction.js",
+          "trustedScoringSignalsURL":"https://example.test/scoring_signals.json",
+          "trustedScoringSignalsUrl":"https://example.test/scoring_signals.json",
           "interestGroupBuyers":["https://buyer1.com",
                                  "https://another-buyer.com"],
           "auctionSignals":{"is_auction_signals":true},
@@ -3096,7 +3096,7 @@ TEST_F(SellerWorkletTest, ReportResultAuctionConfigParam) {
           "perBuyerSignals":{"https://a.com":{"signals_a":"A"},
                              "https://b.com":{"signals_b":"B"}},
           "perBuyerCurrencies":{"*": "USD",
-                                "https://example.ca": "CAD"},
+                                "https://ca.test": "CAD"},
           "perBuyerTimeouts":{"https://a.com":100,"*":150},
           "perBuyerCumulativeTimeouts":{"https://a.com":101,"*":151},
           "perBuyerPrioritySignals":{"https://a.com":{"signals_c":0.5},
@@ -3132,11 +3132,11 @@ TEST_F(SellerWorkletTest, ReportResultAuctionConfigParam) {
       GURL("https://component2.com/signals.json");
 
   const char kExpectedJson2[] =
-      R"({"seller":"https://example.com",
-          "decisionLogicURL":"https://example.com/auction.js",
-          "decisionLogicUrl":"https://example.com/auction.js",
-          "trustedScoringSignalsURL":"https://example.com/scoring_signals.json",
-          "trustedScoringSignalsUrl":"https://example.com/scoring_signals.json",
+      R"({"seller":"https://example.test",
+          "decisionLogicURL":"https://example.test/auction.js",
+          "decisionLogicUrl":"https://example.test/auction.js",
+          "trustedScoringSignalsURL":"https://example.test/scoring_signals.json",
+          "trustedScoringSignalsUrl":"https://example.test/scoring_signals.json",
           "componentAuctions":[
               {"seller":"https://component1.com",
                "decisionLogicURL":"https://component1.com/script.js",
@@ -3169,12 +3169,12 @@ TEST_F(SellerWorkletTest,
 TEST_F(SellerWorkletTest, ReportResultAuctionConfigParamPerBuyerTimeouts) {
   // Empty AuctionAdConfig, with nothing filled in, except the seller and
   // decision logic URL.
-  decision_logic_url_ = GURL("https://example.com/auction.js");
+  decision_logic_url_ = GURL("https://example.test/auction.js");
   RunReportResultCreatedScriptExpectingResult(
       "auctionConfig", /*extra_code=*/std::string(),
-      R"({"seller":"https://example.com",)"
-      R"("decisionLogicURL":"https://example.com/auction.js",)"
-      R"("decisionLogicUrl":"https://example.com/auction.js"})",
+      R"({"seller":"https://example.test",)"
+      R"("decisionLogicURL":"https://example.test/auction.js",)"
+      R"("decisionLogicUrl":"https://example.test/auction.js"})",
       /*expected_report_url=*/std::nullopt);
 
   {
@@ -3186,9 +3186,9 @@ TEST_F(SellerWorkletTest, ReportResultAuctionConfigParamPerBuyerTimeouts) {
 
     RunReportResultCreatedScriptExpectingResult(
         "auctionConfig", /*extra_code=*/std::string(),
-        R"({"seller":"https://example.com",)"
-        R"("decisionLogicURL":"https://example.com/auction.js",)"
-        R"("decisionLogicUrl":"https://example.com/auction.js",)"
+        R"({"seller":"https://example.test",)"
+        R"("decisionLogicURL":"https://example.test/auction.js",)"
+        R"("decisionLogicUrl":"https://example.test/auction.js",)"
         R"("perBuyerTimeouts":{}})",
         /*expected_report_url=*/std::nullopt);
   }
@@ -3203,9 +3203,9 @@ TEST_F(SellerWorkletTest, ReportResultAuctionConfigParamPerBuyerTimeouts) {
 
     RunReportResultCreatedScriptExpectingResult(
         "auctionConfig", /*extra_code=*/std::string(),
-        R"({"seller":"https://example.com",)"
-        R"("decisionLogicURL":"https://example.com/auction.js",)"
-        R"("decisionLogicUrl":"https://example.com/auction.js",)"
+        R"({"seller":"https://example.test",)"
+        R"("decisionLogicURL":"https://example.test/auction.js",)"
+        R"("decisionLogicUrl":"https://example.test/auction.js",)"
         R"("perBuyerTimeouts":{"*":150}})",
         /*expected_report_url=*/std::nullopt);
   }
@@ -3555,8 +3555,8 @@ TEST_F(SellerWorkletTest, BasicV8Debug) {
     return (candidate_method && *candidate_method == "Debugger.scriptParsed");
   };
 
-  const GURL kUrl1 = GURL("http://example.com/first.js");
-  const GURL kUrl2 = GURL("http://example.org/second.js");
+  const GURL kUrl1 = GURL("http://example.test/first.js");
+  const GURL kUrl2 = GURL("http://example2.test/second.js");
 
   AddJavascriptResponse(&url_loader_factory_, kUrl1, CreateScoreAdScript("1"));
   AddJavascriptResponse(&url_loader_factory_, kUrl2, CreateScoreAdScript("2"));
@@ -3700,8 +3700,8 @@ TEST_F(SellerWorkletTest, ParseErrorV8Debug) {
 TEST_F(SellerWorkletTest, BasicDevToolsDebug) {
   const char kScriptResult[] = "this.global_score ? this.global_score : 10";
 
-  const char kUrl1[] = "http://example.com/first.js";
-  const char kUrl2[] = "http://example.org/second.js";
+  const char kUrl1[] = "http://example.test/first.js";
+  const char kUrl2[] = "http://example2.test/second.js";
 
   AddJavascriptResponse(&url_loader_factory_, GURL(kUrl1),
                         CreateScoreAdScript(kScriptResult));
@@ -3730,7 +3730,7 @@ TEST_F(SellerWorkletTest, BasicDevToolsDebug) {
   base::RunLoop run_loop2;
   RunScoreAdOnWorkletAsync(
       worklet2.get(), /*expected_score=*/0,
-      {"http://example.org/second.js scoreAd() return: Value passed as "
+      {"http://example2.test/second.js scoreAd() return: Value passed as "
        "dictionary is neither object, null, nor undefined."},
       mojom::ComponentAuctionModifiedBidParamsPtr(),
       /*expected_data_version=*/std::nullopt,
@@ -3807,7 +3807,7 @@ TEST_F(SellerWorkletTest, BasicDevToolsDebug) {
   ASSERT_TRUE(hit_breakpoints);
   ASSERT_EQ(1u, hit_breakpoints->size());
   ASSERT_TRUE((*hit_breakpoints)[0].is_string());
-  EXPECT_EQ("1:2:0:http://example.com/first.js",
+  EXPECT_EQ("1:2:0:http://example.test/first.js",
             (*hit_breakpoints)[0].GetString());
   std::string* callframe_id1 = breakpoint_hit1.value.GetDict()
                                    .FindDict("params")
@@ -3874,7 +3874,7 @@ TEST_F(SellerWorkletTest, BasicDevToolsDebug) {
 }
 
 TEST_F(SellerWorkletTest, InstrumentationBreakpoints) {
-  const char kUrl[] = "http://example.com/script.js";
+  const char kUrl[] = "http://example.test/script.js";
 
   std::string script_body =
       CreateBasicSellAdScript() +
@@ -4002,7 +4002,7 @@ TEST_F(SellerWorkletTest, InstrumentationBreakpoints) {
 TEST_F(SellerWorkletTest, UnloadWhilePaused) {
   // Make sure things are cleaned up properly if the worklet is destroyed while
   // paused on a breakpoint.
-  const char kUrl[] = "http://example.com/script.js";
+  const char kUrl[] = "http://example.test/script.js";
 
   std::string script_body =
       CreateBasicSellAdScript() +
