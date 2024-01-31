@@ -150,6 +150,19 @@ base::Value SerializeIntoValue(const AuctionConfig::MaybePromise<T>& promise) {
   return base::Value(std::move(result));
 }
 
+template <>
+base::Value SerializeIntoValue(
+    const AuctionConfig::NonSharedParams::AuctionReportBuyerDebugModeConfig&
+        value) {
+  base::Value::Dict result;
+  result.Set("enabled", value.is_enabled);
+  if (value.debug_key.has_value()) {
+    // debug_key is uint64, so it doesn't fit into regular JS numeric types.
+    result.Set("debugKey", base::ToString(value.debug_key.value()));
+  }
+  return base::Value(std::move(result));
+}
+
 template <typename K, typename V>
 base::Value SerializeIntoValue(const base::flat_map<K, V>& value) {
   base::Value::Dict result;
@@ -421,9 +434,11 @@ base::Value::Dict AuctionConfig::SerializeForDevtools() const {
   base::Value::Dict result;
   SerializeIntoDict("seller", seller, result);
   SerializeIntoDict("serverResponse", server_response, result);
-  SerializeIntoDict("decisionLogicUrl", decision_logic_url, result);
-  SerializeIntoDict("trustedScoringSignalsUrl", trusted_scoring_signals_url,
+  SerializeIntoDict("decisionLogicURL", decision_logic_url, result);
+  SerializeIntoDict("trustedScoringSignalsURL", trusted_scoring_signals_url,
                     result);
+  SerializeIntoDict("maxTrustedScoringSignalsURLLength",
+                    max_trusted_scoring_signals_url_length, result);
   SerializeIntoDict("interestGroupBuyers",
                     non_shared_params.interest_group_buyers, result);
   SerializeIntoDict("auctionSignals", non_shared_params.auction_signals,
@@ -456,6 +471,9 @@ base::Value::Dict AuctionConfig::SerializeForDevtools() const {
                     non_shared_params.auction_report_buyers, result);
   SerializeIntoDict("requiredSellerCapabilities",
                     non_shared_params.required_seller_capabilities, result);
+  SerializeIntoDict("auctionReportBuyerDebugModeConfig",
+                    non_shared_params.auction_report_buyer_debug_mode_config,
+                    result);
   SerializeIntoDict("requestedSize", non_shared_params.requested_size, result);
   SerializeIntoDict("allSlotsRequestedSizes",
                     non_shared_params.all_slots_requested_sizes, result);
