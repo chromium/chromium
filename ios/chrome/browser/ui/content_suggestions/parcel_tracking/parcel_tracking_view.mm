@@ -9,6 +9,7 @@
 #import "base/time/time.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
+#import "ios/chrome/browser/ui/content_suggestions/parcel_tracking/parcel_tracking_commands.h"
 #import "ios/chrome/browser/ui/content_suggestions/parcel_tracking/parcel_tracking_item.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -16,7 +17,6 @@
 #import "ios/public/provider/chrome/browser/branded_images/branded_images_api.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 #import "url/gurl.h"
-#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_commands.h"
 
 namespace {
 

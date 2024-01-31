@@ -12,11 +12,8 @@
 #include "components/prefs/pref_service.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_commands.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_consumer.h"
+#import "ios/chrome/browser/ui/content_suggestions/parcel_tracking/parcel_tracking_mediator.h"
 #import "ios/chrome/browser/ui/start_surface/start_surface_recent_tab_removal_observer_bridge.h"
-
-namespace commerce {
-class ShoppingService;
-}
 
 namespace favicon {
 class LargeIconService;
@@ -54,8 +51,6 @@ enum class ContentSuggestionsModuleType;
 class GURL;
 class LargeIconCache;
 @protocol NewTabPageMetricsDelegate;
-@class ParcelTrackingItem;
-enum class ParcelType;
 class PromosManager;
 class ReadingListModel;
 @protocol SnackbarCommands;
@@ -64,6 +59,7 @@ class WebStateList;
 // Mediator for ContentSuggestions.
 @interface ContentSuggestionsMediator
     : NSObject <ContentSuggestionsCommands,
+                ParcelTrackingMediatorDelegate,
                 StartSurfaceRecentTabObserving>
 
 // Default initializer.
@@ -78,7 +74,6 @@ class WebStateList;
                       syncService:(syncer::SyncService*)syncService
             authenticationService:(AuthenticationService*)authService
                   identityManager:(signin::IdentityManager*)identityManager
-                  shoppingService:(commerce::ShoppingService*)shoppingService
                     actionFactory:(BrowserActionFactory*)actionFactory
                           browser:(Browser*)browser NS_DESIGNATED_INITIALIZER;
 
@@ -131,6 +126,9 @@ class WebStateList;
 // Action factory for mediator.
 @property(nonatomic, strong) BrowserActionFactory* actionFactory;
 
+// Parcel Tracking Mediator.
+@property(nonatomic, weak) ParcelTrackingMediator* parcelTrackingMediator;
+
 // Disconnects the mediator.
 - (void)disconnect;
 
@@ -157,20 +155,8 @@ class WebStateList;
 // Disables and hides the Safety Check module, `type`, in the Magic Stack.
 - (void)disableSafetyCheck:(ContentSuggestionsModuleType)type;
 
-// Disables and hides the parcel tracking module.
-- (void)disableParcelTracking;
-
-// Indicates that `parcelID` should be untracked.
-- (void)untrackParcel:(NSString*)parcelID;
-
-// Indicates that `parcelID` should be tracked.
-- (void)trackParcel:(NSString*)parcelID carrier:(ParcelType)carrier;
-
 // Returns all possible items in the Set Up List.
 - (NSArray<SetUpListItemViewData*>*)allSetUpListItems;
-
-// Returns the latest fetched tracked parcels.
-- (NSArray<ParcelTrackingItem*>*)parcelTrackingItems;
 
 // Logs a user Magic Stack engagement for module `type`.
 - (void)logMagicStackEngagementForType:(ContentSuggestionsModuleType)type;

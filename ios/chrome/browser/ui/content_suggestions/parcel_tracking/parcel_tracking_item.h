@@ -13,7 +13,7 @@ namespace base {
 class Time;
 }  // namespace base
 
-@protocol ContentSuggestionsCommands;
+@protocol ParcelTrackingCommands;
 class GURL;
 
 // The carrier type for a given tracked parcel.
@@ -63,7 +63,7 @@ enum class ParcelState {
 @property(nonatomic, assign) GURL trackingURL;
 
 // Command handler for user actions.
-@property(nonatomic, weak) id<ContentSuggestionsCommands> commandHandler;
+@property(nonatomic, weak) id<ParcelTrackingCommands> commandHandler;
 
 @end
 

@@ -31,6 +31,8 @@
 #import "ios/chrome/browser/ntp/model/set_up_list_item_type.h"
 #import "ios/chrome/browser/ntp/model/set_up_list_prefs.h"
 #import "ios/chrome/browser/ntp_tiles/model/ios_most_visited_sites_factory.h"
+#import "ios/chrome/browser/parcel_tracking/parcel_tracking_prefs.h"
+#import "ios/chrome/browser/parcel_tracking/parcel_tracking_util.h"
 #import "ios/chrome/browser/passwords/model/password_checkup_utils.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/promos_manager/model/promos_manager_factory.h"
@@ -80,6 +82,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/magic_stack_half_sheet_table_view_controller.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_constant.h"
 #import "ios/chrome/browser/ui/content_suggestions/parcel_tracking/magic_stack_parcel_list_half_sheet_table_view_controller.h"
+#import "ios/chrome/browser/ui/content_suggestions/parcel_tracking/parcel_tracking_mediator.h"
 #import "ios/chrome/browser/ui/content_suggestions/safety_check/types.h"
 #import "ios/chrome/browser/ui/content_suggestions/safety_check/utils.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_content_notification_promo_coordinator.h"
@@ -131,6 +134,8 @@
 // Metrics recorder for the content suggestions.
 @property(nonatomic, strong)
     ContentSuggestionsMetricsRecorder* contentSuggestionsMetricsRecorder;
+// Parcel Tracking Mediator.
+@property(nonatomic, strong) ParcelTrackingMediator* parcelTrackingMediator;
 
 @end
 
@@ -238,7 +243,6 @@
                         syncService:syncService
               authenticationService:authenticationService
                     identityManager:identityManager
-                    shoppingService:shoppingService
                       actionFactory:
                           [[BrowserActionFactory alloc]
                               initWithBrowser:self.browser
@@ -250,6 +254,17 @@
   self.contentSuggestionsMediator.promosManager = promosManager;
   self.contentSuggestionsMediator.contentSuggestionsMetricsRecorder =
       self.contentSuggestionsMetricsRecorder;
+  if (IsIOSParcelTrackingEnabled() &&
+      !IsParcelTrackingDisabled(GetApplicationContext()->GetLocalState())) {
+    self.parcelTrackingMediator = [[ParcelTrackingMediator alloc]
+        initWithShoppingService:shoppingService
+         URLLoadingBrowserAgent:UrlLoadingBrowserAgent::FromBrowser(
+                                    self.browser)];
+    self.parcelTrackingMediator.delegate = self.contentSuggestionsMediator;
+    self.parcelTrackingMediator.NTPMetricsDelegate = self.NTPMetricsDelegate;
+    self.contentSuggestionsMediator.parcelTrackingMediator =
+        self.parcelTrackingMediator;
+  }
   if (base::FeatureList::IsEnabled(segmentation_platform::features::
                                        kSegmentationPlatformIosModuleRanker)) {
     self.contentSuggestionsMediator.segmentationService =
@@ -295,6 +310,8 @@
         ->RemoveObserver(_startSurfaceObserver.get());
     _startSurfaceObserver.reset();
   }
+  [self.parcelTrackingMediator disconnect];
+  self.parcelTrackingMediator = nil;
   [self.contentSuggestionsMediator disconnect];
   self.contentSuggestionsMediator = nil;
   [self.contentSuggestionsMetricsRecorder disconnect];
@@ -430,8 +447,7 @@
 - (void)showMagicStackParcelList {
   _parcelListHalfSheetTableViewController =
       [[MagicStackParcelListHalfSheetTableViewController alloc]
-          initWithParcels:[self.contentSuggestionsMediator
-                                  parcelTrackingItems]];
+          initWithParcels:[self.parcelTrackingMediator allParcelTrackingItems]];
   _parcelListHalfSheetTableViewController.delegate = self;
 
   UINavigationController* navViewController = [[UINavigationController alloc]
@@ -476,7 +492,7 @@
 }
 
 - (void)untrackParcel:(NSString*)parcelID carrier:(ParcelType)carrier {
-  [self.contentSuggestionsMediator untrackParcel:parcelID];
+  [self.parcelTrackingMediator untrackParcel:parcelID];
 
   id<SnackbarCommands> snackbarHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), SnackbarCommands);
@@ -491,8 +507,8 @@
                   if (!strongSelf) {
                     return;
                   }
-                  [strongSelf.contentSuggestionsMediator trackParcel:parcelID
-                                                             carrier:carrier];
+                  [weakSelf.parcelTrackingMediator trackParcel:parcelID
+                                                       carrier:carrier];
                 }
              completionAction:nil];
 }
@@ -834,8 +850,6 @@
                                      IDS_IOS_CONTENT_SUGGESTIONS_PARCEL_TRACKING_MODULE_TITLE)))];
 
   __weak ContentSuggestionsCoordinator* weakSelf = self;
-  __weak ContentSuggestionsMediator* weakMediator =
-      self.contentSuggestionsMediator;
   [_parcelTrackingAlertCoordinator
       addItemWithTitle:
           l10n_util::GetNSStringF(
@@ -843,7 +857,11 @@
               base::SysNSStringToUTF16(l10n_util::GetNSString(
                   IDS_IOS_CONTENT_SUGGESTIONS_PARCEL_TRACKING_MODULE_TITLE)))
                 action:^{
-                  [weakMediator disableParcelTracking];
+                  __strong __typeof(weakSelf) strongSelf = weakSelf;
+                  if (!strongSelf) {
+                    return;
+                  }
+                  [weakSelf.parcelTrackingMediator disableParcelTracking];
                   [weakSelf dismissParcelTrackingAlertCoordinator];
                 }
                  style:UIAlertActionStyleDefault];

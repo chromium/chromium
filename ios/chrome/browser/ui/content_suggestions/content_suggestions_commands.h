@@ -26,9 +26,6 @@ enum class SafetyCheckItemType;
 // Opens the displayed tab resumption item.
 - (void)openTabResumptionItem;
 
-// Handles a user tap load the `parcelTrackingURL`.
-- (void)loadParcelTrackingPage:(GURL)parcelTrackingURL;
-
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_CONTENT_SUGGESTIONS_COMMANDS_H_

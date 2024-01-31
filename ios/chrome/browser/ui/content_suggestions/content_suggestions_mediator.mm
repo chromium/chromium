@@ -19,7 +19,6 @@
 #import "base/metrics/user_metrics_action.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/time/time.h"
-#import "components/commerce/core/shopping_service.h"
 #import "components/favicon/ios/web_favicon_driver.h"
 #import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/public/tracker.h"
@@ -50,10 +49,8 @@
 #import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/ntp_tiles/model/tab_resumption/tab_resumption_prefs.h"
-#import "ios/chrome/browser/parcel_tracking/metrics.h"
 #import "ios/chrome/browser/parcel_tracking/parcel_tracking_prefs.h"
 #import "ios/chrome/browser/parcel_tracking/parcel_tracking_util.h"
-#import "ios/chrome/browser/parcel_tracking/tracking_source.h"
 #import "ios/chrome/browser/passwords/model/password_checkup_utils.h"
 #import "ios/chrome/browser/safety_check/model/ios_chrome_safety_check_manager.h"
 #import "ios/chrome/browser/safety_check/model/ios_chrome_safety_check_manager_constants.h"
@@ -207,8 +204,6 @@ constexpr base::TimeDelta kSafetyCheckRunThreshold = base::Hours(24);
   // `magicStackOrder:` if kSegmentationPlatformIosModuleRanker is disabled) and
   // any additions beyond `_magicStackOrderFromSegmentation` (e.g. Set Up List).
   NSArray<NSNumber*>* _latestMagicStackOrder;
-  raw_ptr<commerce::ShoppingService> _shoppingService;
-  NSArray<ParcelTrackingItem*>* _parcelTrackingItems;
   MostVisitedTilesMediator* _mostVisitedTilesMediator;
   ShortcutsConfig* _shortcutsConfig;
   SetUpListMediator* _setUpListMediator;
@@ -227,8 +222,6 @@ constexpr base::TimeDelta kSafetyCheckRunThreshold = base::Hours(24);
                       syncService:(syncer::SyncService*)syncService
             authenticationService:(AuthenticationService*)authenticationService
                   identityManager:(signin::IdentityManager*)identityManager
-                  shoppingService:(commerce::ShoppingService*)shoppingService
-
                     actionFactory:(BrowserActionFactory*)actionFactory
                           browser:(Browser*)browser {
   self = [super init];
@@ -254,7 +247,6 @@ constexpr base::TimeDelta kSafetyCheckRunThreshold = base::Hours(24);
         std::make_unique<ReadingListModelBridge>(self, readingListModel);
 
     _syncService = syncService;
-    _shoppingService = shoppingService;
 
     BOOL isSetupListEnabled = set_up_list_utils::IsSetUpListActive(_localState);
     if (IsTabResumptionEnabled() || isSetupListEnabled) {
@@ -435,49 +427,6 @@ constexpr base::TimeDelta kSafetyCheckRunThreshold = base::Hours(24);
   [self.consumer updateMagicStackOrder:change];
 }
 
-- (NSArray<ParcelTrackingItem*>*)parcelTrackingItems {
-  return _parcelTrackingItems;
-}
-
-- (void)disableParcelTracking {
-  DisableParcelTracking(_localState);
-  _shoppingService->StopTrackingAllParcels(base::BindOnce(^(bool){
-  }));
-
-  // Find all parcel tracking modules and remove them.
-  for (NSUInteger i = 0; i < [_latestMagicStackOrder count]; i++) {
-    ContentSuggestionsModuleType type =
-        (ContentSuggestionsModuleType)[_latestMagicStackOrder[i] intValue];
-    if (type == ContentSuggestionsModuleType::kParcelTracking ||
-        type == ContentSuggestionsModuleType::kParcelTrackingSeeMore) {
-      MagicStackOrderChange change{MagicStackOrderChange::Type::kRemove};
-      change.old_module = type;
-      change.index = [self indexForMagicStackModule:type];
-      CHECK(change.index != NSNotFound);
-      [self.consumer updateMagicStackOrder:change];
-    }
-  }
-}
-
-- (void)untrackParcel:(NSString*)parcelID {
-  _shoppingService->StopTrackingParcel(
-      base::SysNSStringToUTF8(parcelID), base::BindOnce(^(bool) {
-        parcel_tracking::RecordParcelsUntracked(
-            TrackingSource::kMagicStackModule, 1);
-      }));
-}
-
-- (void)trackParcel:(NSString*)parcelID carrier:(ParcelType)carrier {
-  commerce::ParcelIdentifier::Carrier carrierValue =
-      [self carrierValueForParcelType:carrier];
-  _shoppingService->StartTrackingParcels(
-      {std::make_pair(carrierValue, base::SysNSStringToUTF8(parcelID))},
-      std::string(),
-      base::BindOnce(
-          ^(bool, std::unique_ptr<std::vector<commerce::ParcelTrackingStatus>>){
-          }));
-}
-
 - (void)logMagicStackEngagementForType:(ContentSuggestionsModuleType)type {
   [self.contentSuggestionsMetricsRecorder
       recordMagicStackModuleEngagementForType:type
@@ -611,15 +560,43 @@ constexpr base::TimeDelta kSafetyCheckRunThreshold = base::Hours(24);
   [self hideTabResumption];
 }
 
-- (void)loadParcelTrackingPage:(GURL)parcelTrackingURL {
-  [self.NTPMetricsDelegate parcelTrackingOpened];
-  ContentSuggestionsModuleType type =
-      [_parcelTrackingItems count] > 2
-          ? ContentSuggestionsModuleType::kParcelTrackingSeeMore
-          : ContentSuggestionsModuleType::kParcelTracking;
-  [self logMagicStackEngagementForType:type];
-  UrlLoadingBrowserAgent::FromBrowser(self.browser)
-      ->Load(UrlLoadParams::InCurrentTab(parcelTrackingURL));
+#pragma mark - ParcelTrackingMediatorDelegate
+
+- (void)newParcelsAvailable {
+  _latestMagicStackOrder =
+      base::FeatureList::IsEnabled(
+          segmentation_platform::features::kSegmentationPlatformIosModuleRanker)
+          ? [self segmentationMagicStackOrder]
+          : [self magicStackOrder];
+  for (NSUInteger index = 0; index < [_latestMagicStackOrder count]; index++) {
+    ContentSuggestionsModuleType type =
+        (ContentSuggestionsModuleType)[_latestMagicStackOrder[index] intValue];
+    if (type == ContentSuggestionsModuleType::kParcelTracking ||
+        type == ContentSuggestionsModuleType::kParcelTrackingSeeMore) {
+      MagicStackOrderChange change{MagicStackOrderChange::Type::kInsert};
+      change.new_module = type;
+      change.index = index;
+      [self.consumer updateMagicStackOrder:change];
+    }
+  }
+
+  [self.consumer showParcelTrackingItems:[self parcelTrackingItems]];
+}
+
+- (void)parcelTrackingDisabled {
+  // Find all parcel tracking modules and remove them.
+  for (NSUInteger i = 0; i < [_latestMagicStackOrder count]; i++) {
+    ContentSuggestionsModuleType type =
+        (ContentSuggestionsModuleType)[_latestMagicStackOrder[i] intValue];
+    if (type == ContentSuggestionsModuleType::kParcelTracking ||
+        type == ContentSuggestionsModuleType::kParcelTrackingSeeMore) {
+      MagicStackOrderChange change{MagicStackOrderChange::Type::kRemove};
+      change.old_module = type;
+      change.index = [self indexForMagicStackModule:type];
+      CHECK(change.index != NSNotFound);
+      [self.consumer updateMagicStackOrder:change];
+    }
+  }
 }
 
 #pragma mark - StartSurfaceRecentTabObserving
@@ -665,6 +642,10 @@ constexpr base::TimeDelta kSafetyCheckRunThreshold = base::Hours(24);
 }
 
 #pragma mark - Private
+
+- (NSArray<ParcelTrackingItem*>*)parcelTrackingItems {
+  return [self.parcelTrackingMediator parcelTrackingItemsToShow];
+}
 
 // Creates the initial `SafetyCheckState` based on the previous check states
 // stored in Prefs, or (for development builds) the overridden check states via
@@ -819,16 +800,6 @@ constexpr base::TimeDelta kSafetyCheckRunThreshold = base::Hours(24);
   }
   if (IsIOSParcelTrackingEnabled() &&
       !IsParcelTrackingDisabled(GetApplicationContext()->GetLocalState())) {
-    __weak ContentSuggestionsMediator* weakSelf = self;
-    _shoppingService->GetAllParcelStatuses(base::BindOnce(^(
-        bool success,
-        std::unique_ptr<std::vector<commerce::ParcelTrackingStatus>> parcels) {
-      ContentSuggestionsMediator* strongSelf = weakSelf;
-      if (!strongSelf || !success) {
-        return;
-      }
-      [strongSelf parcelStatusesSuccessfullyReceived:std::move(parcels)];
-    }));
   }
 }
 
@@ -904,12 +875,12 @@ constexpr base::TimeDelta kSafetyCheckRunThreshold = base::Hours(24);
 
   if (IsIOSParcelTrackingEnabled() &&
       !IsParcelTrackingDisabled(GetApplicationContext()->GetLocalState())) {
-    if ([_parcelTrackingItems count] > 2) {
+    if ([[self parcelTrackingItems] firstObject].shouldShowSeeMore) {
       [magicStackModules
           addObject:@(int(
                         ContentSuggestionsModuleType::kParcelTrackingSeeMore))];
     } else {
-      for (NSUInteger i = 0; i < [_parcelTrackingItems count]; i++) {
+      for (NSUInteger i = 0; i < [[self parcelTrackingItems] count]; i++) {
         // Magic Stack will show up to two modules to match the number of
         // parcels tracked.
         [magicStackModules
@@ -974,11 +945,12 @@ constexpr base::TimeDelta kSafetyCheckRunThreshold = base::Hours(24);
         if (IsIOSParcelTrackingEnabled() &&
             !IsParcelTrackingDisabled(
                 GetApplicationContext()->GetLocalState())) {
-          if ([_parcelTrackingItems count] > 2) {
+          if ([[self parcelTrackingItems] firstObject].shouldShowSeeMore) {
             [magicStackOrder addObject:@(int(ContentSuggestionsModuleType::
                                                  kParcelTrackingSeeMore))];
           } else {
-            for (NSUInteger i = 0; i < [_parcelTrackingItems count]; i++) {
+            for (NSUInteger i = 0; i < [[self parcelTrackingItems] count];
+                 i++) {
               // Magic Stack will show up to two modules to match the number of
               // parcels tracked.
               [magicStackOrder addObject:moduleNumber];
@@ -1197,106 +1169,6 @@ constexpr base::TimeDelta kSafetyCheckRunThreshold = base::Hours(24);
 - (void)hideTabResumption {
   [self.consumer hideTabResumption];
   _tabResumptionItem = nil;
-}
-
-// Handles a parcel tracking status fetch result from the
-// commerce::ShoppingService.
-- (void)parcelStatusesSuccessfullyReceived:
-    (std::unique_ptr<std::vector<commerce::ParcelTrackingStatus>>)
-        parcelStatuses {
-  NSMutableArray* parcelItems = [NSMutableArray array];
-
-  for (auto iter = parcelStatuses->begin(); iter != parcelStatuses->end();
-       ++iter) {
-    ParcelTrackingItem* item = [[ParcelTrackingItem alloc] init];
-    item.parcelType = [self parcelTypeforCarrierValue:iter->carrier];
-    item.estimatedDeliveryTime = iter->estimated_delivery_time;
-    item.parcelID = base::SysUTF8ToNSString(iter->tracking_id);
-    item.trackingURL = iter->tracking_url;
-    item.status = (ParcelState)iter->state;
-    item.commandHandler = self;
-    [parcelItems addObject:item];
-
-    if (!iter->estimated_delivery_time.is_null() &&
-        iter->estimated_delivery_time < base::Time::Now() - base::Days(2)) {
-      // Parcel was delivered more than two days ago, make this the last time it
-      // is shown by stopping tracking.
-      _shoppingService->StopTrackingParcel(iter->tracking_id,
-                                           base::BindOnce(^(bool){
-                                           }));
-    }
-  }
-
-  if ([parcelItems count] > 0) {
-    _parcelTrackingItems = parcelItems;
-    [self logParcelTrackingFreshnessSignalIfApplicable];
-    _latestMagicStackOrder =
-        base::FeatureList::IsEnabled(segmentation_platform::features::
-                                         kSegmentationPlatformIosModuleRanker)
-            ? [self segmentationMagicStackOrder]
-            : [self magicStackOrder];
-    for (NSUInteger index = 0; index < [_latestMagicStackOrder count];
-         index++) {
-      ContentSuggestionsModuleType type = (ContentSuggestionsModuleType)
-          [_latestMagicStackOrder[index] intValue];
-      if (type == ContentSuggestionsModuleType::kParcelTracking ||
-          type == ContentSuggestionsModuleType::kParcelTrackingSeeMore) {
-        MagicStackOrderChange change{MagicStackOrderChange::Type::kInsert};
-        change.new_module = type;
-        change.index = index;
-        [self.consumer updateMagicStackOrder:change];
-      }
-    }
-
-    if ([parcelItems count] > 2) {
-      ParcelTrackingItem* itemToShow = parcelItems[0];
-      itemToShow.shouldShowSeeMore = YES;
-      [self.consumer showParcelTrackingItems:@[ itemToShow ]];
-
-    } else {
-      [self.consumer showParcelTrackingItems:parcelItems];
-    }
-  }
-}
-
-// Logs a freshness signal for the Parcel Tracking module if there is at least
-// one parcel with an estimated delivery date within the next two days.
-- (void)logParcelTrackingFreshnessSignalIfApplicable {
-  for (ParcelTrackingItem* item in _parcelTrackingItems) {
-    base::Time now = base::Time::Now();
-    if (item.estimatedDeliveryTime > now &&
-        item.estimatedDeliveryTime < now + base::Days(2)) {
-      RecordModuleFreshnessSignal(
-          ContentSuggestionsModuleType::kParcelTracking);
-      return;
-    }
-  }
-}
-
-// Maps the carrier int value into a ParcelType.
-- (ParcelType)parcelTypeforCarrierValue:(int)carrier {
-  if (carrier == 1) {
-    return ParcelType::kFedex;
-  } else if (carrier == 2) {
-    return ParcelType::kUPS;
-  } else if (carrier == 4) {
-    return ParcelType::kUSPS;
-  }
-  return ParcelType::kUnkown;
-}
-
-- (commerce::ParcelIdentifier::Carrier)carrierValueForParcelType:
-    (ParcelType)parcelType {
-  switch (parcelType) {
-    case ParcelType::kUSPS:
-      return commerce::ParcelIdentifier::Carrier(4);
-    case ParcelType::kUPS:
-      return commerce::ParcelIdentifier::Carrier(2);
-    case ParcelType::kFedex:
-      return commerce::ParcelIdentifier::Carrier(1);
-    default:
-      return commerce::ParcelIdentifier::Carrier(0);
-  }
 }
 
 // Returns the index rank of `moduleType`.
