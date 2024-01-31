@@ -207,6 +207,13 @@ class MODULES_EXPORT DecoderTemplate
   // aborts the promise attached to request and returns true.
   bool MaybeAbortRequest(Request* request) const;
 
+  // Makes the right type of operation or encoding error based on whether we're
+  // using a platform decoder or not.
+  DOMException* MakeOperationError(std::string error_msg,
+                                   media::DecoderStatus status);
+  DOMException* MakeEncodingError(std::string error_msg,
+                                  media::DecoderStatus status);
+
   bool dequeue_event_pending_ = false;
 
   Member<ScriptState> script_state_;
