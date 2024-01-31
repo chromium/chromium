@@ -387,11 +387,7 @@ export class BrowsingContextProcessor {
           break;
         }
 
-        const cdpTarget = this.#createCdpTarget(
-          targetCdpClient,
-          targetInfo,
-          sessionId
-        );
+        const cdpTarget = this.#createCdpTarget(targetCdpClient, targetInfo);
         const maybeContext = this.#browsingContextStorage.findContext(
           targetInfo.targetId
         );
@@ -428,11 +424,7 @@ export class BrowsingContextProcessor {
           break;
         }
 
-        const cdpTarget = this.#createCdpTarget(
-          targetCdpClient,
-          targetInfo,
-          sessionId
-        );
+        const cdpTarget = this.#createCdpTarget(targetCdpClient, targetInfo);
         this.#handleWorkerTarget(
           cdpTarget,
           this.#realmStorage.getRealm({
@@ -457,8 +449,7 @@ export class BrowsingContextProcessor {
 
   #createCdpTarget(
     targetCdpClient: CdpClient,
-    targetInfo: Protocol.Target.TargetInfo,
-    sessionId: string
+    targetInfo: Protocol.Target.TargetInfo
   ) {
     this.#setEventListeners(targetCdpClient);
 
@@ -466,7 +457,6 @@ export class BrowsingContextProcessor {
       targetInfo.targetId,
       targetCdpClient,
       this.#browserCdpClient,
-      sessionId,
       this.#realmStorage,
       this.#eventManager,
       this.#preloadScriptStorage,

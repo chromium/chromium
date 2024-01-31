@@ -58,17 +58,13 @@ export class BrowsingContextImpl {
 
   readonly #browsingContextStorage: BrowsingContextStorage;
 
-  readonly #deferreds = {
-    Page: {
-      navigatedWithinDocument:
-        new Deferred<Protocol.Page.NavigatedWithinDocumentEvent>(),
-      lifecycleEvent: {
-        DOMContentLoaded: new Deferred<Protocol.Page.LifecycleEventEvent>(),
-        load: new Deferred<Protocol.Page.LifecycleEventEvent>(),
-      },
-      frameStartedLoading:
-        new Deferred<Protocol.Page.FrameStartedLoadingEvent>(),
-    },
+  #lifecycle = {
+    DOMContentLoaded: new Deferred<Protocol.Page.LifecycleEventEvent>(),
+    load: new Deferred<Protocol.Page.LifecycleEventEvent>(),
+  };
+
+  #navigation = {
+    withinDocument: new Deferred<Protocol.Page.NavigatedWithinDocumentEvent>(),
   };
 
   #url = 'about:blank';
@@ -172,7 +168,7 @@ export class BrowsingContextImpl {
     }
 
     // Fail all ongoing navigations.
-    this.#failDeferredsIfNotFinished();
+    this.#failLifecycleIfNotFinished();
 
     this.#eventManager.registerEvent(
       {
@@ -265,11 +261,11 @@ export class BrowsingContextImpl {
   }
 
   async lifecycleLoaded() {
-    await this.#deferreds.Page.lifecycleEvent.load;
+    await this.#lifecycle.load;
   }
 
   async targetUnblockedOrThrow(): Promise<void> {
-    const result = await this.#cdpTarget.targetUnblocked;
+    const result = await this.#cdpTarget.unblocked;
     if (result.kind === 'error') {
       throw result.error;
     }
@@ -351,7 +347,7 @@ export class BrowsingContextImpl {
         }
         const timestamp = BrowsingContextImpl.getTimestamp();
         this.#url = params.url;
-        this.#deferreds.Page.navigatedWithinDocument.resolve(params);
+        this.#navigation.withinDocument.resolve(params);
 
         this.#eventManager.registerEvent(
           {
@@ -431,9 +427,7 @@ export class BrowsingContextImpl {
               },
               this.id
             );
-            this.#deferreds.Page.lifecycleEvent.DOMContentLoaded.resolve(
-              params
-            );
+            this.#lifecycle.DOMContentLoaded.resolve(params);
             break;
 
           case 'load':
@@ -450,7 +444,7 @@ export class BrowsingContextImpl {
               },
               this.id
             );
-            this.#deferreds.Page.lifecycleEvent.load.resolve(params);
+            this.#lifecycle.load.resolve(params);
             break;
         }
       }
@@ -566,8 +560,8 @@ export class BrowsingContextImpl {
   #documentChanged(loaderId?: Protocol.Network.LoaderId) {
     // Same document navigation.
     if (loaderId === undefined || this.#loaderId === loaderId) {
-      if (this.#deferreds.Page.navigatedWithinDocument.isFinished) {
-        this.#deferreds.Page.navigatedWithinDocument =
+      if (this.#navigation.withinDocument.isFinished) {
+        this.#navigation.withinDocument =
           new Deferred<Protocol.Page.NavigatedWithinDocumentEvent>();
       } else {
         this.#logger?.(
@@ -578,14 +572,14 @@ export class BrowsingContextImpl {
       return;
     }
 
-    this.#resetDeferredsIfFinished();
+    this.#resetLifecycleIfFinished();
 
     this.#loaderId = loaderId;
   }
 
-  #resetDeferredsIfFinished() {
-    if (this.#deferreds.Page.lifecycleEvent.DOMContentLoaded.isFinished) {
-      this.#deferreds.Page.lifecycleEvent.DOMContentLoaded =
+  #resetLifecycleIfFinished() {
+    if (this.#lifecycle.DOMContentLoaded.isFinished) {
+      this.#lifecycle.DOMContentLoaded =
         new Deferred<Protocol.Page.LifecycleEventEvent>();
     } else {
       this.#logger?.(
@@ -594,9 +588,8 @@ export class BrowsingContextImpl {
       );
     }
 
-    if (this.#deferreds.Page.lifecycleEvent.load.isFinished) {
-      this.#deferreds.Page.lifecycleEvent.load =
-        new Deferred<Protocol.Page.LifecycleEventEvent>();
+    if (this.#lifecycle.load.isFinished) {
+      this.#lifecycle.load = new Deferred<Protocol.Page.LifecycleEventEvent>();
     } else {
       this.#logger?.(
         BrowsingContextImpl.LOGGER_PREFIX,
@@ -605,15 +598,15 @@ export class BrowsingContextImpl {
     }
   }
 
-  #failDeferredsIfNotFinished() {
-    if (!this.#deferreds.Page.lifecycleEvent.DOMContentLoaded.isFinished) {
-      this.#deferreds.Page.lifecycleEvent.DOMContentLoaded.reject(
+  #failLifecycleIfNotFinished() {
+    if (!this.#lifecycle.DOMContentLoaded.isFinished) {
+      this.#lifecycle.DOMContentLoaded.reject(
         new UnknownErrorException('navigation canceled')
       );
     }
 
-    if (!this.#deferreds.Page.lifecycleEvent.load.isFinished) {
-      this.#deferreds.Page.lifecycleEvent.load.reject(
+    if (!this.#lifecycle.load.isFinished) {
+      this.#lifecycle.load.reject(
         new UnknownErrorException('navigation canceled')
       );
     }
@@ -652,17 +645,17 @@ export class BrowsingContextImpl {
       case BrowsingContext.ReadinessState.Interactive:
         // No `loaderId` means same-document navigation.
         if (cdpNavigateResult.loaderId === undefined) {
-          await this.#deferreds.Page.navigatedWithinDocument;
+          await this.#navigation.withinDocument;
         } else {
-          await this.#deferreds.Page.lifecycleEvent.DOMContentLoaded;
+          await this.#lifecycle.DOMContentLoaded;
         }
         break;
       case BrowsingContext.ReadinessState.Complete:
         // No `loaderId` means same-document navigation.
         if (cdpNavigateResult.loaderId === undefined) {
-          await this.#deferreds.Page.navigatedWithinDocument;
+          await this.#navigation.withinDocument;
         } else {
-          await this.lifecycleLoaded();
+          await this.#lifecycle.load;
         }
         break;
     }
@@ -684,16 +677,16 @@ export class BrowsingContextImpl {
       ignoreCache,
     });
 
-    this.#resetDeferredsIfFinished();
+    this.#resetLifecycleIfFinished();
 
     switch (wait) {
       case BrowsingContext.ReadinessState.None:
         break;
       case BrowsingContext.ReadinessState.Interactive:
-        await this.#deferreds.Page.lifecycleEvent.DOMContentLoaded;
+        await this.#lifecycle.DOMContentLoaded;
         break;
       case BrowsingContext.ReadinessState.Complete:
-        await this.lifecycleLoaded();
+        await this.#lifecycle.load;
         break;
     }
 

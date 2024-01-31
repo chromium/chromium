@@ -132,7 +132,7 @@ export class PreloadScript {
       target: cdpTarget,
       preloadScriptId: addCdpPreloadScriptResult.identifier,
     });
-    this.#targetIds.add(cdpTarget.targetId);
+    this.#targetIds.add(cdpTarget.id);
   }
 
   /**
@@ -154,7 +154,7 @@ export class PreloadScript {
   /** Removes the provided cdp target from the list of cdp preload scripts. */
   dispose(cdpTargetId: Protocol.Target.TargetID) {
     this.#cdpPreloadScripts = this.#cdpPreloadScripts.filter(
-      (cdpPreloadScript) => cdpPreloadScript.target?.targetId !== cdpTargetId
+      (cdpPreloadScript) => cdpPreloadScript.target?.id !== cdpTargetId
     );
     this.#targetIds.delete(cdpTargetId);
   }

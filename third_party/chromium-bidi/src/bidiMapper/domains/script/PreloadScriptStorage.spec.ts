@@ -34,7 +34,7 @@ describe('PreloadScriptStorage', () => {
   beforeEach(() => {
     preloadScriptStorage = new PreloadScriptStorage();
     cdpTarget = sinon.createStubInstance(CdpTarget);
-    sinon.stub(cdpTarget, 'targetId').get(() => CDP_TARGET_ID);
+    sinon.stub(cdpTarget, 'id').get(() => CDP_TARGET_ID);
   });
 
   it('initial state', () => {

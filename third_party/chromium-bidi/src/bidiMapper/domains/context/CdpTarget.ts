@@ -30,10 +30,9 @@ import type {RealmStorage} from '../script/RealmStorage.js';
 import type {EventManager} from '../session/EventManager.js';
 
 export class CdpTarget {
-  readonly #targetId: Protocol.Target.TargetID;
+  readonly #id: Protocol.Target.TargetID;
   readonly #cdpClient: CdpClient;
   readonly #browserCdpClient: CdpClient;
-  readonly #cdpSessionId: Protocol.Target.SessionID;
   readonly #eventManager: EventManager;
 
   readonly #preloadScriptStorage: PreloadScriptStorage;
@@ -46,7 +45,6 @@ export class CdpTarget {
     targetId: Protocol.Target.TargetID,
     cdpClient: CdpClient,
     browserCdpClient: CdpClient,
-    cdpSessionId: Protocol.Target.SessionID,
     realmStorage: RealmStorage,
     eventManager: EventManager,
     preloadScriptStorage: PreloadScriptStorage,
@@ -58,7 +56,6 @@ export class CdpTarget {
       targetId,
       cdpClient,
       browserCdpClient,
-      cdpSessionId,
       eventManager,
       preloadScriptStorage,
       networkStorage,
@@ -81,15 +78,13 @@ export class CdpTarget {
     targetId: Protocol.Target.TargetID,
     cdpClient: CdpClient,
     browserCdpClient: CdpClient,
-    cdpSessionId: Protocol.Target.SessionID,
     eventManager: EventManager,
     preloadScriptStorage: PreloadScriptStorage,
     networkStorage: NetworkStorage,
     acceptInsecureCerts: boolean
   ) {
-    this.#targetId = targetId;
+    this.#id = targetId;
     this.#cdpClient = cdpClient;
-    this.#cdpSessionId = cdpSessionId;
     this.#eventManager = eventManager;
     this.#preloadScriptStorage = preloadScriptStorage;
     this.#networkStorage = networkStorage;
@@ -97,13 +92,13 @@ export class CdpTarget {
     this.#acceptInsecureCerts = acceptInsecureCerts;
   }
 
-  /** Returns a promise that resolves when the target is unblocked. */
-  get targetUnblocked(): Deferred<Result<void>> {
+  /** Returns a deferred that resolves when the target is unblocked. */
+  get unblocked(): Deferred<Result<void>> {
     return this.#targetUnblocked;
   }
 
-  get targetId(): Protocol.Target.TargetID {
-    return this.#targetId;
+  get id(): Protocol.Target.TargetID {
+    return this.#id;
   }
 
   get cdpClient(): CdpClient {
@@ -116,7 +111,8 @@ export class CdpTarget {
 
   /** Needed for CDP escape path. */
   get cdpSessionId(): Protocol.Target.SessionID {
-    return this.#cdpSessionId;
+    // SAFETY we got the client by it's id for creating
+    return this.#cdpClient.sessionId!;
   }
 
   /** Calls `Fetch.enable` with the added network intercepts. */
@@ -191,7 +187,7 @@ export class CdpTarget {
           params: {
             event,
             params,
-            session: this.#cdpSessionId,
+            session: this.cdpSessionId,
           },
         },
         null

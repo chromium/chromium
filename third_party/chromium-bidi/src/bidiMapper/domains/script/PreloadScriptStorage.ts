@@ -19,12 +19,11 @@ import type {CdpTarget} from '../context/CdpTarget.js';
 import type {PreloadScript} from './PreloadScript.js';
 
 /** PreloadScripts can be filtered by BiDi ID or target ID. */
-export type PreloadScriptFilter = Partial<
-  Pick<PreloadScript, 'id'> &
-    Pick<CdpTarget, 'targetId'> & {
-      global: boolean;
-    }
->;
+export type PreloadScriptFilter = Partial<{
+  id: PreloadScript['id'];
+  targetId: CdpTarget['id'];
+  global: boolean;
+}>;
 
 /**
  * Container class for preload scripts.
