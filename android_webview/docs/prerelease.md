@@ -65,7 +65,7 @@ the Google Play Store.
 1. [Leave the tester program.][WebView tester program]
 2. Uninstall all updates by visiting Settings > Apps > Android System WebView >
    Three dots menu in the top right > Uninstall updates.
-3. [Visit the Play Store page][Webview PlayStore] one more time to install the
+3. [Visit the Play Store page][WebView PlayStore] one more time to install the
    latest updates to WebView stable, which will include important security
    fixes.
 
