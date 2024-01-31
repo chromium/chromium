@@ -143,6 +143,7 @@ if (use_centipede) {
       "//third_party/abseil-cpp/absl/log:check",
       "//third_party/abseil-cpp/absl/log:globals",
       "//third_party/abseil-cpp/absl/log:initialize",
+      "//third_party/boringssl",
     ]
     sources = [
       "src/centipede/analyze_corpora.cc",
@@ -185,7 +186,6 @@ if (use_centipede) {
         # Depend on fuzzing_engine so that we are automatically built in builds
         # destined for ClusterFuzz.
         "//testing/libfuzzer:fuzzing_engine",
-        "//third_party/boringssl",
       ]
     }
   }
@@ -208,10 +208,6 @@ if (use_centipede) {
       "src/centipede/environment_flags.cc",
       "src/centipede/environment_flags.h",
     ]
-    if (!build_with_chromium) {
-      # Other projects sharing fuzztest might not have boringssl.
-      ldflags = [ "-lcrypto" ]
-    }
   }
 }
 
