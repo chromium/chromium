@@ -146,28 +146,6 @@ bool SetRenderUrl(v8::Isolate* isolate,
          SetDictMember(isolate, object, "renderUrl", v8_value);
 }
 
-bool SetBiddingWasmHelperUrl(v8::Isolate* isolate,
-                             v8::Local<v8::Object> object,
-                             const std::string& val) {
-  v8::Local<v8::Value> v8_value;
-  if (!gin::TryConvertToV8(isolate, val, &v8_value)) {
-    return false;
-  }
-  return SetDictMember(isolate, object, "biddingWasmHelperURL", v8_value) &&
-         SetDictMember(isolate, object, "biddingWasmHelperUrl", v8_value);
-}
-
-bool SetTrustedBiddingSignalsUrl(v8::Isolate* isolate,
-                                 v8::Local<v8::Object> object,
-                                 const std::string& val) {
-  v8::Local<v8::Value> v8_value;
-  if (!gin::TryConvertToV8(isolate, val, &v8_value)) {
-    return false;
-  }
-  return SetDictMember(isolate, object, "trustedBiddingSignalsURL", v8_value) &&
-         SetDictMember(isolate, object, "trustedBiddingSignalsUrl", v8_value);
-}
-
 bool CanSetRequestedAdSize(
     const std::optional<blink::AdSize>& requested_ad_size) {
   return requested_ad_size.has_value() &&
@@ -1238,12 +1216,6 @@ BidderWorklet::V8State::GenerateSingleBid(
       !interest_group_dict.Set("enableBiddingSignalsPrioritization",
                                bidder_worklet_non_shared_params
                                    .enable_bidding_signals_prioritization) ||
-      (wasm_helper_url_ &&
-       !SetBiddingWasmHelperUrl(isolate, interest_group_object,
-                                wasm_helper_url_->spec())) ||
-      (trusted_bidding_signals_url_ &&
-       !SetTrustedBiddingSignalsUrl(isolate, interest_group_object,
-                                    trusted_bidding_signals_url_->spec())) ||
       !interest_group_dict.Set("executionMode", execution_mode_string) ||
       !interest_group_dict.Set(
           "trustedBiddingSignalsSlotSizeMode",
@@ -1254,7 +1226,12 @@ BidderWorklet::V8State::GenerateSingleBid(
   }
 
   context_recycler->interest_group_lazy_filler()->ReInitialize(
-      &script_source_url_, &bidder_worklet_non_shared_params);
+      &script_source_url_,
+      wasm_helper_url_.has_value() ? &wasm_helper_url_.value() : nullptr,
+      trusted_bidding_signals_url_.has_value()
+          ? &trusted_bidding_signals_url_.value()
+          : nullptr,
+      &bidder_worklet_non_shared_params);
   if (!context_recycler->interest_group_lazy_filler()->FillInObject(
           interest_group_object)) {
     return std::nullopt;

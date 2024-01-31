@@ -110,6 +110,8 @@ InterestGroupLazyFiller::InterestGroupLazyFiller(AuctionV8Helper* v8_helper,
 
 void InterestGroupLazyFiller::ReInitialize(
     const GURL* bidding_logic_url,
+    const GURL* bidding_wasm_helper_url,
+    const GURL* trusted_bidding_signals_url,
     const mojom::BidderWorkletNonSharedParams*
         bidder_worklet_non_shared_params) {
   // These two are never null.
@@ -117,6 +119,8 @@ void InterestGroupLazyFiller::ReInitialize(
   DCHECK(bidder_worklet_non_shared_params);
 
   bidding_logic_url_ = bidding_logic_url;
+  bidding_wasm_helper_url_ = bidding_wasm_helper_url;
+  trusted_bidding_signals_url_ = trusted_bidding_signals_url;
   bidder_worklet_non_shared_params_ = bidder_worklet_non_shared_params;
 }
 
@@ -131,11 +135,25 @@ bool InterestGroupLazyFiller::FillInObject(v8::Local<v8::Object> object) {
                            &HandleDeprecatedBiddingLogicUrl)) {
     return false;
   }
+  if (bidding_wasm_helper_url_ &&
+      (!DefineLazyAttribute(object, "biddingWasmHelperURL",
+                            &HandleBiddingWasmHelperUrl) ||
+       !DefineLazyAttribute(object, "biddingWasmHelperUrl",
+                            &HandleDeprecatedBiddingWasmHelperUrl))) {
+    return false;
+  }
   if (bidder_worklet_non_shared_params_->update_url &&
       (!DefineLazyAttribute(object, "updateURL", &HandleUpdateUrl) ||
        !DefineLazyAttribute(object, "updateUrl", &HandleDeprecatedUpdateUrl) ||
        !DefineLazyAttribute(object, "dailyUpdateUrl",
                             &HandleDeprecatedDailyUpdateUrl))) {
+    return false;
+  }
+  if (trusted_bidding_signals_url_ &&
+      (!DefineLazyAttribute(object, "trustedBiddingSignalsURL",
+                            &HandleTrustedBiddingSignalsUrl) ||
+       !DefineLazyAttribute(object, "trustedBiddingSignalsUrl",
+                            &HandleDeprecatedTrustedBiddingSignalsUrl))) {
     return false;
   }
   if (bidder_worklet_non_shared_params_->trusted_bidding_signals_keys &&
@@ -155,8 +173,10 @@ bool InterestGroupLazyFiller::FillInObject(v8::Local<v8::Object> object) {
 }
 
 void InterestGroupLazyFiller::Reset() {
-  bidder_worklet_non_shared_params_ = nullptr;
   bidding_logic_url_ = nullptr;
+  bidding_wasm_helper_url_ = nullptr;
+  trusted_bidding_signals_url_ = nullptr;
+  bidder_worklet_non_shared_params_ = nullptr;
 }
 
 // static
@@ -210,6 +230,34 @@ void InterestGroupLazyFiller::HandleDeprecatedBiddingLogicUrl(
 }
 
 // static
+void InterestGroupLazyFiller::HandleBiddingWasmHelperUrl(
+    v8::Local<v8::Name> name,
+    const v8::PropertyCallbackInfo<v8::Value>& info) {
+  InterestGroupLazyFiller* self = GetSelf<InterestGroupLazyFiller>(info);
+  AuctionV8Helper* v8_helper = self->v8_helper();
+  v8::Isolate* isolate = v8_helper->isolate();
+  v8::Local<v8::Value> value;
+  if (self->bidding_wasm_helper_url_ &&
+      gin::TryConvertToV8(isolate, self->bidding_wasm_helper_url_->spec(),
+                          &value)) {
+    SetResult(info, value);
+  } else {
+    SetResult(info, v8::Null(isolate));
+  }
+}
+
+// static
+void InterestGroupLazyFiller::HandleDeprecatedBiddingWasmHelperUrl(
+    v8::Local<v8::Name> name,
+    const v8::PropertyCallbackInfo<v8::Value>& info) {
+  InterestGroupLazyFiller* self = GetSelf<InterestGroupLazyFiller>(info);
+  self->v8_logger_->LogConsoleWarning(
+      "interestGroup.biddingWasmHelperUrl is deprecated."
+      " Please use interestGroup.biddingWasmHelperURL instead.");
+  return HandleBiddingWasmHelperUrl(name, info);
+}
+
+// static
 void InterestGroupLazyFiller::HandleUpdateUrl(
     v8::Local<v8::Name> name,
     const v8::PropertyCallbackInfo<v8::Value>& info) {
@@ -248,6 +296,34 @@ void InterestGroupLazyFiller::HandleDeprecatedDailyUpdateUrl(
       "interestGroup.dailyUpdateUrl is deprecated."
       " Please use interestGroup.updateURL instead.");
   return HandleUpdateUrl(name, info);
+}
+
+// static
+void InterestGroupLazyFiller::HandleTrustedBiddingSignalsUrl(
+    v8::Local<v8::Name> name,
+    const v8::PropertyCallbackInfo<v8::Value>& info) {
+  InterestGroupLazyFiller* self = GetSelf<InterestGroupLazyFiller>(info);
+  AuctionV8Helper* v8_helper = self->v8_helper();
+  v8::Isolate* isolate = v8_helper->isolate();
+  v8::Local<v8::Value> value;
+  if (self->trusted_bidding_signals_url_ &&
+      gin::TryConvertToV8(isolate, self->trusted_bidding_signals_url_->spec(),
+                          &value)) {
+    SetResult(info, value);
+  } else {
+    SetResult(info, v8::Null(isolate));
+  }
+}
+
+// static
+void InterestGroupLazyFiller::HandleDeprecatedTrustedBiddingSignalsUrl(
+    v8::Local<v8::Name> name,
+    const v8::PropertyCallbackInfo<v8::Value>& info) {
+  InterestGroupLazyFiller* self = GetSelf<InterestGroupLazyFiller>(info);
+  self->v8_logger_->LogConsoleWarning(
+      "interestGroup.trustedBiddingSignalsUrl is deprecated."
+      " Please use interestGroup.trustedBiddingSignalsURL instead.");
+  return HandleTrustedBiddingSignalsUrl(name, info);
 }
 
 // static

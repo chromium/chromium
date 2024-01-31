@@ -2693,36 +2693,94 @@ TEST_F(BidderWorkletTest, GenerateBidInterestGroupBiddingWasmHelperUrl) {
           /*modeling_signals=*/std::nullopt, base::TimeDelta()));
 }
 
-// TODO(crbug.com/1441988): Remove once rename is complete.
-TEST_F(BidderWorkletTest,
-       GenerateBidInterestGroupBiddingWasmHelperUrlDeprecatedName) {
-  const std::string kGenerateBidBody =
-      R"({ad: "biddingWasmHelperUrl" in interestGroup ?
-            interestGroup.biddingWasmHelperUrl : "missing",
-        bid:1,
-        render:"https://response.test/"})";
+// Check that accessing `biddingWasmHelperUrl` displays a warning.
+//
+// TODO(https://crbug.com/1432707): Remove this test when the field itself is
+// removed.
+TEST_F(BidderWorkletTest, BiddingWasmHelperUrlDeprecationWarning) {
+  ScopedInspectorSupport inspector_support(v8_helper_.get());
 
-  RunGenerateBidWithReturnValueExpectingResult(
-      kGenerateBidBody,
-      mojom::BidderWorkletBid::New(
-          R"("missing")", 1, /*bid_currency=*/std::nullopt,
-          /*ad_cost=*/std::nullopt,
-          blink::AdDescriptor(GURL("https://response.test/")),
-          /*ad_component_descriptors=*/std::nullopt,
-          /*modeling_signals=*/std::nullopt, base::TimeDelta()));
+  AddJavascriptResponse(
+      &url_loader_factory_, interest_group_bidding_url_,
+      CreateGenerateBidScript(
+          R"({ad: ["ad"], bid:1, render:"https://response.test/"})",
+          "if (!interestGroup.biddingWasmHelperUrl) return;"));
 
   interest_group_wasm_url_ = GURL(kWasmUrl);
+  // Need a valid WASM response to avoid a hang, and for the script to run.
   AddResponse(&url_loader_factory_, GURL(kWasmUrl), kWasmMimeType,
               /*charset=*/std::nullopt, ToyWasm());
-  RunGenerateBidWithReturnValueExpectingResult(
-      kGenerateBidBody,
-      mojom::BidderWorkletBid::New(
-          R"("https://foo.test/helper.wasm")", 1,
-          /*bid_currency=*/std::nullopt,
-          /*ad_cost=*/std::nullopt,
-          blink::AdDescriptor(GURL("https://response.test/")),
-          /*ad_component_descriptors=*/std::nullopt,
-          /*modeling_signals=*/std::nullopt, base::TimeDelta()));
+
+  BidderWorklet* worklet_impl;
+  auto worklet =
+      CreateWorklet(interest_group_bidding_url_,
+                    /*pause_for_debugger_on_start=*/false, &worklet_impl);
+
+  int id = worklet_impl->context_group_id_for_testing();
+  TestChannel* channel =
+      inspector_support.ConnectDebuggerSessionAndRuntimeEnable(id);
+
+  load_script_run_loop_ = std::make_unique<base::RunLoop>();
+  GenerateBid(worklet.get());
+  load_script_run_loop_->Run();
+  channel->WaitForAndValidateConsoleMessage(
+      "warning", /*json_args=*/
+      "[{\"type\":\"string\", "
+      "\"value\":\"interestGroup.biddingWasmHelperUrl is deprecated. Please "
+      "use interestGroup.biddingWasmHelperURL instead.\"}]",
+      /*stack_trace_size=*/1, /*function=*/"generateBid",
+      interest_group_bidding_url_, /*line_number=*/4);
+
+  ASSERT_TRUE(bid_);
+  EXPECT_EQ(1, bid_->bid);
+  bid_.reset();
+  load_script_run_loop_.reset();
+}
+
+// Check that accessing `biddingWasmHelperURL` does not display a warning.
+//
+// TODO(https://crbug.com/1432707): Remove this test when `biddingWasmHelperUrl`
+// is removed.
+TEST_F(BidderWorkletTest, BiddingWasmHelperUrlNoDeprecationWarning) {
+  ScopedInspectorSupport inspector_support(v8_helper_.get());
+
+  AddJavascriptResponse(
+      &url_loader_factory_, interest_group_bidding_url_,
+      CreateGenerateBidScript(
+          R"({ad: ["ad"], bid:1, render:"https://response.test/"})",
+          "if (!interestGroup.biddingWasmHelperURL) return;"));
+
+  interest_group_wasm_url_ = GURL(kWasmUrl);
+  // Need a valid WASM response to avoid a hang, and for the script to run.
+  AddResponse(&url_loader_factory_, GURL(kWasmUrl), kWasmMimeType,
+              /*charset=*/std::nullopt, ToyWasm());
+
+  BidderWorklet* worklet_impl;
+  auto worklet =
+      CreateWorklet(interest_group_bidding_url_,
+                    /*pause_for_debugger_on_start=*/false, &worklet_impl);
+
+  int id = worklet_impl->context_group_id_for_testing();
+  TestChannel* channel =
+      inspector_support.ConnectDebuggerSessionAndRuntimeEnable(id);
+
+  load_script_run_loop_ = std::make_unique<base::RunLoop>();
+  GenerateBid(worklet.get());
+  load_script_run_loop_->Run();
+
+  ASSERT_TRUE(bid_);
+  EXPECT_EQ(1, bid_->bid);
+
+  // Make sure all events have been received.
+  task_environment_.RunUntilIdle();
+
+  std::list<TestChannel::Event> events = channel->TakeAllEvents();
+  for (const auto& event : events) {
+    if (event.type == TestChannel::Event::Type::Notification) {
+      EXPECT_NE(*event.value.GetDict().FindString("method"),
+                "Runtime.consoleAPICalled");
+    }
+  }
 }
 
 TEST_F(BidderWorkletTest, GenerateBidInterestGroupUpdateUrl) {
@@ -2937,6 +2995,104 @@ TEST_F(BidderWorkletTest, GenerateBidInterestGroupTrustedBiddingSignalsUrl) {
           blink::AdDescriptor(GURL("https://response.test/")),
           /*ad_component_descriptors=*/std::nullopt,
           /*modeling_signals=*/std::nullopt, base::TimeDelta()));
+}
+
+// Check that accessing `trustedBiddingSignalsUrl` displays a warning.
+//
+// TODO(https://crbug.com/1432707): Remove this test when the field itself is
+// removed.
+TEST_F(BidderWorkletTest, TrustedBiddingSignalsUrlDeprecationWarning) {
+  ScopedInspectorSupport inspector_support(v8_helper_.get());
+
+  AddJavascriptResponse(
+      &url_loader_factory_, interest_group_bidding_url_,
+      CreateGenerateBidScript(
+          R"({ad: ["ad"], bid:1, render:"https://response.test/"})",
+          "if (!interestGroup.trustedBiddingSignalsUrl) return;"));
+
+  interest_group_trusted_bidding_signals_url_ =
+      GURL("https://url.test/trusted_signals");
+  // Need trusted signals response to prevent a hang.
+  AddBidderJsonResponse(
+      &url_loader_factory_,
+      GURL(interest_group_trusted_bidding_signals_url_->spec() +
+           "?hostname=top.window.test&interestGroupNames=Fred"),
+      "{}");
+
+  BidderWorklet* worklet_impl;
+  auto worklet =
+      CreateWorklet(interest_group_bidding_url_,
+                    /*pause_for_debugger_on_start=*/false, &worklet_impl);
+
+  int id = worklet_impl->context_group_id_for_testing();
+  TestChannel* channel =
+      inspector_support.ConnectDebuggerSessionAndRuntimeEnable(id);
+
+  load_script_run_loop_ = std::make_unique<base::RunLoop>();
+  GenerateBid(worklet.get());
+  load_script_run_loop_->Run();
+  channel->WaitForAndValidateConsoleMessage(
+      "warning", /*json_args=*/
+      "[{\"type\":\"string\", "
+      "\"value\":\"interestGroup.trustedBiddingSignalsUrl is deprecated. "
+      "Please use interestGroup.trustedBiddingSignalsURL instead.\"}]",
+      /*stack_trace_size=*/1, /*function=*/"generateBid",
+      interest_group_bidding_url_, /*line_number=*/4);
+
+  ASSERT_TRUE(bid_);
+  EXPECT_EQ(1, bid_->bid);
+  bid_.reset();
+  load_script_run_loop_.reset();
+}
+
+// Check that accessing `TrustedBiddingSignalsURL` does not display a warning.
+//
+// TODO(https://crbug.com/1432707): Remove this test when
+// `trustedBiddingSignalsUrl` is removed.
+TEST_F(BidderWorkletTest, TrustedBiddingSignalsUrlNoDeprecationWarning) {
+  ScopedInspectorSupport inspector_support(v8_helper_.get());
+
+  AddJavascriptResponse(
+      &url_loader_factory_, interest_group_bidding_url_,
+      CreateGenerateBidScript(
+          R"({ad: ["ad"], bid:1, render:"https://response.test/"})",
+          "if (!interestGroup.trustedBiddingSignalsURL) return;"));
+
+  interest_group_trusted_bidding_signals_url_ =
+      GURL("https://url.test/trusted_signals");
+  // Need trusted signals response to prevent a hang.
+  AddBidderJsonResponse(
+      &url_loader_factory_,
+      GURL(interest_group_trusted_bidding_signals_url_->spec() +
+           "?hostname=top.window.test&interestGroupNames=Fred"),
+      "{}");
+
+  BidderWorklet* worklet_impl;
+  auto worklet =
+      CreateWorklet(interest_group_bidding_url_,
+                    /*pause_for_debugger_on_start=*/false, &worklet_impl);
+
+  int id = worklet_impl->context_group_id_for_testing();
+  TestChannel* channel =
+      inspector_support.ConnectDebuggerSessionAndRuntimeEnable(id);
+
+  load_script_run_loop_ = std::make_unique<base::RunLoop>();
+  GenerateBid(worklet.get());
+  load_script_run_loop_->Run();
+
+  ASSERT_TRUE(bid_);
+  EXPECT_EQ(1, bid_->bid);
+
+  // Make sure all events have been received.
+  task_environment_.RunUntilIdle();
+
+  std::list<TestChannel::Event> events = channel->TakeAllEvents();
+  for (const auto& event : events) {
+    if (event.type == TestChannel::Event::Type::Notification) {
+      EXPECT_NE(*event.value.GetDict().FindString("method"),
+                "Runtime.consoleAPICalled");
+    }
+  }
 }
 
 TEST_F(BidderWorkletTest, GenerateBidInterestGroupTrustedBiddingSignalsKeys) {

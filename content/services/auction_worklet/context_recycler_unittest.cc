@@ -129,13 +129,17 @@ class ContextRecyclerTest : public testing::Test {
   // Either way, the script serializes the stashed object to JSON, which is
   // compared to `expected_result`.
   //
-  // The same `bidding_logic_url` is used for both runs, since that doesn't
+  // The same hard-coded `bidding_logic_url`, `bidding_wasm_helper_url`, and
+  // 'trusted_bidding_signals_url` are used for both runs, since that doesn't
   // change across runs, in production code.
   void RunBidderLazyFilterReuseTest(
       mojom::BidderWorkletNonSharedParams* ig_params,
       mojom::BiddingBrowserSignals* bs_params,
       base::Time now,
       std::string_view expected_result) {
+    const GURL kBiddingSignalsWasmHelperUrl("https://example.org/wasm_helper");
+    const GURL kTrustedBiddingSignalsUrl("https://example.org/trusted_signals");
+
     const char kScript[] = R"(
       function test(obj) {
         if (!globalThis.stash) {
@@ -182,7 +186,8 @@ class ContextRecyclerTest : public testing::Test {
 
       ContextRecyclerScope scope(context_recycler);
       context_recycler.interest_group_lazy_filler()->ReInitialize(
-          &bidding_logic_url_, ig_params2.get());
+          &bidding_logic_url_, &kBiddingSignalsWasmHelperUrl,
+          &kTrustedBiddingSignalsUrl, ig_params2.get());
       context_recycler.bidding_browser_signals_lazy_filler()->ReInitialize(
           bs_params2.get(), now2);
 
@@ -199,7 +204,8 @@ class ContextRecyclerTest : public testing::Test {
       ContextRecyclerScope scope(context_recycler);
       if (ig_params) {
         context_recycler.interest_group_lazy_filler()->ReInitialize(
-            &bidding_logic_url_, ig_params);
+            &bidding_logic_url_, &kBiddingSignalsWasmHelperUrl,
+            &kTrustedBiddingSignalsUrl, ig_params);
       }
       if (bs_params) {
         context_recycler.bidding_browser_signals_lazy_filler()->ReInitialize(
@@ -913,9 +919,13 @@ TEST_F(ContextRecyclerTest, BidderLazyFiller) {
       "{\"userBiddingSignals\":{\"k\":2},"
       "\"biddingLogicURL\":\"https://example.org/script.js\","
       "\"biddingLogicUrl\":\"https://example.org/script.js\","
+      "\"biddingWasmHelperURL\":\"https://example.org/wasm_helper\","
+      "\"biddingWasmHelperUrl\":\"https://example.org/wasm_helper\","
       "\"updateURL\":\"https://example.org/update2.json\","
       "\"updateUrl\":\"https://example.org/update2.json\","
       "\"dailyUpdateUrl\":\"https://example.org/update2.json\","
+      "\"trustedBiddingSignalsURL\":\"https://example.org/trusted_signals\","
+      "\"trustedBiddingSignalsUrl\":\"https://example.org/trusted_signals\","
       "\"trustedBiddingSignalsKeys\":[\"c\",\"d\"],"
       "\"priorityVector\":{\"e\":12},"
       "\"useBiddingSignalsPrioritization\":true,"
@@ -941,9 +951,13 @@ TEST_F(ContextRecyclerTest, BidderLazyFiller2) {
       "{\"userBiddingSignals\":null,"
       "\"biddingLogicURL\":\"https://example.org/script.js\","
       "\"biddingLogicUrl\":\"https://example.org/script.js\","
+      "\"biddingWasmHelperURL\":\"https://example.org/wasm_helper\","
+      "\"biddingWasmHelperUrl\":\"https://example.org/wasm_helper\","
       "\"updateURL\":null,"
       "\"updateUrl\":null,"
       "\"dailyUpdateUrl\":null,"
+      "\"trustedBiddingSignalsURL\":\"https://example.org/trusted_signals\","
+      "\"trustedBiddingSignalsUrl\":\"https://example.org/trusted_signals\","
       "\"trustedBiddingSignalsKeys\":null,"
       "\"priorityVector\":null,"
       "\"useBiddingSignalsPrioritization\":false,"
@@ -963,9 +977,13 @@ TEST_F(ContextRecyclerTest, BidderLazyFiller3) {
                                "{\"userBiddingSignals\":null,"
                                "\"biddingLogicURL\":null,"
                                "\"biddingLogicUrl\":null,"
+                               "\"biddingWasmHelperURL\":null,"
+                               "\"biddingWasmHelperUrl\":null,"
                                "\"updateURL\":null,"
                                "\"updateUrl\":null,"
                                "\"dailyUpdateUrl\":null,"
+                               "\"trustedBiddingSignalsURL\":null,"
+                               "\"trustedBiddingSignalsUrl\":null,"
                                "\"trustedBiddingSignalsKeys\":null,"
                                "\"priorityVector\":null,"
                                "\"useBiddingSignalsPrioritization\":null,"
