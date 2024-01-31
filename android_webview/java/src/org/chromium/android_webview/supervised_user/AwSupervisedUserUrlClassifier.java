@@ -14,6 +14,7 @@ import org.chromium.android_webview.AwFeatureMap;
 import org.chromium.android_webview.common.AwFeatures;
 import org.chromium.android_webview.common.AwSupervisedUserUrlClassifierDelegate;
 import org.chromium.android_webview.common.PlatformServiceBridge;
+import org.chromium.base.ContextUtils;
 import org.chromium.url.GURL;
 
 /**
@@ -44,6 +45,10 @@ public class AwSupervisedUserUrlClassifier {
     }
 
     public static AwSupervisedUserUrlClassifier getInstance() {
+        // Supervised user filters currently do not function in the SDK sandbox.
+        // See https://crbug.com/1523530.
+        if (ContextUtils.isSdkSandboxProcess()) return null;
+
         synchronized (sInstanceLock) {
             if (!sInitialized) {
                 if (AwFeatureMap.isEnabled(AwFeatures.WEBVIEW_SUPERVISED_USER_SITE_DETECTION)
