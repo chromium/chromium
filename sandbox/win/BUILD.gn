@@ -57,7 +57,6 @@ static_library("sandbox") {
     "src/filesystem_interception.h",
     "src/filesystem_policy.cc",
     "src/filesystem_policy.h",
-    "src/handle_closer.cc",
     "src/handle_closer.h",
     "src/handle_closer_agent.cc",
     "src/handle_closer_agent.h",

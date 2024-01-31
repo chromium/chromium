@@ -8,8 +8,6 @@
 #include <stddef.h>
 
 #include "sandbox/win/src/interception.h"
-#include "sandbox/win/src/sandbox_policy.h"
-#include "sandbox/win/src/sandbox_types.h"
 #include "sandbox/win/src/target_process.h"
 
 namespace sandbox {
@@ -24,28 +22,6 @@ struct HandleCloserConfig {
 };
 
 SANDBOX_INTERCEPT HandleCloserConfig g_handle_closer_info;
-
-// Holds configuration for handles to close after lockdown.
-class HandleCloser {
- public:
-  HandleCloser() = default;
-  ~HandleCloser() = default;
-
-  HandleCloser(const HandleCloser&) = delete;
-  HandleCloser& operator=(const HandleCloser&) = delete;
-
-  void AddHandle(HandleToClose handle_to_close);
-
-  // Copies handle closer configuration into the target.
-  // Note: this can be called multiple times for different targets.
-  bool InitializeTargetHandles(TargetProcess& target);
-
- private:
-  // Allow PolicyInfo to snapshot HandleCloser for diagnostics.
-  friend class PolicyDiagnostic;
-
-  HandleCloserConfig handles_to_close_;
-};
 
 }  // namespace sandbox
 

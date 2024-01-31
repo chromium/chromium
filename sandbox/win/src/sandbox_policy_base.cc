@@ -153,6 +153,7 @@ ConfigBase::ConfigBase() noexcept
       desktop_(Desktop::kDefault),
       filter_environment_(false),
       zero_appshim_(false),
+      handle_closer_(0),
       policy_maker_(nullptr),
       policy_(nullptr) {
 }
@@ -409,9 +410,21 @@ void ConfigBase::SetJobMemoryLimit(size_t memory_limit) {
 
 void ConfigBase::AddKernelObjectToClose(HandleToClose handle_info) {
   DCHECK(!configured_);
-  if (!handle_closer_)
-    handle_closer_ = std::make_unique<HandleCloser>();
-  handle_closer_->AddHandle(handle_info);
+  handle_closer_.handle_closer_enabled = true;
+  switch (handle_info) {
+    case HandleToClose::kWindowsShellGlobalCounters:
+      handle_closer_.section_windows_global_shell_counters = true;
+      break;
+    case HandleToClose::kDeviceApi:
+      handle_closer_.file_device_api = true;
+      break;
+    case HandleToClose::kKsecDD:
+      handle_closer_.file_ksecdd = true;
+      break;
+    case HandleToClose::kDisconnectCsrss:
+      handle_closer_.disconnect_csrss = true;
+      break;
+  }
 }
 
 void ConfigBase::SetDisconnectCsrss() {
@@ -747,10 +760,18 @@ ResultCode PolicyBase::SetupAllInterceptions(TargetProcess& target) {
 }
 
 bool PolicyBase::SetupHandleCloser(TargetProcess& target) {
-  auto* handle_closer = config()->handle_closer();
-  if (!handle_closer)
+  const HandleCloserConfig& handle_closer = config()->handle_closer();
+  // Do nothing on an empty list (target's config already initialized to zero).
+  if (!handle_closer.handle_closer_enabled) {
     return true;
-  return handle_closer->InitializeTargetHandles(target);
+  }
+
+  static_assert(sizeof(g_handle_closer_info) == sizeof(handle_closer));
+  ResultCode rc = target.TransferVariable("g_handle_closer_info",
+                                          &handle_closer, &g_handle_closer_info,
+                                          sizeof(g_handle_closer_info));
+
+  return (SBOX_ALL_OK == rc);
 }
 
 std::optional<base::span<const uint8_t>> PolicyBase::delegate_data_span() {

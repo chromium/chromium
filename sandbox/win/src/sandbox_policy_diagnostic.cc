@@ -404,10 +404,7 @@ PolicyDiagnostic::PolicyDiagnostic(PolicyBase* policy) {
   }
   is_csrss_connected_ = config->is_csrss_connected();
   zero_appshim_ = config->zero_appshim();
-  auto* handle_closer = config->handle_closer();
-  if (handle_closer) {
-    handles_to_close_ = handle_closer->handles_to_close_;
-  }
+  handles_to_close_ = config->handle_closer();
 }
 
 PolicyDiagnostic::~PolicyDiagnostic() = default;
