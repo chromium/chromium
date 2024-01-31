@@ -1284,10 +1284,16 @@ TEST_P(PartitionAllocTest, AllocGetSizeAndStart) {
       allocator.root()->AllocationCapacityFromSlotStart(slot_start);
   EXPECT_EQ(predicted_capacity, actual_capacity);
   EXPECT_LT(requested_size, actual_capacity);
-  for (size_t offset = 0; offset < requested_size; ++offset) {
-    EXPECT_EQ(PartitionAllocGetSlotStartAndSize(UntagPtr(ptr) + offset).first,
-              slot_start);
+#if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+  if (UseBRPPool()) {
+    uintptr_t address = UntagPtr(ptr);
+    for (size_t offset = 0; offset < requested_size; ++offset) {
+      EXPECT_EQ(
+          PartitionAllocGetSlotStartAndSizeInBRPPool(address + offset).first,
+          slot_start);
+    }
   }
+#endif  // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
   allocator.root()->Free(ptr);
 
   // Allocate a size that should be a perfect match for a bucket, because it
@@ -1302,10 +1308,16 @@ TEST_P(PartitionAllocTest, AllocGetSizeAndStart) {
       allocator.root()->AllocationCapacityFromSlotStart(slot_start);
   EXPECT_EQ(predicted_capacity, actual_capacity);
   EXPECT_EQ(requested_size, actual_capacity);
-  for (size_t offset = 0; offset < requested_size; offset += 877) {
-    EXPECT_EQ(PartitionAllocGetSlotStartAndSize(UntagPtr(ptr) + offset).first,
-              slot_start);
+#if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+  if (UseBRPPool()) {
+    uintptr_t address = UntagPtr(ptr);
+    for (size_t offset = 0; offset < requested_size; offset += 877) {
+      EXPECT_EQ(
+          PartitionAllocGetSlotStartAndSizeInBRPPool(address + offset).first,
+          slot_start);
+    }
   }
+#endif  // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
   allocator.root()->Free(ptr);
 
   // Allocate a size that is a system page smaller than a bucket.
@@ -1326,10 +1338,16 @@ TEST_P(PartitionAllocTest, AllocGetSizeAndStart) {
       allocator.root()->AllocationCapacityFromSlotStart(slot_start);
   EXPECT_EQ(predicted_capacity, actual_capacity);
   EXPECT_EQ(requested_size + SystemPageSize(), actual_capacity);
-  for (size_t offset = 0; offset < requested_size; offset += 4999) {
-    EXPECT_EQ(PartitionAllocGetSlotStartAndSize(UntagPtr(ptr) + offset).first,
-              slot_start);
+#if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+  if (UseBRPPool()) {
+    uintptr_t address = UntagPtr(ptr);
+    for (size_t offset = 0; offset < requested_size; offset += 4999) {
+      EXPECT_EQ(
+          PartitionAllocGetSlotStartAndSizeInBRPPool(address + offset).first,
+          slot_start);
+    }
   }
+#endif  // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
   allocator.root()->Free(ptr);
 
   // Allocate the maximum allowed bucketed size.
@@ -1343,10 +1361,16 @@ TEST_P(PartitionAllocTest, AllocGetSizeAndStart) {
       allocator.root()->AllocationCapacityFromSlotStart(slot_start);
   EXPECT_EQ(predicted_capacity, actual_capacity);
   EXPECT_EQ(requested_size, actual_capacity);
-  for (size_t offset = 0; offset < requested_size; offset += 4999) {
-    EXPECT_EQ(PartitionAllocGetSlotStartAndSize(UntagPtr(ptr) + offset).first,
-              slot_start);
+#if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+  if (UseBRPPool()) {
+    uintptr_t address = UntagPtr(ptr);
+    for (size_t offset = 0; offset < requested_size; offset += 4999) {
+      EXPECT_EQ(
+          PartitionAllocGetSlotStartAndSizeInBRPPool(address + offset).first,
+          slot_start);
+    }
   }
+#endif  // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
 
   // Check that we can write at the end of the reported size too.
   char* char_ptr = static_cast<char*>(ptr);
@@ -1367,11 +1391,16 @@ TEST_P(PartitionAllocTest, AllocGetSizeAndStart) {
 
     EXPECT_LT(requested_size, actual_capacity);
 
+#if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+    if (UseBRPPool()) {
+      uintptr_t address = UntagPtr(ptr);
       for (size_t offset = 0; offset < requested_size; offset += 16111) {
         EXPECT_EQ(
-            PartitionAllocGetSlotStartAndSize(UntagPtr(ptr) + offset).first,
+            PartitionAllocGetSlotStartAndSizeInBRPPool(address + offset).first,
             slot_start);
       }
+    }
+#endif  // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
     allocator.root()->Free(ptr);
   }
 
@@ -1423,7 +1452,12 @@ TEST_P(PartitionAllocTest, MTEProtectsFreedPtr) {
 }
 #endif  // BUILDFLAG(HAS_MEMORY_TAGGING)
 
+#if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
 TEST_P(PartitionAllocTest, IsPtrWithinSameAlloc) {
+  if (!UseBRPPool()) {
+    return;
+  }
+
   const size_t kMinReasonableTestSize =
       partition_alloc::internal::base::bits::AlignUp(
           ExtraAllocSize(allocator) + 1, kAlignment);
@@ -1563,6 +1597,10 @@ TEST_P(PartitionAllocTest, IsPtrWithinSameAlloc) {
 }
 
 TEST_P(PartitionAllocTest, GetSlotStartMultiplePages) {
+  if (!UseBRPPool()) {
+    return;
+  }
+
   auto* root = allocator.root();
   // Find the smallest bucket with multiple PartitionPages. When searching for
   // a bucket here, we need to check two conditions:
@@ -1604,16 +1642,19 @@ TEST_P(PartitionAllocTest, GetSlotStartMultiplePages) {
     ptrs.push_back(allocator.root()->Alloc(requested_size, type_name));
   }
   for (void* ptr : ptrs) {
+    uintptr_t address = UntagPtr(ptr);
     uintptr_t slot_start = allocator.root()->ObjectToSlotStart(ptr);
     EXPECT_EQ(allocator.root()->AllocationCapacityFromSlotStart(slot_start),
               requested_size);
     for (size_t offset = 0; offset < requested_size; offset += 13) {
-      EXPECT_EQ(PartitionAllocGetSlotStartAndSize(UntagPtr(ptr) + offset).first,
-                slot_start);
+      EXPECT_EQ(
+          PartitionAllocGetSlotStartAndSizeInBRPPool(address + offset).first,
+          slot_start);
     }
     allocator.root()->Free(ptr);
   }
 }
+#endif  // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
 
 // Test the realloc() contract.
 TEST_P(PartitionAllocTest, Realloc) {

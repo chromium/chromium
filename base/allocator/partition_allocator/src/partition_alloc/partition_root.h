@@ -1100,15 +1100,17 @@ class ScopedSyscallTimer {
 #endif
 };
 
+#if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+
 PA_ALWAYS_INLINE std::pair<uintptr_t, size_t>
-PartitionAllocGetDirectMapSlotStartAndSize(uintptr_t address) {
-  PA_DCHECK(IsManagedByPartitionAlloc(address));
+PartitionAllocGetDirectMapSlotStartAndSizeInBRPPool(uintptr_t address) {
+  PA_DCHECK(IsManagedByPartitionAllocBRPPool(address));
 #if BUILDFLAG(HAS_64_BIT_POINTERS)
-  PartitionAddressSpace::PoolInfo pool_info = GetPoolInfo(address);
   // Use this variant of GetDirectMapReservationStart as it has better
   // performance.
+  uintptr_t offset = OffsetInBRPPool(address);
   uintptr_t reservation_start =
-      GetDirectMapReservationStart(address, pool_info.handle, pool_info.offset);
+      GetDirectMapReservationStart(address, kBRPPoolHandle, offset);
 #else  // BUILDFLAG(HAS_64_BIT_POINTERS)
   uintptr_t reservation_start = GetDirectMapReservationStart(address);
 #endif
@@ -1144,17 +1146,29 @@ PartitionAllocGetDirectMapSlotStartAndSize(uintptr_t address) {
 // Gets the start address and size of the allocated slot. The input |address|
 // can point anywhere in the slot, including the slot start as well as
 // immediately past the slot.
-PA_ALWAYS_INLINE std::pair<uintptr_t, size_t> PartitionAllocGetSlotStartAndSize(
-    uintptr_t address) {
+//
+// This isn't a general purpose function, it is used specifically for obtaining
+// BackupRefPtr's ref-count. The caller is responsible for ensuring that the
+// ref-count is in place for this allocation.
+PA_ALWAYS_INLINE std::pair<uintptr_t, size_t>
+PartitionAllocGetSlotStartAndSizeInBRPPool(uintptr_t address) {
   PA_DCHECK(IsManagedByNormalBucketsOrDirectMap(address));
+  DCheckIfManagedByPartitionAllocBRPPool(address);
 
   auto directmap_slot_info =
-      PartitionAllocGetDirectMapSlotStartAndSize(address);
+      PartitionAllocGetDirectMapSlotStartAndSizeInBRPPool(address);
   if (PA_UNLIKELY(directmap_slot_info.first)) {
     return directmap_slot_info;
   }
 
   auto* slot_span = SlotSpanMetadata::FromAddr(address);
+#if BUILDFLAG(PA_DCHECK_IS_ON)
+  auto* root = PartitionRoot::FromSlotSpanMetadata(slot_span);
+  // Double check that ref-count is indeed present.
+  PA_DCHECK(root->brp_enabled());
+#endif  // BUILDFLAG(PA_DCHECK_IS_ON)
+
+  // Get the offset from the beginning of the slot span.
   uintptr_t slot_span_start = SlotSpanMetadata::ToSlotSpanStart(slot_span);
   size_t offset_in_slot_span = address - slot_span_start;
 
@@ -1187,12 +1201,14 @@ enum class PtrPosWithinAlloc {
 // which may be the type the allocation is holding or a compatible pointer type
 // such as a base class or char*. It is used to detect pointers near the end of
 // the allocation but not strictly beyond it.
+//
+// This isn't a general purpose function. The caller is responsible for ensuring
+// that the ref-count is in place for this allocation.
 PA_COMPONENT_EXPORT(PARTITION_ALLOC)
 PtrPosWithinAlloc IsPtrWithinSameAlloc(uintptr_t orig_address,
                                        uintptr_t test_address,
                                        size_t type_size);
 
-#if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
 PA_ALWAYS_INLINE void PartitionAllocFreeForRefCounting(uintptr_t slot_start) {
   auto* slot_span = SlotSpanMetadata::FromSlotStart(slot_start);
   auto* root = PartitionRoot::FromSlotSpanMetadata(slot_span);
@@ -1955,7 +1971,7 @@ PartitionRoot::GetUsableSizeWithMac11MallocSizeHack(void* ptr) {
                   usable_size ==
                       root->settings.mac11_malloc_size_hack_usable_size_)) {
     auto [slot_start, slot_size] =
-        internal::PartitionAllocGetSlotStartAndSize(UntagPtr(ptr));
+        internal::PartitionAllocGetSlotStartAndSizeInBRPPool(UntagPtr(ptr));
     auto* ref_count =
         RefCountPointerFromSlotStartAndSize(slot_start, slot_size);
     if (ref_count->NeedsMac11MallocSizeHack()) {
@@ -2565,7 +2581,7 @@ EXPORT_TEMPLATE void* PartitionRoot::AlignedAlloc<AllocFlags::kNone>(size_t,
 #if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
 // Usage in `raw_ptr_backup_ref_impl.cc` is notable enough to merit a
 // non-internal alias.
-using ::partition_alloc::internal::PartitionAllocGetSlotStartAndSize;
+using ::partition_alloc::internal::PartitionAllocGetSlotStartAndSizeInBRPPool;
 #endif  // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
 
 #if BUILDFLAG(IS_APPLE) && BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)

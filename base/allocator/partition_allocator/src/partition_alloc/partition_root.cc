@@ -64,12 +64,15 @@ void RecordAllocOrFree(uintptr_t addr, size_t size) {
 }
 #endif  // BUILDFLAG(RECORD_ALLOC_INFO)
 
+#if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
 PtrPosWithinAlloc IsPtrWithinSameAlloc(uintptr_t orig_address,
                                        uintptr_t test_address,
                                        size_t type_size) {
   PA_DCHECK(IsManagedByNormalBucketsOrDirectMap(orig_address));
+  DCheckIfManagedByPartitionAllocBRPPool(orig_address);
 
-  auto [slot_start, _] = PartitionAllocGetSlotStartAndSize(orig_address);
+  auto [slot_start, _] =
+      PartitionAllocGetSlotStartAndSizeInBRPPool(orig_address);
   // Don't use |orig_address| beyond this point at all. It was needed to
   // pick the right slot, but now we're dealing with very concrete addresses.
   // Zero it just in case, to catch errors.
@@ -77,6 +80,8 @@ PtrPosWithinAlloc IsPtrWithinSameAlloc(uintptr_t orig_address,
 
   auto* slot_span = SlotSpanMetadata::FromSlotStart(slot_start);
   auto* root = PartitionRoot::FromSlotSpanMetadata(slot_span);
+  // Double check that ref-count is indeed present.
+  PA_DCHECK(root->brp_enabled());
 
   uintptr_t object_addr = root->SlotStartToObjectAddr(slot_start);
   uintptr_t object_end = object_addr + root->GetSlotUsableSize(slot_span);
@@ -92,6 +97,7 @@ PtrPosWithinAlloc IsPtrWithinSameAlloc(uintptr_t orig_address,
     return PtrPosWithinAlloc::kInBounds;
   }
 }
+#endif  // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
 
 }  // namespace partition_alloc::internal
 

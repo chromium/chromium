@@ -56,7 +56,7 @@ void InstanceTracer::TraceImpl(uint64_t owner_id,
                                uintptr_t address) {
   PA_CHECK(owner_id);
   const std::pair<uintptr_t, size_t> slot_and_size =
-      partition_alloc::PartitionAllocGetSlotStartAndSize(address);
+      partition_alloc::PartitionAllocGetSlotStartAndSizeInBRPPool(address);
   const uintptr_t slot_count = reinterpret_cast<uintptr_t>(
       partition_alloc::PartitionRoot::RefCountPointerFromSlotStartAndSize(
           slot_and_size.first, slot_and_size.second));
@@ -86,7 +86,7 @@ InstanceTracer::GetStackTracesForDanglingRefs(uintptr_t allocation) {
 std::vector<std::array<const void*, 32>>
 InstanceTracer::GetStackTracesForAddressForTest(const void* address) {
   const std::pair<uintptr_t, size_t> slot_and_size =
-      partition_alloc::PartitionAllocGetSlotStartAndSize(
+      partition_alloc::PartitionAllocGetSlotStartAndSizeInBRPPool(
           reinterpret_cast<uintptr_t>(address));
   const uintptr_t slot_count = reinterpret_cast<uintptr_t>(
       partition_alloc::PartitionRoot::RefCountPointerFromSlotStartAndSize(
