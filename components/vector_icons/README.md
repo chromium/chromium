@@ -22,6 +22,8 @@ Some SVGs are already pretty minimal, like the ones at [the Material Design Icon
 
 + **My colors are inverted!** There is probably a surplus square path encompassing your icon. For example, `<path d="M0 0h16v16H0z"/>`. Delete this and try again.
 
++ **Nothing is rendering!** Lately, [Google repo icons](https://fonts.google.com/icons) have tended to include an odd viewbox directive: `viewBox="0 -960 960 960"`. Address this by entering 960 as the y offset in Skiafy (see "Translate" `<input>`). Bonus points for [patching Skiafy](https://github.com/evanstade/skiafy/issues/46) to do this automatically.
+
 ## Using .icon files
 
 ### Adding new icons
