@@ -36,6 +36,7 @@
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
@@ -62,8 +63,10 @@ const wchar_t k7zaExe[] = L"7za.exe";
 const wchar_t k7zaPathRelative[] = L"..\\..\\third_party\\lzma_sdk\\bin\\win64";
 const wchar_t kB7[] = L"B7";
 const wchar_t kBl[] = L"BL";
+const wchar_t kBN[] = L"BN";
 const wchar_t kChromeBin[] = L"Chrome-bin";
 const wchar_t kChromePacked7z[] = L"CHROME.PACKED.7Z";
+const wchar_t kChrome7z[] = L"CHROME.7Z";
 const wchar_t kExe[] = L"exe";
 const wchar_t kExpandExe[] = L"expand.exe";
 const wchar_t kExtDll[] = L".dll";
@@ -584,10 +587,16 @@ bool GenerateAlternateVersion(const base::FilePath& original_installer_path,
     return false;
   }
 
-  base::FilePath setup_ex_ = work_dir.directory().Append(&kSetupEx_[0]);
-  base::FilePath chrome_packed_7z;  // Empty for component builds.
+  // Setup for compressed builds:
+  base::FilePath setup_ex_;
+  // Setup for uncompressed builds:
+  base::FilePath setup_exe = work_dir.directory().Append(&kSetupExe[0]);
+  const wchar_t* setup_resource_name = nullptr;
+  base::FilePath chrome_packed_7z;  // Empty for uncompressed builds.
+  base::FilePath chrome_7z;
   const wchar_t* archive_resource_name = nullptr;
   base::FilePath* archive_file = nullptr;
+
   // Load the original file and extract setup.ex_ and chrome.packed.7z
   {
     ResourceLoader resource_loader;
@@ -597,26 +606,21 @@ bool GenerateAlternateVersion(const base::FilePath& original_installer_path,
       return false;
     }
 
-    // Write out setup.ex_
-    if (!resource_loader.Load(&kSetupEx_[0], &kBl[0], &resource_data)) {
-      return false;
-    }
-    if (!base::WriteFile(setup_ex_, base::make_span(resource_data.first,
-                                                    resource_data.second))) {
-      LOG(DFATAL) << "Failed writing \"" << setup_ex_.value() << "\"";
-      return false;
-    }
-
-    // Write out chrome.packed.7z
+    // Write out chrome.packed.7z (compressed builds) or chrome.7z (uncompressed
+    // builds).
     if (resource_loader.Load(&kChromePacked7z[0], &kB7[0], &resource_data)) {
       archive_resource_name = &kChromePacked7z[0];
       chrome_packed_7z = work_dir.directory().Append(archive_resource_name);
       archive_file = &chrome_packed_7z;
+    } else if (resource_loader.Load(&kChrome7z[0], &kBN[0], &resource_data)) {
+      archive_resource_name = &kChrome7z[0];
+      chrome_7z = work_dir.directory().Append(archive_resource_name);
+      archive_file = &chrome_7z;
     } else {
       return false;
     }
     DCHECK(archive_resource_name);
-    DCHECK(!chrome_packed_7z.empty());
+    DCHECK(!chrome_packed_7z.empty() || !chrome_7z.empty());
     DCHECK(archive_file);
     if (!base::WriteFile(
             *archive_file,
@@ -624,33 +628,57 @@ bool GenerateAlternateVersion(const base::FilePath& original_installer_path,
       LOG(DFATAL) << "Failed writing \"" << archive_file->value() << "\"";
       return false;
     }
+
+    // Write out setup.ex_ (compressed builds) or
+    // setup.exe (uncompressed builds).
+    if (resource_loader.Load(&kSetupEx_[0], &kBl[0], &resource_data)) {
+      setup_ex_ = work_dir.directory().Append(&kSetupEx_[0]);
+      setup_resource_name = &kSetupEx_[0];
+      if (!base::WriteFile(setup_ex_, base::make_span(resource_data.first,
+                                                      resource_data.second))) {
+        LOG(DFATAL) << "Failed writing \"" << setup_ex_.value() << "\"";
+        return false;
+      }
+    } else if (resource_loader.Load(&kSetupExe[0], &kBN[0], &resource_data)) {
+      setup_resource_name = &kSetupExe[0];
+      if (!base::WriteFile(setup_exe, base::make_span(resource_data.first,
+                                                      resource_data.second))) {
+        LOG(DFATAL) << "Failed writing \"" << setup_exe.value() << "\"";
+        return false;
+      }
+    } else {
+      return false;
+    }
   }
 
-  // Expand setup.ex_
-  base::FilePath setup_exe = setup_ex_.ReplaceExtension(&kExe[0]);
-  std::wstring command_line;
-  command_line.append(1, L'"')
-      .append(&kExpandExe[0])
-      .append(L"\" \"")
-      .append(setup_ex_.value())
-      .append(L"\" \"")
-      .append(setup_exe.value())
-      .append(1, L'\"');
-  int exit_code;
-  if (!RunProcessAndWait(nullptr, command_line, &exit_code)) {
-    return false;
-  }
-  if (exit_code != 0) {
-    LOG(DFATAL) << &kExpandExe[0] << " exited with code " << exit_code;
-    return false;
+  // If a compressed setup was found..
+  if (!setup_ex_.empty()) {
+    // Expand setup.ex_
+    setup_exe = setup_ex_.ReplaceExtension(&kExe[0]);
+    std::wstring command_line(1, L'"');
+    command_line.append(&kExpandExe[0])
+        .append(L"\" \"")
+        .append(setup_ex_.value())
+        .append(L"\" \"")
+        .append(setup_exe.value())
+        .append(1, L'\"');
+    int exit_code = 0;
+    if (!RunProcessAndWait(nullptr, command_line, &exit_code)) {
+      return false;
+    }
+    if (exit_code != 0) {
+      LOG(DFATAL) << &kExpandExe[0] << " exited with code " << exit_code;
+      return false;
+    }
   }
 
-  // Unpack chrome.packed.7z.
-  base::FilePath chrome_7z;
-  if (UnPackArchive(chrome_packed_7z, work_dir.directory(), &chrome_7z) !=
-      UNPACK_NO_ERROR) {
-    LOG(DFATAL) << "Failed unpacking \"" << chrome_packed_7z.value() << "\"";
-    return false;
+  // Unpack chrome.packed.7z (compressed builds only).
+  if (!chrome_packed_7z.empty()) {
+    if (UnPackArchive(chrome_packed_7z, work_dir.directory(), &chrome_7z) !=
+        UNPACK_NO_ERROR) {
+      LOG(DFATAL) << "Failed unpacking \"" << chrome_packed_7z.value() << "\"";
+      return false;
+    }
   }
   DCHECK(!chrome_7z.empty());
 
@@ -662,12 +690,12 @@ bool GenerateAlternateVersion(const base::FilePath& original_installer_path,
   }
 
   // Get rid of intermediate files
-  if (!base::DeleteFile(chrome_7z) || (!base::DeleteFile(chrome_packed_7z)) ||
+  if (!base::DeleteFile(chrome_7z) ||
+      (!chrome_packed_7z.empty() && !base::DeleteFile(chrome_packed_7z)) ||
       !base::DeleteFile(setup_ex_)) {
     LOG(DFATAL) << "Failed deleting intermediate files";
     return false;
   }
-
   // Increment the version in all files.
   ApplyAlternateVersion(work_dir.directory(), direction, original_version,
                         new_version);
@@ -678,35 +706,41 @@ bool GenerateAlternateVersion(const base::FilePath& original_installer_path,
     return false;
   }
 
-  // Compress chrome.7z into chrome.packed.7z for static builds.
+  // Compress chrome.7z into chrome.packed.7z for compressed builds.
   if (!chrome_packed_7z.empty() &&
       !CreateArchive(chrome_packed_7z, chrome_7z, 9)) {
     return false;
   }
 
-  // Compress setup.exe into setup.ex_
-  command_line.assign(1, L'"')
-      .append(&kMakeCab[0])
-      .append(L"\" /D CompressionType=LZX /L \"")
-      .append(work_dir.directory().value())
-      .append(L"\" \"")
-      .append(setup_exe.value());
-  if (!RunProcessAndWait(nullptr, command_line, &exit_code)) {
-    return false;
-  }
-  if (exit_code != 0) {
-    LOG(DFATAL) << &kMakeCab[0] << " exited with code " << exit_code;
-    return false;
+  // Compress setup.exe into setup.ex_ for compressed builds.
+  if (!setup_ex_.empty()) {
+    std::wstring command_line(1, L'"');
+    command_line.append(&kMakeCab[0])
+        .append(L"\" /D CompressionType=LZX /L \"")
+        .append(work_dir.directory().value())
+        .append(L"\" \"")
+        .append(setup_exe.value());
+    int exit_code = 0;
+    if (!RunProcessAndWait(nullptr, command_line, &exit_code)) {
+      return false;
+    }
+    if (exit_code != 0) {
+      LOG(DFATAL) << &kMakeCab[0] << " exited with code " << exit_code;
+      return false;
+    }
   }
 
-  // Replace the mini_installer's setup.ex_ and chrome.packed.7z (or chrome.7z
-  // in component builds) resources.
+  // Replace the mini_installer's setup.ex_ (or setup.exe for an uncompressed
+  // mini_installer) and chrome.packed.7z (or chrome.7z in component and
+  // non-debug builds) resources.
   ResourceUpdater updater;
   if (!updater.Initialize(mini_installer) ||
-      !updater.Update(&kSetupEx_[0], &kBl[0],
+      !updater.Update(setup_resource_name,
+                      (!setup_ex_.empty() ? &kBl[0] : &kBN[0]),
                       MAKELANGID(LANG_ENGLISH, SUBLANG_ENGLISH_US),
-                      setup_ex_) ||
-      !updater.Update(archive_resource_name, &kB7[0],
+                      (!setup_ex_.empty() ? setup_ex_ : setup_exe)) ||
+      !updater.Update(archive_resource_name,
+                      (!chrome_packed_7z.empty() ? &kB7[0] : &kBN[0]),
                       MAKELANGID(LANG_ENGLISH, SUBLANG_ENGLISH_US),
                       *archive_file) ||
       !updater.Commit()) {
