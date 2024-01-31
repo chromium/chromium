@@ -6453,6 +6453,8 @@ static_library("ui") {
       sources += [
         "views/apps/app_dialog/shortcut_removal_dialog_view.cc",
         "views/apps/app_dialog/shortcut_removal_dialog_view.h",
+        "views/frame/picture_in_picture_browser_frame_view_ash.cc",
+        "views/frame/picture_in_picture_browser_frame_view_ash.h",
         "views/web_apps/isolated_web_apps/pref_observer_ash.cc",
       ]
       deps += [ "//components/metrics/debug/structured:debug" ]
