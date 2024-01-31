@@ -4428,6 +4428,8 @@ static_library("ui") {
       "cocoa/main_menu_item.h",
       "cocoa/profiles/profile_menu_controller.h",
       "cocoa/profiles/profile_menu_controller.mm",
+      "cocoa/renderer_context_menu/chrome_swizzle_services_menu_updater.h",
+      "cocoa/renderer_context_menu/chrome_swizzle_services_menu_updater.mm",
       "cocoa/renderer_context_menu/render_view_context_menu_mac.h",
       "cocoa/renderer_context_menu/render_view_context_menu_mac.mm",
       "cocoa/renderer_context_menu/render_view_context_menu_mac_cocoa.h",
