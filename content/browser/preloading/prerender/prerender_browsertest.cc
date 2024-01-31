@@ -864,8 +864,8 @@ class PrerenderTargetAgnosticBrowserTest
     test::PrerenderHostObserver prerender_observer(prerender_web_contents, url);
     if (GetTargetHint() == "_blank") {
       TestNavigationObserver observer(&prerender_web_contents);
-      std::string script = R"(window.open($1, "_blank", "noopener");)";
-      EXPECT_TRUE(ExecJs(web_contents(), JsReplace(script, url.spec())));
+      test::PrerenderTestHelper::OpenNewWindowWithoutOpener(*web_contents(),
+                                                            url);
       observer.WaitForNavigationFinished();
     } else {
       test::PrerenderTestHelper::NavigatePrimaryPage(*web_contents(), url);

@@ -566,6 +566,12 @@ void PrerenderTestHelper::NavigatePrimaryPage(const GURL& gurl) {
   NavigatePrimaryPage(*GetWebContents(), gurl);
 }
 
+void PrerenderTestHelper::OpenNewWindowWithoutOpener(WebContents& web_contents,
+                                                     const GURL& url) {
+  std::string script = R"(window.open($1, "_blank", "noopener");)";
+  EXPECT_TRUE(ExecJs(&web_contents, JsReplace(script, url.spec())));
+}
+
 ::testing::AssertionResult PrerenderTestHelper::VerifyPrerenderingState(
     const GURL& gurl) {
   PrerenderHostRegistry& registry = GetPrerenderHostRegistry(GetWebContents());

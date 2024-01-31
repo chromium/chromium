@@ -187,6 +187,12 @@ class PrerenderTestHelper {
   static void NavigatePrimaryPage(WebContents& web_contents, const GURL& gurl);
   void NavigatePrimaryPage(const GURL& gurl);
 
+  // Opens a new window without an opener on the primary page of `web_contents`.
+  // This is intended for activating a prerendered page initiated for a new
+  // window.
+  static void OpenNewWindowWithoutOpener(WebContents& web_contents,
+                                         const GURL& url);
+
   // Confirms that, internally, appropriate subframes report that they are
   // prerendering (and that each frame tree type is kPrerender).
   [[nodiscard]] ::testing::AssertionResult VerifyPrerenderingState(
