@@ -180,7 +180,7 @@ class Handle {
 
   HandleSignalsState QuerySignalsState() const {
     HandleSignalsState signals_state;
-    MojoResult result = MojoQueryHandleSignalsState(
+    [[maybe_unused]] MojoResult result = MojoQueryHandleSignalsState(
         value_, static_cast<MojoHandleSignalsState*>(&signals_state));
     DCHECK_EQ(MOJO_RESULT_OK, result);
     return signals_state;

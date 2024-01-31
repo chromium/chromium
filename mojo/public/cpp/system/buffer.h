@@ -27,7 +27,7 @@ namespace internal {
 
 struct Unmapper {
   void operator()(void* buffer) {
-    MojoResult result = MojoUnmapBuffer(buffer);
+    [[maybe_unused]] MojoResult result = MojoUnmapBuffer(buffer);
     DCHECK_EQ(MOJO_RESULT_OK, result);
   }
 };
