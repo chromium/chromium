@@ -148,6 +148,10 @@ bool ShouldLaunchHelpApp(Profile* profile) {
     return true;
   }
 
+  if (command_line->HasSwitch(switches::kDisableFirstRunUI)) {
+    return false;
+  }
+
   if (display::Screen::GetScreen()->InTabletMode()) {
     return false;
   }

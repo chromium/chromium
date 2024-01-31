@@ -650,6 +650,9 @@ const char kForceCryptohomeRecoveryForTesting[] =
 // Forces first-run UI to be shown for every login.
 const char kForceFirstRunUI[] = "force-first-run-ui";
 
+// Disables first-run UI from being shown.
+const char kDisableFirstRunUI[] = "disable-first-run-ui";
+
 // Forces Hardware ID check (happens during OOBE) to fail or succeed. Possible
 // values: "failure" or "success". Should be used only for testing.
 const char kForceHWIDCheckResultForTest[] = "force-hwid-check-result-for-test";
