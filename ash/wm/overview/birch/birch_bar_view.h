@@ -9,16 +9,14 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/views/controls/button/button.h"
-#include "ui/views/view.h"
+#include "ui/views/layout/box_layout_view.h"
 
 namespace ash {
 
-// The bar container to show/hide birch chips. The birch chips will
-// be shown in a row with a hiding chips button at the end. When pressing the
-// hiding button, the birch chips will fade out and the showing chips
-// button will appear in the center.
-class BirchBarView : public views::View, public BirchChipButton::Delegate {
-  METADATA_HEADER(BirchBarView, views::View)
+// The bar container of birch chips.
+class BirchBarView : public views::BoxLayoutView,
+                     public BirchChipButton::Delegate {
+  METADATA_HEADER(BirchBarView, views::BoxLayoutView)
 
  public:
   // TODO(zxdan): When the data model is implemented, pass in the model to
@@ -43,30 +41,11 @@ class BirchBarView : public views::View, public BirchChipButton::Delegate {
                std::optional<views::Button::PressedCallback> button_callback =
                    std::nullopt);
 
-  // views::View:
-  gfx::Size CalculatePreferredSize() const override;
-  int GetHeightForWidth(int width) const override;
-  void Layout() override;
-
   // BirchChipButton::Delegate:
   void RemoveChip(BirchChipButton* chip) override;
 
  private:
-  class BirchChipsContainer;
-
-  void OnAnimationsEnded(bool show);
-  void OnShowHideChipsButtonPressed(bool show);
-
-  // The container of the birch chips with the hiding chips button.
-  raw_ptr<BirchChipsContainer> chips_container_ = nullptr;
-  // A view contains the show chips button. To sync the scaling and opacity
-  // animations of the show chips button and its blurred background shield
-  // (which is stacked below the button's layer during animation), we set the
-  // button in this container view and animate the container instead of the
-  // button.
-  raw_ptr<views::View> show_chips_button_container_ = nullptr;
-  // Indicating whether there is a showing/hiding animation in progress.
-  bool animation_in_progress_ = false;
+  std::vector<raw_ptr<BirchChipButton>> chips_;
 };
 
 }  // namespace ash
