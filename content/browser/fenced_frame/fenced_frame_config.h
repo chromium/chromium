@@ -510,6 +510,10 @@ class CONTENT_EXPORT FencedFrameProperties {
     return can_disable_untrusted_network_;
   }
 
+  bool has_disabled_untrusted_network() const {
+    return has_disabled_untrusted_network_;
+  }
+
   // Safe to call multiple times (will do nothing after the first time).
   void DisableUntrustedNetwork() {
     CHECK(can_disable_untrusted_network_);
