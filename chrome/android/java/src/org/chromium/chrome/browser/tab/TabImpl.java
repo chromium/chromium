@@ -48,6 +48,7 @@ import org.chromium.chrome.browser.offlinepages.OfflinePageUtils;
 import org.chromium.chrome.browser.paint_preview.StartupPaintPreviewHelper;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.rlz.RevenueStats;
+import org.chromium.chrome.browser.tab.Tab.LoadUrlResult;
 import org.chromium.chrome.browser.tab.TabUtils.UseDesktopUserAgentCaller;
 import org.chromium.chrome.browser.ui.native_page.FrozenNativePage;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
@@ -61,6 +62,7 @@ import org.chromium.content_public.browser.ChildProcessImportance;
 import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.ContentFeatureMap;
 import org.chromium.content_public.browser.LoadUrlParams;
+import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsAccessibility;
 import org.chromium.content_public.browser.navigation_controller.UserAgentOverrideOption;
@@ -553,7 +555,7 @@ class TabImpl implements Tab {
     }
 
     @Override
-    public int loadUrl(LoadUrlParams params) {
+    public LoadUrlResult loadUrl(LoadUrlParams params) {
         try {
             TraceEvent.begin("Tab.loadUrl");
             // TODO(tedchoc): When showing the android NTP, delay the call to
@@ -593,10 +595,10 @@ class TabImpl implements Tab {
                 params.setOverrideUserAgent(calculateUserAgentOverrideOption(null));
             }
 
-            @TabLoadStatus int result = loadUrlInternal(params, fixedUrl);
+            LoadUrlResult result = loadUrlInternal(params, fixedUrl);
 
             for (TabObserver observer : mObservers) {
-                observer.onLoadUrl(this, params, result);
+                observer.onLoadUrl(this, params, result.tabLoadStatus);
             }
             return result;
         } finally {
@@ -604,10 +606,10 @@ class TabImpl implements Tab {
         }
     }
 
-    private @TabLoadStatus int loadUrlInternal(LoadUrlParams params, GURL fixedUrl) {
-        if (mWebContents == null) return TabLoadStatus.PAGE_LOAD_FAILED;
+    private LoadUrlResult loadUrlInternal(LoadUrlParams params, GURL fixedUrl) {
+        if (mWebContents == null) return new LoadUrlResult(TabLoadStatus.PAGE_LOAD_FAILED, null);
 
-        if (!fixedUrl.isValid()) return TabLoadStatus.PAGE_LOAD_FAILED;
+        if (!fixedUrl.isValid()) return new LoadUrlResult(TabLoadStatus.PAGE_LOAD_FAILED, null);
 
         // Record UMA "ShowHistory" here. That way it'll pick up both user
         // typing chrome://history as well as selecting from the drop down menu.
@@ -616,12 +618,12 @@ class TabImpl implements Tab {
         }
 
         if (TabImplJni.get().handleNonNavigationAboutURL(fixedUrl)) {
-            return TabLoadStatus.DEFAULT_PAGE_LOAD;
+            return new LoadUrlResult(TabLoadStatus.DEFAULT_PAGE_LOAD, null);
         }
 
         params.setUrl(fixedUrl.getSpec());
-        mWebContents.getNavigationController().loadUrl(params);
-        return TabLoadStatus.DEFAULT_PAGE_LOAD;
+        NavigationHandle handle = mWebContents.getNavigationController().loadUrl(params);
+        return new LoadUrlResult(TabLoadStatus.DEFAULT_PAGE_LOAD, handle);
     }
 
     @Override
@@ -1786,7 +1788,7 @@ class TabImpl implements Tab {
     /**
      * Throws a RuntimeException. Useful for testing crash reports with obfuscated Java stacktraces.
      */
-    private int handleJavaCrash() {
+    private LoadUrlResult handleJavaCrash() {
         throw new RuntimeException("Intentional Java Crash");
     }
 

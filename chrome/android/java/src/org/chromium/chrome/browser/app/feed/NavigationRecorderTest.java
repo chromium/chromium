@@ -24,6 +24,7 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.Tab.LoadUrlResult;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
@@ -149,8 +150,8 @@ public class NavigationRecorderTest {
             final String url, Callback<NavigationRecorder.VisitData> visitCallback) {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    int status = mInitialTab.loadUrl(new LoadUrlParams(url));
-                    Log.e(TAG, "loadUrl status=" + status);
+                    LoadUrlResult result = mInitialTab.loadUrl(new LoadUrlParams(url));
+                    Log.e(TAG, "loadUrl status=" + result.tabLoadStatus);
                     NavigationRecorder.record(mInitialTab, visitCallback);
                 });
     }

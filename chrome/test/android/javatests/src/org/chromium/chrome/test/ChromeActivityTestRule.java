@@ -42,6 +42,7 @@ import org.chromium.chrome.browser.prefetch.settings.PreloadPagesState;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.Tab.LoadUrlResult;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuCoordinator;
 import org.chromium.chrome.test.util.ChromeApplicationTestUtils;
@@ -66,7 +67,7 @@ import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Custom {@link BaseActivityTestRule} for test using {@link ChromeActivity}.
@@ -267,11 +268,12 @@ public class ChromeActivityTestRule<T extends ChromeActivity> extends BaseActivi
     /**
      * Navigates to a URL directly without going through the UrlBar. This bypasses the page
      * preloading mechanism of the UrlBar.
-     * @param url            The URL to load in the current tab.
-     * @param secondsToWait  The number of seconds to wait for the page to be loaded.
-     * @return PAGE_LOAD_FAILED if the URL could not be loaded, otherwise DEFAULT_PAGE_LOAD.
+     *
+     * @param url The URL to load in the current tab.
+     * @param secondsToWait The number of seconds to wait for the page to be loaded.
+     * @return {@link LoadUrlResult} from Tab#loadUrl.
      */
-    public int loadUrl(String url, long secondsToWait) throws IllegalArgumentException {
+    public LoadUrlResult loadUrl(String url, long secondsToWait) throws IllegalArgumentException {
         return loadUrlInTab(
                 url,
                 PageTransition.TYPED | PageTransition.FROM_ADDRESS_BAR,
@@ -282,10 +284,11 @@ public class ChromeActivityTestRule<T extends ChromeActivity> extends BaseActivi
     /**
      * Navigates to a URL directly without going through the UrlBar. This bypasses the page
      * preloading mechanism of the UrlBar.
+     *
      * @param url The URL to load in the current tab.
-     * @return PAGE_LOAD_FAILED if the URL could not be loaded, otherwise DEFAULT_PAGE_LOAD.
+     * @return {@link LoadUrlResult} from Tab#loadUrl.
      */
-    public int loadUrl(String url) throws IllegalArgumentException {
+    public LoadUrlResult loadUrl(String url) throws IllegalArgumentException {
         return loadUrlInTab(
                 url,
                 PageTransition.TYPED | PageTransition.FROM_ADDRESS_BAR,
@@ -293,23 +296,21 @@ public class ChromeActivityTestRule<T extends ChromeActivity> extends BaseActivi
     }
 
     /** {@link #loadUrl(String) */
-    public int loadUrl(GURL url) throws IllegalArgumentException {
+    public LoadUrlResult loadUrl(GURL url) throws IllegalArgumentException {
         return loadUrl(url.getSpec());
     }
 
     /**
-     * @param url            The URL of the page to load.
-     * @param pageTransition The type of transition. see
-     *                       {@link org.chromium.ui.base.PageTransition}
-     *                       for valid values.
-     * @param tab            The tab to load the URL into.
-     * @param secondsToWait  The number of seconds to wait for the page to be loaded.
-     * @return               PAGE_LOAD_FAILED if the URL could not be loaded, otherwise
-     *                       DEFAULT_PAGE_LOAD.
+     * @param url The URL of the page to load.
+     * @param pageTransition The type of transition. see {@link org.chromium.ui.base.PageTransition}
+     *     for valid values.
+     * @param tab The tab to load the URL into.
+     * @param secondsToWait The number of seconds to wait for the page to be loaded.
+     * @return {@link LoadUrlResult} from Tab#loadUrl.
      */
-    public int loadUrlInTab(String url, int pageTransition, Tab tab, long secondsToWait) {
+    public LoadUrlResult loadUrlInTab(String url, int pageTransition, Tab tab, long secondsToWait) {
         assertNotNull("Cannot load the URL in a null tab", tab);
-        final AtomicInteger result = new AtomicInteger();
+        AtomicReference<LoadUrlResult> result = new AtomicReference();
 
         ChromeTabUtils.waitForTabPageLoaded(
                 tab,
@@ -330,15 +331,13 @@ public class ChromeActivityTestRule<T extends ChromeActivity> extends BaseActivi
     }
 
     /**
-     * @param url            The URL of the page to load.
-     * @param pageTransition The type of transition. see
-     *                       {@link org.chromium.ui.base.PageTransition}
-     *                       for valid values.
-     * @param tab            The tab to load the URL into.
-     * @return               PAGE_LOAD_FAILED if the URL could not be loaded, otherwise
-     *                       DEFAULT_PAGE_LOAD.
+     * @param url The URL of the page to load.
+     * @param pageTransition The type of transition. see {@link org.chromium.ui.base.PageTransition}
+     *     for valid values.
+     * @param tab The tab to load the URL into.
+     * @return PAGE_LOAD_FAILED if the URL could not be loaded, otherwise DEFAULT_PAGE_LOAD.
      */
-    public int loadUrlInTab(String url, int pageTransition, Tab tab) {
+    public LoadUrlResult loadUrlInTab(String url, int pageTransition, Tab tab) {
         return loadUrlInTab(url, pageTransition, tab, CallbackHelper.WAIT_TIMEOUT_SECONDS);
     }
 
