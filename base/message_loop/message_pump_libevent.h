@@ -233,8 +233,8 @@ class BASE_EXPORT MessagePumpLibevent : public MessagePump,
   struct RunState {
     explicit RunState(Delegate* delegate_in) : delegate(delegate_in) {}
 
-    // `delegate` is not a raw_ptr<...> for performance reasons (based on
-    // analysis of sampling profiler data and tab_search:top100:2020).
+    // RAW_PTR_EXCLUSION: Performance reasons (based on analysis of sampling
+    // profiler data and tab_search:top100:2020).
     RAW_PTR_EXCLUSION Delegate* const delegate;
 
     // Used to flag that the current Run() invocation should return ASAP.
