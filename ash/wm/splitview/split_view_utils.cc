@@ -5,6 +5,7 @@
 #include "ash/wm/splitview/split_view_utils.h"
 
 #include "ash/accessibility/accessibility_controller.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/display/screen_orientation_controller.h"
 #include "ash/public/cpp/system/toast_data.h"
@@ -29,6 +30,7 @@
 #include "base/time/time.h"
 #include "chromeos/ui/frame/caption_buttons/snap_controller.h"
 #include "components/app_restore/window_properties.h"
+#include "components/prefs/pref_service.h"
 #include "ui/aura/window_delegate.h"
 #include "ui/base/hit_test.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -849,8 +851,13 @@ bool CanStartSplitViewOverviewSessionInClamshell(
     return false;
   }
 
-  // TODO(sophiewen): Associated the `if` with the settings pref check.
   if (!window_util::IsFasterSplitScreenOrSnapGroupEnabledInClamshell()) {
+    return false;
+  }
+
+  if (PrefService* pref =
+          Shell::Get()->session_controller()->GetActivePrefService();
+      pref && !pref->GetBoolean(prefs::kSnapWindowSuggestions)) {
     return false;
   }
 
@@ -865,19 +872,10 @@ bool CanStartSplitViewOverviewSessionInClamshell(
       return false;
   }
 
-  // We shouldn't start `SplitViewOverviewSession` if the given `window` belongs
-  // to a snap group.
-  // TODO(michelefan): Revisit and see if this check can be removed.
-  auto* snap_group_controller = SnapGroupController::Get();
-  if (snap_group_controller &&
-      snap_group_controller->GetSnapGroupForGivenWindow(window)) {
-    return false;
-  }
-
   // If `SnapGroups` is not enabled and the topmost window (excluding
   // `window` itself) is snapped on the opposite side, don't start partial
   // overview.
-  if (!snap_group_controller && IsAnotherWindowSnappedOppositeOf(window)) {
+  if (!SnapGroupController::Get() && IsAnotherWindowSnappedOppositeOf(window)) {
     return false;
   }
 

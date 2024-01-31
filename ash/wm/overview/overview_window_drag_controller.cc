@@ -482,8 +482,7 @@ void OverviewWindowDragController::ActivateDraggedWindow() {
   } else if (auto* split_view_overview_session =
                  RootWindowController::ForWindow(item_->GetWindow())
                      ->split_view_overview_session();
-             split_view_overview_session &&
-             split_view_overview_session->auto_snap_controller()) {
+             split_view_overview_session) {
     // If `SplitViewOverviewSession` is active, let it handle the autosnap.
     overview_session_->SelectWindow(event_source_item_);
     item_ = nullptr;

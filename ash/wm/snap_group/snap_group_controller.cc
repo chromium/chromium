@@ -80,9 +80,15 @@ bool SnapGroupController::AddSnapGroup(aura::Window* window1,
     observer.OnSnapGroupCreated();
   }
 
+  // Bounds have to be refreshed after snap group is created together with
+  // divider. Otherwise, the snap ratio will not be precisely calculated see
+  // `GetCurrentSnapRatio()` in window_state.cc.
+  snap_group->RefreshWindowBoundsInSnapGroup(/*add_snap_group=*/true);
+
   window_to_snap_group_map_.emplace(window1, snap_group.get());
   window_to_snap_group_map_.emplace(window2, snap_group.get());
   snap_groups_.push_back(std::move(snap_group));
+
   return true;
 }
 
@@ -94,17 +100,18 @@ bool SnapGroupController::RemoveSnapGroup(SnapGroup* snap_group) {
         base::Contains(window_to_snap_group_map_, window2));
 
   if (!Shell::Get()->IsInTabletMode()) {
-    snap_group->RestoreWindowsBoundsOnSnapGroupRemoved();
+    snap_group->RefreshWindowBoundsInSnapGroup(/*add_snap_group=*/false);
   }
 
   window_to_snap_group_map_.erase(window1);
   window_to_snap_group_map_.erase(window2);
   snap_group->StopObservingWindows();
-  base::EraseIf(snap_groups_, base::MatchesUniquePtr(snap_group));
 
   for (Observer& observer : observers_) {
-    observer.OnSnapGroupRemoved();
+    observer.OnSnapGroupRemoved(snap_group);
   }
+
+  base::EraseIf(snap_groups_, base::MatchesUniquePtr(snap_group));
 
   return true;
 }

@@ -38,8 +38,8 @@ class ASH_EXPORT SnapGroupController : public OverviewObserver,
     // Called to notify with the creation of snap group.
     virtual void OnSnapGroupCreated() = 0;
 
-    // Called to notify the removal of snap group.
-    virtual void OnSnapGroupRemoved() = 0;
+    // Called to notify the removal of `snap_group`.
+    virtual void OnSnapGroupRemoved(SnapGroup* snap_group) = 0;
   };
 
   using SnapGroups = std::vector<std::unique_ptr<SnapGroup>>;

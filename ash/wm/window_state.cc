@@ -561,11 +561,6 @@ void WindowState::OnWMEvent(const WMEvent* event) {
   if (event->IsBoundsEvent()) {
     UpdateSnapRatio();
   }
-
-  if (snap_event && IsSnapped()) {
-    window_util::MaybeStartSplitViewOverview(window_,
-                                             snap_event->snap_action_source());
-  }
 }
 
 gfx::Rect WindowState::GetCurrentBoundsInScreen() const {
