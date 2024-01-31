@@ -8,6 +8,7 @@
 #include "base/base_export.h"
 #include "base/check.h"
 #include "base/dcheck_is_on.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/thread_annotations.h"
 #include "build/build_config.h"
 
@@ -152,7 +153,8 @@ class SCOPED_LOCKABLE BasicAutoLock {
   }
 
  private:
-  LockType& lock_;
+  // RAW_PTR_EXCLUSION: crbug.com/1521343 crbug.com/1520734 crbug.com/1519816
+  RAW_PTR_EXCLUSION LockType& lock_;
 };
 
 // This is an implementation used for AutoTryLock templated on the lock type.
@@ -175,7 +177,8 @@ class SCOPED_LOCKABLE BasicAutoTryLock {
   bool is_acquired() const { return is_acquired_; }
 
  private:
-  LockType& lock_;
+  // RAW_PTR_EXCLUSION: crbug.com/1521343 crbug.com/1520734 crbug.com/1519816
+  RAW_PTR_EXCLUSION LockType& lock_;
   const bool is_acquired_;
 };
 
@@ -195,7 +198,8 @@ class BasicAutoUnlock {
   ~BasicAutoUnlock() { lock_.Acquire(); }
 
  private:
-  LockType& lock_;
+  // RAW_PTR_EXCLUSION: crbug.com/1521343 crbug.com/1520734 crbug.com/1519816
+  RAW_PTR_EXCLUSION LockType& lock_;
 };
 
 // This is an implementation used for AutoLockMaybe templated on the lock type.
@@ -219,7 +223,8 @@ class SCOPED_LOCKABLE BasicAutoLockMaybe {
   }
 
  private:
-  LockType* const lock_;
+  // RAW_PTR_EXCLUSION: crbug.com/1521343 crbug.com/1520734 crbug.com/1519816
+  RAW_PTR_EXCLUSION LockType* const lock_;
 };
 
 // This is an implementation used for ReleasableAutoLock templated on the lock
@@ -251,7 +256,8 @@ class SCOPED_LOCKABLE BasicReleasableAutoLock {
   }
 
  private:
-  LockType* lock_;
+  // RAW_PTR_EXCLUSION: crbug.com/1521343 crbug.com/1520734 crbug.com/1519816
+  RAW_PTR_EXCLUSION LockType* lock_;
 };
 
 }  // namespace internal
