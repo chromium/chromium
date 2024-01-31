@@ -297,3 +297,138 @@ criteria = ["does-not-implement-crypto", "safe-to-run"]
 
 [policy."wycheproof:0.4.0"]
 criteria = ["does-not-implement-crypto", "safe-to-run"]
+
+[[exemptions.autocfg]]
+version = "1.1.0"
+criteria = ["safe-to-deploy", "does-not-implement-crypto"]
+notes = "Grandparented-in when setting up `cargo vet` in Jan 2024"
+
+[[exemptions.cxx]]
+version = "1.0.110"
+criteria = ["safe-to-deploy", "ub-risk-2"]
+notes = "Grandparented-in when setting up `cargo vet` in Jan 2024"
+
+[[exemptions.cxxbridge-flags]]
+version = "1.0.110"
+criteria = ["safe-to-deploy", "ub-risk-2"]
+notes = "Grandparented-in when setting up `cargo vet` in Jan 2024"
+
+[[exemptions.cxxbridge-macro]]
+version = "1.0.110"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
+notes = "Grandparented-in when setting up `cargo vet` in Jan 2024"
+
+[[exemptions.font-types]]
+version = "0.4.2"
+criteria = ["safe-to-deploy", "does-not-implement-crypto"]
+notes = "Grandparented-in when setting up `cargo vet` in Jan 2024"
+
+[[exemptions.heck]]
+version = "0.4.1"
+criteria = "safe-to-deploy"
+notes = "Grandparented-in when setting up `cargo vet` in Jan 2024"
+
+[[exemptions.itoa]]
+version = "1.0.9"
+criteria = ["safe-to-deploy", "ub-risk-2"]
+notes = "Grandparented-in when setting up `cargo vet` in Jan 2024"
+
+[[exemptions.lazy_static]]
+version = "1.4.0"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
+notes = "Grandparented-in when setting up `cargo vet` in Jan 2024"
+
+[[exemptions.libc]]
+version = "0.2.150"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
+notes = "Grandparented-in when setting up `cargo vet` in Jan 2024"
+
+[[exemptions.memchr]]
+version = "2.6.4"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
+notes = "Grandparented-in when setting up `cargo vet` in Jan 2024"
+
+[[exemptions.memoffset]]
+version = "0.6.5"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
+notes = "Grandparented-in when setting up `cargo vet` in Jan 2024"
+
+[[exemptions.proc-macro2]]
+version = "1.0.69"
+criteria = ["safe-to-deploy", "ub-risk-2"]
+notes = "Grandparented-in when setting up `cargo vet` in Jan 2024"
+
+[[exemptions.quote]]
+version = "1.0.33"
+criteria = ["safe-to-deploy", "does-not-implement-crypto"]
+notes = "Grandparented-in when setting up `cargo vet` in Jan 2024"
+
+[[exemptions.rand_chacha]]
+version = "0.3.1"
+criteria = "does-not-implement-crypto"
+notes = "Grandparented-in when setting up `cargo vet` in Jan 2024"
+
+[[exemptions.rand_core]]
+version = "0.6.4"
+criteria = "does-not-implement-crypto"
+notes = "Grandparented-in when setting up `cargo vet` in Jan 2024"
+
+[[exemptions.read-fonts]]
+version = "0.15.2"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
+notes = "Grandparented-in when setting up `cargo vet` in Jan 2024"
+
+[[exemptions.rustversion]]
+version = "1.0.14"
+criteria = ["safe-to-deploy", "does-not-implement-crypto"]
+notes = "Grandparented-in when setting up `cargo vet` in Jan 2024"
+
+[[exemptions.ryu]]
+version = "1.0.15"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
+notes = "Grandparented-in when setting up `cargo vet` in Jan 2024"
+
+[[exemptions.serde]]
+version = "1.0.193"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
+notes = "Grandparented-in when setting up `cargo vet` in Jan 2024"
+
+[[exemptions.serde_derive]]
+version = "1.0.193"
+criteria = ["safe-to-deploy", "does-not-implement-crypto"]
+notes = "Grandparented-in when setting up `cargo vet` in Jan 2024"
+
+[[exemptions.serde_json_lenient]]
+version = "0.1.8"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
+notes = "Grandparented-in when setting up `cargo vet` in Jan 2024"
+
+[[exemptions.skrifa]]
+version = "0.15.2"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
+notes = "Grandparented-in when setting up `cargo vet` in Jan 2024"
+
+[[exemptions.static_assertions]]
+version = "1.1.0"
+criteria = ["safe-to-deploy", "ub-risk-2"]
+notes = "Grandparented-in when setting up `cargo vet` in Jan 2024"
+
+[[exemptions.syn]]
+version = "2.0.39"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
+notes = "Grandparented-in when setting up `cargo vet` in Jan 2024"
+
+[[exemptions.tinyvec]]
+version = "1.6.0"
+criteria = ["safe-to-deploy", "does-not-implement-crypto"]
+notes = "Grandparented-in when setting up `cargo vet` in Jan 2024"
+
+[[exemptions.unicode-ident]]
+version = "1.0.12"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
+notes = "Grandparented-in when setting up `cargo vet` in Jan 2024"
+
+[[exemptions.unicode-linebreak]]
+version = "0.1.5"
+criteria = ["safe-to-deploy", "does-not-implement-crypto"]
+notes = "Grandparented-in when setting up `cargo vet` in Jan 2024"
