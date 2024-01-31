@@ -467,6 +467,7 @@ test("ios_chrome_unittests") {
     "//ios/chrome/browser/voice/model:unit_tests",
     "//ios/chrome/browser/web/model:unit_tests",
     "//ios/chrome/browser/web/model:unit_tests_internal",
+    "//ios/chrome/browser/web/model/annotations:unit_tests",
     "//ios/chrome/browser/web/model/choose_file:unit_tests",
     "//ios/chrome/browser/web/model/font_size:unit_tests",
     "//ios/chrome/browser/web/model/image_fetch:unit_tests",

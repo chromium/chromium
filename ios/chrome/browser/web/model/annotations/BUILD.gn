@@ -41,3 +41,15 @@ source_set("annotations") {
     "annotations_util.mm",
   ]
 }
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "annotations_util_unittest.mm" ]
+  deps = [
+    ":annotations",
+    "//components/prefs",
+    "//components/prefs:test_support",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//testing/gtest",
+  ]
+}
