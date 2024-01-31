@@ -2632,64 +2632,69 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PageLoad.Internal.SuppressedEventsCountBeforePaint"
+<histogram name="PageLoad.Internal.SuppressedEventsCountBeforePaint2"
     units="count" expires_after="2024-07-07">
   <owner>mustaq@chromium.org</owner>
   <owner>blink-interactions-team@google.com</owner>
   <summary>
-    Measures the number of events observed before the first paint.
+    Records the number of events observed before the first paint.
 
-    This metric is emitted for every committed page load, immediately after the
-    first paint is complete. When the DropInputEventsBeforeFirstPaint feature is
-    enabled, these events will be dropped as the user may not have seen the
-    content they are interacting with yet. Since there is a delay from the first
-    paint presentation to when the notification about it is received, the user
-    may have actually seen the first paint for some of these events. If many
-    events are being dropped, we may need to revisit this experiment or improve
-    the measurement to only those after the first paint.
+    This metric is emitted for every committed page load, either at the
+    completion of the first paint or 15sec after navigation (whichever comes
+    first). When the DropInputEventsBeforeFirstPaint feature is enabled, these
+    events will be dropped as the user may not have seen the content they are
+    interacting with yet. Since there is a delay from the first paint
+    presentation to when the notification about it is received, the user may
+    have actually seen the first paint for some of these events. If many events
+    are being dropped, we may need to revisit this experiment or improve the
+    measurement to only those after the first paint.
   </summary>
 </histogram>
 
-<histogram name="PageLoad.Internal.SuppressedEventsTimingBeforePaint"
+<histogram name="PageLoad.Internal.SuppressedEventsTimingBeforePaint2"
     units="ms" expires_after="2024-07-07">
   <owner>mustaq@chromium.org</owner>
   <owner>blink-interactions-team@google.com</owner>
   <summary>
-    Measures time difference between first paint and last event dropped by
-    DropInputEventsBeforeFirstPaint feature.
+    Records time difference between first paint and last event to be dropped by
+    DropInputEventsBeforeFirstPaint feature in a page that has received the
+    first paint signal. If the signal is not received within 15sec of
+    navigation, it records the constant &quot;15sec&quot; instead.
 
-    This metric is emitted for every committed page load, immediately after the
-    first paint is complete. When the DropInputEventsBeforeFirstPaint feature is
-    enabled, these events will be dropped as the user may not have seen the
-    content they are interacting with yet. Since there is a delay from the first
-    paint presentation to when the notification about it is received, the user
-    may have actually seen the first paint for some of these events. If this
-    time difference is long enough to affect user experience, we may need to
-    revisit this experiment. We are logging 0 timestamp if there is no
-    suppressed event or the most recent suppressed event is before the first
-    paint time so that we have a count of the number of times the behavior was
-    good to compare the size of the bad cases to.
+    This metric is emitted for every committed page load, either at the
+    completion of the first paint or 15sec after navigation (whichever comes
+    first). When the DropInputEventsBeforeFirstPaint feature is enabled, these
+    events will be dropped as the user may not have seen the content they are
+    interacting with yet. Since there is a delay from the first paint
+    presentation to when the notification about it is received, the user may
+    have actually seen the first paint for some of these events. If this time
+    difference is long enough to affect user experience, we may need to revisit
+    this experiment. We are logging 0 timestamp if there is no suppressed event
+    or the most recent suppressed event is before the first paint time so that
+    we have a count of the number of times the behavior was good to compare the
+    size of the bad cases to.
   </summary>
 </histogram>
 
-<histogram name="PageLoad.Internal.SuppressedInteractionsCountBeforePaint"
+<histogram name="PageLoad.Internal.SuppressedInteractionsCountBeforePaint2"
     units="count" expires_after="2024-07-07">
   <owner>mustaq@chromium.org</owner>
   <owner>blink-interactions-team@google.com</owner>
   <summary>
-    Measures the number of user-interactions observed before the first paint.
-    The following low-level events are counted for this purpose because they
-    mark the start of a user-interaction: MouseDown, RawKeyDown, KeyDown,
-    TouchStart and PointerDown.
+    Records the number of user-interactions observed before the first paint. The
+    following low-level events are counted for this purpose because they mark
+    the start of a user-interaction: MouseDown, RawKeyDown, KeyDown, TouchStart
+    and PointerDown.
 
-    This metric is emitted for every committed page load, immediately after the
-    first paint is complete. When the DropInputEventsBeforeFirstPaint feature is
-    enabled, these interactions will be dropped as the user may not have seen
-    the content they are interacting with yet. Since there is a delay from the
-    first paint presentation to when the notification about it is received, the
-    user may have actually seen the first paint for some of these interactions.
-    If it turns out that many interactions would be dropped, we will need to
-    revisit our plan.
+    This metric is emitted for every committed page load, either at the
+    completion of the first paint or 15sec after navigation (whichever comes
+    first). When the DropInputEventsBeforeFirstPaint feature is enabled, these
+    interactions will be dropped as the user may not have seen the content they
+    are interacting with yet. Since there is a delay from the first paint
+    presentation to when the notification about it is received, the user may
+    have actually seen the first paint for some of these interactions. If it
+    turns out that many interactions would be dropped, we will need to revisit
+    our plan.
   </summary>
 </histogram>
 

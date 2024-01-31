@@ -14,6 +14,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "cc/base/features.h"
 #include "cc/metrics/event_metrics.h"
@@ -53,6 +54,11 @@ namespace {
 // intermittently. The time delay of the timer is 10X of the threshold of
 // long tasks which block the main thread 50 ms or longer.
 const base::TimeDelta kEventCountsTimerDelay = base::Milliseconds(500);
+
+// The 99th percentile of the delay between navigation start and first paint is
+// around 10sec on most platforms.  We are setting the max acceptable limit to
+// 1.5x to avoid false positives on slow devices.
+const base::TimeDelta kFirstPaintMaxAcceptableDelay = base::Seconds(15);
 
 mojom::blink::DidOverscrollParamsPtr ToDidOverscrollParams(
     const InputHandlerProxy::DidOverscrollParams* overscroll_params) {
@@ -235,7 +241,7 @@ void WidgetInputHandlerManager::DidFirstVisuallyNonEmptyPaint(
   suppressing_input_events_state_ &=
       ~static_cast<uint16_t>(SuppressingInputEventsBits::kHasNotPainted);
 
-  RecordMetricsForDroppedEventsBeforePaint(first_paint_time);
+  RecordEventMetricsForPaintTiming(first_paint_time);
 }
 
 void WidgetInputHandlerManager::InitInputHandler() {
@@ -434,8 +440,23 @@ void WidgetInputHandlerManager::LogInputTimingUMA() {
   UMA_HISTOGRAM_ENUMERATION("PaintHolding.InputTiming4", lifecycle_state);
 }
 
-void WidgetInputHandlerManager::RecordMetricsForDroppedEventsBeforePaint(
+void WidgetInputHandlerManager::RecordEventMetricsForPaintTiming(
     const base::TimeTicks& first_paint_time) {
+  CHECK(main_thread_task_runner_->BelongsToCurrentThread());
+
+  bool first_paint_max_delay_reached = first_paint_time.is_null();
+
+  if (!first_paint_max_delay_reached) {
+    if (first_paint_max_delay_timer_ &&
+        first_paint_max_delay_timer_->IsRunning()) {
+      // Prevent the timer from recording the histograms again.
+      first_paint_max_delay_timer_->Stop();
+    } else {
+      // The histograms are already recorded by the timer.
+      return;
+    }
+  }
+
   // Initialize to 0 timestamp and log 0 if there was no suppressed event or
   // the most recent suppressed event was before the first_paint_time
   auto diff = base::TimeDelta();
@@ -443,7 +464,9 @@ void WidgetInputHandlerManager::RecordMetricsForDroppedEventsBeforePaint(
   int suppressed_events_count = 0;
   {
     base::AutoLock lock(uma_data_lock_);
-    if (uma_data_.most_recent_suppressed_event_time > first_paint_time) {
+    if (first_paint_max_delay_reached) {
+      diff = kFirstPaintMaxAcceptableDelay;
+    } else if (uma_data_.most_recent_suppressed_event_time > first_paint_time) {
       diff = uma_data_.most_recent_suppressed_event_time - first_paint_time;
     }
 
@@ -451,12 +474,12 @@ void WidgetInputHandlerManager::RecordMetricsForDroppedEventsBeforePaint(
     suppressed_events_count = uma_data_.suppressed_events_count;
   }
 
-  UMA_HISTOGRAM_TIMES("PageLoad.Internal.SuppressedEventsTimingBeforePaint",
+  UMA_HISTOGRAM_TIMES("PageLoad.Internal.SuppressedEventsTimingBeforePaint2",
                       diff);
   UMA_HISTOGRAM_COUNTS(
-      "PageLoad.Internal.SuppressedInteractionsCountBeforePaint",
+      "PageLoad.Internal.SuppressedInteractionsCountBeforePaint2",
       suppressed_interactions_count);
-  UMA_HISTOGRAM_COUNTS("PageLoad.Internal.SuppressedEventsCountBeforePaint",
+  UMA_HISTOGRAM_COUNTS("PageLoad.Internal.SuppressedEventsCountBeforePaint2",
                        suppressed_events_count);
 }
 
@@ -731,6 +754,17 @@ void WidgetInputHandlerManager::WaitForInputProcessed(
 void WidgetInputHandlerManager::DidNavigate() {
   suppressing_input_events_state_ =
       static_cast<uint16_t>(SuppressingInputEventsBits::kHasNotPainted);
+
+  if (!first_paint_max_delay_timer_) {
+    first_paint_max_delay_timer_ = std::make_unique<base::OneShotTimer>();
+  }
+  if (!widget_is_embedded_ && !first_paint_max_delay_timer_->IsRunning()) {
+    first_paint_max_delay_timer_->Start(
+        FROM_HERE, kFirstPaintMaxAcceptableDelay,
+        base::BindOnce(
+            &WidgetInputHandlerManager::RecordEventMetricsForPaintTiming, this,
+            base::TimeTicks()));
+  }
 
   base::AutoLock lock(uma_data_lock_);
   uma_data_.have_emitted_uma = false;
@@ -1088,6 +1122,7 @@ WidgetInputHandlerManager::GetSynchronousCompositorRegistry() {
 #endif
 
 void WidgetInputHandlerManager::ClearClient() {
+  first_paint_max_delay_timer_.reset();
   input_event_queue_->ClearClient();
 }
 
