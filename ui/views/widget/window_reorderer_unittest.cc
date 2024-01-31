@@ -37,20 +37,13 @@ std::string ChildWindowNamesAsString(const aura::Window& parent) {
 }
 
 class WindowReordererTest : public ViewsTestBase {
- public:
-  Widget::InitParams CreateParams(Widget::InitParams::Type type) override {
-    Widget::InitParams params = ViewsTestBase::CreateParams(type);
-    params.parent = parent_;
-    return params;
-  }
-
+ protected:
   std::unique_ptr<Widget> CreateControlWidget(aura::Window* parent) {
-    parent_ = parent;
-    return CreateTestWidget(Widget::InitParams::TYPE_CONTROL);
+    Widget::InitParams params =
+        CreateParamsForTestWidget(Widget::InitParams::TYPE_CONTROL);
+    params.parent = parent;
+    return CreateTestWidget(std::move(params));
   }
-
- private:
-  raw_ptr<aura::Window, DanglingUntriaged> parent_ = nullptr;
 };
 
 // Test that views with layers and views with associated windows are reordered
