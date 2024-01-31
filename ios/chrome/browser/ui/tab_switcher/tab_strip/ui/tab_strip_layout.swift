@@ -12,6 +12,10 @@ class TabStripLayout: UICollectionViewFlowLayout {
   /// IndexPath of the selected item.
   public var selectedIndexPath: IndexPath?
 
+  /// Static decoration views that border the collection view.
+  public var leftStaticSeparator: TabStripDecorationView?
+  public var rightStaticSeparator: TabStripDecorationView?
+
   /// Dynamic size of a tab.
   private var tabCellSize: CGSize = .zero
 
@@ -296,7 +300,12 @@ class TabStripLayout: UICollectionViewFlowLayout {
       return nil
     }
 
+    var cellAnimated = false
     if let cell = collectionView.cellForItem(at: indexPath) as? TabStripCell {
+      if let animationKeys = cell.layer.animationKeys() {
+        cellAnimated = !animationKeys.isEmpty
+      }
+
       // Update cell separators.
       cell.leadingSeparatorHidden = true
       cell.trailingSeparatorHidden = true
@@ -304,14 +313,21 @@ class TabStripLayout: UICollectionViewFlowLayout {
       cell.trailingSeparatorGradientViewHidden = true
     }
 
+    let isScrollable: Bool = collectionView.contentSize.width > collectionView.frame.width
     let collectionViewWidth = collectionView.bounds.size.width
     let horizontalOffset = collectionView.contentOffset.x
     let frame = layoutAttributes.frame
     var origin = layoutAttributes.frame.origin
     var horizontalInset: CGFloat = 0
 
-    // If the collection view is scrollable, add an horizontal inset to its origin.
-    if collectionView.contentSize.width > collectionView.frame.width {
+    let staticSeparatorHorizontalInset =
+      tabCellSize.width - TabStripConstants.AnimatedSeparator.collapseHorizontalInsetThreshold
+    var hideLeftStaticSeparator = true
+    var hideRightStaticSeparator = true
+
+    // If the collection view is scrollable, add an horizontal inset to its
+    // origin.
+    if isScrollable {
       horizontalInset = TabStripConstants.TabItem.horizontalSelectedInset
     }
 
@@ -320,12 +336,32 @@ class TabStripLayout: UICollectionViewFlowLayout {
 
     // Check the left side.
     let minOringin = horizontalOffset + sectionInset.left + horizontalInset
+    // Show left static separators when all of the following conditions are
+    // satisfied:
+    // - The selected cell is on the left edge.
+    // - A cell behind the selected cell is also reaching the left edge.
+    // - The cell is not animated (inserted / deleted).
+    if (minOringin - staticSeparatorHorizontalInset) >= origin.x {
+      hideLeftStaticSeparator = !isScrollable || cellAnimated
+    }
     origin.x = max(origin.x, minOringin)
+
     // Check the right side.
     let maxOrigin =
       horizontalOffset + collectionViewWidth - frame.size.width - sectionInset.right
       - horizontalInset
+    // Show right static separators when all of the following conditions are
+    // satisfied:
+    // - The selected cell is on the right edge.
+    // - A cell behind the selected cell is also reaching the right edge.
+    // - The cell is not animated (inserted / deleted).
+    if (maxOrigin + staticSeparatorHorizontalInset) <= origin.x {
+      hideRightStaticSeparator = !isScrollable || cellAnimated
+    }
     origin.x = min(origin.x, maxOrigin)
+
+    leftStaticSeparator?.isHidden = hideLeftStaticSeparator
+    rightStaticSeparator?.isHidden = hideRightStaticSeparator
 
     layoutAttributes.frame = CGRect(origin: origin, size: frame.size)
     return layoutAttributes

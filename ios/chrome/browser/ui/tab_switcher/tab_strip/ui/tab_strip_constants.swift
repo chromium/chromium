@@ -48,4 +48,15 @@ struct TabStripConstants {
     static let collapseHorizontalInset: CGFloat = 6
   }
 
+  /// Static separator constants.
+  struct StaticSeparator {
+    static let viewHeight: CGFloat = 40
+    static let separatorWidth: CGFloat = 2
+    static let separatorCornerRadius: CGFloat = 1
+    static let smallSeparatorHeight: CGFloat = 12
+    static let regularSeparatorHeight: CGFloat = 18
+    static let horizontalInset: CGFloat = 4
+    static let leadingInset: CGFloat = 6
+  }
+
 }

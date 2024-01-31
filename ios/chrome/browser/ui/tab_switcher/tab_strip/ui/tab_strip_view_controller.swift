@@ -23,7 +23,13 @@ class TabStripViewController: UIViewController, TabStripCellDelegate,
   private var tabCellRegistration: UICollectionView.CellRegistration<TabStripCell, TabSwitcherItem>?
 
   // The New tab button.
-  private let newTabButton: TabStripNewTabButton = TabStripNewTabButton(frame: .zero)
+  private let newTabButton: TabStripNewTabButton = TabStripNewTabButton()
+
+  // Static decoration views that border the collection view. They are
+  // visible when the selected cell reaches an edge of the collection view and
+  // if the collection view can be scrolled.
+  private let leftStaticSeparator: TabStripDecorationView = TabStripDecorationView()
+  private let rightStaticSeparator: TabStripDecorationView = TabStripDecorationView()
 
   // Lastest dragged item. This property is set when the item
   // is long pressed which does not always result in a drag action.
@@ -57,6 +63,8 @@ class TabStripViewController: UIViewController, TabStripCellDelegate,
     }
 
     layout.dataSource = diffableDataSource
+    layout.leftStaticSeparator = leftStaticSeparator
+    layout.rightStaticSeparator = rightStaticSeparator
   }
 
   required init?(coder: NSCoder) {
@@ -73,6 +81,11 @@ class TabStripViewController: UIViewController, TabStripCellDelegate,
 
     collectionView.backgroundColor = .clear
     view.addSubview(collectionView)
+
+    // Mirror the layer.
+    rightStaticSeparator.transform = CGAffineTransformMakeScale(-1, 1)
+    view.addSubview(leftStaticSeparator)
+    view.addSubview(rightStaticSeparator)
 
     newTabButton.delegate = self
     view.addSubview(newTabButton)
@@ -92,6 +105,16 @@ class TabStripViewController: UIViewController, TabStripCellDelegate,
       newTabButton.bottomAnchor.constraint(equalTo: view.bottomAnchor),
       newTabButton.topAnchor.constraint(equalTo: view.topAnchor),
       newTabButton.widthAnchor.constraint(equalToConstant: TabStripConstants.NewTabButton.width),
+
+      /// `leftStaticSeparator` constraints.
+      leftStaticSeparator.leftAnchor.constraint(equalTo: collectionView.leftAnchor),
+      leftStaticSeparator.bottomAnchor.constraint(
+        equalTo: collectionView.bottomAnchor),
+
+      /// `rightStaticSeparator` constraints.
+      rightStaticSeparator.rightAnchor.constraint(equalTo: collectionView.rightAnchor),
+      rightStaticSeparator.bottomAnchor.constraint(
+        equalTo: collectionView.bottomAnchor),
     ])
   }
 
