@@ -358,13 +358,13 @@ chromium-metrics-reviews@google.com.
   <int value="8" label="Bookmark bubble"/>
   <int value="9" label="Bookmark manager"/>
   <int value="10" label="Avatar bubble sign in"/>
-  <int value="11" label="User manager"/>
+  <int value="11" label="Profile picker"/>
   <int value="12" label="Devices page"/>
   <int value="13" label="Cloud print"/>
-  <int value="14" label="Content area"/>
+  <int value="14" label="(obsolete) Content area"/>
   <int value="15" label="Signin promo"/>
   <int value="16" label="Recent tabs"/>
-  <int value="17" label="Typed URL with unknown access point"/>
+  <int value="17" label="Unknown"/>
   <int value="18" label="Password bubble"/>
   <int value="19" label="Autofill dropdown"/>
   <int value="20" label="NTP Content Suggestions"/>
@@ -378,7 +378,7 @@ chromium-metrics-reviews@google.com.
   <int value="28" label="Re-signin from sync error card in settings"/>
   <int value="29" label="Forced sign-in"/>
   <int value="30" label="Re-signin after an account rename"/>
-  <int value="31" label="Sign-in promo in the web sign-in flow"/>
+  <int value="31" label="Web sign-in"/>
   <int value="32" label="Safety check settings page"/>
   <int value="33" label="Kaleidoscope"/>
   <int value="34" label="Enterprise sign-out coordinator"/>
