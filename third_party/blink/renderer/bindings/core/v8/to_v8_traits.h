@@ -969,17 +969,6 @@ struct ToV8Traits<IDLOptional<T>> {
   }
 };
 
-// Cannot define in ScriptValue because of the circular dependency between toV8
-// and ScriptValue
-template <typename T>
-  requires std::derived_from<T, bindings::DictionaryBase> ||
-           std::derived_from<T, ScriptWrappable> ||
-           std::derived_from<T, bindings::UnionBase>
-inline ScriptValue ScriptValue::From(ScriptState* script_state, T* value) {
-  v8::Local<v8::Value> v8_value = ToV8Traits<T>::ToV8(script_state, value);
-  return ScriptValue(script_state->GetIsolate(), v8_value);
-}
-
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_TO_V8_TRAITS_H_
