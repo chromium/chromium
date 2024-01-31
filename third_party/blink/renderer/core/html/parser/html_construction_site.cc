@@ -395,10 +395,8 @@ void HTMLConstructionSite::FlushPendingText() {
             ? string
             : string.SubstringView(current_position,
                                    break_index - current_position);
-    String substring = canonicalize_whitespace_strings_
-                           ? TryCanonicalizeString(
-                                 substring_view, pending_text_.whitespace_mode)
-                           : substring_view.ToString();
+    String substring =
+        TryCanonicalizeString(substring_view, pending_text_.whitespace_mode);
 
     DCHECK_GT(break_index, current_position);
     DCHECK_EQ(break_index - current_position, substring.length());
@@ -498,9 +496,7 @@ HTMLConstructionSite::HTMLConstructionSite(
           ScriptingContentIsAllowed(parser_content_policy)),
       is_parsing_fragment_(fragment),
       redirect_attach_to_foster_parent_(false),
-      in_quirks_mode_(document.InQuirksMode()),
-      canonicalize_whitespace_strings_(
-          RuntimeEnabledFeatures::CanonicalizeWhitespaceStringsEnabled()) {
+      in_quirks_mode_(document.InQuirksMode()) {
   DCHECK(document_->IsHTMLDocument() || document_->IsXHTMLDocument() ||
          is_parsing_fragment_);
 

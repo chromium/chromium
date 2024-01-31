@@ -525,11 +525,6 @@
       base_feature: "none",
     },
     {
-      // If set, the parser will canonicalize whitespace strings.
-      name: "CanonicalizeWhitespaceStrings",
-      status: "stable",
-    },
-    {
       name: "Canvas2dCanvasFilter",
       status: "experimental",
       base_feature: "none",
