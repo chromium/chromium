@@ -6,11 +6,14 @@ package org.chromium.chrome.browser.back_press;
 
 import android.annotation.SuppressLint;
 import android.util.SparseIntArray;
+import android.view.Window;
 
 import androidx.activity.BackEventCompat;
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
+import androidx.core.graphics.Insets;
+import androidx.core.view.WindowInsetsCompat;
 
 import org.chromium.base.Callback;
 import org.chromium.base.cached_flags.BooleanCachedFieldTrialParameter;
@@ -80,6 +83,7 @@ public class BackPressManager implements Destroyable {
             new OnBackPressedCallback(false) {
                 private BackPressHandler mActiveHandler;
                 private BackEventCompat mLastBackEvent;
+                private boolean mIsBackProgressedCalled;
 
                 @SuppressLint("WrongConstant") // Suppress mLastCalledHandlerType assignment warning
                 @Override
@@ -88,8 +92,12 @@ public class BackPressManager implements Destroyable {
                     recordSystemBackCountIfBeforeFirstVisibleContent();
                     mLastCalledHandlerType = -1;
                     BackPressManager.this.handleBackPress();
+
                     // This means this back is triggered by a gesture rather than the back button.
-                    if (mLastBackEvent != null && mLastCalledHandlerType != -1) {
+                    if (mLastBackEvent != null
+                            && mLastCalledHandlerType != -1
+                            && mIsGestureNavEnabledSupplier.get()
+                            && mIsBackProgressedCalled) {
                         BackPressMetrics.recordBackPressFromEdge(
                                 mLastCalledHandlerType, mLastBackEvent.getSwipeEdge());
 
@@ -98,8 +106,11 @@ public class BackPressManager implements Destroyable {
                                     mLastBackEvent.getSwipeEdge());
                         }
                     }
+                    assert mIsGestureNavEnabledSupplier.get() == mIsBackProgressedCalled
+                            : "Inequality: is back progressed called " + mIsBackProgressedCalled;
                     mActiveHandler = null;
                     mLastBackEvent = null;
+                    mIsBackProgressedCalled = false;
                 }
 
                 // Following methods are only triggered on API 34+.
@@ -117,10 +128,12 @@ public class BackPressManager implements Destroyable {
                     mActiveHandler.handleOnBackCancelled();
                     mActiveHandler = null;
                     mLastBackEvent = null;
+                    mIsBackProgressedCalled = false;
                 }
 
                 @Override
                 public void handleOnBackProgressed(@NonNull BackEventCompat backEvent) {
+                    mIsBackProgressedCalled = true;
                     if (mActiveHandler == null) return;
                     mActiveHandler.handleOnBackProgressed(backEvent);
                 }
@@ -139,6 +152,7 @@ public class BackPressManager implements Destroyable {
     private boolean mBackBeforeFirstVisibleContentRecorded;
     private Supplier<Boolean> mIsFirstVisibleContentDrawnSupplier;
     private Runnable mOnBackPressed;
+    private Supplier<Boolean> mIsGestureNavEnabledSupplier = () -> false;
 
     /**
      * @return True if the back gesture refactor is enabled.
@@ -184,6 +198,24 @@ public class BackPressManager implements Destroyable {
      */
     public static int getHistogramValue(@Type int type) {
         return sMetricsMap.get(type);
+    }
+
+    /**
+     * TODO(crbug.com/1523293): move to UiUtils once crbug.com/1522985 is fixed.
+     *
+     * @param window The application window which includes the decor view.
+     * @return True if gesture navigation mode is on.
+     */
+    public static boolean isGestureNavigationMode(Window window) {
+        // https://stackoverflow.com/a/70514883
+        WindowInsetsCompat windowInsets =
+                WindowInsetsCompat.toWindowInsetsCompat(
+                        window.getDecorView().getRootWindowInsets());
+        // Use systemGestures rather than tappableElements.
+        // In some devices, like Samsung Fold, which has a dock, the bottom inset of
+        // tappableElements is non-zero even when gesture mode is on.
+        Insets insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemGestures());
+        return insets.left > 0;
     }
 
     private static void recordFailure(@Type int type) {
@@ -280,6 +312,11 @@ public class BackPressManager implements Destroyable {
     /** Set a supplier to provide whether first visible content has been drawn. */
     public void setIsFirstVisibleContentDrawnSupplier(Supplier<Boolean> supplier) {
         mIsFirstVisibleContentDrawnSupplier = supplier;
+    }
+
+    /** Set a supplier to provide whether gesture nav mode is on when called. */
+    public void setIsGestureNavEnabledSupplier(Supplier<Boolean> supplier) {
+        mIsGestureNavEnabledSupplier = supplier;
     }
 
     /**

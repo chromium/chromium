@@ -2455,6 +2455,8 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
     }
 
     private void initializeBackPressHandling() {
+        mBackPressManager.setIsGestureNavEnabledSupplier(
+                () -> BackPressManager.isGestureNavigationMode(getWindow()));
         mBackPressManager.setIsFirstVisibleContentDrawnSupplier(
                 () -> {
                     if (mActivityTabStartupMetricsTracker == null) return false;
