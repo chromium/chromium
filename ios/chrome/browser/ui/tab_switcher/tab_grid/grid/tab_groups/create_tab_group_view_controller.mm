@@ -8,6 +8,7 @@
 #import "components/strings/grit/components_strings.h"
 #import "components/tab_groups/tab_group_color.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/ui/elements/top_aligned_image_view.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/tab_groups/tab_group_creation_mutator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/tab_groups/tab_groups_commands.h"
@@ -37,6 +38,8 @@ constexpr CGFloat kSnapshotViewRatio = 0.83;
 constexpr CGFloat kSnapshotViewMaxHeight = 190;
 constexpr CGFloat kSnapshotViewCornerRadius = 18;
 constexpr CGFloat kSnapshotViewVerticalMargin = 25;
+constexpr CGFloat kOutsideSnapshotCornerRadius = 16;
+constexpr CGFloat kSingleSnapshotRatio = 0.75;
 }  // namespace
 
 @implementation CreateTabGroupViewController {
@@ -58,6 +61,9 @@ constexpr CGFloat kSnapshotViewVerticalMargin = 25;
   tab_groups::TabGroupColorId _defaultColor;
   // StackView which contains all bottom views.
   UIStackView* _bottomStackView;
+  NSArray<UIImage*>* _snapshots;
+  // List of favicons.
+  NSArray<UIImage*>* _favicons;
 }
 
 - (instancetype)initWithHandler:(id<TabGroupsCommands>)handler {
@@ -487,6 +493,18 @@ constexpr CGFloat kSnapshotViewVerticalMargin = 25;
   snapshotsBackground.layer.cornerRadius = kSnapshotViewCornerRadius;
   snapshotsBackground.opaque = NO;
 
+  // TODO(crbug.com/1501837): Manage more than one snapshot and favicons.
+  // TODO(crbug.com/1501837): Manage favicons.
+  UIImage* snapshotImg = _snapshots.firstObject;
+  TopAlignedImageView* snapshotView = [[TopAlignedImageView alloc] init];
+  snapshotView.image = snapshotImg;
+  snapshotView.translatesAutoresizingMaskIntoConstraints = NO;
+  snapshotView.layer.cornerRadius = kOutsideSnapshotCornerRadius;
+  snapshotView.contentMode = UIViewContentModeScaleAspectFill;
+  snapshotView.clipsToBounds = YES;
+
+  [snapshotsBackground addSubview:snapshotView];
+
   NSLayoutConstraint* backgroundHeightConstraint =
       [snapshotsBackground.heightAnchor
           constraintEqualToConstant:kSnapshotViewMaxHeight];
@@ -499,9 +517,27 @@ constexpr CGFloat kSnapshotViewVerticalMargin = 25;
     [snapshotsBackground.widthAnchor
         constraintEqualToAnchor:snapshotsBackground.heightAnchor
                      multiplier:kSnapshotViewRatio],
+    [snapshotView.widthAnchor
+        constraintEqualToAnchor:snapshotsBackground.widthAnchor
+                     multiplier:kSingleSnapshotRatio],
+    [snapshotView.heightAnchor
+        constraintEqualToAnchor:snapshotsBackground.heightAnchor
+                     multiplier:kSingleSnapshotRatio],
+    [snapshotView.centerXAnchor
+        constraintEqualToAnchor:snapshotsBackground.centerXAnchor],
+    [snapshotView.centerYAnchor
+        constraintEqualToAnchor:snapshotsBackground.centerYAnchor],
   ]];
 
   return snapshotsBackground;
+}
+
+#pragma mark - TabGroupCreationConsumer
+
+- (void)setSnapshots:(NSArray<UIImage*>*)snapshots
+            favicons:(NSArray<UIImage*>*)favicons {
+  _snapshots = snapshots;
+  _favicons = favicons;
 }
 
 @end

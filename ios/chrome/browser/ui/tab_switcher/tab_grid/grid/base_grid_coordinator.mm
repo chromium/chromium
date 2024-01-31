@@ -96,6 +96,7 @@
          "experiment.";
   CHECK(!_tabGroupCreator) << "There is an atemps to create a tab group when a "
                               "creation process is still running.";
+
   // TODO(crbug.com/1501837): Replace base view controller by view controller
   // when the base grid coordinator will have access to the grid view
   // controller.

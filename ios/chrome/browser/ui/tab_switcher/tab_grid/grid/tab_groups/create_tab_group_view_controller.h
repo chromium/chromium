@@ -7,7 +7,6 @@
 
 #import <UIKit/UIKit.h>
 
-#import "components/tab_groups/tab_group_color.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/tab_groups/tab_group_creation_consumer.h"
 
 @protocol TabGroupCreationMutator;

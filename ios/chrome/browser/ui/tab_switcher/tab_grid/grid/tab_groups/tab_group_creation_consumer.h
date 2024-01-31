@@ -7,12 +7,14 @@
 
 #import "components/tab_groups/tab_group_color.h"
 
-// Consumer reflect tab group creation model change to the tab group ui creation
-// view.
+// Consumer to allow the tab group model to send information to the tab group
+// UI when creating a tab group.
 @protocol TabGroupCreationConsumer
 
 // Sets the default group color.
 - (void)setDefaultGroupColor:(tab_groups::TabGroupColorId)color;
+// Sets snapshots and favicons.
+- (void)setSnapshots:(NSArray*)snapshots favicons:(NSArray*)favicons;
 
 @end
 

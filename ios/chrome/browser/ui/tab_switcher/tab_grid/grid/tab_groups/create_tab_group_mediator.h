@@ -7,14 +7,26 @@
 
 #import <Foundation/Foundation.h>
 
+#import <set>
+
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/tab_groups/tab_group_creation_mutator.h"
 
 @protocol TabGroupCreationConsumer;
+class WebStateList;
+
+namespace web {
+class WebStateID;
+}
 
 // Mediator to manage the model layer of the tab group creation.
 @interface CreateTabGroupMediator : NSObject <TabGroupCreationMutator>
 
-- (instancetype)initWithConsumer:(id<TabGroupCreationConsumer>)consumer;
+// Init the tab group creation mediator with:
+// - `identifiers` the list of selected tabs ID
+// - `webStateList` the web state list where the `identifiers` are from
+- (instancetype)initWithConsumer:(id<TabGroupCreationConsumer>)consumer
+                    selectedTabs:(std::set<web::WebStateID>&)identifiers
+                    webStateList:(WebStateList*)webStateList;
 
 @end
 
