@@ -94,6 +94,13 @@ class MODULES_EXPORT AudioEncoder final
       uint32_t reset_count,
       media::EncodedAudioBuffer encoded_buffer,
       absl::optional<media::AudioEncoder::CodecDescription> codec_desc);
+  DOMException* MakeOperationError(std::string error_msg,
+                                   media::EncoderStatus status);
+  DOMException* MakeEncodingError(std::string error_msg,
+                                  media::EncoderStatus status);
+
+  // True if MojoAudioEncoder is being used.
+  bool is_platform_encoder_ = false;
 };
 
 }  // namespace blink
