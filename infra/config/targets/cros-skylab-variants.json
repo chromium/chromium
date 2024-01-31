@@ -46,41 +46,6 @@
     "enabled": true,
     "identifier": "BRYA_RELEASE_STABLE"
   },
-  "CROS_DEDEDE_RELEASE_LKGM": {
-    "skylab": {
-      "cros_board": "dedede",
-      "use_lkgm": true
-    },
-    "enabled": true,
-    "identifier": "DEDEDE_RELEASE_LKGM"
-  },
-  "CROS_DEDEDE_RELEASE_DEV": {
-    "skylab": {
-      "cros_board": "dedede",
-      "cros_chrome_version": "122.0.6241.0",
-      "cros_img": "dedede-release/R122-15748.0.0"
-    },
-    "enabled": true,
-    "identifier": "DEDEDE_RELEASE_DEV"
-  },
-  "CROS_DEDEDE_RELEASE_BETA": {
-    "skylab": {
-      "cros_board": "dedede",
-      "cros_chrome_version": "121.0.6167.82",
-      "cros_img": "dedede-release/R121-15699.40.0"
-    },
-    "enabled": true,
-    "identifier": "DEDEDE_RELEASE_BETA"
-  },
-  "CROS_DEDEDE_RELEASE_STABLE": {
-    "skylab": {
-      "cros_board": "dedede",
-      "cros_chrome_version": "120.0.6099.235",
-      "cros_img": "dedede-release/R120-15662.76.0"
-    },
-    "enabled": true,
-    "identifier": "DEDEDE_RELEASE_STABLE"
-  },
   "CROS_FIZZ_RELEASE_LKGM": {
     "skylab": {
       "cros_board": "fizz",
