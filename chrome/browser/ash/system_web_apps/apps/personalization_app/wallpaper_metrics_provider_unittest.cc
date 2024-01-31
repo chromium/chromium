@@ -76,4 +76,26 @@ TEST_F(WallpaperMetricsProviderTest, RecordsImageSettledWithUnitId) {
                                       1);
 }
 
+TEST_F(WallpaperMetricsProviderTest, RecordsImageSettledWithEmptyCollectionId) {
+  AccountId account_id =
+      ash::Shell::Get()->session_controller()->GetActiveAccountId();
+
+  auto* wallpaper_controller = ash::Shell::Get()->wallpaper_controller();
+  ash::WallpaperInfo info;
+  info.type = ash::WallpaperType::kOnline;
+  wallpaper_controller->SetUserWallpaperInfo(account_id, info);
+
+  base::HistogramTester histogram_tester;
+
+  wallpaper_metrics_provider().ProvideCurrentSessionData(nullptr);
+
+  const int false_bucket = 0;
+  histogram_tester.ExpectUniqueSample("Ash.Wallpaper.Image.Settled.HasUnitId",
+                                      false_bucket, 1);
+  histogram_tester.ExpectTotalCount("Ash.Wallpaper.Image.Settled", 0);
+  histogram_tester.ExpectUniqueSample(
+      "Ash.Wallpaper.Image.Settled.HasCollectionId", false_bucket, 1);
+  histogram_tester.ExpectTotalCount("Ash.Wallpaper.Collection.Settled", 0);
+}
+
 }  // namespace

@@ -31,8 +31,11 @@ void WallpaperMetricsProvider::ProvideCurrentSessionData(
     base::UmaHistogramSparse("Ash.Wallpaper.Image.Settled",
                              info->unit_id.value());
   }
-  CHECK(!info->collection_id.empty());
-  const int collection_id_hash = base::PersistentHash(info->collection_id);
-  base::UmaHistogramSparse("Ash.Wallpaper.Collection.Settled",
-                           collection_id_hash);
+  base::UmaHistogramBoolean("Ash.Wallpaper.Image.Settled.HasCollectionId",
+                            !info->collection_id.empty());
+  if (!info->collection_id.empty()) {
+    const int collection_id_hash = base::PersistentHash(info->collection_id);
+    base::UmaHistogramSparse("Ash.Wallpaper.Collection.Settled",
+                             collection_id_hash);
+  }
 }

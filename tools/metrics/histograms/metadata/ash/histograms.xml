@@ -7511,6 +7511,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.Wallpaper.Image.Settled.HasCollectionId" enum="Boolean"
+    expires_after="2025-01-11">
+  <owner>jasontt@chromium.org</owner>
+  <owner>assistive-eng@google.com</owner>
+  <summary>
+    Whether the current online image currently set as the active wallpaper has
+    the collection_id field. Older versions of ChromeOS (pre M107) did not set
+    this field, so this metric tracks how many users selected an older online
+    wallpaper and have not updated it since. Emitted once for every UMA upload.
+  </summary>
+</histogram>
+
 <histogram name="Ash.Wallpaper.Image.Settled.HasUnitId" enum="Boolean"
     expires_after="2025-01-11">
   <owner>jasontt@chromium.org</owner>
