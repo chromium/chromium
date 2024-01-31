@@ -156,6 +156,12 @@ class NearbyConnections : public mojom::NearbyConnections {
  private:
   Core* GetCore(const std::string& service_id);
 
+  const presence::PresenceDevice& GetPresenceDevice(
+      const std::string& service_id,
+      const std::string& endpoint_id) const;
+  void RemovePresenceDevice(const std::string& service_id,
+                            const std::string& endpoint_id);
+
   mojo::Receiver<mojom::NearbyConnections> nearby_connections_;
 
   std::unique_ptr<ServiceControllerRouter> service_controller_router_;
@@ -180,6 +186,15 @@ class NearbyConnections : public mojom::NearbyConnections {
   // A map of payload_id to file for OutputFile.
   base::flat_map<int64_t, base::File> output_file_map_
       GUARDED_BY(output_file_lock_);
+
+  // A map of outgoing connections to remote devices per service, keyed first by
+  // `service_id`, and then as `endpoint_id` to `PresenceDevice`. This class
+  // must own its `PresenceDevice` instances, because Nearby Connections' `Core`
+  // object only accepts `PresenceDevice` references.
+  base::flat_map<
+      std::string,
+      base::flat_map<std::string, std::unique_ptr<presence::PresenceDevice>>>
+      service_id_to_endpoint_id_to_presence_devices_with_outgoing_connections_map_;
 
   scoped_refptr<base::SingleThreadTaskRunner> thread_task_runner_;
 
