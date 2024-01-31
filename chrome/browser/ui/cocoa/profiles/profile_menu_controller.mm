@@ -16,6 +16,7 @@
 #include "chrome/browser/profiles/avatar_menu.h"
 #include "chrome/browser/profiles/avatar_menu_observer.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_metrics.h"
@@ -40,7 +41,9 @@ NSString* GetProfileMenuTitle() {
 }  // namespace
 
 @interface ProfileMenuController (Private)
-- (void)initializeMenu;
+- (void)initializeMenuWithProfileAttributesStorage:
+    (ProfileAttributesStorage*)storage;
+- (void)rebuildMenu;
 @end
 
 namespace ProfileMenuControllerInternal {
@@ -77,32 +80,59 @@ class Observer : public BrowserListObserver, public AvatarMenuObserver {
 ////////////////////////////////////////////////////////////////////////////////
 
 @implementation ProfileMenuController {
-  // The controller for the profile submenu.
-  std::unique_ptr<AvatarMenu> _avatarMenu;
-
   // An observer to be notified when the active browser changes and when the
   // menu model changes.
   std::unique_ptr<ProfileMenuControllerInternal::Observer> _observer;
 
+  // The controller for the profile submenu.
+  std::unique_ptr<AvatarMenu> _avatarMenu;
+
   // The main menu item to which the profile menu is attached.
-  NSMenuItem* _mainMenuItem;  // weak
+  NSMenuItem* __strong _mainMenuItem;
 }
 
-- (instancetype)initWithMainMenuItem:(NSMenuItem*)item {
+- (instancetype)initWithMainMenuItem:(NSMenuItem*)item
+            profileAttributesStorage:(ProfileAttributesStorage*)storage {
   if ((self = [super init])) {
     _mainMenuItem = item;
 
-    NSMenu* menu = [[NSMenu alloc] initWithTitle:GetProfileMenuTitle()];
-    [_mainMenuItem setSubmenu:menu];
+    _mainMenuItem.submenu =
+        [[NSMenu alloc] initWithTitle:GetProfileMenuTitle()];
 
-    // This object will be constructed as part of nib loading, which happens
-    // before the message loop starts and g_browser_process is available.
-    // Schedule this on the loop to do work when the browser is ready.
-    [self performSelector:@selector(initializeMenu)
-               withObject:nil
-               afterDelay:0];
+    // When this object is constructed in non-test code, right after the main
+    // menu is created, that happens before the message loop starts and thus
+    // `g_browser_process` is not yet available. In that case, schedule
+    // initialization on the loop to do work when the browser is ready. For test
+    // code, the required object is available, so initialize immediately to
+    // allow test code to avoid loop spinning calls, which could cause
+    // flakiness.
+
+    if (storage) {
+      [self initializeMenuWithProfileAttributesStorage:storage];
+    } else {
+      dispatch_async(dispatch_get_main_queue(), ^{
+        [self initializeMenuWithProfileAttributesStorage:
+                  &g_browser_process->profile_manager()
+                       ->GetProfileAttributesStorage()];
+      });
+    }
   }
   return self;
+}
+
+- (instancetype)initWithMainMenuItem:(NSMenuItem*)item {
+  return [self initWithMainMenuItem:item profileAttributesStorage:nullptr];
+}
+
+- (instancetype)initSynchronouslyForTestingWithMainMenuItem:(NSMenuItem*)item
+                                   profileAttributesStorage:
+                                       (ProfileAttributesStorage*)storage {
+  return [self initWithMainMenuItem:item profileAttributesStorage:storage];
+}
+
+- (void)deinitialize {
+  _avatarMenu.reset();
+  _observer.reset();
 }
 
 - (IBAction)switchToProfileFromMenu:(id)sender {
@@ -140,7 +170,7 @@ class Observer : public BrowserListObserver, public AvatarMenuObserver {
     NSMenuItem* header = [[NSMenuItem alloc] initWithTitle:GetProfileMenuTitle()
                                                     action:nil
                                              keyEquivalent:@""];
-    [header setEnabled:NO];
+    header.enabled = NO;
     [menu insertItem:header atIndex:offset++];
   }
 
@@ -151,15 +181,15 @@ class Observer : public BrowserListObserver, public AvatarMenuObserver {
                       : @selector(switchToProfileFromMenu:);
     NSMenuItem* item = [self createItemWithTitle:name
                                           action:action];
-    [item setTag:itemData.menu_index];
+    item.tag = itemData.menu_index;
     if (dock) {
-      [item setIndentationLevel:1];
+      item.indentationLevel = 1;
     } else {
       gfx::Image itemIcon =
           profiles::GetAvatarIconForNSMenu(itemData.profile_path);
-      [item setImage:itemIcon.ToNSImage()];
-      [item setState:itemData.active ? NSControlStateValueOn
-                                     : NSControlStateValueOff];
+      item.image = itemIcon.ToNSImage();
+      item.state =
+          itemData.active ? NSControlStateValueOn : NSControlStateValueOff;
     }
     [menu insertItem:item atIndex:i + offset];
   }
@@ -169,12 +199,12 @@ class Observer : public BrowserListObserver, public AvatarMenuObserver {
 
 - (BOOL)validateMenuItem:(NSMenuItem*)menuItem {
   if (!_avatarMenu->ShouldShowAddNewProfileLink() &&
-      [menuItem action] == @selector(newProfile:)) {
+      menuItem.action == @selector(newProfile:)) {
     return NO;
   }
 
-  if (!_avatarMenu->ShouldShowEditProfileLink() &&
-      [menuItem action] == @selector(editProfile:)) {
+  if (!_avatarMenu->ShouldShowEditProfileLink() && menuItem.action == @selector
+                                                       (editProfile:)) {
     return NO;
   }
 
@@ -184,30 +214,30 @@ class Observer : public BrowserListObserver, public AvatarMenuObserver {
 // Private /////////////////////////////////////////////////////////////////////
 
 - (NSMenu*)menu {
-  return [_mainMenuItem submenu];
+  return _mainMenuItem.submenu;
 }
 
-- (void)initializeMenu {
+- (void)initializeMenuWithProfileAttributesStorage:
+    (ProfileAttributesStorage*)storage {
   _observer = std::make_unique<ProfileMenuControllerInternal::Observer>(self);
-  _avatarMenu = std::make_unique<AvatarMenu>(
-      &g_browser_process->profile_manager()->GetProfileAttributesStorage(),
-      _observer.get(), nullptr);
+  _avatarMenu = std::make_unique<AvatarMenu>(storage, _observer.get(),
+                                             /*browser=*/nullptr);
   _avatarMenu->RebuildMenu();
 
-  [[self menu] addItem:[NSMenuItem separatorItem]];
+  [self.menu addItem:[NSMenuItem separatorItem]];
 
   NSMenuItem* item = [self createItemWithTitle:
       l10n_util::GetNSStringWithFixup(IDS_PROFILES_MANAGE_BUTTON_LABEL)
                                         action:@selector(editProfile:)];
-  [[self menu] addItem:item];
+  [self.menu addItem:item];
 
   if (_avatarMenu->ShouldShowAddNewProfileLink()) {
-    [[self menu] addItem:[NSMenuItem separatorItem]];
+    [self.menu addItem:[NSMenuItem separatorItem]];
 
     item = [self createItemWithTitle:l10n_util::GetNSStringWithFixup(
                                          IDS_PROFILES_ADD_PROFILE_LABEL)
                               action:@selector(newProfile:)];
-    [[self menu] addItem:item];
+    [self.menu addItem:item];
   }
 
   [self rebuildMenu];
@@ -227,8 +257,9 @@ class Observer : public BrowserListObserver, public AvatarMenuObserver {
   //      profile will have a check mark.
   //   b) If the profile was not deleted, but there is no active browser, then
   //      the previous profile will remain checked.
-  if (!browser)
+  if (!browser) {
     return;
+  }
 
   // Update the avatar menu to get the active item states. Don't call
   // avatarMenu_->GetActiveProfileIndex() as the index might be
@@ -239,31 +270,30 @@ class Observer : public BrowserListObserver, public AvatarMenuObserver {
   // Update the state for the menu items.
   for (size_t i = 0; i < _avatarMenu->GetNumberOfItems(); ++i) {
     const AvatarMenu::Item& itemData = _avatarMenu->GetItemAt(i);
-    [[[self menu] itemWithTag:itemData.menu_index]
+    [[self.menu itemWithTag:itemData.menu_index]
         setState:itemData.active ? NSControlStateValueOn
                                  : NSControlStateValueOff];
   }
 }
 
 - (void)rebuildMenu {
-  NSMenu* menu = [self menu];
+  NSMenu* menu = self.menu;
 
-  for (NSMenuItem* item = [menu itemAtIndex:0];
-       ![item isSeparatorItem];
+  for (NSMenuItem* item = [menu itemAtIndex:0]; !item.separatorItem;
        item = [menu itemAtIndex:0]) {
     [menu removeItemAtIndex:0];
   }
 
   BOOL hasContent = [self insertItemsIntoMenu:menu atOffset:0 fromDock:NO];
 
-  [_mainMenuItem setHidden:!hasContent];
+  _mainMenuItem.hidden = !hasContent;
 }
 
 - (NSMenuItem*)createItemWithTitle:(NSString*)title action:(SEL)sel {
   NSMenuItem* item = [[NSMenuItem alloc] initWithTitle:title
                                                 action:sel
                                          keyEquivalent:@""];
-  [item setTarget:self];
+  item.target = self;
   return item;
 }
 
