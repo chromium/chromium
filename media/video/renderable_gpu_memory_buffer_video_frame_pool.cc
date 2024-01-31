@@ -203,8 +203,10 @@ bool FrameResources::Initialize() {
       gpu::SHARED_IMAGE_USAGE_MACOS_VIDEO_TOOLBOX |
 #endif
       // These SharedImages, like most/all SharedImages created to back
-      // VideoFrames, can be read via GLES2 to be exported for WebGL usage.
-      // Unusually for such SharedImages, they are also written via raster for
+      // VideoFrames, can be read both via the raster interface for import into
+      // canvas and/or 2-copy import into WebGL and via the GLES2 interface for
+      // 1-copy import into WebGL.
+      // Unusually for such SharedImages, they are also *written* via raster for
       // WebGL and WebRTC use cases in which RGBA textures are imported into the
       // VideoFrames (this is what "renderable" means in this context). Hence,
       // GLES2_WRITE is required for raster-over-GLES.
