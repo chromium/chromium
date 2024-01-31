@@ -264,6 +264,7 @@ cc_test(
     deps = [
         ":flat_hash_map",
         ":hash_generator_testing",
+        ":test_allocator",
         ":unordered_map_constructor_test",
         ":unordered_map_lookup_test",
         ":unordered_map_members_test",
@@ -301,6 +302,7 @@ cc_test(
         ":container_memory",
         ":flat_hash_set",
         ":hash_generator_testing",
+        ":test_allocator",
         ":unordered_set_constructor_test",
         ":unordered_set_lookup_test",
         ":unordered_set_members_test",
@@ -563,6 +565,7 @@ cc_library(
         "//absl/base",
         "//absl/base:config",
         "//absl/base:core_headers",
+        "//absl/base:no_destructor",
         "//absl/base:raw_logging_internal",
         "//absl/debugging:stacktrace",
         "//absl/memory",

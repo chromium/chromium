@@ -573,9 +573,10 @@ struct FlatHashMapPolicy {
     slot_policy::construct(alloc, slot, std::forward<Args>(args)...);
   }
 
+  // Returns std::true_type in case destroy is trivial.
   template <class Allocator>
-  static void destroy(Allocator* alloc, slot_type* slot) {
-    slot_policy::destroy(alloc, slot);
+  static auto destroy(Allocator* alloc, slot_type* slot) {
+    return slot_policy::destroy(alloc, slot);
   }
 
   template <class Allocator>

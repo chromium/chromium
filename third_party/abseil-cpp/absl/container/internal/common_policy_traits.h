@@ -45,9 +45,10 @@ struct common_policy_traits {
 
   // PRECONDITION: `slot` is INITIALIZED
   // POSTCONDITION: `slot` is UNINITIALIZED
+  // Returns std::true_type in case destroy is trivial.
   template <class Alloc>
-  static void destroy(Alloc* alloc, slot_type* slot) {
-    Policy::destroy(alloc, slot);
+  static auto destroy(Alloc* alloc, slot_type* slot) {
+    return Policy::destroy(alloc, slot);
   }
 
   // Transfers the `old_slot` to `new_slot`. Any memory allocated by the
@@ -83,6 +84,13 @@ struct common_policy_traits {
   static constexpr bool transfer_uses_memcpy() {
     return std::is_same<decltype(transfer_impl<std::allocator<char>>(
                             nullptr, nullptr, nullptr, Rank0{})),
+                        std::true_type>::value;
+  }
+
+  // Returns true if destroy is trivial and can be omitted.
+  template <class Alloc>
+  static constexpr bool destroy_is_trivial() {
+    return std::is_same<decltype(destroy<Alloc>(nullptr, nullptr)),
                         std::true_type>::value;
   }
 
