@@ -284,9 +284,7 @@ void DatabaseDiagnostics::WriteIntoTrace(
   context->set_error_message(error_message);
 }
 
-// DatabaseOptions::explicit_locking needs to be set to false for historical
-// reasons.
-Database::Database() : Database({.exclusive_locking = false}) {}
+Database::Database() : Database(DatabaseOptions{}) {}
 
 Database::Database(DatabaseOptions options)
     : options_(options), mmap_disabled_(!enable_mmap_by_default_) {
