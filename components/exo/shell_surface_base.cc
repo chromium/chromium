@@ -1171,23 +1171,8 @@ void ShellSurfaceBase::OnSetFrame(SurfaceFrameType frame_type) {
     return;
   }
 
-  bool frame_type_changed = frame_type_ != frame_type;
-
-  // aura-shell's set_frame, when used with xdg-shell, works iff the frame type
-  // or frame colors were specified before firsrt buffer commit. If these are
-  // not specified, the widget's layer is set to 'NOT_DRAWN' and the frame can't
-  // be drawn. `ClientControlledShellSurface is not affected.
-  if (frame_type_changed && widget_ &&
-      widget_->GetNativeWindow()->layer()->type() == ui::LAYER_NOT_DRAWN) {
-    if (frame_type != SurfaceFrameType::NONE &&
-        frame_type != SurfaceFrameType::SHADOW) {
-      DLOG(FATAL)
-          << "A shell surface with NOT_DRAWN layer can't support visible frame";
-      return;
-    }
-  }
   bool frame_was_disabled = !frame_enabled();
-
+  bool frame_type_changed = frame_type_ != frame_type;
   frame_type_ = frame_type;
   switch (frame_type) {
     case SurfaceFrameType::NONE:
@@ -2088,25 +2073,6 @@ void ShellSurfaceBase::UpdateShadow() {
       shadow->SetElevation(wm::kShadowElevationMenuOrTooltip);
 
     UpdateShadowRoundedCorners();
-  }
-
-  if (window->layer()->type() == ui::LAYER_NOT_DRAWN) {
-    DCHECK(!window->GetProperty(chromeos::kWindowManagerManagesOpacityKey));
-
-    // Snapped window should not be opaque because it can be drag-resized, in
-    // which case the widget's window can be exposed while waiting for
-    // configure_ack + commit.
-    bool window_is_opaque = widget_->IsFullscreen() || widget_->IsMaximized();
-    window->SetTransparent(!window_is_opaque);
-    if (root_surface()->FillsBoundsOpaquely()) {
-      // Manually control occlusion, but do not make the window
-      // opaque as the host window may not be at the same size unless the
-      // window state is either in fullscreen or maximized.
-      window->SetOpaqueRegionsForOcclusion(
-          {gfx::Rect(window->bounds().size())});
-    } else {
-      window->SetOpaqueRegionsForOcclusion({});
-    }
   }
 }
 

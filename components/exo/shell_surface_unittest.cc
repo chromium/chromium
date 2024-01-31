@@ -76,8 +76,6 @@
 
 namespace exo {
 
-const gfx::BufferFormat kOpaqueFormat = gfx::BufferFormat::RGBX_8888;
-
 using ShellSurfaceTest = test::ExoTestBase;
 
 namespace {
@@ -1349,9 +1347,8 @@ TEST_F(ShellSurfaceTest, SetGeometry) {
 
 TEST_F(ShellSurfaceTest, SetMinimumSize) {
   constexpr gfx::Size kBufferSize(64, 64);
-  auto shell_surface = test::ShellSurfaceBuilder(kBufferSize)
-                           .SetFrameColors(SK_ColorWHITE, SK_ColorWHITE)
-                           .BuildShellSurface();
+  auto shell_surface =
+      test::ShellSurfaceBuilder(kBufferSize).BuildShellSurface();
   auto* surface = shell_surface->root_surface();
 
   constexpr gfx::Size kSizes[] = {{50, 50}, {100, 50}};
@@ -2526,15 +2523,15 @@ TEST_F(ShellSurfaceTest, DragMaximizedWindow) {
 
 TEST_F(ShellSurfaceTest, CaptionWithPopup) {
   constexpr gfx::Size kBufferSize(256, 256);
-  auto shell_surface = test::ShellSurfaceBuilder(kBufferSize)
-                           .SetRootBufferFormat(kOpaqueFormat)
-                           .SetFrame(SurfaceFrameType::NORMAL)
-                           .BuildShellSurface();
+  auto shell_surface =
+      test::ShellSurfaceBuilder(kBufferSize).BuildShellSurface();
   auto* surface = shell_surface->root_surface();
-  shell_surface->GetWidget()->SetBounds(gfx::Rect(0, 0, 256, 288));
+
+  shell_surface->GetWidget()->SetBounds(gfx::Rect(0, 0, 256, 256));
+  shell_surface->OnSetFrame(SurfaceFrameType::NORMAL);
 
   auto popup_buffer = std::make_unique<Buffer>(
-      exo_test_helper()->CreateGpuMemoryBuffer(kBufferSize, kOpaqueFormat));
+      exo_test_helper()->CreateGpuMemoryBuffer(kBufferSize));
   auto popup_surface = std::make_unique<Surface>();
   popup_surface->Attach(popup_buffer.get());
   std::unique_ptr<ShellSurface> popup_shell_surface(CreatePopupShellSurface(
@@ -2571,10 +2568,9 @@ TEST_F(ShellSurfaceTest, CaptionWithPopup) {
 
 TEST_F(ShellSurfaceTest, SkipImeProcessingPropagateToSurface) {
   std::unique_ptr<ShellSurface> shell_surface =
-      test::ShellSurfaceBuilder({256, 256})
-          .SetFrame(SurfaceFrameType::NORMAL)
-          .BuildShellSurface();
+      test::ShellSurfaceBuilder({256, 256}).BuildShellSurface();
   shell_surface->GetWidget()->SetBounds(gfx::Rect(0, 0, 256, 256));
+  shell_surface->OnSetFrame(SurfaceFrameType::NORMAL);
 
   aura::Window* window = shell_surface->GetWidget()->GetNativeWindow();
   ASSERT_FALSE(window->GetProperty(aura::client::kSkipImeProcessing));
@@ -3274,11 +3270,11 @@ TEST_F(ShellSurfaceTest, Overlay) {
 }
 
 TEST_F(ShellSurfaceTest, OverlayOverlapsFrame) {
-  auto shell_surface = test::ShellSurfaceBuilder({100, 100})
-                           .SetFrame(SurfaceFrameType::NORMAL)
-                           .BuildShellSurface();
+  auto shell_surface =
+      test::ShellSurfaceBuilder({100, 100}).BuildShellSurface();
   shell_surface->GetWidget()->GetNativeWindow()->SetProperty(
       aura::client::kSkipImeProcessing, true);
+  shell_surface->OnSetFrame(SurfaceFrameType::NORMAL);
 
   EXPECT_FALSE(shell_surface->HasOverlay());
 
@@ -3311,11 +3307,11 @@ TEST_F(ShellSurfaceTest, OverlayOverlapsFrame) {
 }
 
 TEST_F(ShellSurfaceTest, OverlayCanResize) {
-  auto shell_surface = test::ShellSurfaceBuilder({100, 100})
-                           .SetFrame(SurfaceFrameType::NORMAL)
-                           .BuildShellSurface();
+  auto shell_surface =
+      test::ShellSurfaceBuilder({100, 100}).BuildShellSurface();
   shell_surface->GetWidget()->GetNativeWindow()->SetProperty(
       aura::client::kSkipImeProcessing, true);
+  shell_surface->OnSetFrame(SurfaceFrameType::NORMAL);
 
   EXPECT_FALSE(shell_surface->HasOverlay());
   {
@@ -3932,10 +3928,9 @@ TEST_F(ShellSurfaceTest, SetShapeAppliedAfterSurfaceCommit) {
 // when the surface commits.
 TEST_F(ShellSurfaceTest, SetShapeUpdatesAndUnsetsCorrectlyAfterCommit) {
   std::unique_ptr<ShellSurface> shell_surface =
-      test::ShellSurfaceBuilder({64, 64})
-          .SetFrame(SurfaceFrameType::SHADOW)
-          .BuildShellSurface();
+      test::ShellSurfaceBuilder({64, 64}).BuildShellSurface();
   shell_surface->OnSetServerStartResize();
+  shell_surface->OnSetFrame(SurfaceFrameType::SHADOW);
   shell_surface->root_surface()->Commit();
   const views::Widget* widget = shell_surface->GetWidget();
   ASSERT_TRUE(widget);
@@ -3984,11 +3979,9 @@ TEST_F(ShellSurfaceTest, SetShapeUpdatesAndUnsetsCorrectlyAfterCommit) {
 // SetShape() is not supported for windows with the frame enabled.
 TEST_F(ShellSurfaceTest, SetShapeWithFrameNotSupported) {
   std::unique_ptr<ShellSurface> shell_surface =
-      test::ShellSurfaceBuilder({64, 64})
-          .SetFrame(SurfaceFrameType::NORMAL)
-          .BuildShellSurface();
-
+      test::ShellSurfaceBuilder({64, 64}).BuildShellSurface();
   shell_surface->OnSetServerStartResize();
+  shell_surface->OnSetFrame(SurfaceFrameType::NORMAL);
   shell_surface->root_surface()->Commit();
   const views::Widget* widget = shell_surface->GetWidget();
   ASSERT_TRUE(widget);
@@ -4176,10 +4169,11 @@ TEST_F(ShellSurfaceTest, SubpixelPositionOffset) {
   std::unique_ptr<ShellSurface> shell_surface =
       test::ShellSurfaceBuilder({256, 256})
           .SetOrigin({20, 20})
-          .SetFrame(SurfaceFrameType::NORMAL)
           .BuildShellSurface();
+  auto* surface = shell_surface->root_surface();
   // Enabling a normal frame makes `GetClientViewBounds().origin()` return
   // (0, 32), which makes the host window not align with any pixel boundary.
+  surface->SetFrame(SurfaceFrameType::NORMAL);
   shell_surface->root_surface()->SetSurfaceHierarchyContentBoundsForTest(
       gfx::Rect(-20, -20, 256, 256));
   EXPECT_TRUE(shell_surface->OnPreWidgetCommit());
@@ -4412,57 +4406,37 @@ TEST_F(ShellSurfaceTest, DisplayLayoutConfigurationUpdatesSurfaceOrigin) {
   EXPECT_EQ(kNewOrigin + gfx::Vector2d(0, kVerticalOffset), client_origin);
 }
 
-// Tests the unnecessary occlusion events are fired when opaque buffer and no
-// frame are used.
 TEST_F(ShellSurfaceTest, DisplayScaleChangeDoesNotSendOcclusionUpdates) {
   std::unique_ptr<ShellSurface> shell_surface1 =
-      test::ShellSurfaceBuilder({256, 256})
-          .SetRootBufferFormat(kOpaqueFormat)
-          .BuildShellSurface();
+      test::ShellSurfaceBuilder({256, 256}).BuildShellSurface();
   std::unique_ptr<ShellSurface> shell_surface2 =
-      test::ShellSurfaceBuilder({256, 256})
-          .SetRootBufferFormat(kOpaqueFormat)
-          .BuildShellSurface();
-  auto* surface1 = shell_surface1->root_surface();
-  auto* surface2 = shell_surface2->root_surface();
-  auto* window1 = shell_surface1->GetWidget()->GetNativeWindow();
-  auto* window2 = shell_surface2->GetWidget()->GetNativeWindow();
+      test::ShellSurfaceBuilder({256, 256}).BuildShellSurface();
 
-  // xdg-shell without a frame type will use NOT_DRAWN layer type and
-  // should control the opacity by themselves.
-  EXPECT_EQ(ui::LAYER_NOT_DRAWN, window1->layer()->type());
-  EXPECT_FALSE(window1->GetProperty(chromeos::kWindowManagerManagesOpacityKey));
-  EXPECT_EQ(ui::LAYER_NOT_DRAWN, window2->layer()->type());
-  EXPECT_FALSE(window2->GetProperty(chromeos::kWindowManagerManagesOpacityKey));
+  shell_surface1->GetWidget()->GetNativeWindow()->SetProperty(
+      chromeos::kWindowManagerManagesOpacityKey, true);
+  shell_surface2->GetWidget()->GetNativeWindow()->SetProperty(
+      chromeos::kWindowManagerManagesOpacityKey, true);
 
-  const std::vector<gfx::Rect> kNormalOpaqueRegion{gfx::Rect(256, 256)};
-
-  // Normal window should have custom opacity regions.
-  EXPECT_TRUE(window1->GetTransparent());
-  EXPECT_TRUE(window2->GetTransparent());
-  EXPECT_EQ(kNormalOpaqueRegion, window1->opaque_regions_for_occlusion());
-  EXPECT_EQ(kNormalOpaqueRegion, window2->opaque_regions_for_occlusion());
-
-  // Test Maximzied State
+  // Do state change after setting kWindowManagerManagesOpacityKey so it
+  // applies properly.
   shell_surface1->Maximize();
   shell_surface2->Maximize();
 
-  EXPECT_FALSE(window1->GetTransparent());
-  EXPECT_FALSE(window2->GetTransparent());
-  const std::vector<gfx::Rect> kMaximizedOpaqueRegion{gfx::Rect(800, 552)};
-  EXPECT_EQ(kMaximizedOpaqueRegion, window1->opaque_regions_for_occlusion());
-  EXPECT_EQ(kMaximizedOpaqueRegion, window2->opaque_regions_for_occlusion());
+  auto* surface1 = shell_surface1->root_surface();
+  auto* surface2 = shell_surface2->root_surface();
 
   // Update root surfaces (this happens asynchronously normally) and set
   // occlusion tracking.
   surface1->SetOcclusionTracking(true);
   auto surface1_buffer =
-      exo_test_helper()->CreateBuffer(shell_surface1.get(), kOpaqueFormat);
+      std::make_unique<Buffer>(exo_test_helper()->CreateGpuMemoryBuffer(
+          shell_surface1->GetWidget()->GetWindowBoundsInScreen().size()));
   surface1->Attach(surface1_buffer.get());
   surface1->Commit();
   surface2->SetOcclusionTracking(true);
   auto surface2_buffer =
-      exo_test_helper()->CreateBuffer(shell_surface2.get(), kOpaqueFormat);
+      std::make_unique<Buffer>(exo_test_helper()->CreateGpuMemoryBuffer(
+          shell_surface2->GetWidget()->GetWindowBoundsInScreen().size()));
   surface2->Attach(surface2_buffer.get());
   surface2->Commit();
 
@@ -4483,103 +4457,31 @@ TEST_F(ShellSurfaceTest, DisplayScaleChangeDoesNotSendOcclusionUpdates) {
   EXPECT_EQ(0, observer2.num_occlusion_state_changes());
 
   display_manager->ZoomDisplay(display_id, /*up=*/true);
-  // Update root surfaces (this happens asynchronously normally).
-  {
-    auto surface1_buffer_zoom =
-        exo_test_helper()->CreateBuffer(shell_surface1.get(), kOpaqueFormat);
-    surface1->Attach(surface1_buffer_zoom.get());
-    surface1->Commit();
-    auto surface2_buffer_zoom =
-        exo_test_helper()->CreateBuffer(shell_surface2.get(), kOpaqueFormat);
-    surface2->Attach(surface2_buffer_zoom.get());
-    surface2->Commit();
-  }
+
   EXPECT_EQ(0, observer1.num_occlusion_state_changes());
   EXPECT_EQ(0, observer2.num_occlusion_state_changes());
 
+  // Update root surfaces (this happens asynchronously normally).
+  auto surface1_buffer_zoom =
+      std::make_unique<Buffer>(exo_test_helper()->CreateGpuMemoryBuffer(
+          shell_surface1->GetWidget()->GetWindowBoundsInScreen().size()));
+  surface1->Attach(surface1_buffer_zoom.get());
+  surface1->Commit();
+  auto surface2_buffer_zoom =
+      std::make_unique<Buffer>(exo_test_helper()->CreateGpuMemoryBuffer(
+          shell_surface2->GetWidget()->GetWindowBoundsInScreen().size()));
+  surface2->Attach(surface2_buffer_zoom.get());
+  surface2->Commit();
+
   display_manager->ZoomDisplay(display_id, /*up=*/false);
-  {
-    auto surface1_buffer_zoom =
-        exo_test_helper()->CreateBuffer(shell_surface1.get(), kOpaqueFormat);
-    surface1->Attach(surface1_buffer_zoom.get());
-    surface1->Commit();
-    auto surface2_buffer_zoom =
-        exo_test_helper()->CreateBuffer(shell_surface2.get(), kOpaqueFormat);
-    surface2->Attach(surface2_buffer_zoom.get());
-    surface2->Commit();
-  }
+
   // Should not get any occlusion changes - requires occlusion tracking clip
   // to the root window and that the shelf occlude what is below it, too.
   EXPECT_EQ(0, observer1.num_occlusion_state_changes());
   EXPECT_EQ(0, observer2.num_occlusion_state_changes());
 
-  // Test Snapped State
-  ash::WindowSnapWMEvent snap_event(ash::WM_EVENT_SNAP_PRIMARY);
-  ash::WindowState* window_state1 = ash::WindowState::Get(window1);
-  ash::WindowState* window_state2 = ash::WindowState::Get(window2);
-
-  window_state1->OnWMEvent(&snap_event);
-  window_state2->OnWMEvent(&snap_event);
-  EXPECT_EQ(0, observer1.num_occlusion_state_changes());
-  EXPECT_EQ(0, observer2.num_occlusion_state_changes());
-
-  EXPECT_TRUE(window1->GetTransparent());
-  EXPECT_TRUE(window2->GetTransparent());
-
-  const std::vector<gfx::Rect> kSnappedOpaqueRegion{gfx::Rect(400, 552)};
-  EXPECT_EQ(kSnappedOpaqueRegion, window1->opaque_regions_for_occlusion());
-  EXPECT_EQ(kSnappedOpaqueRegion, window2->opaque_regions_for_occlusion());
-  {
-    auto snapped_buffer1 =
-        exo_test_helper()->CreateBuffer(shell_surface1.get(), kOpaqueFormat);
-    surface1->Attach(snapped_buffer1.get());
-    surface1->Commit();
-
-    auto snapped_buffer2 =
-        exo_test_helper()->CreateBuffer(shell_surface2.get(), kOpaqueFormat);
-    surface2->Attach(snapped_buffer2.get());
-    surface2->Commit();
-  }
-  EXPECT_EQ(0, observer1.num_occlusion_state_changes());
-  EXPECT_EQ(0, observer2.num_occlusion_state_changes());
-
-  display_manager->ZoomDisplay(display_id, /*up=*/true);
-  {
-    auto snapped_buffer1 =
-        exo_test_helper()->CreateBuffer(shell_surface1.get(), kOpaqueFormat);
-    surface1->Attach(snapped_buffer1.get());
-    surface1->Commit();
-
-    auto snapped_buffer2 =
-        exo_test_helper()->CreateBuffer(shell_surface2.get(), kOpaqueFormat);
-    surface2->Attach(snapped_buffer2.get());
-    surface2->Commit();
-  }
-  EXPECT_EQ(0, observer1.num_occlusion_state_changes());
-  EXPECT_EQ(0, observer2.num_occlusion_state_changes());
-
-  display_manager->ZoomDisplay(display_id, /*up=*/false);
-  {
-    auto snapped_buffer1 =
-        exo_test_helper()->CreateBuffer(shell_surface1.get(), kOpaqueFormat);
-    surface1->Attach(snapped_buffer1.get());
-    surface1->Commit();
-
-    auto snapped_buffer2 =
-        exo_test_helper()->CreateBuffer(shell_surface2.get(), kOpaqueFormat);
-    surface2->Attach(snapped_buffer2.get());
-    surface2->Commit();
-  }
-  EXPECT_EQ(0, observer1.num_occlusion_state_changes());
-  EXPECT_EQ(0, observer2.num_occlusion_state_changes());
-
-  // Make sure the occlusion tracking is working.
-  surface2->RemoveSurfaceObserver(&observer2);
-  shell_surface2.reset();
-
-  EXPECT_EQ(1, observer1.num_occlusion_state_changes());
-
   surface1->RemoveSurfaceObserver(&observer1);
+  surface2->RemoveSurfaceObserver(&observer2);
 }
 
 }  // namespace exo
