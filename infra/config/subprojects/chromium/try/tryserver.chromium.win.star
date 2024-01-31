@@ -112,10 +112,6 @@ try_.builder(
     ),
     builderless = False,
     os = os.WINDOWS_ANY,
-    experiments = {
-        # crbug/940930
-        "chromium.enable_cleandead": 50,
-    },
     main_list_view = "try",
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
     tryjob = try_.job(),
