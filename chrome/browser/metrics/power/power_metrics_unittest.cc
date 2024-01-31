@@ -9,30 +9,7 @@
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(IS_MAC)
-#include "base/mac/mac_util.h"
-#endif
-
 namespace {
-
-#if BUILDFLAG(IS_MAC)
-power_metrics::CoalitionResourceUsageRate GetFakeResourceUsageRate() {
-  power_metrics::CoalitionResourceUsageRate rate;
-  rate.cpu_time_per_second = 0.5;
-  rate.interrupt_wakeups_per_second = 10;
-  rate.platform_idle_wakeups_per_second = 11;
-  rate.bytesread_per_second = 12;
-  rate.byteswritten_per_second = 13;
-  rate.gpu_time_per_second = 0.6;
-  rate.energy_impact_per_second = 15;
-  rate.power_nw = 1000000;
-
-  for (int i = 0; i < COALITION_NUM_THREAD_QOS_TYPES; ++i)
-    rate.qos_time_per_second[i] = 0.1 * i;
-
-  return rate;
-}
-#endif  // BUILDFLAG(IS_MAC)
 
 struct HistogramSampleExpectation {
   std::string histogram_name_prefix;
@@ -40,8 +17,8 @@ struct HistogramSampleExpectation {
 };
 
 // For each histogram named after the combination of prefixes from
-// `expectations` and suffixes from `suffixes`, verifies that there is a unique
-// sample `expectation.sample`.
+// `expectations` and suffixes from `suffixes`, verifies that there is a
+// unique sample `expectation.sample`.
 void ExpectHistogramSamples(
     base::HistogramTester* histogram_tester,
     const std::vector<const char*>& suffixes,
@@ -97,84 +74,6 @@ TEST(PowerMetricsTest, ReportAggregatedProcessMetricsHistograms) {
 #endif
   });
 }
-
-#if BUILDFLAG(IS_MAC)
-TEST(PowerMetricsTest, ReportShortIntervalHistograms) {
-  base::HistogramTester histogram_tester;
-  const char* kScenarioSuffix = ".AllTabsHidden_Audio";
-
-  ReportShortIntervalHistograms(kScenarioSuffix, GetFakeResourceUsageRate());
-
-  const std::vector<const char*> suffixes({"", kScenarioSuffix});
-  ExpectHistogramSamples(
-      &histogram_tester, suffixes,
-      {{"PerformanceMonitor.ResourceCoalition.CPUTime2_10sec", 5000}});
-}
-
-TEST(PowerMetricsTest, ReportResourceCoalitionHistograms) {
-  base::HistogramTester histogram_tester;
-
-  const std::vector<const char*> suffixes = {"", ".Foo", ".Bar"};
-  ReportResourceCoalitionHistograms(GetFakeResourceUsageRate(), suffixes);
-
-  ExpectHistogramSamples(
-      &histogram_tester, suffixes,
-      {// These histograms reports the CPU/GPU times as a percentage of
-       // time with a permyriad granularity, 10% (0.1) will be represented
-       // as 1000.
-       {"PerformanceMonitor.ResourceCoalition.CPUTime2", 5000},
-       {"PerformanceMonitor.ResourceCoalition.GPUTime2", 6000},
-       // These histograms report counts with a millievent/second
-       // granularity.
-       {"PerformanceMonitor.ResourceCoalition.InterruptWakeupsPerSecond",
-        10000},
-       {"PerformanceMonitor.ResourceCoalition."
-        "PlatformIdleWakeupsPerSecond",
-        11000},
-       {"PerformanceMonitor.ResourceCoalition.BytesReadPerSecond2", 12},
-       {"PerformanceMonitor.ResourceCoalition.BytesWrittenPerSecond2", 13},
-       // EI is reported in centi-EI so the data needs to be multiplied by
-       // 100.0.
-       {"PerformanceMonitor.ResourceCoalition.EnergyImpact", 1500},
-       // The QoS histograms also reports the CPU times as a percentage of
-       // time with a permyriad granularity.
-       {"PerformanceMonitor.ResourceCoalition.QoSLevel.Default", 0},
-       {"PerformanceMonitor.ResourceCoalition.QoSLevel.Maintenance", 1000},
-       {"PerformanceMonitor.ResourceCoalition.QoSLevel.Background", 2000},
-       {"PerformanceMonitor.ResourceCoalition.QoSLevel.Utility", 3000},
-       {"PerformanceMonitor.ResourceCoalition.QoSLevel.Legacy", 4000},
-       {"PerformanceMonitor.ResourceCoalition.QoSLevel.UserInitiated", 5000},
-       {"PerformanceMonitor.ResourceCoalition.QoSLevel.UserInteractive",
-        6000}});
-
-  if (base::mac::GetCPUType() == base::mac::CPUType::kArm) {
-    ExpectHistogramSamples(
-        &histogram_tester, suffixes,
-        {// Power is reported in milliwatts (mj/s), the data
-         // is in nj/s so it has to be divided by 1000000.
-         {"PerformanceMonitor.ResourceCoalition.Power2", 1}});
-  } else {
-    histogram_tester.ExpectTotalCount(
-        "PerformanceMonitor.ResourceCoalition.Power2", 0);
-  }
-}
-
-// Verify that no energy impact histogram is reported when
-// `CoalitionResourceUsageRate::energy_impact_per_second` is nullopt.
-TEST(PowerMetricsTest, ReportResourceCoalitionHistograms_NoEnergyImpact) {
-  base::HistogramTester histogram_tester;
-  power_metrics::CoalitionResourceUsageRate rate = GetFakeResourceUsageRate();
-  rate.energy_impact_per_second.reset();
-
-  std::vector<const char*> suffixes = {"", ".Foo"};
-  ReportResourceCoalitionHistograms(rate, suffixes);
-
-  histogram_tester.ExpectTotalCount(
-      "PerformanceMonitor.ResourceCoalition.EnergyImpact", 0);
-  histogram_tester.ExpectTotalCount(
-      "PerformanceMonitor.ResourceCoalition.EnergyImpact.Foo", 0);
-}
-#endif  // BUILDFLAG(IS_MAC)
 
 TEST(PowerMetricsTest, CalculateDischargeRateMilliwatts_mWh) {
   int64_t discharge_rate = CalculateDischargeRateMilliwatts(
