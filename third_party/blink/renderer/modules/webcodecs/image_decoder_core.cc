@@ -251,6 +251,13 @@ std::unique_ptr<ImageDecoderCore::ImageDecodeResult> ImageDecoderCore::Decode(
     return result;
   }
 
+  if (auto sk_cs = decoder_->ColorSpaceForSkImages()) {
+    auto gfx_cs = gfx::ColorSpace(*sk_cs);
+    if (gfx_cs.IsValid()) {
+      frame->set_color_space(gfx_cs);
+    }
+  }
+
   frame->metadata().transformation =
       ImageOrientationToVideoTransformation(decoder_->Orientation());
 

@@ -256,6 +256,7 @@ TEST_F(ImageDecoderTest, DecodeGifZeroDuration) {
     EXPECT_EQ(frame->duration(), 0u);
     EXPECT_EQ(frame->displayWidth(), 16u);
     EXPECT_EQ(frame->displayHeight(), 16u);
+    EXPECT_EQ(frame->frame()->ColorSpace(), gfx::ColorSpace::CreateSRGB());
   }
 
   {
@@ -271,6 +272,7 @@ TEST_F(ImageDecoderTest, DecodeGifZeroDuration) {
     EXPECT_EQ(frame->duration(), 0u);
     EXPECT_EQ(frame->displayWidth(), 16u);
     EXPECT_EQ(frame->displayHeight(), 16u);
+    EXPECT_EQ(frame->frame()->ColorSpace(), gfx::ColorSpace::CreateSRGB());
   }
 
   // Decoding past the end should result in a rejected promise.
@@ -319,6 +321,7 @@ TEST_F(ImageDecoderTest, DecodeGif) {
     EXPECT_EQ(frame->duration(), 100000u);
     EXPECT_EQ(frame->displayWidth(), 100u);
     EXPECT_EQ(frame->displayHeight(), 100u);
+    EXPECT_EQ(frame->frame()->ColorSpace(), gfx::ColorSpace::CreateSRGB());
   }
 
   {
@@ -334,6 +337,7 @@ TEST_F(ImageDecoderTest, DecodeGif) {
     EXPECT_EQ(frame->duration(), 100000u);
     EXPECT_EQ(frame->displayWidth(), 100u);
     EXPECT_EQ(frame->displayHeight(), 100u);
+    EXPECT_EQ(frame->frame()->ColorSpace(), gfx::ColorSpace::CreateSRGB());
   }
 
   // Decoding past the end should result in a rejected promise.
@@ -616,6 +620,7 @@ TEST_F(ImageDecoderTest, DecoderReadableStream) {
     EXPECT_EQ(*frame->duration(), 100000u);
     EXPECT_EQ(frame->displayWidth(), 100u);
     EXPECT_EQ(frame->displayHeight(), 100u);
+    EXPECT_EQ(frame->frame()->ColorSpace(), gfx::ColorSpace::CreateSRGB());
   }
 }
 
@@ -689,6 +694,7 @@ TEST_F(ImageDecoderTest, DecoderReadableStreamAvif) {
   EXPECT_EQ(*frame->duration(), 100000u);
   EXPECT_EQ(frame->displayWidth(), 159u);
   EXPECT_EQ(frame->displayHeight(), 159u);
+  EXPECT_EQ(frame->frame()->ColorSpace(), gfx::ColorSpace::CreateSRGB());
 #else
   EXPECT_FALSE(decode_tester.IsFulfilled());
 #endif
@@ -763,6 +769,11 @@ TEST_F(ImageDecoderTest, ReadableStreamAvifStillYuvDecoding) {
     EXPECT_EQ(frame->duration(), absl::nullopt);
     EXPECT_EQ(frame->displayWidth(), 3u);
     EXPECT_EQ(frame->displayHeight(), 3u);
+    EXPECT_EQ(frame->frame()->ColorSpace(),
+              gfx::ColorSpace(gfx::ColorSpace::PrimaryID::BT709,
+                              gfx::ColorSpace::TransferID::SRGB,
+                              gfx::ColorSpace::MatrixID::BT709,
+                              gfx::ColorSpace::RangeID::LIMITED));
 #else
     EXPECT_FALSE(tester.IsFulfilled());
 #endif
@@ -961,6 +972,7 @@ TEST_F(ImageDecoderTest, DecodeYuv) {
     EXPECT_EQ(frame->duration(), absl::nullopt);
     EXPECT_EQ(frame->displayWidth(), 99u);
     EXPECT_EQ(frame->displayHeight(), 99u);
+    EXPECT_EQ(frame->frame()->ColorSpace(), gfx::ColorSpace::CreateJpeg());
   }
 }
 
