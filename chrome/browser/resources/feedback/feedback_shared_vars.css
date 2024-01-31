@@ -1,10 +1,12 @@
-/* Copyright 2021 The Chromium Authors
+/* Copyright 2024 The Chromium Authors
  * Use of this source code is governed by a BSD-style license that can be
  * found in the LICENSE file. */
 
-/* TODO(temao): Delete this file when feedback UI componentization is
-finished (crbug.com/1509032).*/
+/* #css_wrapper_metadata_start
+ * #type=vars
+ * #css_wrapper_metadata_end */
 
+<if expr="is_chromeos">
 html:has(body.jelly-enabled) {
   --feedback-alert-color: var(--cros-sys-alert);
   --feedback-bg-color: var(--cros-sys-app_base_shaded);
@@ -18,6 +20,7 @@ html:has(body.jelly-enabled) {
   --feedback-separator-color: var(--cros-sys-separator);
   --feedback-textfield-bg-color: var(--cros-sys-input_field_on_shaded);
 }
+</if>
 
 html:not(body) {
   /* Google colors used in UI. */
@@ -51,6 +54,7 @@ html:not(body) {
 }
 
 @media (prefers-color-scheme: dark) {
+<if expr="is_chromeos">
   html:has(body.jelly-enabled) {
     --feedback-alert-color: var(--cros-sys-alert);
     --feedback-bg-color: var(--cros-sys-app_base_shaded);
@@ -64,6 +68,7 @@ html:not(body) {
     --feedback-separator-color: var(--cros-sys-separator);
     --feedback-textfield-bg-color: var(--cros-sys-input_field_on_shaded);
   }
+</if>
 
   html:not(body) {
     --feedback-alert-color: var(--google-red-300);

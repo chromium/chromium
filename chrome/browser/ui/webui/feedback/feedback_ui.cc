@@ -90,7 +90,7 @@ void CreateAndAddFeedbackHTMLSource(Profile* profile) {
       profile, chrome::kChromeUIFeedbackHost);
   webui::SetupWebUIDataSource(
       source, base::make_span(kFeedbackResources, kFeedbackResourcesSize),
-      IDR_FEEDBACK_HTML_DEFAULT_HTML);
+      IDR_FEEDBACK_FEEDBACK_HTML);
 
   AddStringResources(source, profile);
 }
