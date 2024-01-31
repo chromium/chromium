@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {LitElement} from 'lit/index.js';
+import {LitElement, PropertyValues} from 'lit/index.js';
 
 type ElementCache = Record<string, HTMLElement>;
 
@@ -23,6 +23,33 @@ export class CrLitElement extends LitElement {
     const self = this;
     this.$ = new Proxy({}, {
       get(cache: ElementCache, id: string): HTMLElement {
+        if (!self.hasUpdated && !self.isConnected) {
+          throw new Error(`CrLitElement ${
+              self.tagName} $ dictionary accessed before element is connected at least once.`);
+        }
+
+        if (!self.hasUpdated) {
+          // Ensure not within a willUpdate() call, otherwise the
+          // performUpdate() call below will cause an endless recursion. Local
+          // DOM nodes should not be accessed within willUpdate() anyway.
+          if (self.willUpdatePending_) {
+            throw new Error(`CrLitElement ${
+                self.tagName} tried to access this.$ within willUpdate().`);
+          }
+
+          // Force-render in case the $ helper dictionary is used before the
+          // connectedCallback() has fired. This can happen in some cases, for
+          // example when the following pattern is encountered:
+          // dom-if > parent element -> child element
+          // When the dom-if is stamped, and the parent element's
+          // connectedCallback() is called, the child element's
+          // connectedCallback() has not fired yet, which is problematic when
+          // the parent element calls a synchronous API method on the child that
+          // accesses its Shadow DOM (like <cr-dialog>'s showModal() accessing
+          // the underlying <dialog> element).
+          self.performUpdate();
+        }
+
         // First look whether the element has already been retrieved previously.
         if (id in cache) {
           return cache[id]!;
@@ -31,13 +58,39 @@ export class CrLitElement extends LitElement {
         // Otherwise query the shadow DOM and cache the reference for later use.
         const element = self.shadowRoot!.querySelector<HTMLElement>(`#${id}`);
         if (element === null) {
-          throw new Error(`CrLitElement: Failed to find child with id ${id}`);
+          throw new Error(`CrLitElement ${
+              self.tagName}: Failed to find child with id ${id}`);
         }
         cache[id] = element;
 
         return element;
       },
     });
+  }
+
+  private willUpdatePending_: boolean = false;
+
+  override connectedCallback() {
+    super.connectedCallback();
+
+    if (!this.hasUpdated) {
+      // Force-render the initial state synchronously instead of waiting for
+      // Lit's asynchronous initial render, to make the initial render behavior
+      // similar to Polymer, and consequently make migrating from Polymer to Lit
+      // easier. Example (one of many): CrActionMenuElement provides synchronous
+      // APIs showAt(), showAtPosition(), close(), getDialog(), and client code
+      // should be able to call these immediately after attaching this element
+      // to the DOM, without having to wait for `updateComplete`.
+      this.performUpdate();
+    }
+  }
+
+  override willUpdate(_changedProperties: PropertyValues<this>) {
+    this.willUpdatePending_ = true;
+  }
+
+  override updated(_changedProperties: PropertyValues<this>) {
+    this.willUpdatePending_ = false;
   }
 
   // Modifies the 'properties' object by automatically specifying
