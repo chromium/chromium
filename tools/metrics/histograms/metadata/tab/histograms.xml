@@ -2163,14 +2163,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Tabs.TabsStatsDailyEventInterval"
-    enum="DailyEventIntervalType" expires_after="M77">
-  <owner>sebmarchand@chromium.org</owner>
-  <summary>
-    Counts how often tab stats daily interval events were fired.
-  </summary>
-</histogram>
-
 <histogram name="Tabs.TabState.LoadTime" units="ms" expires_after="2024-06-30">
   <owner>yusufo@chromium.org</owner>
   <owner>nyquist@chromium.org</owner>

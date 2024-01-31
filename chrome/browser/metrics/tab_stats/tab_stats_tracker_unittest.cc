@@ -126,7 +126,7 @@ class TestTabStatsTracker : public TabStatsTracker {
     // manually several times in the same test.
     reset_daily_event_for_testing(
         new DailyEvent(pref_service_, prefs::kTabStatsDailySample,
-                       kTabStatsDailyEventHistogramName));
+                       /* histogram_name=*/std::string()));
     daily_event_for_testing()->AddObserver(
         std::make_unique<TabStatsDailyObserver>(
             reporting_delegate_for_testing(), tab_stats_data_store()));

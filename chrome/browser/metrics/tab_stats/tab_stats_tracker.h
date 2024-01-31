@@ -172,9 +172,6 @@ class TabStatsTracker : public TabStripModelObserver,
   // Function to call to report the tab heartbeat metrics.
   void OnHeartbeatEvent();
 
-  // The name of the histogram used to report that the daily event happened.
-  static const char kTabStatsDailyEventHistogramName[];
-
  private:
   // Observer used to be notified when the state of a WebContents changes or
   // when it's about to be destroyed.
