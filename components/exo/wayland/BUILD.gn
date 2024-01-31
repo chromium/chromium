@@ -21,8 +21,6 @@ source_set("wayland") {
     "client_tracker.h",
     "content_type.cc",
     "content_type.h",
-    "output_controller.cc",
-    "output_controller.h",
     "output_metrics.cc",
     "output_metrics.h",
     "overlay_prioritizer.cc",
@@ -290,7 +288,6 @@ source_set("unit_tests") {
   sources = [
     "client_tracker_unittest.cc",
     "clients/security_delegate_binding_test.cc",
-    "output_controller_unittest.cc",
     "output_metrics_unittest.cc",
     "serial_tracker_unittest.cc",
     "server_unittest.cc",
