@@ -54,6 +54,8 @@ const routerRules = {
   }],
   'condition-request-source-fetch-event':
       [{condition: {requestMode: 'no-cors'}, source: 'fetch-event'}],
+  'condition-urlpattern-string-source-fetch-event':
+      [{condition: {urlPattern: '/**/*'}, source: 'fetch-event'}],
   'multiple-router-rules': [
     {
       condition: {
