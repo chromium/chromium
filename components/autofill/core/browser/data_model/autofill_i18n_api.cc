@@ -110,6 +110,12 @@ std::unique_ptr<AddressComponent> BuildTreeNode(
     case ADDRESS_HOME_DEPENDENT_LOCALITY_AND_LANDMARK:
     case COMPANY_NAME:
     case DELIVERY_INSTRUCTIONS:
+      return std::make_unique<AddressComponent>(type, std::move(children),
+                                                MergeMode::kDefault);
+    case NO_SERVER_DATA:
+    case UNKNOWN_TYPE:
+    case EMPTY_TYPE:
+    case EMAIL_ADDRESS:
     case NAME_FIRST:
     case NAME_MIDDLE:
     case NAME_LAST:
@@ -119,12 +125,7 @@ std::unique_ptr<AddressComponent> BuildTreeNode(
     case NAME_LAST_FIRST:
     case NAME_LAST_CONJUNCTION:
     case NAME_LAST_SECOND:
-      return std::make_unique<AddressComponent>(type, std::move(children),
-                                                MergeMode::kDefault);
-    case NO_SERVER_DATA:
-    case UNKNOWN_TYPE:
-    case EMPTY_TYPE:
-    case EMAIL_ADDRESS:
+    case NAME_HONORIFIC_PREFIX:
     case PHONE_HOME_NUMBER:
     case PHONE_HOME_CITY_CODE:
     case PHONE_HOME_COUNTRY_CODE:
@@ -170,7 +171,6 @@ std::unique_ptr<AddressComponent> BuildTreeNode(
     case ONE_TIME_CODE:
     case SINGLE_USERNAME_FORGOT_PASSWORD:
     case SINGLE_USERNAME_WITH_INTERMEDIATE_VALUES:
-    case NAME_HONORIFIC_PREFIX:
     case MAX_VALID_FIELD_TYPE:
       return nullptr;
   }
