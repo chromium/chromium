@@ -18,6 +18,7 @@
 #import "ios/chrome/browser/ui/omnibox/popup/autocomplete_suggestion.h"
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_icon_view.h"
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_accessibility_identifier_constants.h"
+#import "ios/chrome/browser/ui/omnibox/popup/row/omnibox_popup_row_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/elements/gradient_view.h"
 #import "ios/chrome/common/ui/util/pointer_interaction_util.h"
@@ -37,7 +38,7 @@ const CGFloat kMultilineTextTrailingMargin = 4.0;
 const CGFloat kMultilineLineSpacing = 2.0;
 const CGFloat kTrailingButtonSize = 24;
 const CGFloat kTrailingButtonTrailingMargin = 14;
-const CGFloat kTrailingButtonTrailingMarginPopoutOmnibox = 30;
+const CGFloat kTrailingButtonTrailingMarginPopoutOmnibox = 22.0;
 const CGFloat kTopGradientColorOpacity = 0.85;
 const CGFloat kTextSpacing = 2.0f;
 /// In Variation 2, the images and the text in the popup don't align with the
@@ -329,7 +330,7 @@ const CGFloat kOmniboxPopupCellMinimumHeight = 58;
                      constant:kTextTrailingMargin];
 
   CGFloat trailingConstant = kTrailingButtonTrailingMargin;
-  if (IsIpadPopoutOmniboxEnabled()) {
+  if (ShouldApplyOmniboxPopoutLayout(self.traitCollection)) {
     trailingConstant = kTrailingButtonTrailingMarginPopoutOmnibox;
   }
 
