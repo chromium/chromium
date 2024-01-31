@@ -126,6 +126,35 @@ TEST_F(MandatoryReauthManagerTest, GetAuthenticationMethod_UnsupportedMethod) {
             MandatoryReauthAuthenticationMethod::kUnsupportedMethod);
 }
 
+TEST_F(MandatoryReauthManagerTest, StartDeviceAuthentication_Biometric) {
+  ON_CALL(device_authenticator(), CanAuthenticateWithBiometrics)
+      .WillByDefault(testing::Return(true));
+
+  EXPECT_CALL(device_authenticator(), AuthenticateWithMessage);
+  mandatory_reauth_manager_->StartDeviceAuthentication(base::DoNothing());
+}
+
+TEST_F(MandatoryReauthManagerTest, StartDeviceAuthentication_ScreenLock) {
+  ON_CALL(device_authenticator(), CanAuthenticateWithBiometrics)
+      .WillByDefault(testing::Return(false));
+  ON_CALL(device_authenticator(), CanAuthenticateWithBiometricOrScreenLock)
+      .WillByDefault(testing::Return(true));
+
+  EXPECT_CALL(device_authenticator(), AuthenticateWithMessage);
+  mandatory_reauth_manager_->StartDeviceAuthentication(base::DoNothing());
+}
+
+TEST_F(MandatoryReauthManagerTest, StartDeviceAuthentication_Unsupported) {
+  ON_CALL(device_authenticator(), CanAuthenticateWithBiometrics)
+      .WillByDefault(testing::Return(false));
+  ON_CALL(device_authenticator(), CanAuthenticateWithBiometricOrScreenLock)
+      .WillByDefault(testing::Return(false));
+
+  base::MockCallback<base::OnceCallback<void(bool)>> callback;
+  EXPECT_CALL(callback, Run(true));
+  mandatory_reauth_manager_->StartDeviceAuthentication(callback.Get());
+}
+
 // Test that the MandatoryReauthManager returns that we should offer re-auth
 // opt-in if the conditions for offering it are all met for local cards.
 TEST_F(MandatoryReauthManagerTest, ShouldOfferOptin_LocalCard) {

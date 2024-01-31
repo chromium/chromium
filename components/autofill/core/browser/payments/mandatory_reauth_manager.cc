@@ -44,6 +44,38 @@ void MandatoryReauthManager::AuthenticateWithMessage(
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
+void MandatoryReauthManager::StartDeviceAuthentication(
+    base::OnceCallback<void(bool)> authentication_complete_callback) {
+  MandatoryReauthAuthenticationMethod authentication_method =
+      GetAuthenticationMethod();
+
+  // If there is no supported auth method on the device, we should skip re-auth
+  // and fill the form. Otherwise the user removing authentication on the
+  // device will prevent them from using payments autofill. In the settings
+  // page, we signal to the user through various means that they need to turn
+  // the device's authentication on in order to use re-auth.
+  if (authentication_method ==
+          payments::MandatoryReauthAuthenticationMethod::kUnknown ||
+      authentication_method ==
+          payments::MandatoryReauthAuthenticationMethod::kUnsupportedMethod) {
+    std::move(authentication_complete_callback).Run(true);
+    return;
+  }
+
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+  AuthenticateWithMessage(
+      l10n_util::GetStringUTF16(IDS_PAYMENTS_AUTOFILL_FILLING_MANDATORY_REAUTH),
+      std::move(authentication_complete_callback));
+#elif BUILDFLAG(IS_ANDROID)
+  // TODO(crbug.com/1427216): Convert this to
+  // DeviceAuthenticator::AuthenticateWithMessage() with the correct message
+  // once it is supported. Currently, the message is "Verify it's you".
+  Authenticate(std::move(authentication_complete_callback));
+#else
+  NOTREACHED_NORETURN();
+#endif
+}
+
 void MandatoryReauthManager::OnAuthenticationCompleted(
     device_reauth::DeviceAuthenticator::AuthenticateCallback callback,
     bool success) {

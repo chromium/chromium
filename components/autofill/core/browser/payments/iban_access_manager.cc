@@ -32,8 +32,14 @@ void IbanAccessManager::FetchValue(const Suggestion& suggestion,
         client_->GetPersonalDataManager()->GetIbanByGUID(guid->value());
     if (iban) {
       Iban copy_iban = *iban;
-      std::move(on_iban_fetched).Run(copy_iban.value());
       client_->GetPersonalDataManager()->RecordUseOfIban(copy_iban);
+      if (client_->GetPersonalDataManager()
+              ->IsPaymentMethodsMandatoryReauthEnabled()) {
+        StartDeviceAuthenticationForFilling(std::move(on_iban_fetched),
+                                            copy_iban.value());
+      } else {
+        std::move(on_iban_fetched).Run(copy_iban.value());
+      }
     }
     return;
   }
@@ -82,14 +88,33 @@ void IbanAccessManager::OnUnmaskResponseReceived(
     base::TimeTicks unmask_request_timestamp,
     AutofillClient::PaymentsRpcResult result,
     const std::u16string& value) {
-  client_->CloseAutofillProgressDialog(
-      /*show_confirmation_before_closing=*/false);
   bool is_successful = result == AutofillClient::PaymentsRpcResult::kSuccess;
   autofill_metrics::LogServerIbanUnmaskLatency(
       base::TimeTicks::Now() - unmask_request_timestamp, is_successful);
   autofill_metrics::LogServerIbanUnmaskStatus(is_successful);
   if (is_successful) {
-    std::move(on_iban_fetched).Run(value);
+    if (client_->GetPersonalDataManager()
+            ->IsPaymentMethodsMandatoryReauthEnabled()) {
+      // On some operating systems (for example, macOS and Windows), the
+      // device authentication prompt freezes Chrome. Thus we can only trigger
+      // the prompt after the progress dialog has been closed, which we can do
+      // by using the `no_interactive_authentication_callback` parameter in
+      // `AutofillClient::CloseAutofillProgressDialog()`.
+      client_->CloseAutofillProgressDialog(
+          /*show_confirmation_before_closing=*/false,
+          /*no_interactive_authentication_callback=*/base::BindOnce(
+              // `StartDeviceAuthenticationForFilling()` will asynchronously
+              // trigger the re-authentication flow, so we should avoid
+              // calling `Reset()` until the re-authentication flow is
+              // complete.
+              &IbanAccessManager::StartDeviceAuthenticationForFilling,
+              weak_ptr_factory_.GetWeakPtr(), std::move(on_iban_fetched),
+              value));
+    } else {
+      client_->CloseAutofillProgressDialog(
+          /*show_confirmation_before_closing=*/false);
+      std::move(on_iban_fetched).Run(value);
+    }
     return;
   }
   AutofillErrorDialogContext error_context;
@@ -100,6 +125,26 @@ void IbanAccessManager::OnUnmaskResponseReceived(
 
 void IbanAccessManager::OnServerIbanUnmaskCancelled() {
   // TODO(b/296651899): Log the cancel metrics.
+}
+
+void IbanAccessManager::StartDeviceAuthenticationForFilling(
+    OnIbanFetchedCallback on_iban_fetched,
+    const std::u16string& value) {
+  client_->GetOrCreatePaymentsMandatoryReauthManager()
+      ->StartDeviceAuthentication(base::BindOnce(
+          &IbanAccessManager::OnDeviceAuthenticationResponseForFilling,
+          weak_ptr_factory_.GetWeakPtr(), std::move(on_iban_fetched), value));
+}
+
+void IbanAccessManager::OnDeviceAuthenticationResponseForFilling(
+    OnIbanFetchedCallback on_iban_fetched,
+    const std::u16string& value,
+    bool successful_auth) {
+  // TODO(b/296651526): Add LogMandatoryReauthCheckoutFlowUsageEvent,
+  // kFlowSucceeded or kFlowFailed.
+  if (successful_auth) {
+    std::move(on_iban_fetched).Run(value);
+  }
 }
 
 }  // namespace autofill

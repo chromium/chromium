@@ -13,6 +13,7 @@
 #include "components/autofill/core/browser/test_personal_data_manager.h"
 #include "components/autofill/core/browser/ui/popup_item_ids.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
+#include "components/autofill/core/common/autofill_prefs.h"
 #include "components/sync/test/test_sync_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -341,5 +342,103 @@ TEST_F(IbanAccessManagerTest, UnmaskIbanResult_Metric_Failure) {
   histogram_tester.ExpectUniqueSample("Autofill.Iban.UnmaskIbanResult", false,
                                       1);
 }
+
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+
+class IbanAccessManagerMandatoryReauthTest : public IbanAccessManagerTest {
+ public:
+  IbanAccessManagerMandatoryReauthTest() = default;
+  ~IbanAccessManagerMandatoryReauthTest() override = default;
+
+ protected:
+  void SetUp() override {
+    IbanAccessManagerTest::SetUp();
+    autofill_client_.GetPrefs()->SetBoolean(
+        prefs::kAutofillPaymentMethodsMandatoryReauth, true);
+  }
+
+  void SetUpDeviceAuthenticatorResponseMock(bool success) {
+    ON_CALL(mandatory_reauth_manager(), StartDeviceAuthentication)
+        .WillByDefault(testing::WithArg<0>(
+            testing::Invoke([success](base::OnceCallback<void(bool)> callback) {
+              std::move(callback).Run(success);
+            })));
+  }
+
+  payments::MockMandatoryReauthManager& mandatory_reauth_manager() {
+    return *static_cast<payments::MockMandatoryReauthManager*>(
+        autofill_client_.GetOrCreatePaymentsMandatoryReauthManager());
+  }
+};
+
+// Tests that retrieving local IBANs works correctly in the context of the
+// Mandatory Re-Auth feature.
+TEST_F(IbanAccessManagerMandatoryReauthTest, FetchValue_Local_Reauth_Success) {
+  SetUpDeviceAuthenticatorResponseMock(/*success=*/true);
+
+  Suggestion suggestion(PopupItemId::kIbanEntry);
+  Iban local_iban = test::GetLocalIban();
+  local_iban.set_value(kFullIbanValue);
+  personal_data().AddIbanForTest(std::make_unique<Iban>(local_iban));
+  suggestion.payload =
+      Suggestion::BackendId(Suggestion::Guid(local_iban.guid()));
+
+  base::MockCallback<IbanAccessManager::OnIbanFetchedCallback> callback;
+  EXPECT_CALL(callback, Run(std::u16string(kFullIbanValue)));
+  iban_access_manager_->FetchValue(suggestion, callback.Get());
+}
+
+// Tests that retrieving local IBANs does not return the full IBAN value if
+// Mandatory Re-Auth fails.
+TEST_F(IbanAccessManagerMandatoryReauthTest, FetchValue_Local_Reauth_Fail) {
+  SetUpDeviceAuthenticatorResponseMock(/*success=*/false);
+
+  Suggestion suggestion(PopupItemId::kIbanEntry);
+  Iban local_iban = test::GetLocalIban();
+  local_iban.set_value(kFullIbanValue);
+  personal_data().AddIbanForTest(std::make_unique<Iban>(local_iban));
+  suggestion.payload =
+      Suggestion::BackendId(Suggestion::Guid(local_iban.guid()));
+
+  base::MockCallback<IbanAccessManager::OnIbanFetchedCallback> callback;
+  EXPECT_CALL(callback, Run(std::u16string(kFullIbanValue))).Times(0);
+  iban_access_manager_->FetchValue(suggestion, callback.Get());
+}
+
+// Tests that retrieving server IBANs works correctly in the context of the
+// Mandatory Re-Auth feature.
+TEST_F(IbanAccessManagerMandatoryReauthTest, FetchValue_Server_Reauth_Success) {
+  SetUpDeviceAuthenticatorResponseMock(/*success=*/true);
+  SetUpUnmaskIbanCall(/*is_successful=*/true, /*value=*/kFullIbanValue);
+
+  Iban server_iban = test::GetServerIban();
+  server_iban.set_identifier(Iban::InstrumentId(kInstrumentId));
+  personal_data().AddServerIban(server_iban);
+  Suggestion suggestion(PopupItemId::kIbanEntry);
+  suggestion.payload = Suggestion::InstrumentId(kInstrumentId);
+
+  base::MockCallback<IbanAccessManager::OnIbanFetchedCallback> callback;
+  EXPECT_CALL(callback, Run(std::u16string(kFullIbanValue)));
+  iban_access_manager_->FetchValue(suggestion, callback.Get());
+}
+
+// Tests that retrieving server IBANs does not return the full IBAN value if
+// Mandatory Re-Auth fails.
+TEST_F(IbanAccessManagerMandatoryReauthTest, FetchValue_Server_Reauth_Fail) {
+  SetUpDeviceAuthenticatorResponseMock(/*success=*/false);
+  SetUpUnmaskIbanCall(/*is_successful=*/true, /*value=*/kFullIbanValue);
+
+  Iban server_iban = test::GetServerIban();
+  server_iban.set_identifier(Iban::InstrumentId(kInstrumentId));
+  personal_data().AddServerIban(server_iban);
+  Suggestion suggestion(PopupItemId::kIbanEntry);
+  suggestion.payload = Suggestion::InstrumentId(kInstrumentId);
+
+  base::MockCallback<IbanAccessManager::OnIbanFetchedCallback> callback;
+  EXPECT_CALL(callback, Run(std::u16string(kFullIbanValue))).Times(0);
+  iban_access_manager_->FetchValue(suggestion, callback.Get());
+}
+
+#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 
 }  // namespace autofill
