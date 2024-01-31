@@ -248,11 +248,14 @@ export class EmojiGroupComponent extends PolymerElement {
   }
 
   /**
-   * Returns HTML class attribute of an emoji button.
+   * Returns whether the emoji has variants or not.
+   * Does not use `this`.
    */
-  private getEmojiButtonClassName(emoji: EmojiVariants): string {
-    return emoji.alternates && emoji.alternates.length > 0 ? 'has-variants' :
-                                                             '';
+  private hasVariants(emoji: EmojiVariants): boolean {
+    // TODO: b/322909764 - The type of `EmojiVariants.alternates` cannot be
+    // null/undefined, so the `!== undefined` check should be redundant. Either
+    // add undefined to the type, or remove the below check.
+    return emoji.alternates !== undefined && emoji.alternates.length > 0;
   }
 
   /**
@@ -365,9 +368,13 @@ export class EmojiGroupComponent extends PolymerElement {
     return category === CategoryEnum.GIF;
   }
 
-  private hasVariants(data: EmojiVariants[]): boolean {
-    return data.some(
-        t => !(t.alternates === undefined || t.alternates.length === 0));
+  /**
+   * Returns whether any emoji in the array has variants or not.
+   */
+  private hasAnyVariants(data: EmojiVariants[]): boolean {
+    // `hasVariants` does not use `this`, so there is no need to bind `this`
+    // here.
+    return data.some(this.hasVariants);
   }
 
   /**

@@ -195,7 +195,7 @@
   /* Implement has-variants as ::after so that it still works with hover
    * ripple.
    */
-  .has-variants::after {
+  [has-variants]::after {
     /* 4px grey triangle in bottom-right.
      * 315 degrees means starting at bottom-right towards top-left.
      * Manual color here because there isn't something easy to use, but fine
@@ -296,11 +296,11 @@
     </div>
   </template>
   <template is="dom-if" if="[[!isVisual(category)]]">
-    <template is="dom-if" if="[[hasVariants(data)]]">
+    <template is="dom-if" if="[[hasAnyVariants(data)]]">
       <template is="dom-repeat" items="[[data]]">
         <div class="emoji-button-container">
         <button id="emoji-[[index]]" data-index$="[[index]]"
-          class$="emoji-button [[getEmojiButtonClassName(item)]]"
+          class="emoji-button" has-variants$="[[hasVariants(item)]]"
           on-mouseenter="showTooltip" on-focus="showTooltip"
           aria-label="[[getEmojiAriaLabel(item)]]">
           [[getDisplayEmojiForEmoji(item.base.string, item)]]
@@ -318,11 +318,11 @@
         </div>
       </template>
     </template>
-    <template is="dom-if" if="[[!hasVariants(data)]]">
+    <template is="dom-if" if="[[!hasAnyVariants(data)]]">
       <template is="dom-repeat" items="[[data]]">
         <div class="emoji-button-container">
         <button id="emoji-[[index]]" data-index$="[[index]]"
-          class$="emoji-button [[getEmojiButtonClassName(item)]]"
+          class="emoji-button"
           on-mouseenter="showTooltip" on-focus="showTooltip"
           aria-label="[[getEmojiAriaLabel(item)]]">
           [[getDisplayEmojiForEmoji(item.base.string, item)]]
