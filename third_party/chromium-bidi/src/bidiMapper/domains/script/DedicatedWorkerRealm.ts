@@ -62,6 +62,15 @@ export class DedicatedWorkerRealm extends Realm {
     return 'dedicated-worker';
   }
 
+  override get source(): Script.Source {
+    return {
+      realm: this.realmId,
+      // This is a hack to make Puppeteer able to track workers.
+      // TODO: remove after Puppeteer tracks workers by owners and use the base version.
+      context: this.associatedBrowsingContexts[0]?.id,
+    };
+  }
+
   override get realmInfo(): Script.DedicatedWorkerRealmInfo {
     return {
       ...this.baseInfo,
