@@ -101,7 +101,6 @@ export class CrExpandButtonElement extends PolymerElement {
 
   static get observers() {
     return [
-      'updateAriaExpanded_(disabled, expanded)',
       'updateIcon_(collapseIcon, expandIcon, expanded)',
     ];
   }
@@ -148,13 +147,8 @@ export class CrExpandButtonElement extends PolymerElement {
     focusWithoutInk(this.$.icon);
   }
 
-  private updateAriaExpanded_() {
-    if (this.disabled) {
-      this.$.icon.removeAttribute('aria-expanded');
-    } else {
-      this.$.icon.setAttribute(
-          'aria-expanded', this.expanded ? 'true' : 'false');
-    }
+  private getAriaExpanded_(): string {
+    return this.expanded ? 'true' : 'false';
   }
 }
 
