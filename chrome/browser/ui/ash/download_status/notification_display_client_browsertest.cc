@@ -41,7 +41,9 @@
 #include "chrome/browser/ui/ash/ash_test_util.h"
 #include "chrome/browser/ui/ash/download_status/display_metadata.h"
 #include "chrome/browser/ui/ash/download_status/display_test_util.h"
-#include "chrome/browser/ui/ash/mock_activation_change_observer.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chromeos/crosapi/mojom/download_status_updater.mojom.h"
 #include "content/public/test/browser_test.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -62,7 +64,6 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/progress_bar.h"
 #include "ui/views/view_utils.h"
-#include "ui/wm/public/activation_client.h"
 
 namespace ash::download_status {
 
@@ -106,6 +107,13 @@ class MockNotificationDisplayServiceObserver
               OnNotificationDisplayServiceDestroyed,
               (NotificationDisplayService * service),
               (override));
+};
+
+// MockTabStripModelObserver ---------------------------------------------------
+
+class MockTabStripModelObserver : public TabStripModelObserver {
+ public:
+  MOCK_METHOD(void, OnTabWillBeAdded, (), (override));
 };
 
 // Helpers ---------------------------------------------------------------------
@@ -312,16 +320,10 @@ IN_PROC_BROWSER_TEST_F(NotificationDisplayClientBrowserTest, CancelDownload) {
 
 // Verifies clicking a completed download's notification.
 IN_PROC_BROWSER_TEST_F(NotificationDisplayClientBrowserTest,
-                       DISABLED_ClickCompletedDownload) {
-  // Test setup:
-  // 1. Wait until test system apps are installed so that opening a download
-  //    file is handled.
-  // 2. Minimize the browser window before clicking a notification to ensure the
-  //    activation change.
-  // NOTE: Perform setup tasks before showing the notification popup to avoid
-  // the flakiness when the popup is dismissed due to timeout.
+                       ClickCompletedDownload) {
+  // Wait until test system apps are installed so that opening a download file
+  // is handled.
   WaitForTestSystemAppInstall();
-  browser()->window()->Minimize();
 
   // Add a completed download and cache its notification ID.
   Profile* const profile = ProfileManager::GetActiveUserProfile();
@@ -341,32 +343,28 @@ IN_PROC_BROWSER_TEST_F(NotificationDisplayClientBrowserTest,
   Update(download->Clone());
   Mock::VerifyAndClearExpectations(&service_observer());
 
+  // The command that shows downloads in browser should not be performed.
+  EXPECT_CALL(download_status_updater_client(), ShowInBrowser).Times(0);
+
+  // Set up an observer to wait until a tab is added.
+  NiceMock<MockTabStripModelObserver> tab_strip_model_observer;
+  base::ScopedObservation<TabStripModel, MockTabStripModelObserver>
+      tab_strip_model_observation{&tab_strip_model_observer};
+  base::test::TestFuture<void> future;
+  ON_CALL(tab_strip_model_observer, OnTabWillBeAdded)
+      .WillByDefault(base::test::RunClosure(future.GetRepeatingCallback()));
+
   AshNotificationView* const notification_view =
       GetPopupView(profile, notification_id);
   ASSERT_TRUE(notification_view);
 
-  // Observe the `activation_client` so we can detect windows becoming active as
-  // a result of opening the download file.
-  NiceMock<MockActivationChangeObserver> activation_mock_observer;
-  base::ScopedObservation<wm::ActivationClient, wm::ActivationChangeObserver>
-      activation_observation{&activation_mock_observer};
-  auto* const activation_client =
-      wm::GetActivationClient(Shell::GetPrimaryRootWindow());
-  ASSERT_TRUE(activation_client);
-  activation_observation.Observe(activation_client);
-
-  // The command that shows downloads in browser should not be performed.
-  EXPECT_CALL(download_status_updater_client(), ShowInBrowser).Times(0);
-
-  // Click `notification_view` and wait until window activation updates. Then
-  // verify that the click is recorded.
-  base::test::TestFuture<void> future;
-  EXPECT_CALL(activation_mock_observer, OnWindowActivated)
-      .WillOnce(base::test::RunOnceClosure(future.GetCallback()));
+  // Click `notification_view` and wait until a tab is added. Then verify that
+  // the click is recorded. It assumes the download file is opened by browser.
   base::UserActionTester tester;
+  tab_strip_model_observation.Observe(browser()->tab_strip_model());
   test::Click(notification_view, ui::EF_NONE);
   EXPECT_TRUE(future.Wait());
-  Mock::VerifyAndClearExpectations(&activation_mock_observer);
+  Mock::VerifyAndClearExpectations(&tab_strip_model_observer);
   Mock::VerifyAndClearExpectations(&download_status_updater_client());
   EXPECT_EQ(tester.GetActionCount("DownloadNotificationV2.Click_Completed"), 1);
 }
