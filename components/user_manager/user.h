@@ -102,7 +102,7 @@ class USER_MANAGER_EXPORT User : public UserInfo {
   void UpdateType(UserType new_type);
 
   // Returns true if user has gaia account. True for users of types
-  // USER_TYPE_REGULAR and USER_TYPE_CHILD.
+  // UserType::kRegular and UserType::kChild.
   virtual bool HasGaiaAccount() const;
 
   // Returns true if it's Active Directory user.
@@ -210,7 +210,7 @@ class USER_MANAGER_EXPORT User : public UserInfo {
   }
 
   static User* CreateRegularUserForTesting(const AccountId& account_id) {
-    User* user = CreateRegularUser(account_id, USER_TYPE_REGULAR);
+    User* user = CreateRegularUser(account_id, UserType::kRegular);
     user->SetImage(std::unique_ptr<UserImage>(new UserImage), 0);
     return user;
   }

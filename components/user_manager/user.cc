@@ -48,14 +48,13 @@ std::string GetUserName(const std::string& email) {
 
 // static
 bool User::TypeHasGaiaAccount(UserType user_type) {
-  return user_type == USER_TYPE_REGULAR ||
-         user_type == USER_TYPE_CHILD;
+  return user_type == UserType::kRegular || user_type == UserType::kChild;
 }
 
 // static
 bool User::TypeIsKiosk(UserType type) {
-  return type == USER_TYPE_KIOSK_APP || type == USER_TYPE_ARC_KIOSK_APP ||
-         type == USER_TYPE_WEB_KIOSK_APP;
+  return type == UserType::kKioskApp || type == UserType::kArcKioskApp ||
+         type == UserType::kWebKioskApp;
 }
 
 User::User(const AccountId& account_id, UserType type)
@@ -139,7 +138,7 @@ bool User::IsActiveDirectoryUser() const {
 }
 
 bool User::IsChild() const {
-  return GetType() == USER_TYPE_CHILD;
+  return GetType() == UserType::kChild;
 }
 
 std::string User::GetAccountName(bool use_display_email) const {
@@ -260,31 +259,31 @@ bool User::IsKioskType() const {
 
 User* User::CreateRegularUser(const AccountId& account_id,
                               const UserType type) {
-  CHECK(type == USER_TYPE_REGULAR || type == USER_TYPE_CHILD)
+  CHECK(type == UserType::kRegular || type == UserType::kChild)
       << "Invalid user type " << type;
 
   return new User(account_id, type);
 }
 
 User* User::CreateGuestUser(const AccountId& guest_account_id) {
-  return new User(guest_account_id, USER_TYPE_GUEST);
+  return new User(guest_account_id, UserType::kGuest);
 }
 
 User* User::CreateKioskAppUser(const AccountId& kiosk_app_account_id) {
-  return new User(kiosk_app_account_id, USER_TYPE_KIOSK_APP);
+  return new User(kiosk_app_account_id, UserType::kKioskApp);
 }
 
 User* User::CreateArcKioskAppUser(const AccountId& arc_kiosk_account_id) {
-  return new User(arc_kiosk_account_id, USER_TYPE_ARC_KIOSK_APP);
+  return new User(arc_kiosk_account_id, UserType::kArcKioskApp);
 }
 
 User* User::CreateWebKioskAppUser(const AccountId& web_kiosk_account_id) {
-  return new User(web_kiosk_account_id, USER_TYPE_WEB_KIOSK_APP);
+  return new User(web_kiosk_account_id, UserType::kWebKioskApp);
 }
 
 User* User::CreatePublicAccountUser(const AccountId& account_id,
                                     bool is_using_saml) {
-  User* user = new User(account_id, USER_TYPE_PUBLIC_ACCOUNT);
+  User* user = new User(account_id, UserType::kPublicAccount);
   user->set_using_saml(is_using_saml);
   return user;
 }
