@@ -12,6 +12,7 @@
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/app_mode/app_launch_utils.h"
 #include "chrome/browser/ash/app_mode/crash_recovery_launcher.h"
+#include "chrome/browser/ash/app_mode/device_weekly_scheduled_suspend_policy_handler.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_update_service.h"
 #include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
@@ -144,6 +145,12 @@ KioskSystemSession::KioskSystemSession(
 }
 
 KioskSystemSession::~KioskSystemSession() = default;
+
+// static
+void KioskSystemSession::RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
+  policy::DeviceWeeklyScheduledSuspendPolicyHandler::RegisterLocalStatePrefs(
+      registry);
+}
 
 void KioskSystemSession::InitForChromeAppKiosk() {
   const std::string& app_id = kiosk_app_id_.app_id.value();

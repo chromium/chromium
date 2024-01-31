@@ -13,6 +13,8 @@
 #include "chrome/browser/ash/app_mode/metrics/periodic_metrics_service.h"
 #include "chrome/browser/chromeos/app_mode/kiosk_browser_session.h"
 
+class PrefRegistrySimple;
+
 namespace ash {
 
 class NetworkConnectivityMetricsService;
@@ -29,6 +31,8 @@ class KioskSystemSession {
   KioskSystemSession(const KioskSystemSession&) = delete;
   KioskSystemSession& operator=(const KioskSystemSession&) = delete;
   ~KioskSystemSession();
+
+  static void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
 
   // Destroys ash observers.
   void ShuttingDown();

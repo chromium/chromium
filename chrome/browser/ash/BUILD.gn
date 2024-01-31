@@ -128,6 +128,8 @@ source_set("ash") {
     "app_mode/cancellable_job.h",
     "app_mode/crash_recovery_launcher.cc",
     "app_mode/crash_recovery_launcher.h",
+    "app_mode/device_weekly_scheduled_suspend_policy_handler.cc",
+    "app_mode/device_weekly_scheduled_suspend_policy_handler.h",
     "app_mode/kiosk_app.cc",
     "app_mode/kiosk_app.h",
     "app_mode/kiosk_app_data.cc",
