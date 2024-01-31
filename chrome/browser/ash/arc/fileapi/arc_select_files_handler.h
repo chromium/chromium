@@ -44,6 +44,15 @@ inline constexpr char kScriptClickDirectory[] =
     "  Array.from(dirs).filter(a => a.innerText === %s)[0].click();"
     "})();";
 
+// Same script as above but execute when FilesNewDirectoryTree flag is on.
+// TODO(b/285977941): Remove the old script once the old tree implementation is
+// removed.
+inline constexpr char kScriptClickDirectoryForNewTree[] =
+    "(function() {"
+    "  var dirs = document.querySelectorAll('#directory-tree xf-tree-item');"
+    "  Array.from(dirs).filter(a => a.getAttribute('label') === %s)[0].click();"
+    "})();";
+
 // Script for clicking a file element in the right pane of the selector.
 // %s should be replaced by the target file name wrapped by double-quotes.
 inline constexpr char kScriptClickFile[] =
@@ -62,6 +71,17 @@ inline constexpr char kScriptGetElements[] =
     "  var dirs = document.querySelectorAll('#directory-tree .entry-name');"
     "  var files = document.querySelectorAll('#file-list .file');"
     "  return {dirNames: Array.from(dirs, a => a.innerText),"
+    "          fileNames: Array.from(files, a => a.getAttribute('file-name'))};"
+    "})();";
+
+// Same script as above but execute when FilesNewDirectoryTree flag is on.
+// TODO(b/285977941): Remove the old script once the old tree implementation is
+// removed.
+inline constexpr char kScriptGetElementsForNewTree[] =
+    "(function() {"
+    "  var dirs = document.querySelectorAll('#directory-tree xf-tree-item');"
+    "  var files = document.querySelectorAll('#file-list .file');"
+    "  return {dirNames: Array.from(dirs, a => a.getAttribute('label')),"
     "          fileNames: Array.from(files, a => a.getAttribute('file-name'))};"
     "})();";
 
