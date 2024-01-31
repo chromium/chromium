@@ -404,9 +404,11 @@ PermissionHatsTriggerHelper::GetSurveyParametersForRequestType(
                                : messages::MessageIdentifier::
                                      PROMPT_HATS_MICROPHONE_GENERIC_INVITATION;
     }
-    CHECK_NE(request_type_message_id, -1)
-        << "Request type not supported by the custom invitation experiment.";
-    if (is_custom_invitation_arm) {
+
+    // If request_type_message_id == -1, the request is not part of the custom
+    // invitation experiment, hence the custom invitation doesn't need to be
+    // set.
+    if (request_type_message_id != -1 && is_custom_invitation_arm) {
       custom_invitation =
           std::optional<std::u16string>(l10n_util::GetStringFUTF16(
               IDS_PERMISSION_PROMPT_SURVEY_CUSTOM_INVITATION,
