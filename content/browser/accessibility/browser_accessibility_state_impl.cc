@@ -223,7 +223,9 @@ BrowserAccessibilityStateImpl::BrowserAccessibilityStateImpl()
       if (ax_mode_bundle.compare(kAXModeBundleBasic) == 0) {
         AddAccessibilityModeFlags(ui::kAXModeBasic);
       } else if (ax_mode_bundle.compare(kAXModeBundleFormControls) == 0) {
+#if BUILDFLAG(IS_ANDROID)
         AddAccessibilityModeFlags(ui::kAXModeFormControls);
+#endif
       } else {
         // If AXMode is 'complete' or invalid, default to complete bundle.
         AddAccessibilityModeFlags(ui::kAXModeComplete);
