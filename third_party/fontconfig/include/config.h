@@ -104,6 +104,8 @@
 
 #define SIZEOF_VOID_P 8
 
+#define USE_ICONV 0
+
 #define _GNU_SOURCE 1
 
 #define ENABLE_LIBXML2 1

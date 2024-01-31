@@ -37,7 +37,7 @@ int name;
 int id;
 };
 #include <string.h>
-/* maximum key range = 56, duplicates = 0 */
+/* maximum key range = 57, duplicates = 0 */
 
 #ifdef __GNUC__
 __inline
@@ -51,32 +51,32 @@ FcObjectTypeHash (register const char *str, register size_t len)
 {
   static const unsigned char asso_values[] =
     {
-      62, 62, 62, 62, 62, 62, 62, 62, 62, 62,
-      62, 62, 62, 62, 62, 62, 62, 62, 62, 62,
-      62, 62, 62, 62, 62, 62, 62, 62, 62, 62,
-      62, 62, 62, 62, 62, 62, 62, 62, 62, 62,
-      62, 62, 62, 62, 62, 62, 62, 62, 62, 62,
-      62, 62, 62, 62, 62, 62, 62, 62, 62, 62,
-      62, 62, 62, 62, 62, 62, 62, 62, 62, 62,
-      62, 62, 62, 62, 62, 62, 62, 62, 62, 62,
-      62, 62, 62, 62, 62, 62, 62, 62, 62, 62,
-      62, 62, 62, 62, 62, 62, 62,  2, 19, 10,
-      21, 36, 37, 51, 13,  7, 62, 62, 18,  4,
-      10, 46, 17, 62, 21,  2,  6, 30, 31, 18,
-      24,  8,  3, 62, 62, 62, 62, 62, 62, 62,
-      62, 62, 62, 62, 62, 62, 62, 62, 62, 62,
-      62, 62, 62, 62, 62, 62, 62, 62, 62, 62,
-      62, 62, 62, 62, 62, 62, 62, 62, 62, 62,
-      62, 62, 62, 62, 62, 62, 62, 62, 62, 62,
-      62, 62, 62, 62, 62, 62, 62, 62, 62, 62,
-      62, 62, 62, 62, 62, 62, 62, 62, 62, 62,
-      62, 62, 62, 62, 62, 62, 62, 62, 62, 62,
-      62, 62, 62, 62, 62, 62, 62, 62, 62, 62,
-      62, 62, 62, 62, 62, 62, 62, 62, 62, 62,
-      62, 62, 62, 62, 62, 62, 62, 62, 62, 62,
-      62, 62, 62, 62, 62, 62, 62, 62, 62, 62,
-      62, 62, 62, 62, 62, 62, 62, 62, 62, 62,
-      62, 62, 62, 62, 62, 62
+      63, 63, 63, 63, 63, 63, 63, 63, 63, 63,
+      63, 63, 63, 63, 63, 63, 63, 63, 63, 63,
+      63, 63, 63, 63, 63, 63, 63, 63, 63, 63,
+      63, 63, 63, 63, 63, 63, 63, 63, 63, 63,
+      63, 63, 63, 63, 63, 63, 63, 63, 63, 63,
+      63, 63, 63, 63, 63, 63, 63, 63, 63, 63,
+      63, 63, 63, 63, 63, 63, 63, 63, 63, 63,
+      63, 63, 63, 63, 63, 63, 63, 63, 63, 63,
+      63, 63, 63, 63, 63, 63, 63, 63, 63, 63,
+      63, 63, 63, 63, 63, 63, 63,  2, 19, 10,
+      21, 36, 37, 20, 13,  7, 63, 63, 18,  4,
+      10, 46, 17, 63, 21,  2,  6, 32, 34, 41,
+      24,  8,  3, 63, 63, 63, 63, 63, 63, 63,
+      63, 63, 63, 63, 63, 63, 63, 63, 63, 63,
+      63, 63, 63, 63, 63, 63, 63, 63, 63, 63,
+      63, 63, 63, 63, 63, 63, 63, 63, 63, 63,
+      63, 63, 63, 63, 63, 63, 63, 63, 63, 63,
+      63, 63, 63, 63, 63, 63, 63, 63, 63, 63,
+      63, 63, 63, 63, 63, 63, 63, 63, 63, 63,
+      63, 63, 63, 63, 63, 63, 63, 63, 63, 63,
+      63, 63, 63, 63, 63, 63, 63, 63, 63, 63,
+      63, 63, 63, 63, 63, 63, 63, 63, 63, 63,
+      63, 63, 63, 63, 63, 63, 63, 63, 63, 63,
+      63, 63, 63, 63, 63, 63, 63, 63, 63, 63,
+      63, 63, 63, 63, 63, 63, 63, 63, 63, 63,
+      63, 63, 63, 63, 63, 63
     };
   register unsigned int hval = len;
 
@@ -116,7 +116,7 @@ struct FcObjectTypeNamePool_t
     char FcObjectTypeNamePool_str26[sizeof("weight")];
     char FcObjectTypeNamePool_str27[sizeof("autohint")];
     char FcObjectTypeNamePool_str28[sizeof("family")];
-    char FcObjectTypeNamePool_str29[sizeof("charwidth")];
+    char FcObjectTypeNamePool_str29[sizeof("prgname")];
     char FcObjectTypeNamePool_str30[sizeof("namelang")];
     char FcObjectTypeNamePool_str31[sizeof("variable")];
     char FcObjectTypeNamePool_str32[sizeof("familylang")];
@@ -139,16 +139,17 @@ struct FcObjectTypeNamePool_t
     char FcObjectTypeNamePool_str49[sizeof("style")];
     char FcObjectTypeNamePool_str50[sizeof("index")];
     char FcObjectTypeNamePool_str51[sizeof("pixelsize")];
-    char FcObjectTypeNamePool_str52[sizeof("fontversion")];
+    char FcObjectTypeNamePool_str52[sizeof("charwidth")];
     char FcObjectTypeNamePool_str53[sizeof("stylelang")];
     char FcObjectTypeNamePool_str54[sizeof("embeddedbitmap")];
-    char FcObjectTypeNamePool_str55[sizeof("fontvariations")];
+    char FcObjectTypeNamePool_str55[sizeof("fontversion")];
     char FcObjectTypeNamePool_str56[sizeof("symbol")];
     char FcObjectTypeNamePool_str57[sizeof("fontformat")];
-    char FcObjectTypeNamePool_str58[sizeof("foundry")];
+    char FcObjectTypeNamePool_str58[sizeof("fontvariations")];
     char FcObjectTypeNamePool_str59[sizeof("fontfeatures")];
-    char FcObjectTypeNamePool_str60[sizeof("prgname")];
+    char FcObjectTypeNamePool_str60[sizeof("foundry")];
     char FcObjectTypeNamePool_str61[sizeof("globaladvance")];
+    char FcObjectTypeNamePool_str62[sizeof("fontwrapper")];
   };
 static const struct FcObjectTypeNamePool_t FcObjectTypeNamePool_contents =
   {
@@ -173,7 +174,7 @@ static const struct FcObjectTypeNamePool_t FcObjectTypeNamePool_contents =
     "weight",
     "autohint",
     "family",
-    "charwidth",
+    "prgname",
     "namelang",
     "variable",
     "familylang",
@@ -196,16 +197,17 @@ static const struct FcObjectTypeNamePool_t FcObjectTypeNamePool_contents =
     "style",
     "index",
     "pixelsize",
-    "fontversion",
+    "charwidth",
     "stylelang",
     "embeddedbitmap",
-    "fontvariations",
+    "fontversion",
     "symbol",
     "fontformat",
-    "foundry",
+    "fontvariations",
     "fontfeatures",
-    "prgname",
-    "globaladvance"
+    "foundry",
+    "globaladvance",
+    "fontwrapper"
   };
 #define FcObjectTypeNamePool ((const char *) &FcObjectTypeNamePool_contents)
 const struct FcObjectTypeInfo *
@@ -213,11 +215,11 @@ FcObjectTypeLookup (register const char *str, register size_t len)
 {
   enum
     {
-      TOTAL_KEYWORDS = 54,
+      TOTAL_KEYWORDS = 55,
       MIN_WORD_LENGTH = 3,
       MAX_WORD_LENGTH = 14,
       MIN_HASH_VALUE = 6,
-      MAX_HASH_VALUE = 61
+      MAX_HASH_VALUE = 62
     };
 
   static const struct FcObjectTypeInfo wordlist[] =
@@ -266,8 +268,8 @@ FcObjectTypeLookup (register const char *str, register size_t len)
       {(int)(size_t)&((struct FcObjectTypeNamePool_t *)0)->FcObjectTypeNamePool_str27,FC_AUTOHINT_OBJECT},
 #line 18 "src/fcobjshash.gperf"
       {(int)(size_t)&((struct FcObjectTypeNamePool_t *)0)->FcObjectTypeNamePool_str28,FC_FAMILY_OBJECT},
-#line 47 "src/fcobjshash.gperf"
-      {(int)(size_t)&((struct FcObjectTypeNamePool_t *)0)->FcObjectTypeNamePool_str29,FC_CHARWIDTH_OBJECT},
+#line 61 "src/fcobjshash.gperf"
+      {(int)(size_t)&((struct FcObjectTypeNamePool_t *)0)->FcObjectTypeNamePool_str29,FC_PRGNAME_OBJECT},
 #line 59 "src/fcobjshash.gperf"
       {(int)(size_t)&((struct FcObjectTypeNamePool_t *)0)->FcObjectTypeNamePool_str30,FC_NAMELANG_OBJECT},
 #line 67 "src/fcobjshash.gperf"
@@ -312,26 +314,28 @@ FcObjectTypeLookup (register const char *str, register size_t len)
       {(int)(size_t)&((struct FcObjectTypeNamePool_t *)0)->FcObjectTypeNamePool_str50,FC_INDEX_OBJECT},
 #line 29 "src/fcobjshash.gperf"
       {(int)(size_t)&((struct FcObjectTypeNamePool_t *)0)->FcObjectTypeNamePool_str51,FC_PIXEL_SIZE_OBJECT},
-#line 52 "src/fcobjshash.gperf"
-      {(int)(size_t)&((struct FcObjectTypeNamePool_t *)0)->FcObjectTypeNamePool_str52,FC_FONTVERSION_OBJECT},
+#line 47 "src/fcobjshash.gperf"
+      {(int)(size_t)&((struct FcObjectTypeNamePool_t *)0)->FcObjectTypeNamePool_str52,FC_CHARWIDTH_OBJECT},
 #line 21 "src/fcobjshash.gperf"
       {(int)(size_t)&((struct FcObjectTypeNamePool_t *)0)->FcObjectTypeNamePool_str53,FC_STYLELANG_OBJECT},
 #line 56 "src/fcobjshash.gperf"
       {(int)(size_t)&((struct FcObjectTypeNamePool_t *)0)->FcObjectTypeNamePool_str54,FC_EMBEDDED_BITMAP_OBJECT},
-#line 66 "src/fcobjshash.gperf"
-      {(int)(size_t)&((struct FcObjectTypeNamePool_t *)0)->FcObjectTypeNamePool_str55,FC_FONT_VARIATIONS_OBJECT},
+#line 52 "src/fcobjshash.gperf"
+      {(int)(size_t)&((struct FcObjectTypeNamePool_t *)0)->FcObjectTypeNamePool_str55,FC_FONTVERSION_OBJECT},
 #line 65 "src/fcobjshash.gperf"
       {(int)(size_t)&((struct FcObjectTypeNamePool_t *)0)->FcObjectTypeNamePool_str56,FC_SYMBOL_OBJECT},
 #line 54 "src/fcobjshash.gperf"
       {(int)(size_t)&((struct FcObjectTypeNamePool_t *)0)->FcObjectTypeNamePool_str57,FC_FONTFORMAT_OBJECT},
-#line 31 "src/fcobjshash.gperf"
-      {(int)(size_t)&((struct FcObjectTypeNamePool_t *)0)->FcObjectTypeNamePool_str58,FC_FOUNDRY_OBJECT},
+#line 66 "src/fcobjshash.gperf"
+      {(int)(size_t)&((struct FcObjectTypeNamePool_t *)0)->FcObjectTypeNamePool_str58,FC_FONT_VARIATIONS_OBJECT},
 #line 60 "src/fcobjshash.gperf"
       {(int)(size_t)&((struct FcObjectTypeNamePool_t *)0)->FcObjectTypeNamePool_str59,FC_FONT_FEATURES_OBJECT},
-#line 61 "src/fcobjshash.gperf"
-      {(int)(size_t)&((struct FcObjectTypeNamePool_t *)0)->FcObjectTypeNamePool_str60,FC_PRGNAME_OBJECT},
+#line 31 "src/fcobjshash.gperf"
+      {(int)(size_t)&((struct FcObjectTypeNamePool_t *)0)->FcObjectTypeNamePool_str60,FC_FOUNDRY_OBJECT},
 #line 37 "src/fcobjshash.gperf"
-      {(int)(size_t)&((struct FcObjectTypeNamePool_t *)0)->FcObjectTypeNamePool_str61,FC_GLOBAL_ADVANCE_OBJECT}
+      {(int)(size_t)&((struct FcObjectTypeNamePool_t *)0)->FcObjectTypeNamePool_str61,FC_GLOBAL_ADVANCE_OBJECT},
+#line 72 "src/fcobjshash.gperf"
+      {(int)(size_t)&((struct FcObjectTypeNamePool_t *)0)->FcObjectTypeNamePool_str62,FC_FONT_WRAPPER_OBJECT}
     };
 
   if (len <= MAX_WORD_LENGTH && len >= MIN_WORD_LENGTH)
