@@ -57,6 +57,8 @@ _SUPPORTED_WIN_GPU_VENDORS = [
 _ARGS_TO_CONSOLIDATE = frozenset([
     '--enable-features',
     '--disable-features',
+    '--enable-dawn-features',
+    '--disable-dawn-features',
 ])
 
 TestTuple = Tuple[str, ct.GeneratedTest]

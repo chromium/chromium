@@ -4,7 +4,7 @@
 
 import os
 import sys
-from typing import Any, List, Set
+from typing import Any, List, Optional, Set
 import unittest
 
 from gpu_tests import gpu_integration_test
@@ -14,6 +14,15 @@ import gpu_path_util
 
 EXPECTATIONS_FILE = os.path.join(gpu_path_util.CHROMIUM_SRC_DIR, 'third_party',
                                  'dawn', 'webgpu-cts', 'expectations.txt')
+
+# Tests that are generating OOM errors currently require us to bypass tiered
+# limits to more consistently cause failures.
+ERROR_SCOPE_TESTS = 'webgpu:api,validation,error_scope'
+OOM_ERROR_TEST_PREFIXES = [
+    ERROR_SCOPE_TESTS + ':current_scope:errorFilter="out-of-memory";',
+    ERROR_SCOPE_TESTS + ':parent_scope:errorFilter="out-of-memory";',
+    ERROR_SCOPE_TESTS + ':simple:errorType="out-of-memory";'
+]
 
 
 class WebGpuCtsIntegrationTest(
@@ -108,6 +117,14 @@ class WebGpuCtsIntegrationTest(
 
   def _GetSerialTests(self) -> Set[str]:
     return set()
+
+  @classmethod
+  def _GetAdditionalBrowserArgsForQuery(cls, query: str) -> Optional[List[str]]:
+    # Tests that are generating OOM errors currently require us to bypass
+    # tiered limits to more consistently cause failures.
+    if any(query.startswith(prefix) for prefix in OOM_ERROR_TEST_PREFIXES):
+      return ['--disable-dawn-features=tiered_adapter_limits']
+    return None
 
   @classmethod
   def ExpectationsFiles(cls) -> List[str]:
