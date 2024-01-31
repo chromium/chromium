@@ -109,4 +109,16 @@ public class ModuleRegistry {
     public @ModuleType Set<Integer> getRegisteredModuleTypes() {
         return mModuleBuildersMap.keySet();
     }
+
+    /** Returns whether it has any module to customize. */
+    public boolean hasCustomizableModule() {
+        for (@ModuleType int key : mModuleBuildersMap.keySet()) {
+            // The Single Tab module can't be customized, skips it here.
+            if (key == ModuleType.SINGLE_TAB) continue;
+            if (mModuleBuildersMap.get(key).isEligible()) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

@@ -63,13 +63,14 @@ public class HomeModulesCoordinator implements ModuleDelegate, OnViewCreatedCall
             @NonNull ViewGroup parentView,
             @NonNull HomeModulesConfigManager homeModulesConfigManager) {
         mModuleDelegateHost = moduleDelegateHost;
+        ModuleRegistry moduleRegistry = ModuleRegistry.getInstance();
         mHomeModulesContextMenuManager =
                 new HomeModulesContextMenuManager(
-                        this, moduleDelegateHost.getContextMenuStartPoint());
+                        this, moduleDelegateHost.getContextMenuStartPoint(), moduleRegistry);
 
         mModel = new ModelList();
         mAdapter = new SimpleRecyclerViewAdapter(mModel);
-        ModuleRegistry.getInstance().registerAdapter(mAdapter, this::onViewCreated);
+        moduleRegistry.registerAdapter(mAdapter, this::onViewCreated);
         mRecyclerView = parentView.findViewById(R.id.home_modules_recycler_view);
 
         mRecyclerView.setAdapter(mAdapter);
@@ -85,7 +86,7 @@ public class HomeModulesCoordinator implements ModuleDelegate, OnViewCreatedCall
         mHomeModulesConfigManager.addListener(mHomeModulesStateListener);
         mEnabledModuleList = mHomeModulesConfigManager.getEnabledModuleList();
 
-        mMediator = new HomeModulesMediator(mModel, ModuleRegistry.getInstance());
+        mMediator = new HomeModulesMediator(mModel, moduleRegistry);
     }
 
     private void setupRecyclerView(Activity activity) {
