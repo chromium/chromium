@@ -106,8 +106,6 @@
   [self addChildViewController:self.brandingViewController];
   [self.leadingView addArrangedSubview:self.brandingViewController.view];
   [self.brandingViewController didMoveToParentViewController:self];
-  self.brandingViewController.keyboardAccessoryVisible =
-      self.formAccessoryVisible;
 
   [self.leadingView addArrangedSubview:self.formSuggestionView];
 
@@ -136,6 +134,13 @@
     formInputAccessoryView.previousButton.enabled =
         self.formInputPreviousButtonEnabled;
   }
+
+  // Update branding view keyboard accessory visibility after
+  // `self.manualFillAccessoryViewController` loaded its view, as
+  // `self.formAccessoryVisible` depends on the visible state of its view.
+  self.brandingViewController.keyboardAccessoryVisible =
+      self.formAccessoryVisible;
+
   self.view = formInputAccessoryView;
   [self showManualFillView:NO];
 }
