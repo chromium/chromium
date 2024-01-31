@@ -13,6 +13,7 @@
 #import "components/omnibox/common/omnibox_features.h"
 #import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
+#import "ios/chrome/browser/shared/ui/elements/self_sizing_table_view.h"
 #import "ios/chrome/browser/shared/ui/util/keyboard_observer_helper.h"
 #import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
 #import "ios/chrome/browser/shared/ui/util/rtl_geometry.h"
@@ -29,7 +30,6 @@
 #import "ios/chrome/browser/ui/omnibox/popup/content_providing.h"
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_accessibility_identifier_constants.h"
 #import "ios/chrome/browser/ui/omnibox/popup/popup_match_preview_delegate.h"
-#import "ios/chrome/browser/ui/omnibox/popup/popup_table_view.h"
 #import "ios/chrome/browser/ui/omnibox/popup/row/omnibox_popup_row_cell.h"
 #import "ios/chrome/browser/ui/omnibox/popup/row/omnibox_popup_row_cell_experimental.h"
 #import "ios/chrome/browser/ui/omnibox/popup/row/omnibox_popup_row_content_configuration.h"
@@ -190,8 +190,8 @@ BOOL ShouldDismissKeyboardOnScroll() {
     _carouselAttributeProvider.cache = self.largeIconCache;
   }
   self.tableView =
-      [[PopupTableView alloc] initWithFrame:CGRectZero
-                                      style:UITableViewStyleGrouped];
+      [[SelfSizingTableView alloc] initWithFrame:CGRectZero
+                                           style:UITableViewStyleGrouped];
   self.tableView.delegate = self;
   self.tableView.dataSource = self;
   self.view = self.tableView;

@@ -133,8 +133,6 @@ source_set("popup_ui") {
   sources = [
     "omnibox_popup_view_controller.h",
     "omnibox_popup_view_controller.mm",
-    "popup_table_view.h",
-    "popup_table_view.mm",
   ]
   deps = [
     ":popup_accessibility_identifier_constants",
