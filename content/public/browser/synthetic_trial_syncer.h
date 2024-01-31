@@ -5,18 +5,24 @@
 #ifndef CONTENT_PUBLIC_BROWSER_SYNTHETIC_TRIAL_SYNCER_H_
 #define CONTENT_PUBLIC_BROWSER_SYNTHETIC_TRIAL_SYNCER_H_
 
+#include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "components/variations/synthetic_trials.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/browser_child_process_observer.h"
 #include "content/public/browser/render_process_host_creation_observer.h"
 #include "content/public/browser/render_process_host_observer.h"
+#include "mojo/public/cpp/bindings/remote.h"
 
 namespace variations {
 class SyntheticTrialRegistry;
 }  // namespace variations
 
 namespace content {
+
+namespace mojom {
+class SyntheticTrialConfiguration;
+}  // namespace mojom
 
 // This class is used by the browser process to tell child processes
 // what synthetic trial groups the browser process joins in.
@@ -47,6 +53,8 @@ class CONTENT_EXPORT SyntheticTrialSyncer
   SyntheticTrialSyncer& operator=(const SyntheticTrialSyncer&) = delete;
 
  private:
+  void OnDisconnected(int unique_child_process_id);
+
   // variations::SyntheticTrialObserver:
   void OnSyntheticTrialsChanged(
       const std::vector<variations::SyntheticTrialGroup>& trials_updated,
@@ -55,6 +63,8 @@ class CONTENT_EXPORT SyntheticTrialSyncer
 
   // BrowserChildProcessObserver:
   void BrowserChildProcessLaunchedAndConnected(
+      const ChildProcessData& data) override;
+  void BrowserChildProcessHostDisconnected(
       const ChildProcessData& data) override;
 
   // RenderProcessHostCreationObserver:
@@ -67,6 +77,15 @@ class CONTENT_EXPORT SyntheticTrialSyncer
                            const ChildProcessTerminationInfo& info) override;
 
   const raw_ptr<variations::SyntheticTrialRegistry> registry_;
+
+  // A map: child process' unique id to the mojo connection.
+  // The keys are unique id-s created by
+  // ChildProcessHostImpl::GenerateChildProcessUniqueId().
+  //
+  // Since the number of child precesses is basically not large, use
+  // base::flat_map for the map.
+  base::flat_map<int, mojo::Remote<mojom::SyntheticTrialConfiguration>>
+      child_process_unique_id_to_mojo_connections_;
 };
 
 }  // namespace content
