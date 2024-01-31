@@ -689,6 +689,10 @@ BASE_FEATURE(kOpenDownloadDialog,
              "OpenDownloadDialog",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kOpenPdfInline,
+             "OpenPdfInline",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kPartnerCustomizationsUma,
              "PartnerCustomizationsUma",
              base::FEATURE_DISABLED_BY_DEFAULT);
