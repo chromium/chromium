@@ -4,10 +4,10 @@
 
 import 'chrome://os-settings/os_settings.js';
 
-import {CrSettingsPrefs, MultitaskingSettingsCardElement, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
+import {CrSettingsPrefs, MultitaskingSettingsCardElement, Router, routes, settingMojom, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
 
 suite('<multitasking-settings-card>', () => {
@@ -93,5 +93,24 @@ suite('<multitasking-settings-card>', () => {
 
     setPref(true);
     assertTrue(snapWindowSuggestionsToggle.checked);
+  });
+
+  test('kSnapWindowSuggestions setting is deep-linkable', async () => {
+    await createCardElement();
+
+    const setting = settingMojom.Setting.kSnapWindowSuggestions;
+    const params = new URLSearchParams();
+    params.append('settingId', setting.toString());
+    Router.getInstance().navigateTo(routes.SYSTEM_PREFERENCES, params);
+
+    const deepLinkElement =
+        multitaskingSettingsCard.shadowRoot!.querySelector<HTMLElement>(
+            '#snapWindowSuggestionsToggle');
+    assertTrue(!!deepLinkElement);
+
+    await waitAfterNextRender(deepLinkElement);
+    assertEquals(
+        deepLinkElement, multitaskingSettingsCard.shadowRoot!.activeElement,
+        `Element should be focused for settingId=${setting}.'`);
   });
 });

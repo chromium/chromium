@@ -13,17 +13,20 @@ import '../os_settings_page/settings_card.js';
 import '../settings_shared.css.js';
 
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {DeepLinkingMixin} from '../common/deep_linking_mixin.js';
 import {shouldShowMultitasking} from '../common/load_time_booleans.js';
+import {RouteObserverMixin} from '../common/route_observer_mixin.js';
 import {PrefsState} from '../common/types.js';
+import {Setting} from '../mojom-webui/setting.mojom-webui.js';
+import {Route, routes} from '../router.js';
 
 import {getTemplate} from './multitasking_settings_card.html.js';
 
 
 const MultitaskingSettingsCardElementBase =
-    WebUiListenerMixin(I18nMixin(PolymerElement));
+    RouteObserverMixin(DeepLinkingMixin(I18nMixin(PolymerElement)));
 
 export class MultitaskingSettingsCardElement extends
     MultitaskingSettingsCardElementBase {
@@ -40,6 +43,15 @@ export class MultitaskingSettingsCardElement extends
         type: Object,
         notify: true,
       },
+
+      /**
+       * Used by DeepLinkingMixin to focus this element's deep links.
+       */
+      supportedSettingIds: {
+        type: Object,
+        value: () => new Set<Setting>([Setting.kSnapWindowSuggestions]),
+      },
+
       shouldShowMultitasking_: {
         type: Boolean,
         value() {
@@ -51,6 +63,14 @@ export class MultitaskingSettingsCardElement extends
   }
 
   prefs: PrefsState;
+
+  override currentRouteChanged(newRoute: Route): void {
+    if (newRoute !== routes.SYSTEM_PREFERENCES) {
+      return;
+    }
+
+    this.attemptDeepLink();
+  }
 
   // The following strings are only defined when the OsSettingsRevampWayfinding
   // feature flag is enabled. Avoid using $i18n{} templating in HTML to avoid
