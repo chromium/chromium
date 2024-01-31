@@ -131,11 +131,6 @@ chromium-metrics-reviews@google.com.
   <variant name=".NtpRealbox" summary="from the realbox on the NTP"/>
 </variants>
 
-<variants name="VoiceIntentTargetVariant">
-  <variant name="Assistant" summary="Assistant voice transcription."/>
-  <variant name="System" summary="System voice transcription."/>
-</variants>
-
 <variants name="WebContentsObserverMethods">
   <variant name="DidChangeVisibleSecurityState"/>
   <variant name="DidFinishLoad"/>
@@ -11256,19 +11251,8 @@ regressions. -->
   </summary>
 </histogram>
 
-<histogram name="VoiceInteraction.DismissedEventTarget"
-    enum="VoiceIntentTarget" expires_after="2024-01-14">
-  <owner>basiaz@google.com</owner>
-  <owner>chrome-language@google.com</owner>
-  <summary>
-    Android: The target of a dismissed voice search, such as the system
-    transcription dialog or Assistant. This is recorded after the dismissed
-    intent returns to Chrome.
-  </summary>
-</histogram>
-
 <histogram name="VoiceInteraction.FailureEventSource"
-    enum="VoiceInteractionEventSource" expires_after="2024-02-04">
+    enum="VoiceInteractionEventSource" expires_after="2024-07-04">
   <owner>basiaz@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -11279,18 +11263,6 @@ regressions. -->
   </summary>
 </histogram>
 
-<histogram name="VoiceInteraction.FailureEventTarget" enum="VoiceIntentTarget"
-    expires_after="2023-08-20">
-  <owner>basiaz@google.com</owner>
-  <owner>chrome-language@google.com</owner>
-  <summary>
-    Android: The target of a failed voice search, such as the system
-    transcription dialog or Assistant. This is recorded after any intent
-    failure, which could occur before an intent is sent (if the send fails) or
-    after the intent returns unsuccessfully. It will only be recorded once.
-  </summary>
-</histogram>
-
 <histogram name="VoiceInteraction.FinishEventSource"
     enum="VoiceInteractionEventSource" expires_after="2024-07-21">
   <owner>basiaz@google.com</owner>
@@ -11298,17 +11270,6 @@ regressions. -->
   <summary>
     Android: The source of a successful voice search, such as omnibox or NTP.
     This is recorded immediately after the successful intent returns to Chrome.
-  </summary>
-</histogram>
-
-<histogram name="VoiceInteraction.FinishEventTarget" enum="VoiceIntentTarget"
-    expires_after="2024-07-21">
-  <owner>basiaz@google.com</owner>
-  <owner>chrome-language@google.com</owner>
-  <summary>
-    Android: The target of a successful voice search, such as the system
-    transcription dialog or Assistant. This is recorded immediately after the
-    successful intent returns to Chrome.
   </summary>
 </histogram>
 
@@ -11330,20 +11291,6 @@ regressions. -->
     receiving the transcribed voice query. This is recorded after an Assistant
     intent has completed successfully.
   </summary>
-</histogram>
-
-<histogram name="VoiceInteraction.QueryDuration.Android.Target.{Target}"
-    units="ms" expires_after="2023-07-05">
-  <owner>basiaz@google.com</owner>
-  <owner>chrome-language@google.com</owner>
-  <summary>
-    Records the time it takes between the user clicking the mic and chrome
-    receiving the transcribed voice query. This is recorded after an Assistant
-    intent has completed successfully. This histogram is limited to intents sent
-    to {Target}. See VoiceInteraction.QueryDuration.Android for the total count
-    across all targets.
-  </summary>
-  <token key="Target" variants="VoiceIntentTargetVariant"/>
 </histogram>
 
 <histogram name="VoiceInteraction.QueryDuration.Android{Action}" units="ms"
@@ -11378,17 +11325,6 @@ regressions. -->
   </summary>
 </histogram>
 
-<histogram name="VoiceInteraction.StartEventTarget" enum="VoiceIntentTarget"
-    expires_after="2024-05-19">
-  <owner>basiaz@google.com</owner>
-  <owner>chrome-language@google.com</owner>
-  <summary>
-    Android: The target of a voice search start event, such as the system
-    transcription dialog or Assistant. This is recorded immediately before the
-    voice transcription intent is sent.
-  </summary>
-</histogram>
-
 <histogram name="VoiceInteraction.UnexpectedResultSource"
     enum="VoiceInteractionEventSource" expires_after="2023-07-05">
   <owner>basiaz@google.com</owner>
@@ -11397,17 +11333,6 @@ regressions. -->
     Android: The source of an incoming result that doesn't align with an
     outgoing request from Chrome. This is recorded when the extraneous intent
     response is received.
-  </summary>
-</histogram>
-
-<histogram name="VoiceInteraction.UnexpectedResultTarget"
-    enum="VoiceIntentTarget" expires_after="2023-07-05">
-  <owner>basiaz@google.com</owner>
-  <owner>chrome-language@google.com</owner>
-  <summary>
-    Android: The target of an intent result that doesn't align with an outgoing
-    request from Chrome. This is recorded when the extraneous intent response is
-    received.
   </summary>
 </histogram>
 
@@ -11429,18 +11354,6 @@ regressions. -->
   </summary>
 </histogram>
 
-<histogram name="VoiceInteraction.VoiceResultConfidenceValue.{Target}"
-    units="%" expires_after="2023-07-05">
-  <owner>basiaz@google.com</owner>
-  <owner>chrome-language@google.com</owner>
-  <summary>
-    Android: Records the confidence value of a successful voice search as a
-    percentage, limited to intents sent to {Target}. This is recorded when the
-    voice intent returns successfully.
-  </summary>
-  <token key="Target" variants="VoiceIntentTargetVariant"/>
-</histogram>
-
 <histogram name="VoiceInteraction.VoiceSearchResult" enum="BooleanSuccess"
     expires_after="2024-07-21">
   <owner>basiaz@google.com</owner>
@@ -11449,18 +11362,6 @@ regressions. -->
     Android: Records whether the voice search produced results. This is recorded
     when the voice intent returns successfully.
   </summary>
-</histogram>
-
-<histogram name="VoiceInteraction.VoiceSearchResult.{Target}"
-    enum="BooleanSuccess" expires_after="2023-07-05">
-  <owner>basiaz@google.com</owner>
-  <owner>chrome-language@google.com</owner>
-  <summary>
-    Android: Records whether the voice search produced results, limited to
-    intents sent to {Target}. This is recorded when the voice intent returns
-    successfully.
-  </summary>
-  <token key="Target" variants="VoiceIntentTargetVariant"/>
 </histogram>
 
 <histogram name="WebContentsObserver.{Method}" units="ms"
