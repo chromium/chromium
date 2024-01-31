@@ -207,31 +207,6 @@ try_.builder(
 )
 
 try_.builder(
-    name = "win_chromium_compile_siso_dbg_ng",
-    description_html = """\
-This builder shadows win_chromium_compile_dbg_ng builder to compare between Siso builds and Ninja builds.<br/>
-This builder should be removed after migrating win_chromium_compile_dbg_ng from Ninja to Siso. b/277863839
-""",
-    mirrors = builder_config.copy_from("try/win_chromium_compile_dbg_ng"),
-    try_settings = builder_config.try_settings(
-        include_all_triggered_testers = True,
-        is_compile_only = True,
-    ),
-    gn_args = "try/win_chromium_compile_dbg_ng",
-    builderless = False,
-    cores = 16,
-    ssd = True,
-    contact_team_email = "chrome-build-team@google.com",
-    main_list_view = "try",
-    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
-    siso_enabled = True,
-    tryjob = try_.job(
-        cancel_stale = False,
-        experiment_percentage = 10,
-    ),
-)
-
-try_.builder(
     name = "win_chromium_compile_rel_ng",
     branch_selector = branches.selector.WINDOWS_BRANCHES,
     mirrors = [

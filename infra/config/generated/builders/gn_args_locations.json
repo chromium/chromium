@@ -956,7 +956,6 @@
     "win32-clobber-rel": "try/win32-clobber-rel/gn-args.json",
     "win_chromium_compile_dbg_ng": "try/win_chromium_compile_dbg_ng/gn-args.json",
     "win_chromium_compile_rel_ng": "try/win_chromium_compile_rel_ng/gn-args.json",
-    "win_chromium_compile_siso_dbg_ng": "try/win_chromium_compile_siso_dbg_ng/gn-args.json",
     "win_chromium_x64_rel_ng": "try/win_chromium_x64_rel_ng/gn-args.json",
     "win_optional_gpu_tests_rel": "try/win_optional_gpu_tests_rel/gn-args.json"
   }
