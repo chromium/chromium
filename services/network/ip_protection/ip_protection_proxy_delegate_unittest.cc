@@ -219,13 +219,11 @@ TEST_F(IpProtectionProxyDelegateTest, AddsTokenToTunnelRequest) {
   auto delegate = CreateDelegate(std::move(ipp_config_cache));
 
   net::HttpRequestHeaders headers;
-  auto ip_protection_proxy_chain =
-      net::ProxyChain(
-          {net::ProxyServer::FromSchemeHostAndPort(
-               net::ProxyServer::SCHEME_HTTPS, "proxya", std::nullopt),
-           net::ProxyServer::FromSchemeHostAndPort(
-               net::ProxyServer::SCHEME_HTTPS, "proxyb", std::nullopt)})
-          .ForIpProtection();
+  auto ip_protection_proxy_chain = net::ProxyChain::ForIpProtection(
+      {net::ProxyServer::FromSchemeHostAndPort(net::ProxyServer::SCHEME_HTTPS,
+                                               "proxya", absl::nullopt),
+       net::ProxyServer::FromSchemeHostAndPort(net::ProxyServer::SCHEME_HTTPS,
+                                               "proxyb", absl::nullopt)});
   delegate->OnBeforeTunnelRequest(ip_protection_proxy_chain, /*chain_index=*/0,
                                   &headers);
 
@@ -244,13 +242,11 @@ TEST_F(IpProtectionProxyDelegateTest, AddsPskToTunnelRequest) {
   auto delegate = CreateDelegate(std::move(ipp_config_cache));
 
   net::HttpRequestHeaders headers;
-  auto ip_protection_proxy_chain =
-      net::ProxyChain(
-          {net::ProxyServer::FromSchemeHostAndPort(
-               net::ProxyServer::SCHEME_HTTPS, "proxya", std::nullopt),
-           net::ProxyServer::FromSchemeHostAndPort(
-               net::ProxyServer::SCHEME_HTTPS, "proxyb", std::nullopt)})
-          .ForIpProtection();
+  auto ip_protection_proxy_chain = net::ProxyChain::ForIpProtection(
+      {net::ProxyServer::FromSchemeHostAndPort(net::ProxyServer::SCHEME_HTTPS,
+                                               "proxya", absl::nullopt),
+       net::ProxyServer::FromSchemeHostAndPort(net::ProxyServer::SCHEME_HTTPS,
+                                               "proxyb", absl::nullopt)});
   delegate->OnBeforeTunnelRequest(ip_protection_proxy_chain, /*chain_index=*/0,
                                   &headers);
   EXPECT_THAT(headers, testing::Not(Contain("Proxy-Authorization",
@@ -295,10 +291,9 @@ TEST_F(IpProtectionProxyDelegateTest, OnResolveProxyDeprioritizesBadProxies) {
                                  std::move(ipp_config_cache));
 
   net::ProxyRetryInfoMap retry_map;
-  net::ProxyRetryInfo& info =
-      retry_map[ProxyUriToProxyChain("https://proxya",
-                                     net::ProxyServer::SCHEME_HTTPS)
-                    .ForIpProtection()];
+  net::ProxyRetryInfo& info = retry_map[net::ProxyChain::ForIpProtection(
+      {net::ProxyServer::FromSchemeHostAndPort(net::ProxyServer::SCHEME_HTTPS,
+                                               "proxya", absl::nullopt)})];
   info.try_while_bad = false;
   info.bad_until = base::TimeTicks::Now() + base::Days(2);
 
@@ -311,7 +306,8 @@ TEST_F(IpProtectionProxyDelegateTest, OnResolveProxyDeprioritizesBadProxies) {
 
   net::ProxyList expected_proxy_list;
   expected_proxy_list.AddProxyChain(
-      net::PacResultElementToProxyChain("HTTPS backup").ForIpProtection());
+      net::ProxyChain::ForIpProtection({net::ProxyServer::FromSchemeHostAndPort(
+          net::ProxyServer::SCHEME_HTTPS, "backup", absl::nullopt)}));
   expected_proxy_list.AddProxyChain(net::ProxyChain::Direct());
 
   EXPECT_TRUE(result.proxy_list().Equals(expected_proxy_list))
@@ -331,10 +327,9 @@ TEST_F(IpProtectionProxyDelegateTest, OnResolveProxyAllProxiesBad) {
                                  std::move(ipp_config_cache));
 
   net::ProxyRetryInfoMap retry_map;
-  net::ProxyRetryInfo& info =
-      retry_map[ProxyUriToProxyChain("https://proxya",
-                                     net::ProxyServer::SCHEME_HTTPS)
-                    .ForIpProtection()];
+  net::ProxyRetryInfo& info = retry_map[net::ProxyChain::ForIpProtection(
+      {net::ProxyServer::FromSchemeHostAndPort(net::ProxyServer::SCHEME_HTTPS,
+                                               "proxya", absl::nullopt)})];
   info.try_while_bad = false;
   info.bad_until = base::TimeTicks::Now() + base::Days(2);
 
@@ -380,9 +375,9 @@ TEST_F(IpProtectionProxyDelegateTest,
   const net::ProxyServer kProxyServer2{net::ProxyServer::SCHEME_HTTPS,
                                        net::HostPortPair("ippro-2", 443)};
   const net::ProxyChain kIpProtectionChain1 =
-      net::ProxyChain({kProxyServer1, kProxyServer2}).ForIpProtection();
+      net::ProxyChain::ForIpProtection({kProxyServer1, kProxyServer2});
   const net::ProxyChain kIpProtectionChain2 =
-      net::ProxyChain({kProxyServer2, kProxyServer2}).ForIpProtection();
+      net::ProxyChain::ForIpProtection({kProxyServer2, kProxyServer2});
 
   expected_proxy_list.AddProxyChain(std::move(kIpProtectionChain1));
   expected_proxy_list.AddProxyChain(std::move(kIpProtectionChain2));
@@ -425,7 +420,7 @@ TEST_F(IpProtectionProxyDelegateTest,
                            "GET", net::ProxyRetryInfoMap(), &result);
 
   net::ProxyList expected_proxy_list;
-  auto ip_protection_proxy_chain = net::ProxyChain::Direct().ForIpProtection();
+  auto ip_protection_proxy_chain = net::ProxyChain::ForIpProtection({});
   expected_proxy_list.AddProxyChain(std::move(ip_protection_proxy_chain));
   EXPECT_TRUE(result.proxy_list().Equals(expected_proxy_list))
       << "Got: " << result.proxy_list().ToDebugString();
@@ -665,9 +660,8 @@ TEST_F(IpProtectionProxyDelegateTest, OnResolveProxyIpProtectionHttpsSuccess) {
 
 TEST_F(IpProtectionProxyDelegateTest, OnFallback_IpProtection) {
   auto ip_protection_proxy_chain =
-      net::ProxyChain::FromSchemeHostAndPort(net::ProxyServer::SCHEME_HTTPS,
-                                             "proxy.com", std::nullopt)
-          .ForIpProtection();
+      net::ProxyChain::ForIpProtection({net::ProxyServer::FromSchemeHostAndPort(
+          net::ProxyServer::SCHEME_HTTPS, "proxy.com", absl::nullopt)});
   bool force_refresh_called = false;
 
   auto ipp_config_cache = std::make_unique<MockIpProtectionConfigCache>();

@@ -67,14 +67,12 @@ TEST(ProxyInfoTest, IsForIpProtection) {
   info.UseProxyChain(regular_proxy_chain);
   EXPECT_FALSE(info.is_for_ip_protection());
 
-  ProxyChain ip_protection_proxy_chain =
-      ProxyChain({
-                     ProxyServer::FromSchemeHostAndPort(
-                         ProxyServer::SCHEME_HTTPS, "proxy1", absl::nullopt),
-                     ProxyServer::FromSchemeHostAndPort(
-                         ProxyServer::SCHEME_HTTPS, "proxy2", absl::nullopt),
-                 })
-          .ForIpProtection();
+  ProxyChain ip_protection_proxy_chain = ProxyChain::ForIpProtection({
+      ProxyServer::FromSchemeHostAndPort(ProxyServer::SCHEME_HTTPS, "proxy1",
+                                         absl::nullopt),
+      ProxyServer::FromSchemeHostAndPort(ProxyServer::SCHEME_HTTPS, "proxy2",
+                                         absl::nullopt),
+  });
   info.UseProxyChain(ip_protection_proxy_chain);
   EXPECT_TRUE(info.is_for_ip_protection());
   info.UseProxyChain(regular_proxy_chain);

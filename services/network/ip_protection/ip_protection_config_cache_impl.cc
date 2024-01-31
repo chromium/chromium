@@ -123,7 +123,7 @@ IpProtectionConfigCacheImpl::ConvertProxyServerStringsToProxyChainList(
     }
     if (!invalid_proxy_server) {
       net::ProxyChain ip_protection_proxy_chain =
-          net::ProxyChain(std::move(proxy_servers)).ForIpProtection();
+          net::ProxyChain::ForIpProtection(std::move(proxy_servers));
       proxy_chain_list.push_back(std::move(ip_protection_proxy_chain));
     }
   }

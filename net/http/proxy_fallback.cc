@@ -15,15 +15,15 @@ NET_EXPORT bool CanFalloverToNextProxy(const ProxyChain& proxy_chain,
                                        int* final_error,
                                        bool is_for_ip_protection) {
   *final_error = error;
-
-  if (!proxy_chain.is_direct() &&
-      proxy_chain.GetProxyServer(/*chain_index=*/0).is_quic()) {
-    // TODO(https://crbug.com/1495793): For supporting QUIC with proxy chains
-    // containing more than one proxy server it's unclear whether the proxy
-    // server at chain index 0 is really what we should be doing here. Figure
-    // that out and add tests.
-    CHECK(!proxy_chain.is_multi_proxy());
-
+  auto proxy_servers = proxy_chain.proxy_servers();
+  bool has_quic_proxy = std::any_of(
+      proxy_servers.begin(), proxy_servers.end(),
+      [](const ProxyServer& proxy_server) { return proxy_server.is_quic(); });
+  if (!proxy_chain.is_direct() && has_quic_proxy) {
+    // The whole chain should be QUIC.
+    for (const auto& proxy_server : proxy_servers) {
+      CHECK(proxy_server.is_quic());
+    }
     switch (error) {
       case ERR_QUIC_PROTOCOL_ERROR:
       case ERR_QUIC_HANDSHAKE_FAILED:

@@ -12,13 +12,12 @@ function expect(expected, message) {
 }
 
 var httpProxy = {
-  scheme: "quic",
   host: "1.1.1.1"
 };
 var httpProxyExpected = {
-  scheme: "quic",
+  scheme: "http",
   host: "1.1.1.1",
-  port: 443
+  port: 80
 };
 var httpsProxy = {
   host: "2.2.2.2"

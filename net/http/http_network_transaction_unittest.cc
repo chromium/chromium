@@ -27262,8 +27262,8 @@ TEST_P(HttpNetworkTransactionTest, SetProxyInfoInResponse_Empty) {
 TEST_P(HttpNetworkTransactionTest, SetProxyInfoInResponse_IpProtection) {
   ProxyInfo proxy_info;
   ProxyChain ip_protection_proxy_chain =
-      ProxyChain::FromSchemeHostAndPort(ProxyServer::SCHEME_HTTPS, "prx", 443)
-          .ForIpProtection();
+      ProxyChain::ForIpProtection({ProxyServer::FromSchemeHostAndPort(
+          ProxyServer::SCHEME_HTTPS, "prx", 443)});
   proxy_info.UseProxyChain(ip_protection_proxy_chain);
   HttpResponseInfo response_info;
   HttpNetworkTransaction::SetProxyInfoInResponse(proxy_info, &response_info);
@@ -27322,8 +27322,8 @@ TEST_P(HttpNetworkTransactionTest,
                                   HostPortPair("proxy1.test", 70)};
   const ProxyServer kProxyServer2{ProxyServer::SCHEME_HTTPS,
                                   HostPortPair("proxy2.test", 71)};
-  ProxyChain kNestedProxyChain{{kProxyServer1, kProxyServer2}};
-  kNestedProxyChain = std::move(kNestedProxyChain).ForIpProtection();
+  ProxyChain kNestedProxyChain =
+      ProxyChain::ForIpProtection({kProxyServer1, kProxyServer2});
 
   session_deps_.proxy_resolution_service =
       ConfiguredProxyResolutionService::CreateFixedForTest(
@@ -27416,7 +27416,8 @@ TEST_P(HttpNetworkTransactionTest,
   request.traffic_annotation =
       net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
-  auto kIpProtectionDirectChain = ProxyChain::Direct().ForIpProtection();
+  auto kIpProtectionDirectChain =
+      ProxyChain::ForIpProtection(std::vector<ProxyServer>());
 
   session_deps_.proxy_resolution_service =
       ConfiguredProxyResolutionService::CreateFixedForTest(
@@ -27482,8 +27483,8 @@ TEST_P(HttpNetworkTransactionTest,
                                   HostPortPair("proxy1.test", 70)};
   const ProxyServer kProxyServer2{ProxyServer::SCHEME_HTTPS,
                                   HostPortPair("proxy2.test", 71)};
-  ProxyChain kNestedProxyChain{{kProxyServer1, kProxyServer2}};
-  kNestedProxyChain = std::move(kNestedProxyChain).ForIpProtection();
+  ProxyChain kNestedProxyChain =
+      ProxyChain::ForIpProtection({kProxyServer1, kProxyServer2});
 
   session_deps_.proxy_resolution_service =
       ConfiguredProxyResolutionService::CreateFixedForTest(
@@ -27577,8 +27578,8 @@ TEST_P(HttpNetworkTransactionTest,
                                   HostPortPair("proxy1.test", 70)};
   const ProxyServer kProxyServer2{ProxyServer::SCHEME_HTTPS,
                                   HostPortPair("proxy2.test", 71)};
-  ProxyChain kNestedProxyChain{{kProxyServer1, kProxyServer2}};
-  kNestedProxyChain = std::move(kNestedProxyChain).ForIpProtection();
+  ProxyChain kNestedProxyChain =
+      ProxyChain::ForIpProtection({kProxyServer1, kProxyServer2});
 
   session_deps_.proxy_resolution_service =
       ConfiguredProxyResolutionService::CreateFixedForTest(

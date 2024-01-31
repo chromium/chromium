@@ -170,9 +170,8 @@ TEST_F(IpProtectionConfigCacheImplTest,
 TEST_F(IpProtectionConfigCacheImplTest, GetProxyListFromManager) {
   std::string proxy = "a-proxy";
   auto ip_protection_proxy_chain =
-      net::ProxyChain(net::ProxyServer::FromSchemeHostAndPort(
-                          net::ProxyServer::SCHEME_HTTPS, proxy, std::nullopt))
-          .ForIpProtection();
+      net::ProxyChain::ForIpProtection({net::ProxyServer::FromSchemeHostAndPort(
+          net::ProxyServer::SCHEME_HTTPS, proxy, absl::nullopt)});
   const std::vector<net::ProxyChain> proxy_chain_list = {
       std::move(ip_protection_proxy_chain)};
   auto ipp_proxy_list_manager_ =
@@ -207,10 +206,9 @@ TEST_F(IpProtectionConfigCacheImplTest, GetProxyChainList) {
   };
 
   for (size_t i = 0; i < std::size(tests); ++i) {
-    auto ip_protection_proxy_chain =
-        net::ProxyChain(net::ProxyServer::FromSchemeHostAndPort(
-                            tests[i].scheme, tests[i].host, tests[i].port))
-            .ForIpProtection();
+    auto ip_protection_proxy_chain = net::ProxyChain::ForIpProtection(
+        {net::ProxyServer::FromSchemeHostAndPort(tests[i].scheme, tests[i].host,
+                                                 tests[i].port)});
     const std::vector<net::ProxyChain> proxy_chain_list = {
         std::move(ip_protection_proxy_chain)};
     auto ipp_proxy_list_manager_ =

@@ -66,6 +66,18 @@ class NET_EXPORT ProxyChain {
   // Create a "direct" proxy chain, which includes no proxy servers.
   static ProxyChain Direct() { return ProxyChain(std::vector<ProxyServer>()); }
 
+  // Creates a `ProxyChain` for use by the IP Protection feature. This is used
+  // for metrics collection and for special handling (for instance, IP
+  // protection proxy chains will have an authorization header appended to the
+  // CONNECT requests sent to the proxy servers, and requests sent through an
+  // IP Protection proxy chain will have an "IP-Protection: 1" header added to
+  // them).
+  static ProxyChain ForIpProtection(
+      std::vector<ProxyServer> proxy_server_list) {
+    return ProxyChain(std::move(proxy_server_list),
+                      /*is_for_ip_protection=*/true);
+  }
+
   // Get ProxyServer at index in chain. This is not valid for direct or invalid
   // proxy chains.
   const ProxyServer& GetProxyServer(size_t chain_index) const;
@@ -125,13 +137,6 @@ class NET_EXPORT ProxyChain {
   // Returns true if a proxy server list is available.
   bool IsValid() const { return proxy_server_list_.has_value(); }
 
-  // Returns a `ProxyChain` for use by the IP Protection feature. This is used
-  // for metrics collection and for special handling (for instance, IP
-  // protection proxy chains will have an authorization header appended to the
-  // CONNECT requests sent to the proxy servers, and requests sent through an
-  // IP Protection proxy chain will have an "IP-Protection: 1" header added to
-  // them).
-  ProxyChain&& ForIpProtection() &&;
   bool is_for_ip_protection() const { return is_for_ip_protection_; }
 
   bool operator==(const ProxyChain& other) const {
@@ -150,11 +155,17 @@ class NET_EXPORT ProxyChain {
   std::string ToDebugString() const;
 
  private:
+  explicit ProxyChain(std::vector<ProxyServer> proxy_server_list,
+                      bool is_for_ip_protection);
+
   std::optional<std::vector<ProxyServer>> proxy_server_list_;
 
   bool is_for_ip_protection_ = false;
-
-  // Returns true if this chain is valid.
+  // Returns true if this chain is valid. A chain is considered valid if (1) is
+  // a single valid proxy server. If single QUIC proxy, it must
+  // also be an IP protection proxy chain. (2) is multi-proxy and
+  // all servers are either HTTPS or QUIC. If QUIC servers, it must also
+  // be an IP protection proxy chain.
   bool IsValidInternal() const;
 };
 

@@ -166,7 +166,7 @@ bool StructTraits<network::mojom::ProxyChainDataView, net::ProxyChain>::Read(
     if (!out->IsValid()) {
       return false;
     }
-    *out = std::move(*out).ForIpProtection();
+    *out = net::ProxyChain::ForIpProtection(std::move(out->proxy_servers()));
   }
   return true;
 }

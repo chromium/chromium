@@ -1503,8 +1503,8 @@ TEST_P(QuicNetworkTransactionTest, QuicProxy) {
   session_params_.enable_quic = true;
   proxy_resolution_service_ =
       ConfiguredProxyResolutionService::CreateFixedFromProxyChainsForTest(
-          {ProxyChain::FromSchemeHostAndPort(ProxyServer::SCHEME_QUIC,
-                                             "mail.example.org", 70)},
+          {ProxyChain::ForIpProtection({ProxyServer::FromSchemeHostAndPort(
+              ProxyServer::SCHEME_QUIC, "mail.example.org", 70)})},
           TRAFFIC_ANNOTATION_FOR_TESTS);
 
   MockQuicData mock_quic_data(version_);
@@ -1554,8 +1554,8 @@ TEST_P(QuicNetworkTransactionTest, QuicProxyWithCert) {
   session_params_.enable_quic = true;
   proxy_resolution_service_ =
       ConfiguredProxyResolutionService::CreateFixedFromProxyChainsForTest(
-          {ProxyChain::FromSchemeHostAndPort(ProxyServer::SCHEME_QUIC,
-                                             proxy_host, 70)},
+          {ProxyChain::ForIpProtection({ProxyServer::FromSchemeHostAndPort(
+              ProxyServer::SCHEME_QUIC, proxy_host, 70)})},
           TRAFFIC_ANNOTATION_FOR_TESTS);
 
   client_maker_->set_hostname(origin_host);
@@ -5300,10 +5300,13 @@ TEST_P(QuicNetworkTransactionTest, ConnectionCloseDuringConnectProxy) {
 
   const HostPortPair host_port_pair("myproxy.org", 443);
 
+  auto quic_proxy_chain =
+      ProxyChain::ForIpProtection({ProxyServer::FromSchemeHostAndPort(
+          ProxyServer::SCHEME_QUIC, "myproxy.org", 443)});
+
   proxy_resolution_service_ =
       ConfiguredProxyResolutionService::CreateFixedFromProxyChainsForTest(
-          {ProxyChain::FromSchemeHostAndPort(ProxyServer::SCHEME_QUIC,
-                                             "myproxy.org", 443),
+          {quic_proxy_chain,
            ProxyChain::FromSchemeHostAndPort(ProxyServer::SCHEME_HTTPS,
                                              "myproxy.org", 443)},
           TRAFFIC_ANNOTATION_FOR_TESTS);
@@ -5320,8 +5323,7 @@ TEST_P(QuicNetworkTransactionTest, ConnectionCloseDuringConnectProxy) {
       MockCryptoClientStream::COLD_START_WITH_CHLO_SENT);
   SendRequestAndExpectHttpResponseFromProxy("hello world", true, 443);
   EXPECT_THAT(session_->proxy_resolution_service()->proxy_retry_info(),
-              ElementsAre(Key(ProxyUriToProxyChain("quic://myproxy.org:443",
-                                                   ProxyServer::SCHEME_QUIC))));
+              ElementsAre(Key(quic_proxy_chain)));
 }
 
 TEST_P(QuicNetworkTransactionTest, SecureResourceOverSecureQuic) {
@@ -6243,8 +6245,8 @@ TEST_P(QuicNetworkTransactionTest, QuicProxyConnectHttpsServer) {
   session_params_.enable_quic_proxies_for_https_urls = true;
   proxy_resolution_service_ =
       ConfiguredProxyResolutionService::CreateFixedFromProxyChainsForTest(
-          {ProxyChain::FromSchemeHostAndPort(ProxyServer::SCHEME_QUIC,
-                                             "proxy.example.org", 70)},
+          {ProxyChain::ForIpProtection({ProxyServer::FromSchemeHostAndPort(
+              ProxyServer::SCHEME_QUIC, "proxy.example.org", 70)})},
           TRAFFIC_ANNOTATION_FOR_TESTS);
 
   MockQuicData mock_quic_data(version_);
@@ -6338,8 +6340,8 @@ TEST_P(QuicNetworkTransactionTest, QuicProxyConnectSpdyServer) {
   session_params_.enable_quic_proxies_for_https_urls = true;
   proxy_resolution_service_ =
       ConfiguredProxyResolutionService::CreateFixedFromProxyChainsForTest(
-          {ProxyChain::FromSchemeHostAndPort(ProxyServer::SCHEME_QUIC,
-                                             "proxy.example.org", 70)},
+          {ProxyChain::ForIpProtection({ProxyServer::FromSchemeHostAndPort(
+              ProxyServer::SCHEME_QUIC, "proxy.example.org", 70)})},
           TRAFFIC_ANNOTATION_FOR_TESTS);
 
   MockQuicData mock_quic_data(version_);
@@ -6434,8 +6436,8 @@ TEST_P(QuicNetworkTransactionTest, QuicProxyConnectReuseTransportSocket) {
   session_params_.enable_quic_proxies_for_https_urls = true;
   proxy_resolution_service_ =
       ConfiguredProxyResolutionService::CreateFixedFromProxyChainsForTest(
-          {ProxyChain::FromSchemeHostAndPort(ProxyServer::SCHEME_QUIC,
-                                             "proxy.example.org", 70)},
+          {ProxyChain::ForIpProtection({ProxyServer::FromSchemeHostAndPort(
+              ProxyServer::SCHEME_QUIC, "proxy.example.org", 70)})},
           TRAFFIC_ANNOTATION_FOR_TESTS);
 
   MockQuicData mock_quic_data(version_);
@@ -6563,8 +6565,8 @@ TEST_P(QuicNetworkTransactionTest, QuicProxyConnectReuseQuicSession) {
   session_params_.enable_quic_proxies_for_https_urls = true;
   proxy_resolution_service_ =
       ConfiguredProxyResolutionService::CreateFixedFromProxyChainsForTest(
-          {ProxyChain::FromSchemeHostAndPort(ProxyServer::SCHEME_QUIC,
-                                             "proxy.example.org", 70)},
+          {ProxyChain::ForIpProtection({ProxyServer::FromSchemeHostAndPort(
+              ProxyServer::SCHEME_QUIC, "proxy.example.org", 70)})},
           TRAFFIC_ANNOTATION_FOR_TESTS);
 
   MockQuicData mock_quic_data(version_);
@@ -6724,7 +6726,8 @@ TEST_P(QuicNetworkTransactionTest, QuicProxyConnectNoReuseDifferentChains) {
 
   const ProxyServer kQuicProxyServer{ProxyServer::SCHEME_QUIC,
                                      HostPortPair("proxy.example.org", 443)};
-  const ProxyChain kQuicProxyChain{kQuicProxyServer};
+  const ProxyChain kQuicProxyChain =
+      ProxyChain::ForIpProtection({kQuicProxyServer});
 
   proxy_delegate_ = std::make_unique<TestProxyDelegate>();
   proxy_delegate_->set_proxy_chain(kQuicProxyChain);
@@ -6892,8 +6895,8 @@ TEST_P(QuicNetworkTransactionTest, QuicProxyConnectFailure) {
   session_params_.enable_quic_proxies_for_https_urls = true;
   proxy_resolution_service_ =
       ConfiguredProxyResolutionService::CreateFixedFromProxyChainsForTest(
-          {ProxyChain::FromSchemeHostAndPort(ProxyServer::SCHEME_QUIC,
-                                             "proxy.example.org", 70)},
+          {ProxyChain::ForIpProtection({ProxyServer::FromSchemeHostAndPort(
+              ProxyServer::SCHEME_QUIC, "proxy.example.org", 70)})},
           TRAFFIC_ANNOTATION_FOR_TESTS);
 
   MockQuicData mock_quic_data(version_);
@@ -6947,8 +6950,8 @@ TEST_P(QuicNetworkTransactionTest, QuicProxyQuicConnectionError) {
   session_params_.enable_quic_proxies_for_https_urls = true;
   proxy_resolution_service_ =
       ConfiguredProxyResolutionService::CreateFixedFromProxyChainsForTest(
-          {ProxyChain::FromSchemeHostAndPort(ProxyServer::SCHEME_QUIC,
-                                             "proxy.example.org", 70)},
+          {ProxyChain::ForIpProtection({ProxyServer::FromSchemeHostAndPort(
+              ProxyServer::SCHEME_QUIC, "proxy.example.org", 70)})},
           TRAFFIC_ANNOTATION_FOR_TESTS);
 
   MockQuicData mock_quic_data(version_);
@@ -6991,8 +6994,8 @@ TEST_P(QuicNetworkTransactionTest, QuicProxyConnectBadCertificate) {
   session_params_.enable_quic_proxies_for_https_urls = true;
   proxy_resolution_service_ =
       ConfiguredProxyResolutionService::CreateFixedFromProxyChainsForTest(
-          {ProxyChain::FromSchemeHostAndPort(ProxyServer::SCHEME_QUIC,
-                                             "proxy.example.org", 70)},
+          {ProxyChain::ForIpProtection({ProxyServer::FromSchemeHostAndPort(
+              ProxyServer::SCHEME_QUIC, "proxy.example.org", 70)})},
           TRAFFIC_ANNOTATION_FOR_TESTS);
 
   MockQuicData mock_quic_data(version_);
@@ -7121,8 +7124,8 @@ TEST_P(QuicNetworkTransactionTest, QuicProxyUserAgent) {
   session_params_.enable_quic_proxies_for_https_urls = true;
   proxy_resolution_service_ =
       ConfiguredProxyResolutionService::CreateFixedFromProxyChainsForTest(
-          {ProxyChain::FromSchemeHostAndPort(ProxyServer::SCHEME_QUIC,
-                                             "proxy.example.org", 70)},
+          {ProxyChain::ForIpProtection({ProxyServer::FromSchemeHostAndPort(
+              ProxyServer::SCHEME_QUIC, "proxy.example.org", 70)})},
           TRAFFIC_ANNOTATION_FOR_TESTS);
 
   MockQuicData mock_quic_data(version_);
@@ -7175,8 +7178,8 @@ TEST_P(QuicNetworkTransactionTest, QuicProxyRequestPriority) {
   session_params_.enable_quic_proxies_for_https_urls = true;
   proxy_resolution_service_ =
       ConfiguredProxyResolutionService::CreateFixedFromProxyChainsForTest(
-          {ProxyChain::FromSchemeHostAndPort(ProxyServer::SCHEME_QUIC,
-                                             "proxy.example.org", 70)},
+          {ProxyChain::ForIpProtection({ProxyServer::FromSchemeHostAndPort(
+              ProxyServer::SCHEME_QUIC, "proxy.example.org", 70)})},
           TRAFFIC_ANNOTATION_FOR_TESTS);
 
   const RequestPriority request_priority = MEDIUM;
@@ -7222,8 +7225,8 @@ TEST_P(QuicNetworkTransactionTest, QuicProxyMultipleRequestsError) {
   session_params_.enable_quic_proxies_for_https_urls = true;
   proxy_resolution_service_ =
       ConfiguredProxyResolutionService::CreateFixedFromProxyChainsForTest(
-          {ProxyChain::FromSchemeHostAndPort(ProxyServer::SCHEME_QUIC,
-                                             "proxy.example.org", 70)},
+          {ProxyChain::ForIpProtection({ProxyServer::FromSchemeHostAndPort(
+              ProxyServer::SCHEME_QUIC, "proxy.example.org", 70)})},
           TRAFFIC_ANNOTATION_FOR_TESTS);
 
   const RequestPriority kRequestPriority = MEDIUM;
@@ -7307,8 +7310,8 @@ TEST_P(QuicNetworkTransactionTest, QuicProxyAuth) {
     session_params_.enable_quic_proxies_for_https_urls = true;
     proxy_resolution_service_ =
         ConfiguredProxyResolutionService::CreateFixedFromProxyChainsForTest(
-            {ProxyChain::FromSchemeHostAndPort(ProxyServer::SCHEME_QUIC,
-                                               "proxy.example.org", 70)},
+            {ProxyChain::ForIpProtection({ProxyServer::FromSchemeHostAndPort(
+                ProxyServer::SCHEME_QUIC, "proxy.example.org", 70)})},
             TRAFFIC_ANNOTATION_FOR_TESTS);
 
     MockQuicData mock_quic_data(version_);
@@ -7488,8 +7491,8 @@ TEST_P(QuicNetworkTransactionTest, NetworkIsolation) {
     if (use_proxy) {
       proxy_resolution_service_ =
           ConfiguredProxyResolutionService::CreateFixedFromProxyChainsForTest(
-              {ProxyChain::FromSchemeHostAndPort(ProxyServer::SCHEME_QUIC,
-                                                 "mail.example.org", 443)},
+              {ProxyChain::ForIpProtection({ProxyServer::FromSchemeHostAndPort(
+                  ProxyServer::SCHEME_QUIC, "mail.example.org", 443)})},
               TRAFFIC_ANNOTATION_FOR_TESTS);
     } else {
       proxy_resolution_service_ =
@@ -7781,8 +7784,8 @@ TEST_P(QuicNetworkTransactionTest, NetworkIsolationTunnel) {
   session_params_.enable_quic_proxies_for_https_urls = true;
   proxy_resolution_service_ =
       ConfiguredProxyResolutionService::CreateFixedFromProxyChainsForTest(
-          {ProxyChain::FromSchemeHostAndPort(ProxyServer::SCHEME_QUIC,
-                                             "proxy.example.org", 70)},
+          {ProxyChain::ForIpProtection({ProxyServer::FromSchemeHostAndPort(
+              ProxyServer::SCHEME_QUIC, "proxy.example.org", 70)})},
           TRAFFIC_ANNOTATION_FOR_TESTS);
 
   const char kGetRequest[] =

@@ -77,12 +77,6 @@ const ProxyServer& ProxyChain::Last() const {
   return proxy_server_list_->back();
 }
 
-ProxyChain&& ProxyChain::ForIpProtection() && {
-  CHECK(IsValid());
-  is_for_ip_protection_ = true;
-  return std::move(*this);
-}
-
 std::string ProxyChain::ToDebugString() const {
   if (!IsValid()) {
     return "INVALID PROXY CHAIN";
@@ -102,17 +96,33 @@ std::string ProxyChain::ToDebugString() const {
   return debug_string;
 }
 
+ProxyChain::ProxyChain(std::vector<ProxyServer> proxy_server_list,
+                       bool is_for_ip_protection)
+    : proxy_server_list_(std::move(proxy_server_list)),
+      is_for_ip_protection_(is_for_ip_protection) {
+  CHECK(IsValidInternal());
+}
+
 bool ProxyChain::IsValidInternal() const {
   if (!proxy_server_list_.has_value()) {
     return false;
   }
   if (is_single_proxy()) {
-    return proxy_server_list_.value().at(0).is_valid();
+    bool is_valid = proxy_server_list_.value().at(0).is_valid();
+    if (proxy_server_list_.value().at(0).is_quic()) {
+      is_valid = is_valid && is_for_ip_protection_;
+    }
+    return is_valid;
   }
-  return base::ranges::all_of(
+  bool all_https = base::ranges::all_of(
       proxy_server_list_.value(), [](const auto& proxy_server) {
         return proxy_server.is_valid() && proxy_server.is_https();
       });
+  bool all_quic = base::ranges::all_of(
+      proxy_server_list_.value(), [](const auto& proxy_server) {
+        return proxy_server.is_valid() && proxy_server.is_quic();
+      });
+  return all_https || (all_quic && is_for_ip_protection_);
 }
 
 std::ostream& operator<<(std::ostream& os, const ProxyChain& proxy_chain) {

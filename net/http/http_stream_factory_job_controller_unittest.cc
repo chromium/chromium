@@ -133,9 +133,9 @@ class MockPrefDelegate : public HttpServerProperties::PrefDelegate {
 class TestProxyDelegateForIpProtection : public TestProxyDelegate {
  public:
   TestProxyDelegateForIpProtection() {
-    set_proxy_chain(net::ProxyChain::FromSchemeHostAndPort(
-                        ProxyServer::SCHEME_HTTPS, "ip-pro", 443)
-                        .ForIpProtection());
+    set_proxy_chain(net::ProxyChain::ForIpProtection(
+        {net::ProxyServer::FromSchemeHostAndPort(ProxyServer::SCHEME_HTTPS,
+                                                 "ip-pro", 443)}));
     set_extra_header_name(net::HttpRequestHeaders::kAuthorization);
   }
   void OnResolveProxy(const GURL& url,
@@ -1780,11 +1780,12 @@ TEST_F(JobControllerReconsiderProxyAfterErrorTest,
 
 // Tests that ERR_MSG_TOO_BIG is retryable for QUIC proxy.
 TEST_F(JobControllerReconsiderProxyAfterErrorTest, ReconsiderErrMsgTooBig) {
+  auto quic_proxy_chain =
+      ProxyChain::ForIpProtection({ProxyServer::FromSchemeHostAndPort(
+          ProxyServer::SCHEME_QUIC, "bad", 99)});
   std::unique_ptr<ConfiguredProxyResolutionService> proxy_resolution_service =
       ConfiguredProxyResolutionService::CreateFixedFromProxyChainsForTest(
-          {ProxyChain::FromSchemeHostAndPort(ProxyServer::SCHEME_QUIC,
-                                             "badproxy", 99),
-           ProxyChain::Direct()},
+          {quic_proxy_chain, ProxyChain::Direct()},
           TRAFFIC_ANNOTATION_FOR_TESTS);
 
   // Before starting the test, verify that there are no proxies marked as bad.
@@ -1820,9 +1821,7 @@ TEST_F(JobControllerReconsiderProxyAfterErrorTest, ReconsiderErrMsgTooBig) {
   const ProxyRetryInfoMap& retry_info =
       session_->proxy_resolution_service()->proxy_retry_info();
   EXPECT_THAT(retry_info, SizeIs(1));
-  EXPECT_THAT(retry_info,
-              Contains(Key(ProxyUriToProxyChain("quic://badproxy:99",
-                                                ProxyServer::SCHEME_QUIC))));
+  EXPECT_THAT(retry_info, Contains(Key(quic_proxy_chain)));
 
   request.reset();
   EXPECT_TRUE(HttpStreamFactoryPeer::IsJobControllerDeleted(factory_));
