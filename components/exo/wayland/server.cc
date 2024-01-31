@@ -263,7 +263,6 @@ Server::Server(Display* display,
   wl_display_.reset(wl_display_create());
   SetSecurityDelegate(wl_display_.get(), security_delegate_.get());
   display_manager_observation_.Observe(ash::Shell::Get()->display_manager());
-  ash::Shell::Get()->AddShellObserver(this);
 
   client_tracker_ = std::make_unique<ClientTracker>(wl_display_.get());
 }
@@ -434,7 +433,6 @@ void Server::Finalize(StartCallback callback, bool success) {
 }
 
 Server::~Server() {
-  ash::Shell::Get()->RemoveShellObserver(this);
   RemoveSecurityDelegate(wl_display_.get());
   // TODO(https://crbug.com/1124106): Investigate if we can eliminate Shutdown
   // methods.
@@ -550,14 +548,6 @@ void Server::OnDidProcessDisplayChanges(
   // TODO(crbug.com/1502682): Exo should be updated to automatically flush
   // buffers at the end of task processing if necessary.
   Flush();
-}
-
-void Server::OnDisplayForNewWindowsChanged() {
-  const int64_t active_display_id =
-      display::Screen::GetScreen()->GetDisplayForNewWindows().id();
-  auto output_pair = outputs_.find(active_display_id);
-  CHECK(output_pair != outputs_.end());
-  output_pair->second->SendOutputActivated();
 }
 
 wl_resource* Server::GetOutputResource(wl_client* client, int64_t display_id) {

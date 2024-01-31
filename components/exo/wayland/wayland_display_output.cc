@@ -148,13 +148,5 @@ void WaylandDisplayOutput::SendDisplayMetricsChanges(
   }
 }
 
-void WaylandDisplayOutput::SendOutputActivated() {
-  for (auto& pair : output_ids_) {
-    auto* handler = GetUserDataAs<WaylandDisplayHandler>(pair.second);
-    CHECK(handler);
-    handler->SendDisplayActivated();
-  }
-}
-
 }  // namespace wayland
 }  // namespace exo

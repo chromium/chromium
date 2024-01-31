@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include "ash/shell_observer.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "ui/display/display.h"
@@ -41,7 +42,8 @@ class WaylandDisplayObserver : public base::CheckedObserver {
   ~WaylandDisplayObserver() override;
 };
 
-class WaylandDisplayHandler : public WaylandDisplayObserver {
+class WaylandDisplayHandler : public WaylandDisplayObserver,
+                              public ash::ShellObserver {
  public:
   WaylandDisplayHandler(WaylandDisplayOutput* output,
                         wl_resource* output_resource);
@@ -60,10 +62,6 @@ class WaylandDisplayHandler : public WaylandDisplayObserver {
   // metrics events were dispatched to the client.
   void SendDisplayMetricsChanges(const display::Display& display,
                                  uint32_t changed_metrics);
-
-  // Called when the output associated with this handler is activated and sends
-  // the appropriate output events to the client.
-  void SendDisplayActivated();
 
   // Called when an xdg_output object is created through get_xdg_output()
   // request by the wayland client.
@@ -92,6 +90,9 @@ class WaylandDisplayHandler : public WaylandDisplayObserver {
   // required, |false| otherwise.
   bool SendXdgOutputMetrics(const display::Display& display,
                             uint32_t changed_metrics);
+
+  // ShellObserver:
+  void OnDisplayForNewWindowsChanged() override;
 
   // Gets the AuraOutputManager instance associated with this handler, may
   // return null.

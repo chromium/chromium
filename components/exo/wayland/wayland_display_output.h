@@ -58,9 +58,6 @@ class WaylandDisplayOutput {
   void SendDisplayMetricsChanges(const display::Display& display,
                                  uint32_t changed_metrics);
 
-  // Notifies clients of the activation of this output.
-  void SendOutputActivated();
-
   wl_resource* GetOutputResourceForClient(wl_client* client);
 
   // Self destruct in 5 seconeds.
