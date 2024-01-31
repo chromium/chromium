@@ -988,7 +988,7 @@ ScriptEvaluationResult V8ScriptRunner::EvaluateModule(
 
 void V8ScriptRunner::ReportException(v8::Isolate* isolate,
                                      v8::Local<v8::Value> exception) {
-  DCHECK(!exception.IsEmpty());
+  CHECK(!exception.IsEmpty());
 
   // https://html.spec.whatwg.org/C/#report-the-error
   v8::Local<v8::Message> message =

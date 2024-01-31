@@ -207,13 +207,16 @@ void V8Initializer::MessageHandlerInMainThread(v8::Local<v8::Message> message,
 void V8Initializer::MessageHandlerInWorker(v8::Local<v8::Message> message,
                                            v8::Local<v8::Value> data) {
   v8::Isolate* isolate = message->GetIsolate();
-
+  v8::Local<v8::Context> v8_context = isolate->GetCurrentContext();
+  CHECK(!v8_context.IsEmpty());
   // During the frame teardown, there may not be a valid context.
-  ScriptState* script_state = ScriptState::Current(isolate);
+  auto* script_state = ScriptState::From(v8_context);
+  CHECK(script_state);
   if (!script_state->ContextIsValid())
     return;
 
   ExecutionContext* context = ExecutionContext::From(script_state);
+  CHECK(context);
 
   UseCounter::Count(context, WebFeature::kUnhandledExceptionCountInWorker);
   base::UmaHistogramBoolean("V8.UnhandledExceptionCountInWorker", true);
