@@ -212,15 +212,14 @@ FormData CreateAutofillFormData(blink::WebLocalFrame* main_frame) {
   field_data.name = u"fname";
   field_data.value = u"John";
   field_data.is_autofilled = true;
-  field_data.unique_renderer_id = form_util::GetFieldRendererId(fname_element);
+  field_data.renderer_id = form_util::GetFieldRendererId(fname_element);
   data.fields.push_back(field_data);
 
   if (!lname_element.IsNull()) {
     field_data.name = u"lname";
     field_data.value = u"Smith";
     field_data.is_autofilled = true;
-    field_data.unique_renderer_id =
-        form_util::GetFieldRendererId(lname_element);
+    field_data.renderer_id = form_util::GetFieldRendererId(lname_element);
     data.fields.push_back(field_data);
   }
 
@@ -282,20 +281,20 @@ void SimulateFillFormWithNonFillableFields(
   field.name = u"fname";
   field.value = u"John";
   field.is_autofilled = true;
-  field.unique_renderer_id = form_util::GetFieldRendererId(fname_element);
+  field.renderer_id = form_util::GetFieldRendererId(fname_element);
   form.fields.push_back(field);
 
   field.name = u"lname";
   field.value = u"Smith";
   field.is_autofilled = true;
-  field.unique_renderer_id = form_util::GetFieldRendererId(lname_element);
+  field.renderer_id = form_util::GetFieldRendererId(lname_element);
   form.fields.push_back(field);
 
   // Additional non-autofillable field.
   field.name = u"mname";
   field.value = u"James";
   field.is_autofilled = false;
-  field.unique_renderer_id = form_util::GetFieldRendererId(mname_element);
+  field.renderer_id = form_util::GetFieldRendererId(mname_element);
   form.fields.push_back(field);
 
   // This call is necessary to setup the autofill agent appropriate for the
@@ -452,7 +451,7 @@ TEST_F(FormAutocompleteTest, VerifyFocusAndBlurEventAfterElementAdded) {
   FormData data = CreateAutofillFormData(GetMainFrame());
   // Simulate that the form was modified between parsing and executing the fill.
   // The element is inserted at the beginning of the form to verify that
-  // everything works correctly even if unique_renderer_ids of the <input>
+  // everything works correctly even if renderer_ids of the <input>
   // elements are not in ascending order.
   ExecuteJavaScriptForTests(
       "document.getElementById('fname').insertAdjacentHTML('beforebegin', "

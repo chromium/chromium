@@ -613,13 +613,12 @@ class PasswordAutofillAgentTest : public ChromeRenderViewTest {
     FormFieldData::FillData field;
     field.value = text;
     field.is_autofilled = true;
-    field.unique_renderer_id = form_util::GetFieldRendererId(username_element_);
+    field.renderer_id = form_util::GetFieldRendererId(username_element_);
     field_data.push_back(field);
 
     FormData::FillData form;
     form.fields = field_data;
-    form.unique_renderer_id =
-        form_util::GetFormRendererId(username_element_.Form());
+    form.renderer_id = form_util::GetFormRendererId(username_element_.Form());
 
     autofill_agent_->ApplyFormAction(mojom::ActionType::kFill,
                                      mojom::ActionPersistence::kFill, form);
@@ -802,7 +801,7 @@ class PasswordAutofillAgentTest : public ChromeRenderViewTest {
       const std::u16string& password_value,
       const std::u16string& new_password_value,
       SubmissionIndicatorEvent event) {
-    EXPECT_EQ(form_renderer_id, form_data.unique_renderer_id);
+    EXPECT_EQ(form_renderer_id, form_data.renderer_id);
     EXPECT_TRUE(FormHasFieldWithValue(form_data, username_value));
     EXPECT_TRUE(FormHasFieldWithValue(form_data, password_value));
     EXPECT_TRUE(FormHasFieldWithValue(form_data, new_password_value));
