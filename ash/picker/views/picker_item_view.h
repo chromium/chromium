@@ -11,6 +11,10 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/button.h"
 
+namespace ui {
+class ImageModel;
+}
+
 namespace views {
 class ImageView;
 class View;
@@ -41,7 +45,7 @@ class ASH_EXPORT PickerItemView : public views::Button {
   PickerItemView& operator=(const PickerItemView&) = delete;
   ~PickerItemView() override;
 
-  void SetLeadingIcon(const gfx::VectorIcon& icon);
+  void SetLeadingIcon(const ui::ImageModel& icon);
 
   // Sets the primary text or image of the list item. This replaces any existing
   // contents in the primary container.

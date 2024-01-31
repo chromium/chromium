@@ -18,6 +18,7 @@
 #include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/image_view.h"
@@ -35,7 +36,7 @@ constexpr auto kPickerListItemBorderInsets = gfx::Insets::TLBR(8, 16, 8, 8);
 
 constexpr auto kPickerGridItemCornerRadius = gfx::RoundedCornersF(8);
 
-constexpr int kIconSizeDip = 20;
+constexpr gfx::Size kLeadingIconSizeDip(20, 20);
 constexpr auto kLeadingIconRightPadding = gfx::Insets::TLBR(0, 0, 0, 16);
 
 gfx::Insets GetBorderInsetsForItemType(PickerItemView::ItemType item_type) {
@@ -119,12 +120,12 @@ void PickerItemView::SetPrimaryImage(
   SetAccessibleName(u"image contents");
 }
 
-void PickerItemView::SetLeadingIcon(const gfx::VectorIcon& icon) {
+void PickerItemView::SetLeadingIcon(const ui::ImageModel& icon) {
   leading_container_->RemoveAllChildViews();
   leading_container_->AddChildView(
       views::Builder<views::ImageView>()
-          .SetImage(ui::ImageModel::FromVectorIcon(
-              icon, cros_tokens::kCrosSysOnSurface, kIconSizeDip))
+          .SetImageSize(kLeadingIconSizeDip)
+          .SetImage(icon)
           .SetCanProcessEventsWithinSubtree(false)
           .SetProperty(views::kMarginsKey, kLeadingIconRightPadding)
           .Build());
