@@ -316,6 +316,12 @@ BASE_FEATURE(kAutofillUseINAddressModel,
              "AutofillUseINAddressModel",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, Autofill will issues votes for EMAIL_ADDRESS field types on
+// fields where the content matches a valid email format.
+BASE_FEATURE(kAutofillUploadVotesForFieldsWithEmail,
+             "AutofillUploadVotesForFieldsWithEmail",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Changes Autofill Clear Form into Undo Autofill.
 BASE_FEATURE(kAutofillUndo, "AutofillUndo", base::FEATURE_DISABLED_BY_DEFAULT);
 

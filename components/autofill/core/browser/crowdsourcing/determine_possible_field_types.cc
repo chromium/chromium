@@ -9,6 +9,7 @@
 #include "components/autofill/core/browser/data_model/address.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/field_type_utils.h"
+#include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/validation.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -239,6 +240,15 @@ void DeterminePossibleFieldTypesForUpload(
           metrics.classified_more_field_types = true;
         }
       }
+    }
+
+    // If the input's content matches a valid email format, include email
+    // address as one of the possible matching types.
+    if (field->IsTextInputElement() &&
+        base::FeatureList::IsEnabled(
+            features::kAutofillUploadVotesForFieldsWithEmail) &&
+        !matching_types.contains(EMAIL_ADDRESS) && IsValidEmailAddress(value)) {
+      matching_types.insert(EMAIL_ADDRESS);
     }
 
     // In case a select element has options like this
