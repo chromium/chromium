@@ -598,28 +598,6 @@ class BrowserAutofillManager : public AutofillManager {
   // its action attribute targets a HTTP url.
   bool IsFormNonSecure(const FormData& form) const;
 
-  // Uses the existing personal data in |profiles| and |credit_cards| to
-  // determine possible field types for the |form|.  This is
-  // potentially expensive -- on the order of 50ms even for a small set of
-  // |stored_data|. Hence, it should not run on the UI thread -- to avoid
-  // locking up the UI -- nor on the IO thread -- to avoid blocking IPC calls.
-  static void DeterminePossibleFieldTypesForUpload(
-      const std::vector<AutofillProfile>& profiles,
-      const std::vector<CreditCard>& credit_cards,
-      const std::u16string& last_unlocked_credit_card_cvc,
-      const std::string& app_locale,
-      bool observed_submission,
-      FormStructure* form);
-
-  // Uses context about previous and next fields to select the appropriate type
-  // for fields with ambiguous upload types.
-  static void DisambiguateUploadTypes(FormStructure* form);
-
-  // Disambiguates name field upload types.
-  static void DisambiguateNameUploadTypes(FormStructure* form,
-                                          size_t current_index,
-                                          const FieldTypeSet& upload_types);
-
   // Returns the value to fill along with the field type and if the value is an
   // override.
   FieldFillingData GetFieldFillingData(

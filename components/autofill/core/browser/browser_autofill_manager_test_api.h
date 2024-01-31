@@ -18,18 +18,6 @@ namespace autofill {
 // Exposes some testing operations for BrowserAutofillManager.
 class BrowserAutofillManagerTestApi : public AutofillManagerTestApi {
  public:
-  static void DeterminePossibleFieldTypesForUpload(
-      const std::vector<AutofillProfile>& profiles,
-      const std::vector<CreditCard>& credit_cards,
-      const std::u16string& last_unlocked_credit_card_cvc,
-      const std::string& app_locale,
-      FormStructure* form) {
-    // For tests, the observed_submission is hardcoded to true.
-    BrowserAutofillManager::DeterminePossibleFieldTypesForUpload(
-        profiles, credit_cards, last_unlocked_credit_card_cvc, app_locale,
-        /*observed_submission=*/true, form);
-  }
-
   explicit BrowserAutofillManagerTestApi(BrowserAutofillManager* manager)
       : AutofillManagerTestApi(manager), manager_(*manager) {}
 
