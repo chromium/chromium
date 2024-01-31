@@ -58,11 +58,13 @@ class PdfOcrController : public KeyedService,
   static std::vector<content::WebContents*> GetAllPdfWebContentsesForTesting(
       Profile* profile);
 
-  // Return true if PDF OCR is enabled for the profile.
+  // Return true if PDF OCR is enabled for the profile.F
   bool IsEnabled() const;
 
   // ScreenAIInstallState::Observer:
   void StateChanged(ScreenAIInstallState::State state) override;
+
+  void set_ocr_ready_for_testing() { ocr_service_ready_ = true; }
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   // ui::AXModeObserver:
@@ -77,6 +79,9 @@ class PdfOcrController : public KeyedService,
       const ash::AccessibilityStatusEventDetails& details);
 #endif
 
+  // Receives the result of OCR service initialization.
+  void OCRServiceInitializationCallback(bool successful);
+
   // Handles a change to the activation state.
   void OnActivationChanged();
 
@@ -85,15 +90,6 @@ class PdfOcrController : public KeyedService,
 
   // Sends Pdf Ocr Always Active state to all relevant WebContents.
   void SendPdfOcrAlwaysActiveToAll(bool is_always_active);
-
-  // If library is ready, returns false as the request can be immediately
-  // executed. Otherwise:
-  //  - Stores the request to be run when library is ready.
-  //  - Triggers library download and installation through adding observer if
-  //    not done before.
-  //  - Asks for a retry on download if a previous download has failed.
-  //  - Returns true.
-  bool MaybeScheduleRequest();
 
   // PdfOcrController will be created via PdfOcrControllerFactory on this
   // profile and then destroyed before the profile gets destroyed.
@@ -117,6 +113,12 @@ class PdfOcrController : public KeyedService,
   // Enables the kPDFOcr accessibility mode flag for all tabs associated
   // with the controller's profile.
   std::unique_ptr<content::ScopedAccessibilityMode> scoped_accessibility_mode_;
+
+  // True when OCR service is initialized and ready to use.
+  bool ocr_service_ready_ = false;
+
+  // OCR initialization has started, but is not finished yet.
+  bool waiting_for_ocr_service_initialization_ = false;
 
   base::WeakPtrFactory<PdfOcrController> weak_ptr_factory_{this};
 };

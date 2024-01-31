@@ -282,12 +282,7 @@ BASE_FEATURE(kPdfOcr,
 );
 
 bool IsPdfOcrEnabled() {
-  // TODO(crbug.com/1520424): Remove `IsScreenAIOCREnabled` after
-  // `PdfOcrController` is updated to respect ready state from
-  // `ScreenAIServiceRouter` instead of the deprecated one from
-  // `ScreenAISInstallState`.
-  return base::FeatureList::IsEnabled(::features::kPdfOcr) &&
-         IsScreenAIOCREnabled();
+  return base::FeatureList::IsEnabled(::features::kPdfOcr);
 }
 
 BASE_FEATURE(kReadAnything, "ReadAnything", base::FEATURE_ENABLED_BY_DEFAULT);

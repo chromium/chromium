@@ -8,6 +8,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/with_feature_override.h"
 #include "chrome/browser/accessibility/pdf_ocr_controller.h"
+#include "chrome/browser/accessibility/pdf_ocr_controller_factory.h"
 #include "chrome/browser/pdf/pdf_extension_test_base.h"
 #include "chrome/browser/screen_ai/screen_ai_install_state.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -224,8 +225,8 @@ IN_PROC_BROWSER_TEST_P(PdfOcrControllerBrowserTest,
 
   EnableScreenReader(false);
 
-  screen_ai::ScreenAIInstallState::GetInstance()->SetStateForTesting(
-      screen_ai::ScreenAIInstallState::State::kReady);
+  screen_ai::PdfOcrControllerFactory::GetForProfile(browser()->profile())
+      ->set_ocr_ready_for_testing();
   PrefChangeWaiter pref_waiter(browser()->profile());
   // Turn on PDF OCR.
   browser()->profile()->GetPrefs()->SetBoolean(
@@ -251,8 +252,8 @@ IN_PROC_BROWSER_TEST_P(PdfOcrControllerBrowserTest,
 
   EnableSelectToSpeak(false);
 
-  screen_ai::ScreenAIInstallState::GetInstance()->SetStateForTesting(
-      screen_ai::ScreenAIInstallState::State::kReady);
+  screen_ai::PdfOcrControllerFactory::GetForProfile(browser()->profile())
+      ->set_ocr_ready_for_testing();
   PrefChangeWaiter pref_waiter(browser()->profile());
   // Turn on PDF OCR.
   browser()->profile()->GetPrefs()->SetBoolean(

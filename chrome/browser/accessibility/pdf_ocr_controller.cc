@@ -234,13 +234,30 @@ void PdfOcrController::OnActivationChanged() {
   if (is_always_active) {
     RecordAcceptLanguages(
         profile_->GetPrefs()->GetString(language::prefs::kAcceptLanguages));
-    if (MaybeScheduleRequest()) {
-      // The request will be handled when the library is ready or discarded if
-      // it fails to load.
+
+    if (!ocr_service_ready_) {
+      // Avoid repeated requests.
+      if (waiting_for_ocr_service_initialization_) {
+        return;
+      }
+      waiting_for_ocr_service_initialization_ = true;
+
+      if (ScreenAIInstallState::GetInstance()->get_state() !=
+              ScreenAIInstallState::State::kDownloaded &&
+          !component_ready_observer_.IsObserving()) {
+        // Start observing ScreenAIInstallState to report it to user.
+        component_ready_observer_.Observe(ScreenAIInstallState::GetInstance());
+      }
+
+      screen_ai::ScreenAIServiceRouterFactory::GetForBrowserContext(profile_)
+          ->GetServiceStateAsync(
+              ScreenAIServiceRouter::Service::kOCR,
+              base::BindOnce(
+                  &PdfOcrController::OCRServiceInitializationCallback,
+                  weak_ptr_factory_.GetWeakPtr()));
       return;
     }
-    CHECK_EQ(ScreenAIInstallState::GetInstance()->get_state(),
-             ScreenAIInstallState::State::kReady);
+
     // This will send the `kPDFOcr` flag to all WebContents. Strictly speaking,
     // it need only be sent to those associated with PDF Viewer Mimehandlers,
     // but we have no filtering mechanism today. The others should simply ignore
@@ -253,28 +270,18 @@ void PdfOcrController::OnActivationChanged() {
   }
 }
 
-bool PdfOcrController::MaybeScheduleRequest() {
-  ScreenAIInstallState::State current_install_state =
-      ScreenAIInstallState::GetInstance()->get_state();
-
-  // No need for scheduling if service is ready already.
-  if (current_install_state == ScreenAIInstallState::State::kReady) {
-    return false;
+void PdfOcrController::OCRServiceInitializationCallback(bool successful) {
+  waiting_for_ocr_service_initialization_ = false;
+  ocr_service_ready_ = successful;
+  if (successful) {
+    OnActivationChanged();
+  } else {
+    // Call `StateChanged` to announce the state to user.
+    StateChanged(ScreenAIInstallState::State::kDownloadFailed);
   }
 
-  // TODO(crbug.com/127829): Make sure requesting to repeat a failed download
-  // will trigger a new one.
-  if (current_install_state == ScreenAIInstallState::State::kFailed) {
-    ScreenAIInstallState::GetInstance()->DownloadComponent();
-  }
-
-  if (!component_ready_observer_.IsObserving()) {
-    // Start observing ScreenAIInstallState when the user activates PDF OCR. It
-    // triggers downloading the Screen AI library if it's not downloaded.
-    component_ready_observer_.Observe(ScreenAIInstallState::GetInstance());
-  }
-
-  return true;
+  // No more need for observing Screen AI state changes.
+  component_ready_observer_.Reset();
 }
 
 void PdfOcrController::StateChanged(ScreenAIInstallState::State state) {
@@ -286,7 +293,7 @@ void PdfOcrController::StateChanged(ScreenAIInstallState::State state) {
       AnnounceToScreenReader(IDS_SETTINGS_PDF_OCR_DOWNLOADING);
       break;
 
-    case ScreenAIInstallState::State::kFailed:
+    case ScreenAIInstallState::State::kDownloadFailed:
       AnnounceToScreenReader(IDS_SETTINGS_PDF_OCR_DOWNLOAD_ERROR);
       // Update the PDF OCR pref to be false to toggle off the button.
       profile_->GetPrefs()->SetBoolean(prefs::kAccessibilityPdfOcrAlwaysActive,
@@ -295,12 +302,10 @@ void PdfOcrController::StateChanged(ScreenAIInstallState::State state) {
 
     case ScreenAIInstallState::State::kDownloaded:
       AnnounceToScreenReader(IDS_SETTINGS_PDF_OCR_DOWNLOAD_COMPLETE);
-      screen_ai::ScreenAIServiceRouterFactory::GetForBrowserContext(profile_)
-          ->InitializeServiceIfNeeded(ScreenAIServiceRouter::Service::kOCR);
       break;
 
+    // TODO(crbug.com/1520424): Deprecated, remove.
     case ScreenAIInstallState::State::kReady:
-      OnActivationChanged();
       break;
   }
 }
