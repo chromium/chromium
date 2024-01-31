@@ -861,7 +861,9 @@ int View::GetMirroredXWithWidthInView(int x, int w) const {
 // Layout ----------------------------------------------------------------------
 
 void View::DeprecatedLayoutImmediately() {
-  LayoutImmediately();
+  TRACE_EVENT1("ui", "View::DeprecatedLayoutImmediately", "view class",
+               GetClassName());
+  LayoutImmediately(false);
 }
 
 void View::Layout() {
@@ -3413,7 +3415,10 @@ bool View::HasLayoutManager() const {
           layout_manager_);
 }
 
-void View::LayoutImmediately() {
+void View::LayoutImmediately(bool collect_trace) {
+  if (collect_trace) {
+    TRACE_EVENT1("ui", "View::LayoutImmediately", "view class", GetClassName());
+  }
   Layout();
 }
 

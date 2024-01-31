@@ -2168,7 +2168,7 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   // Implementation of synchronous layout. DeprecatedLayoutImmediately() is a
   // temporary public accessor to this; this is the access point for the few
   // blessed uses.
-  void LayoutImmediately();
+  void LayoutImmediately(bool collect_trace = true);
 
   // Input ---------------------------------------------------------------------
 
