@@ -4,6 +4,9 @@
 
 package org.chromium.chrome.browser.compositor;
 
+import static androidx.core.view.WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE;
+
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -23,12 +26,15 @@ import android.view.MotionEvent;
 import android.view.PointerIcon;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.view.accessibility.AccessibilityEvent;
 import android.widget.FrameLayout;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowCompat;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.core.view.accessibility.AccessibilityEventCompat;
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
 import androidx.customview.widget.ExploreByTouchHelper;
@@ -144,6 +150,7 @@ public class CompositorViewHolder extends FrameLayout
     private boolean mIsKeyboardShowing;
     private boolean mNativeInitialized;
     private LayoutManagerImpl mLayoutManager;
+    private Activity mActivity;
     private CompositorView mCompositorView;
 
     private boolean mContentOverlayVisiblity = true;
@@ -439,6 +446,13 @@ public class CompositorViewHolder extends FrameLayout
                 new FrameLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
 
         setOnSystemUiVisibilityChangeListener(visibility -> handleSystemUiVisibilityChange());
+        if (ChromeFeatureList.sFullscreenInsetsApiMigration.isEnabled()) {
+            setOnApplyWindowInsetsListener(
+                    (view, windowInsets) -> {
+                        handleSystemUiVisibilityChange();
+                        return windowInsets;
+                    });
+        }
         handleSystemUiVisibilityChange();
 
         mDelayTempStripRemoval = TabUiFeatureUtilities.isDelayTempStripRemovalEnabled(getContext());
@@ -479,7 +493,8 @@ public class CompositorViewHolder extends FrameLayout
         return mCachePoint;
     }
 
-    private void handleSystemUiVisibilityChange() {
+    @VisibleForTesting
+    void handleSystemUiVisibilityChange() {
         View view = getContentView();
         if (view == null || !ViewCompat.isAttachedToWindow(view)) view = this;
 
@@ -490,14 +505,8 @@ public class CompositorViewHolder extends FrameLayout
             view = (View) view.getParent();
         }
 
-        // SYSTEM_UI_FLAG_FULLSCREEN is cleared when showing the soft keyboard in older version of
-        // Android (prior to P).  The immersive mode flags are not cleared, so use those in
-        // combination to detect this state.
-        boolean isInFullscreen =
-                (uiVisibility & View.SYSTEM_UI_FLAG_FULLSCREEN) != 0
-                        || (uiVisibility & View.SYSTEM_UI_FLAG_IMMERSIVE) != 0
-                        || (uiVisibility & View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY) != 0;
-        boolean layoutFullscreen = (uiVisibility & View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN) != 0;
+        boolean isInFullscreen = isInFullscreenMode(uiVisibility, view);
+        boolean layoutFullscreen = isLayoutFullscreen(uiVisibility);
 
         if (mShowingFullscreen == isInFullscreen) return;
         mShowingFullscreen = isInFullscreen;
@@ -516,6 +525,49 @@ public class CompositorViewHolder extends FrameLayout
         // not reliably jump from updating the viewport too early.
         long delay = layoutFullscreen ? SYSTEM_UI_VIEWPORT_UPDATE_DELAY_MS : 0;
         postDelayed(mSystemUiFullscreenResizeRunnable, delay);
+    }
+
+    private boolean isInFullscreenMode(int uiVisibility, View view) {
+        // If the fullscreen api migration is enabled, check the updated API instead.
+        if (ChromeFeatureList.sFullscreenInsetsApiMigration.isEnabled()) {
+            if (view != null
+                    && view.getRootWindowInsets() != null
+                    && mActivity != null
+                    && mActivity.getWindow() != null
+                    && mActivity.getWindow().getDecorView() != null) {
+                Window window = mActivity.getWindow();
+                return !WindowInsetsCompat.toWindowInsetsCompat(view.getRootWindowInsets(), view)
+                                .isVisible(WindowInsetsCompat.Type.statusBars())
+                        || WindowCompat.getInsetsController(window, window.getDecorView())
+                                        .getSystemBarsBehavior()
+                                == BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE;
+            } else {
+                return false;
+            }
+        } else {
+            // SYSTEM_UI_FLAG_FULLSCREEN is cleared when showing the soft keyboard in older version
+            // of
+            // Android (prior to P).  The immersive mode flags are not cleared, so use those in
+            // combination to detect this state.
+            return (uiVisibility & View.SYSTEM_UI_FLAG_FULLSCREEN) != 0
+                    || (uiVisibility & View.SYSTEM_UI_FLAG_IMMERSIVE) != 0
+                    || (uiVisibility & View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY) != 0;
+        }
+    }
+
+    private boolean isLayoutFullscreen(int uiVisibility) {
+        if (ChromeFeatureList.sFullscreenInsetsApiMigration.isEnabled()) {
+            if (mActivity != null
+                    && mActivity.getWindow() != null
+                    && mActivity.getWindow().getDecorView() != null) {
+                // TODO(crbug.com/1519669): Coordinate usage of #setDecorFitsSystemWindows
+                return !mActivity.getWindow().getDecorView().getFitsSystemWindows();
+            } else {
+                return false;
+            }
+        } else {
+            return (uiVisibility & View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN) != 0;
+        }
     }
 
     /**
@@ -619,6 +671,7 @@ public class CompositorViewHolder extends FrameLayout
             WindowAndroid windowAndroid,
             TabContentManager tabContentManager,
             PrefService prefService) {
+        mActivity = windowAndroid.getActivity().get();
         mCompositorView.initNativeCompositor(
                 SysUtils.isLowEndDevice(), windowAndroid, tabContentManager);
 
