@@ -44,6 +44,7 @@ chromium-metrics-reviews@google.com.
   <int value="20" label="Error: CONNECTION_SUSPENDED_DURING_CALL"/>
   <int value="22" label="Error: RECONNECTION_TIMED_OUT"/>
   <int value="11000" label="Error: PASSPHRASE_REQUIRED"/>
+  <int value="11001" label="Error: WRONG_PASSPHRASE"/>
   <int value="11004" label="Error: ACCESS_DENIED"/>
   <int value="11005" label="Error: AUTH_ERROR_RESOLVABLE"/>
   <int value="11006" label="Error: AUTH_ERROR_UNRESOLVABLE"/>
