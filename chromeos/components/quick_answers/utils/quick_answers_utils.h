@@ -38,12 +38,6 @@ std::string UnescapeStringForHTML(const std::string& string);
 // if not feasible.
 std::optional<double> GetRatio(const std::optional<double>& value1,
                                const std::optional<double>& value2);
-
-// Get the conversion rate between two unit values. Return nullopt if no valid
-// conversion rate is found.
-std::optional<double> GetUnitConversionRate(const base::Value::Dict& unit_a,
-                                            const base::Value::Dict& unit_b);
-
 }  // namespace quick_answers
 
 #endif  // CHROMEOS_COMPONENTS_QUICK_ANSWERS_UTILS_QUICK_ANSWERS_UTILS_H_

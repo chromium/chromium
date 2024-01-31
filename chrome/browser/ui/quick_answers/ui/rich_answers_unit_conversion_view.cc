@@ -19,36 +19,6 @@
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/layout/flex_layout_view.h"
 
-namespace {
-
-std::string BuildFormulaDescriptionText(double source_rate,
-                                        double dest_rate,
-                                        const std::string& category) {
-  std::u16string arithmetic_operator_text;
-
-  if (source_rate <= dest_rate) {
-    arithmetic_operator_text = l10n_util::GetStringUTF16(
-        IDS_QUICK_ANSWERS_UNIT_CONVERSION_FORMULA_MULTIPLICATION_OPERATOR_TEXT);
-  } else {
-    arithmetic_operator_text = l10n_util::GetStringUTF16(
-        IDS_QUICK_ANSWERS_UNIT_CONVERSION_FORMULA_DIVISION_OPERATOR_TEXT);
-  }
-
-  std::optional<double> conversion_rate =
-      quick_answers::GetRatio(source_rate, dest_rate);
-  if (!conversion_rate.has_value()) {
-    return std::string();
-  }
-
-  return l10n_util::GetStringFUTF8(
-      IDS_QUICK_ANSWERS_UNIT_CONVERSION_FORMULA_DESCRIPTION_TEXT,
-      arithmetic_operator_text, base::UTF8ToUTF16(base::ToLowerASCII(category)),
-      base::UTF8ToUTF16(base::StringPrintf(quick_answers::kResultValueTemplate,
-                                           conversion_rate.value())));
-}
-
-}  // namespace
-
 namespace quick_answers {
 
 // RichAnswersUnitConversionView
@@ -91,17 +61,15 @@ void RichAnswersUnitConversionView::AddConversionResultText() {
 }
 
 void RichAnswersUnitConversionView::MaybeAddFormulaInformation() {
-  if (!unit_conversion_result_.standard_unit_conversion_rates.has_value()) {
+  if (!unit_conversion_result_.source_to_dest_unit_conversion.has_value()) {
     return;
   }
 
-  StandardUnitConversionRates conversion_rates =
-      unit_conversion_result_.standard_unit_conversion_rates.value();
-  std::string formula_description_text = BuildFormulaDescriptionText(
-      conversion_rates.source_to_standard_conversion_rate,
-      conversion_rates.dest_to_standard_conversion_rate,
-      unit_conversion_result_.category);
-  if (formula_description_text.empty()) {
+  UnitConversion unit_conversion =
+      unit_conversion_result_.source_to_dest_unit_conversion.value();
+  std::optional<std::string> formula_description_text =
+      unit_conversion.GetConversionFormulaText();
+  if (!formula_description_text) {
     return;
   }
 
@@ -115,8 +83,8 @@ void RichAnswersUnitConversionView::MaybeAddFormulaInformation() {
       content_view_->AddChildView(CreateHorizontalBoxLayoutView());
   subcontent_view->SetInsideBorderInsets(kSubContentViewInsets);
   subcontent_view->AddChildView(QuickAnswersTextLabel::CreateLabelWithStyle(
-      formula_description_text, GetFontList(TypographyToken::kCrosBody2),
-      kContentTextWidth,
+      formula_description_text.value(),
+      GetFontList(TypographyToken::kCrosBody2), kContentTextWidth,
       /*is_multi_line=*/true, cros_tokens::kCrosSysOnSurface));
 }
 
