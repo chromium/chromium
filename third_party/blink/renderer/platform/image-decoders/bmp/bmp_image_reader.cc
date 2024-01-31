@@ -748,36 +748,37 @@ bool BMPImageReader::ProcessColorTable() {
 
   const wtf_size_t header_end = header_offset_ + info_header_.size;
   wtf_size_t colors_in_palette = info_header_.clr_used;
+  CHECK_LE(colors_in_palette, 256u);  // Enforced by ProcessInfoHeader().
   wtf_size_t table_size_in_bytes = colors_in_palette * bytes_per_color;
   const wtf_size_t table_end = header_end + table_size_in_bytes;
   if (table_end < header_end) {
     return parent_->SetFailed();
   }
 
-  // Some BMPs don't contain a complete palette.  Avoid reading off the end.
+  // Some BMPs don't contain a complete palette.  Truncate it instead of reading
+  // off the end of the palette.
   if (img_data_offset_ && (img_data_offset_ < table_end)) {
-    colors_in_palette = (img_data_offset_ - header_end) / bytes_per_color;
+    wtf_size_t colors_in_truncated_palette =
+        (img_data_offset_ - header_end) / bytes_per_color;
+    CHECK_LE(colors_in_truncated_palette, colors_in_palette);
+    colors_in_palette = colors_in_truncated_palette;
     table_size_in_bytes = colors_in_palette * bytes_per_color;
   }
 
-  // Read color table.
+  // If we don't have enough data to read in the whole palette yet, stop here.
   if ((decoded_offset_ > data_->size()) ||
       ((data_->size() - decoded_offset_) < table_size_in_bytes)) {
     return false;
   }
-  color_table_.resize(info_header_.clr_used);
+
+  // Read the color table.
+  color_table_.resize(colors_in_palette);
 
   for (wtf_size_t i = 0; i < colors_in_palette; ++i) {
     color_table_[i].rgb_blue = ReadUint8(0);
     color_table_[i].rgb_green = ReadUint8(1);
     color_table_[i].rgb_red = ReadUint8(2);
     decoded_offset_ += bytes_per_color;
-  }
-  // Explicitly zero any colors past the end of a truncated palette.
-  for (wtf_size_t i = colors_in_palette; i < info_header_.clr_used; ++i) {
-    color_table_[i].rgb_blue = 0;
-    color_table_[i].rgb_green = 0;
-    color_table_[i].rgb_red = 0;
   }
 
   // We've now decoded all the non-image data we care about.  Skip anything
@@ -966,7 +967,7 @@ BMPImageReader::ProcessingResult BMPImageReader::ProcessRLEData() {
         for (wtf_size_t which = 0; coord_.x() < end_x;) {
           // Some images specify color values past the end of the
           // color table; set these pixels to black.
-          if (color_indexes[which] < info_header_.clr_used) {
+          if (color_indexes[which] < color_table_.size()) {
             SetI(color_indexes[which]);
           } else {
             SetRGBA(0, 0, 0, 255);
@@ -1045,7 +1046,7 @@ BMPImageReader::ProcessingResult BMPImageReader::ProcessNonRLEData(
             }
           } else {
             // See comments near the end of ProcessRLEData().
-            if (color_index < info_header_.clr_used) {
+            if (color_index < color_table_.size()) {
               SetI(color_index);
             } else {
               SetRGBA(0, 0, 0, 255);
