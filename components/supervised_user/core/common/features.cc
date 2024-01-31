@@ -109,16 +109,7 @@ bool CanDisplayFirstTimeInterstitialBanner() {
 
 BASE_FEATURE(kForceGoogleSafeSearchForSupervisedUsers,
              "ForceGoogleSafeSearchForSupervisedUsers",
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
-             // For Android and ChromeOS, the long-standing behaviour is that
-             // Safe Search is force-enabled by the browser, irrespective of the
-             // parent configuration.
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#else
-             // For other platforms, Safe Search is controlled by the parent
-             // configuration in Family Link.
              base::FEATURE_DISABLED_BY_DEFAULT);
-#endif
 
 // The URL which the "Managed by your parent" UI links to. This is defined as a
 // FeatureParam (but with the currently correct default) because:
