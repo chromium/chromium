@@ -59,8 +59,7 @@ FileSystemAccessRestorePermissionBubbleView::
   for (auto file : file_data) {
     file_paths.push_back(file.path);
   }
-  auto scroll_panel = FileSystemAccessScrollPanel();
-  AddChildView(scroll_panel.Create(file_paths));
+  AddChildView(FileSystemAccessScrollPanel::Create(file_paths));
 
   // Add buttons.
   auto allow_once_button = std::make_unique<views::MdTextButton>(
