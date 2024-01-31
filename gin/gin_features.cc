@@ -264,6 +264,11 @@ BASE_FEATURE(kJavaScriptSetMethods,
              "JavaScriptSetMethods",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables the RegExp duplicate named capture groups proposal.
+BASE_FEATURE(kJavaScriptRegExpDuplicateNamedGroups,
+             "JavaScriptRegExpDuplicateNamedGroups",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // WebAssembly features.
 
 // Enable support for the WebAssembly tail-call proposal:
