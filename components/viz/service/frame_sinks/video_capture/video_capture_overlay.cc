@@ -377,8 +377,8 @@ void VideoCaptureOverlay::Sprite::Blend(const gfx::Rect& src_rect,
       << ", dst_rect=" << dst_rect.ToString();
   DCHECK(frame->ColorSpace().IsValid());
 
-  TRACE_EVENT2("gpu.capture", "VideoCaptureOverlay::Sprite::Blend", "x",
-               dst_rect.x(), "y", dst_rect.y());
+  TRACE_EVENT("gpu.capture", "VideoCaptureOverlay::Sprite::Blend", "x",
+              dst_rect.x(), "y", dst_rect.y());
 
   if (!transformed_image_ || color_space_ != frame->ColorSpace()) {
     color_space_ = frame->ColorSpace();
@@ -518,8 +518,8 @@ void VideoCaptureOverlay::Sprite::Blend(const gfx::Rect& src_rect,
 }
 
 void VideoCaptureOverlay::Sprite::TransformImage() {
-  TRACE_EVENT2("gpu.capture", "VideoCaptureOverlay::Sprite::TransformImage",
-               "width", size_.width(), "height", size_.height());
+  TRACE_EVENT("gpu.capture", "VideoCaptureOverlay::Sprite::TransformImage",
+              "width", size_.width(), "height", size_.height());
 
   // Scale the source |image_| to match the format and size required. For the
   // purposes of color space conversion, the alpha must not be pre-multiplied.
