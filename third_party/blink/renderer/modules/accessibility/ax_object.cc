@@ -5704,10 +5704,9 @@ void AXObject::UpdateChildrenIfNecessary() {
     return;
   }
 
-  CHECK(!AXObjectCache().IsFrozen())
-      << "Object should have already had its children updated in "
-         "AXObjectCacheImpl::UpdateTreeIfNeeded(): "
-      << ToString(true, true);
+  if (AXObjectCache().IsFrozen()) {
+    return;
+  }
 
   UpdateCachedAttributeValuesIfNeeded();
 
