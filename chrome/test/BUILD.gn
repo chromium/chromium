@@ -10633,6 +10633,7 @@ if (!is_android && !is_chromeos_device) {
       "../browser/ssl/typed_navigation_upgrade_throttle_browsertest.cc",
       "../browser/ui/autofill/autofill_context_menu_manager_interactive_uitest.cc",
       "../browser/ui/autofill/autofill_popup_controller_interactive_uitest.cc",
+      "../browser/ui/autofill/payments/desktop_payments_window_manager_interactive_uitest.cc",
       "../browser/ui/blocked_content/popup_blocker_browsertest.cc",
       "../browser/ui/browser_command_controller_interactive_browsertest.cc",
       "../browser/ui/browser_focus_uitest.cc",

@@ -263,7 +263,11 @@ TEST_F(ChromeAutofillClientTest,
 // Test that there is always an PaymentsWindowManager present if attempted
 // to be retrieved.
 TEST_F(ChromeAutofillClientTest, GetPaymentsWindowManager) {
-  EXPECT_NE(client()->GetPaymentsWindowManager(), nullptr);
+  if constexpr (BUILDFLAG(IS_ANDROID)) {
+    EXPECT_EQ(client()->GetPaymentsWindowManager(), nullptr);
+  } else {
+    EXPECT_NE(client()->GetPaymentsWindowManager(), nullptr);
+  }
 }
 
 #if BUILDFLAG(IS_ANDROID)
