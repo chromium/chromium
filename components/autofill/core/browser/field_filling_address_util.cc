@@ -320,10 +320,9 @@ std::u16string GetPhoneCountryCodeSelectControlValue(
   }
   for (const SelectOption& option : field_options) {
     std::u16string cc_candidate_in_value =
-        data_util::FindPossiblePhoneCountryCode(RemoveWhitespace(option.value));
+        data_util::FindPossiblePhoneCountryCode(option.value);
     std::u16string cc_candidate_in_content =
-        data_util::FindPossiblePhoneCountryCode(
-            RemoveWhitespace(option.content));
+        data_util::FindPossiblePhoneCountryCode(option.content);
     if (cc_candidate_in_value == country_code ||
         cc_candidate_in_content == country_code) {
       return option.value;
