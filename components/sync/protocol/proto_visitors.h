@@ -1231,8 +1231,25 @@ VISIT_PROTO_FIELDS(const sync_pb::SessionWindow& proto) {
   VISIT_ENUM(browser_type);
 }
 
+VISIT_PROTO_FIELDS(const sync_pb::SharedTabGroup& proto) {
+  VISIT(title);
+  VISIT_ENUM(color);
+}
+
+VISIT_PROTO_FIELDS(const sync_pb::SharedTab& proto) {
+  VISIT(url);
+  VISIT(title);
+  VISIT(favicon_url);
+  VISIT(shared_tab_group_guid);
+  VISIT(unique_position);
+}
+
 VISIT_PROTO_FIELDS(const sync_pb::SharedTabGroupDataSpecifics& proto) {
   VISIT(guid);
+  VISIT(collaboration_id);
+  VISIT(last_modification_author);
+  VISIT(tab_group);
+  VISIT(tab);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::SharingMessageSpecifics& proto) {

@@ -19,6 +19,7 @@
 #include "components/sync/protocol/saved_tab_group_specifics.pb.h"
 #include "components/sync/protocol/segmentation_specifics.pb.h"
 #include "components/sync/protocol/session_specifics.pb.h"
+#include "components/sync/protocol/shared_tab_group_data_specifics.pb.h"
 #include "components/sync/protocol/sync.pb.h"
 #include "components/sync/protocol/sync_enums.pb.h"
 #include "components/sync/protocol/user_consent_types.pb.h"
@@ -74,6 +75,8 @@ const char* ProtoEnumToString(
     sync_pb::ReadingListSpecifics::ReadingListEntryStatus status);
 
 const char* ProtoEnumToString(sync_pb::SavedTabGroup::SavedTabGroupColor color);
+
+const char* ProtoEnumToString(sync_pb::SharedTabGroup::Color color);
 
 const char* ProtoEnumToString(
     sync_pb::SearchEngineSpecifics::ActiveStatus is_active);
