@@ -79,7 +79,7 @@ NSArray<RecipientInfoForIOSDisplay*>* _recipients;
     didSelectRowAtIndexPath:(NSIndexPath*)indexPath {
   if (_recipients[indexPath.row].isEligible) {
     [tableView cellForRowAtIndexPath:indexPath].accessoryView =
-        [[UIImageView alloc] initWithImage:[self checkmarkCircleIcon]];
+        [self checkmarkCircleIcon];
     [self setShareButtonStatus];
   }
 }
@@ -88,7 +88,7 @@ NSArray<RecipientInfoForIOSDisplay*>* _recipients;
     didDeselectRowAtIndexPath:(NSIndexPath*)indexPath {
   if (_recipients[indexPath.row].isEligible) {
     [tableView cellForRowAtIndexPath:indexPath].accessoryView =
-        [[UIImageView alloc] initWithImage:[self circleIcon]];
+        [self circleIcon];
     [self setShareButtonStatus];
   }
 }
@@ -120,10 +120,9 @@ NSArray<RecipientInfoForIOSDisplay*>* _recipients;
   cell.accessibilityIdentifier = _recipients[indexPath.row].email;
   if (_recipients[indexPath.row].isEligible) {
     cell.accessoryView =
-        [[UIImageView alloc] initWithImage:[tableView.indexPathsForSelectedRows
-                                               containsObject:indexPath]
-                                               ? [self checkmarkCircleIcon]
-                                               : [self circleIcon]];
+        [tableView.indexPathsForSelectedRows containsObject:indexPath]
+            ? [self checkmarkCircleIcon]
+            : [self circleIcon];
   } else {
     UIButton* infoButton = [UIButton buttonWithType:UIButtonTypeInfoLight];
     [infoButton setImage:[self infoCircleIcon] forState:UIControlStateNormal];
@@ -226,14 +225,19 @@ NSArray<RecipientInfoForIOSDisplay*>* _recipients;
 #pragma mark - Private
 
 // Creates accessory view for a cell with selected sharing recipient.
-- (UIImage*)checkmarkCircleIcon {
-  return DefaultSymbolWithPointSize(kCheckmarkCircleFillSymbol,
-                                    kAccessorySymbolSize);
+- (UIImageView*)checkmarkCircleIcon {
+  return [[UIImageView alloc]
+      initWithImage:DefaultSymbolWithPointSize(kCheckmarkCircleFillSymbol,
+                                               kAccessorySymbolSize)];
 }
 
 // Creates accessory view for a cell with unselected sharing recipient.
-- (UIImage*)circleIcon {
-  return DefaultSymbolWithPointSize(kCircleSymbol, kAccessorySymbolSize);
+- (UIImageView*)circleIcon {
+  UIImageView* circleIcon = [[UIImageView alloc]
+      initWithImage:DefaultSymbolWithPointSize(kCircleSymbol,
+                                               kAccessorySymbolSize)];
+  circleIcon.tintColor = [UIColor colorNamed:kGrey300Color];
+  return circleIcon;
 }
 
 // Creates accessory view for a cell with ineligible sharing recipient.
