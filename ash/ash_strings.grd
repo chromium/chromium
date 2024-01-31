@@ -7552,6 +7552,13 @@ To shut down the device, press and hold the power button on the device again.
       <message name="IDS_ASH_DOWNLOAD_COMMAND_TEXT_SHOW_IN_FOLDER" desc="Text of the command to show the download file in folder.">
         Show in folder
       </message>
+
+      <!-- Forest -->
+      <message name="IDS_ASH_FOREST_WINDOW_OVERFLOW_COUNT" translateable="false" desc="Text summarizing how many windows left to restore. [ICU Syntax]">
+        {NUM_OVERFLOW, plural,
+         =1 {1 more window}
+         other {# more windows}}
+      </message>
      </messages>
     </release>
 </grit>

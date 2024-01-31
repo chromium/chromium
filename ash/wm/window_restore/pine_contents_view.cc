@@ -8,11 +8,15 @@
 #include "ash/public/cpp/window_properties.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/style/pill_button.h"
+#include "ash/style/typography.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/window_properties.h"
 #include "ash/wm/window_restore/pine_context_menu_model.h"
 #include "base/barrier_callback.h"
+#include "base/i18n/number_formatting.h"
+#include "base/strings/strcat.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "components/account_id/account_id.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
@@ -46,8 +50,6 @@ namespace {
 // `ash::TypographyProvider`.
 
 constexpr int kMaxItems = 4;
-constexpr int kOverflowMinElements = kMaxItems + 1;
-constexpr int kOverflowThreshold = kMaxItems - 1;
 
 // Constants for `PineItemView`.
 constexpr gfx::Size kFaviconPreferredSize(16, 16);
@@ -58,10 +60,16 @@ constexpr gfx::Size kItemIconPreferredSize(32, 32);
 constexpr int kItemTitleFontSize = 16;
 
 // Constants for `PineItemsOverflowView`.
+constexpr int kOverflowMinElements = kMaxItems + 1;
+constexpr int kOverflowMinThreshold = kMaxItems - 1;
+constexpr int kOverflowMaxElements = 7;
+constexpr int kOverflowMaxThreshold = kOverflowMaxElements - 1;
 constexpr int kOverflowTablePadding = 2;
 constexpr int kOverflowTableSize = 20;
 constexpr int kOverflowBackgroundRounding = 20;
+constexpr int kOverflowCountBackgroundRounding = 9;
 constexpr gfx::Size kOverflowIconPreferredSize(20, 20);
+constexpr gfx::Size kOverflowCountPreferredSize(18, 18);
 
 // Constants for `PineItemsContainerView`.
 constexpr int kAppIdImageSize = 64;
@@ -204,9 +212,6 @@ class PineItemsOverflowView : public views::BoxLayoutView {
   explicit PineItemsOverflowView(const PineContentsView::AppsData& apps) {
     const int elements = static_cast<int>(apps.size());
     CHECK_GE(elements, kOverflowMinElements);
-    // TODO(http://b/322396902): Remove check when 5+ the overflow case is
-    // added.
-    CHECK_LT(elements, 8);
 
     // TODO(hewer): Fix margins so the icons and text are aligned with
     // `PineItemView` elements.
@@ -244,10 +249,28 @@ class PineItemsOverflowView : public views::BoxLayoutView {
     // Add the overflow apps to the table.
     // TODO(http://b/322361367): Handle case where there are 2 overflow windows.
     // TODO(http://b/322361588): Handle case where there are 3 overflow windows.
-    // TODO(http://b/322396902): Handle cases where there are 5+ overflow
-    // windows, and the last cell in the table should be the number that remain.
-    for (int count = kOverflowThreshold; count < elements; ++count) {
-      const auto& [app_id, favicons] = apps[count];
+    for (int i = kOverflowMinThreshold; i < elements; ++i) {
+      // If there are 5 or more overflow windows, save the last spot in the
+      // table to count the remaining windows.
+      if (elements > kOverflowMaxElements && i >= kOverflowMaxThreshold) {
+        views::Label* count_label;
+        table_layout_view->AddChildView(
+            views::Builder<views::Label>()
+                .CopyAddressTo(&count_label)
+                // TODO(hewer): Cut off the maximum number of digits to display.
+                .SetText(base::FormatNumber(elements - kOverflowMaxThreshold))
+                .SetPreferredSize(kOverflowCountPreferredSize)
+                .SetEnabledColor(cros_tokens::kCrosSysOnPrimaryContainer)
+                .SetBackground(views::CreateThemedRoundedRectBackground(
+                    cros_tokens::kCrosSysPrimaryContainer,
+                    kOverflowCountBackgroundRounding))
+                .Build());
+        TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosLabel2,
+                                              *count_label);
+        break;
+      }
+
+      const auto& [app_id, favicons] = apps[i];
 
       // Add the icon to the table.
       views::ImageView* image_view = table_layout_view->AddChildView(
@@ -257,16 +280,15 @@ class PineItemsOverflowView : public views::BoxLayoutView {
               .Build());
 
       // Insert `image_view` into a map so it can be retrieved in a callback.
-      image_view_map_[count] = image_view;
+      image_view_map_[i] = image_view;
 
       // The callback may be called synchronously.
       delegate->GetIconForAppId(
           app_id, kAppIdImageSize,
           base::BindOnce(&PineItemsOverflowView::SetIconForIndex,
-                         weak_ptr_factory_.GetWeakPtr(), count));
+                         weak_ptr_factory_.GetWeakPtr(), i));
     }
 
-    // TODO(hewer): List the titles of the remaining windows.
     views::Label* remaining_windows_label;
     AddChildView(views::Builder<views::Label>()
                      .CopyAddressTo(&remaining_windows_label)
@@ -275,9 +297,9 @@ class PineItemsOverflowView : public views::BoxLayoutView {
                                                 kItemTitleFontSize,
                                                 gfx::Font::Weight::BOLD))
                      .SetHorizontalAlignment(gfx::ALIGN_LEFT)
-                     // TODO(hewer): Change hardcoded string to count remaining
-                     // elements.
-                     .SetText(u"16 more current windows")
+                     .SetText(l10n_util::GetPluralStringFUTF16(
+                         IDS_ASH_FOREST_WINDOW_OVERFLOW_COUNT,
+                         elements - kOverflowMinThreshold))
                      .Build());
     SetFlexForView(remaining_windows_label, 1);
   }
@@ -328,7 +350,7 @@ class PineItemsContainerView : public views::BoxLayoutView {
       const auto& [app_id, favicons] = apps[i];
       // If there are more than four elements, we will need to save the last
       // space for the overflow view to condense the remaining info.
-      if (elements >= kOverflowMinElements && i >= kOverflowThreshold) {
+      if (elements >= kOverflowMinElements && i >= kOverflowMinThreshold) {
         AddChildView(std::make_unique<PineItemsOverflowView>(apps));
         break;
       }
@@ -446,6 +468,8 @@ PineContentsView::PineContentsView(const gfx::ImageSkia& pine_image) {
         {"oabkinaljpjeilageghcdlnekhphhphl", {}},  // Calculator
         {"agimnkijcaahngcdmfeangaknmldooml", {}},  // YouTube
         {"kefjledonklijopmnomlcbpllchaibag", {}},  // Google Slides
+        {"mgndgikekgjfcpckkfioiadnlibdjbkf",       // Chrome
+         {"https://www.reddit.com/"}},
     };
     PineItemsContainerView* container_view = AddChildView(
         std::make_unique<PineItemsContainerView>(kTestingAppsData));
