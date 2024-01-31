@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] light-dark(white, black)
-  assert_not_equals: Should be valid got disallowed value ""
-[FAIL] light-dark(light-dark(white, red), red)
-  assert_not_equals: Should be valid got disallowed value ""
-Harness: the test ran to completion.
-

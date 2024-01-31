@@ -906,6 +906,13 @@
       base_feature: "none",
     },
     {
+      // Support for 'light-dark()' function to select computed color values
+      // based on the used color-scheme.
+      name: "CSSLightDarkColors",
+      status: "experimental",
+    },
+
+    {
       name: "CSSLinearTimingFunction",
       status: "stable"
     },

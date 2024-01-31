@@ -805,14 +805,11 @@ CSSFunctionValue* ConsumeFilterFunction(CSSParserTokenRange& range,
 }
 
 template <typename Func, typename... Args>
-CSSLightDarkValuePair* ConsumeInternalLightDark(Func consume_value,
-                                                CSSParserTokenRange& range,
-                                                const CSSParserContext& context,
-                                                Args&&... args) {
-  if (range.Peek().FunctionId() != CSSValueID::kInternalLightDark) {
-    return nullptr;
-  }
-  if (!isValueAllowedInMode(CSSValueID::kInternalLightDark, context.Mode())) {
+CSSLightDarkValuePair* ConsumeLightDark(Func consume_value,
+                                        CSSParserTokenRange& range,
+                                        const CSSParserContext& context,
+                                        Args&&... args) {
+  if (range.Peek().FunctionId() != CSSValueID::kLightDark) {
     return nullptr;
   }
   CSSParserTokenRange range_copy = range;
@@ -1988,9 +1985,12 @@ CSSValue* ConsumeColor(CSSParserTokenRange& range,
     return cssvalue::CSSColor::Create(color);
   }
 
-  return ConsumeInternalLightDark(ConsumeColor, range, context,
-                                  false /* accept_quirky_colors */,
-                                  allowed_keywords);
+  if (IsUASheetBehavior(context.Mode()) ||
+      RuntimeEnabledFeatures::CSSLightDarkColorsEnabled()) {
+    return ConsumeLightDark(ConsumeColor, range, context,
+                            false /* accept_quirky_colors */, allowed_keywords);
+  }
+  return nullptr;
 }
 
 CSSValue* ConsumeLineWidth(CSSParserTokenRange& range,
@@ -3199,7 +3199,9 @@ CSSValue* ConsumeImage(
         IsGeneratedImage(id)) {
       return ConsumeGeneratedImage(range, context);
     }
-    return ConsumeInternalLightDark(ConsumeImageOrNone, range, context);
+    if (IsUASheetBehavior(context.Mode())) {
+      return ConsumeLightDark(ConsumeImageOrNone, range, context);
+    }
   }
   return nullptr;
 }

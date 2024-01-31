@@ -1870,35 +1870,33 @@ void Color::ApplyInherit(StyleResolverState& state) const {
 void Color::ApplyValue(StyleResolverState& state,
                        const CSSValue& value,
                        ValueMode) const {
-  // As per the spec, 'color: currentColor' is treated as 'color: inherit'
   ComputedStyleBuilder& builder = state.StyleBuilder();
-  auto* identifier_value = DynamicTo<CSSIdentifierValue>(value);
-  if (identifier_value &&
-      identifier_value->GetValueID() == CSSValueID::kCurrentcolor) {
-    ApplyInherit(state);
-    builder.SetColorIsCurrentColor(true);
-    if (state.UsesHighlightPseudoInheritance() &&
-        state.OriginatingElementStyle()) {
-      builder.SetColor(state.OriginatingElementStyle()->Color());
-    }
-    return;
-  }
   if (value.IsInitialColorValue()) {
     DCHECK_EQ(state.GetElement(), state.GetDocument().documentElement());
     builder.SetColor(builder.InitialColorForColorScheme());
   } else {
-    // color-mix with currentcolor is a special case for this property.
-    // currentColor used in the color property value refers to the parent's
-    // computed currentColor which means we can fully resolve currentColor at
-    // ApplyValue time to get the correct resolved and used values for the color
-    // property, even for the color-mix() function.
-    // For typed OM, currentColor and color-mix() functions containing
-    // currentColor should have been preserved for values in computedStyleMap().
-    // See crbug.com/1099874
     StyleColor color = StyleBuilderConverter::ConvertStyleColor(state, value);
     if (color.IsUnresolvedColorMixFunction()) {
+      // color-mix with currentcolor is a special case for this property.
+      // currentColor used in the color property value refers to the parent's
+      // computed currentColor which means we can fully resolve currentColor at
+      // ApplyValue time to get the correct resolved and used values for the
+      // color property, even for the color-mix() function.
+      // For typed OM, currentColor and color-mix() functions containing
+      // currentColor should have been preserved for values in
+      // computedStyleMap().
+      // See crbug.com/1099874
       color = StyleColor(color.GetUnresolvedColorMix().Resolve(
           state.ParentStyle()->Color().GetColor()));
+    } else if (color.IsCurrentColor()) {
+      // As per the spec, 'color: currentColor' is treated as 'color: inherit'
+      ApplyInherit(state);
+      builder.SetColorIsCurrentColor(true);
+      if (state.UsesHighlightPseudoInheritance() &&
+          state.OriginatingElementStyle()) {
+        builder.SetColor(state.OriginatingElementStyle()->Color());
+      }
+      return;
     }
     builder.SetColor(color);
   }

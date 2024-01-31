@@ -896,21 +896,21 @@ TEST(CSSPropertyParserTest, ImageSetDivCalcDoubleX) {
   TestImageSetParsingFailure("image-set(url(foo) calc(6x / 3x))");
 }
 
-TEST(CSSPropertyParserTest, InternalLightDarkAuthor) {
+TEST(CSSPropertyParserTest, LightDarkAuthor) {
   auto* context = MakeGarbageCollected<CSSParserContext>(
       kHTMLStandardMode, SecureContextMode::kInsecureContext);
-  // -internal-light-dark() is only valid in UA sheets.
-  ASSERT_FALSE(CSSParser::ParseSingleValue(
-      CSSPropertyID::kColor, "-internal-light-dark(#000000, #ffffff)",
-      context));
-  ASSERT_FALSE(CSSParser::ParseSingleValue(
-      CSSPropertyID::kColor, "-internal-light-dark(red, green)", context));
+  ASSERT_TRUE(CSSParser::ParseSingleValue(
+      CSSPropertyID::kColor, "light-dark(#000000, #ffffff)", context));
+  ASSERT_TRUE(CSSParser::ParseSingleValue(CSSPropertyID::kColor,
+                                          "light-dark(red, green)", context));
+  // light-dark() is only valid for background-image in UA sheets.
   ASSERT_FALSE(CSSParser::ParseSingleValue(
       CSSPropertyID::kBackgroundImage,
-      "-internal-light-dark(url(light.png), url(dark.png))", context));
+      "light-dark(url(light.png), url(dark.png))", context));
 }
 
-TEST(CSSPropertyParserTest, UAInternalLightDarkColor) {
+TEST(CSSPropertyParserTest, UALightDarkColor) {
+  ScopedCSSLightDarkColorsForTest disable_light_dark(false);
   auto* ua_context = MakeGarbageCollected<CSSParserContext>(
       kUASheetMode, SecureContextMode::kInsecureContext);
 
@@ -918,17 +918,17 @@ TEST(CSSPropertyParserTest, UAInternalLightDarkColor) {
     const char* value;
     bool valid;
   } tests[] = {
-      {"-internal-light-dark()", false},
-      {"-internal-light-dark(#feedab)", false},
-      {"-internal-light-dark(red blue)", false},
-      {"-internal-light-dark(red,,blue)", false},
-      {"-internal-light-dark(red, blue)", true},
-      {"-internal-light-dark(#000000, #ffffff)", true},
-      {"-internal-light-dark(rgb(0, 0, 0), hsl(180, 75%, 50%))", true},
-      {"-internal-light-dark(rgba(0, 0, 0, 0.5), hsla(180, 75%, 50%, "
+      {"light-dark()", false},
+      {"light-dark(#feedab)", false},
+      {"light-dark(red blue)", false},
+      {"light-dark(red,,blue)", false},
+      {"light-dark(red, blue)", true},
+      {"light-dark(#000000, #ffffff)", true},
+      {"light-dark(rgb(0, 0, 0), hsl(180, 75%, 50%))", true},
+      {"light-dark(rgba(0, 0, 0, 0.5), hsla(180, 75%, 50%, "
        "0.7))",
        true},
-      {"-internal-light-dark(ff0000, green)", false},
+      {"light-dark(ff0000, green)", false},
   };
 
   for (const auto& test : tests) {
@@ -938,16 +938,18 @@ TEST(CSSPropertyParserTest, UAInternalLightDarkColor) {
   }
 }
 
-TEST(CSSPropertyParserTest, UAInternalLightDarkColorSerialization) {
+TEST(CSSPropertyParserTest, UALightDarkColorSerialization) {
+  ScopedCSSLightDarkColorsForTest disable_light_dark(false);
+
   auto* ua_context = MakeGarbageCollected<CSSParserContext>(
       kUASheetMode, SecureContextMode::kInsecureContext);
   const CSSValue* value = CSSParser::ParseSingleValue(
-      CSSPropertyID::kColor, "-internal-light-dark(red,#aaa)", ua_context);
+      CSSPropertyID::kColor, "light-dark(red,#aaa)", ua_context);
   ASSERT_TRUE(value);
-  EXPECT_EQ("-internal-light-dark(red, rgb(170, 170, 170))", value->CssText());
+  EXPECT_EQ("light-dark(red, rgb(170, 170, 170))", value->CssText());
 }
 
-TEST(CSSPropertyParserTest, UAInternalLightDarkBackgroundImage) {
+TEST(CSSPropertyParserTest, UALightDarkBackgroundImage) {
   auto* ua_context = MakeGarbageCollected<CSSParserContext>(
       kUASheetMode, SecureContextMode::kInsecureContext);
 
@@ -955,16 +957,16 @@ TEST(CSSPropertyParserTest, UAInternalLightDarkBackgroundImage) {
     const char* value;
     bool valid;
   } tests[] = {
-      {"-internal-light-dark()", false},
-      {"-internal-light-dark(url(light.png))", false},
-      {"-internal-light-dark(url(light.png) url(dark.png))", false},
-      {"-internal-light-dark(url(light.png),,url(dark.png))", false},
-      {"-internal-light-dark(url(light.png), url(dark.png))", true},
-      {"-internal-light-dark(url(light.png), none)", true},
-      {"-internal-light-dark(none, -webkit-image-set(url(dark.png) 1x))", true},
-      {"-internal-light-dark(none, image-set(url(dark.png) 1x))", true},
-      {"-internal-light-dark(  none  ,  none   )", true},
-      {"-internal-light-dark(  url(light.png)  ,  url(dark.png)   )", true},
+      {"light-dark()", false},
+      {"light-dark(url(light.png))", false},
+      {"light-dark(url(light.png) url(dark.png))", false},
+      {"light-dark(url(light.png),,url(dark.png))", false},
+      {"light-dark(url(light.png), url(dark.png))", true},
+      {"light-dark(url(light.png), none)", true},
+      {"light-dark(none, -webkit-image-set(url(dark.png) 1x))", true},
+      {"light-dark(none, image-set(url(dark.png) 1x))", true},
+      {"light-dark(  none  ,  none   )", true},
+      {"light-dark(  url(light.png)  ,  url(dark.png)   )", true},
   };
 
   for (const auto& test : tests) {
@@ -991,7 +993,7 @@ bool ParseCSSValue(CSSPropertyID property_id,
 
 }  // namespace
 
-TEST(CSSPropertyParserTest, UAInternalLightDarkBackgroundShorthand) {
+TEST(CSSPropertyParserTest, UALightDarkBackgroundShorthand) {
   auto* ua_context = MakeGarbageCollected<CSSParserContext>(
       kUASheetMode, SecureContextMode::kInsecureContext);
 
@@ -999,16 +1001,16 @@ TEST(CSSPropertyParserTest, UAInternalLightDarkBackgroundShorthand) {
     const char* value;
     bool valid;
   } tests[] = {
-      {"-internal-light-dark()", false},
-      {"-internal-light-dark(url(light.png))", false},
-      {"-internal-light-dark(url(light.png) url(dark.png))", false},
-      {"-internal-light-dark(url(light.png),,url(dark.png))", false},
-      {"-internal-light-dark(url(light.png), url(dark.png))", true},
-      {"-internal-light-dark(url(light.png), none)", true},
-      {"-internal-light-dark(none, -webkit-image-set(url(dark.png) 1x))", true},
-      {"-internal-light-dark(none, image-set(url(dark.png) 1x))", true},
-      {"-internal-light-dark(  none  ,  none   )", true},
-      {"-internal-light-dark(  url(light.png)  ,  url(dark.png)   )", true},
+      {"light-dark()", false},
+      {"light-dark(url(light.png))", false},
+      {"light-dark(url(light.png) url(dark.png))", false},
+      {"light-dark(url(light.png),,url(dark.png))", false},
+      {"light-dark(url(light.png), url(dark.png))", true},
+      {"light-dark(url(light.png), none)", true},
+      {"light-dark(none, -webkit-image-set(url(dark.png) 1x))", true},
+      {"light-dark(none, image-set(url(dark.png) 1x))", true},
+      {"light-dark(  none  ,  none   )", true},
+      {"light-dark(  url(light.png)  ,  url(dark.png)   )", true},
   };
 
   for (const auto& test : tests) {
