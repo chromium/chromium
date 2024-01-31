@@ -555,6 +555,23 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="IOS.DefaultBrowserAbandonment{PeriodConsidered}"
+    enum="Boolean" expires_after="2024-06-30">
+  <owner>gujen@google.com</owner>
+  <owner>bling-mony-pod@google.com</owner>
+  <summary>
+    Records true if Chrome was likely the default browser in the last
+    {PeriodConsidered}, indicating that Chrome may have recently stopped being
+    the default browser. Records false in all other scenarios. Recorded once per
+    metrics log upload.
+  </summary>
+  <token key="PeriodConsidered">
+    <variant name="21To7" summary="21 days but not in the last 7 days"/>
+    <variant name="28To14" summary="28 days but not in the last 14 days"/>
+    <variant name="35To14" summary="35 days but not in the last 14 days"/>
+  </token>
+</histogram>
+
 <histogram name="IOS.DefaultBrowserFullscreenPromo"
     enum="IOSDefaultBrowserFullscreenPromoAction" expires_after="2024-06-30">
   <owner>sebsg@chromium.org</owner>

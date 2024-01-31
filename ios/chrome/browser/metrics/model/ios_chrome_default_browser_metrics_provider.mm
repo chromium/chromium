@@ -36,6 +36,13 @@ void ProvideUmaHistograms() {
                             IsChromeLikelyDefaultBrowserXDays(35));
   base::UmaHistogramBoolean("IOS.IsDefaultBrowser42",
                             IsChromeLikelyDefaultBrowserXDays(42));
+
+  base::UmaHistogramBoolean("IOS.DefaultBrowserAbandonment21To7",
+                            IsChromePotentiallyNoLongerDefaultBrowser21To7());
+  base::UmaHistogramBoolean("IOS.DefaultBrowserAbandonment28To14",
+                            IsChromePotentiallyNoLongerDefaultBrowser28To14());
+  base::UmaHistogramBoolean("IOS.DefaultBrowserAbandonment35To14",
+                            IsChromePotentiallyNoLongerDefaultBrowser35To14());
 }
 
 }  // namespace
