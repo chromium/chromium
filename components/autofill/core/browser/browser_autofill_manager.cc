@@ -135,8 +135,6 @@ using mojom::SubmissionSource;
 
 namespace {
 
-constexpr size_t kMaxRecentFormSignaturesToRemember = 3;
-
 // The minimum required number of fields for an user perception survey to be
 // triggered. This makes sure that for example forms that only contain a single
 // email field do not prompt a survey. Such survey answer would likely taint
@@ -1866,10 +1864,6 @@ void BrowserAutofillManager::UploadVotesAndLogQuality(
     return;
   }
 
-  // Check if the form is among the forms that were recently auto-filled.
-  bool was_autofilled = base::Contains(autofilled_form_signatures_,
-                                       submitted_form->form_signature());
-
   FieldTypeSet non_empty_types;
   client().GetPersonalDataManager()->GetNonEmptyTypes(&non_empty_types);
   // As CVC is not stored, treat it separately.
@@ -1879,9 +1873,9 @@ void BrowserAutofillManager::UploadVotesAndLogQuality(
   }
 
   client().GetCrowdsourcingManager()->StartUploadRequest(
-      /*upload_contents=*/EncodeUploadRequest(
-          *submitted_form, non_empty_types, was_autofilled,
-          /*login_form_signature=*/{}, observed_submission),
+      /*upload_contents=*/EncodeUploadRequest(*submitted_form, non_empty_types,
+                                              /*login_form_signature=*/{},
+                                              observed_submission),
       submitted_form->submission_source(), submitted_form->active_field_count(),
       client().GetPrefs());
 }
@@ -2655,13 +2649,6 @@ void BrowserAutofillManager::OnDidFillOrPreviewForm(
     return;
   }
   CHECK_EQ(action_persistence, mojom::ActionPersistence::kFill);
-
-  autofilled_form_signatures_.push_front(form_structure.form_signature());
-  // Only remember the last few forms that we've seen, both to avoid false
-  // positives and to avoid wasting memory.
-  if (autofilled_form_signatures_.size() > kMaxRecentFormSignaturesToRemember) {
-    autofilled_form_signatures_.pop_back();
-  }
   if (absl::holds_alternative<const CreditCard*>(profile_or_credit_card)) {
     // The originally selected masked card is `credit_card_`. So we must log
     // `credit_card_` as opposed to

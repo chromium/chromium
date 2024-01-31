@@ -734,8 +734,6 @@ class BrowserAutofillManager : public AutofillManager {
   // some of the filling operations.
   FormAutofillHistory form_autofill_history_;
 
-  base::circular_deque<FormSignature> autofilled_form_signatures_;
-
   // Handles routing single-field form filling requests, such as for
   // Autocomplete and merchant promo codes.
   std::unique_ptr<SingleFieldFormFillRouter> single_field_form_fill_router_ =

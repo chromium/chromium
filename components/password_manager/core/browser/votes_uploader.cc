@@ -586,9 +586,9 @@ bool VotesUploader::UploadPasswordVote(
                             password_attributes);
   }
 
-  std::vector<AutofillUploadContents> upload_contents = EncodeUploadRequest(
-      form_structure, available_field_types, /*form_was_autofilled=*/false,
-      login_form_signature, /*observed_submission=*/true);
+  std::vector<AutofillUploadContents> upload_contents =
+      EncodeUploadRequest(form_structure, available_field_types,
+                          login_form_signature, /*observed_submission=*/true);
   CHECK(!upload_contents.empty());
   upload_contents[0].set_passwords_revealed(
       should_set_passwords_were_revealed && has_passwords_revealed_vote_);
@@ -955,7 +955,7 @@ bool VotesUploader::StartUploadRequest(
       RandomizedEncoder::Create(client_->GetPrefs()));
   return crowdsourcing_manager->StartUploadRequest(
       EncodeUploadRequest(form_to_upload, available_field_types,
-                          /*form_was_autofilled=*/false, login_form_signature,
+                          login_form_signature,
                           /*observed_submission=*/true),
       form_to_upload.submission_source(), form_to_upload.active_field_count(),
       /*pref_service=*/nullptr);

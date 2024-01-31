@@ -594,7 +594,6 @@ GetSuggestionsMapFromResponse(
 std::vector<AutofillUploadContents> EncodeUploadRequest(
     const FormStructure& form,
     const FieldTypeSet& available_field_types,
-    bool form_was_autofilled,
     std::string_view login_form_signature,
     bool observed_submission) {
   DCHECK_EQ(FirstNonCapturedType(form, available_field_types),
@@ -607,7 +606,7 @@ std::vector<AutofillUploadContents> EncodeUploadRequest(
   upload.set_client_version(
       std::string(version_info::GetProductNameAndVersionForUserAgent()));
   upload.set_form_signature(form.form_signature().value());
-  upload.set_autofill_used(form_was_autofilled);
+  upload.set_autofill_used(false);
   upload.set_data_present(data_present);
   upload.set_has_form_tag(form.is_form_tag());
   if (!form.current_page_language()->empty() &&
@@ -684,7 +683,7 @@ std::vector<AutofillUploadContents> EncodeUploadRequest(
         std::string(version_info::GetProductNameAndVersionForUserAgent()));
     upload_content.set_form_signature(
         (*subform_begin)->host_form_signature.value());
-    upload_content.set_autofill_used(form_was_autofilled);
+    upload_content.set_autofill_used(false);
     upload_content.set_data_present(data_present);
 
     auto subform_end =

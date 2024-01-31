@@ -311,12 +311,7 @@ TEST_F(AutofillCrowdsourcingEncoding,
   // Verification
   ////////////////
   std::string expected_upload_string;
-  EXPECT_THAT(EncodeUploadRequest(*form_structure, available_field_types, false,
-                                  std::string(), true),
-              ElementsSerializeSameAs(upload));
-
-  upload.set_autofill_used(true);
-  EXPECT_THAT(EncodeUploadRequest(*form_structure, available_field_types, true,
+  EXPECT_THAT(EncodeUploadRequest(*form_structure, available_field_types,
                                   std::string(), true),
               ElementsSerializeSameAs(upload));
 
@@ -359,7 +354,7 @@ TEST_F(AutofillCrowdsourcingEncoding,
   test::FillUploadField(upload.add_field(), 509334676U, {30U, 31U}, {2, 2});
   test::FillUploadField(upload.add_field(), 509334676U, {30U, 31U}, {2, 2});
 
-  EXPECT_THAT(EncodeUploadRequest(*form_structure, available_field_types, false,
+  EXPECT_THAT(EncodeUploadRequest(*form_structure, available_field_types,
                                   std::string(), true),
               ElementsSerializeSameAs(upload));
 }
@@ -472,7 +467,7 @@ TEST_F(AutofillCrowdsourcingEncoding,
   test::FillUploadField(upload.add_field(), 2799270304U, 36U,
                         1);  // Non-matching validities
 
-  EXPECT_THAT(EncodeUploadRequest(*form_structure, available_field_types, false,
+  EXPECT_THAT(EncodeUploadRequest(*form_structure, available_field_types,
                                   std::string(), true),
               ElementsAre(Not(SerializesSameAs(upload))));
 }
@@ -597,7 +592,7 @@ TEST_F(AutofillCrowdsourcingEncoding,
   test::FillUploadField(upload.add_field(), 466116101U, 14U, {1, 2});
   test::FillUploadField(upload.add_field(), 2799270304U, 36U, {2, 2});
 
-  EXPECT_THAT(EncodeUploadRequest(*form_structure, available_field_types, false,
+  EXPECT_THAT(EncodeUploadRequest(*form_structure, available_field_types,
                                   std::string(), true),
               ElementsSerializeSameAs(upload));
 }
@@ -707,12 +702,7 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeUploadRequest) {
   test::FillUploadField(upload.add_field(), 466116101U, 14U);
   test::FillUploadField(upload.add_field(), 2799270304U, 36U);
 
-  EXPECT_THAT(EncodeUploadRequest(*form_structure, available_field_types, false,
-                                  std::string(), true),
-              ElementsSerializeSameAs(upload));
-
-  upload.set_autofill_used(true);
-  EXPECT_THAT(EncodeUploadRequest(*form_structure, available_field_types, true,
+  EXPECT_THAT(EncodeUploadRequest(*form_structure, available_field_types,
                                   std::string(), true),
               ElementsSerializeSameAs(upload));
 
@@ -756,7 +746,7 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeUploadRequest) {
   test::FillUploadField(upload.mutable_field(5), 509334676U, 31U);
   test::FillUploadField(upload.mutable_field(6), 509334676U, 31U);
 
-  EXPECT_THAT(EncodeUploadRequest(*form_structure, available_field_types, false,
+  EXPECT_THAT(EncodeUploadRequest(*form_structure, available_field_types,
                                   std::string(), true),
               ElementsSerializeSameAs(upload));
 
@@ -782,7 +772,7 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeUploadRequest) {
         possible_field_types_validities[i]);
   }
 
-  EXPECT_TRUE(EncodeUploadRequest(*form_structure, available_field_types, false,
+  EXPECT_TRUE(EncodeUploadRequest(*form_structure, available_field_types,
                                   std::string(), true)
                   .empty());
 }
@@ -857,7 +847,7 @@ TEST_F(AutofillCrowdsourcingEncoding,
   upload.set_client_version(
       std::string(GetProductNameAndVersionForUserAgent()));
   upload.set_form_signature(form_structure->form_signature().value());
-  upload.set_autofill_used(true);
+  upload.set_autofill_used(false);
   upload.set_data_present("1440000000000000000802");
   upload.set_login_form_signature(42);
   upload.set_submission_event(
@@ -890,9 +880,9 @@ TEST_F(AutofillCrowdsourcingEncoding,
           MANUALLY_TRIGGERED_GENERATION_ON_SIGN_UP_FORM);
   upload_password_field->set_generated_password_changed(true);
 
-  EXPECT_THAT(EncodeUploadRequest(*form_structure, available_field_types, true,
-                                  "42", true),
-              ElementsSerializeSameAs(upload));
+  EXPECT_THAT(
+      EncodeUploadRequest(*form_structure, available_field_types, "42", true),
+      ElementsSerializeSameAs(upload));
 }
 
 TEST_F(AutofillCrowdsourcingEncoding, EncodeUploadRequestWithPropertiesMask) {
@@ -959,7 +949,7 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeUploadRequestWithPropertiesMask) {
   upload.set_client_version(
       std::string(GetProductNameAndVersionForUserAgent()));
   upload.set_form_signature(form_structure->form_signature().value());
-  upload.set_autofill_used(true);
+  upload.set_autofill_used(false);
   upload.set_data_present("1440");
   upload.set_submission_event(
       AutofillUploadContents_SubmissionIndicatorEvent_NONE);
@@ -974,7 +964,7 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeUploadRequestWithPropertiesMask) {
   upload.mutable_field(2)->set_properties_mask(
       FieldPropertiesFlags::kHadFocus | FieldPropertiesFlags::kUserTyped);
 
-  EXPECT_THAT(EncodeUploadRequest(*form_structure, available_field_types, true,
+  EXPECT_THAT(EncodeUploadRequest(*form_structure, available_field_types,
                                   std::string(), true),
               ElementsSerializeSameAs(upload));
 }
@@ -1042,7 +1032,7 @@ TEST_F(AutofillCrowdsourcingEncoding,
   upload.set_client_version(
       std::string(GetProductNameAndVersionForUserAgent()));
   upload.set_form_signature(form_structure->form_signature().value());
-  upload.set_autofill_used(true);
+  upload.set_autofill_used(false);
   upload.set_data_present("1440");
   upload.set_submission_event(
       AutofillUploadContents_SubmissionIndicatorEvent_NONE);
@@ -1052,10 +1042,10 @@ TEST_F(AutofillCrowdsourcingEncoding,
   test::FillUploadField(upload.add_field(), 3494530716U, 5U);
   test::FillUploadField(upload.add_field(), 1029417091U, 9U);
 
-  EXPECT_THAT(EncodeUploadRequest(*form_structure, available_field_types, true,
-                                  std::string(),
-                                  /* observed_submission= */ false),
-              ElementsSerializeSameAs(upload));
+  EXPECT_THAT(
+      EncodeUploadRequest(*form_structure, available_field_types, std::string(),
+                          /* observed_submission= */ false),
+      ElementsSerializeSameAs(upload));
 }
 
 TEST_F(AutofillCrowdsourcingEncoding, EncodeUploadRequest_WithLabels) {
@@ -1113,7 +1103,7 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeUploadRequest_WithLabels) {
   upload.set_client_version(
       std::string(GetProductNameAndVersionForUserAgent()));
   upload.set_form_signature(form_structure->form_signature().value());
-  upload.set_autofill_used(true);
+  upload.set_autofill_used(false);
   upload.set_data_present("1440");
   upload.set_submission_event(
       AutofillUploadContents_SubmissionIndicatorEvent_NONE);
@@ -1123,7 +1113,7 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeUploadRequest_WithLabels) {
   test::FillUploadField(upload.add_field(), 1318412689U, 5U);
   test::FillUploadField(upload.add_field(), 1318412689U, 9U);
 
-  EXPECT_THAT(EncodeUploadRequest(*form_structure, available_field_types, true,
+  EXPECT_THAT(EncodeUploadRequest(*form_structure, available_field_types,
                                   std::string(), true),
               ElementsSerializeSameAs(upload));
 }
@@ -1258,7 +1248,7 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeUploadRequest_WithSubForms) {
     return upload;
   }();
 
-  EXPECT_THAT(EncodeUploadRequest(*form_structure, available_field_types, false,
+  EXPECT_THAT(EncodeUploadRequest(*form_structure, available_field_types,
                                   std::string(), true),
               UnorderedElementsSerializeSameAs(upload_main, upload_name_exp,
                                                upload_number, upload_cvc));
@@ -1330,7 +1320,7 @@ TEST_F(AutofillCrowdsourcingEncoding, CheckDataPresence) {
   test::FillUploadField(upload.add_field(), 2404144663U, 1U);
   test::FillUploadField(upload.add_field(), 420638584U, 1U);
 
-  EXPECT_THAT(EncodeUploadRequest(form_structure, available_field_types, false,
+  EXPECT_THAT(EncodeUploadRequest(form_structure, available_field_types,
                                   std::string(), true),
               ElementsSerializeSameAs(upload));
 
@@ -1354,7 +1344,7 @@ TEST_F(AutofillCrowdsourcingEncoding, CheckDataPresence) {
 
   // Adjust the expected proto string.
   upload.set_data_present("1540000240");
-  EXPECT_THAT(EncodeUploadRequest(form_structure, available_field_types, false,
+  EXPECT_THAT(EncodeUploadRequest(form_structure, available_field_types,
                                   std::string(), true),
               ElementsSerializeSameAs(upload));
 
@@ -1402,7 +1392,7 @@ TEST_F(AutofillCrowdsourcingEncoding, CheckDataPresence) {
 
   // Adjust the expected proto string.
   upload.set_data_present("1f7e000378000008");
-  EXPECT_THAT(EncodeUploadRequest(form_structure, available_field_types, false,
+  EXPECT_THAT(EncodeUploadRequest(form_structure, available_field_types,
                                   std::string(), true),
               ElementsSerializeSameAs(upload));
 
@@ -1428,7 +1418,7 @@ TEST_F(AutofillCrowdsourcingEncoding, CheckDataPresence) {
 
   // Adjust the expected proto string.
   upload.set_data_present("0000000000001fc0");
-  EXPECT_THAT(EncodeUploadRequest(form_structure, available_field_types, false,
+  EXPECT_THAT(EncodeUploadRequest(form_structure, available_field_types,
                                   std::string(), true),
               ElementsSerializeSameAs(upload));
 
@@ -1490,7 +1480,7 @@ TEST_F(AutofillCrowdsourcingEncoding, CheckDataPresence) {
 
   // Adjust the expected proto string.
   upload.set_data_present("1f7e000378001fc8");
-  EXPECT_THAT(EncodeUploadRequest(form_structure, available_field_types, false,
+  EXPECT_THAT(EncodeUploadRequest(form_structure, available_field_types,
                                   std::string(), true),
               ElementsSerializeSameAs(upload));
 }
@@ -1588,7 +1578,7 @@ TEST_F(AutofillCrowdsourcingEncoding, CheckMultipleTypes) {
   test::FillUploadField(upload.add_field(), 2404144663U, 5U);
   test::FillUploadField(upload.add_field(), 509334676U, 30U);
 
-  EXPECT_THAT(EncodeUploadRequest(*form_structure, available_field_types, false,
+  EXPECT_THAT(EncodeUploadRequest(*form_structure, available_field_types,
                                   std::string(), true),
               ElementsSerializeSameAs(upload));
 
@@ -1604,7 +1594,7 @@ TEST_F(AutofillCrowdsourcingEncoding, CheckMultipleTypes) {
   upload.mutable_field(2)->mutable_autofill_type_validities()->SwapElements(0,
                                                                             1);
 
-  EXPECT_THAT(EncodeUploadRequest(*form_structure, available_field_types, false,
+  EXPECT_THAT(EncodeUploadRequest(*form_structure, available_field_types,
                                   std::string(), true),
               ElementsSerializeSameAs(upload));
 
@@ -1617,7 +1607,7 @@ TEST_F(AutofillCrowdsourcingEncoding, CheckMultipleTypes) {
   // Adjust the expected upload proto.
   test::FillUploadField(upload.mutable_field(3), 509334676U, 31U);
 
-  EXPECT_THAT(EncodeUploadRequest(*form_structure, available_field_types, false,
+  EXPECT_THAT(EncodeUploadRequest(*form_structure, available_field_types,
                                   std::string(), true),
               ElementsSerializeSameAs(upload));
 
@@ -1637,7 +1627,7 @@ TEST_F(AutofillCrowdsourcingEncoding, CheckMultipleTypes) {
   upload.mutable_field(3)->mutable_autofill_type_validities(1)->set_type(60);
   upload.mutable_field(3)->set_autofill_type(1, 60);
 
-  EXPECT_THAT(EncodeUploadRequest(*form_structure, available_field_types, false,
+  EXPECT_THAT(EncodeUploadRequest(*form_structure, available_field_types,
                                   std::string(), true),
               ElementsSerializeSameAs(upload));
 }
@@ -1670,8 +1660,7 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeUploadRequest_PasswordsRevealed) {
 
   std::vector<AutofillUploadContents> uploads = EncodeUploadRequest(
       form_structure, {{}} /* available_field_types */,
-      false /* form_was_autofilled */, std::string() /* login_form_signature */,
-      true /* observed_submission */);
+      std::string() /* login_form_signature */, true /* observed_submission */);
   ASSERT_EQ(1u, uploads.size());
 }
 
@@ -1694,7 +1683,6 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeUploadRequest_IsFormTag) {
     }
     std::vector<AutofillUploadContents> uploads =
         EncodeUploadRequest(form_structure, {{}} /* available_field_types */,
-                            false /* form_was_autofilled */,
                             std::string() /* login_form_signature */,
                             true /* observed_submission */);
     ASSERT_EQ(1u, uploads.size());
@@ -1756,8 +1744,7 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeUploadRequest_RichMetadata) {
 
   std::vector<AutofillUploadContents> uploads = EncodeUploadRequest(
       form_structure, {{}} /* available_field_types */,
-      false /* form_was_autofilled */, std::string() /* login_form_signature */,
-      true /* observed_submission */);
+      std::string() /* login_form_signature */, true /* observed_submission */);
   ASSERT_EQ(1u, uploads.size());
   AutofillUploadContents& upload = uploads.front();
 
@@ -1905,7 +1892,7 @@ TEST_F(AutofillCrowdsourcingEncoding, Metadata_OnlySendFullUrlWithUserConsent) {
     FormStructure form_structure(form);
     form_structure.set_randomized_encoder(RandomizedEncoder::Create(&prefs));
     std::vector<AutofillUploadContents> uploads =
-        EncodeUploadRequest(form_structure, {}, true, "", true);
+        EncodeUploadRequest(form_structure, {}, "", true);
 
     EXPECT_EQ(has_consent,
               uploads.front().randomized_form_metadata().has_url());
@@ -1932,8 +1919,7 @@ TEST_F(AutofillCrowdsourcingEncoding,
 
   std::vector<AutofillUploadContents> uploads = EncodeUploadRequest(
       form_structure, {{}} /* available_field_types */,
-      false /* form_was_autofilled */, std::string() /* login_form_signature */,
-      true /* observed_submission */);
+      std::string() /* login_form_signature */, true /* observed_submission */);
   ASSERT_EQ(1u, uploads.size());
   EXPECT_EQ(form_structure.field(0)->single_username_vote_type(),
             uploads.front().field(0).single_username_vote_type());
@@ -1964,8 +1950,7 @@ TEST_F(AutofillCrowdsourcingEncoding,
 
   std::vector<AutofillUploadContents> uploads = EncodeUploadRequest(
       form_structure, {{}} /* available_field_types */,
-      false /* form_was_autofilled */, std::string() /* login_form_signature */,
-      true /* observed_submission */);
+      std::string() /* login_form_signature */, true /* observed_submission */);
   ASSERT_EQ(1u, uploads.size());
   ASSERT_EQ(1, uploads.front().single_username_data().size());
   const AutofillUploadContents::SingleUsernameData& uploaded_data =
@@ -1992,8 +1977,8 @@ TEST_F(AutofillCrowdsourcingEncoding, CreateForPasswordManagerUpload) {
   ASSERT_EQ(3u, form->field_count());
   ASSERT_EQ(FieldSignature(100u), form->field(2)->GetFieldSignature());
   std::vector<AutofillUploadContents> uploads = EncodeUploadRequest(
-      *form, {} /* available_field_types */, false /* form_was_autofilled */,
-      "" /*login_form_signature*/, true /*observed_submission*/);
+      *form, {} /* available_field_types */, "" /*login_form_signature*/,
+      true /*observed_submission*/);
   ASSERT_EQ(1u, uploads.size());
 }
 
@@ -2010,8 +1995,8 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeUploadRequest_MilestoneSet) {
     field->host_form_signature = form->form_signature();
   }
   std::vector<AutofillUploadContents> uploads = EncodeUploadRequest(
-      *form, {} /* available_field_types */, false /* form_was_autofilled */,
-      "" /*login_form_signature*/, true /*observed_submission*/);
+      *form, {} /* available_field_types */, "" /*login_form_signature*/,
+      true /*observed_submission*/);
   ASSERT_EQ(1u, uploads.size());
   static constexpr char kChromeVersionRegex[] =
       "\\w+/([0-9]+)\\.[0-9]+\\.[0-9]+\\.[0-9]+";
@@ -2059,7 +2044,7 @@ TEST_F(AutofillCrowdsourcingEncoding,
 
   const std::vector<AutofillUploadContents> uploads = EncodeUploadRequest(
       form_structure,
-      /*available_field_types=*/{}, /*form_was_autofilled=*/false,
+      /*available_field_types=*/{},
       /*login_form_signature=*/"", /*observed_submission=*/true);
   ASSERT_EQ(uploads.size(), 1UL);
   const AutofillUploadContents& upload = uploads[0];
@@ -2086,7 +2071,7 @@ TEST_F(AutofillCrowdsourcingEncoding,
 
   std::vector<AutofillUploadContents> uploads = EncodeUploadRequest(
       form_structure,
-      /*available_field_types=*/{}, /*form_was_autofilled=*/false,
+      /*available_field_types=*/{},
       /*login_form_signature=*/"", /*observed_submission=*/true);
   ASSERT_GE(uploads.size(), 1u);
   AutofillUploadContents upload = uploads[0];
@@ -2096,10 +2081,10 @@ TEST_F(AutofillCrowdsourcingEncoding,
   // classified type, representing that the field was filled using this type as
   // fallback.
   form_structure.field(0)->set_autofilled_type(NAME_FULL);
-  uploads = EncodeUploadRequest(
-      form_structure,
-      /*available_field_types=*/{}, /*form_was_autofilled=*/false,
-      /*login_form_signature=*/"", /*observed_submission=*/true);
+  uploads = EncodeUploadRequest(form_structure,
+                                /*available_field_types=*/{},
+                                /*login_form_signature=*/"",
+                                /*observed_submission=*/true);
   ASSERT_GE(uploads.size(), 1u);
   upload = uploads[0];
   EXPECT_EQ(upload.field_size(), 0);
