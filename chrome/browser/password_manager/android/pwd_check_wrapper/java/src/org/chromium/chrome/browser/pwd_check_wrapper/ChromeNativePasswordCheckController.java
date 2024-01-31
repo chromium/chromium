@@ -15,10 +15,10 @@ class ChromeNativePasswordCheckController
         implements PasswordCheckController, PasswordCheck.Observer {
     private CompletableFuture<Integer> mPasswordsTotalCount;
     private CompletableFuture<PasswordCheckResult> mPasswordCheckResult;
-    private final PasswordCheck mPasswordCheck;
+    private final SettingsLauncher mSettingsLauncher;
 
     public ChromeNativePasswordCheckController(SettingsLauncher settingsLauncher) {
-        mPasswordCheck = PasswordCheckFactory.getOrCreate(settingsLauncher);
+        mSettingsLauncher = settingsLauncher;
     }
 
     @Override
@@ -27,15 +27,18 @@ class ChromeNativePasswordCheckController
         mPasswordCheckResult = new CompletableFuture<>();
         mPasswordsTotalCount = new CompletableFuture<>();
         // Start observing the password check events (including data loads).
-        mPasswordCheck.addObserver(this, false);
-        mPasswordCheck.startCheck();
+        getPasswordCheck().addObserver(this, false);
+        getPasswordCheck().startCheck();
         return mPasswordCheckResult;
     }
 
     @Override
     public void destroy() {
-        mPasswordCheck.stopCheck();
-        mPasswordCheck.removeObserver(this);
+        PasswordCheck passwordCheck = PasswordCheckFactory.getPasswordCheckInstance();
+        if (passwordCheck == null) return;
+
+        passwordCheck.stopCheck();
+        passwordCheck.removeObserver(this);
     }
 
     @Override
@@ -43,8 +46,14 @@ class ChromeNativePasswordCheckController
             int passwordStorageType) {
         mPasswordCheckResult = new CompletableFuture<>();
         mPasswordsTotalCount = new CompletableFuture<>();
-        mPasswordCheck.addObserver(this, true);
+        getPasswordCheck().addObserver(this, true);
         return mPasswordCheckResult;
+    }
+
+    private PasswordCheck getPasswordCheck() {
+        PasswordCheck passwordCheck = PasswordCheckFactory.getOrCreate(mSettingsLauncher);
+        assert passwordCheck != null : "Password Check UI component needs native counterpart!";
+        return passwordCheck;
     }
 
     // PasswordCheck.Observer implementation.
@@ -52,16 +61,16 @@ class ChromeNativePasswordCheckController
     public void onCompromisedCredentialsFetchCompleted() {
         mPasswordsTotalCount.thenAccept(
                 totalCount -> {
-                    int breachedCount = mPasswordCheck.getCompromisedCredentialsCount();
+                    int breachedCount = getPasswordCheck().getCompromisedCredentialsCount();
                     mPasswordCheckResult.complete(
                             new PasswordCheckResult(totalCount, breachedCount));
-                    mPasswordCheck.removeObserver(this);
+                    getPasswordCheck().removeObserver(this);
                 });
     }
 
     @Override
     public void onSavedPasswordsFetchCompleted() {
-        int totalCount = mPasswordCheck.getSavedPasswordsCount();
+        int totalCount = getPasswordCheck().getSavedPasswordsCount();
         mPasswordsTotalCount.complete(totalCount);
     }
 
@@ -78,12 +87,12 @@ class ChromeNativePasswordCheckController
                             "Password check finished with the error " + status + ".", status);
             mPasswordCheckResult.complete(new PasswordCheckResult(error));
         } else {
-            int totalCount = mPasswordCheck.getSavedPasswordsCount();
-            int breachedCount = mPasswordCheck.getCompromisedCredentialsCount();
+            int totalCount = getPasswordCheck().getSavedPasswordsCount();
+            int breachedCount = getPasswordCheck().getCompromisedCredentialsCount();
             mPasswordCheckResult.complete(new PasswordCheckResult(totalCount, breachedCount));
         }
 
-        mPasswordCheck.removeObserver(this);
+        getPasswordCheck().removeObserver(this);
     }
 
     /** Not relevant for this controller. */
