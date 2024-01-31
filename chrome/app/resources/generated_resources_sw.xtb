@@ -111,6 +111,7 @@
 <translation id="1078037449555275327">Mipangilio ya ChromeVox</translation>
 <translation id="1079285777677001938">Huenda vipengele visifanye kazi kwenye baadhi ya tovuti.</translation>
 <translation id="1079766198702302550">Zuia ufikiaji wa kamera kila wakati</translation>
+<translation id="1080365971383768617">Manenosiri kwenye vifaa vyako vyote</translation>
 <translation id="1081956462909987459">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> - Kichupo Kimoja}other{<ph name="GROUP_TITLE" /> - Vichupo #}}</translation>
 <translation id="1082214733466244292">Msimamizi wako amezuia baadhi ya vipengele kwenye kifaa hiki</translation>
 <translation id="1082398631555931481"><ph name="THIRD_PARTY_TOOL_NAME" /> inataka kurejesha Mipangilio yako ya Chrome katika hali yake ya chaguomsingi. Hii itaweka upya ukurasa wako wa kwanza, ukurasa mpya wa kichupo na mtambo wa kutafuta, izime viendelezi vyako na kubanua vichupo vyote. Pia itafuta data nyingine iliyohifadhiwa kwa muda na iliyoakibishwa, kama vile vidakuzi, maudhui na data ya tovuti.</translation>
@@ -5168,6 +5169,7 @@ Bonyeza kitufe cha Ctrl kisha Alt na kitufe cha Kupunguza Mwangaza kwa wakati mm
 <translation id="4953808748584563296">Ishara chaguomsingi ya rangi ya machungwa</translation>
 <translation id="4955707703665801001">Mipangilio ya uonekanaji ya kipengele cha <ph name="FEATURE_NAME" /></translation>
 <translation id="4955710816792587366">Chagua PIN yako</translation>
+<translation id="4956847150856741762">1</translation>
 <translation id="4959262764292427323">Manenosiri yanahifadhiwa kwenye Akaunti yako ya Google ili uweze kuyatumia kwenye kifaa chochote</translation>
 <translation id="4960020053211143927">Haitumiki kwenye baadhi ya programu</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
@@ -8273,7 +8275,6 @@ Una manenosiri # zaidi yaliyoathiriwa. Kidhibiti cha Manenosiri cha Google kinap
 <translation id="7424153922653300265">Kiokoa Nishati Kimewashwa</translation>
 <translation id="7424818322350938336">Mtandao umewekwa</translation>
 <translation id="7425037327577270384">Nisaidie kuandika</translation>
-<translation id="7425292366411265498">Viendelezi vilivyosakinishwa na msimamizi wako bado vinaweza kusoma na kubadilisha tovuti</translation>
 <translation id="7427315069950454694">kumbukumbu zako za leo</translation>
 <translation id="7427348830195639090">Ukurasa wa Mandharinyuma: <ph name="BACKGROUND_PAGE_URL" /></translation>
 <translation id="7427798576651127129">Simu kutoka kwenye <ph name="DEVICE_NAME" /></translation>

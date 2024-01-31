@@ -1101,7 +1101,7 @@
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Сканировать}=1{Сканировать {NUMBER_OF_PAGES} страницу}one{Сканировать {NUMBER_OF_PAGES} страницу}few{Сканировать {NUMBER_OF_PAGES} страницы}many{Сканировать {NUMBER_OF_PAGES} страниц}other{Сканировать {NUMBER_OF_PAGES} страницы}}</translation>
 <translation id="8997710128084572139">Устройство заряжено на <ph name="BATTERY_PERCENTAGE" /> %.</translation>
-<translation id="8998289560386111590">Недоступно на вашем устройстве</translation>
+<translation id="8998289560386111590">Недоступно на вашем устройстве.</translation>
 <translation id="9003704114456258138">Частота</translation>
 <translation id="901834265349196618">электронная почта</translation>
 <translation id="9024331582947483881">полноэкранный режим</translation>

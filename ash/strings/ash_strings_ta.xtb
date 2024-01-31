@@ -607,9 +607,11 @@
 <translation id="3526440770046466733">புதிய பக்கத்தில் இணைப்பைத் திறக்கும், ஆனால் தற்போதைய பக்கத்திலேயே இருக்கும்</translation>
 <translation id="353086728817903341"><ph name="NUM_DEVICES" /> சாதனங்களுடன் இணைக்கப்பட்டுள்ளது</translation>
 <translation id="3533126039236445965">ஷெல்ஃபில் உள்ள ஆப்ஸ்</translation>
+<translation id="3537350467437346467">நீங்கள் பார்த்தவை</translation>
 <translation id="3539957339480430241"><ph name="DEVICE_NAME" /> ஹாட்ஸ்பாட்</translation>
 <translation id="3540893133818942399">மொபைலில் உள்ள சமீபத்திய படங்களையும் மீடியாவையும் பார்க்கும்படி அமைப்பதை நிராகரிக்கலாம்</translation>
 <translation id="3542066395059568317">நீங்கள் விட்ட இடத்தில் இருந்து தொடர்வதற்கு உதவும் வகையில் பரிந்துரைகள் காட்டப்படும். வலது கிளிக் செய்து அவற்றை அகற்றலாம்.</translation>
+<translation id="3547318469722231257">நீங்கள் மாற்றியவை</translation>
 <translation id="3552189655002856821">வைஃபை முடக்கப்பட்டது</translation>
 <translation id="3554215588514239132">டெவெலப்பர் கருவிகள் பேனலைக் காட்டு அல்லது மறை</translation>
 <translation id="3554637740840164787"><ph name="ITEM_TITLE" /> ஷெல்ஃபில் நிலையாகப் பொருத்தப்பட்டது</translation>
@@ -701,6 +703,7 @@
 <translation id="385300504083504382">தொடக்கம்</translation>
 <translation id="3859364108019690">ஆப்ஸை ஸ்ட்ரீம் செய்ய முடியவில்லை</translation>
 <translation id="3861651314799684201">முழுத்திரையை ரெக்கார்டு செய்ய Enter பட்டனை அழுத்தவும்</translation>
+<translation id="3882323608730650973">மாற்றப்பட்டவை</translation>
 <translation id="3886872229787704059">இன்று திறக்கப்பட்டது</translation>
 <translation id="3891340733213178823">வெளியேற Ctrl+Shift+Q ஐ இருமுறை அழுத்தவும்.</translation>
 <translation id="3893630138897523026">ChromeVox (பேச்சுவடிவ கருத்து)</translation>
@@ -894,6 +897,7 @@
 <translation id="4582666543382004902">வைஃபையைப் பயன்படுத்தும் வகையில் ஹாட்ஸ்பாட் முடக்கப்பட்டுள்ளது. ஹாட்ஸ்பாட்டைப் பயன்படுத்த வைஃபையை முடக்கவும்.</translation>
 <translation id="4585337515783392668">தெரியாத ரிசீவருக்கு அனுப்புவதை நிறுத்து</translation>
 <translation id="4596144739579517758">டார்க் தீம் முடக்கப்பட்டுள்ளது</translation>
+<translation id="4596442969149038771"><ph name="USER" /> பகிர்ந்துள்ளவை</translation>
 <translation id="4611292653554630842">உள்நுழைக</translation>
 <translation id="462160925400706389"><ph name="NAME" /> இணைக்கப்பட்டது</translation>
 <translation id="4623167406982293031">கணக்கைச் சரிபார்க்கவும்</translation>
@@ -1815,6 +1819,7 @@
 <translation id="8314772463905284467">CAPS LOCK இயக்கத்தில்</translation>
 <translation id="8315514906653279104">இயக்கப்படுகிறது...</translation>
 <translation id="8331351032546853669">பதிவிறக்கம் நிலுவையில் உள்ளது</translation>
+<translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
 <translation id="8345019317483336363"><ph name="WINDOW_TITLE" /> சாளரம் தேர்ந்தெடுக்கப்பட்டது</translation>
 <translation id="8349826889576450703">தொடக்கி</translation>
@@ -2034,6 +2039,7 @@
 <translation id="953431725143473984">சாதனத்தை ஷட் டவுன் செய்யவா?</translation>
 <translation id="954052413789300507"><ph name="FILENAME" /> ஃபைலைப் பதிவிறக்க போதிய இடமில்லை. சேமிப்பிடத்தைக் காலியாக்கவும்.</translation>
 <translation id="954520015070501466">30 நிமி</translation>
+<translation id="954786879461589145"><ph name="USER" /> மாற்றியவை</translation>
 <translation id="974545358917229949"><ph name="QUERY" />க்கான <ph name="RESULT_COUNT" /> முடிவுகளைக் காட்டுகிறது</translation>
 <translation id="981011780479609956">முடிக்க வேண்டிய தேதி இல்லாதவை</translation>
 <translation id="98120814841227350">ஆவணத்தின் இறுதிக்குச் செல்</translation>

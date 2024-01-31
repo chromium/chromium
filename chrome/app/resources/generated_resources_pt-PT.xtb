@@ -111,6 +111,7 @@
 <translation id="1078037449555275327">Definições do ChromeVox</translation>
 <translation id="1079285777677001938">As funcionalidades em alguns sites podem não funcionar.</translation>
 <translation id="1079766198702302550">Bloquear sempre o acesso à câmara</translation>
+<translation id="1080365971383768617">Palavras-passe em todos os dispositivos</translation>
 <translation id="1081956462909987459">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> - 1 separador}other{<ph name="GROUP_TITLE" /> - # separadores}}</translation>
 <translation id="1082214733466244292">O seu administrador bloqueou algumas funcionalidades para este dispositivo</translation>
 <translation id="1082398631555931481"><ph name="THIRD_PARTY_TOOL_NAME" /> quer restaurar as suas definições do Chrome para as predefinições originais. Esta ação repõe a página inicial, a página novo separador e o motor de pesquisa, desativa as extensões e solta todos os separadores. Limpa também outros dados em cache e temporários, tais como cookies, conteúdos e dados de sites.</translation>
@@ -5158,6 +5159,7 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="4953808748584563296">Avatar cor de laranja predefinido</translation>
 <translation id="4955707703665801001">Visibilidade da funcionalidade <ph name="FEATURE_NAME" /></translation>
 <translation id="4955710816792587366">Escolher o PIN</translation>
+<translation id="4956847150856741762">1</translation>
 <translation id="4959262764292427323">As palavras-passe são guardadas na sua Conta Google para que as possa utilizar em qualquer dispositivo.</translation>
 <translation id="4960020053211143927">Não suportado por algumas apps</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> – <ph name="PROFILE_NAME" /></translation>
@@ -8264,7 +8266,6 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="7424153922653300265">Poupança de energia ativada</translation>
 <translation id="7424818322350938336">Rede adicionada</translation>
 <translation id="7425037327577270384">Ajuda-me a escrever</translation>
-<translation id="7425292366411265498">As extensões instaladas pelo seu administrador ainda podem ler e alterar sites</translation>
 <translation id="7427315069950454694">as suas memórias para hoje</translation>
 <translation id="7427348830195639090">Página de fundo: <ph name="BACKGROUND_PAGE_URL" /></translation>
 <translation id="7427798576651127129">Chamada de <ph name="DEVICE_NAME" /></translation>

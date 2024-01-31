@@ -12,6 +12,7 @@
 <translation id="1024111578869940408">不正なユーザーが、ウェブアドレスを一目ではわからないように改変してサイトを偽装している可能性があります。</translation>
 <translation id="1024913885641459127">商品レビュー、価格比較</translation>
 <translation id="1028781062521375153">詳細を表示</translation>
+<translation id="102916930470544692">パスキー</translation>
 <translation id="1030706264415084469"><ph name="URL" /> から、デバイスに大きなデータを永続的に保存する許可を求められています</translation>
 <translation id="1030949145805074938">{COUNT,plural, =0{なし}=1{1 件のサイトが対象。ほとんどのサイトからログアウトします。}other{# 件のサイトが対象。ほとんどのサイトからログアウトします。}}</translation>
 <translation id="1033329911862281889">シークレット モードを使用しても、オンライン上にまったく記録が残らないわけではありません。
@@ -3179,6 +3180,7 @@
 <translation id="7251437084390964440">ネットワーク設定が ONC 標準に準拠していません。設定の一部がインポートされない可能性があります。
 詳細:
 <ph name="DEBUG_INFO" /></translation>
+<translation id="7251635775446614726">管理者からのメッセージ:「<ph name="CUSTOM_MESSAGE" />」</translation>
 <translation id="7256634549594854023">背面トレイ</translation>
 <translation id="725866823122871198">パソコンの日時（<ph name="DATE_AND_TIME" />）が正しくないため、<ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> へのプライベート接続を確立できません。</translation>
 <translation id="7260075294900977274">新しいスマート フォルダを使用すると、すべてのショッピング ページを 1 か所に保存して、価格のトラッキングや検討などを自動的に行えます</translation>

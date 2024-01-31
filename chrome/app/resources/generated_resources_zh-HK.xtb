@@ -111,6 +111,7 @@
 <translation id="1078037449555275327">ChromeVox 設定</translation>
 <translation id="1079285777677001938">部分網站的功能可能會無法正常運作。</translation>
 <translation id="1079766198702302550">永遠封鎖存取相機</translation>
+<translation id="1080365971383768617">在所有裝置上都能使用自己的密碼</translation>
 <translation id="1081956462909987459">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> - 1 個分頁}other{<ph name="GROUP_TITLE" /> - # 個分頁}}</translation>
 <translation id="1082214733466244292">管理員已封鎖此裝置的部分功能</translation>
 <translation id="1082398631555931481"><ph name="THIRD_PARTY_TOOL_NAME" /> 要求還原您的 Chrome 設定為原始預設值，並會重設您的首頁、新分頁和搜尋引擎、停用您的擴充功能，以及取消固定所有分頁。其他暫存資料和快取資料 (例如 Cookie、內容和網站資料) 亦會一併清除。</translation>
@@ -5169,6 +5170,7 @@
 <translation id="4953808748584563296">預設橙色圖片</translation>
 <translation id="4955707703665801001">「<ph name="FEATURE_NAME" />」分享設定</translation>
 <translation id="4955710816792587366">選擇 PIN</translation>
+<translation id="4956847150856741762">1</translation>
 <translation id="4959262764292427323">密碼會儲存在您的 Google 帳戶中，讓您可在任何裝置上使用</translation>
 <translation id="4960020053211143927">部分應用程式不支援此設定</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
@@ -8272,7 +8274,6 @@
 <translation id="7424153922653300265">「慳電模式」已開啟</translation>
 <translation id="7424818322350938336">已新增網絡</translation>
 <translation id="7425037327577270384">幫我寫</translation>
-<translation id="7425292366411265498">管理員安裝的擴充程式仍可讀取及變更網站</translation>
 <translation id="7427315069950454694">今天的回憶</translation>
 <translation id="7427348830195639090">背景頁面：<ph name="BACKGROUND_PAGE_URL" /></translation>
 <translation id="7427798576651127129">透過 <ph name="DEVICE_NAME" /> 撥打電話</translation>

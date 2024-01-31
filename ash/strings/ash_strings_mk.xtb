@@ -607,9 +607,11 @@
 <translation id="3526440770046466733">Отвора линк во нова картичка и останува во тековната картичка</translation>
 <translation id="353086728817903341">Поврзано со <ph name="NUM_DEVICES" /> уреди</translation>
 <translation id="3533126039236445965">Апликации на полица</translation>
+<translation id="3537350467437346467">Прегледано од вас</translation>
 <translation id="3539957339480430241">Точка на пристап на <ph name="DEVICE_NAME" /></translation>
 <translation id="3540893133818942399">Отфрлете го поставувањето прегледување на неодамнешните фотографии и аудиовизуелни содржини на телефонот</translation>
 <translation id="3542066395059568317">Ќе видите препораки за да можете да продолжите каде што сте застанале. Може да кликнете со десното копче за да ги отстраните препораките.</translation>
+<translation id="3547318469722231257">Изменето од вас</translation>
 <translation id="3552189655002856821">Wi-Fi е исклучено</translation>
 <translation id="3554215588514239132">Ја прикажува или ја сокрива таблата со „Програмерски алатки“</translation>
 <translation id="3554637740840164787"><ph name="ITEM_TITLE" /> е прикачена</translation>
@@ -702,6 +704,7 @@
 <translation id="385300504083504382">Почеток</translation>
 <translation id="3859364108019690">Не може да се стримуваат апликации</translation>
 <translation id="3861651314799684201">Притиснете Enter за да го снимите целиот екран</translation>
+<translation id="3882323608730650973">Изменето</translation>
 <translation id="3886872229787704059">Отворено денес</translation>
 <translation id="3891340733213178823">Притиснете Ctrl+Shift+Q двапати за да се одјавите.</translation>
 <translation id="3893630138897523026">ChromeVox (говорни повратни информации)</translation>
@@ -895,6 +898,7 @@
 <translation id="4582666543382004902">Точката на пристап е исклучена за да се користи Wi-Fi. За да користите точка на пристап, исклучете ја Wi-Fi мрежата.</translation>
 <translation id="4585337515783392668">Престани со емитување на непознат приемник</translation>
 <translation id="4596144739579517758">Темната тема е исклучена</translation>
+<translation id="4596442969149038771">Споделено од <ph name="USER" /></translation>
 <translation id="4611292653554630842">Најави се</translation>
 <translation id="462160925400706389">Поврзано: <ph name="NAME" /></translation>
 <translation id="4623167406982293031">Потврдете ја сметката</translation>
@@ -1816,6 +1820,7 @@
 <translation id="8314772463905284467">Вклучено е Caps Lock</translation>
 <translation id="8315514906653279104">Се вклучува…</translation>
 <translation id="8331351032546853669">Преземање на чекање</translation>
+<translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" /> <ph name="GET_STARTED" /></translation>
 <translation id="8345019317483336363">Избран е прозорецот <ph name="WINDOW_TITLE" /></translation>
 <translation id="8349826889576450703">стартер</translation>
@@ -2035,6 +2040,7 @@
 <translation id="953431725143473984">Дали да се исклучи уредот?</translation>
 <translation id="954052413789300507">Нема доволно простор за <ph name="FILENAME" />. Ослободете простор.</translation>
 <translation id="954520015070501466">30 мин.</translation>
+<translation id="954786879461589145">Изменето од <ph name="USER" /></translation>
 <translation id="974545358917229949">Се прикажуваат <ph name="RESULT_COUNT" /> резултати за <ph name="QUERY" /></translation>
 <translation id="981011780479609956">Без рок</translation>
 <translation id="98120814841227350">Одете на крајот од документот</translation>

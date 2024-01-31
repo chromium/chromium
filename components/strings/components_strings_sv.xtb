@@ -12,6 +12,7 @@
 <translation id="1024111578869940408">Ibland försöker hackare efterlikna webbplatser genom att göra svårupptäckta ändringar i webbadressen.</translation>
 <translation id="1024913885641459127">Produktrecensioner och prisjämförelser</translation>
 <translation id="1028781062521375153">Visa information</translation>
+<translation id="102916930470544692">Nyckel</translation>
 <translation id="1030706264415084469"><ph name="URL" /> vill lagra stora mängder data permanent på din enhet</translation>
 <translation id="1030949145805074938">{COUNT,plural, =0{Inga}=1{Från 1 webbplats Du loggas ut från de flesta webbplatser. }other{Från # webbplatser. Du loggas ut från de flesta webbplatser. }}</translation>
 <translation id="1033329911862281889">Inkognitoläget gör dig inte osynlig online:
@@ -397,6 +398,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="1711528724596764268">Maskininlärning och artificiell intelligens</translation>
 <translation id="1712552549805331520"><ph name="URL" /> vill lagra data permanent på din lokala dator</translation>
 <translation id="1713628304598226412">Fack 2</translation>
+<translation id="1713819065634160212">Använd och spara adresser från Google-kontot</translation>
 <translation id="1714807406136741351">Bläddringsläge – du kan växla till formulärläget och använda vänster/höger pil för att granska prisändringar i diagrammet</translation>
 <translation id="1717218214683051432">Rörelsesensorer</translation>
 <translation id="1717494416764505390">Postfack 3</translation>
@@ -1087,6 +1089,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="3120807611504813890">Kuvert (lättvikt)</translation>
 <translation id="3121994479408824897">Besök <ph name="DOMAIN" /></translation>
 <translation id="3126023634486644099">Etiketter (permanenta)</translation>
+<translation id="3133565499688974786"><ph name="SEARCH_ENGINE_NAME" /> är nu din standardsökmotor</translation>
 <translation id="3140646734028448730">Företagstjänster</translation>
 <translation id="3141093262818886744">Öppna ändå</translation>
 <translation id="3141641372357166056">Inget samtyckesbeslut</translation>
@@ -1510,6 +1513,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="3943857333388298514">Klistra in</translation>
 <translation id="3946209740501886391">Fråga alltid på den här webbplatsen</translation>
 <translation id="3948588869002647271">Appen saknas eller är skadad</translation>
+<translation id="3949297482798028668">Möjligheten att klistra in innehållet här blockeras av administratören.</translation>
 <translation id="3949571496842715403">Servern kunde inte bevisa att den är <ph name="DOMAIN" /> eftersom inga alternativa namn på certifikatobjektet anges i säkerhetscertifikatet. Detta kan bero på en felaktig konfigurering eller att en angripare manipulerat anslutningen.</translation>
 <translation id="3949601375789751990">Webbhistoriken visas här</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
@@ -1926,6 +1930,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="4764680219299728632">Spishällar, gasspisar och ugnar</translation>
 <translation id="4764776831041365478">Webbsidan på <ph name="URL" /> kan ligga nere för tillfället eller kan ha flyttats permanent till en ny webbadress.</translation>
 <translation id="4766713847338118463">Två häftklamrar längst ned</translation>
+<translation id="4768864802656530630">Detaljerade systemloggar. <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
 <translation id="4771973620359291008">Ett okänt fel uppstod.</translation>
 <translation id="4774055414220872623">Konsthantverksmaterial</translation>
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{Popup-fönster har blockerats}other{# popup-fönster har blockerats}}</translation>
@@ -2231,6 +2236,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="5377026284221673050">Klockan går efter, Klockan går före eller &lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;</translation>
 <translation id="5383478552402031184">Golv</translation>
 <translation id="5385857628869214740">Humor</translation>
+<translation id="5385966243497224160">Det går inte att förhandsgranska webbadresser som inte använder HTTPS</translation>
 <translation id="5386426401304769735">Certifikatkedjan för den här webbplatsen innehåller ett certifikat som signerades med SHA-1.</translation>
 <translation id="5392506727170022660">Metall (halvblank)</translation>
 <translation id="5396631636586785122">Kanthäftning till höger</translation>
@@ -2454,6 +2460,8 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="5838732667866024867">Du kan se prisändringarna i diagrammet med hjälp av vänster-/högerpil</translation>
 <translation id="5840318881868981258">I Google-kontot <ph name="ACCOUNT" /></translation>
 <translation id="5841338463993781099">Vill du spara i kontot?</translation>
+<translation id="5843987376989109187">Det här språket stöds inte än.
+    <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
 <translation id="5847181246682413476">Kraftförsörjning</translation>
 <translation id="5851548754964597211">Fliklista</translation>
 <translation id="5852909432155870672">RA4</translation>
@@ -3179,6 +3187,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="7251437084390964440">Nätverkskonfigurationen uppfyller inte ONC-standarden. Det kan hända att delar av konfigurationen inte kan importeras.
 Mer information.
 <ph name="DEBUG_INFO" /></translation>
+<translation id="7251635775446614726">Meddelande från administratören: <ph name="CUSTOM_MESSAGE" /></translation>
 <translation id="7256634549594854023">Bakre fack</translation>
 <translation id="725866823122871198">Det gick inte att upprätta en privat anslutning till <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> eftersom datorns datum och tid (<ph name="DATE_AND_TIME" />) inte stämmer.</translation>
 <translation id="7260075294900977274">En ny smart mapp som hjälper dig att spara alla shoppingsidor på ett ställe och automatiskt bevakar priser, samlar prisinformation med mera</translation>
@@ -3665,6 +3674,7 @@ Mer information.
 <translation id="8194797478851900357">&amp;Ångra Flytta</translation>
 <translation id="8194956568907463262">Skjutspel</translation>
 <translation id="8199437620497683918">Optisk skiva (blank)</translation>
+<translation id="8199730148066603000">Förhandsgranskning av webbadresser som inte använder HTTPS är inte tillåten.</translation>
 <translation id="8200772114523450471">Återuppta</translation>
 <translation id="8202097416529803614">Beställningsöversikt</translation>
 <translation id="8202370299023114387">Konflikt</translation>
@@ -4103,6 +4113,8 @@ Mer information:
 <translation id="9049981332609050619">Du försökte nå <ph name="DOMAIN" /> men servern angav ett ogiltigt certifikat.</translation>
 <translation id="9050666287014529139">Lösenfras</translation>
 <translation id="9051072642122229460">Kaffe- och espressobryggare</translation>
+<translation id="9051260467258969162"><ph name="BEGIN_LINK" />Logga in<ph name="END_LINK" /> 
+    igen och återgå sedan till den här fliken för att få hjälp med att skriva</translation>
 <translation id="9053840549256861041">Vi lanserar en ny funktion för annonsintegritet som kallas annonsmätning. Chrome delar bara mycket begränsad information mellan webbplatser, till exempel när en annons visades för dig, för att hjälpa webbplatser att mäta annonsernas resultat.</translation>
 <translation id="9056953843249698117">Butik</translation>
 <translation id="9062620674789239642">Den kan ha flyttats, ändrats eller tagits bort.</translation>

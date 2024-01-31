@@ -148,6 +148,7 @@
 <translation id="1753905327828125965">常去网站</translation>
 <translation id="1757699834933698436">{count,plural, =1{有 {count} 个安全系数低的密码}other{有 {count} 个安全系数低的密码}}</translation>
 <translation id="1767766085187034454">Google 翻译</translation>
+<translation id="1769106850515800431">个性化内容</translation>
 <translation id="1789803444939621101">欢迎回来，<ph name="USER_NAME" /></translation>
 <translation id="1803264062614276815">持卡人姓名</translation>
 <translation id="1809939268435598390">删除文件夹</translation>
@@ -565,6 +566,7 @@
 <translation id="3929457972718048006">地址</translation>
 <translation id="3948600256434252210">向右滑动即可在无痕模式下浏览内容。</translation>
 <translation id="3955822496205734389">您有安全系数低的密码。</translation>
+<translation id="3958312024468322930">将图标拖动到主屏幕底部的程序坞中</translation>
 <translation id="3959736869653157332">菜单 → 打开新的无痕式标签页</translation>
 <translation id="3962326069546168954">保存</translation>
 <translation id="3967822245660637423">下载完毕</translation>
@@ -818,7 +820,6 @@
 <translation id="5245322853195994030">取消同步</translation>
 <translation id="5248640482715684545">此网站正在尝试打开另一款应用。</translation>
 <translation id="5256661381001734217">此网站正在尝试打开某款应用。这项操作会使您退出无痕模式。</translation>
-<translation id="5266104675489036658">向新组添加标签页</translation>
 <translation id="5271265092610673171">{count,plural, =1{有一个必填字段是空的。请先填写这个字段，然后再保存。}other{有一些必填字段是空的。请先填写这些字段，然后再保存。}}</translation>
 <translation id="5271549068863921519">保存密码</translation>
 <translation id="5283494734135414249">点按地址栏下方显示的相应快捷方式。</translation>
@@ -829,6 +830,7 @@
 <translation id="5327753393331509826">接收内容通知</translation>
 <translation id="5329451663851195956">下拉即可刷新。</translation>
 <translation id="5339316356165661760">开启同步功能</translation>
+<translation id="5343472494710226394">根据您的兴趣推送的新闻、体育赛事和内容。</translation>
 <translation id="5345660046352249607">{COUNT,plural, =1{要跟踪此包裹吗？}other{要跟踪这 {COUNT} 个包裹吗？}}</translation>
 <translation id="536067926684072644">显示书签</translation>
 <translation id="5360976571138293719">如需了解更多与隐私、安全和数据收集相关的设置，请前往 <ph name="BEGIN_LINK" />Google 服务<ph name="END_LINK" />部分。</translation>
@@ -899,6 +901,7 @@
 <translation id="5737974891429562743">账号登录详细信息已过期，请进行更新以开始同步。</translation>
 <translation id="5738385766833540397">管理您所跟踪商品的降价提醒接收方式</translation>
 <translation id="5738887413654608789">这样可让您找到与目前周遭环境相关的网页。</translation>
+<translation id="5744274077973758795">“<ph name="FEATURE_NAME" />”通知已开启</translation>
 <translation id="5745916533876677730">转到上一个标签页</translation>
 <translation id="574762237186762643">活动</translation>
 <translation id="5748177854685749242">将于<ph name="DATE" />送达</translation>
@@ -923,6 +926,7 @@
 <translation id="5850913622988109693">包裹跟踪选项</translation>
 <translation id="5854790677617711513">30 天之前的</translation>
 <translation id="5857090052475505287">新文件夹</translation>
+<translation id="5857361196621230935">向分组中添加标签页</translation>
 <translation id="5857770089550859117">必须输入密码才能开始同步。</translation>
 <translation id="5859715514067755465">前进</translation>
 <translation id="5860033963881614850">关闭</translation>
@@ -1275,6 +1279,7 @@
 <translation id="7649070708921625228">帮助</translation>
 <translation id="7658239707568436148">取消</translation>
 <translation id="7666861622396822790">您可在<ph name="BEGIN_LINK" />内容设置<ph name="END_LINK" />中进行管理。</translation>
+<translation id="7669493687462784703">要继续从 <ph name="WEBSITE" /> 下载配置文件吗？</translation>
 <translation id="7671141431838911305">安装</translation>
 <translation id="7673346542062368520">向左滑动即可在无痕模式下浏览内容。</translation>
 <translation id="7679915578945954324">已复制网址</translation>
@@ -1462,6 +1467,7 @@
 <translation id="8620640915598389714">编辑</translation>
 <translation id="8624447588354561276">包裹编号</translation>
 <translation id="8624753446837753970">设置位置</translation>
+<translation id="8625706492572042370">修改主屏幕</translation>
 <translation id="8626393685701737946">您可在“设置”&gt;“内容设置”中将默认网站视图改为桌面版</translation>
 <translation id="8636825310635137004">要访问您在其他设备上的标签页，请开启同步功能。</translation>
 <translation id="8637431369725868556">保护您免受危险网站的侵害。</translation>
@@ -1523,6 +1529,7 @@
 <translation id="891282356902782456">这个密码仅会保存到此设备上。如果想在您的其他设备上使用它，请将它保存到您的 Google 账号 <ph name="EMAIL" /> 中。</translation>
 <translation id="8917490105272468696">我同意</translation>
 <translation id="8928133177108699615">桌面版</translation>
+<translation id="8937676484307616731">开启“<ph name="FEATURE_NAME" />”的通知</translation>
 <translation id="894191600409472540">创建安全系数高的密码</translation>
 <translation id="8952559610785099500">添加密码</translation>
 <translation id="8953046091948372197">您的密码会显示在此处</translation>

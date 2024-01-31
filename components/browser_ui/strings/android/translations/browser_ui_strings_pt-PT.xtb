@@ -66,6 +66,7 @@
 <translation id="2228071138934252756">Para permitir que a app <ph name="APP_NAME" /> aceda à câmara, ative também a câmara nas <ph name="BEGIN_LINK" />Definições do Android<ph name="END_LINK" />.</translation>
 <translation id="2235344399760031203">Os cookies de terceiros estão bloqueados</translation>
 <translation id="2238944249568001759">Pesquisas sugeridas com base no último separador</translation>
+<translation id="2241587408274973373">Cartões da página Novo separador</translation>
 <translation id="2241634353105152135">Apenas uma vez</translation>
 <translation id="2253414712144136228"><ph name="NAME_OF_LIST_ITEM" /> Remover</translation>
 <translation id="2253989982043948086">{NUM_SELECTED,plural, =1{1 site bloqueado}other{# sites bloqueados}}</translation>
@@ -281,6 +282,7 @@
 <translation id="5706552988683188916">Esta ação elimina os cookies e outros dados de sites de <ph name="WEBSITE" /></translation>
 <translation id="5723967018671998714">Os cookies de terceiros estão bloqueados no Modo de navegação anónima</translation>
 <translation id="5740126560802162366">Os sites podem guardar dados no seu dispositivo</translation>
+<translation id="5749158352074143502">Continue com este separador</translation>
 <translation id="5771720122942595109">Bloqueio de <ph name="PERMISSION_1" />.</translation>
 <translation id="5804241973901381774">Permissões</translation>
 <translation id="5844448279347999754">Quando esta opção está ativada, os sites podem pedir para ver o texto e as imagens guardados na área de transferência. Quando esta opção está desativada, os sites não podem ver o texto nem as imagens guardados na área de transferência.</translation>
@@ -421,6 +423,7 @@
 <translation id="7990211076305263060">Quando esta opção está ativada, os sites podem pedir para usar o microfone. Quando esta opção está desativada, os sites não podem usar o microfone.</translation>
 <translation id="8007176423574883786">Desativada para este dispositivo</translation>
 <translation id="802154636333426148">Falha ao transferir</translation>
+<translation id="8024161440284949905">Continue com estes separadores</translation>
 <translation id="8042586301629853791">Ordenar por:</translation>
 <translation id="8067883171444229417">Ver vídeo</translation>
 <translation id="8068648041423924542">Não é possível selecionar o certificado.</translation>

@@ -111,6 +111,7 @@
 <translation id="1078037449555275327">ChromeVox-instellings</translation>
 <translation id="1079285777677001938">Kenmerke op sommige werwe sal dalk nie werk nie.</translation>
 <translation id="1079766198702302550">Blokkeer altyd toegang tot kamera</translation>
+<translation id="1080365971383768617">Wagwoorde op al jou toestelle</translation>
 <translation id="1081956462909987459">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> – 1 oortjie}other{<ph name="GROUP_TITLE" /> – # oortjies}}</translation>
 <translation id="1082214733466244292">Jou administrateur het sommige funksies op hierdie toestel geblokkeer</translation>
 <translation id="1082398631555931481"><ph name="THIRD_PARTY_TOOL_NAME" /> wil jou Chrome-instellings na hul oorspronklike verstekwaardes herstel. Dit sal jou tuisblad, nuwe oortjie-bladsy en soekenjin terugstel, jou uitbreidings deaktiveer en alle oortjies ontspeld. Dit sal ook alle tydelike en gekaste data soos koekies, inhoud en werfdata uitvee.</translation>
@@ -5173,6 +5174,7 @@ Gebruik Ctrl + Alt + Verlaag Helderheid om uit te zoem.</translation>
 <translation id="4953808748584563296">Verstek- oranje avatar</translation>
 <translation id="4955707703665801001"><ph name="FEATURE_NAME" />-sigbaarheid</translation>
 <translation id="4955710816792587366">Kies jou PIN</translation>
+<translation id="4956847150856741762">1</translation>
 <translation id="4959262764292427323">Wagwoorde word in jou Google-rekening gestoor sodat jy hulle op enige toestel kan gebruik</translation>
 <translation id="4960020053211143927">Word nie deur sommige apps gesteun nie</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> – <ph name="PROFILE_NAME" /></translation>
@@ -8278,7 +8280,6 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="7424153922653300265">Energiebespaarder is aangeskakel</translation>
 <translation id="7424818322350938336">Netwerk is bygevoeg</translation>
 <translation id="7425037327577270384">Help my skryf</translation>
-<translation id="7425292366411265498">Uitbreidings wat deur jou administrateur geïnstalleer is, kan steeds werwe lees en verander</translation>
 <translation id="7427315069950454694">jou herinneringe vir vandag</translation>
 <translation id="7427348830195639090">Agtergrondbladsy: <ph name="BACKGROUND_PAGE_URL" /></translation>
 <translation id="7427798576651127129">Oproep vanaf <ph name="DEVICE_NAME" /></translation>

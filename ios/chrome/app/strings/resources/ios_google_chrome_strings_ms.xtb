@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ms">
+<translation id="1021782183249308751">Tekan dan tahan ikon Chrome dan klik "Edit Skrin Utama"</translation>
 <translation id="1066101356081285416">Chrome akan mengesan nombor penjejakan pada laman yang anda lawati dan menunjukkan kepada anda kemaskinian pakej pada halaman Tab Baharu. Nombor penjejakan bungkusan dan nama laman web akan dihantar kepada Google untuk menyediakan ciri ini dan untuk meningkatkan ciri beli-belah untuk semua. Anda boleh mengemaskinikan tetapan ini pada bila-bila masa dalam <ph name="BEGIN_LINK" />Tetapan Penjejakan Bungkusan<ph name="END_LINK" />.</translation>
 <translation id="1085696779717592361">Gunakan Chrome Secara Lalai</translation>
 <translation id="1105362920864247682">Kosongkan Data Semakan Imbas dalam Chrome.</translation>
@@ -96,6 +97,7 @@ Orang yang mengetahui ungkapan laluan anda sahaja yang dapat membaca data tersul
 <translation id="3345341804167540816">Gunakan Chrome Everywhere</translation>
 <translation id="3360031466389132716">{THRESHOLD,plural, =1{Perkara ini berlaku apabila Chrome tidak digunakan selama {THRESHOLD} minit}other{Perkara ini berlaku apabila Chrome tidak digunakan selama {THRESHOLD} minit}}</translation>
 <translation id="3399930248910934354">Buka Tetapan Chrome</translation>
+<translation id="344736123700721678">Akses Chrome lebih pantas daripada Dok Skrin Utama anda</translation>
 <translation id="3472587960215700950">Chrome menggunakan Google Maps untuk memberi anda arah dan maklumat setempat pada alamat yang dikesan.</translation>
 <translation id="3503014945441706099">Dapatkan juga Penyemakan Imbas Selamat Dipertingkat untuk profil Chrome ini</translation>
 <translation id="3522659714780527202">Untuk melihat tab anda daripada mana-mana tempat anda menggunakan Chrome, hidupkan penyegerakan</translation>

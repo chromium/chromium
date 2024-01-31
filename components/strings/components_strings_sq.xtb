@@ -12,6 +12,7 @@
 <translation id="1024111578869940408">Sulmuesit ndonjëherë i imitojnë sajtet duke bërë tek adresa e uebit ndryshime që janë të vështira për t'u dalluar.</translation>
 <translation id="1024913885641459127">Komente për produkte dhe krahasime çmimesh</translation>
 <translation id="1028781062521375153">Shiko detajet</translation>
+<translation id="102916930470544692">Çelësi i kalimit</translation>
 <translation id="1030706264415084469"><ph name="URL" /> do të ruajë në mënyrë të përhershme të dhëna të mëdha në pajisjen tënde</translation>
 <translation id="1030949145805074938">{COUNT,plural, =0{Asnjë}=1{Nga 1 sajt. Bën që të dalësh nga llogaria nga shumica e sajteve. }other{Nga # sajte. Bën që të dalësh nga llogaria nga shumica e sajteve. }}</translation>
 <translation id="1033329911862281889">Modaliteti "I fshehtë" nuk të bën të padukshëm online:
@@ -3178,6 +3179,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="7251437084390964440">Konfigurimi i rrjetit nuk përputhet me standardin ONC. Disa pjesë të konfigurimit mund të mos jenë importuar.
 Detaje shtesë:
 <ph name="DEBUG_INFO" /></translation>
+<translation id="7251635775446614726">Administratori yt thotë: "<ph name="CUSTOM_MESSAGE" />"</translation>
 <translation id="7256634549594854023">Tabakaja e pasme</translation>
 <translation id="725866823122871198">Nuk mund të vendoset një lidhje private me <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> sepse data dhe ora (<ph name="DATE_AND_TIME" />) e kompjuterit tënd nuk janë të sakta.</translation>
 <translation id="7260075294900977274">Një dosje e re inteligjente që të ndihmon të ruash të gjitha faqet e blerjeve në një vend, si dhe të monitorosh automatikisht çmimet, të marrësh statistika mbi to etj.</translation>

@@ -148,6 +148,7 @@
 <translation id="1753905327828125965">Sering Dibuka</translation>
 <translation id="1757699834933698436">{count,plural, =1{{count} Sandi Lemah}other{{count} Sandi Lemah}}</translation>
 <translation id="1767766085187034454">Google Terjemahan</translation>
+<translation id="1769106850515800431">Konten yang Dipersonalisasi</translation>
 <translation id="1789803444939621101">Selamat Datang Kembali, <ph name="USER_NAME" /></translation>
 <translation id="1803264062614276815">Nama Pemegang Kartu</translation>
 <translation id="1809939268435598390">Hapus Folder</translation>
@@ -818,7 +819,6 @@ Lihat petunjuk mesin telusur untuk menghapus histori penelusuran Anda, jika memu
 <translation id="5245322853195994030">Batalkan Sinkronisasi</translation>
 <translation id="5248640482715684545">Situs ini mencoba membuka aplikasi lain.</translation>
 <translation id="5256661381001734217">Situs ini mencoba membuka aplikasi.  Tindakan ini akan membuat Anda keluar dari mode Samaran.</translation>
-<translation id="5266104675489036658">Tambahkan Tab ke Grup Baru</translation>
 <translation id="5271265092610673171">{count,plural, =1{Kolom wajib diisi masih kosong. Isi kolom sebelum menyimpan.}other{Beberapa kolom wajib diisi masih kosong. Isi kolom sebelum menyimpan.}}</translation>
 <translation id="5271549068863921519">Simpan sandi</translation>
 <translation id="5283494734135414249">Ketuk pintasan yang muncul di bawah kolom URL.</translation>
@@ -829,6 +829,7 @@ Lihat petunjuk mesin telusur untuk menghapus histori penelusuran Anda, jika memu
 <translation id="5327753393331509826">Dapatkan Notifikasi Konten</translation>
 <translation id="5329451663851195956">Anda dapat menarik ke bagian bawah layar untuk memuat ulang.</translation>
 <translation id="5339316356165661760">Aktifkan Sinkronisasi</translation>
+<translation id="5343472494710226394">Berita, olahraga, dan konten berdasarkan minat Anda.</translation>
 <translation id="5345660046352249607">{COUNT,plural, =1{Lacak Paket Ini?}other{Melacak {COUNT} Paket?}}</translation>
 <translation id="536067926684072644">Tampilkan Bookmark</translation>
 <translation id="5360976571138293719">Untuk setelan lainnya yang berkaitan dengan privasi, keamanan, dan pengumpulan data, lihat <ph name="BEGIN_LINK" />Layanan Google<ph name="END_LINK" />.</translation>
@@ -899,6 +900,7 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="5737974891429562743">Detail proses masuk akun sudah tidak berlaku lagi. Perbarui untuk memulai sinkronisasi.</translation>
 <translation id="5738385766833540397">Kelola cara Anda menerima notifikasi diskon untuk produk yang dipantau</translation>
 <translation id="5738887413654608789">Hal ini memungkinkan Anda menemukan halaman web yang relevan berdasarkan berbagai hal di sekitar.</translation>
+<translation id="5744274077973758795">Notifikasi <ph name="FEATURE_NAME" /> diaktifkan</translation>
 <translation id="5745916533876677730">Buka Tab Sebelumnya</translation>
 <translation id="574762237186762643">Acara</translation>
 <translation id="5748177854685749242">Tiba pada <ph name="DATE" /></translation>
@@ -923,6 +925,7 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="5850913622988109693">Opsi untuk Melacak Paket</translation>
 <translation id="5854790677617711513">Lebih dari 30 hari</translation>
 <translation id="5857090052475505287">Folder Baru</translation>
+<translation id="5857361196621230935">Tambahkan Tab ke Grup</translation>
 <translation id="5857770089550859117">Perlu frasa sandi untuk memulai sinkronisasi.</translation>
 <translation id="5859715514067755465">Maju</translation>
 <translation id="5860033963881614850">Nonaktif</translation>
@@ -1275,6 +1278,7 @@ Selama dalam mode Samaran, situs tidak dapat menggunakan cookie untuk melihat ak
 <translation id="7649070708921625228">Bantuan</translation>
 <translation id="7658239707568436148">Batal</translation>
 <translation id="7666861622396822790">Anda dapat mengelolanya di <ph name="BEGIN_LINK" />Setelan Konten<ph name="END_LINK" />.</translation>
+<translation id="7669493687462784703">Lanjutkan mendownload profil konfigurasi dari <ph name="WEBSITE" />?</translation>
 <translation id="7671141431838911305">INSTAL</translation>
 <translation id="7673346542062368520">Anda dapat menggeser ke kiri untuk menjelajah dalam mode Samaran.</translation>
 <translation id="7679915578945954324">Alamat situs disalin</translation>
@@ -1523,6 +1527,7 @@ Situs dapat menggunakan cookie untuk melihat aktivitas penjelajahan Anda di berb
 <translation id="891282356902782456">Sandi ini hanya disimpan ke perangkat ini. Untuk menggunakannya di perangkat lain, simpan sandi di Akun Google Anda, <ph name="EMAIL" />.</translation>
 <translation id="8917490105272468696">Ya, Saya Setuju</translation>
 <translation id="8928133177108699615">Desktop</translation>
+<translation id="8937676484307616731">Aktifkan Notifikasi untuk <ph name="FEATURE_NAME" /></translation>
 <translation id="894191600409472540">Buat sandi yang kuat</translation>
 <translation id="8952559610785099500">Tambahkan Sandi</translation>
 <translation id="8953046091948372197">Sandi Anda akan ditampilkan di sini</translation>

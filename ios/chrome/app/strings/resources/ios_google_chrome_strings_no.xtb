@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="no">
+<translation id="1021782183249308751">Trykk og hold på Chrome-ikonet, og klikk på «Endre startsiden»</translation>
 <translation id="1066101356081285416">Chrome registrerer sporingsnumre på nettsteder du besøker, og viser pakkeoppdateringer på Ny fane-siden. Pakkesporingsnummeret og navnet på nettstedet sendes til Google, slik at Google kan levere denne funksjonen og gjøre Google Shopping-funksjonene bedre for alle. Du kan når som helst oppdatere dette i <ph name="BEGIN_LINK" />innstillingene for pakkesporing<ph name="END_LINK" />.</translation>
 <translation id="1085696779717592361">Bruk Chrome som standard</translation>
 <translation id="1105362920864247682">Slett nettlesingsdata i Chrome.</translation>
@@ -96,6 +97,7 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="3345341804167540816">Bruk Chrome overalt</translation>
 <translation id="3360031466389132716">{THRESHOLD,plural, =1{Dette skjer når Chrome ikke har vært i bruk på {THRESHOLD} minutt}other{Dette skjer når Chrome ikke har vært i bruk på {THRESHOLD} minutter}}</translation>
 <translation id="3399930248910934354">Åpne Chrome-innstillingene</translation>
+<translation id="344736123700721678">Få raskere tilgang til Chrome fra dokken på startsiden</translation>
 <translation id="3472587960215700950">Chrome bruker Google Maps for å gi deg veibeskrivelser og lokal informasjon om registrerte adresser.</translation>
 <translation id="3503014945441706099">Få Safe Browsing med økt beskyttelse for denne Chrome-profilen også</translation>
 <translation id="3522659714780527202">For å se fanene dine overalt hvor du bruker Chrome, slå på synkronisering</translation>
@@ -177,12 +179,15 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="6054613632208573261">Bruk Chrome som standard</translation>
 <translation id="6063091872902370735">Tillat Chrome-pålogging</translation>
 <translation id="6110625574506755980">Enkelte Chrome-funksjoner kommer ikke til å være tilgjengelige lenger.</translation>
+<translation id="6132149203299792222">Logg på med Google-kontoen din for å synkronisere blant annet passordene og bokmerkene dine.</translation>
 <translation id="6177442314419606057">Søk i Chrome</translation>
 <translation id="6181930887571472871">Bytt til Chrome</translation>
 <translation id="6238746320622508509">La Chrome låse inkognitofanene dine.</translation>
 <translation id="6247557882553405851">Google Passordlagring</translation>
+<translation id="6272822675004864999">For å motta varsler fra Chrome, slå på varsler i iOS-innstillingene.</translation>
 <translation id="630693926528731525">Passordet ble ikke delt. Sjekk internettilkoblingen, og kontroller at du er logget på Chrome. Prøv deretter på nytt.</translation>
 <translation id="6348855835728304880">Få tilgang til Chrome-passord med mer i andre apper på denne enheten.</translation>
+<translation id="6389317667633680932">Utforsk nye funksjoner som hjelper deg med å få mest mulig ut av Chrome.</translation>
 <translation id="6412673304250309937">Kontrollerer nettadresser opp mot en liste i Chrome over utrygge nettsteder. Hvis nettsteder prøver å stjele passordet ditt, eller når du laster ned skadelige filer, kan Chrome også sende nettadresser, inkludert deler av sideinnholdet, til Safe Browsing.</translation>
 <translation id="6427126399757991875">Organisasjonen din konfigurerer Chrome …</translation>
 <translation id="6484712497741564393">Logget på som <ph name="EMAIL" />.
@@ -214,6 +219,7 @@ For å se flere innstillinger som bruker data for å forbedre Chrome-opplevelsen
 <translation id="7124339256045485976">Hold Chrome oppdatert</translation>
 <translation id="7161390184744336561">Google Chrome er utdatert</translation>
 <translation id="7165736900384873061">Begynn å bruke Google Chrome QR-skanneren</translation>
+<translation id="7175129790242719365">Chrome-tips: Logg på Chrome</translation>
 <translation id="7187993566681480880">Holder deg trygg i Chrome og kan brukes til å øke sikkerheten din i andre Google-apper når du er pålogget.</translation>
 <translation id="7200524487407690471">Chrome kjører sikkerhetssjekken automatisk hver dag for å beskytte deg mot databrudd, utrygge nettsteder med mer. Du kan finne ut mer om sikkerhetssjekken i innstillingene.</translation>
 <translation id="72119412072970160">Du kan bruke passordene du har lagret i Google Passordlagring, i andre apper på iPaden din.</translation>
@@ -244,6 +250,8 @@ For å se flere innstillinger som bruker data for å forbedre Chrome-opplevelsen
 <translation id="7897703007638178753">Se nylige faner fra Chrome</translation>
 <translation id="7925119591961387184">Velg «Chrome».</translation>
 <translation id="7933491483529363150">Åpne den nyligste fanen min i Chrome.</translation>
+<translation id="7948283758957877064">Dette er nytt i Chrome</translation>
+<translation id="8006014511203279255">Bruk Chrome hver gang du trykker på linker i meldinger og andre apper.</translation>
 <translation id="8022947259858476807">Bruk Chrome som standard til å åpne linker, søke i moduler og fylle ut passord i andre apper automatisk</translation>
 <translation id="804638182476029347">Tillat at Chrome-varsler mottar varsler om prisavslag</translation>
 <translation id="8065292699993359127">Åpne nettadresser i Chrome i inkognitomodus</translation>
@@ -280,6 +288,7 @@ Dataene dine ble kryptert med passordfrasen din <ph name="TIME" />. Skriv den in
 <translation id="8765470054473112089">Når du skriver i adressefeltet eller søkefeltet, sender Chrome det du skriver til standardsøkemotoren din, for å gi deg bedre forslag. Dette er av i Inkognito.</translation>
 <translation id="8772179140489533211">Viser vinduer som ber deg logge på Chrome.</translation>
 <translation id="8788269841521769222">Du trenger ikke å huske dette passordet. Det blir lagret i Google Passordlagring for <ph name="EMAIL" /></translation>
+<translation id="878917453316810648">Chrome-tips: Bruk Chrome som standard</translation>
 <translation id="8808828119384186784">Chrome-innstillinger</translation>
 <translation id="8855781063981781621">For å deaktivere låsingsmodus i Chrome, slå den av på iPad.</translation>
 <translation id="8856877214925961642">Kryptering med passordfrase inkluderer ikke betalingsmåter eller adresser.

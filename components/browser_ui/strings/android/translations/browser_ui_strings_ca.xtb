@@ -66,6 +66,7 @@
 <translation id="2228071138934252756">Perquè <ph name="APP_NAME" /> pugui accedir a la càmera, també has d'activar-la a la <ph name="BEGIN_LINK" />configuració d'Android<ph name="END_LINK" />.</translation>
 <translation id="2235344399760031203">Les galetes de tercers estan bloquejades</translation>
 <translation id="2238944249568001759">Cerques suggerides basades en la darrera pestanya</translation>
+<translation id="2241587408274973373">Targetes de la pàgina Pestanya nova</translation>
 <translation id="2241634353105152135">Només una vegada</translation>
 <translation id="2253414712144136228">Suprimeix <ph name="NAME_OF_LIST_ITEM" /></translation>
 <translation id="2253989982043948086">{NUM_SELECTED,plural, =1{1 lloc web bloquejat}other{# llocs web bloquejats}}</translation>
@@ -281,6 +282,7 @@
 <translation id="5706552988683188916">Aquesta acció suprimeix les galetes i altres dades de llocs web per a <ph name="WEBSITE" /></translation>
 <translation id="5723967018671998714">Les galetes de tercers estan bloquejades en mode d'incògnit</translation>
 <translation id="5740126560802162366">Els llocs web poden desar dades al teu dispositiu</translation>
+<translation id="5749158352074143502">Continua amb aquesta pestanya</translation>
 <translation id="5771720122942595109">S'ha bloquejat <ph name="PERMISSION_1" /></translation>
 <translation id="5804241973901381774">Permisos</translation>
 <translation id="5844448279347999754">Quan aquesta opció està activada, els llocs web poden demanar permís per veure el text i les imatges desats al porta-retalls. Quan aquesta opció està desactivada, els llocs web no poden veure el text ni les imatges desats al porta-retalls.</translation>
@@ -421,6 +423,7 @@
 <translation id="7990211076305263060">Quan aquesta opció està activada, els llocs web poden demanar permís per utilitzar el micròfon. Quan aquesta opció està desactivada, els llocs web no poden utilitzar el micròfon.</translation>
 <translation id="8007176423574883786">Aquesta ubicació està desactivada per a aquest dispositiu</translation>
 <translation id="802154636333426148">Error de baixada</translation>
+<translation id="8024161440284949905">Continua amb aquestes pestanyes</translation>
 <translation id="8042586301629853791">Ordena per:</translation>
 <translation id="8067883171444229417">Reprodueix el vídeo</translation>
 <translation id="8068648041423924542">No es pot seleccionar el certificat.</translation>

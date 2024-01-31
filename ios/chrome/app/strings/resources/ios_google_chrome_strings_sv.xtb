@@ -177,12 +177,15 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="6054613632208573261">Använd Chrome som standard</translation>
 <translation id="6063091872902370735">Tillåt inloggning i Chrome</translation>
 <translation id="6110625574506755980">Vissa funktioner i Chrome kommer inte längre att vara tillgängliga.</translation>
+<translation id="6132149203299792222">Logga in med Google-kontot för att synkronisera lösenord, bokmärken med mera.</translation>
 <translation id="6177442314419606057">Sök i Chrome</translation>
 <translation id="6181930887571472871">Byt till Chrome</translation>
 <translation id="6238746320622508509">Låt Chrome låsa inkognitoflikarna.</translation>
 <translation id="6247557882553405851">Google Lösenordshantering</translation>
+<translation id="6272822675004864999">Om du vill få aviseringar från Chrome aktiverar du aviseringar i iOS-inställningarna.</translation>
 <translation id="630693926528731525">Ditt lösenord har inte delats. Kontrollera internetanslutningen och se till att du är inloggad i Chrome. Försök sedan igen.</translation>
 <translation id="6348855835728304880">Få åtkomst till dina lösenord och annat från Chrome i andra appar på den här enheten.</translation>
+<translation id="6389317667633680932">Utforska nya funktioner som hjälper dig att få ut så mycket som möjligt av Chrome.</translation>
 <translation id="6412673304250309937">Kontrollera webbadresser mot en lista över osäkra webbplatser i Chrome. Om du utsätts för försök att kapa ditt lösenord på en webbplats eller om du laddar ned en skadlig fil kan webbadresserna skickas från Chrome till Säker webbsökning tillsammans med delar av sidinnehållet.</translation>
 <translation id="6427126399757991875">Organisationen konfigurerar Chrome …</translation>
 <translation id="6484712497741564393">Inloggad som <ph name="EMAIL" />.
@@ -214,6 +217,7 @@ Du hittar fler inställningar som använder data för att förbättra Chrome-upp
 <translation id="7124339256045485976">Håll Chrome uppdaterad</translation>
 <translation id="7161390184744336561">Google Chrome-versionen är inaktuell</translation>
 <translation id="7165736900384873061">Börja använda Google Chrome som QR-skanner</translation>
+<translation id="7175129790242719365">Tips för Chrome: Logga in i Chrome</translation>
 <translation id="7187993566681480880">Skyddar dig i Chrome och kan användas för förbättrad säkerhet i andra Google-appar där du är inloggad.</translation>
 <translation id="7200524487407690471">Chrome kör automatiskt en säkerhetskontroll varje dag för att skydda dig från dataintrång, osäkra webbplatser med mera. Du hittar mer information om säkerhetskontrollen i inställningarna.</translation>
 <translation id="72119412072970160">Du kan använda lösenorden som sparats med Google Lösenordshantering i andra iPad-appar.</translation>
@@ -244,6 +248,8 @@ Du hittar fler inställningar som använder data för att förbättra Chrome-upp
 <translation id="7897703007638178753">Visa de senaste flikarna i Chrome</translation>
 <translation id="7925119591961387184">Välj Chrome.</translation>
 <translation id="7933491483529363150">Öppna Min senaste flik i Chrome.</translation>
+<translation id="7948283758957877064">Nyheter i Chrome</translation>
+<translation id="8006014511203279255">Använd Chrome varje gång du trycker på länkar i meddelanden eller andra appar.</translation>
 <translation id="8022947259858476807">Använd Chrome som standard när du öppnar länkar och söker med en widget och få lösenord ifyllda i andra appar automatiskt</translation>
 <translation id="804638182476029347">Tillåt Chrome-aviseringar om sänkt pris</translation>
 <translation id="8065292699993359127">Öppna webbadresser i Chrome i inkognitoläge</translation>
@@ -280,6 +286,7 @@ Din data krypterades med lösenfrasen den <ph name="TIME" />. Ange den om du vil
 <translation id="8765470054473112089">När du skriver i adressfältet eller sökrutan skickar Chrome det du skriver till standardsökmotorn för att du ska få bättre förslag. Detta är inaktiverat i inkognitoläge.</translation>
 <translation id="8772179140489533211">Visar meddelanden om att logga in i Chrome.</translation>
 <translation id="8788269841521769222">Du behöver inte komma ihåg det här lösenordet. Det sparas med Google Lösenordshantering för <ph name="EMAIL" /></translation>
+<translation id="878917453316810648">Tips för Chrome: Använd Chrome som standard</translation>
 <translation id="8808828119384186784">Inställningar för Chrome</translation>
 <translation id="8855781063981781621">Om du vill inaktivera låsningsläget i Chrome kan du stänga av det på din iPad.</translation>
 <translation id="8856877214925961642">Betalningsmetoder och adresser omfattas inte av lösenfraskryptering.

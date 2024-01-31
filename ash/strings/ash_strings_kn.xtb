@@ -607,9 +607,11 @@
 <translation id="3526440770046466733">ಹೊಸ ಟ್ಯಾಬ್‌ನಲ್ಲಿ ಲಿಂಕ್ ತೆರೆಯಿರಿ ಮತ್ತು ಪ್ರಸ್ತುತ ಟ್ಯಾಬ್‌ನಲ್ಲಿ ಉಳಿಯಿರಿ</translation>
 <translation id="353086728817903341"><ph name="NUM_DEVICES" /> ಸಾಧನಗಳಿಗೆ ಕನೆಕ್ಟ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="3533126039236445965">ಶೆಲ್ಫ್‌ನಲ್ಲಿರುವ ಆ್ಯಪ್‌ಗಳು</translation>
+<translation id="3537350467437346467">ನೀವು ವೀಕ್ಷಿಸಿದ್ದೀರಿ</translation>
 <translation id="3539957339480430241"><ph name="DEVICE_NAME" /> ಹಾಟ್‌ಸ್ಪಾಟ್</translation>
 <translation id="3540893133818942399">ನಿಮ್ಮ ಫೋನ್‌ನ ಇತ್ತೀಚಿನ ಫೋಟೋಗಳು, ಮಾಧ್ಯಮವನ್ನು ವೀಕ್ಷಿಸುವುದಕ್ಕಾಗಿ ಸೆಟಪ್ ಮಾಡುವುದನ್ನು ವಜಾಗೊಳಿಸಿ</translation>
 <translation id="3542066395059568317">ನೀವು ಶಿಫಾರಸುಗಳನ್ನು ನೋಡುತ್ತೀರಿ ಆದ್ದರಿಂದ ನೀವು ಎಲ್ಲಿಗೆ ನಿಲ್ಲಿಸಿರುವಿರೋ ಅಲ್ಲಿಂದಲೇ ಮುಂದುವರಿಸಬಹುದು. ಶಿಫಾರಸುಗಳನ್ನು ತೆಗೆದುಹಾಕಲು ನೀವು ಬಲ-ಕ್ಲಿಕ್ ಮಾಡಬಹುದು.</translation>
+<translation id="3547318469722231257">ನೀವು ಮಾರ್ಪಾಡು ಮಾಡಿದ್ದೀರಿ</translation>
 <translation id="3552189655002856821">ವೈ-ಫೈ ಆಫ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="3554215588514239132">ಡೆವಲಪರ್ ಪರಿಕರಗಳ ಫಲಕವನ್ನು ತೋರಿಸಿ ಅಥವಾ ಮರೆಮಾಡಿ</translation>
 <translation id="3554637740840164787"><ph name="ITEM_TITLE" /> ಅನ್ನು ಪಿನ್ ಮಾಡಲಾಗಿದೆ</translation>
@@ -701,6 +703,7 @@
 <translation id="385300504083504382">ಪ್ರಾರಂಭ</translation>
 <translation id="3859364108019690">ಆ್ಯಪ್‌ಗಳನ್ನು ಸ್ಟ್ರೀಮ್ ಮಾಡಲು ಸಾಧ್ಯವಿಲ್ಲ</translation>
 <translation id="3861651314799684201">ಪೂರ್ಣ ಸ್ಕ್ರೀನ್ ಅನ್ನು ರೆಕಾರ್ಡ್ ಮಾಡಲು Enter ಒತ್ತಿರಿ</translation>
+<translation id="3882323608730650973">ಮಾರ್ಪಾಡು ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="3886872229787704059">ಇಂದು ತೆರೆಯಲಾಗಿದೆ</translation>
 <translation id="3891340733213178823">ಸೈನ್ ಔಟ್ ಮಾಡಲು Ctrl+Shift+Q ಅನ್ನು ಎರಡುಬಾರಿ ಒತ್ತಿರಿ.</translation>
 <translation id="3893630138897523026">ChromeVox (ಮಾತಿನ ಪ್ರತಿಕ್ರಿಯೆ)</translation>
@@ -894,6 +897,7 @@
 <translation id="4582666543382004902">Wi-Fi ಬಳಸಲು ಹಾಟ್‌ಸ್ಪಾಟ್ ಅನ್ನು ಆಫ್ ಮಾಡಲಾಗಿದೆ. ಹಾಟ್‌ಸ್ಪಾಟ್ ಅನ್ನು ಬಳಸಲು, Wi-Fi ಆಫ್ ಮಾಡಿ.</translation>
 <translation id="4585337515783392668">"ಅಪರಿಚಿತ ಸ್ವೀಕರಿಸುವವರು" ನಲ್ಲಿ ಬಿತ್ತರಿಸುವುದನ್ನು ನಿಲ್ಲಿಸಿ</translation>
 <translation id="4596144739579517758">ಡಾರ್ಕ್ ಥೀಮ್ ಆಫ್ ಆಗಿದೆ</translation>
+<translation id="4596442969149038771"><ph name="USER" /> ಅವರು ಹಂಚಿಕೊಂಡಿದ್ದಾರೆ</translation>
 <translation id="4611292653554630842">ಲಾಗ್ ಇನ್</translation>
 <translation id="462160925400706389"><ph name="NAME" /> ಅನ್ನು ಕನೆಕ್ಟ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="4623167406982293031">ಖಾತೆಯನ್ನು ದೃಢೀಕರಿಸಿ</translation>
@@ -1815,6 +1819,7 @@
 <translation id="8314772463905284467">CAPS LOCK ಆನ್ ಆಗಿದೆ</translation>
 <translation id="8315514906653279104">ಆನ್ ಮಾಡಲಾಗುತ್ತಿದೆ...</translation>
 <translation id="8331351032546853669">ಡೌನ್‌ಲೋಡ್ ಬಾಕಿ ಉಳಿದಿದೆ</translation>
+<translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
 <translation id="8345019317483336363"><ph name="WINDOW_TITLE" /> ವಿಂಡೋ ಆಯ್ಕೆಮಾಡಲಾಗಿದೆ</translation>
 <translation id="8349826889576450703">ಲಾಂಚರ್</translation>
@@ -2034,6 +2039,7 @@
 <translation id="953431725143473984">ಸಾಧನವನ್ನು ಸ್ಥಗಿತಗೊಳಿಸಬೇಕೆ?</translation>
 <translation id="954052413789300507"><ph name="FILENAME" /> ಗಾಗಿ ಸಾಕಷ್ಟು ಸ್ಥಳಾವಕಾಶವಿಲ್ಲ. ಸ್ಥಳಾವಕಾಶವನ್ನು ಮುಕ್ತಗೊಳಿಸಿ.</translation>
 <translation id="954520015070501466">30ನಿಮಿ</translation>
+<translation id="954786879461589145"><ph name="USER" /> ಅವರು ಮಾರ್ಪಾಡು ಮಾಡಿದ್ದಾರೆ</translation>
 <translation id="974545358917229949"><ph name="QUERY" /> ಕುರಿತಾದ <ph name="RESULT_COUNT" /> ಫಲಿತಾಂಶಗಳನ್ನು ಪ್ರದರ್ಶಿಸಲಾಗುತ್ತಿದೆ</translation>
 <translation id="981011780479609956">ಯಾವುದೇ ಅಂತಿಮ ದಿನಾಂಕವಿಲ್ಲ</translation>
 <translation id="98120814841227350">ಡಾಕ್ಯುಮೆಂಟ್‌ನ ಅಂತ್ಯಕ್ಕೆ ಹೋಗಿ</translation>

@@ -111,6 +111,7 @@
 <translation id="1078037449555275327">ChromeVox की सेटिंग</translation>
 <translation id="1079285777677001938">यह मुमकिन है कि कुछ साइटों पर सुविधाएं काम न करें.</translation>
 <translation id="1079766198702302550">कैमरा कभी भी ब्लॉक करने के लिए एक्सेस करें</translation>
+<translation id="1080365971383768617">आपके सभी डिवाइसों पर पासवर्ड</translation>
 <translation id="1081956462909987459">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> - 1 टैब}one{<ph name="GROUP_TITLE" /> - # टैब}other{<ph name="GROUP_TITLE" /> - # टैब}}</translation>
 <translation id="1082214733466244292">आपके एडमिन ने इस डिवाइस के कुछ फ़ंक्शन को ब्लॉक कर दिया है</translation>
 <translation id="1082398631555931481"><ph name="THIRD_PARTY_TOOL_NAME" /> आपकी Chrome सेटिंग को उनकी मूल डिफ़ॉल्ट स्थिति पर वापस लाना चाहता है. इससे आपका होम पेज, नया टैब पेज और सर्च इंजन रीसेट हो जाएंगे, आपके एक्सटेंशन बंद हो जाएंगे और सभी टैब अनपिन हो जाएंगे. इससे कुछ समय के लिए सेव किया गया डेटा और कैश मेमोरी का डेटा, जैसे कुकी, सामग्री और साइट डेटा भी हट जाएंगे.</translation>
@@ -5156,6 +5157,7 @@
 <translation id="4953808748584563296">डिफ़ॉल्ट नारंगी अवतार</translation>
 <translation id="4955707703665801001"><ph name="FEATURE_NAME" /> के लिए, 'किसको दिखे' सेटिंग</translation>
 <translation id="4955710816792587366">अनलॉक करने के लिए अपना पिन चुनें</translation>
+<translation id="4956847150856741762">1</translation>
 <translation id="4959262764292427323">पासवर्ड आपके Google खाते में सेव किए जाते हैं ताकि आप किसी भी डिवाइस पर उनका इस्तेमाल कर सकें</translation>
 <translation id="4960020053211143927">कुछ ऐप्लिकेशन पर काम नहीं करती</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
@@ -8253,7 +8255,6 @@
 <translation id="7424153922653300265">एनर्जी सेवर चालू किया गया</translation>
 <translation id="7424818322350938336">नेटवर्क जोड़ा गया</translation>
 <translation id="7425037327577270384">लिखने में मेरी मदद करें</translation>
-<translation id="7425292366411265498">आपके एडमिन ने जो एक्सटेंशन इंस्टॉल किए हैं वे अब भी साइटों का कॉन्टेंट पढ़ सकते हैं और उनमें बदलाव कर सकते हैं</translation>
 <translation id="7427315069950454694">आज की यादें</translation>
 <translation id="7427348830195639090">पेजभूमि पेज: <ph name="BACKGROUND_PAGE_URL" /></translation>
 <translation id="7427798576651127129"><ph name="DEVICE_NAME" /> से कॉल करें</translation>

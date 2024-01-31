@@ -111,6 +111,7 @@
 <translation id="1078037449555275327">ChromeVoxના સેટિંગ</translation>
 <translation id="1079285777677001938">સુવિધાઓ કેટલીક સાઇટ પર કાર્ય ન કરે એવું બની શકે છે.</translation>
 <translation id="1079766198702302550">હંમેશા કૅમેરાનો ઍક્સેસ બ્લૉક કરો</translation>
+<translation id="1080365971383768617">તમારા બધા ડિવાઇસમાંના પાસવર્ડ</translation>
 <translation id="1081956462909987459">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> - 1 ટૅબ}one{<ph name="GROUP_TITLE" /> - # ટૅબ}other{<ph name="GROUP_TITLE" /> - # ટૅબ}}</translation>
 <translation id="1082214733466244292">તમારા વ્યવસ્થાપકે આ ડિવાઇસ માટેની અમુક કાર્યક્ષમતા બ્લૉક કરી છે</translation>
 <translation id="1082398631555931481"><ph name="THIRD_PARTY_TOOL_NAME" />, તમારા Chrome સેટિંગને એના મૂળ ડિફૉલ્ટ પર પહેલાં જેવું કરવા માગે છે. આ તમારા હોમપેજ, નવા ટૅબ પેજ અને શોધ એન્જિનને રીસેટ કરશે, તમારા એક્સ્ટેન્શનને બંધ કરશે અને તમામ ટૅબને અનપિન કરશે. તે બીજા અસ્થાયી અને કૅશ મેમરીના ડેટા જેમ કે કુકી, કન્ટેન્ટ અને સાઇટ ડેટાને પણ સાફ કરશે.</translation>
@@ -5155,6 +5156,7 @@
 <translation id="4953808748584563296">ડિફોલ્ટ નારંગી અવતાર</translation>
 <translation id="4955707703665801001"><ph name="FEATURE_NAME" /> માટે દૃશ્યતા</translation>
 <translation id="4955710816792587366">તમારો પિન પસંદ કરો</translation>
+<translation id="4956847150856741762">1</translation>
 <translation id="4959262764292427323">પાસવર્ડ તમારા Google એકાઉન્ટમાં સાચવવામાં આવે છે, જેથી તમે કોઈપણ ઉપકરણ પર તેનો ઉપયોગ કરી શકો</translation>
 <translation id="4960020053211143927">અમુક ઍપ દ્વારા સપોર્ટ આપવામાં આવતો નથી</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
@@ -8264,7 +8266,6 @@ USB ડિવાઇસ</translation>
 <translation id="7424153922653300265">એનર્જી સેવર મોડ ચાલુ કર્યો</translation>
 <translation id="7424818322350938336">નેટવર્ક ઉમેર્યું</translation>
 <translation id="7425037327577270384">લખવામાં મારી સહાય કરો</translation>
-<translation id="7425292366411265498">તમારા ઍડમિનિસ્ટ્રેટર દ્વારા ઇન્સ્ટૉલ કરેલા એક્સ્ટેન્શન હજી પણ સાઇટ વાંચી અને બદલી શકે છે</translation>
 <translation id="7427315069950454694">તમારી આજની યાદગીરીઓ</translation>
 <translation id="7427348830195639090">બૅકગ્રાઉન્ડ પેજ: <ph name="BACKGROUND_PAGE_URL" /></translation>
 <translation id="7427798576651127129"><ph name="DEVICE_NAME" /> તરફથી કૉલ</translation>

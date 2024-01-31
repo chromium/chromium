@@ -12,6 +12,7 @@
 <translation id="1024111578869940408">Mae ymosodwyr yn dynwared gwefannau weithiau, gan wneud newidiadau sy'n anodd eu gweld yn y cyfeiriad gwe.</translation>
 <translation id="1024913885641459127">Adolygiadau Cynnyrch a Chymhariaethau Prisiau</translation>
 <translation id="1028781062521375153">Gweld y manylion</translation>
+<translation id="102916930470544692">Cod pas</translation>
 <translation id="1030706264415084469">Mae <ph name="URL" /> eisiau storio data mawr ar eich dyfais yn barhaol</translation>
 <translation id="1030949145805074938">{COUNT,plural, =0{Dim}=1{O 1 wefan. Yn eich allgofnodi o'r rhan fwyaf o wefannau. }two{O # wefan. Yn eich allgofnodi o'r rhan fwyaf o wefannau. }few{O # gwefan. Yn eich allgofnodi o'r rhan fwyaf o wefannau. }many{O # gwefan. Yn eich allgofnodi o'r rhan fwyaf o wefannau. }other{O # gwefan. Yn eich allgofnodi o'r rhan fwyaf o wefannau. }}</translation>
 <translation id="1033329911862281889">Nid yw'r modd Anhysbys yn eich gwneud yn anweledig ar-lein:
@@ -3179,6 +3180,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="7251437084390964440">Nid yw ffurfweddiad y rhwydwaith yn cydymffurfio â safon ONC. Ni chaniateir mewnforio rhannau o'r ffurfweddiad.
 Manylion ychwanegol:
 <ph name="DEBUG_INFO" /></translation>
+<translation id="7251635775446614726">Meddai eich gweinyddwr: "<ph name="CUSTOM_MESSAGE" />"</translation>
 <translation id="7256634549594854023">Hambwrdd Cefn</translation>
 <translation id="725866823122871198">Ni ellir sefydlu cysylltiad preifat â <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> oherwydd bod dyddiad ac amser eich cyfrifiadur (<ph name="DATE_AND_TIME" />) yn anghywir.</translation>
 <translation id="7260075294900977274">Ffolder smart newydd sy'n eich helpu i gadw'ch holl dudalennau siopa mewn un lle, olrhain prisiau yn awtomatig, cael mewnwelediadau pris, a rhagor</translation>

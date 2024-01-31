@@ -25,6 +25,7 @@
 <translation id="1617663976202781617">Gögn úr Chromium samstillingu</translation>
 <translation id="1647558790457890304">Chromium-stillingar</translation>
 <translation id="164952285225495380">Þegar er búið að rekja þennan pakka í Chromium.</translation>
+<translation id="1707458603865303524">Notaðu Chromium þegar þú ýtir á tengla í skilaboðum eða öðrum forritum.</translation>
 <translation id="1722370509450468186">Aðgangsorðið þitt verður vistað á reikningnum þínum (<ph name="EMAIL" />).</translation>
 <translation id="1736662517232558588">Hreinsaði gögn Chromium</translation>
 <translation id="1791845338122684020">Opnar Chromium-ferilssíðuna þína</translation>
@@ -95,6 +96,7 @@ Til að skoða fleiri stillingar sem nota gögn til að bæta Chromium-upplifuni
 <translation id="3805899903892079518">Chromium hefur ekki aðgang að myndunum þínum eða myndskeiðum. Veittu aðgang í iOS Settings &gt; Privacy &gt; Photos.</translation>
 <translation id="3827545470516145620">Þú er með staðlaða öryggisvörn í þessu tæki</translation>
 <translation id="3833326979834193417">Chromium keyrir öryggisathugun sjálfkrafa daglega til að verja þig gegn öryggisbrotum, ótraustum vefsvæðum og fleiru. Þú færð frekari upplýsingar um öryggisathugun í stillingunum.</translation>
+<translation id="3855938650519180865">Nýjungar í Chromium</translation>
 <translation id="3886689467633467988">Skráðu þig inn á þetta vefsvæði og Chromium til að fá bókamerkin þín og fleira í öll tækin þín.</translation>
 <translation id="394413318816989199">Dulkóðun aðgangsorða felur ekki í sér greiðslumáta og vefföng.
 
@@ -107,6 +109,7 @@ Til að breyta þessari stillingu skaltu <ph name="BEGIN_LINK" />hreinsa Chromiu
 <translation id="4106512142782407609">Skráð(ur) inn sem <ph name="EMAIL" />.
 
 Gögnin þín eru dulkóðuð með aðgangsorði. Sláðu það inn til að nota og vista Chromium-gögn á Google-reikningnum þínum.</translation>
+<translation id="4118287192800900567">Chromium-ráð: Skráðu þig inn í Chromium</translation>
 <translation id="4195557071150719219">Sjá nýlega flipa í Chromium</translation>
 <translation id="4200712796753248893">Notaðu Chromium-aðgerðir í iOS</translation>
 <translation id="420541179527342563">Til að slökkva á Lockdown Mode í Chromium þarftu að slökkva á því í iPad-tækinu þínu.</translation>
@@ -158,6 +161,7 @@ Gögnin þín eru dulkóðuð með aðgangsorði. Sláðu það inn til að nota
 <translation id="5688047395118852662">Þetta spjald sýnir þér tillögur um hvernig þú getur nýtt þér Chromium til fulls.</translation>
 <translation id="5700709190537129682">Chromium getur ekki athugað aðgangsorðin þín</translation>
 <translation id="5777187867430702742">Chromium síða</translation>
+<translation id="584239279770005676">Chromium-ráð: Notaðu Chromium sjálfkrafa</translation>
 <translation id="584550191241316896">Innskráning í Chromium virk</translation>
 <translation id="5889847953983052353">Þegar kveikt er á þessu:
 <ph name="BEGIN_INDENT" />  • Hjálpaðu til við að bæta Chromium fyrir fólk sem notar það eins og þú.<ph name="END_INDENT" />
@@ -172,6 +176,7 @@ Hafðu í huga:
 <translation id="5951593919357934226">Fáðu sem mest út úr Chromium.</translation>
 <translation id="5983312940147103417">Bættu Chromium</translation>
 <translation id="5985102273857091344">Veldu „Chromium“.</translation>
+<translation id="5985254578475526217">Til að fá tilkynningar frá Chromium skaltu kveikja á tilkynningum í iOS-stillingum.</translation>
 <translation id="6062449165341879460"><ph name="DOMAIN" /> fyrirtækisins þíns fær aðgang að Chromium gögnunum þínum, bókamerkjum, ferli, aðgangsorðum og öðrum stillingum sem þú geymir á þessum reikningi. Þegar þú skráir þig út verður gögnunum þínum eytt úr þessu tæki.  Hins vegar verða gögnin þín geymd á stýrða Google reikningnum þínum og verða aðgengileg fyrirtækinu þínu. Fyrirtækið þitt getur líka stillt notendareglur sem eru sértækar fyrir reikninginn þinn og geta breytt virkni Chromium.</translation>
 <translation id="6093744543579359059">Stjórna aðgangsorðum í Chromium</translation>
 <translation id="6104024151682120539">Opna í Chromium</translation>
@@ -180,6 +185,7 @@ Hafðu í huga:
 1. Opnaðu Stillingar
 2. Ýttu á „Sjálfgefið vafraforrit“
 3. Veldu Chromium.</translation>
+<translation id="6132149203299792222">Skráðu þig inn á Google-reikninginn þinn til að samstilla aðgangsorð, bókamerki og fleira.</translation>
 <translation id="6154098560469640583">Notaðu Chromium þegar þú ýtir á tengla í skilaboðum, skjölum og öðrum forritum.</translation>
 <translation id="6170619162539716595">Veittu Chromium heimild til að nota Google-kort til að sýna þér leiðarlýsingu og staðbundnar upplýsingar um heimilisföng sem greinast.</translation>
 <translation id="6175967839221456271">Deila Chromium</translation>
@@ -257,6 +263,7 @@ Aðeins einstaklingar sem eru með aðgangsorðið þitt geta lesið dulkóðuð
 <translation id="8234150821523419638">Opnaðu valmynd Chromium</translation>
 <translation id="8235427517854598594">Gera Chromium að sjálfgefnum vafra?</translation>
 <translation id="8240981428553046115">Chromium gat ekki leitað að uppfærslum. Reyndu aftur síðar.</translation>
+<translation id="8254729934443216898">Kannaðu nýja eiginleika sem hjálpa þér að fá sem mest út úr Chromium.</translation>
 <translation id="8303579360494576778">Stjórna greiðslumátum í Chromium</translation>
 <translation id="830951810931292870">Opnar vefslóðir sem eru slegnar inn í Chromium í huliðsstillingu</translation>
 <translation id="8386869251364507178">Chromium-aðgerðir</translation>

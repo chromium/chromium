@@ -111,6 +111,7 @@
 <translation id="1078037449555275327">Настройки на ChromeVox</translation>
 <translation id="1079285777677001938">Функциите в някои сайтове може да не работят.</translation>
 <translation id="1079766198702302550">Достъпът до камерата да се блокира винаги</translation>
+<translation id="1080365971383768617">Паролите са достъпни на всичките ви устройства</translation>
 <translation id="1081956462909987459">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> – 1 раздел}other{<ph name="GROUP_TITLE" /> – # раздела}}</translation>
 <translation id="1082214733466244292">Администраторът ви е блокирал някои от функциите на това устройство</translation>
 <translation id="1082398631555931481"><ph name="THIRD_PARTY_TOOL_NAME" /> иска да възстанови настройките ви на Chrome към първоначалните им стандартни стойности. Това ще нулира началната ви страница, новия раздел в браузъра и търсещата машина, ще деактивира разширенията ви и ще освободи всички раздели. Също така ще се изчистят други временни и кеширани данни, като „бисквитки“, съдържание и информация за сайтове.</translation>
@@ -5170,6 +5171,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4953808748584563296">Стандартен оранжев аватар</translation>
 <translation id="4955707703665801001">Видимост за „<ph name="FEATURE_NAME" />“</translation>
 <translation id="4955710816792587366">Изберете ПИН код</translation>
+<translation id="4956847150856741762">1</translation>
 <translation id="4959262764292427323">Паролите се запазват в профила ви в Google, за да можете да ги използвате на всяко устройство</translation>
 <translation id="4960020053211143927">Не се поддържа от някои приложения</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> – <ph name="PROFILE_NAME" /></translation>
@@ -8276,7 +8278,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="7424153922653300265">Режимът за икономия на енергия е включен</translation>
 <translation id="7424818322350938336">Мрежата е добавена</translation>
 <translation id="7425037327577270384">Помощ при писане</translation>
-<translation id="7425292366411265498">Инсталираните от администратора ви разширения пак могат да четат и променят сайтовете</translation>
 <translation id="7427315069950454694">спомените ви за днес</translation>
 <translation id="7427348830195639090">Фонова страница: <ph name="BACKGROUND_PAGE_URL" /></translation>
 <translation id="7427798576651127129">Обаждане от <ph name="DEVICE_NAME" /></translation>

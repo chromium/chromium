@@ -111,6 +111,7 @@
 <translation id="1078037449555275327">ChromeVox sozlamalari</translation>
 <translation id="1079285777677001938">Ayrim saytlardagi funksiyalar ishlamay qolishi mumkin.</translation>
 <translation id="1079766198702302550">Kameraga ruxsat har doim ta’qiqlansin</translation>
+<translation id="1080365971383768617">Barcha qurlimalardagi parollar</translation>
 <translation id="1081956462909987459">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> – 1 ta varaq}other{<ph name="GROUP_TITLE" /> – # ta varaq}}</translation>
 <translation id="1082214733466244292">Administrator bu qurilma uchun ayrim funksiyalarni bloklagan</translation>
 <translation id="1082398631555931481"><ph name="THIRD_PARTY_TOOL_NAME" /> brauzerning dastlabki sozlamalarini tiklamoqchi. Bosh sahifa, tezkor havolalar, qidiruv tizimi kabi sozlamalar qayta tayinlanadi, kengaytmalar o‘chirib qo‘yiladi va ochiq sahifalar yopiladi. Bundan tashqari, barcha cookie-fayllar kabi vaqtinchalik va keshlangan sayt ma’lumotlari o‘chiriladi.</translation>
@@ -5165,6 +5166,7 @@ Kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="4953808748584563296">Standart to‘q sariq avatar</translation>
 <translation id="4955707703665801001"><ph name="FEATURE_NAME" /> koʻrinuvchanligi</translation>
 <translation id="4955710816792587366">PIN kod tanlang</translation>
+<translation id="4956847150856741762">1</translation>
 <translation id="4959262764292427323">Google hisobingizga saqlangan parollardan har qanday qurilmada foydalanishingiz mumkin.</translation>
 <translation id="4960020053211143927">Ayrim ilovalarda ishlamaydi</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
@@ -8275,7 +8277,6 @@ Yana # ta oshkor qilingan parollaringiz bor. Google Parollar menejeri ularni hoz
 <translation id="7424153922653300265">Energiya tejalishi yoniq</translation>
 <translation id="7424818322350938336">Tarmoq kiritildi</translation>
 <translation id="7425037327577270384">Yozishda yordam ber</translation>
-<translation id="7425292366411265498">Administrator oʻrnatgan kengaytmalar saytlarni oʻqishi va oʻzgartirishi mumkin</translation>
 <translation id="7427315069950454694">bugun uchun xotiralaringiz</translation>
 <translation id="7427348830195639090">Orqa fon sahifasi: <ph name="BACKGROUND_PAGE_URL" /></translation>
 <translation id="7427798576651127129"><ph name="DEVICE_NAME" /> orqali telefon qilish</translation>

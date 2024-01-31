@@ -565,6 +565,7 @@ Consulta les instruccions del teu motor de cerca per suprimir l'historial de cer
 <translation id="3929457972718048006">Adreces</translation>
 <translation id="3948600256434252210">Pots lliscar cap a la dreta per navegar d'incògnit.</translation>
 <translation id="3955822496205734389">Tens contrasenyes poc segures.</translation>
+<translation id="3958312024468322930">Arrossega-la a la base que hi ha a la part inferior de la pantalla d'inici</translation>
 <translation id="3959736869653157332">Menú → Nova pestanya d'incògnit</translation>
 <translation id="3962326069546168954">Desa</translation>
 <translation id="3967822245660637423">S'ha completat la baixada</translation>
@@ -818,7 +819,6 @@ Consulta les instruccions del teu motor de cerca per suprimir l'historial de cer
 <translation id="5245322853195994030">Cancel·la la sincronització</translation>
 <translation id="5248640482715684545">Aquest lloc web està provant d'obrir una altra aplicació.</translation>
 <translation id="5256661381001734217">Aquest lloc web està provant d'obrir una aplicació.  Aquesta acció farà que surtis del mode d'incògnit.</translation>
-<translation id="5266104675489036658">Afegeix una pestanya a un grup nou</translation>
 <translation id="5271265092610673171">{count,plural, =1{Un camp obligatori és buit. Emplena'l abans de desar.}other{Alguns camps obligatoris són buits. Emplena'ls abans de desar.}}</translation>
 <translation id="5271549068863921519">Desa la contrasenya</translation>
 <translation id="5283494734135414249">Toca la drecera que es mostra a sota de la barra d'adreces.</translation>
@@ -1462,6 +1462,7 @@ Els llocs web poden fer servir galetes per veure la teva activitat de navegació
 <translation id="8620640915598389714">Edita</translation>
 <translation id="8624447588354561276">Número de paquet</translation>
 <translation id="8624753446837753970">Defineix la posició</translation>
+<translation id="8625706492572042370">Edita la pantalla d'inici</translation>
 <translation id="8626393685701737946">Pots canviar la visualització predeterminada dels llocs web a la visualització per a ordinadors a Configuració &gt; Configuració del contingut</translation>
 <translation id="8636825310635137004">Activa la sincronització per accedir a les pestanyes dels altres dispositius que tinguis.</translation>
 <translation id="8637431369725868556">Obtén protecció contra llocs web perillosos.</translation>

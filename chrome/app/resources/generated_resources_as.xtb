@@ -111,6 +111,7 @@
 <translation id="1078037449555275327">ChromeVoxৰ ছেটিং</translation>
 <translation id="1079285777677001938">কিছুমান ছাইটত সুবিধাসমূহে কাম নকৰিবও পাৰে।</translation>
 <translation id="1079766198702302550">সদায় কেমেৰাৰ এক্সেছ অৱৰোধ কৰক</translation>
+<translation id="1080365971383768617">আপোনাৰ আটাইবোৰ ডিভাইচত পাছৱৰ্ড</translation>
 <translation id="1081956462909987459">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> - ১ টা টেব}one{<ph name="GROUP_TITLE" /> - # টা টেব}other{<ph name="GROUP_TITLE" /> - # টা টেব}}</translation>
 <translation id="1082214733466244292">আপোনাৰ প্ৰশাসকে এই ডিভাইচটোৰ বাবে কিছু কাৰ্যকাৰিতা অৱৰোধ কৰিছে</translation>
 <translation id="1082398631555931481"><ph name="THIRD_PARTY_TOOL_NAME" />এ আপোনাৰ Chromeৰ ছেটিংসমূহ সেইটোৰ প্ৰকৃত ডিফ'ল্টলৈ পুনৰুদ্ধাৰ কৰিব বিচাৰে। এইটোৱে আপোনাৰ গৃহপৃষ্ঠা, নতুন টেবযুক্ত পৃষ্ঠা আৰু সন্ধান ইঞ্জিন ৰিছেট কৰিব, আপোনাৰ এক্সটেনশ্বনবোৰ অক্ষম কৰিব আৰু সকলো টেব আনপিন কৰিব। এইটোৱে লগতে কুকি, সমল আৰু ছাইটৰ ডেটাৰ দৰে অন্য সাময়িক আৰু কেশ্ব ডেটা মচিব।</translation>
@@ -8276,7 +8277,6 @@
 <translation id="7424153922653300265">শক্তি সঞ্চয়কাৰী অন কৰা হ’ল</translation>
 <translation id="7424818322350938336">নেটৱৰ্ক যোগ দিয়া হৈছে</translation>
 <translation id="7425037327577270384">মোক লিখাত সহায় কৰক</translation>
-<translation id="7425292366411265498">আপোনাৰ প্ৰশাসকে ইনষ্টল কৰা এক্সটেনশ্বনে ছাইটসমূহ তথাপি পঢ়িব আৰু সলনি কৰিব পাৰে</translation>
 <translation id="7427315069950454694">আজিৰ বাবে আপোনাৰ স্মৃতি</translation>
 <translation id="7427348830195639090">নেপথ্যৰ পৃষ্ঠা: <ph name="BACKGROUND_PAGE_URL" /></translation>
 <translation id="7427798576651127129"><ph name="DEVICE_NAME" />ৰ পৰা অহা কল</translation>

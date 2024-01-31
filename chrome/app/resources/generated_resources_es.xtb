@@ -111,6 +111,7 @@
 <translation id="1078037449555275327">Configuración de ChromeVox</translation>
 <translation id="1079285777677001938">Es posible que ciertas funciones de algunos sitios no estén operativas.</translation>
 <translation id="1079766198702302550">Bloquear siempre el acceso a la cámara</translation>
+<translation id="1080365971383768617">Contraseñas en todos tus dispositivos</translation>
 <translation id="1081956462909987459">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> - 1 pestaña}other{<ph name="GROUP_TITLE" /> - # pestañas}}</translation>
 <translation id="1082214733466244292">Tu administrador ha bloqueado algunas funciones para este dispositivo</translation>
 <translation id="1082398631555931481"><ph name="THIRD_PARTY_TOOL_NAME" /> quiere restablecer la configuración predeterminada original de Chrome. Se restablecerá la página principal, la página Nueva pestaña y el motor de búsqueda. Asimismo, se inhabilitarán las extensiones y no se fijará ninguna pestaña. También se borrarán los datos temporales y los almacenados en la memoria caché, como las cookies, el contenido y los datos de sitios.</translation>
@@ -5157,6 +5158,7 @@ Usa Ctrl + Alt + Reducir el brillo para reducir la pantalla.</translation>
 <translation id="4953808748584563296">Avatar naranja predeterminado</translation>
 <translation id="4955707703665801001">Visibilidad de <ph name="FEATURE_NAME" /></translation>
 <translation id="4955710816792587366">Elige un PIN</translation>
+<translation id="4956847150856741762">1</translation>
 <translation id="4959262764292427323">Las contraseñas se guardan en tu cuenta de Google para que puedas utilizarlas en cualquier dispositivo</translation>
 <translation id="4960020053211143927">No compatible con algunas aplicaciones</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
@@ -8262,7 +8264,6 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="7424153922653300265">Ahorro de energía activado</translation>
 <translation id="7424818322350938336">Red añadida</translation>
 <translation id="7425037327577270384">Ayúdame a escribir</translation>
-<translation id="7425292366411265498">Las extensiones instaladas por tu administrador aún pueden leer y cambiar los sitios</translation>
 <translation id="7427315069950454694">tus recuerdos de hoy</translation>
 <translation id="7427348830195639090">Página en segundo plano: <ph name="BACKGROUND_PAGE_URL" /></translation>
 <translation id="7427798576651127129">Llamar desde <ph name="DEVICE_NAME" /></translation>

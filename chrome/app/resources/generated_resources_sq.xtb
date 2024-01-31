@@ -111,6 +111,7 @@
 <translation id="1078037449555275327">Cilësimet e ChromeVox</translation>
 <translation id="1079285777677001938">Veçoritë në disa sajte mund të mos funksionojnë.</translation>
 <translation id="1079766198702302550">Blloko gjithmonë qasjen te kamera</translation>
+<translation id="1080365971383768617">Fjalëkalimet në të gjitha pajisjet e tua</translation>
 <translation id="1081956462909987459">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> - 1 skedë}other{<ph name="GROUP_TITLE" /> - # skeda}}</translation>
 <translation id="1082214733466244292">Administratori yt ka bllokuar disa funksionalitete për këtë pajisje</translation>
 <translation id="1082398631555931481"><ph name="THIRD_PARTY_TOOL_NAME" /> dëshiron të restaurojë cilësimet e Chrome në parazgjedhjet origjinale. Kjo do të rivendosë faqen bazë, faqen e skedës së re dhe motorin e kërkimit, do të çaktivizojë shtesa dhe do të zhgozhdojë të gjitha skedat. Ajo do të pastrojë po ashtu të dhënat e tjera të përkohshme dhe në memorien specifike, si kukit, përmbajtjet dhe të dhënat e sajtit.</translation>
@@ -5155,6 +5156,7 @@ Përdor Ctrl + Alt + "Ul ndriçimin" për ta zvogëluar.</translation>
 <translation id="4953808748584563296">Avatari i parazgjedhur portokalli</translation>
 <translation id="4955707703665801001">Dukshmëria e "<ph name="FEATURE_NAME" />"</translation>
 <translation id="4955710816792587366">Zgjidh kodin PIN</translation>
+<translation id="4956847150856741762">1</translation>
 <translation id="4959262764292427323">Fjalëkalimet ruhen në llogarinë tënde të Google që të mund t'i përdorësh në çdo pajisje</translation>
 <translation id="4960020053211143927">Nuk mbështetet nga disa aplikacione</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
@@ -8259,7 +8261,6 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="7424153922653300265">"Kursyesi i energjisë" u aktivizua</translation>
 <translation id="7424818322350938336">Rrjeti u shtua</translation>
 <translation id="7425037327577270384">Më ndihmo të shkruaj</translation>
-<translation id="7425292366411265498">Shtesat e instaluara nga administratori yt mund të lexojnë dhe të ndryshojnë përsëri sajtet</translation>
 <translation id="7427315069950454694">kujtimet e tua për sot</translation>
 <translation id="7427348830195639090">Faqja në sfond: <ph name="BACKGROUND_PAGE_URL" /></translation>
 <translation id="7427798576651127129">Telefonatë nga <ph name="DEVICE_NAME" /></translation>

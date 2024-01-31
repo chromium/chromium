@@ -111,6 +111,7 @@
 <translation id="1078037449555275327">Настройки ChromeVox</translation>
 <translation id="1079285777677001938">Функции некоторых сайтов могут стать недоступными</translation>
 <translation id="1079766198702302550">Всегда блокировать доступ к камере</translation>
+<translation id="1080365971383768617">Пароли на всех ваших устройствах</translation>
 <translation id="1081956462909987459">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> – 1 вкладка}one{<ph name="GROUP_TITLE" /> – # вкладка}few{<ph name="GROUP_TITLE" /> – # вкладки}many{<ph name="GROUP_TITLE" /> – # вкладок}other{<ph name="GROUP_TITLE" /> – # вкладки}}</translation>
 <translation id="1082214733466244292">Некоторые функции этого устройства заблокированы администратором</translation>
 <translation id="1082398631555931481"><ph name="THIRD_PARTY_TOOL_NAME" /> предлагает восстановить настройки Chrome по умолчанию. В результате произойдет сброс настроек стартовой страницы, страницы быстрого доступа и поисковой системы, а также отключение расширений и открепление всех вкладок. Кроме того, все временные и кешированные данные (такие как файлы cookie, контент и данные сайтов) будут удалены.</translation>
@@ -5159,6 +5160,7 @@
 <translation id="4953808748584563296">Аватар по умолчанию (оранжевый)</translation>
 <translation id="4955707703665801001">Доступ (<ph name="FEATURE_NAME" />)</translation>
 <translation id="4955710816792587366">Установите PIN-код</translation>
+<translation id="4956847150856741762">1</translation>
 <translation id="4959262764292427323">Пароли сохраняются в аккаунте Google и будут доступны на любом устройстве.</translation>
 <translation id="4960020053211143927">Не поддерживается некоторыми приложениями</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> (<ph name="PROFILE_NAME" />)</translation>
@@ -8270,7 +8272,6 @@
 <translation id="7424153922653300265">Режим энергосбережения включен</translation>
 <translation id="7424818322350938336">Сеть добавлена</translation>
 <translation id="7425037327577270384">Генератор текстов</translation>
-<translation id="7425292366411265498">Расширения, установленные администратором, всё ещё могут считывать и изменять данные сайтов</translation>
 <translation id="7427315069950454694">воспоминания на сегодня</translation>
 <translation id="7427348830195639090">Фоновая страница: <ph name="BACKGROUND_PAGE_URL" /></translation>
 <translation id="7427798576651127129">Позвонить с устройства "<ph name="DEVICE_NAME" />"</translation>

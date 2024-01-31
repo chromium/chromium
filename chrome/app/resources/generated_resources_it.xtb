@@ -111,6 +111,7 @@
 <translation id="1078037449555275327">Impostazioni di ChromeVox</translation>
 <translation id="1079285777677001938">Le funzionalità su alcuni siti potrebbero non funzionare correttamente.</translation>
 <translation id="1079766198702302550">Impedisci sempre l'accesso alla webcam</translation>
+<translation id="1080365971383768617">Password su tutti i tuoi dispositivi</translation>
 <translation id="1081956462909987459">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> - 1 scheda}other{<ph name="GROUP_TITLE" /> - # schede}}</translation>
 <translation id="1082214733466244292">Il tuo amministratore ha bloccato alcune funzionalità per questo dispositivo</translation>
 <translation id="1082398631555931481"><ph name="THIRD_PARTY_TOOL_NAME" /> vuole ripristinare le impostazioni predefinite originali di Chrome. Questa operazione comporta la reimpostazione di pagina iniziale, pagina Nuova scheda e motore di ricerca, oltre alla disattivazione delle estensioni e allo sblocco di tutte le schede. Verranno inoltre cancellati altri dati temporanei e memorizzati nella cache, come cookie e dati relativi a contenuti e siti.</translation>
@@ -5157,6 +5158,7 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="4953808748584563296">Avatar arancione predefinito</translation>
 <translation id="4955707703665801001">Visibilità della funzionalità <ph name="FEATURE_NAME" /></translation>
 <translation id="4955710816792587366">Scegli il PIN</translation>
+<translation id="4956847150856741762">1</translation>
 <translation id="4959262764292427323">Le password vengono salvate nel tuo Account Google affinché tu possa usarle su qualsiasi dispositivo</translation>
 <translation id="4960020053211143927">Non supportata da alcune app</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
@@ -8259,7 +8261,6 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7424153922653300265">Risparmio energetico attivo</translation>
 <translation id="7424818322350938336">La rete è stata aggiunta</translation>
 <translation id="7425037327577270384">Aiutami a scrivere</translation>
-<translation id="7425292366411265498">Le estensioni installate dall'amministratore possono comunque leggere e modificare i siti</translation>
 <translation id="7427315069950454694">i tuoi ricordi per oggi</translation>
 <translation id="7427348830195639090">Pagina di sfondo: <ph name="BACKGROUND_PAGE_URL" /></translation>
 <translation id="7427798576651127129">Chiamata da <ph name="DEVICE_NAME" /></translation>

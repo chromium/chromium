@@ -12,6 +12,7 @@
 <translation id="1024111578869940408">Napadalci včasih poskušajo posnemati spletna mesta, tako da skoraj neopazno spremenijo spletni naslov.</translation>
 <translation id="1024913885641459127">Ocene izdelkov in primerjava cen</translation>
 <translation id="1028781062521375153">Ogled podrobnosti</translation>
+<translation id="102916930470544692">Ključ za dostop</translation>
 <translation id="1030706264415084469"><ph name="URL" /> želi trajno shranjevati velike količine podatkov v vaši napravi</translation>
 <translation id="1030949145805074938">{COUNT,plural, =0{Brez}=1{1 spletno mesto. Odjavi vas iz večine spletnih mest. }one{# spletno mesto. Odjavi vas iz večine spletnih mest. }two{# spletni mesti. Odjavi vas iz večine spletnih mest. }few{# spletna mesta. Odjavi vas iz večine spletnih mest. }other{# spletnih mest. Odjavi vas iz večine spletnih mest. }}</translation>
 <translation id="1033329911862281889">V anonimnem načinu niste nevidni v spletu:
@@ -397,6 +398,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="1711528724596764268">Strojno učenje in umetna inteligenca</translation>
 <translation id="1712552549805331520"><ph name="URL" /> želi trajno shraniti podatke v lokalnem računalniku</translation>
 <translation id="1713628304598226412">Pladenj 2</translation>
+<translation id="1713819065634160212">Uporaba in shranjevanje naslovov iz računa Google</translation>
 <translation id="1714807406136741351">Način brskanja, preklopite lahko v način za obrazce in uporabite puščico levo/desno za pregled sprememb cen na grafikonu</translation>
 <translation id="1717218214683051432">Tipala gibanja</translation>
 <translation id="1717494416764505390">Nabiralnik 3</translation>
@@ -1087,6 +1089,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="3120807611504813890">Envelope (Lightweight)</translation>
 <translation id="3121994479408824897">Odpri <ph name="DOMAIN" /></translation>
 <translation id="3126023634486644099">Labels (Permanent)</translation>
+<translation id="3133565499688974786"><ph name="SEARCH_ENGINE_NAME" /> je zdaj vaš privzeti iskalnik</translation>
 <translation id="3140646734028448730">Poslovne storitve</translation>
 <translation id="3141093262818886744">Vseeno odpri</translation>
 <translation id="3141641372357166056">Brez odločitve glede privolitve</translation>
@@ -1510,6 +1513,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="3943857333388298514">Prilepi</translation>
 <translation id="3946209740501886391">Vedno vprašaj na tem spletnem mestu</translation>
 <translation id="3948588869002647271">Ta aplikacija manjka ali je poškodovana</translation>
+<translation id="3949297482798028668">Lepljenje te vsebine sem je blokiral skrbnik.</translation>
 <translation id="3949571496842715403">Strežniku ni uspelo dokazati, da je <ph name="DOMAIN" />; njegovo varnostno potrdilo ne določa nadomestnih imen SAN (Subject Alternative Name). Razlog za to je morda napačna konfiguracija ali napadalčevo prestrezanje povezave.</translation>
 <translation id="3949601375789751990">Tu je prikazana zgodovina brskanja</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
@@ -1926,6 +1930,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="4764680219299728632">Štedilniki, kuhalne plošče in pečice</translation>
 <translation id="4764776831041365478">Spletna stran na naslovu <ph name="URL" /> morda začasno ne deluje ali pa je trajno premaknjena na novi spletni naslov.</translation>
 <translation id="4766713847338118463">Dvojno spenjanje spodaj</translation>
+<translation id="4768864802656530630">Podrobni sistemski dnevniki. <ph name="BEGIN_LINK" />Več o tem<ph name="END_LINK" /></translation>
 <translation id="4771973620359291008">Prišlo je do neznane napake.</translation>
 <translation id="4774055414220872623">Potrebščine za ustvarjalne</translation>
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{Pojavno okno je blokirano}one{# pojavno okno je blokirano}two{# pojavni okni sta blokirani}few{# pojavna okna so blokirana}other{# pojavnih oken je blokiranih}}</translation>
@@ -2231,6 +2236,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="5377026284221673050">Ura zaostaja« ali »Ura prehiteva« ali »&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;«</translation>
 <translation id="5383478552402031184">Storitve, povezane s talnimi oblogami</translation>
 <translation id="5385857628869214740">Humor</translation>
+<translation id="5385966243497224160">Predogleda URL-ja, ki ni HTTPS, ni mogoče prikazati</translation>
 <translation id="5386426401304769735">Veriga potrdil za to spletno mesto vsebuje potrdilo, podpisano z algoritmom SHA-1.</translation>
 <translation id="5392506727170022660">Metal (Semi-Gloss)</translation>
 <translation id="5396631636586785122">Robni šiv na desni</translation>
@@ -2454,6 +2460,8 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="5838732667866024867">S puščico levo/desno lahko pregledujete spremembe cen na grafikonu</translation>
 <translation id="5840318881868981258">V računu Google, <ph name="ACCOUNT" /></translation>
 <translation id="5841338463993781099">Želite shraniti v račun?</translation>
+<translation id="5843987376989109187">Ta jezik še ni podprt.
+    <ph name="BEGIN_LINK" />Več o tem<ph name="END_LINK" /></translation>
 <translation id="5847181246682413476">Dobava energije</translation>
 <translation id="5851548754964597211">Seznam zavihkov</translation>
 <translation id="5852909432155870672">RA4</translation>
@@ -3179,6 +3187,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="7251437084390964440">Omrežna konfiguracija ne ustreza standardu ONC. Deli konfiguracije morda niso bili uvoženi.
 Dodatne podrobnosti:
 <ph name="DEBUG_INFO" /></translation>
+<translation id="7251635775446614726">Sporočilo skrbnika: »<ph name="CUSTOM_MESSAGE" />«</translation>
 <translation id="7256634549594854023">Zadnji pladenj</translation>
 <translation id="725866823122871198">Zasebne povezave z domeno <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> ni mogoče vzpostaviti, ker sta datum in ura (<ph name="DATE_AND_TIME" />) v računalniku nepravilna.</translation>
 <translation id="7260075294900977274">Nova pametna mapa, ki vam pomaga shraniti vse strani za nakupovanje na enem mestu in samodejno spremljati cene, pridobiti vpoglede v cene in drugo</translation>
@@ -3665,6 +3674,7 @@ Dodatne podrobnosti:
 <translation id="8194797478851900357">&amp;Razveljavi premik</translation>
 <translation id="8194956568907463262">Strelske igre</translation>
 <translation id="8199437620497683918">Optical Disc (Glossy)</translation>
+<translation id="8199730148066603000">Predogled URL-ja, ki ni HTTPS, ni dovoljen.</translation>
 <translation id="8200772114523450471">Nadaljuj</translation>
 <translation id="8202097416529803614">Povzetek naročila</translation>
 <translation id="8202370299023114387">Spor</translation>
@@ -4102,6 +4112,8 @@ Dodatne podrobnosti:
 <translation id="9049981332609050619">Skušali ste dostopati do domene <ph name="DOMAIN" />, vendar je strežnik predložil neveljavno potrdilo.</translation>
 <translation id="9050666287014529139">Geslo</translation>
 <translation id="9051072642122229460">Kavni avtomati</translation>
+<translation id="9051260467258969162">Znova <ph name="BEGIN_LINK" />se prijavite<ph name="END_LINK" />, 
+    nato se vrnite na ta zavihek, če želite pomoč pri pisanju</translation>
 <translation id="9053840549256861041">Uvajamo novo funkcijo za zasebnost pri oglaševanju, ki se imenuje merjenje oglasov. Chrome deli samo zelo omejene podatke s spletnimi mesti, na primer kdaj vam je bil oglas prikazan, da bi spletnim mestom pomagal meriti uspešnost oglasov.</translation>
 <translation id="9056953843249698117">Trgovina</translation>
 <translation id="9062620674789239642">Morda je premaknjena, urejena ali izbrisana.</translation>

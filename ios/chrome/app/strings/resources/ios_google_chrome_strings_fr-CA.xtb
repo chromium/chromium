@@ -1,7 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="fr-CA">
-<translation id="1066101356081285416">Chrome détectera les numéros de suivi sur les sites que vous visitez et vous montrera les mises à jour des colis sur la page Nouvel onglet. Le numéro de suivi du colis et le nom du site Web seront envoyés à Google pour fournir cette fonctionnalité et améliorer les fonctionnalités de Google Shopping pour tous. Vous pouvez mettre à jour cette option à tout moment dans les <ph name="BEGIN_LINK" />paramètres de suivi des colis<ph name="END_LINK" />.</translation>
+<translation id="1066101356081285416">Chrome détectera les numéros de suivi sur les sites que vous visitez et vous montrera les mises à jour des colis sur la page Nouvel onglet. Le numéro de suivi du colis et le nom du site Web seront envoyés à Google pour fournir cette fonctionnalité et améliorer les fonctionnalités d'achat Google pour tous. Vous pouvez mettre à jour cette option à tout moment dans les <ph name="BEGIN_LINK" />paramètres de suivi des colis<ph name="END_LINK" />.</translation>
 <translation id="1085696779717592361">Utiliser Chrome par défaut</translation>
 <translation id="1105362920864247682">Effacez les données de navigation dans Chrome.</translation>
 <translation id="1113057722807951993">Le chiffrement de la phrase de passe n'inclut pas les modes de paiement et les adresses de Google Pay.

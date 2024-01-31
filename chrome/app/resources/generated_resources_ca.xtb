@@ -111,6 +111,7 @@
 <translation id="1078037449555275327">Configuració de ChromeVox</translation>
 <translation id="1079285777677001938">És possible que les funcions d'alguns llocs web no estiguin operatives.</translation>
 <translation id="1079766198702302550">Bloqueja sempre l'accés a la càmera</translation>
+<translation id="1080365971383768617">Contrasenyes en tots els teus dispositius</translation>
 <translation id="1081956462909987459">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> (1 pestanya)}other{<ph name="GROUP_TITLE" /> (# pestanyes)}}</translation>
 <translation id="1082214733466244292">El teu administrador ha bloquejat algunes funcions en aquest dispositiu</translation>
 <translation id="1082398631555931481"><ph name="THIRD_PARTY_TOOL_NAME" /> vol restaurar la configuració de Chrome i aplicar-hi els valors predeterminats originals. Es restablirà la pàgina d'inici, la pàgina Pestanya nova i el motor de cerca, es desactivaran les extensions i s'anul·larà la fixació de totes les pestanyes. També s'esborraran altres dades temporals i emmagatzemades a la memòria cau, com ara galetes i dades de contingut i de llocs.</translation>
@@ -5156,6 +5157,7 @@ Fes servir Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="4953808748584563296">Avatar taronja predeterminat</translation>
 <translation id="4955707703665801001">Visibilitat de <ph name="FEATURE_NAME" /></translation>
 <translation id="4955710816792587366">Tria un PIN</translation>
+<translation id="4956847150856741762">1</translation>
 <translation id="4959262764292427323">Les contrasenyes es desen al Compte de Google perquè les puguis utilitzar en tots els dispositius</translation>
 <translation id="4960020053211143927">No és compatible amb algunes aplicacions</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" />: <ph name="PROFILE_NAME" /></translation>
@@ -8260,7 +8262,6 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="7424153922653300265">L'estalvi d'energia està activat</translation>
 <translation id="7424818322350938336">S'ha afegit la xarxa</translation>
 <translation id="7425037327577270384">Ajuda'm a escriure</translation>
-<translation id="7425292366411265498">Les extensions instal·lades per l'administrador poden continuar llegint i modificant els llocs web</translation>
 <translation id="7427315069950454694">els teus records per a avui</translation>
 <translation id="7427348830195639090">Pàgina en segon pla: <ph name="BACKGROUND_PAGE_URL" /></translation>
 <translation id="7427798576651127129">Truca des de: <ph name="DEVICE_NAME" /></translation>

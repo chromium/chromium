@@ -12,6 +12,7 @@
 <translation id="1024111578869940408">Hücum edənlər bəzən veb ünvana kiçik, çətin sezilə bilən dəyişikliklər etməklə saytları təqlid edir.</translation>
 <translation id="1024913885641459127">Məhsul rəyi və qiymət müqayisəsi</translation>
 <translation id="1028781062521375153">Detallara baxın</translation>
+<translation id="102916930470544692">Giriş açarı</translation>
 <translation id="1030706264415084469"><ph name="URL" /> böyük həcmli datanı həmişəlik cihazınızda yadda saxlamaq istəyir</translation>
 <translation id="1030949145805074938">{COUNT,plural, =0{Yoxdur}=1{1 saytdan. Əksər saytlardan çıxacaqsınız. }other{# saytdan. Əksər saytlardan çıxacaqsınız. }}</translation>
 <translation id="1033329911862281889">Anonim rejim sizi onlayn görünməz etmir:
@@ -397,6 +398,7 @@
 <translation id="1711528724596764268">Cihaz öyrənimi və süni intellekt</translation>
 <translation id="1712552549805331520"><ph name="URL" /> datanı həmişəlik lokal kompüterinizdə yadda saxlamaq istəyir</translation>
 <translation id="1713628304598226412">Qab 2</translation>
+<translation id="1713819065634160212">Google Hesabınızda ünvanları istifadə edin və yadda saxlayın</translation>
 <translation id="1714807406136741351">Baxış rejimi. Formalar rejiminə dəyişərək qrafikdəki qiymət dəyişikliklərini nəzərdən keçirmək üçün sol/sağ oxdan istifadə edə bilərsiniz</translation>
 <translation id="1717218214683051432">Hərəkət sensorları</translation>
 <translation id="1717494416764505390">Poçt qutusu 3</translation>
@@ -1087,6 +1089,7 @@
 <translation id="3120807611504813890">Zərf (yüngül)</translation>
 <translation id="3121994479408824897"><ph name="DOMAIN" /> səhifəsinə keçin</translation>
 <translation id="3126023634486644099">Etiket (daimi)</translation>
+<translation id="3133565499688974786"><ph name="SEARCH_ENGINE_NAME" /> defolt axtarış mexanizmidir</translation>
 <translation id="3140646734028448730">Biznes xidmətləri</translation>
 <translation id="3141093262818886744">Hər halda açın</translation>
 <translation id="3141641372357166056">Razılıq qərarı yoxdur</translation>
@@ -1506,6 +1509,7 @@
 <translation id="3943857333388298514">Yapışdırın.</translation>
 <translation id="3946209740501886391">Həmişə bu saytda sual verin</translation>
 <translation id="3948588869002647271">Bu tətbiq çatışmır, yaxud zədələnib</translation>
+<translation id="3949297482798028668">Administrator bu kontentin bura əlavə edilməsini bloklayıb.</translation>
 <translation id="3949571496842715403">Server bunun <ph name="DOMAIN" /> olduğunu sübut edə bilmir; onun təhlükəsizlik sertifikatı Subyektiv Alternativ Adı göstərmir. Buna yanlış konfiqurasiya və ya hücumçu tərəfindən bağlantının blok edilməsi səbəb ola bilər.</translation>
 <translation id="3949601375789751990">Axtarış tarixçəsi burada görünür</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
@@ -1922,6 +1926,7 @@
 <translation id="4764680219299728632">Mətbəx sobası, ocaq və peçlər</translation>
 <translation id="4764776831041365478"><ph name="URL" /> ünvanındakı səhifə müvəqqəti olaraq deaktiv ola və ya həmişəlik olaraq yeni ünvana köçə bilər.</translation>
 <translation id="4766713847338118463">Aşağıdan qoşa ştapel vurun</translation>
+<translation id="4768864802656530630">Ətraflı sistem qeydləri. <ph name="BEGIN_LINK" />Ətraflı məlumat<ph name="END_LINK" /></translation>
 <translation id="4771973620359291008">Naməlum xəta baş verdi.</translation>
 <translation id="4774055414220872623">İncəsənət və sənətkarlıq ləvazimatları</translation>
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{Popap bloklandı}other{# popap bloklandı}}</translation>
@@ -2227,6 +2232,7 @@
 <translation id="5377026284221673050">"Saatınız geridədir" və ya "Saatınız qabaqdadır" və ya "&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;"</translation>
 <translation id="5383478552402031184">Döşəmə</translation>
 <translation id="5385857628869214740">Yumor</translation>
+<translation id="5385966243497224160">Qeyri-HTTPS URL-ni önizləmək olmur</translation>
 <translation id="5386426401304769735">Bu saytın sertifikat zənciri SHA-1 istifadə edərək imzalanmış sertifikatdan ibarətdir.</translation>
 <translation id="5392506727170022660">Metal (yarıparlaq)</translation>
 <translation id="5396631636586785122">Sağdan kənarını tikin</translation>
@@ -2450,6 +2456,8 @@
 <translation id="5838732667866024867">Qrafikdə qiymət dəyişikliklərini nəzərdən keçirmək üçün sol/sağ oxdan istifadə edə bilərsiniz</translation>
 <translation id="5840318881868981258"><ph name="ACCOUNT" /> Google Hesabınızda</translation>
 <translation id="5841338463993781099">Hesabda saxlansın?</translation>
+<translation id="5843987376989109187">Bu dil dəstəklənmir.
+    <ph name="BEGIN_LINK" />Ətraflı məlumat<ph name="END_LINK" /></translation>
 <translation id="5847181246682413476">Enerji ləvazimatları</translation>
 <translation id="5851548754964597211">Panel siyahısı</translation>
 <translation id="5852909432155870672">RA4</translation>
@@ -3175,6 +3183,7 @@
 <translation id="7251437084390964440">Şəbəkə konfiqurasiyası ONC standartına uyğun deyil. Konfiqurasiyanın hissələri import edilə bilməz.
 Əlavə məlumat:
 <ph name="DEBUG_INFO" /></translation>
+<translation id="7251635775446614726">Administratorunuz "<ph name="CUSTOM_MESSAGE" />" deyir</translation>
 <translation id="7256634549594854023">Arxa Qab</translation>
 <translation id="725866823122871198">Kompüterinizin tarixi və vaxtı (<ph name="DATE_AND_TIME" />) yanlış olduğu üçün <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> domeninə bağlantı alınmır.</translation>
 <translation id="7260075294900977274">Alış-veriş səhifələrini bir yerdə saxlamağa, qiymətləri avtomatik izləməyə, qiymət məlumatı əldə etməyə və s. kömək edən yeni ağıllı qovluq</translation>
@@ -3661,6 +3670,7 @@
 <translation id="8194797478851900357">&amp;Ləğv edin</translation>
 <translation id="8194956568907463262">Atıcılıq oyunları</translation>
 <translation id="8199437620497683918">Optik disk (parlaq)</translation>
+<translation id="8199730148066603000">Qeyri-HTTPS URL-ni önizləməyə icazə verilmir.</translation>
 <translation id="8200772114523450471">Davam edin</translation>
 <translation id="8202097416529803614">Sifariş xülasəsi</translation>
 <translation id="8202370299023114387">Ziddiyət</translation>
@@ -4098,6 +4108,8 @@
 <translation id="9049981332609050619"><ph name="DOMAIN" /> domeninə giriş cəhdi etdiniz, amma server yanlış sertifikat təqdim etdi.</translation>
 <translation id="9050666287014529139">Parol ifadəsi</translation>
 <translation id="9051072642122229460">Qəhvə və espresso maşınları</translation>
+<translation id="9051260467258969162">Yazarkən kömək almaq
+    üçün yenidən <ph name="BEGIN_LINK" />daxil olun<ph name="END_LINK" />, sonra bu taba qayıdın</translation>
 <translation id="9053840549256861041">"Reklam dəyərləndirməsi" adlı yeni reklam məxfiliyi funksiyasını işə salırıq. Reklam performansını dəyərləndirmək üçün Chrome reklamın göstərildiyi vaxt kimi məhdud məlumatları saytlar arasında paylaşır.</translation>
 <translation id="9056953843249698117">Mağaza</translation>
 <translation id="9062620674789239642">Köçürülmüş, redaktə edilmiş və ya silinmiş ola bilər.</translation>

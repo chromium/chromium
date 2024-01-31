@@ -25,6 +25,7 @@
 <translation id="1617663976202781617">Data från Chromium-synkronisering</translation>
 <translation id="1647558790457890304">Chromium-inställningar</translation>
 <translation id="164952285225495380">Den här försändelsen spåras redan i Chromium.</translation>
+<translation id="1707458603865303524">Använd Chromium varje gång du trycker på länkar i meddelanden eller andra appar.</translation>
 <translation id="1722370509450468186">Lösenordet sparas i kontot (<ph name="EMAIL" />).</translation>
 <translation id="1736662517232558588">Chromium-data har rensats</translation>
 <translation id="1791845338122684020">Öppnar historiksidan för Chromium.</translation>
@@ -95,6 +96,7 @@ Du hittar fler inställningar som använder data för att förbättra Chromium-u
 <translation id="3805899903892079518">Chromium har inte åtkomst till dina foton eller videor. Aktivera åtkomst i iOS-inställningar &gt; Integritet &gt; Foton.</translation>
 <translation id="3827545470516145620">Du har standardsäkerhetsskydd på den här enheten</translation>
 <translation id="3833326979834193417">Chromium kör automatiskt en säkerhetskontroll varje dag för att skydda dig från dataintrång, osäkra webbplatser med mera. Du hittar mer information om säkerhetskontrollen i inställningarna.</translation>
+<translation id="3855938650519180865">Nyheter i Chromium</translation>
 <translation id="3886689467633467988">Logga in på den här webbplatsen och i Chromium om du vill få dina bokmärken med mera på alla dina enheter.</translation>
 <translation id="394413318816989199">Betalningsmetoder och adresser omfattas inte av lösenfraskryptering.
 
@@ -107,6 +109,7 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />rensar du Chro
 <translation id="4106512142782407609">Inloggad som <ph name="EMAIL" />.
 
 Din data krypteras med lösenfrasen. Ange den om du vill använda och spara Chromium-data i ditt Google-konto.</translation>
+<translation id="4118287192800900567">Tips för Chromium: Logga in i Chromium</translation>
 <translation id="4195557071150719219">Visa senaste flikarna i Chromium</translation>
 <translation id="4200712796753248893">Använda Chromium-åtgärder på iOS</translation>
 <translation id="420541179527342563">Om du vill inaktivera låsningsläget i Chromium kan du stänga av det på din iPad.</translation>
@@ -158,6 +161,7 @@ Din data krypteras med lösenfrasen. Ange den om du vill använda och spara Chro
 <translation id="5688047395118852662">Det här kortet visar förslag på hur du får ut mesta möjliga av Chromium.</translation>
 <translation id="5700709190537129682">Chromium kan inte kontrollera dina lösenord</translation>
 <translation id="5777187867430702742">Chromium-sida</translation>
+<translation id="584239279770005676">Tips för Chromium: Använd Chromium som standard</translation>
 <translation id="584550191241316896">Inloggad i Chromium</translation>
 <translation id="5889847953983052353">När detta är aktiverat:
 <ph name="BEGIN_INDENT" /> • Du hjälper oss att göra Chromium bättre för den som använder programmet på samma sätt som du.<ph name="END_INDENT" />
@@ -172,6 +176,7 @@ Tänk på detta:
 <translation id="5951593919357934226">Få ut mesta möjliga av Chromium.</translation>
 <translation id="5983312940147103417">Gör Chromium bättre</translation>
 <translation id="5985102273857091344">Välj Chromium.</translation>
+<translation id="5985254578475526217">Om du vill få aviseringar från Chromium aktiverar du aviseringar i iOS-inställningarna</translation>
 <translation id="6062449165341879460">Organisationen <ph name="DOMAIN" /> har åtkomst till data, bokmärken, historik, lösenord och andra inställningar i Chromium som du lagrar i det här kontot. När du loggar ut raderas din data från enheten.  Datan lagras dock fortfarande i det hanterade Google-kontot och kan kommas åt av organisationen. Organisationen kan även ställa in användarpolicyer som gäller det kontot specifikt och som kan påverka hur Chromium fungerar.</translation>
 <translation id="6093744543579359059">Hantera lösenord i Chromium</translation>
 <translation id="6104024151682120539">Öppna i Chromium</translation>
@@ -180,6 +185,7 @@ Tänk på detta:
 1. Öppna inställningarna
 2. Tryck på Standardwebbläsarapp
 3. Välj Chromium.</translation>
+<translation id="6132149203299792222">Logga in med Google-kontot för att synkronisera lösenord, bokmärken med mera.</translation>
 <translation id="6154098560469640583">Använd Chromium varje gång du trycker på länkar i meddelanden, dokument och andra appar.</translation>
 <translation id="6170619162539716595">Tillåt att Google Maps används i Chromium för att ge dig vägbeskrivningar och lokal information om identifierade adresser.</translation>
 <translation id="6175967839221456271">Dela Chromium</translation>
@@ -257,6 +263,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="8234150821523419638">Öppna Chromium-menyn</translation>
 <translation id="8235427517854598594">Vill du använda Chromium som standardwebbläsare?</translation>
 <translation id="8240981428553046115">Chromium kunde inte söka efter uppdateringar. Försök igen senare.</translation>
+<translation id="8254729934443216898">Utforska nya funktioner som hjälper dig att få ut så mycket som möjligt av Chromium.</translation>
 <translation id="8303579360494576778">Hantera betalningsmetoder i Chromium</translation>
 <translation id="830951810931292870">Öppnar de angivna webbadresserna i Chromium i inkognitoläge.</translation>
 <translation id="8386869251364507178">Chromium-åtgärder</translation>

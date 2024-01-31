@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="pt-PT">
+<translation id="1021782183249308751">Prima sem soltar o ícone do Chrome e clique em "Editar ecrã principal"</translation>
 <translation id="1066101356081285416">O Chrome vai detetar números de acompanhamento nos sites que visitar e mostrar-lhe atualizações de embalagens na página Novo separador. O número de acompanhamento da embalagem e o nome do Website vão ser enviados para a Google para oferecer esta funcionalidade e melhorar as funcionalidades do Google Shopping para todos. Pode atualizar esta opção em qualquer altura nas <ph name="BEGIN_LINK" />Definições de acompanhamento de embalagens<ph name="END_LINK" />.</translation>
 <translation id="1085696779717592361">Use o Chrome por predefinição</translation>
 <translation id="1105362920864247682">Limpe os dados de navegação no Chrome.</translation>
@@ -96,6 +97,7 @@ Só alguém com a sua frase de acesso pode ler os dados encriptados. A Google n�
 <translation id="3345341804167540816">Usar o Chrome em todas as plataformas</translation>
 <translation id="3360031466389132716">{THRESHOLD,plural, =1{Isto acontece quando o Chrome não é usado durante {THRESHOLD} minuto}other{Isto acontece quando o Chrome não é usado durante {THRESHOLD} minutos}}</translation>
 <translation id="3399930248910934354">Abrir definições do Chrome</translation>
+<translation id="344736123700721678">Aceda ao Chrome mais rapidamente a partir da dock do ecrã principal</translation>
 <translation id="3472587960215700950">O Chrome usa o Google Maps para lhe dar direções e informações locais sobre moradas detetadas.</translation>
 <translation id="3503014945441706099">Obtenha também a Navegação segura melhorada para este perfil do Chrome</translation>
 <translation id="3522659714780527202">Para ver os seus separadores onde quer que esteja a utilizar o Chrome, ative a sincronização.</translation>

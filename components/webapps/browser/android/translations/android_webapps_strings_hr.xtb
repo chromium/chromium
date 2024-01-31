@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="hr">
 <translation id="1213425325105380833">Vraćanje web-aplikacija koje ste nedavno upotrebljavali na uređajima povezanim s ovim računom</translation>
+<translation id="1786044937610313874">Prečaci se otvaraju u Chromeu</translation>
 <translation id="204914487372604757">Stvori prečac</translation>
 <translation id="2065911435109240297">Vratite web-aplikacije</translation>
 <translation id="2111649875343992405">Pregledajte koje web-aplikacije treba vratiti</translation>
@@ -14,6 +15,7 @@
 <translation id="4338600611020922010">Dodaj na početni zaslon</translation>
 <translation id="4665282149850138822">Web-lokacija <ph name="NAME" /> dodana je na početni zaslon</translation>
 <translation id="5250483651202458397">Snimka zaslona. Dodirnite da biste zatvorili.</translation>
+<translation id="5684726956335420505">Odaberite kako dodati aplikaciju na početni zaslon</translation>
 <translation id="5972844218283131174">Poništi odabir za sve</translation>
 <translation id="6838423508083736333">Web-aplikacije korištene u proteklom mjesecu</translation>
 <translation id="6990079615885386641">Preuzmite aplikaciju iz Trgovine Google Play: <ph name="APP_ACTION" /></translation>

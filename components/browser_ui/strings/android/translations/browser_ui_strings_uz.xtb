@@ -66,6 +66,7 @@
 <translation id="2228071138934252756"><ph name="APP_NAME" /> kameradan foydalanishiga ruxsat berish uchun <ph name="BEGIN_LINK" />Android sozlamalari<ph name="END_LINK" /> orqali kamerani yoqing.</translation>
 <translation id="2235344399760031203">Tashqi cookie fayllar bloklandi</translation>
 <translation id="2238944249568001759">Oxirgi varaq asosida tavsiya etiladigan qidiruvlar</translation>
+<translation id="2241587408274973373">Yangi varaq sahifasi bildirgilari</translation>
 <translation id="2241634353105152135">Bir marta</translation>
 <translation id="2253414712144136228">Olib tashlash: <ph name="NAME_OF_LIST_ITEM" /></translation>
 <translation id="2253989982043948086">{NUM_SELECTED,plural, =1{1 ta sayt bloklangan}other{# ta sayt bloklangan}}</translation>
@@ -281,6 +282,7 @@
 <translation id="5706552988683188916"><ph name="WEBSITE" /> uchun cookie fayllar va sayt maʼlumotlarini oʻchiradi</translation>
 <translation id="5723967018671998714">Inkognito rejimida tashqi cookie fayllariga ruxsat berilmaydi</translation>
 <translation id="5740126560802162366">Saytlar maʼlumotlarni qurilmangizda saqlashi mumkin</translation>
+<translation id="5749158352074143502">Shu varaqda davom etish</translation>
 <translation id="5771720122942595109">Bloklandi: <ph name="PERMISSION_1" /></translation>
 <translation id="5804241973901381774">Ruxsatlar</translation>
 <translation id="5844448279347999754">Yoqilsa, saytlar klipborddagi rasm va matnlarni koʻrishga ruxsat soʻrashi mumkin. Oʻchirilsa, bunday fayllarni koʻra olmaydi.</translation>
@@ -421,6 +423,7 @@
 <translation id="7990211076305263060">Yoqilsa, saytlar mikrofondan foydalanishni soʻrashi mumkin. Oʻchirilsa, mikrofondan foydalana olmaydi.</translation>
 <translation id="8007176423574883786">Ushbu qurilma uchun o‘chirilgan</translation>
 <translation id="802154636333426148">Yuklab olib bo‘lmadi</translation>
+<translation id="8024161440284949905">Shu varaqlarda davom etish</translation>
 <translation id="8042586301629853791">Saralash:</translation>
 <translation id="8067883171444229417">Videoni ijro qilish</translation>
 <translation id="8068648041423924542">Sertifikatni tanlab bo‘lmadi.</translation>

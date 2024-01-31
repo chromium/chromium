@@ -109,6 +109,7 @@
 <translation id="1078037449555275327">ChromeVox का सेटिङ</translation>
 <translation id="1079285777677001938">केही साइटका सुविधाहरूले काम नगर्न सक्छन्।</translation>
 <translation id="1079766198702302550">जहिले पनि क्यामेरा पहुँच रोक्नुहोस्</translation>
+<translation id="1080365971383768617">तपाईंका सबै डिभाइसहरूमा पासवर्ड सेभ गर्ने सुविधा</translation>
 <translation id="1081956462909987459">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> - १ ट्याब}other{<ph name="GROUP_TITLE" /> - # वटा ट्याब}}</translation>
 <translation id="1082214733466244292">तपाईंका एड्मिनले यो डिभाइसका केही सुविधाहरू ब्लक गरेका छन्</translation>
 <translation id="1082398631555931481"><ph name="THIRD_PARTY_TOOL_NAME" />ले तपाईँका Chrome सेटिङहरू उनीहरूको आफ्नो मूल पूर्वनिर्धारितमा पुनर्स्थापना गर्न चाहन्छ। यसले तपाईँको गृहपृष्ठ, नयाँ ट्याब पृष्ठ र खोज इन्जिनलाई रिसेट गर्ने छ, तपाईँका विस्तारहरूलाई निस्क्रिय पार्दछ, र सबै ट्याबहरूलाई अनपिन गर्ने छ। यसले कुकीहरू, सामग्री र साइट डेटा जस्ता अन्य अस्थायी र क्यास गरिएका डेटालाई मेटाउने छ।</translation>
@@ -5154,6 +5155,7 @@
 <translation id="4953808748584563296">डिफल्ट सुन्तला रङ्गको अवतार</translation>
 <translation id="4955707703665801001"><ph name="FEATURE_NAME" /> को अनुमतिसम्बन्धी सेटिङ</translation>
 <translation id="4955710816792587366">आफ्नो PIN छनौट गर्नुहोस्</translation>
+<translation id="4956847150856741762">1</translation>
 <translation id="4959262764292427323">तपाईं जुनसुकै बेला पासवर्ड प्रयोग गर्न सक्नुहोस् भन्नाका लागि तिनलाई तपाईंको Google खातामा सेभ गरिन्छ</translation>
 <translation id="4960020053211143927">केही एपहरूमा प्रयोग गर्न मिल्दैन</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
@@ -8257,7 +8259,6 @@
 <translation id="7424153922653300265">इनर्जी सेभर अन गरिएको छ</translation>
 <translation id="7424818322350938336">नेटवर्क थप गरिएको छ</translation>
 <translation id="7425037327577270384">मलाई लेख्न मद्दत गरियोस्</translation>
-<translation id="7425292366411265498">तपाईंका एड्मिनले इन्स्टल गरेका एक्स्टेन्सनहरूले अझै पनि साइटहरू रिड गर्न र बदल्न सक्छन्</translation>
 <translation id="7427315069950454694">आजका स्मरणीय क्षणहरू</translation>
 <translation id="7427348830195639090">पृष्ठभूमि पाना: <ph name="BACKGROUND_PAGE_URL" /></translation>
 <translation id="7427798576651127129"><ph name="DEVICE_NAME" /> बाट आएको कल</translation>

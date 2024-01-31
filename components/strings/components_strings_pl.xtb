@@ -12,6 +12,7 @@
 <translation id="1024111578869940408">Niektóre złośliwe strony podszywają się pod inne, używając bardzo podobnych adresów internetowych, które różnią się trudnymi do zauważenia szczegółami.</translation>
 <translation id="1024913885641459127">Opinie o produktach i porównania cen</translation>
 <translation id="1028781062521375153">Zobacz szczegóły</translation>
+<translation id="102916930470544692">Klucz dostępu</translation>
 <translation id="1030706264415084469"><ph name="URL" /> chce na stałe przechowywać dużą ilość danych na Twoim urządzeniu</translation>
 <translation id="1030949145805074938">{COUNT,plural, =0{Brak}=1{Z 1 witryny. Wylogowuje z większości witryn. }few{Z # witryn. Wylogowuje z większości witryn. }many{Z # witryn. Wylogowuje z większości witryn. }other{Z # witryny. Wylogowuje z większości witryn. }}</translation>
 <translation id="1033329911862281889">Tryb incognito nie sprawia, że nie widać Cię w internecie:
@@ -3179,6 +3180,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="7251437084390964440">Konfiguracja sieci jest niezgodna ze standardem ONC. Jej część mogła nie zostać zaimportowana.
 Dodatkowe informacje:
 <ph name="DEBUG_INFO" /></translation>
+<translation id="7251635775446614726">Wiadomość od Twojego administratora: „<ph name="CUSTOM_MESSAGE" />”</translation>
 <translation id="7256634549594854023">Taca tylna</translation>
 <translation id="725866823122871198">Nie można nawiązać prywatnego połączenia z <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" />, ponieważ data i godzina (<ph name="DATE_AND_TIME" />) ustawione na komputerze są nieprawidłowe.</translation>
 <translation id="7260075294900977274">Nowy inteligentny folder, który pozwala zapisać wszystkie strony zakupów w 1 miejscu, automatycznie obserwować ceny, sprawdzać statystyki dotyczące cen i korzystać z innych funkcji</translation>

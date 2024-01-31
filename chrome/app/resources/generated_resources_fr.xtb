@@ -111,6 +111,7 @@
 <translation id="1078037449555275327">Paramètres ChromeVox</translation>
 <translation id="1079285777677001938">Il est possible que les fonctionnalités de certains sites ne fonctionnent pas.</translation>
 <translation id="1079766198702302550">Toujours bloquer l'accès à la caméra</translation>
+<translation id="1080365971383768617">Mots de passe sur tous vos appareils</translation>
 <translation id="1081956462909987459">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> - 1 onglet}one{<ph name="GROUP_TITLE" /> - # onglet}other{<ph name="GROUP_TITLE" /> - # onglets}}</translation>
 <translation id="1082214733466244292">Votre administrateur a bloqué l'accès à certaines fonctionnalités de l'appareil</translation>
 <translation id="1082398631555931481"><ph name="THIRD_PARTY_TOOL_NAME" /> souhaite rétablir les valeurs par défaut des paramètres Chrome. Suite à cette opération, votre page d'accueil, la page Nouvel onglet et le moteur de recherche seront la réinitialisés, vos extensions seront désactivées et tous les onglets épinglés seront supprimés. D'autres données temporaires et mises en cache seront également effacées, comme les cookies, les données relatives au contenu et les données de sites.</translation>
@@ -5158,6 +5159,7 @@ Appuyez sur Ctrl+Alt+Baisser la luminosité pour faire un zoom arrière.</transl
 <translation id="4953808748584563296">Avatar orange par défaut</translation>
 <translation id="4955707703665801001">Visibilité du <ph name="FEATURE_NAME" /></translation>
 <translation id="4955710816792587366">Configurer un code</translation>
+<translation id="4956847150856741762">1</translation>
 <translation id="4959262764292427323">Les mots de passe sont enregistrés dans votre compte Google, afin que vous puissiez les utiliser sur tous vos appareils</translation>
 <translation id="4960020053211143927">Non compatible avec certaines applis</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> – <ph name="PROFILE_NAME" /></translation>
@@ -8266,7 +8268,6 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="7424153922653300265">Économiseur d'énergie activé</translation>
 <translation id="7424818322350938336">Réseau ajouté</translation>
 <translation id="7425037327577270384">M'aider à écrire</translation>
-<translation id="7425292366411265498">Les extensions installées par votre administrateur peuvent toujours lire et modifier les sites</translation>
 <translation id="7427315069950454694">vos souvenirs pour aujourd'hui</translation>
 <translation id="7427348830195639090">Page en arrière-plan : <ph name="BACKGROUND_PAGE_URL" /></translation>
 <translation id="7427798576651127129">Passer un appel avec <ph name="DEVICE_NAME" /></translation>

@@ -607,9 +607,11 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="3526440770046466733">Otvaranje veze u novoj kartici i zadržavanje na toj kartici</translation>
 <translation id="353086728817903341">Povezano s ovoliko uređaja: <ph name="NUM_DEVICES" />.</translation>
 <translation id="3533126039236445965">Aplikacije na polici</translation>
+<translation id="3537350467437346467">Vi ste pregledali</translation>
 <translation id="3539957339480430241">Žarišna točka uređaja <ph name="DEVICE_NAME" /></translation>
 <translation id="3540893133818942399">Odbacite postavljanje prikaza nedavnih fotografija i medijskih sadržaja telefona</translation>
 <translation id="3542066395059568317">Primat ćete preporuke kako biste mogli nastaviti tamo gdje ste stali. Preporuke možete ukloniti klikom desnom tipkom.</translation>
+<translation id="3547318469722231257">Vi ste izmijenili</translation>
 <translation id="3552189655002856821">Wi-Fi je isključen</translation>
 <translation id="3554215588514239132">Prikazivanje ili skrivanje ploče alata za razvojne programere</translation>
 <translation id="3554637740840164787">Prikvačena je stavka <ph name="ITEM_TITLE" /></translation>
@@ -701,6 +703,7 @@ Priključite uređaj na napajanje.</translation>
 <translation id="385300504083504382">Početak</translation>
 <translation id="3859364108019690">Aplikacije se ne mogu emitirati</translation>
 <translation id="3861651314799684201">Pritisnite Enter za snimanje cijelog zaslona</translation>
+<translation id="3882323608730650973">Izmijenjeno</translation>
 <translation id="3886872229787704059">Otvoreno danas</translation>
 <translation id="3891340733213178823">Pritisnite Ctrl + Shift + Q dvaput da biste se odjavili.</translation>
 <translation id="3893630138897523026">ChromeVox (govorne povratne informacije)</translation>
@@ -894,6 +897,7 @@ Neke su značajke ograničene radi produljenja trajanja baterije.</translation>
 <translation id="4582666543382004902">Žarišna točka je isključena jer upotrebljavate Wi-Fi. Da biste upotrebljavali žarišnu točku, isključite Wi-Fi.</translation>
 <translation id="4585337515783392668">Zaustavite emitiranje na nepoznatom prijamniku</translation>
 <translation id="4596144739579517758">Tamna je tema isključena</translation>
+<translation id="4596442969149038771">Podijelio/podijelila je <ph name="USER" /></translation>
 <translation id="4611292653554630842">Prijava</translation>
 <translation id="462160925400706389"><ph name="NAME" /> – povezano</translation>
 <translation id="4623167406982293031">Potvrdite račun</translation>
@@ -1815,6 +1819,7 @@ Da biste isključili uređaj, ponovno pritisnite i zadržite tipku za uključiva
 <translation id="8314772463905284467">Uključena je opcija Caps Lock</translation>
 <translation id="8315514906653279104">Uključivanje...</translation>
 <translation id="8331351032546853669">Preuzimanje na čekanju</translation>
+<translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
 <translation id="8345019317483336363">Odabran je prozor <ph name="WINDOW_TITLE" /></translation>
 <translation id="8349826889576450703">pokretač</translation>
@@ -2034,6 +2039,7 @@ Da biste isključili uređaj, ponovno pritisnite i zadržite tipku za uključiva
 <translation id="953431725143473984">Želite li isključiti uređaj?</translation>
 <translation id="954052413789300507">Nema dovoljno prostora za datoteku <ph name="FILENAME" />. Oslobodite prostor.</translation>
 <translation id="954520015070501466">30 min</translation>
+<translation id="954786879461589145">Izmijenio/izmijenila je <ph name="USER" /></translation>
 <translation id="974545358917229949">Prikazuju se rezultati za upit <ph name="QUERY" /> (njih <ph name="RESULT_COUNT" />)</translation>
 <translation id="981011780479609956">Bez krajnjeg roka</translation>
 <translation id="98120814841227350">Prelazak na kraj dokumenta</translation>

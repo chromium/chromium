@@ -111,6 +111,7 @@
 <translation id="1078037449555275327">ChromeVox-instellingen</translation>
 <translation id="1079285777677001938">Functies op bepaalde sites werken misschien niet.</translation>
 <translation id="1079766198702302550">Cameratoegang altijd blokkeren</translation>
+<translation id="1080365971383768617">Wachtwoorden op al je apparaten</translation>
 <translation id="1081956462909987459">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> - 1 tabblad}other{<ph name="GROUP_TITLE" /> - # tabbladen}}</translation>
 <translation id="1082214733466244292">Je beheerder heeft bepaalde functionaliteit geblokkeerd voor dit apparaat</translation>
 <translation id="1082398631555931481"><ph name="THIRD_PARTY_TOOL_NAME" /> wil de standaardwaarden van je Chrome-instellingen herstellen. Als je dit doet, worden je homepage, nieuwe tabbladpagina en zoekmachine opnieuw ingesteld, je extensies uitgezet en alle tabbladen losgemaakt. Ook worden alle andere tijdelijke en gecachte gegevens gewist, zoals cookies, content en sitegegevens.</translation>
@@ -5155,6 +5156,7 @@ Gebruik Ctrl + Alt + Helderheid omlaag om uit te zoomen.</translation>
 <translation id="4953808748584563296">Standaard oranje avatar</translation>
 <translation id="4955707703665801001">Zichtbaarheid voor <ph name="FEATURE_NAME" /></translation>
 <translation id="4955710816792587366">Je pincode kiezen</translation>
+<translation id="4956847150856741762">1</translation>
 <translation id="4959262764292427323">Wachtwoorden worden in je Google-account opgeslagen, zodat je deze op elk apparaat kunt gebruiken</translation>
 <translation id="4960020053211143927">Niet ondersteund door bepaalde apps</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
@@ -8255,7 +8257,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="7424153922653300265">Energiebesparing staat aan</translation>
 <translation id="7424818322350938336">Netwerk toegevoegd</translation>
 <translation id="7425037327577270384">Help me met schrijven</translation>
-<translation id="7425292366411265498">Extensies die door je beheerder zijn geïnstalleerd, kunnen nog steeds sites lezen en wijzigen</translation>
 <translation id="7427315069950454694">je herinneringen voor vandaag</translation>
 <translation id="7427348830195639090">Achtergrondpagina: <ph name="BACKGROUND_PAGE_URL" /></translation>
 <translation id="7427798576651127129">Gesprek van <ph name="DEVICE_NAME" /></translation>

@@ -12,6 +12,7 @@
 <translation id="1024111578869940408">Aanvallers maken sites soms na door wijzigingen in het webadres aan te brengen die je moeilijk kunt zien.</translation>
 <translation id="1024913885641459127">Productreviews en prijsvergelijkingen</translation>
 <translation id="1028781062521375153">Details bekijken</translation>
+<translation id="102916930470544692">Toegangssleutel</translation>
 <translation id="1030706264415084469"><ph name="URL" /> wil grote gegevens permanent op je apparaat opslaan</translation>
 <translation id="1030949145805074938">{COUNT,plural, =0{Geen}=1{Van 1 site. Hiermee word je uitgelogd bij de meeste sites. }other{Van # sites. Hiermee word je uitgelogd bij de meeste sites. }}</translation>
 <translation id="1033329911862281889">Incognito maakt je niet onzichtbaar online:
@@ -3173,6 +3174,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="7251437084390964440">De netwerkconfiguratie voldoet niet aan de ONC-standaard. Delen van de configuratie worden mogelijk niet geïmporteerd.
 Aanvullende informatie:
 <ph name="DEBUG_INFO" /></translation>
+<translation id="7251635775446614726">Je beheerder zegt: '<ph name="CUSTOM_MESSAGE" />'</translation>
 <translation id="7256634549594854023">Achterste lade</translation>
 <translation id="725866823122871198">Er kan geen privéverbinding met <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> tot stand worden gebracht, omdat de datum en tijd van de computer (<ph name="DATE_AND_TIME" />) onjuist zijn.</translation>
 <translation id="7260075294900977274">Een nieuwe slimme map waarmee je al je winkelpagina's op één plek kunt opslaan en automatisch prijzen kunt volgen, prijsinzichten kunt krijgen en meer.</translation>

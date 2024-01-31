@@ -111,6 +111,7 @@
 <translation id="1078037449555275327">Paramètres ChromeVox</translation>
 <translation id="1079285777677001938">Les fonctionnalités de certains sites pourraient ne pas fonctionner.</translation>
 <translation id="1079766198702302550">Toujours bloquer l'accès à la caméra</translation>
+<translation id="1080365971383768617">Mots de passe sur tous vos appareils</translation>
 <translation id="1081956462909987459">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> : 1 onglet}one{<ph name="GROUP_TITLE" /> : # onglet}other{<ph name="GROUP_TITLE" /> : # onglets}}</translation>
 <translation id="1082214733466244292">Votre administrateur a bloqué certaines fonctionnalités pour cet appareil</translation>
 <translation id="1082398631555931481"><ph name="THIRD_PARTY_TOOL_NAME" /> souhaite restaurer vos paramètres Chrome par défaut. Votre page d'accueil, la page Nouvel onglet et votre moteur de recherche seront réinitialisés. Vos extensions seront désactivées et vos onglets ne seront plus épinglés. Les autres données temporaires ou mises en cache, telles que les témoins, les données relatives aux contenus et aux sites, seront effacées.</translation>
@@ -5143,6 +5144,7 @@ Appuyez sur Ctrl+Alt+diminuer la luminosité pour dézoomer.</translation>
 <translation id="4953808748584563296">Avatar orange par défaut</translation>
 <translation id="4955707703665801001">Visibilité pour le <ph name="FEATURE_NAME" /></translation>
 <translation id="4955710816792587366">Choisir votre NIP</translation>
+<translation id="4956847150856741762">1</translation>
 <translation id="4959262764292427323">Les mots de passe sont enregistrés dans votre compte Google afin que vous puissiez les utiliser sur n'importe quel appareil</translation>
 <translation id="4960020053211143927">N'est pas pris en charge par certaines applications</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> – <ph name="PROFILE_NAME" /></translation>
@@ -8239,7 +8241,6 @@ Vous avez # autres mots de passe compromis. Le gestionnaire de mots de passe de
 <translation id="7424153922653300265">Économiseur d'énergie activé</translation>
 <translation id="7424818322350938336">Réseau ajouté</translation>
 <translation id="7425037327577270384">Aide à la rédaction</translation>
-<translation id="7425292366411265498">Les extensions installées par votre administrateur peuvent toujours lire et modifier les sites</translation>
 <translation id="7427315069950454694">vos souvenirs pour aujourd'hui</translation>
 <translation id="7427348830195639090">Page en arrière-plan : <ph name="BACKGROUND_PAGE_URL" /></translation>
 <translation id="7427798576651127129">Appel de <ph name="DEVICE_NAME" /></translation>

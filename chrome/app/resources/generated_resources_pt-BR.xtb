@@ -111,6 +111,7 @@
 <translation id="1078037449555275327">Configurações do ChromeVox</translation>
 <translation id="1079285777677001938">Os recursos de alguns sites podem não funcionar.</translation>
 <translation id="1079766198702302550">Sempre bloquear o acesso à câmera</translation>
+<translation id="1080365971383768617">Senhas em todos os seus dispositivos</translation>
 <translation id="1081956462909987459">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" />: 1 guia}one{<ph name="GROUP_TITLE" />: # guia}other{<ph name="GROUP_TITLE" />: # guias}}</translation>
 <translation id="1082214733466244292">O administrador bloqueou algumas funcionalidades do dispositivo</translation>
 <translation id="1082398631555931481"><ph name="THIRD_PARTY_TOOL_NAME" /> deseja restaurar as configurações do Chrome aos padrões originais. Isso redefinirá sua página inicial, a página "Nova guia" e mecanismo de pesquisa, desativará suas extensões e liberará todas as guias. Além disso, outros dados temporários e dados armazenados em cache, tais como cookies, conteúdo e dados de site, também serão limpos.</translation>
@@ -5174,6 +5175,7 @@ Use Ctrl + Alt + Diminuir brilho para diminuir o zoom.</translation>
 <translation id="4953808748584563296">Avatar laranja padrão</translation>
 <translation id="4955707703665801001">Visibilidade do <ph name="FEATURE_NAME" /></translation>
 <translation id="4955710816792587366">Escolher o PIN</translation>
+<translation id="4956847150856741762">1</translation>
 <translation id="4959262764292427323">As senhas são salvas na sua Conta do Google para que você possa usá-las em qualquer dispositivo</translation>
 <translation id="4960020053211143927">Indisponível em alguns apps</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" />: <ph name="PROFILE_NAME" /></translation>
@@ -8282,7 +8284,6 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="7424153922653300265">Economia de energia ativada</translation>
 <translation id="7424818322350938336">Rede adicionada</translation>
 <translation id="7425037327577270384">Quero ajuda para escrever</translation>
-<translation id="7425292366411265498">As extensões instaladas pelo administrador ainda podem ler e mudar os sites</translation>
 <translation id="7427315069950454694">suas lembranças de hoje</translation>
 <translation id="7427348830195639090">Página de plano de fundo: <ph name="BACKGROUND_PAGE_URL" /></translation>
 <translation id="7427798576651127129">Chamada de <ph name="DEVICE_NAME" /></translation>

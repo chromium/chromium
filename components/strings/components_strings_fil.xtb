@@ -12,6 +12,7 @@
 <translation id="1024111578869940408">Kung minsan, ginagaya ng mga attacker ang mga site sa pamamagitan ng paggawa ng mga mahirap makitang pagbabago sa address sa web.</translation>
 <translation id="1024913885641459127">Mga Review sa Produkto at Paghahambing ng Presyo</translation>
 <translation id="1028781062521375153">Tingnan ang mga detalye</translation>
+<translation id="102916930470544692">Passkey</translation>
 <translation id="1030706264415084469">Gusto ng <ph name="URL" /> na permanenteng mag-store ng malaking data sa iyong device</translation>
 <translation id="1030949145805074938">{COUNT,plural, =0{Wala}=1{Mula sa 1 site. Isa-sign out ka sa karamihan ng mga site. }one{Mula sa # site. Isa-sign out ka sa karamihan ng mga site. }other{Mula sa # na site. Isa-sign out ka sa karamihan ng mga site. }}</translation>
 <translation id="1033329911862281889">Hindi ka ginagawang invisible ng Incognito online:
@@ -397,6 +398,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="1711528724596764268">Machine learning at artificial intelligence</translation>
 <translation id="1712552549805331520">Gusto ng <ph name="URL" /> na permanenteng mag-store ng data sa iyong lokal na computer</translation>
 <translation id="1713628304598226412">Tray 2</translation>
+<translation id="1713819065634160212">Gumamit at mag-save ng Mga Address mula sa iyong Google Account</translation>
 <translation id="1714807406136741351">Browse mode, puwede kang lumipat sa Forms mode para magamit ang pakaliwa/pakanang arrow para suriin ang mga pagbabago sa presyo sa graph</translation>
 <translation id="1717218214683051432">Mga sensor ng paggalaw</translation>
 <translation id="1717494416764505390">Mailbox 3</translation>
@@ -1087,6 +1089,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="3120807611504813890">Envelope (Lightweight)</translation>
 <translation id="3121994479408824897">Pumunta sa <ph name="DOMAIN" /></translation>
 <translation id="3126023634486644099">Mga Label (Permanente)</translation>
+<translation id="3133565499688974786">Ang <ph name="SEARCH_ENGINE_NAME" /> na ang iyong default na search engine</translation>
 <translation id="3140646734028448730">Mga Serbisyong Pangnegosyo</translation>
 <translation id="3141093262818886744">Buksan pa rin</translation>
 <translation id="3141641372357166056">Walang pasya sa pahintulot</translation>
@@ -1510,6 +1513,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="3943857333388298514">I-paste</translation>
 <translation id="3946209740501886391">Palaging hilingin sa site na ito</translation>
 <translation id="3948588869002647271">Wala o sira ang application na ito</translation>
+<translation id="3949297482798028668">Na-block ng iyong administrator ang pag-paste dito ng content na ito.</translation>
 <translation id="3949571496842715403">Hindi mapatunayan ng server na ito na <ph name="DOMAIN" /> ito; hindi tinutukoy ng certificate ng seguridad nito ang Mga Alternatibong Pangalan ng Subject. Maaaring dahil ito sa isang maling configuration o sa isang umaatake na humahadlang sa iyong koneksyon.</translation>
 <translation id="3949601375789751990">Lalabas dito ang iyong history ng pag-browse</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
@@ -1926,6 +1930,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="4764680219299728632">Mga Range, Cooktop, at Oven</translation>
 <translation id="4764776831041365478">Ang webpage sa <ph name="URL" /> ay maaaring pansamantalang hindi gumagana o maaaring permanente itong inilipat sa isang bagong web address.</translation>
 <translation id="4766713847338118463">Dual staple bottom</translation>
+<translation id="4768864802656530630">Mga detalyadong log ng system. <ph name="BEGIN_LINK" />Matuto pa<ph name="END_LINK" /></translation>
 <translation id="4771973620359291008">Isang hindi alam na error ang nangyari.</translation>
 <translation id="4774055414220872623">Mga Supply sa Sining at Paglikha</translation>
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{Na-block ang pop-up}one{# pop-up ang na-block}other{# na pop-up ang na-block}}</translation>
@@ -2231,6 +2236,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="5377026284221673050">"Nahuhuli ang iyong orasan" o "Nauuna ang iyong orasan" o "&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;"</translation>
 <translation id="5383478552402031184">Pag-aayos ng Sahig</translation>
 <translation id="5385857628869214740">Katatawanan</translation>
+<translation id="5385966243497224160">Hindi ma-preview ang non-HTTPS URL</translation>
 <translation id="5386426401304769735">Naglalaman ang chain ng certificate para sa site na ito ng certificate na naka-sign gamit ang SHA-1.</translation>
 <translation id="5392506727170022660">Metal (Semi-Gloss)</translation>
 <translation id="5396631636586785122">Edge stitch right</translation>
@@ -2454,6 +2460,8 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="5838732667866024867">Puwede mong gamitin ang pakaliwa/pakanang arrow para suriin ang mga pagbabago ng presyo sa graph</translation>
 <translation id="5840318881868981258">Sa iyong Google Account, <ph name="ACCOUNT" /></translation>
 <translation id="5841338463993781099">I-save sa account?</translation>
+<translation id="5843987376989109187">Hindi pa sinusuportahan ang wikang ito.
+    <ph name="BEGIN_LINK" />Matuto pa<ph name="END_LINK" /></translation>
 <translation id="5847181246682413476">Mga Power Supply</translation>
 <translation id="5851548754964597211">Listahan ng tab</translation>
 <translation id="5852909432155870672">RA4</translation>
@@ -3179,6 +3187,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="7251437084390964440">Hindi sumusunod ang configuration ng network sa pamantayan ng ONC. Hindi maaaring i-import ang mga bahagi ng configuration.
 Mga karagdagang detalye:
 <ph name="DEBUG_INFO" /></translation>
+<translation id="7251635775446614726">Sabi ng iyong administrator: "<ph name="CUSTOM_MESSAGE" />"</translation>
 <translation id="7256634549594854023">Likod na Tray</translation>
 <translation id="725866823122871198">Hindi makapagtatag ng pribadong koneksyon sa <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> dahil mali ang petsa at oras ng iyong computer (<ph name="DATE_AND_TIME" />).</translation>
 <translation id="7260075294900977274">Isang bagong smart folder na tumutulong sa iyong i-save ang lahat ng iyong page sa pamimili sa iisang lugar, at awtomatikong subaybayan ang mga presyo, makakuha ng mga insight sa presyo, at higit pa</translation>
@@ -3665,6 +3674,7 @@ Mga karagdagang detalye:
 <translation id="8194797478851900357">&amp;I-undo ang Paglilipat</translation>
 <translation id="8194956568907463262">Mga Larong Barilan</translation>
 <translation id="8199437620497683918">Optical Disc (Glossy)</translation>
+<translation id="8199730148066603000">Hindi pinapayagan ang pag-preview ng non-HTTPS URL.</translation>
 <translation id="8200772114523450471">Resume</translation>
 <translation id="8202097416529803614">Buod ng order</translation>
 <translation id="8202370299023114387">Hindi pagkakasundo</translation>
@@ -4102,6 +4112,8 @@ Mga karagdagang detalye:
 <translation id="9049981332609050619">Tinangka mong maabot ang <ph name="DOMAIN" />, ngunit nagpakita ang server ng isang di-wastong certificate.</translation>
 <translation id="9050666287014529139">Passphrase</translation>
 <translation id="9051072642122229460">Mga Coffee at Espresso Maker</translation>
+<translation id="9051260467258969162"><ph name="BEGIN_LINK" />Mag-sign in<ph name="END_LINK" /> 
+    ulit, at pagkatapos ay bumalik sa tab na ito para makakuha ng tulong sa pagsusulat</translation>
 <translation id="9053840549256861041">Maglulunsad kami ng bagong feature ng privacy sa ad na tinatawag na pagsukat sa ad. Napakalimitado lang ng impormasyong shine-share ng Chrome sa pagitan ng mga site, gaya kapag may ipinakitang ad sa iyo, para matulungan ang mga site na sukatin ang performance ng mga ad.</translation>
 <translation id="9056953843249698117">Store</translation>
 <translation id="9062620674789239642">Posibleng nailipat, na-edit, o na-delete ito.</translation>

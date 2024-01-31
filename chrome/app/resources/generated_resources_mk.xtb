@@ -111,6 +111,7 @@
 <translation id="1078037449555275327">Поставки за ChromeVox</translation>
 <translation id="1079285777677001938">Функциите на некои сајтови може да не функционираат.</translation>
 <translation id="1079766198702302550">Секогаш блокирај пристап до камера</translation>
+<translation id="1080365971383768617">Лозинки на сите ваши уреди</translation>
 <translation id="1081956462909987459">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> - 1 картичка}one{<ph name="GROUP_TITLE" /> - # картичка}other{<ph name="GROUP_TITLE" /> - # картички}}</translation>
 <translation id="1082214733466244292">Администраторот блокирал одредени функции за уредов</translation>
 <translation id="1082398631555931481"><ph name="THIRD_PARTY_TOOL_NAME" /> сака да ги врати поставките на Chrome на нивните оригинални стандардни вредности. Ова ќе ја ресетира вашата почетна страница, страницата во нова картичка и пребарувачот, ќе ги оневозможи вашите екстензии и ќе ги откачи сите картички. Исто така, ќе ги исчисти останатите привремени и кеширани податоци, како што се колачиња, содржини и податоци на локацијата.</translation>
@@ -240,6 +241,7 @@
 <translation id="1177073277575830464">Брзото поставување на Android е завршено. Продолжете со поставувањето на <ph name="DEVICE_TYPE" />.</translation>
 <translation id="1177440945615690056">Може да се поврзете на која било подобна мобилна мрежа во „Поставки“</translation>
 <translation id="1177863135347784049">Приспособено</translation>
+<translation id="1178093605842850860">Дозволено е читање и променување на сајтов</translation>
 <translation id="1178581264944972037">Пауза</translation>
 <translation id="1178601482396475810">Управување со синхронизацијата на уредот</translation>
 <translation id="117916940443676133">Вашиот безбедносен клуч не е заштитен со PIN. За да управувате со податоците за најавување, прво создајте PIN.</translation>
@@ -2615,6 +2617,7 @@
 <translation id="2935314715123552088">Оневозможи го активниот профил на eSIM</translation>
 <translation id="2935654492420446828">Додајте училишна сметка подоцна</translation>
 <translation id="2936851848721175671">Бекап и обнова</translation>
+<translation id="2938981087412273365">Не е дозволено читање и променување на сајтов</translation>
 <translation id="2939908794993783865">Дополнителни неактивни сајтови</translation>
 <translation id="2939938020978911855">Покажи достапни уреди со Bluetooth</translation>
 <translation id="2941112035454246133">Низок</translation>
@@ -3423,6 +3426,7 @@
 <translation id="3602894439067790744">Читај ги броевите како</translation>
 <translation id="3603622770190368340">Набави сертификат на мрежа</translation>
 <translation id="3605156246402033687">{COUNT,plural, =1{{COUNT} сметка ја користи истата лозинка}one{{COUNT} сметка ја користат истата лозинка}other{{COUNT} сметки ја користат истата лозинка}}</translation>
+<translation id="3605515937536882518">Вредностите во формуларот се ажурирани</translation>
 <translation id="3605780360466892872">Закопчан</translation>
 <translation id="3607671391978830431">За дете</translation>
 <translation id="3608460311600621471">Внесете причина за печатење на податоциве:</translation>
@@ -4489,6 +4493,7 @@
 <translation id="4410545552906060960">Користете број (PIN) наместо лозинка за отклучување на уредот. Вашиот PIN може да го поставите и подоцна од „Поставки“.</translation>
 <translation id="4411578466613447185">Потпишувач на код</translation>
 <translation id="4411719918614785832">Криптографскиве клучеви се зачувани на Windows Hello на компјутеров. Не се зачувани во вашата сметка на Google.</translation>
+<translation id="4412544493002546580">Обидете се повторно или изберете една од инспирациите подолу.</translation>
 <translation id="4412547955014928315">Да се избришат податоците и дозволите од сајтот за <ph name="SITE_NAME" /> и сите сајтови под него?</translation>
 <translation id="4412632005703201014">Апликациите на Chrome мигрираат на прогресивни веб-апликации. Оваа апликација на Chrome беше инсталирана на вашиот прелистувач од вашата организација. За да ја отворите прогресивната веб-апликација од списокот со апликации, прво контактирајте со вашиот администратор и побарајте да ја деинсталира апликацијата на Chrome. Во меѓувреме, може да одите на <ph name="EXTENSION_LAUNCH_URL" /> за да ја отворите <ph name="EXTENSION_NAME" /> на интернет.</translation>
 <translation id="4412698727486357573">Центар за помош</translation>
@@ -4905,6 +4910,7 @@
 <translation id="4744268813103118742">Оди на сајтот</translation>
 <translation id="4744571849207727284">Excel</translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{Вклучи звук на сајтот}one{Вклучи звук на сајтовите}other{Вклучи звук на сајтовите}}</translation>
+<translation id="4745500401920035244">Администраторот изврши промена на целиот систем што оневозможува некои стари профили. Веќе не може да пристапувате до профилов, но сѐ уште може да го отстраните</translation>
 <translation id="474609389162964566">Пристапувајте до вашиот „Помошник“ со „Ok Google“</translation>
 <translation id="4748783296226936791">Сајтовите обично се поврзуваат со HID-уреди за функции што користат невообичаени тастатури, контролери за игри и други уреди</translation>
 <translation id="4749960740855309258">Отворете нова картичка</translation>
@@ -5174,6 +5180,7 @@
 <translation id="4953808748584563296">Стандарден портокалов аватар</translation>
 <translation id="4955707703665801001">Видливост за <ph name="FEATURE_NAME" /></translation>
 <translation id="4955710816792587366">Изберете PIN</translation>
+<translation id="4956847150856741762">1</translation>
 <translation id="4959262764292427323">Лозинките се зачувуваат во вашата сметка на Google за да може да ги користите на кој било уред</translation>
 <translation id="4960020053211143927">Не е поддржани од некои апликации</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
@@ -5450,6 +5457,7 @@
 <translation id="5178667623289523808">Најди претходно</translation>
 <translation id="5181140330217080051">Се презема</translation>
 <translation id="5181172023548002891">До „Управник со лозинки на Google“ за <ph name="ACCOUNT" /></translation>
+<translation id="5181551096188687373">Лозинкава ќе се зачува само на овој уред. За да ја користите на другите ваши уреди, зачувајте ја во вашата сметка на Google, <ph name="USER_EMAIL" />.</translation>
 <translation id="5183344263225877832">Дали да се ресетираат сите дозволи за HID-уредите?</translation>
 <translation id="5184063094292164363">Конзола за &amp;JavaScript</translation>
 <translation id="5184209580557088469">Билет со ова корисничко име веќе постои</translation>
@@ -5736,6 +5744,7 @@
 <translation id="5417312524372586921">Теми на прелистувачот</translation>
 <translation id="5417353542809767994">Брзо искористете силна лозинка</translation>
 <translation id="541737483547792035">Зголеми го екранот</translation>
+<translation id="541822678830750798">Се бара пристап за читање и променување на сајтов</translation>
 <translation id="5419405654816502573">Voice Match</translation>
 <translation id="5420061891386124792">Овозможува зачувување и враќање на групи картички. Кликнете со десното копче на група картички за да ја зачувате. Вратете ги групите од лентата со обележувачи.</translation>
 <translation id="5420274697768050645">Барај лозинка за отклучување на уредот за дополнителна безбедност</translation>
@@ -5988,6 +5997,7 @@
 <translation id="560834977503641186">Синхронизирање на Wi-Fi, дознајте повеќе</translation>
 <translation id="5608580678041221894">Допрете ги следниве копчиња за да го приспособите или преместите подрачјето за сечење</translation>
 <translation id="5609231933459083978">Апликацијата изгледа дека е неважечка.</translation>
+<translation id="5610867721023328944">Обидете се повторно или изберете една од достапните теми подолу.</translation>
 <translation id="5611398002774823980">Зачувај на сметката</translation>
 <translation id="561236229031062396"><ph name="SHORTCUT_NAME" />, <ph name="APP_FULL_NAME" /></translation>
 <translation id="5614190747811328134">Известување за корисникот</translation>
@@ -6312,6 +6322,7 @@
 <translation id="586567932979200359">Го активиравте производот <ph name="PRODUCT_NAME" /> од неговата слика на дискот. Со негово инсталирање на компјутер, може да го активирате без сликата на диск и се обезбедува дека ќе биде ажурен.</translation>
 <translation id="5865733239029070421">Автоматски испраќа статистика на користењето и извештаи за падовите до Google.</translation>
 <translation id="5868434909835797817">Микрофонот е исклучен на уредот</translation>
+<translation id="5868479397518301468">Времето за најавување истече</translation>
 <translation id="5868822853313956582">Следи ги боите на системот</translation>
 <translation id="5869029295770560994">Добро, сфатив</translation>
 <translation id="5869522115854928033">Зачувани лозинки</translation>
@@ -6663,6 +6674,7 @@
     Уредот е видлив како <ph name="QUICK_START_DEVICE_DISPLAY_NAME" />...</translation>
 <translation id="6146409560350811147">Синхронизацијата не функционира. Обидете се да се најавите повторно.</translation>
 <translation id="6147020289383635445">Не успеа прегледот за печатење.</translation>
+<translation id="6147253937684562370">За да го отклучите профилот, најавете се со адресата на е-пошта на главната сметка: <ph name="EMAIL" /></translation>
 <translation id="6148576794665275391">Отвори сега</translation>
 <translation id="614890671148262506">Секогаш дозволувај известувања од сајтов</translation>
 <translation id="6149015141270619212">Не може да се поврзе на интернет</translation>
@@ -7645,6 +7657,7 @@
 <translation id="6918677045355889289">Потребно е ажурирање на Chrome OS</translation>
 <translation id="6919354101107095996">Пробајте да се најавите на сајтот. Потоа, преземете пак</translation>
 <translation id="6919952941889172531">Да се вклучи и „Подобрено безбедно прелистување“ за профилов на Chrome?</translation>
+<translation id="6920473853105515518">Проверете дали уредот <ph name="DEVICE_TYPE" /> е поврзан на интернет, па обидете се повторно. Може да одите и на play.google/play-terms на друг уред.</translation>
 <translation id="6920989436227028121">Отвори како обична картичка</translation>
 <translation id="6921104647315081813">Избриши ги активностите</translation>
 <translation id="692114467174262153"><ph name="ALTERNATIVE_BROWSER_NAME" /> не може да се отвори</translation>
@@ -8280,7 +8293,6 @@
 <translation id="7424153922653300265">„Штедачот на енергија“ е вклучен</translation>
 <translation id="7424818322350938336">Додадена е мрежа</translation>
 <translation id="7425037327577270384">Помогни ми да напишам</translation>
-<translation id="7425292366411265498">Екстензиите што ги инсталирал администраторот сѐ уште може да читаат и променуваат сајтови</translation>
 <translation id="7427315069950454694">вашите спомени за денес</translation>
 <translation id="7427348830195639090">Страница во заднина: <ph name="BACKGROUND_PAGE_URL" /></translation>
 <translation id="7427798576651127129">Јавете се од <ph name="DEVICE_NAME" /></translation>
@@ -8775,6 +8787,7 @@
 
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="7789963078219276159">Заднината на почетната страница е сменета во <ph name="CATEGORY" />.</translation>
+<translation id="7791269138074599214">Метод за внесување</translation>
 <translation id="7791429245559955092">Апликацијава ќе се инсталира на профилот на Chrome што го користите тековно</translation>
 <translation id="7791436592012979144">Лизгањето наназад е овозможено</translation>
 <translation id="7791543448312431591">Додај</translation>
@@ -8867,6 +8880,7 @@
 <translation id="7861215335140947162">&amp;Преземања</translation>
 <translation id="7861846108263890455">Јазик на сметката на Google</translation>
 <translation id="7864539943188674973">Оневозможи Bluetooth</translation>
+<translation id="7864825798076155402">Да се зачува во вашата сметка на Google?</translation>
 <translation id="7865127013871431856">Опции за „Преведи“</translation>
 <translation id="786957569166715433"><ph name="DEVICE_NAME" /> - спарено</translation>
 <translation id="7869655448736341731">Сите</translation>
@@ -10049,6 +10063,7 @@
 <translation id="8756969031206844760">Дали да се ажурира лозинката?</translation>
 <translation id="8757368836647541092">Контактот <ph name="USER_NAME_OR_EMAIL" /> е отстранет</translation>
 <translation id="8759753423332885148">Дознајте повеќе.</translation>
+<translation id="876161309768861172">Не можеше да се најави. Обидете се повторно.</translation>
 <translation id="8761945298804995673">Корисников веќе постои</translation>
 <translation id="8762886931014513155">На вашиот <ph name="DEVICE_TYPE" /> му е потребно ажурирање</translation>
 <translation id="8763927697961133303">USB-уред</translation>
@@ -10560,6 +10575,7 @@
 <translation id="9138978632494473300">Додајте кратенки на следниве места:</translation>
 <translation id="9139988741193276691">Се конфигурира Linux</translation>
 <translation id="9140067245205650184">Користите неподдржана ознака за функција: <ph name="BAD_FLAG" />. Ќе настрадаат стабилноста и безбедноста.</translation>
+<translation id="914031120300235526">Профилот не може да се отклучи</translation>
 <translation id="9142637293078737510">Псевдоним на слика</translation>
 <translation id="9143298529634201539">Дали да се отстрани предлогот?</translation>
 <translation id="9143922477019434797">Заштитете ги лозинките</translation>
@@ -10688,6 +10704,7 @@
 <translation id="951991426597076286">Одбиј</translation>
 <translation id="952471655966876828">Уредот автоматски ќе се поврзе кога е вклучен или кога се користи</translation>
 <translation id="953434574221655299">Дозволено им е да знаат кога активно го користите уредот</translation>
+<translation id="954749761428814584">Јазик и метод за внесување</translation>
 <translation id="956500788634395331">Заштитени сте од потенцијално штетни екстензии</translation>
 <translation id="957179356621191750">Со 6 точки</translation>
 <translation id="957960681186851048">Сајтов се обиде автоматски да преземе повеќе датотеки</translation>

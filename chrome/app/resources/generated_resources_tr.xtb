@@ -111,6 +111,7 @@
 <translation id="1078037449555275327">ChromeVox ayarları</translation>
 <translation id="1079285777677001938">Bazı sitelerdeki özellikler çalışmayabilir.</translation>
 <translation id="1079766198702302550">Kamera erişimini her zaman engelle</translation>
+<translation id="1080365971383768617">Tüm cihazlarınızdaki şifreler</translation>
 <translation id="1081956462909987459">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> - 1 Sekme}other{<ph name="GROUP_TITLE" /> - # Sekme}}</translation>
 <translation id="1082214733466244292">Yöneticiniz bu cihazın bazı işlevlerini engelledi</translation>
 <translation id="1082398631555931481"><ph name="THIRD_PARTY_TOOL_NAME" />, Chrome ayarlarınızı orijinal varsayılan değerlerine geri yüklemek istiyor. Bu işlem ana sayfanızı, yeni sekme sayfanızı ve arama motorunuzu sıfırlayacak, uzantılarınızı devre dışı bırakacak ve tüm sekmelerinizin sabitlemesini kaldıracaktır. Ayrıca çerezler, içerik ve site verileri gibi geçici ve önbelleğe alınmış diğer veriler temizlenecektir.</translation>
@@ -5155,6 +5156,7 @@ Uzaklaştırmak için Ctrl + Alt + Parlaklığı Azalt tuşlarını kullanın.</
 <translation id="4953808748584563296">Varsayılan turuncu avatar</translation>
 <translation id="4955707703665801001"><ph name="FEATURE_NAME" /> görünürlüğü</translation>
 <translation id="4955710816792587366">PIN'inizi seçin</translation>
+<translation id="4956847150856741762">1</translation>
 <translation id="4959262764292427323">Şifreler Google Hesabınıza kaydedildiğinden bunları herhangi bir cihazda kullanabilirsiniz</translation>
 <translation id="4960020053211143927">Bazı uygulamalar tarafından desteklenmiyor</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
@@ -8261,7 +8263,6 @@ Güvenliği ihlal edilmiş # şifreniz daha var. Google Şifre Yöneticisi bu ş
 <translation id="7424153922653300265">Enerji Tasarrufu Açık</translation>
 <translation id="7424818322350938336">Ağ eklendi</translation>
 <translation id="7425037327577270384">Yazmama yardım et</translation>
-<translation id="7425292366411265498">Yöneticiniz tarafından yüklenen uzantılar, siteleri okumaya ve değiştirmeye devam edebilir</translation>
 <translation id="7427315069950454694">bugün için anılarınız</translation>
 <translation id="7427348830195639090">Arka Plan Sayfası: <ph name="BACKGROUND_PAGE_URL" /></translation>
 <translation id="7427798576651127129"><ph name="DEVICE_NAME" /> adlı cihazdan çağrı</translation>

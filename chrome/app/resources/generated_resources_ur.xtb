@@ -111,6 +111,7 @@
 <translation id="1078037449555275327">‏ChromeVox کی ترتیبات</translation>
 <translation id="1079285777677001938">ہو سکتا ہے کہ کچھ سائٹس پر خصوصیات کام نہ کریں۔</translation>
 <translation id="1079766198702302550">کیمرا رسائی کو ہمیشہ مسدود کریں</translation>
+<translation id="1080365971383768617">آپ کے تمام آلات پر پاس ورڈز</translation>
 <translation id="1081956462909987459">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> - 1 ٹیب}other{<ph name="GROUP_TITLE" /> - # ٹیبز}}</translation>
 <translation id="1082214733466244292">آپ کے منتظم نے اس آلے کے لیے کچھ فعالیت کو مسدود کر دیا ہے</translation>
 <translation id="1082398631555931481">‏<ph name="THIRD_PARTY_TOOL_NAME" /> آپ کی Chrome ترتیبات کو ان کے اصل ڈیفالٹس پر بحال کرنا چاہتا ہے۔ یہ آپ کے ہوم صفحہ، نئے ٹیب صفحے اور سرچ انجن کو دوبارہ ترتیب دے دے گا، آپ کی ایکسٹینشنز کو غیر فعال کر دے گا اورسبھی ٹیبز سے پن ہٹا دے گا۔ یہ دیگر عارضی اور کیش کردہ ڈیٹا جیسے کوکیز، مواد اور سائٹ ڈیٹا کو بھی صاف کر دے گا۔</translation>
@@ -5159,6 +5160,7 @@
 <translation id="4953808748584563296">ڈیفالٹ نارنجی اوتار</translation>
 <translation id="4955707703665801001"><ph name="FEATURE_NAME" /> کی مرئیت</translation>
 <translation id="4955710816792587366">‏اپنا PIN منتخب کریں</translation>
+<translation id="4956847150856741762">1</translation>
 <translation id="4959262764292427323">‏آپ کے Google اکاؤنٹ میں پاس ورڈز محفوظ ہیں اس لیے آپ انہیں کسی بھی آلہ پر استعمال کر سکتے ہیں</translation>
 <translation id="4960020053211143927">کچھ ایپس کے ذریعے تعاون یافتہ نہیں ہے</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
@@ -8262,7 +8264,6 @@
 <translation id="7424153922653300265">انرجی سیور آن ہو گیا</translation>
 <translation id="7424818322350938336">نیٹ ورک شامل کیا گیا</translation>
 <translation id="7425037327577270384">لکھنے میں میری مدد کریں</translation>
-<translation id="7425292366411265498">آپ کے منتظم کے ذریعے انسٹال کردہ ایکسٹینشنز اب بھی سائٹس کو پڑھ اور تبدیل کر سکتی ہیں</translation>
 <translation id="7427315069950454694">آج کے لیے آپ کی میموریز</translation>
 <translation id="7427348830195639090">پس منظر کا صفحہ: <ph name="BACKGROUND_PAGE_URL" /></translation>
 <translation id="7427798576651127129"><ph name="DEVICE_NAME" /> سے کال کریں</translation>

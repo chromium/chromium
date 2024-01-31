@@ -111,6 +111,7 @@
 <translation id="1078037449555275327">ChromeVox సెట్టింగ్‌లు</translation>
 <translation id="1079285777677001938">కొన్ని సైట్‌లలోని ఫీచర్‌లు పని చేయకపోవచ్చు.</translation>
 <translation id="1079766198702302550">ఎల్లప్పుడూ కెమెరా యాక్సెస్‌ను బ్లాక్ చేయండి</translation>
+<translation id="1080365971383768617">మీ అన్ని పరికరాలలోని పాస్‌వర్డ్‌లు</translation>
 <translation id="1081956462909987459">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> - 1 ట్యాబ్}other{<ph name="GROUP_TITLE" /> - # ట్యాబ్‌లు}}</translation>
 <translation id="1082214733466244292">ఈ పరికరంలో కొంత ఫంక్షనాలిటీని మీ అడ్మినిస్ట్రేటర్ బ్లాక్ చేశారు</translation>
 <translation id="1082398631555931481"><ph name="THIRD_PARTY_TOOL_NAME" /> మీ Chrome సెట్టింగ్‌లను వాటి అసలు డిఫాల్ట్‌లకు పునరుద్ధరించాలనుకుంటోంది. ఇది మీ హోమ్ పేజీని, కొత్త ట్యాబ్ పేజీని మరియు సెర్చ్ ఇంజిన్‌ను రీసెట్ చేస్తుంది, మీ ఎక్స్‌టెన్షన్‌లను నిలిపివేస్తుంది మరియు ట్యాబ్‌లు అన్నింటినీ అన్‌పిన్ చేస్తుంది. ఇది కుక్కీలు, కంటెంట్ మరియు సైట్ డేటా వంటి ఇతర తాత్కాలిక మరియు కాష్ చేసిన డేటాను కూడా తీసివేస్తుంది.</translation>
@@ -5171,6 +5172,7 @@
 <translation id="4953808748584563296">డిఫాల్ట్ నారింజ రంగు అవతార్</translation>
 <translation id="4955707703665801001"><ph name="FEATURE_NAME" /> విజిబిలిటీ</translation>
 <translation id="4955710816792587366">మీ పిన్ ఎంచుకోండి</translation>
+<translation id="4956847150856741762">1</translation>
 <translation id="4959262764292427323">మీ Google ఖాతాలో పాస్‌వర్డ్‌లు సేవ్ చేయబడతాయి కాబట్టి మీరు వాటిని ఏ పరికరంలోనైనా ఉపయోగించవచ్చు</translation>
 <translation id="4960020053211143927">కొన్ని యాప్‌లు సపోర్ట్ చేయవు</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
@@ -8276,7 +8278,6 @@
 <translation id="7424153922653300265">ఎనర్జీ సేవర్ ఆన్ చేయబడింది</translation>
 <translation id="7424818322350938336">నెట్‌వర్క్ జోడించబడింది</translation>
 <translation id="7425037327577270384">రాయడంలో నాకు సహాయపడండి</translation>
-<translation id="7425292366411265498">మీ అడ్మినిస్ట్రేటర్ ద్వారా ఇన్‌స్టాల్ చేయబడిన ఎక్స్‌టెన్షన్‌లను ఉపయోగించి ఇప్పటికీ సైట్‌లను చదవగలరు, మార్చగలరు</translation>
 <translation id="7427315069950454694">నేడు మీ అందించబడిన జ్ఞాపకాలు</translation>
 <translation id="7427348830195639090">నేపథ్య పేజీ: <ph name="BACKGROUND_PAGE_URL" /></translation>
 <translation id="7427798576651127129"><ph name="DEVICE_NAME" /> నుండి కాల్ చేయండి</translation>

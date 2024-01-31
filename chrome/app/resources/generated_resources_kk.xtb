@@ -111,6 +111,7 @@
 <translation id="1078037449555275327">ChromeVox параметрлері</translation>
 <translation id="1079285777677001938">Кейбір сайттың функциялары жұмыс істемеуі мүмкін.</translation>
 <translation id="1079766198702302550">Камераға кіруге тыйым салу</translation>
+<translation id="1080365971383768617">Барлық құрылғыңыздағы құпия сөздер</translation>
 <translation id="1081956462909987459">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> – 1 қойынды}other{<ph name="GROUP_TITLE" /> – # қойынды}}</translation>
 <translation id="1082214733466244292">Әкімші осы құрылғының кейбір функциясына тыйым салды.</translation>
 <translation id="1082398631555931481"><ph name="THIRD_PARTY_TOOL_NAME" /> бастапқы Chrome параметрлеріңіздің әдепкі мәндерін қалпына келтіргісі келеді. Бұл әрекет бастапқы бетті, жаңа қойынды бетін және іздеу жүйесін бастапқы қалпына келтіреді және кеңейтімдерді өшіреді, барлық қойындыларды босатады. Сонымен қатар cookie файлдары, контент және сайт деректері тәрізді басқа уақытша және кэштелген деректер өшіріледі.</translation>
@@ -5154,6 +5155,7 @@
 <translation id="4953808748584563296">Әдепкі сарғыш түсті аватар</translation>
 <translation id="4955707703665801001"><ph name="FEATURE_NAME" /> көру рұқсаты</translation>
 <translation id="4955710816792587366">PIN кодын таңдаңыз</translation>
+<translation id="4956847150856741762">1</translation>
 <translation id="4959262764292427323">Құпия сөздер Google аккаунтыңызда сақталады және оларды кез келген құрылғыда пайдалана аласыз</translation>
 <translation id="4960020053211143927">Кейбір қолданбаларда қолдау көрсетілмейді</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
@@ -8255,7 +8257,6 @@
 <translation id="7424153922653300265">Қуат үнемдеу режимі қосылды</translation>
 <translation id="7424818322350938336">Желі қосылды</translation>
 <translation id="7425037327577270384">Жазуға көмектесіңіз</translation>
-<translation id="7425292366411265498">Әкімшіңіз орнатқан кеңейтімдер әлі де сайттарды оқи және өзгерте алады.</translation>
 <translation id="7427315069950454694">бүгінге арналған естеліктеріңіз</translation>
 <translation id="7427348830195639090">Фондық бет: <ph name="BACKGROUND_PAGE_URL" /></translation>
 <translation id="7427798576651127129"><ph name="DEVICE_NAME" /> шалған қоңырау</translation>

@@ -111,6 +111,7 @@
 <translation id="1078037449555275327">การตั้งค่า ChromeVox</translation>
 <translation id="1079285777677001938">ฟีเจอร์ในบางเว็บไซต์อาจใช้งานไม่ได้</translation>
 <translation id="1079766198702302550">บล็อกการเข้าถึงกล้องเสมอ</translation>
+<translation id="1080365971383768617">รหัสผ่านในอุปกรณ์ทุกเครื่อง</translation>
 <translation id="1081956462909987459">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> - 1 แท็บ}other{<ph name="GROUP_TITLE" /> - # แท็บ}}</translation>
 <translation id="1082214733466244292">ผู้ดูแลระบบบล็อกฟังก์ชันการทำงานบางอย่างในอุปกรณ์นี้</translation>
 <translation id="1082398631555931481"><ph name="THIRD_PARTY_TOOL_NAME" /> ต้องการคืนค่าการตั้งค่า Chrome ของคุณกลับไปเป็นค่าเริ่มต้นดั้งเดิม การดำเนินการนี้จะรีเซ็ตหน้าหลักของคุณ หน้าแท็บใหม่ และเครื่องมือค้นหา ปิดใช้ส่วนขยาย และเลิกปักหมุดแท็บทั้งหมด นอกจากนี้ยังล้างข้อมูลชั่วคราวอื่นๆ และข้อมูลที่แคชไว้ เช่น คุกกี้ เนื้อหา และข้อมูลเว็บไซต์อีกด้วย</translation>
@@ -5157,6 +5158,7 @@
 <translation id="4953808748584563296">รูปโปรไฟล์เริ่มต้นสีส้ม</translation>
 <translation id="4955707703665801001">ระดับการเข้าถึงของ<ph name="FEATURE_NAME" /></translation>
 <translation id="4955710816792587366">เลือก PIN ของคุณ</translation>
+<translation id="4956847150856741762">1</translation>
 <translation id="4959262764292427323">เราจะบันทึกรหัสผ่านไว้ในบัญชี Google เพื่อให้คุณใช้ในอุปกรณ์เครื่องใดก็ได้</translation>
 <translation id="4960020053211143927">บางแอปไม่รองรับ</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
@@ -8259,7 +8261,6 @@
 <translation id="7424153922653300265">เปิดโหมดประหยัดพลังงานแล้ว</translation>
 <translation id="7424818322350938336">เพิ่มเครือข่ายแล้ว</translation>
 <translation id="7425037327577270384">ช่วยฉันเขียน</translation>
-<translation id="7425292366411265498">ส่วนขยายที่ติดตั้งโดยผู้ดูแลระบบจะยังคงอ่านและเปลี่ยนแปลงเว็บไซต์ได้</translation>
 <translation id="7427315069950454694">ความทรงจำของคุณสำหรับวันนี้</translation>
 <translation id="7427348830195639090">หน้าเว็บพื้นหลัง: <ph name="BACKGROUND_PAGE_URL" /></translation>
 <translation id="7427798576651127129">โทรจาก <ph name="DEVICE_NAME" /></translation>

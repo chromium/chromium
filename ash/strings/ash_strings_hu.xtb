@@ -607,9 +607,11 @@
 <translation id="3526440770046466733">Link megnyitása új lapon, és maradjon az aktuális lapon</translation>
 <translation id="353086728817903341">Csatlakoztatva <ph name="NUM_DEVICES" /> eszközhöz</translation>
 <translation id="3533126039236445965">Alkalmazások a polcon</translation>
+<translation id="3537350467437346467">Megtekintette</translation>
 <translation id="3539957339480430241"><ph name="DEVICE_NAME" /> hotspot</translation>
 <translation id="3540893133818942399">A telefon legutóbbi fotóinak és médiatartalmainak megtekintésére vonatkozó beállítások elvetése</translation>
 <translation id="3542066395059568317">Ajánlásokat tekinthet meg, hogy ott folytathassa, ahol abbahagyta. Jobb gombbal való kattintással eltávolíthatja az ajánlásokat.</translation>
+<translation id="3547318469722231257">Módosította</translation>
 <translation id="3552189655002856821">A Wi-Fi ki van kapcsolva</translation>
 <translation id="3554215588514239132">A Fejlesztői eszközök panel megjelenítése vagy elrejtése</translation>
 <translation id="3554637740840164787"><ph name="ITEM_TITLE" /> rögzítve</translation>
@@ -702,6 +704,7 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
 <translation id="385300504083504382">A legelejére</translation>
 <translation id="3859364108019690">Az alkalmazástreamelés nem sikerült</translation>
 <translation id="3861651314799684201">Nyomja le az Entert a teljes képernyő tartalmának rögzítéséhez</translation>
+<translation id="3882323608730650973">Módosítva</translation>
 <translation id="3886872229787704059">Ma nyitotta meg</translation>
 <translation id="3891340733213178823">Nyomja meg a Ctrl+Shift+Q billentyűkombinációt kétszer a kijelentkezéshez.</translation>
 <translation id="3893630138897523026">ChromeVox (beszélt visszajelzés)</translation>
@@ -895,6 +898,7 @@ Az akkumulátor-élettartam növelése érdekében egyes funkciók korlátozotta
 <translation id="4582666543382004902">A hotspot ki lett kapcsolva, hogy használni lehessen a Wi-Fi-t. A hotspot használatához kapcsolja ki a Wi-Fi-t.</translation>
 <translation id="4585337515783392668">Ismeretlen fogadó eszközre történő átküldés leállítása</translation>
 <translation id="4596144739579517758">Sötét téma kikapcsolva.</translation>
+<translation id="4596442969149038771"><ph name="USER" /> megosztotta</translation>
 <translation id="4611292653554630842">Bejelentkezés</translation>
 <translation id="462160925400706389"><ph name="NAME" /> csatlakoztatva</translation>
 <translation id="4623167406982293031">Fiók ellenőrzése</translation>
@@ -1816,6 +1820,7 @@ Az eszköz leállításához tartsa ismét nyomva az eszköz bekapcsológombját
 <translation id="8314772463905284467">A Caps Lock be van kapcsolva</translation>
 <translation id="8315514906653279104">Bekapcsolás…</translation>
 <translation id="8331351032546853669">Letöltés függőben</translation>
+<translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
 <translation id="8345019317483336363">A következő ablak van kiválasztva: <ph name="WINDOW_TITLE" /></translation>
 <translation id="8349826889576450703">indító</translation>
@@ -2035,6 +2040,7 @@ Az eszköz leállításához tartsa ismét nyomva az eszköz bekapcsológombját
 <translation id="953431725143473984">Leállítja az eszközt?</translation>
 <translation id="954052413789300507">Nincs elég tárhely a következő fájl számára: <ph name="FILENAME" />. Szabadítson fel tárhelyet.</translation>
 <translation id="954520015070501466">30 perc</translation>
+<translation id="954786879461589145"><ph name="USER" /> módosította</translation>
 <translation id="974545358917229949"><ph name="RESULT_COUNT" /> találat megjelenítése a következő lekérdezésre: <ph name="QUERY" /></translation>
 <translation id="981011780479609956">Nincs határidő</translation>
 <translation id="98120814841227350">Ugrás a dokumentum végére</translation>

@@ -12,6 +12,7 @@
 <translation id="1024111578869940408">攻擊者有時會在網址中加入不易察覺的細微變更來仿冒網站。</translation>
 <translation id="1024913885641459127">產品評論與比價</translation>
 <translation id="1028781062521375153">查看詳細資料</translation>
+<translation id="102916930470544692">密碼金鑰</translation>
 <translation id="1030706264415084469"><ph name="URL" /> 要求在你的裝置上永久儲存大量資料</translation>
 <translation id="1030949145805074938">{COUNT,plural, =0{無}=1{來自 1 個網站。刪除 Cookie 後，大多數網站都會將你登出。}other{來自 # 個網站。刪除 Cookie 後，大多數網站都會將你登出。}}</translation>
 <translation id="1033329911862281889">無痕模式無法讓你在網路上不留痕跡：
@@ -3177,6 +3178,7 @@
 <translation id="7251437084390964440">網路設定未遵循 ONC 標準，系統可能無法匯入部分設定。
 其他詳細資料：
 <ph name="DEBUG_INFO" /></translation>
+<translation id="7251635775446614726">管理員訊息：「<ph name="CUSTOM_MESSAGE" />」</translation>
 <translation id="7256634549594854023">後端托盤</translation>
 <translation id="725866823122871198">你電腦的日期和時間 (<ph name="DATE_AND_TIME" />) 不正確，因此無法與 <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> 建立私人連線。</translation>
 <translation id="7260075294900977274">新的智慧型資料夾可集中儲存所有購物頁面，並自動追蹤價格、取得價格分析資訊等等</translation>

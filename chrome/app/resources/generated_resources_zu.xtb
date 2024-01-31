@@ -111,6 +111,7 @@ I-<ph name="EXTENSION_NAME" /></translation>
 <translation id="1078037449555275327">Amasethingi we-ChromeVox</translation>
 <translation id="1079285777677001938">Izakhi ezikwamanye amasayithi zingase zingasebenzi.</translation>
 <translation id="1079766198702302550">Vimbela njalo ukufinyelela kwekhamela</translation>
+<translation id="1080365971383768617">Amaphasiwedi kuwo wonke amadivayisi akho</translation>
 <translation id="1081956462909987459">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> - Ithebhu e-1}one{<ph name="GROUP_TITLE" /> - Amathebhu angu-#}other{<ph name="GROUP_TITLE" /> - Amathebhu angu-#}}</translation>
 <translation id="1082214733466244292">Umlawuli wakho uvimbe okunye ukusebenza kwale divayisi</translation>
 <translation id="1082398631555931481">I-<ph name="THIRD_PARTY_TOOL_NAME" /> ifuna ukubuyisela izilungiselelo zakho ze-Chrome kokuzenzakalelayo kwayo kwasekuqaleni. Lokhu kuzosetha kabusha ikhasi lakho lasekhaya, ikhasi lethebhu elisha nenjini yosesho, khubaza izandiso zakho, uphinde ususe ukuphina kwawo wonke amathebhu. Kuzophinda kusule enye idatha yesikhashana nefakwe kunqolobane, efana namakhukhi, okuqukethwe nedatha yesayithi.</translation>
@@ -5173,6 +5174,7 @@ Sebenzisa u-Ctrl + Alt + Brightness down ukuze uhlehlise isithombe.</translation
 <translation id="4953808748584563296">Isithombe esizenzakalelayo esiwolintshi</translation>
 <translation id="4955707703665801001">Ukubonakala <ph name="FEATURE_NAME" /></translation>
 <translation id="4955710816792587366">Khetha i-PIN yakho</translation>
+<translation id="4956847150856741762">1</translation>
 <translation id="4959262764292427323">Amaphasiwedi alondolozwa ku-akhawunti yakho ye-Google ukuze ukwazi ukuwasebenzisa kunoma iyiphi idivayisi</translation>
 <translation id="4960020053211143927">Akusekelwa ngamanye ama-app</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
@@ -8280,7 +8282,6 @@ Unamaphasiwedi onakalisiwe angu-# ngokwengeziwe. Umphathi Wephasiwedi Ye-Google 
 <translation id="7424153922653300265">Isilondolozi Samandla Sivuliwe</translation>
 <translation id="7424818322350938336">Inethiwekhi yengeziwe</translation>
 <translation id="7425037327577270384">Ngisize ngibhale</translation>
-<translation id="7425292366411265498">Izandiso ezifakwe ngumlawuli wakho zisengafunda futhi ziguqule amasayithi</translation>
 <translation id="7427315069950454694">izinkumbulo zakho zanamuhla</translation>
 <translation id="7427348830195639090">Ikhasi elingemuva: <ph name="BACKGROUND_PAGE_URL" /></translation>
 <translation id="7427798576651127129">Ikholi esuka ku-<ph name="DEVICE_NAME" /></translation>

@@ -111,6 +111,7 @@
 <translation id="1078037449555275327">ChromeVox ക്രമീകരണം</translation>
 <translation id="1079285777677001938">ചില സൈറ്റുകളിലെ ഫീച്ചറുകൾ പ്രവർത്തിച്ചേക്കില്ല.</translation>
 <translation id="1079766198702302550">എപ്പോഴും ക്യാമറ ആക്‌സസ് തടയുക</translation>
+<translation id="1080365971383768617">നിങ്ങളുടെ എല്ലാ ഉപകരണങ്ങളിലും പാസ്‌വേഡുകൾ ലഭ്യമാകും</translation>
 <translation id="1081956462909987459">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> - 1 ടാബ്}other{<ph name="GROUP_TITLE" /> - # ടാബുകൾ}}</translation>
 <translation id="1082214733466244292">നിങ്ങളുടെ അഡ്‌മിൻ ഈ ഉപകരണത്തിന്റെ ചില ഫംഗ്‌ഷനുകൾ ബ്ലോക്ക് ചെയ്തു</translation>
 <translation id="1082398631555931481"><ph name="THIRD_PARTY_TOOL_NAME" /> നിങ്ങളുടെ Chrome ക്രമീകരണം അവരുടെ യഥാർത്ഥ ഡിഫോൾട്ടുകളിലേക്ക് പുനഃസ്ഥാപിക്കാൻ താൽപ്പര്യപ്പെടുന്നു. ഇത് നിങ്ങളുടെ ഹോം പേജ്, പുതിയ ടാബ് പേജ്, തിരയൽ എഞ്ചിൻ എന്നിവ റീസെറ്റ് ചെയ്യും ഒപ്പം വിപുലീകരണങ്ങൾ പ്രവർത്തനരഹിതമാക്കി എല്ലാ ടാബുകളും അൺപിൻ ചെയ്യും. ഇത് കുക്കികൾ, ഉള്ളടക്കം, സൈറ്റ് വിവരം എന്നിങ്ങനെയുള്ള മറ്റ് താൽക്കാലികവും കാഷെ ചെയ്‌തതുമായ വിവരവും മായ്‌ക്കും.</translation>
@@ -5155,6 +5156,7 @@
 <translation id="4953808748584563296">ഡിഫോൾട്ടായ ഓറഞ്ച് അവതാർ</translation>
 <translation id="4955707703665801001"><ph name="FEATURE_NAME" /> ദൃശ്യപരത</translation>
 <translation id="4955710816792587366">നിങ്ങളുടെ പിൻ തിരഞ്ഞെടുക്കുക</translation>
+<translation id="4956847150856741762">1</translation>
 <translation id="4959262764292427323">പാസ്‌വേഡുകൾ നിങ്ങളുടെ Google അക്കൗണ്ടിൽ സംരക്ഷിക്കുന്നതിനാൽ, ഏത് ഉപകരണത്തിലും അവ നിങ്ങൾക്ക് ഉപയോഗിക്കാനാവും</translation>
 <translation id="4960020053211143927">ചില ആപ്പുകളിൽ പിന്തുണയില്ല</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
@@ -8262,7 +8264,6 @@
 <translation id="7424153922653300265">എനർജി സേവർ ഓണാക്കി</translation>
 <translation id="7424818322350938336">നെറ്റ്‌വർക്ക് ചേർത്തു</translation>
 <translation id="7425037327577270384">എന്നെ എഴുതാൻ സഹായിക്കൂ</translation>
-<translation id="7425292366411265498">നിങ്ങളുടെ അഡ്‌മിൻ ഇൻസ്റ്റാൾ ചെയ്ത വിപുലീകരണങ്ങൾക്ക് തുടർന്നും സൈറ്റുകൾ വായിക്കാനും മാറ്റാനും കഴിയും</translation>
 <translation id="7427315069950454694">ഇന്നത്തെ നിങ്ങളുടെ മനോഹര ഓർമ്മകൾ</translation>
 <translation id="7427348830195639090">പശ്ചാത്തല പേജ്: <ph name="BACKGROUND_PAGE_URL" /></translation>
 <translation id="7427798576651127129"><ph name="DEVICE_NAME" /> എന്ന ഉപകരണത്തിൽ നിന്നും വിളിക്കുക</translation>

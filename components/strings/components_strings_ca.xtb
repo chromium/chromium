@@ -12,6 +12,7 @@
 <translation id="1024111578869940408">De vegades, els atacants imiten llocs web introduint canvis difícils de veure a l'adreça web.</translation>
 <translation id="1024913885641459127">Comentaris sobre productes i comparatives de preus</translation>
 <translation id="1028781062521375153">Mostra els detalls</translation>
+<translation id="102916930470544692">Clau d'accés</translation>
 <translation id="1030706264415084469"><ph name="URL" /> vol emmagatzemar una gran quantitat de dades al dispositiu de manera permanent</translation>
 <translation id="1030949145805074938">{COUNT,plural, =0{Cap}=1{D'1 lloc web. Se't tancarà la sessió de la majoria de llocs web. }other{De # llocs web. Se't tancarà la sessió de la majoria de llocs web. }}</translation>
 <translation id="1033329911862281889">Amb el mode d'incògnit no ets invisible en línia:
@@ -3179,6 +3180,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="7251437084390964440">La configuració de la xarxa no compleix l'estàndard ONC. Pot ser que algunes opcions de configuració no s'hagin importat.
 Detalls addicionals:
 <ph name="DEBUG_INFO" /></translation>
+<translation id="7251635775446614726">L'administrador diu: "<ph name="CUSTOM_MESSAGE" />".</translation>
 <translation id="7256634549594854023">Safata posterior</translation>
 <translation id="725866823122871198">No s'ha pogut establir una connexió privada amb <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> perquè la data i l'hora (<ph name="DATE_AND_TIME" />) de l'ordinador no són correctes.</translation>
 <translation id="7260075294900977274">Una carpeta intel·ligent nova que et permet desar totes les teves pàgines de compra en un sol lloc i fer un seguiment automàtic dels preus, obtenir estadístiques de preus i més</translation>

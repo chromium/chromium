@@ -12,6 +12,7 @@
 <translation id="1024111578869940408">Angreifer kopieren manchmal Websites und nehmen unauffällige Änderungen an der Webadresse vor.</translation>
 <translation id="1024913885641459127">Rezensionen und Preisvergleiche</translation>
 <translation id="1028781062521375153">Details anzeigen</translation>
+<translation id="102916930470544692">Passkey</translation>
 <translation id="1030706264415084469"><ph name="URL" /> möchte dauerhaft umfangreiche Daten auf deinem Gerät speichern</translation>
 <translation id="1030949145805074938">{COUNT,plural, =0{Keine}=1{Von 1 Website. Du wirst von den meisten Websites abgemeldet. }other{Von # Websites. Du wirst von den meisten Websites abgemeldet. }}</translation>
 <translation id="1033329911862281889">Der Inkognitomodus macht dich online nicht unsichtbar:
@@ -3177,6 +3178,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="7251437084390964440">Die Netzwerkkonfiguration entspricht nicht dem ONC-Standard. Die Konfiguration wird unter Umständen nicht vollständig importiert.
 Weitere Details:
 <ph name="DEBUG_INFO" /></translation>
+<translation id="7251635775446614726">Dein Administrator sagt „<ph name="CUSTOM_MESSAGE" />“</translation>
 <translation id="7256634549594854023">Hinteres Fach</translation>
 <translation id="725866823122871198">Es kann keine private Verbindung zu <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> hergestellt werden, weil Datum und Uhrzeit deines Computers falsch sind (<ph name="DATE_AND_TIME" />).</translation>
 <translation id="7260075294900977274">Ein neuer intelligenter Ordner, in dem du alle deine Shoppingseiten an einem einzigen Ort speichern und beispielsweise automatisch Preise beobachten und Preisinformationen abrufen kannst</translation>

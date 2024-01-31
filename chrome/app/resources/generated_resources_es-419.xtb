@@ -111,6 +111,7 @@
 <translation id="1078037449555275327">Configuración de ChromeVox</translation>
 <translation id="1079285777677001938">Es posible que algunas funciones no puedan utilizarse en algunos sitios.</translation>
 <translation id="1079766198702302550">Bloquear siempre el acceso a la cámara</translation>
+<translation id="1080365971383768617">Contraseñas en todos tus dispositivos</translation>
 <translation id="1081956462909987459">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> - 1 pestaña}other{<ph name="GROUP_TITLE" /> - # pestañas}}</translation>
 <translation id="1082214733466244292">Tu administrador restringió algunas funcionalidades en este dispositivo</translation>
 <translation id="1082398631555931481"><ph name="THIRD_PARTY_TOOL_NAME" /> quiere restaurar la configuración de Chrome a los valores predeterminados originales. Esta acción restablecerá la página principal, la página Nueva pestaña y el motor de búsqueda, inhabilitará las extensiones y no se fijará ninguna pestaña. También se borrarán otros datos temporales y almacenados en la caché, como las cookies y los datos de contenido y de sitios.</translation>
@@ -408,7 +409,7 @@ Puedes revisar las contraseñas en cualquier momento, en <ph name="GOOGLE_PASSWO
 <translation id="1307165550267142340">Se creó tu PIN</translation>
 <translation id="1307431692088049276">No volver a preguntarme</translation>
 <translation id="1307559529304613120">El sistema no pudo obtener un token de acceso a la API a largo plazo para este dispositivo.</translation>
-<translation id="131112695174432497">Se borran los datos que afectan la personalización de anuncios.</translation>
+<translation id="131112695174432497">Se borran los datos que afectan la personalización de anuncios</translation>
 <translation id="1311294419381837540">Estás transmitiendo una pestaña. Puedes pausar o detener la transmisión en cualquier momento.</translation>
 <translation id="1312811472299082263">Crear a partir de un archivo de copia de seguridad de Crostini o de playbook de Ansible</translation>
 <translation id="13130607084115184">Las contraseñas guardadas aparecerán aquí. Para importar contraseñas al <ph name="BRAND" /> en este dispositivo, <ph name="BEGIN_LINK" />selecciona un archivo CSV.<ph name="END_LINK" /></translation>
@@ -2317,7 +2318,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2730647855013151888">Incluir toda la información personal</translation>
 <translation id="2730901670247399077">Sugerencias de emojis</translation>
 <translation id="273093730430620027">Esta página está accediendo a la cámara.</translation>
-<translation id="2730956943403103181">No puede usar el optimizador V8</translation>
+<translation id="2730956943403103181">No se permite usar el optimizador V8</translation>
 <translation id="2731392572903530958">Volv&amp;er a abrir una ventana cerrada</translation>
 <translation id="2731700343119398978">Espera...</translation>
 <translation id="2731971182069536520">La próxima vez que reinicies el dispositivo, tu administrador realizará una actualización única que borrará tus datos locales.</translation>
@@ -3651,7 +3652,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3776508619697147021">Permitir que los sitios soliciten permiso para descargar múltiples archivos de forma automática</translation>
 <translation id="3776796446459804932">Esta extensión infringe la política de Chrome Web Store.</translation>
 <translation id="3777483481409781352">No se pudo activar el dispositivo celular</translation>
-<translation id="3777796259512476958">Saldrás de la mayoría de los sitios</translation>
+<translation id="3777796259512476958">Saldrás de la mayoría de los sitios.</translation>
 <translation id="3778208826288864398">Se ingresó el PIN de forma incorrecta demasiadas veces; por lo tanto, se bloqueó la llave de seguridad. Deberás restablecerla.</translation>
 <translation id="3778740492972734840">&amp;Herramientas del desarrollador</translation>
 <translation id="3778868487658107119">Hazle preguntas. Encárgale tareas. Es tu versión personal de Google, está siempre lista para ayudarte.</translation>
@@ -5154,6 +5155,7 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="4953808748584563296">Avatar naranja predeterminado</translation>
 <translation id="4955707703665801001">Visibilidad de <ph name="FEATURE_NAME" /></translation>
 <translation id="4955710816792587366">Elige un PIN</translation>
+<translation id="4956847150856741762">1</translation>
 <translation id="4959262764292427323">Las contraseñas se guardan en tu cuenta de Google para que puedas usarlas en cualquier dispositivo</translation>
 <translation id="4960020053211143927">No es compatible con algunas apps</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
@@ -6480,7 +6482,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="6020431688553761150">No tienes autorización del servidor para acceder a este recurso.</translation>
 <translation id="6021293122504240352">Ya no se admiten <ph name="APPS" /> apps</translation>
 <translation id="6021969570711251331">Intercalar</translation>
-<translation id="602212068530399867">El motor de búsqueda que se utiliza en la barra de direcciones y en el Selector.</translation>
+<translation id="602212068530399867">El motor de búsqueda que se utiliza en la barra de direcciones y en el selector.</translation>
 <translation id="6022526133015258832">Abrir en pantalla completa</translation>
 <translation id="6022659036123304283">Personaliza Chrome a tu medida</translation>
 <translation id="6023643151125006053">El administrador de <ph name="SAML_DOMAIN" /> bloqueó este dispositivo (NS: <ph name="SERIAL_NUMBER" />).</translation>
@@ -8259,7 +8261,6 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="7424153922653300265">Se activó el Ahorro de energía</translation>
 <translation id="7424818322350938336">Se agregó una red</translation>
 <translation id="7425037327577270384">Ayúdame a escribir</translation>
-<translation id="7425292366411265498">Las extensiones que instaló tu administrador aún pueden leer y modificar sitios</translation>
 <translation id="7427315069950454694">tus recuerdos para hoy</translation>
 <translation id="7427348830195639090">Página de fondo: <ph name="BACKGROUND_PAGE_URL" /></translation>
 <translation id="7427798576651127129">Llamada de <ph name="DEVICE_NAME" /></translation>
@@ -9798,7 +9799,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8601206103050338563">Autenticación de cliente TLS WWW</translation>
 <translation id="8602674530529411098">Apps (beta)</translation>
 <translation id="8602851771975208551">Otro programa en tu computadora agregó una app que puede cambiar el funcionamiento de Chrome.</translation>
-<translation id="8604513817270995005">Te ayuda a escribir contenido de formato corto para elementos de la Web, como opiniones. El contenido sugerido se basa en tus indicaciones y en el contenido de la página web. Para usar esta función, haz clic con el botón derecho en un cuadro de texto.</translation>
+<translation id="8604513817270995005">Te ayuda a escribir contenido breve para elementos de la Web, como opiniones. El contenido sugerido se basa en tus indicaciones y en el contenido de la página web. Para usar esta función, haz clic con el botón derecho en un cuadro de texto.</translation>
 <translation id="8605428685123651449">Memoria SQLite</translation>
 <translation id="8607171490667464784">Mientras esté inactivo y usando la batería</translation>
 <translation id="8607828412110648570">Asegúrate de que tu dispositivo Bluetooth esté cerca y tenga el modo de vinculación activado. Vincúlate solo con dispositivos de confianza. Todas las cuentas de esta Chromebook pueden ver los dispositivos vinculados. <ph name="BEGIN_LINK_LEARN_MORE" />Más información<ph name="END_LINK_LEARN_MORE" /></translation>

@@ -66,6 +66,7 @@
 <translation id="2228071138934252756">Untuk membolehkan <ph name="APP_NAME" /> mengakses kamera anda, hidupkan juga kamera dalam <ph name="BEGIN_LINK" />Tetapan Android<ph name="END_LINK" />.</translation>
 <translation id="2235344399760031203">Kuki pihak ketiga disekat</translation>
 <translation id="2238944249568001759">Carian cadangan berdasarkan tab terakhir anda</translation>
+<translation id="2241587408274973373">Kad halaman tab baharu</translation>
 <translation id="2241634353105152135">Hanya sekali</translation>
 <translation id="2253414712144136228">Alih keluar <ph name="NAME_OF_LIST_ITEM" /></translation>
 <translation id="2253989982043948086">{NUM_SELECTED,plural, =1{1 laman disekat}other{# laman disekat}}</translation>
@@ -281,6 +282,7 @@
 <translation id="5706552988683188916">Tindakan ini memadamkan kuki dan data laman lain untuk <ph name="WEBSITE" /></translation>
 <translation id="5723967018671998714">Kuki pihak ketiga disekat dalam mod Inkognito</translation>
 <translation id="5740126560802162366">Laman boleh menyimpan data pada peranti anda</translation>
+<translation id="5749158352074143502">Teruskan dengan tab ini</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" /> disekat</translation>
 <translation id="5804241973901381774">Kebenaran</translation>
 <translation id="5844448279347999754">Apabila dihidupkan, laman dapat meminta untuk melihat teks dan imej yang disimpan pada papan keratan anda. Apabila dimatikan, laman tidak dapat melihat teks atau imej pada papan keratan anda.</translation>
@@ -421,6 +423,7 @@
 <translation id="7990211076305263060">Apabila dihidupkan, laman dapat meminta untuk menggunakan mikrofon anda. Apabila dimatikan, laman tidak dapat menggunakan mikrofon anda.</translation>
 <translation id="8007176423574883786">Dimatikan untuk peranti ini</translation>
 <translation id="802154636333426148">Muat turun gagal</translation>
+<translation id="8024161440284949905">Teruskan dengan tab ini</translation>
 <translation id="8042586301629853791">Isih mengikut:</translation>
 <translation id="8067883171444229417">Mainkan video</translation>
 <translation id="8068648041423924542">Tidak dapat memilih sijil.</translation>

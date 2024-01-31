@@ -12,6 +12,7 @@
 <translation id="1024111578869940408">Penyerang terkadang meniru situs dengan membuat perubahan yang sulit terlihat pada alamat web.</translation>
 <translation id="1024913885641459127">Ulasan Produk &amp; Perbandingan Harga</translation>
 <translation id="1028781062521375153">Lihat detail</translation>
+<translation id="102916930470544692">Kunci sandi</translation>
 <translation id="1030706264415084469"><ph name="URL" /> ingin menyimpan data berukuran besar di perangkat Anda secara permanen</translation>
 <translation id="1030949145805074938">{COUNT,plural, =0{Tidak ada}=1{Dari 1 situs. Anda akan logout dari sebagian besar situs. }other{Dari # situs. Anda akan logout dari sebagian besar situs. }}</translation>
 <translation id="1033329911862281889">Mode Samaran tidak membuat Anda tidak terlihat secara online:
@@ -397,6 +398,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="1711528724596764268">Machine learning &amp; kecerdasan buatan</translation>
 <translation id="1712552549805331520"><ph name="URL" /> ingin menyimpan data di komputer lokal Anda secara permanen</translation>
 <translation id="1713628304598226412">Baki 2</translation>
+<translation id="1713819065634160212">Simpan dan gunakan Alamat dari Akun Google Anda</translation>
 <translation id="1714807406136741351">Mode jelajah, Anda dapat beralih ke mode Formulir untuk menggunakan panah kiri/kanan guna meninjau perubahan harga pada grafik</translation>
 <translation id="1717218214683051432">Sensor gerakan</translation>
 <translation id="1717494416764505390">Kotak surat 3</translation>
@@ -1088,6 +1090,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="3120807611504813890">Amplop (Ringan)</translation>
 <translation id="3121994479408824897">Buka <ph name="DOMAIN" /></translation>
 <translation id="3126023634486644099">Label (Permanen)</translation>
+<translation id="3133565499688974786"><ph name="SEARCH_ENGINE_NAME" /> kini menjadi mesin telusur default Anda</translation>
 <translation id="3140646734028448730">Layanan Bisnis</translation>
 <translation id="3141093262818886744">Tetap buka</translation>
 <translation id="3141641372357166056">Tidak ada keputusan izin</translation>
@@ -1510,6 +1513,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="3943857333388298514">Sisipkan</translation>
 <translation id="3946209740501886391">Selalu tanyakan pada situs ini</translation>
 <translation id="3948588869002647271">Aplikasi ini tidak ada atau rusak</translation>
+<translation id="3949297482798028668">Administrator Anda memblokir penempelan konten ini ke sini.</translation>
 <translation id="3949571496842715403">Server ini tidak dapat membuktikan bahwa ini adalah <ph name="DOMAIN" />; sertifikat keamanannya tidak menyebutkan Nama Alternatif Subjek. Hal ini dapat disebabkan oleh kesalahan konfigurasi atau penyerang memotong sambungan Anda.</translation>
 <translation id="3949601375789751990">Histori browsing Anda muncul di sini</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
@@ -1926,6 +1930,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="4764680219299728632">Kompor, Pemanggang, &amp; Oven</translation>
 <translation id="4764776831041365478">Halaman web di <ph name="URL" /> mungkin sedang tidak aktif untuk sementara atau dipindahkan secara permanen ke alamat web baru.</translation>
 <translation id="4766713847338118463">Dua jepretan di bawah</translation>
+<translation id="4768864802656530630">Log sistem mendetail. <ph name="BEGIN_LINK" />Pelajari lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="4771973620359291008">Terjadi error yang tidak diketahui.</translation>
 <translation id="4774055414220872623">Perlengkapan Kesenian &amp; Kerajinan</translation>
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{Pop-up diblokir}other{# pop-up diblokir}}</translation>
@@ -2231,6 +2236,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="5377026284221673050">"Jam Anda terlalu lambat" atau "Jam Anda terlalu cepat" atau "&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;"</translation>
 <translation id="5383478552402031184">Pekerjaan Lantai</translation>
 <translation id="5385857628869214740">Humor</translation>
+<translation id="5385966243497224160">Tidak dapat melihat pratinjau URL non-HTTPS</translation>
 <translation id="5386426401304769735">Rantai sertifikat untuk situs ini berisi sertifikat yang ditandatangani menggunakan SHA-1.</translation>
 <translation id="5392506727170022660">Logam (Semi-Kilap)</translation>
 <translation id="5396631636586785122">Jahitan tepi di kanan</translation>
@@ -2454,6 +2460,8 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="5838732667866024867">Anda dapat menggunakan panah kiri/kanan untuk meninjau perubahan harga pada grafik</translation>
 <translation id="5840318881868981258">Di Akun Google Anda, <ph name="ACCOUNT" /></translation>
 <translation id="5841338463993781099">Simpan di akun?</translation>
+<translation id="5843987376989109187">Bahasa ini belum didukung.
+    <ph name="BEGIN_LINK" />Pelajari lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="5847181246682413476">Catu Daya Listrik</translation>
 <translation id="5851548754964597211">Daftar tab</translation>
 <translation id="5852909432155870672">RA4</translation>
@@ -3177,6 +3185,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="7244465398154211886">{NUM_MATCHES,plural, =1{# kecocokan}other{# kecocokan}}</translation>
 <translation id="724691107663265825">Situs yang akan dibuka berisi software perusak</translation>
 <translation id="7251437084390964440">Konfigurasi jaringan tidak mematuhi standar ONC. Sebagian konfigurasi mungkin tidak diimpor. Detail tambahan: <ph name="DEBUG_INFO" /></translation>
+<translation id="7251635775446614726">Administrator Anda menyatakan: "<ph name="CUSTOM_MESSAGE" />"</translation>
 <translation id="7256634549594854023">Baki Belakang</translation>
 <translation id="725866823122871198">Sambungan pribadi ke <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> tidak dapat dibuat karena tanggal dan waktu (<ph name="DATE_AND_TIME" />) komputer Anda tidak benar.</translation>
 <translation id="7260075294900977274">Folder cerdas baru yang membantu Anda menyimpan semua halaman belanja di satu tempat, dan otomatis memantau harga, mendapatkan analisis harga, dan lainnya</translation>
@@ -3663,6 +3672,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="8194797478851900357">&amp;Urungkan Pemindahan</translation>
 <translation id="8194956568907463262">Game Menembak</translation>
 <translation id="8199437620497683918">Cakram Optis (Mengilap)</translation>
+<translation id="8199730148066603000">Pratinjau URL non-HTTPS tidak diizinkan.</translation>
 <translation id="8200772114523450471">Lanjutkan</translation>
 <translation id="8202097416529803614">Ringkasan pesanan</translation>
 <translation id="8202370299023114387">Konflik</translation>
@@ -4098,6 +4108,8 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="9049981332609050619">Anda berupaya menjangkau <ph name="DOMAIN" />, tetapi server menyajikan sertifikat yang tidak valid.</translation>
 <translation id="9050666287014529139">Frasa sandi</translation>
 <translation id="9051072642122229460">Mesin Pembuat Kopi &amp; Espreso</translation>
+<translation id="9051260467258969162"><ph name="BEGIN_LINK" />Login<ph name="END_LINK" /> 
+    lagi, lalu kembali ke tab ini untuk mendapatkan bantuan menulis</translation>
 <translation id="9053840549256861041">Kami meluncurkan fitur privasi iklan baru yang disebut pengukuran iklan. Chrome hanya membagikan informasi yang sangat terbatas antar situs, seperti kapan iklan ditampilkan kepada Anda, untuk membantu situs mengukur performa iklan.</translation>
 <translation id="9056953843249698117">Toko</translation>
 <translation id="9062620674789239642">File mungkin telah dipindahkan, diedit, atau dihapus.</translation>

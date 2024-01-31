@@ -111,6 +111,7 @@
 <translation id="1078037449555275327">Setări ChromeVox</translation>
 <translation id="1079285777677001938">Este posibil ca funcțiile de pe anumite site-uri să nu ruleze.</translation>
 <translation id="1079766198702302550">Blocați întotdeauna accesul la cameră</translation>
+<translation id="1080365971383768617">Parole disponibile pe toate dispozitivele</translation>
 <translation id="1081956462909987459">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> – o filă}few{<ph name="GROUP_TITLE" /> – # file}other{<ph name="GROUP_TITLE" /> – # de file}}</translation>
 <translation id="1082214733466244292">Administratorul a blocat unele funcții pentru acest dispozitiv</translation>
 <translation id="1082398631555931481"><ph name="THIRD_PARTY_TOOL_NAME" /> dorește să restabilească setările Chrome la valorile inițiale. Astfel, pagina de pornire, pagina Filă nouă și motorul de căutare vor fi resetate, extensiile vor fi dezactivate și fixarea filelor va fi anulată. De asemenea, vor fi șterse alte date temporare și memorate în cache, cum ar fi cookie-urile, conținutul și datele despre site-uri.</translation>
@@ -5158,6 +5159,7 @@ Folosește Ctrl + Alt + tasta de reducere a luminozității pentru a micșora.</
 <translation id="4953808748584563296">Avatar portocaliu prestabilit</translation>
 <translation id="4955707703665801001">Vizibilitatea pentru <ph name="FEATURE_NAME" /></translation>
 <translation id="4955710816792587366">Alege codul PIN</translation>
+<translation id="4956847150856741762">1</translation>
 <translation id="4959262764292427323">Parolele sunt salvate în Contul tău Google, astfel încât să le poți folosi pe orice dispozitiv</translation>
 <translation id="4960020053211143927">Nu este acceptată de unele aplicații</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> – <ph name="PROFILE_NAME" /></translation>
@@ -8265,7 +8267,6 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="7424153922653300265">Economisirea energiei este activată</translation>
 <translation id="7424818322350938336">Rețeaua a fost adăugată</translation>
 <translation id="7425037327577270384">Ajută-mă să scriu</translation>
-<translation id="7425292366411265498">Extensiile instalate de administrator pot în continuare să citească și să modifice site-uri</translation>
 <translation id="7427315069950454694">amintirile tale pentru astăzi</translation>
 <translation id="7427348830195639090">Pagină de fundal: <ph name="BACKGROUND_PAGE_URL" /></translation>
 <translation id="7427798576651127129">Apel de la <ph name="DEVICE_NAME" /></translation>

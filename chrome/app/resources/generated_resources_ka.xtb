@@ -111,6 +111,7 @@
 <translation id="1078037449555275327">ChromeVox-ის პარამეტრები</translation>
 <translation id="1079285777677001938">ფუნქციებმა, შესაძლოა, არ იმუშაოს ზოგიერთ საიტზე.</translation>
 <translation id="1079766198702302550">ყოველთვის დაიბლოკოს კამერაზე წვდომა</translation>
+<translation id="1080365971383768617">პაროლები თქვენს ყველა მოწყობილობაზე</translation>
 <translation id="1081956462909987459">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> — 1 ჩანართი}other{<ph name="GROUP_TITLE" /> — # ჩანართი}}</translation>
 <translation id="1082214733466244292">თქვენმა ადმინისტრატორმა დაბლოკა ზოგიერთი ფუნქცია ამ მოწყობილობისთვის</translation>
 <translation id="1082398631555931481"><ph name="THIRD_PARTY_TOOL_NAME" />-ს სურს თქვენი პარამეტრების საწყის მნიშვნელობებზე დაბრუნდება. ეს მოქმედება გადააყენებს თქვენს მთავარ გვერდს, ახალი ჩანართის გვერდსა და საძიებო სისტემას, ასევე გაითიშება გაფართოებები და მოიხსენება ყველა ჩანართის ჩამაგრება. ეს მოქმედება გაასუფთავებს სხვა დროებით და ქეშირებულ მონაცემებსაც, როგორიცაა ქუქი-ჩანაწერები, კონტენტი და საიტების მონაცემები.</translation>
@@ -5157,6 +5158,7 @@
 <translation id="4953808748584563296">ნაგულისხმევი სტაფილოსფერი ავატარი</translation>
 <translation id="4955707703665801001">ხილვადობა ფუნქციაში „<ph name="FEATURE_NAME" />“</translation>
 <translation id="4955710816792587366">აირჩიეთ PIN-კოდი</translation>
+<translation id="4956847150856741762">1</translation>
 <translation id="4959262764292427323">პაროლები ინახება თქვენს Google ანგარიშში, რაც ნიშნავს, რომ მათი გამოყენება ნებისმიერ მოწყობილობაზე შეგიძლიათ</translation>
 <translation id="4960020053211143927">მხარდაუჭერელია ზოგიერთი აპის მიერ</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> — <ph name="PROFILE_NAME" /></translation>
@@ -8261,7 +8263,6 @@
 <translation id="7424153922653300265">ენერგიის დამზოგი ჩაირთო</translation>
 <translation id="7424818322350938336">ქსელი დამატებულია</translation>
 <translation id="7425037327577270384">დამეხმარეთ დაწერაში</translation>
-<translation id="7425292366411265498">თქვენი ადმინისტრატორის მიერ დაინსტალირებულ გაფართოებებს კვლავ შეუძლია საიტების წაკითხვა და შეცვლა</translation>
 <translation id="7427315069950454694">თქვენი მოგონებები დღეისთვის</translation>
 <translation id="7427348830195639090">ფონის გვერდი: <ph name="BACKGROUND_PAGE_URL" /></translation>
 <translation id="7427798576651127129">ზარი <ph name="DEVICE_NAME" />-ისგან</translation>

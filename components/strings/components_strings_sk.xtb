@@ -12,6 +12,7 @@
 <translation id="1024111578869940408">Útočníci niekedy weby napodobňujú tak, že vo webovej adrese vykonajú ťažko odhaliteľné zmeny.</translation>
 <translation id="1024913885641459127">Recenzie produktov a porovnanie cien</translation>
 <translation id="1028781062521375153">Zobraziť podrobnosti</translation>
+<translation id="102916930470544692">Prístupový kľúč</translation>
 <translation id="1030706264415084469"><ph name="URL" /> chce natrvalo ukladať veľké množstvo dát vo vašom zariadení</translation>
 <translation id="1030949145805074938">{COUNT,plural, =0{Žiadne}=1{Z jedného webu. Touto akciou sa odhlásite z väčšiny webov. }few{Z # webov. Touto akciou sa odhlásite z väčšiny webov. }many{From # sites. Signs you out of most sites. }other{Z # webov. Touto akciou sa odhlásite z väčšiny webov. }}</translation>
 <translation id="1033329911862281889">Režim inkognito neznamená, že vás na internete nie je vidieť:
@@ -3174,6 +3175,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="7251437084390964440">Konfigurácia siete nie je v súlade so štandardom ONC. Niektoré časti konfigurácie sa nemusia importovať.
 Ďalšie podrobnosti:
 <ph name="DEBUG_INFO" /></translation>
+<translation id="7251635775446614726">Toto je správa od vášho správcu: <ph name="CUSTOM_MESSAGE" />.</translation>
 <translation id="7256634549594854023">Zadný zásobník</translation>
 <translation id="725866823122871198">Súkromné pripojenie k doméne <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> sa nedá nadviazať, pretože dátum a čas (<ph name="DATE_AND_TIME" />) vášho počítača sú nesprávne.</translation>
 <translation id="7260075294900977274">Nový inteligentný priečinok, ktorý vám pomáha ukladať všetky nákupné stránky na jednom mieste, automaticky sledovať ceny, získavať cenové štatistiky a viac</translation>

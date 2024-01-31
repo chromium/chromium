@@ -12,6 +12,7 @@
 <translation id="1024111578869940408">Aanvallers boots soms werwe na deur veranderinge aan die webadres te maak wat moeilik is om te sien.</translation>
 <translation id="1024913885641459127">Produkresensies en prysvergelykings</translation>
 <translation id="1028781062521375153">Sien besonderhede</translation>
+<translation id="102916930470544692">Wagwoordsleutel</translation>
 <translation id="1030706264415084469"><ph name="URL" /> wil groot data permanent op jou toestel berg</translation>
 <translation id="1030949145805074938">{COUNT,plural, =0{Geen}=1{Van 1 werf af. Meld jou by die meeste werwe af. }other{Van # werwe af. Meld jou by die meeste werwe af. }}</translation>
 <translation id="1033329911862281889">Incognito maak jou nie onsigbaar aanlyn nie:
@@ -3179,6 +3180,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="7251437084390964440">Die netwerkopstelling voldoen nie aan die ONC-standaard nie. Dele van die opstelling sal dalk nie ingevoer word nie.
 Bykomende besonderhede:
 <ph name="DEBUG_INFO" /></translation>
+<translation id="7251635775446614726">Jou administrateur sê: "<ph name="CUSTOM_MESSAGE" />"</translation>
 <translation id="7256634549594854023">Agterste laai</translation>
 <translation id="725866823122871198">'n Private verbinding aan <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> kan nie gevestig word nie omdat jou rekenaar se datum en tyd (<ph name="DATE_AND_TIME" />) verkeerd is.</translation>
 <translation id="7260075294900977274">’n Nuwe slim vouer wat jou help om al jou inkopiebladsye op een plek te stoor en outomaties pryse dop te hou, prysinsigte te kry, en nog meer</translation>

@@ -334,6 +334,7 @@
 <translation id="2870560284913253234">网站</translation>
 <translation id="2871733351037274014">预加载网页</translation>
 <translation id="2876136027428473467"><ph name="CHILD_NAME" />请求您批准访问此网站：</translation>
+<translation id="2876194821763651818">密码已保存到 <ph name="USERNAME" /> 中。</translation>
 <translation id="2876628302275096482">详细了解 <ph name="BEGIN_LINK" />Chrome 如何确保您数据的私密性<ph name="END_LINK" /></translation>
 <translation id="2888126860611144412">关于 Chrome</translation>
 <translation id="2891154217021530873">停止加载网页</translation>
@@ -672,6 +673,7 @@
 <translation id="4699172675775169585">缓存的图片和文件</translation>
 <translation id="4710167854527459075">按从新到旧排序</translation>
 <translation id="4719927025381752090">提供翻译</translation>
+<translation id="4720556299488643018">退订</translation>
 <translation id="4732120983431207637">堆栈展开程序</translation>
 <translation id="4736934858538408121">虚拟卡</translation>
 <translation id="473775607612524610">更新</translation>
@@ -1194,6 +1196,7 @@
 <translation id="7313188324932846546">点按即可设置同步</translation>
 <translation id="7324354302972299151">发送“Do Not Track”请求</translation>
 <translation id="7332075081379534664">登录成功</translation>
+<translation id="7333041109965360609">已退订通知</translation>
 <translation id="7333232495927792353">同步即可获取 Google 提供的与您最相关的内容</translation>
 <translation id="7339898014177206373">打开新的窗口</translation>
 <translation id="7340958967809483333">“探索”功能的选项</translation>
@@ -1452,6 +1455,7 @@
 <translation id="8503813439785031346">用户名</translation>
 <translation id="8505766168025405649">查看与下载状态有关的通知</translation>
 <translation id="8506357771923193001">您下载的内容会显示在此处</translation>
+<translation id="8512053371384421952">您将不会再收到来自 <ph name="DOMAIN" /> 的通知。</translation>
 <translation id="8514477925623180633">导出存储在 Chrome 中的密码</translation>
 <translation id="8516012719330875537">图片编辑器</translation>
 <translation id="8523928698583292556">删除存储的密码</translation>
@@ -1536,6 +1540,7 @@
 <translation id="8996847606757455498">另选一个提供商</translation>
 <translation id="8998289560386111590">在您的设备上不可用</translation>
 <translation id="8998729206196772491">您正要登录由 <ph name="MANAGED_DOMAIN" /> 管理的账号，并要授权其管理员控制您的 Chrome 数据。您的数据将与此账号永久关联。退出 Chrome 后，您的数据将从这台设备上删除，但仍会保留在您的 Google 账号中。</translation>
+<translation id="8998837250940831980">无法将标签页最小化。请稍后再试。</translation>
 <translation id="9012585441087414258">防范已知危险的网站、下载内容和扩展程序。如果发现某个网页有可疑之处，系统会将相应网址连同少量网页内容发送到“Google 安全浏览”功能进行检查。</translation>
 <translation id="9019199799064251516">不设置车载设备个人资料锁定就继续吗？</translation>
 <translation id="9022774213089566801">经常访问</translation>

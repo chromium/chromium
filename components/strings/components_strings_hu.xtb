@@ -12,6 +12,7 @@
 <translation id="1024111578869940408">A támadók néha úgy próbálnak meg webhelyeket utánozni, hogy alig észrevehető változtatásokat végeznek a webhely címében.</translation>
 <translation id="1024913885641459127">Termékkritikák és árak összehasonlítása</translation>
 <translation id="1028781062521375153">Részletek megtekintése</translation>
+<translation id="102916930470544692">Azonosítókulcs</translation>
 <translation id="1030706264415084469">A(z) <ph name="URL" /> webhely állandó jelleggel nagy méretű adatokat szeretne tárolni az eszközön</translation>
 <translation id="1030949145805074938">{COUNT,plural, =0{Nincs}=1{1 webhelytől. A rendszer a legtöbb webhelyről kijelentkezteti. }other{# webhelytől. A rendszer a legtöbb webhelyről kijelentkezteti. }}</translation>
 <translation id="1033329911862281889">Az inkognitó mód nem teszi Önt láthatatlanná az interneten:
@@ -397,6 +398,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="1711528724596764268">Gépi tanulás és mesterséges intelligencia</translation>
 <translation id="1712552549805331520">A(z) <ph name="URL" /> webhely állandó jelleggel adatokat szeretne tárolni a helyi számítógépen</translation>
 <translation id="1713628304598226412">2. tálca</translation>
+<translation id="1713819065634160212">Jelszavak mentése és használata a Google-fiókból</translation>
 <translation id="1714807406136741351">Böngészés módban átválthat az Űrlapok módra, így a balra/jobbra nyíllal áttekintheti az árváltozásokat a diagramon</translation>
 <translation id="1717218214683051432">Mozgásérzékelők</translation>
 <translation id="1717494416764505390">3. postaláda</translation>
@@ -1087,6 +1089,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="3120807611504813890">Boríték (könnyűsúlyú)</translation>
 <translation id="3121994479408824897">Ugrás ide: <ph name="DOMAIN" /></translation>
 <translation id="3126023634486644099">Címkék (állandó)</translation>
+<translation id="3133565499688974786">Mostantól a(z) <ph name="SEARCH_ENGINE_NAME" /> az alapértelmezett keresőmotor</translation>
 <translation id="3140646734028448730">Üzleti szolgáltatás</translation>
 <translation id="3141093262818886744">Megnyitás mindenképpen</translation>
 <translation id="3141641372357166056">Nincs beleegyezési döntés</translation>
@@ -1508,6 +1511,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="3943857333388298514">Beillesztés</translation>
 <translation id="3946209740501886391">Mindig kérdezze meg ezen a webhelyen</translation>
 <translation id="3948588869002647271">Az alkalmazás hiányzik vagy sérült</translation>
+<translation id="3949297482798028668">A rendszergazda letiltotta ennek a tartalomnak az ide való beillesztését.</translation>
 <translation id="3949571496842715403">A szerver nem tudta bizonyítani, hogy valóban a(z) <ph name="DOMAIN" /> domainbe tartozik; biztonsági tanúsítványában nincs meghatározva a „Subject Alternative Names” mező. Ezt okozhatja konfigurációs hiba, vagy az, hogy egy támadó eltérítette az Ön kapcsolatát.</translation>
 <translation id="3949601375789751990">A böngészési előzmények itt jelennek meg</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
@@ -1924,6 +1928,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="4764680219299728632">Sütőlapok és sütők</translation>
 <translation id="4764776831041365478">A <ph name="URL" /> weboldal ideiglenesen nem érhető el, vagy véglegesen új címre költözött.</translation>
 <translation id="4766713847338118463">Kettő kapocs alul</translation>
+<translation id="4768864802656530630">Részletes rendszernaplók. <ph name="BEGIN_LINK" />További információ<ph name="END_LINK" />.</translation>
 <translation id="4771973620359291008">Ismeretlen hiba történt.</translation>
 <translation id="4774055414220872623">Kézműves kellékek</translation>
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{Előugró ablak letiltva}other{# előugró ablak letiltva}}</translation>
@@ -2229,6 +2234,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="5377026284221673050">„Az óra késik”, „Az óra siet” vagy „&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;”</translation>
 <translation id="5383478552402031184">Padlóburkolás</translation>
 <translation id="5385857628869214740">Humor</translation>
+<translation id="5385966243497224160">Nem lehet megjeleníteni a nem HTTPS URL-ek előnézetét</translation>
 <translation id="5386426401304769735">A webhely tanúsítványlánca SHA-1 titkosítással aláírt tanúsítványt tartalmaz.</translation>
 <translation id="5392506727170022660">Fém (félig fényes)</translation>
 <translation id="5396631636586785122">Éltűzés a jobb oldalon</translation>
@@ -2452,6 +2458,8 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="5838732667866024867">A balra/jobbra nyíllal áttekintheti a diagramon ábrázolt árváltozásokat</translation>
 <translation id="5840318881868981258">A Google-fiókjában (<ph name="ACCOUNT" />)</translation>
 <translation id="5841338463993781099">Mentés a fiókba?</translation>
+<translation id="5843987376989109187">Ez a nyelv még nem támogatott.
+    <ph name="BEGIN_LINK" />További információ<ph name="END_LINK" />.</translation>
 <translation id="5847181246682413476">Tápegységek</translation>
 <translation id="5851548754964597211">Laplista</translation>
 <translation id="5852909432155870672">RA4</translation>
@@ -3177,6 +3185,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="7251437084390964440">A hálózati konfiguráció nem felel meg az ONC szabványnak. A konfiguráció egyes részeit nem lehet importálni.
 További részletek:
 <ph name="DEBUG_INFO" /></translation>
+<translation id="7251635775446614726">A rendszergazda üzenete: „<ph name="CUSTOM_MESSAGE" />”</translation>
 <translation id="7256634549594854023">Hátsó tálca</translation>
 <translation id="725866823122871198">Nem hozható létre privát kapcsolat a következővel: <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" />, mert a számítógép dátum- és időbeállítása helytelen (<ph name="DATE_AND_TIME" />).</translation>
 <translation id="7260075294900977274">Új intelligens mappa, amelynek segítségével egy helyen mentheti az összes vásárlási oldalát, automatikusan nyomon követheti az árakat, valamint árváltozásokról és -összehasonlításokról szóló értesítéseket, illetve egyéb információkat tekinthet meg</translation>
@@ -3663,6 +3672,7 @@ További részletek:
 <translation id="8194797478851900357">&amp;Áthelyezés visszavonása</translation>
 <translation id="8194956568907463262">Lövöldözős játékok</translation>
 <translation id="8199437620497683918">Optikai lemez (fényes)</translation>
+<translation id="8199730148066603000">A nem HTTPS URL-ek előnézete nem engedélyezett.</translation>
 <translation id="8200772114523450471">Folytatás</translation>
 <translation id="8202097416529803614">Rendelés összegzése</translation>
 <translation id="8202370299023114387">Ütközés</translation>
@@ -4101,6 +4111,8 @@ További részletek:
 <translation id="9049981332609050619">Megpróbálta elérni a(z) <ph name="DOMAIN" /> webhelyet, de a szerver érvénytelen tanúsítványt mutatott be.</translation>
 <translation id="9050666287014529139">Összetett jelszó</translation>
 <translation id="9051072642122229460">Kávé- és eszpresszógépek</translation>
+<translation id="9051260467258969162"><ph name="BEGIN_LINK" />Jelentkezzen be<ph name="END_LINK" />
+    újra, majd térjen vissza erre a lapra, hogy segítséget kaphasson az írással kapcsolatban</translation>
 <translation id="9053840549256861041">Új, hirdetésekhez kapcsolódó adatvédelmi funkciót vezetünk be, melynek neve hirdetésmérés. A Chrome csak nagyon korlátozott információkat oszt meg webhelyek között (például arról, hogy mikor jelent meg Önnek egy adott hirdetés), hogy segítsen a webhelyeknek a hirdetések teljesítményének mérésében.</translation>
 <translation id="9056953843249698117">Áruház</translation>
 <translation id="9062620674789239642">Előfordulhat, hogy át lett helyezve, illetve szerkesztve vagy törölve lett</translation>

@@ -111,6 +111,7 @@
 <translation id="1078037449555275327">ChromeVox-н тохиргоо</translation>
 <translation id="1079285777677001938">Зарим сайтын онцлогууд ажиллахгүй байж магадгүй.</translation>
 <translation id="1079766198702302550">Камерын оролтыг үргэлж хориглож байх</translation>
+<translation id="1080365971383768617">Таны бүх төхөөрөмж дээрх нууц үгнүүд</translation>
 <translation id="1081956462909987459">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> - 1 таб}other{<ph name="GROUP_TITLE" /> - # таб}}</translation>
 <translation id="1082214733466244292">Таны администратор энэ төхөөрөмжид зарим функцийг блоклосон</translation>
 <translation id="1082398631555931481"><ph name="THIRD_PARTY_TOOL_NAME" /> нь таны Chrome-н тохиргоог өгөгдмөл хэлбэрт тохируулахыг хүсэж байна. Энэхүү тохиргоо нь таны үндсэн нүүр хуудас, шинэ цонх болон хайлтын системийн тохиргоог өөрчлөх бөгөөд таны өргөтгөлийн идэвхгүй болгож бүх цонхыг unpin хиих болно. Энэхүү тохиргоо нь күүки, мэдээлэл болон бусад сайтын мэдээлэл зэрэг түр болон хадгалагдсан бүх мэдээллийг арилгах болно.</translation>
@@ -3206,7 +3207,7 @@
 <translation id="3434272557872943250">Хэрэв таны хүүхдийн Веб, аппын нэмэлт үйл ажиллагааны тохиргоо асаалттай байвал энэ өгөгдлийг түүний Google Бүртгэлд хадгалж болзошгүй. Эдгээр тохиргооны талаар болон тэднийг хэрхэн тохируулах тухай нэмэлт мэдээллийг families.google.com дээрээс авна уу.</translation>
 <translation id="3434475275396485144">Энэ тохиргоог таны утасны администратор удирддаг</translation>
 <translation id="3434512374684753970">Аудио болон видео</translation>
-<translation id="3435381311628654443">Микрофоны зөвшөөрөл болон системийн үйлчилгээнүүдтэй апп, вебсайтуудад хандахыг зөвшөөрөх</translation>
+<translation id="3435381311628654443">Микрофоны зөвшөөрөл болон системийн үйлчилгээнүүдтэй апп, вебсайтуудад хандахыг зөвшөөрнө үү</translation>
 <translation id="3435688026795609344">"<ph name="EXTENSION_NAME" />" таны <ph name="CODE_TYPE" />-г хүсэж байна</translation>
 <translation id="3435738964857648380">Нууцлал</translation>
 <translation id="343578350365773421">Цаас дууссан</translation>
@@ -5168,6 +5169,7 @@
 <translation id="4953808748584563296">Өгөгдмөл улбар шар аватар</translation>
 <translation id="4955707703665801001"><ph name="FEATURE_NAME" />-н харагдац</translation>
 <translation id="4955710816792587366">ПИН-ээ сонгох</translation>
+<translation id="4956847150856741762">1</translation>
 <translation id="4959262764292427323">Нууц үгнүүдийr таны Google Бүртгэлд хадгалсан тул тэдгээрийг та дурын төхөөрөмжид ашиглаж болно</translation>
 <translation id="4960020053211143927">Зарим апп дэмждэггүй</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
@@ -6084,7 +6086,7 @@
 <translation id="5691581861107245578">Бичиж буй зүйл дээрээ тулгуурлан эможигийн санал аваарай</translation>
 <translation id="5691772641933328258">Хурууны хээг таньсангүй</translation>
 <translation id="5692183275898619210">Хэвлэж дууслаа</translation>
-<translation id="5693237475389615913">Chrome-д сайтын микрофоны зөвшөөрлүүдийг удирдах</translation>
+<translation id="5693237475389615913">Chrome-д сайтын микрофоны зөвшөөрлүүдийг удирдана уу</translation>
 <translation id="5693255400847650006">Микрофоныг ашиглаж байна</translation>
 <translation id="5695184138696833495">Linux-н Андройд аппын ADB</translation>
 <translation id="5696143504434933566">"<ph name="EXTENSION_NAME" />"-н зохисгүй үйлдлийг мэдээлэх</translation>
@@ -8272,7 +8274,6 @@
 <translation id="7424153922653300265">Эрчим хүч хэмнэгчийг асаасан</translation>
 <translation id="7424818322350938336">Сүлжээ нэмсэн</translation>
 <translation id="7425037327577270384">Надад бичихэд тусал</translation>
-<translation id="7425292366411265498">Танай администраторын суулгасан өргөтгөлүүд сайтуудыг унших болон өөрчлөх боломжтой хэвээр байна</translation>
 <translation id="7427315069950454694">таны өнөөдрийн дурсамжууд</translation>
 <translation id="7427348830195639090">Дэвсгэр хуудас: <ph name="BACKGROUND_PAGE_URL" /></translation>
 <translation id="7427798576651127129"><ph name="DEVICE_NAME" />-c дуудлага хийх</translation>

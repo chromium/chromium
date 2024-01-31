@@ -111,6 +111,7 @@
 <translation id="1078037449555275327">„ChromeVox“ nustatymai</translation>
 <translation id="1079285777677001938">Funkcijos gali neveikti kai kuriose svetainėse.</translation>
 <translation id="1079766198702302550">Visada blokuoti prieigą prie fotoaparato</translation>
+<translation id="1080365971383768617">Slaptažodžiai visuose jūsų įrenginiuose</translation>
 <translation id="1081956462909987459">{NUM_TABS,plural, =1{„<ph name="GROUP_TITLE" />“ – vienas skirtukas}one{„<ph name="GROUP_TITLE" />“ – # skirtukas}few{„<ph name="GROUP_TITLE" />“ – # skirtukai}many{„<ph name="GROUP_TITLE" />“ – # skirtuko}other{„<ph name="GROUP_TITLE" />“ – # skirtukų}}</translation>
 <translation id="1082214733466244292">Administratorius užblokavo kai kurias šio įrenginio funkcijas</translation>
 <translation id="1082398631555931481">„<ph name="THIRD_PARTY_TOOL_NAME" />“ nori atkurti „Chrome “ nustatymus į pradinius numatytuosius nustatymus. Bus iš naujo nustatyti pagrindinis puslapis, naujo skirtuko puslapis ir paieškos variklis, išjungti plėtiniai ir atsegti visi skirtukai. Taip pat bus išvalyti kiti laikini ir talpykloje esantys duomenys, pvz., slapukai, turinio ir svetainių duomenys.</translation>
@@ -5181,6 +5182,7 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="4953808748584563296">Numatytasis oranžinis pseudoportretas</translation>
 <translation id="4955707703665801001">„<ph name="FEATURE_NAME" />“ matomumas</translation>
 <translation id="4955710816792587366">PIN kodo pasirinkimas</translation>
+<translation id="4956847150856741762">1</translation>
 <translation id="4959262764292427323">Slaptažodžiai išsaugoti „Google“ paskyroje, todėl galite juos naudoti bet kuriame įrenginyje</translation>
 <translation id="4960020053211143927">Nepalaikoma kai kuriose programose</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> – <ph name="PROFILE_NAME" /></translation>
@@ -8299,7 +8301,6 @@ Turite dar # pažeistų slaptažodžių. „Google“ slaptažodžių tvarkyklė
 <translation id="7424153922653300265">Energijos taupymo priemonė įjungta</translation>
 <translation id="7424818322350938336">Tinklas pridėtas</translation>
 <translation id="7425037327577270384">Padėkite man rašyti</translation>
-<translation id="7425292366411265498">Administratoriaus įdiegti plėtiniai vis tiek galės skaityti ir keisti svetaines</translation>
 <translation id="7427315069950454694">šios dienos prisiminimus</translation>
 <translation id="7427348830195639090">Foninis puslapis: <ph name="BACKGROUND_PAGE_URL" /></translation>
 <translation id="7427798576651127129">Skambina <ph name="DEVICE_NAME" /></translation>

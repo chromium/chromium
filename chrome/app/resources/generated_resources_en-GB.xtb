@@ -111,6 +111,7 @@
 <translation id="1078037449555275327">ChromeVox settings</translation>
 <translation id="1079285777677001938">Features on some sites may not work.</translation>
 <translation id="1079766198702302550">Always block camera access</translation>
+<translation id="1080365971383768617">Passwords on all of your devices</translation>
 <translation id="1081956462909987459">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> – 1 Tab}other{<ph name="GROUP_TITLE" /> – # Tabs}}</translation>
 <translation id="1082214733466244292">Your administrator has blocked some functionality for this device</translation>
 <translation id="1082398631555931481"><ph name="THIRD_PARTY_TOOL_NAME" /> wants to restore your Chrome settings to their original defaults. This will reset your homepage, new tab page and search engine, disable your extensions and unpin all tabs. It will also clear other temporary and cached data, such as cookies, content and site data.</translation>
@@ -240,6 +241,7 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="1177073277575830464">Android quick setup is done. Continue setup on your <ph name="DEVICE_TYPE" />.</translation>
 <translation id="1177440945615690056">You can connect to any eligible mobile network in Settings</translation>
 <translation id="1177863135347784049">Customised</translation>
+<translation id="1178093605842850860">Allowed to read and change this site</translation>
 <translation id="1178581264944972037">Pause</translation>
 <translation id="1178601482396475810">Manage device sync</translation>
 <translation id="117916940443676133">Your security key is not protected with a PIN. To manage sign-in data, first create a PIN.</translation>
@@ -2614,6 +2616,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2935314715123552088">Disable active eSIM profile</translation>
 <translation id="2935654492420446828">Add a school account later</translation>
 <translation id="2936851848721175671">Backup &amp; restore</translation>
+<translation id="2938981087412273365">Not allowed to read and change this site</translation>
 <translation id="2939908794993783865">Additional inactive sites</translation>
 <translation id="2939938020978911855">Show available Bluetooth devices</translation>
 <translation id="2941112035454246133">Low</translation>
@@ -3422,6 +3425,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3602894439067790744">Read numbers as</translation>
 <translation id="3603622770190368340">Obtain network certificate</translation>
 <translation id="3605156246402033687">{COUNT,plural, =1{{COUNT} account using same password}other{{COUNT} accounts using same password}}</translation>
+<translation id="3605515937536882518">Form values updated</translation>
 <translation id="3605780360466892872">Businessman</translation>
 <translation id="3607671391978830431">For a child</translation>
 <translation id="3608460311600621471">Please enter a reason for printing this data:</translation>
@@ -4488,6 +4492,7 @@ This can include information about installed software, files, your browser and t
 <translation id="4410545552906060960">Use a number (PIN) instead of a password to unlock your device. To set your PIN later, go to Settings.</translation>
 <translation id="4411578466613447185">Code Signer</translation>
 <translation id="4411719918614785832">These passkeys are saved to Windows Hello on this computer. They aren't saved to your Google Account.</translation>
+<translation id="4412544493002546580">Try again or select from one of the inspirations below.</translation>
 <translation id="4412547955014928315">Delete site data and permissions for <ph name="SITE_NAME" /> and all sites under it?</translation>
 <translation id="4412632005703201014">Chrome apps are migrating to progressive web apps. This Chrome app was installed on your browser by your organisation. To open the progressive web app from the Apps list, first contact your administrator and ask them to uninstall the Chrome app. In the meantime, you can visit <ph name="EXTENSION_LAUNCH_URL" /> to open <ph name="EXTENSION_NAME" /> on the web.</translation>
 <translation id="4412698727486357573">Help Centre</translation>
@@ -4904,6 +4909,7 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="4744268813103118742">Go to site</translation>
 <translation id="4744571849207727284">Excel</translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{Unmute site}other{Unmute sites}}</translation>
+<translation id="4745500401920035244">Your administrator has made a system-wide change that disables some old profiles. You can no longer access this profile but can still remove it</translation>
 <translation id="474609389162964566">Access your Assistant with 'Hey Google'</translation>
 <translation id="4748783296226936791">Sites usually connect to HID devices for features that use uncommon keyboards, game controllers and other devices</translation>
 <translation id="4749960740855309258">Open a new tab</translation>
@@ -5173,6 +5179,7 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="4953808748584563296">Default orange avatar</translation>
 <translation id="4955707703665801001"><ph name="FEATURE_NAME" /> visibility</translation>
 <translation id="4955710816792587366">Choose your PIN</translation>
+<translation id="4956847150856741762">1</translation>
 <translation id="4959262764292427323">Passwords are saved in your Google Account so that you can use them on any device</translation>
 <translation id="4960020053211143927">Not supported by some apps</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> – <ph name="PROFILE_NAME" /></translation>
@@ -5449,6 +5456,7 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="5178667623289523808">Find Previous</translation>
 <translation id="5181140330217080051">Downloading</translation>
 <translation id="5181172023548002891">To Google Password Manager for <ph name="ACCOUNT" /></translation>
+<translation id="5181551096188687373">This password is saved only to this device. To use it on your other devices, save it in your Google Account, <ph name="USER_EMAIL" />.</translation>
 <translation id="5183344263225877832">Reset all HID permissions?</translation>
 <translation id="5184063094292164363">&amp;JavaScript Console</translation>
 <translation id="5184209580557088469">A ticket with this username already exists</translation>
@@ -5735,6 +5743,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="5417312524372586921">Browser themes</translation>
 <translation id="5417353542809767994">Quickly use a strong password</translation>
 <translation id="541737483547792035">Magnify screen</translation>
+<translation id="541822678830750798">Requesting to read and change this site</translation>
 <translation id="5419405654816502573">Voice match</translation>
 <translation id="5420061891386124792">Enables saving and recalling of tab groups. Right-click a tab group to save it. Recall groups from the bookmarks bar.</translation>
 <translation id="5420274697768050645">Require password to unlock device for added security</translation>
@@ -5987,6 +5996,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="560834977503641186">Wi-Fi Sync, learn more</translation>
 <translation id="5608580678041221894">Tap the following keys to adjust or move the cropping area</translation>
 <translation id="5609231933459083978">The application appears to be invalid.</translation>
+<translation id="5610867721023328944">Try again or select from one of the available themes below.</translation>
 <translation id="5611398002774823980">Save in account</translation>
 <translation id="561236229031062396"><ph name="SHORTCUT_NAME" />, <ph name="APP_FULL_NAME" /></translation>
 <translation id="5614190747811328134">User Notice</translation>
@@ -6311,6 +6321,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="586567932979200359">You're running <ph name="PRODUCT_NAME" /> from its disk image. Installing it on your computer lets you run it without the disk image and ensures that it will be kept up to date.</translation>
 <translation id="5865733239029070421">Automatically sends usage statistics and crash reports to Google</translation>
 <translation id="5868434909835797817">Microphone is off on your device</translation>
+<translation id="5868479397518301468">Sign in timed out</translation>
 <translation id="5868822853313956582">Follow device colours</translation>
 <translation id="5869029295770560994">OK, got it</translation>
 <translation id="5869522115854928033">Saved passwords</translation>
@@ -6662,6 +6673,7 @@ Permissions that you've already given to websites and apps may apply to this acc
     Visible as <ph name="QUICK_START_DEVICE_DISPLAY_NAME" />...</translation>
 <translation id="6146409560350811147">Sync isn't working. Try signing in again.</translation>
 <translation id="6147020289383635445">Print preview failed.</translation>
+<translation id="6147253937684562370">To unlock the profile sign in with your main account email: <ph name="EMAIL" /></translation>
 <translation id="6148576794665275391">Open now</translation>
 <translation id="614890671148262506">Always allow notifications from this site</translation>
 <translation id="6149015141270619212">Can't connect to the Internet</translation>
@@ -7642,6 +7654,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="6918677045355889289">Chrome OS update required</translation>
 <translation id="6919354101107095996">Try to sign in to the site. Then, download again</translation>
 <translation id="6919952941889172531">Also turn on Enhanced Safe Browsing for this Chrome profile?</translation>
+<translation id="6920473853105515518">Make sure that your <ph name="DEVICE_TYPE" /> is connected to the Internet and try again. You can also visit play.google/play-terms on another device.</translation>
 <translation id="6920989436227028121">Open as standard tab</translation>
 <translation id="6921104647315081813">Clear activities</translation>
 <translation id="692114467174262153"><ph name="ALTERNATIVE_BROWSER_NAME" /> could not be opened</translation>
@@ -8278,7 +8291,6 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7424153922653300265">Energy Saver Turned On</translation>
 <translation id="7424818322350938336">Network added</translation>
 <translation id="7425037327577270384">Help me write</translation>
-<translation id="7425292366411265498">Extensions installed by your administrator can still read and change sites</translation>
 <translation id="7427315069950454694">your memories for today</translation>
 <translation id="7427348830195639090">Background Page: <ph name="BACKGROUND_PAGE_URL" /></translation>
 <translation id="7427798576651127129">Call from <ph name="DEVICE_NAME" /></translation>
@@ -8773,6 +8785,7 @@ Press an assigned switch or key to remove assignment.</translation>
 
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="7789963078219276159">Start page background has been changed to <ph name="CATEGORY" />.</translation>
+<translation id="7791269138074599214">Input method</translation>
 <translation id="7791429245559955092">This application will be installed on your currently-used Chrome profile</translation>
 <translation id="7791436592012979144">Reverse scrolling enabled</translation>
 <translation id="7791543448312431591">Add</translation>
@@ -8865,6 +8878,7 @@ Press an assigned switch or key to remove assignment.</translation>
 <translation id="7861215335140947162">&amp;Downloads</translation>
 <translation id="7861846108263890455">Google Account language</translation>
 <translation id="7864539943188674973">Disable Bluetooth</translation>
+<translation id="7864825798076155402">Save in your Google Account?</translation>
 <translation id="7865127013871431856">Translate options</translation>
 <translation id="786957569166715433"><ph name="DEVICE_NAME" /> – Paired</translation>
 <translation id="7869655448736341731">Any</translation>
@@ -10045,6 +10059,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8756969031206844760">Update password?</translation>
 <translation id="8757368836647541092"><ph name="USER_NAME_OR_EMAIL" /> removed</translation>
 <translation id="8759753423332885148">Learn more.</translation>
+<translation id="876161309768861172">Couldn't sign you in, please try again</translation>
 <translation id="8761945298804995673">This user already exists</translation>
 <translation id="8762886931014513155">Your <ph name="DEVICE_TYPE" /> needs an update</translation>
 <translation id="8763927697961133303">USB device</translation>
@@ -10555,6 +10570,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="9138978632494473300">Add shortcuts to the following places:</translation>
 <translation id="9139988741193276691">Configuring Linux</translation>
 <translation id="9140067245205650184">You are using an unsupported feature flag: <ph name="BAD_FLAG" />. Stability and security will suffer.</translation>
+<translation id="914031120300235526">Can't unlock the profile</translation>
 <translation id="9142637293078737510">Image alias</translation>
 <translation id="9143298529634201539">Remove suggestion?</translation>
 <translation id="9143922477019434797">Protect your passwords</translation>
@@ -10683,6 +10699,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="951991426597076286">Decline</translation>
 <translation id="952471655966876828">Device will connect automatically when it's turned on and is being used</translation>
 <translation id="953434574221655299">Allowed to know when you're actively using your device</translation>
+<translation id="954749761428814584">Language and input method</translation>
 <translation id="956500788634395331">You're protected from potentially harmful extensions</translation>
 <translation id="957179356621191750">6-dot</translation>
 <translation id="957960681186851048">This site attempted to download multiple files automatically</translation>

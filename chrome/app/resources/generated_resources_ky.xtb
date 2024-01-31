@@ -111,6 +111,7 @@
 <translation id="1078037449555275327">ChromeVox параметрлери</translation>
 <translation id="1079285777677001938">Функциялар айрым сайттарда иштебеши мүмкүн.</translation>
 <translation id="1079766198702302550">Камераны колдонуу мүмкүнчүлүгү ар дайым бөгөттөлсүн</translation>
+<translation id="1080365971383768617">Бардык түзмөктөрүңүздөгү сырсөздөр</translation>
 <translation id="1081956462909987459">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> – 1 өтмөк}other{<ph name="GROUP_TITLE" /> – # өтмөк}}</translation>
 <translation id="1082214733466244292">Администраторуңуз бул түзмөктөгү айрым функцияларды бөгөттөп койду</translation>
 <translation id="1082398631555931481"><ph name="THIRD_PARTY_TOOL_NAME" /> Chrome параметрлериңизди демейки параметрлерге кайтарайын деп жатат. Ушуну менен башкы барагыңыз, жаңы өтмөк барагыңыз жана издөө куралыңыз кайра коюлуп, кеңейтүүлөрүңүз өчүрүлөт жана өтмөктөрдүн баары бошотулат. Мындан тышкары, кукилер, мазмун жана сайт дайындары сыяктуу убактылуу жана кештелген дайындардын баары тазаланат.</translation>
@@ -5173,6 +5174,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="4953808748584563296">Демейки ток сары аватар</translation>
 <translation id="4955707703665801001"><ph name="FEATURE_NAME" /> көрсөтүлүшү</translation>
 <translation id="4955710816792587366">PIN кодуңузду тандаңыз</translation>
+<translation id="4956847150856741762">1</translation>
 <translation id="4959262764292427323">Бардык түзмөктөрүңүздө колдонуу үчүн сырсөздөр Google аккаунтуңузда сакталат</translation>
 <translation id="4960020053211143927">Айрым колдонмолордо иштебейт</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
@@ -8277,7 +8279,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="7424153922653300265">Кубатты үнөмдөгүч күйгүзүлдү</translation>
 <translation id="7424818322350938336">Тармак кошулду</translation>
 <translation id="7425037327577270384">Жазууга жардам бер</translation>
-<translation id="7425292366411265498">Администраторуңуз орноткон кеңейтүүлөр сайттарды окуп, өзгөртө алат</translation>
 <translation id="7427315069950454694">бүгүнкү эстен кеткис көз ирмемдериңиз</translation>
 <translation id="7427348830195639090">Фондук бет: <ph name="BACKGROUND_PAGE_URL" /></translation>
 <translation id="7427798576651127129"><ph name="DEVICE_NAME" /> келген чалуу</translation>

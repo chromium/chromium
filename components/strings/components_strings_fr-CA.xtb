@@ -12,6 +12,7 @@
 <translation id="1024111578869940408">Les pirates tentent parfois d'imiter des sites Web en utilisant des variations subtiles d'adresses Web.</translation>
 <translation id="1024913885641459127">Avis sur les produits et comparaison de prix</translation>
 <translation id="1028781062521375153">Voir les renseignements</translation>
+<translation id="102916930470544692">Clé d'accès</translation>
 <translation id="1030706264415084469">L'URL <ph name="URL" /> veut stocker de façon permanente de grandes quantités de données sur votre appareil</translation>
 <translation id="1030949145805074938">{COUNT,plural, =0{Aucun}=1{À partir de 1 site. Cette option vous déconnectera de la plupart des sites. }one{À partir de # site. Cette option vous déconnectera de la plupart des sites. }other{À partir de # sites. Cette option vous déconnectera de la plupart des sites. }}</translation>
 <translation id="1033329911862281889">La navigation privée ne vous rend pas invisible en ligne :
@@ -3171,6 +3172,7 @@
 <translation id="7251437084390964440">La configuration du réseau ne respecte pas la norme de l'ONC. Il est possible que des parties de la configuration ne soient pas importées.
 Détails supplémentaires :
 <ph name="DEBUG_INFO" /></translation>
+<translation id="7251635775446614726">Message de votre administrateur : « <ph name="CUSTOM_MESSAGE" /> »</translation>
 <translation id="7256634549594854023">Plateau arrière</translation>
 <translation id="725866823122871198">Impossible d'établir une connexion privée à <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" />, car la date et l'heure de votre ordinateur (<ph name="DATE_AND_TIME" />) sont incorrectes.</translation>
 <translation id="7260075294900977274">Un nouveau dossier intelligent qui vous aide à enregistrer toutes vos pages d'achats au même endroit, à suivre automatiquement les prix, à obtenir des statistiques sur les prix, et plus</translation>

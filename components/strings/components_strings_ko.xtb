@@ -12,6 +12,7 @@
 <translation id="1024111578869940408">어떤 공격자는 웹 주소를 알아채기 어렵게 변경하는 방법으로 다른 사이트를 모방합니다.</translation>
 <translation id="1024913885641459127">제품 리뷰 및 가격 비교</translation>
 <translation id="1028781062521375153">세부정보 보기</translation>
+<translation id="102916930470544692">패스키</translation>
 <translation id="1030706264415084469"><ph name="URL" />에서 내 기기에 대용량 데이터를 영구 저장하려고 합니다</translation>
 <translation id="1030949145805074938">{COUNT,plural, =0{없음}=1{사이트 1개입니다. 대부분의 사이트에서 로그아웃됩니다. }other{사이트 #개입니다. 대부분의 사이트에서 로그아웃됩니다. }}</translation>
 <translation id="1033329911862281889">시크릿 모드를 사용해도 나의 온라인 활동이 완전히 비공개로 유지되지는 않습니다.
@@ -397,6 +398,7 @@
 <translation id="1711528724596764268">머신러닝 및 인공지능</translation>
 <translation id="1712552549805331520"><ph name="URL" />에서 로컬 컴퓨터에 데이터를 영구 저장하려고 합니다</translation>
 <translation id="1713628304598226412">트레이 2</translation>
+<translation id="1713819065634160212">Google 계정의 주소 사용 및 저장</translation>
 <translation id="1714807406136741351">탐색 모드, 양식 모드로 변경하면 왼쪽/오른쪽 화살표를 사용하여 그래프의 가격 변경사항을 검토할 수 있습니다.</translation>
 <translation id="1717218214683051432">움직임 감지 센서</translation>
 <translation id="1717494416764505390">메일박스 3</translation>
@@ -1087,6 +1089,7 @@
 <translation id="3120807611504813890">봉투(경량)</translation>
 <translation id="3121994479408824897"><ph name="DOMAIN" />(으)로 이동</translation>
 <translation id="3126023634486644099">라벨(영구)</translation>
+<translation id="3133565499688974786">이제 <ph name="SEARCH_ENGINE_NAME" /> 검색엔진이 기본 검색엔진이 되었습니다</translation>
 <translation id="3140646734028448730">비즈니스 서비스</translation>
 <translation id="3141093262818886744">무시하고 열기</translation>
 <translation id="3141641372357166056">동의 결정 없음</translation>
@@ -1510,6 +1513,7 @@
 <translation id="3943857333388298514">붙여넣기</translation>
 <translation id="3946209740501886391">이 사이트에서 항상 물어보기</translation>
 <translation id="3948588869002647271">애플리케이션이 없거나 손상되었습니다.</translation>
+<translation id="3949297482798028668">관리자가 이 콘텐츠를 여기에 붙여넣지 못하도록 차단했습니다.</translation>
 <translation id="3949571496842715403">보안 인증서에 주체 대체 이름(SAN)이 지정되어 있지 않아 이 서버가 <ph name="DOMAIN" />임을 입증할 수 없습니다. 서버를 잘못 설정했거나 공격자가 연결을 가로채고 있기 때문일 수도 있습니다.</translation>
 <translation id="3949601375789751990">인터넷 사용 기록이 여기에 표시됩니다.</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" />(<ph name="DEVICE_ID" />)</translation>
@@ -1926,6 +1930,7 @@
 <translation id="4764680219299728632">레인지, 쿡탑, 오븐</translation>
 <translation id="4764776831041365478"><ph name="URL" />의 웹페이지가 일시적으로 다운되었거나 새 웹 주소로 완전히 이동했을 수 있습니다.</translation>
 <translation id="4766713847338118463">하단 듀얼 스테이플</translation>
+<translation id="4768864802656530630">세부 시스템 로그입니다. <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="4771973620359291008">알 수 없는 오류가 발생했습니다.</translation>
 <translation id="4774055414220872623">미술 및 공예용품</translation>
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{팝업 1개 차단됨}other{팝업 #개 차단됨}}</translation>
@@ -2231,6 +2236,7 @@
 <translation id="5377026284221673050">'시간이 너무 먼 과거로 설정되어 있습니다.', '시간이 너무 먼 미래로 설정되어 있습니다.', 또는  '&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;'</translation>
 <translation id="5383478552402031184">바닥재</translation>
 <translation id="5385857628869214740">유머</translation>
+<translation id="5385966243497224160">HTTPS가 아닌 URL은 미리 볼 수 없음</translation>
 <translation id="5386426401304769735">이 사이트의 인증서 체인은 SHA-1을 사용하여 서명된 인증서를 포함합니다.</translation>
 <translation id="5392506727170022660">금속(반광택)</translation>
 <translation id="5396631636586785122">오른쪽 에지 스티치</translation>
@@ -2454,6 +2460,8 @@
 <translation id="5838732667866024867">왼쪽/오른쪽 화살표를 사용하여 그래프에서 가격 변경사항을 검토할 수 있습니다.</translation>
 <translation id="5840318881868981258">Google 계정(<ph name="ACCOUNT" />)에서 업데이트합니다.</translation>
 <translation id="5841338463993781099">계정에 저장하시겠습니까?</translation>
+<translation id="5843987376989109187">아직 지원되지 않는 언어입니다.
+    <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="5847181246682413476">전원 공급 장치</translation>
 <translation id="5851548754964597211">탭 목록</translation>
 <translation id="5852909432155870672">RA4</translation>
@@ -3179,6 +3187,7 @@
 <translation id="7251437084390964440">네트워크 설정이 ONC 표준을 준수하지 않습니다. 일부 설정을 가져오지 못했을 수도 있습니다.
 추가 세부정보:
 <ph name="DEBUG_INFO" /></translation>
+<translation id="7251635775446614726">관리자의 메시지: "<ph name="CUSTOM_MESSAGE" />"</translation>
 <translation id="7256634549594854023">후면 트레이</translation>
 <translation id="725866823122871198">컴퓨터의 날짜와 시간(<ph name="DATE_AND_TIME" />)이 잘못되어 <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" />에 대한 비공개 연결을 설정할 수 없습니다.</translation>
 <translation id="7260075294900977274">새로운 스마트 폴더를 통해 모든 쇼핑 페이지를 한곳에 저장하고, 자동으로 가격을 추적하고, 가격 정보를 확인하는 등 다양한 작업을 할 수 있습니다.</translation>
@@ -3664,6 +3673,7 @@
 <translation id="8194797478851900357">이동 실행 취소(&amp;U)</translation>
 <translation id="8194956568907463262">슈팅 게임</translation>
 <translation id="8199437620497683918">광디스크(유광)</translation>
+<translation id="8199730148066603000">HTTPS가 아닌 URL은 미리 볼 수 없습니다.</translation>
 <translation id="8200772114523450471">다시 시작</translation>
 <translation id="8202097416529803614">주문 요약</translation>
 <translation id="8202370299023114387">충돌</translation>
@@ -4101,6 +4111,8 @@
 <translation id="9049981332609050619"><ph name="DOMAIN" />에 접속하려 했지만 서버가 잘못된 인증서를 전달했습니다.</translation>
 <translation id="9050666287014529139">암호</translation>
 <translation id="9051072642122229460">커피 및 에스프레소 메이커</translation>
+<translation id="9051260467258969162">다시 <ph name="BEGIN_LINK" />로그인<ph name="END_LINK" />한 후 
+    이 탭으로 돌아와 작성 지원 기능을 이용하세요.</translation>
 <translation id="9053840549256861041">광고 측정이라는 새로운 광고 개인 정보 보호 기능이 출시됩니다. Chrome에서 광고가 사용자에게 게시된 시기 등의 제한된 정보만 사이트 간에 공유되어 사이트의 광고 실적을 측정하도록 돕습니다.</translation>
 <translation id="9056953843249698117">스토어</translation>
 <translation id="9062620674789239642">이동, 수정 또는 삭제되었을 수 있습니다.</translation>

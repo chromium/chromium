@@ -565,6 +565,7 @@ Se aplicável, consulte as instruções do motor de pesquisa para eliminar o his
 <translation id="3929457972718048006">Moradas</translation>
 <translation id="3948600256434252210">Pode deslizar rapidamente para a direita para navegar na Navegação anónima.</translation>
 <translation id="3955822496205734389">Tem palavras-passe fracas.</translation>
+<translation id="3958312024468322930">Arraste-o para a dock na parte inferior do ecrã principal</translation>
 <translation id="3959736869653157332">Menu → Novo separador anónimo</translation>
 <translation id="3962326069546168954">Guardar</translation>
 <translation id="3967822245660637423">Transferência concluída</translation>
@@ -818,7 +819,6 @@ Se aplicável, consulte as instruções do motor de pesquisa para eliminar o his
 <translation id="5245322853195994030">Cancelar sincronização</translation>
 <translation id="5248640482715684545">Este site está a tentar abrir outra aplicação.</translation>
 <translation id="5256661381001734217">Este site está a tentar abrir uma aplicação.  Esta ação faz com que saia da Navegação anónima.</translation>
-<translation id="5266104675489036658">Adicionar separador a novo grupo</translation>
 <translation id="5271265092610673171">{count,plural, =1{Um campo obrigatório está vazio. Preencha-o antes de guardar.}other{Alguns campos obrigatórios estão vazios. Preencha-os antes de guardar.}}</translation>
 <translation id="5271549068863921519">Guardar palavra-passe</translation>
 <translation id="5283494734135414249">Toque no atalho apresentado abaixo da barra de endereço.</translation>
@@ -1462,6 +1462,7 @@ Os sites podem utilizar cookies para ver a sua atividade de navegação em difer
 <translation id="8620640915598389714">Editar</translation>
 <translation id="8624447588354561276">Número da embalagem</translation>
 <translation id="8624753446837753970">Definir Posição</translation>
+<translation id="8625706492572042370">Edite o ecrã principal</translation>
 <translation id="8626393685701737946">Pode alterar a vista do site predefinida para o computador em Definições &gt; Definições de conteúdo</translation>
 <translation id="8636825310635137004">Para obter os separadores dos seus outros dispositivos, ative a sincronização.</translation>
 <translation id="8637431369725868556">Proteja-se contra sites perigosos.</translation>

@@ -111,6 +111,7 @@
 <translation id="1078037449555275327">‏إعدادات قارئ الشاشة ChromeVox</translation>
 <translation id="1079285777677001938">قد لا تعمل الميزات على بعض المواقع الإلكترونية.</translation>
 <translation id="1079766198702302550">حظر الدخول إلى الكاميرا دومًا</translation>
+<translation id="1080365971383768617">كلمات المرور على جميع أجهزتك</translation>
 <translation id="1081956462909987459">{NUM_TABS,plural, =1{المجموعة "<ph name="GROUP_TITLE" />" - تحتوي على علامة تبويب واحدة}zero{المجموعة "<ph name="GROUP_TITLE" />" - تحتوي على # علامة تبويب}two{المجموعة "<ph name="GROUP_TITLE" />" - تحتوي على علامتَي تبويب}few{المجموعة "<ph name="GROUP_TITLE" />" - تحتوي على # علامات تبويب}many{المجموعة "<ph name="GROUP_TITLE" />" - تحتوي على # علامة تبويب}other{المجموعة "<ph name="GROUP_TITLE" />" - تحتوي على # علامة تبويب}}</translation>
 <translation id="1082214733466244292">حظر المشرف إمكانية استخدام بعض الوظائف على هذا الجهاز.</translation>
 <translation id="1082398631555931481">‏يريد <ph name="THIRD_PARTY_TOOL_NAME" /> إعادة إعدادات Chrome إلى الحالة التلقائية الأصلية. وسيعمل هذا على إعادة ضبط صفحتك الرئيسية وصفحة علامة التبويب الجديدة ومحرك البحث وسيعطّل إضافاتك ويلغي تثبيت كل علامات التبويب. كما سيزيل البيانات الأخرى المؤقتة والمخبأة، مثل ملفات تعريف الارتباط وبيانات الموقع والمحتوى.</translation>
@@ -5160,6 +5161,7 @@
 <translation id="4953808748584563296">الصورة الرمزية التلقائية البرتقالية</translation>
 <translation id="4955707703665801001">إمكانية ظهور الجهاز الذي يستخدم ميزة "<ph name="FEATURE_NAME" />"</translation>
 <translation id="4955710816792587366">اختيار رقم التعريف الشخصي</translation>
+<translation id="4956847150856741762">1</translation>
 <translation id="4959262764292427323">‏يتم حفظ كلمات المرور في حسابك على Google حتى تتمكَّن من استخدامها على أي جهاز.</translation>
 <translation id="4960020053211143927">هذا الخيار غير متاح في بعض التطبيقات.</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
@@ -8274,7 +8276,6 @@
 <translation id="7424153922653300265">تم تفعيل ميزة "توفير الطاقة"</translation>
 <translation id="7424818322350938336">تمت إضافة الشبكة</translation>
 <translation id="7425037327577270384">مساعدة في الكتابة</translation>
-<translation id="7425292366411265498">سيظل بإمكان الإضافات التي ثبَّتها المشرف قراءة المواقع الإلكترونية وتغييرها.</translation>
 <translation id="7427315069950454694">ذكرياتك لهذا اليوم</translation>
 <translation id="7427348830195639090">صفحة الخلفية: <ph name="BACKGROUND_PAGE_URL" /></translation>
 <translation id="7427798576651127129">الاتصال من <ph name="DEVICE_NAME" /></translation>

@@ -12,6 +12,7 @@
 <translation id="1024111578869940408">Napadači ponekad oponašaju web lokacije pomoću teško primjetnih izmjena web adrese.</translation>
 <translation id="1024913885641459127">Recenzije proizvoda i poređenja cijena</translation>
 <translation id="1028781062521375153">Prikaži detalje</translation>
+<translation id="102916930470544692">Pristupni ključ</translation>
 <translation id="1030706264415084469"><ph name="URL" /> želi trajno pohraniti veliku količinu podataka na vaš uređaj</translation>
 <translation id="1030949145805074938">{COUNT,plural, =0{Ništa}=1{S 1 web lokacije. Odjavljuje vas s većine web lokacija. }one{S # web lokacije. Odjavljuje vas s većine web lokacija. }few{S # web lokacije. Odjavljuje vas s većine web lokacija. }other{S # web lokacija. Odjavljuje vas s većine web lokacija. }}</translation>
 <translation id="1033329911862281889">Anonimnim načinom rada niste nevidljivi online:
@@ -397,6 +398,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="1711528724596764268">Mašinsko učenje i umjetna inteligencija</translation>
 <translation id="1712552549805331520">URL <ph name="URL" /> želi trajno pohraniti podatke na vaš lokalni računar</translation>
 <translation id="1713628304598226412">Ladica 2</translation>
+<translation id="1713819065634160212">Koristite i spremajte adrese sa svojeg Google računa</translation>
 <translation id="1714807406136741351">Način rada za pregledanje; možete prebaciti na način rada za obrasce da pregledate promjene cijena na grafikonu pomoću strelice ulijevo/udesno</translation>
 <translation id="1717218214683051432">Senzori pokreta</translation>
 <translation id="1717494416764505390">Poštansko sanduče 3</translation>
@@ -1087,6 +1089,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="3120807611504813890">Koverta (lagana)</translation>
 <translation id="3121994479408824897">Idi na <ph name="DOMAIN" /></translation>
 <translation id="3126023634486644099">Naljepnice (trajne)</translation>
+<translation id="3133565499688974786"><ph name="SEARCH_ENGINE_NAME" /> je sada vaša zadana tražilica</translation>
 <translation id="3140646734028448730">Poslovne usluge</translation>
 <translation id="3141093262818886744">Ipak otvori</translation>
 <translation id="3141641372357166056">Nema odluke o pristanku</translation>
@@ -1510,6 +1513,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="3943857333388298514">Zalijepi</translation>
 <translation id="3946209740501886391">Uvijek pitaj na ovoj web lokaciji</translation>
 <translation id="3948588869002647271">Aplikacija nedostaje ili je oštećena</translation>
+<translation id="3949297482798028668">Administrator je blokirao lijepljenje ovog sadržaja ovdje.</translation>
 <translation id="3949571496842715403">Ovaj server ne može dokazati da pripada domeni <ph name="DOMAIN" />; njegova sigurnosna potvrda ne navodi alternativne nazive subjekata. Uzrok ovome može biti pogrešna konfiguracija ili napadač koji presreće vašu vezu.</translation>
 <translation id="3949601375789751990">Historija pregledanja se pojavljuje ovdje</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
@@ -1926,6 +1930,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="4764680219299728632">Šporeti, ploče za kuhanje i rerne</translation>
 <translation id="4764776831041365478">Web stranica na <ph name="URL" /> je možda privremeno ugašena ili je trajno prebačena na novu web adresu.</translation>
 <translation id="4766713847338118463">Dvostruko spajanje na donjoj strani</translation>
+<translation id="4768864802656530630">Detaljni zapisnici sustava. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="4771973620359291008">Došlo je do nepoznate greške.</translation>
 <translation id="4774055414220872623">Potrepštine za umjetnost i rukotvorine</translation>
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{Skočni prozor blokiran}one{# skočni prozor blokiran}few{# skočna prozora blokirana}other{# skočnih prozora blokirano}}</translation>
@@ -2231,6 +2236,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="5377026284221673050">"Sat kasni" ili "Sat brza" ili "&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;"</translation>
 <translation id="5383478552402031184">Podne obloge</translation>
 <translation id="5385857628869214740">Humor</translation>
+<translation id="5385966243497224160">Nije moguće pregledati URL koji nema HTTPS</translation>
 <translation id="5386426401304769735">Lanac potvrda za ovu web lokaciju sadrži potvrdu koja je izdata koristeći SHA-1.</translation>
 <translation id="5392506727170022660">Metal (polusjajni)</translation>
 <translation id="5396631636586785122">Uvez desnog ruba</translation>
@@ -2454,6 +2460,8 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="5838732667866024867">Možete koristiti strelicu ulijevo/udesno da pregledate promjene cijena na grafikonu</translation>
 <translation id="5840318881868981258">Na vašem Google računu, <ph name="ACCOUNT" /></translation>
 <translation id="5841338463993781099">Sačuvati na račun?</translation>
+<translation id="5843987376989109187">Taj jezik još nije podržan.
+    <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="5847181246682413476">Napajanja električnom energijom</translation>
 <translation id="5851548754964597211">Lista kartica</translation>
 <translation id="5852909432155870672">RA4</translation>
@@ -3179,6 +3187,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="7251437084390964440">Konfiguracija mreže nije u skladu s ONC standardom. Dijelovi konfiguracije možda nisu uvezeni.
 Dodatni detalji:
 <ph name="DEBUG_INFO" /></translation>
+<translation id="7251635775446614726">Vaš administrator kaže: "<ph name="CUSTOM_MESSAGE" />"</translation>
 <translation id="7256634549594854023">Zadnja ladica</translation>
 <translation id="725866823122871198">Nije moguće uspostaviti privatnu vezu s domenom <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> jer su datum i vrijeme (<ph name="DATE_AND_TIME" />) na vašem računaru netačni.</translation>
 <translation id="7260075294900977274">Novi pametni folder koji vam omogućava da na jednom mjestu sačuvate sve stranice za kupovinu, automatski pratite cijene, dobijate uvide u cijene i drugo</translation>
@@ -3665,6 +3674,7 @@ Dodatni detalji:
 <translation id="8194797478851900357">&amp;Opozovi premještanje</translation>
 <translation id="8194956568907463262">Pucačke igre</translation>
 <translation id="8199437620497683918">Optički disk (sjajno)</translation>
+<translation id="8199730148066603000">Nije dopušten pregled URL-a koji nema HTTPS.</translation>
 <translation id="8200772114523450471">Nastavi</translation>
 <translation id="8202097416529803614">Sažetak narudžbe</translation>
 <translation id="8202370299023114387">Neslaganje</translation>
@@ -4102,6 +4112,7 @@ Dodatni detalji:
 <translation id="9049981332609050619">Pokušali ste pristupiti domeni <ph name="DOMAIN" />, ali je server prikazao nevažeću potvrdu.</translation>
 <translation id="9050666287014529139">Pristupni izraz</translation>
 <translation id="9051072642122229460">Aparati za kafu i espresso</translation>
+<translation id="9051260467258969162">Ponovo se <ph name="BEGIN_LINK" />prijavite<ph name="END_LINK" />, a zatim se vratite na ovu karticu da biste dobili pomoć pri pisanju</translation>
 <translation id="9053840549256861041">Pokrećemo novu funkciju privatnosti pri izloženosti oglasima koja se naziva mjerenje oglasa. Da pomogne web lokacijama da izmjere performanse oglasa, Chrome dijeli samo veoma ograničene informacije među web lokacijama, npr., kada vam se prikaže oglas.</translation>
 <translation id="9056953843249698117">Trgovina</translation>
 <translation id="9062620674789239642">Moguće je da je premješten, uređen ili izbrisan.</translation>

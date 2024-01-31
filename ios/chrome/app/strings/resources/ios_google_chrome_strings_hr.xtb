@@ -177,12 +177,15 @@ Vaše šifrirane podatke može pročitati samo osoba koja ima vašu šifru. Šif
 <translation id="6054613632208573261">Koristi Chrome prema zadanim postavkama</translation>
 <translation id="6063091872902370735">Dopusti prijavu u Chrome</translation>
 <translation id="6110625574506755980">Neke značajke Chromea više neće biti dostupne.</translation>
+<translation id="6132149203299792222">Prijavite se Google računom da biste sinkronizirali zaporke, oznake i ostale podatke.</translation>
 <translation id="6177442314419606057">Pretraživanje u Chromeu</translation>
 <translation id="6181930887571472871">Prelazak na Chrome</translation>
 <translation id="6238746320622508509">Dopustite Chromeu da zaključa vaše anonimne kartice.</translation>
 <translation id="6247557882553405851">Google upravitelj zaporki</translation>
+<translation id="6272822675004864999">Da biste primali obavijesti Chromea, uključite ih u postavkama iOS-a.</translation>
 <translation id="630693926528731525">Zaporka nije podijeljena. Provjerite internetsku vezu i prijavite se na Chrome. Zatim pokušajte ponovo.</translation>
 <translation id="6348855835728304880">Pristupajte zaporkama u Chromeu i ostalom u drugim aplikacijama na ovom uređaju.</translation>
+<translation id="6389317667633680932">Istražite nove značajke koje će vam pomoći da iskoristite sve prednosti Chromea.</translation>
 <translation id="6412673304250309937">Provjerava URL-ove s popisom nesigurnih web-lokacija pohranjenih u Chromeu. Ako neka web-lokacija pokuša ukrasti vašu zaporku ili ako preuzmete štetnu datoteku, Chrome također može poslati URL-ove, uključujući dijelove sadržaja web-stranice, Sigurnom pregledavanju.</translation>
 <translation id="6427126399757991875">Vaša organizacija postavlja Chrome...</translation>
 <translation id="6484712497741564393">Prijavljeni ste kao <ph name="EMAIL" />.
@@ -214,6 +217,7 @@ Više postavki koje upotrebljavaju podatke za poboljšanje vašeg doživljaja u 
 <translation id="7124339256045485976">Ažuriranje Chromea</translation>
 <translation id="7161390184744336561">Google Chrome je zastario</translation>
 <translation id="7165736900384873061">Upotrijebite QR skener Google Chromea</translation>
+<translation id="7175129790242719365">Savjet za Chrome: prijavite se u Chrome</translation>
 <translation id="7187993566681480880">Štiti vas na Chromeu i može se upotrebljavati za poboljšanje vaše sigurnosti u drugim Googleovim aplikacijama kad ste prijavljeni.</translation>
 <translation id="7200524487407690471">Chrome automatski pokreće sigurnosnu provjeru svaki dan kako bi vas zaštitio od neovlaštenog pristupa podacima, nesigurnih web-lokacija i drugih opasnosti. Više o sigurnosnoj provjeri možete pronaći u postavkama.</translation>
 <translation id="72119412072970160">Zaporke koje ste spremili u Google upravitelj zaporki možete koristiti u drugim aplikacijama na iPadu.</translation>
@@ -244,6 +248,8 @@ Više postavki koje upotrebljavaju podatke za poboljšanje vašeg doživljaja u 
 <translation id="7897703007638178753">Prikaz nedavnih kartica u Chromeu</translation>
 <translation id="7925119591961387184">Odaberite Chrome.</translation>
 <translation id="7933491483529363150">Otvori moju najnoviju karticu u Chromeu.</translation>
+<translation id="7948283758957877064">Novosti u Chromeu</translation>
+<translation id="8006014511203279255">Upotrebljavajte Chrome svaki put kad dodirnete veze u porukama ili drugim aplikacijama.</translation>
 <translation id="8022947259858476807">Koristite Chrome prema zadanim postavkama da biste otvarali veze, pretraživali putem widgeta i automatski popunjavali zaporke u drugim aplikacijama</translation>
 <translation id="804638182476029347">Dopustite Chromeove obavijesti da biste primali upozorenja o sniženju cijena</translation>
 <translation id="8065292699993359127">Otvorite URL-ove u Chromeu u anonimnom načinu</translation>
@@ -280,6 +286,7 @@ Vaši su podaci šifrirani vašom šifrom <ph name="TIME" /> Unesite je da biste
 <translation id="8765470054473112089">Kad upisujete u adresnu traku ili okvir za pretraživanje, ono što upisujete Chrome šalje vašoj zadanoj tražilici kako bi vam pružio bolje prijedloge. To je isključeno u anonimnom načinu.</translation>
 <translation id="8772179140489533211">Prikazuje obavijesti za prijavu u Chrome.</translation>
 <translation id="8788269841521769222">Nećete morati pamtiti tu zaporku. Spremit će se u Google upravitelj zaporki za <ph name="EMAIL" /></translation>
+<translation id="878917453316810648">Savjet za Chrome: upotrebljavajte Chrome prema zadanim postavkama</translation>
 <translation id="8808828119384186784">Postavke preglednika Chrome</translation>
 <translation id="8855781063981781621">Da biste onemogućili način zaključavanja u Chromeu, isključite ga na iPadu.</translation>
 <translation id="8856877214925961642">Šifriranje šifre ne uključuje načine plaćanja i adrese.

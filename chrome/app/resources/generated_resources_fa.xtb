@@ -111,6 +111,7 @@
 <translation id="1078037449555275327">‏تنظیمات ChromeVox</translation>
 <translation id="1079285777677001938">ممکن است ویژگی‌های برخی‌از سایت‌ها کار نکند.</translation>
 <translation id="1079766198702302550">دسترسی به دوربین همیشه مسدود شود</translation>
+<translation id="1080365971383768617">گذرواژه‌ها در همه دستگاه‌ها دردسترس است</translation>
 <translation id="1081956462909987459">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> - ۱ برگه}one{<ph name="GROUP_TITLE" /> - # برگه}other{<ph name="GROUP_TITLE" /> - # برگه}}</translation>
 <translation id="1082214733466244292">سرپرستتان برخی‌از عملکردهای این دستگاه را مسدود کرده است</translation>
 <translation id="1082398631555931481">‏<ph name="THIRD_PARTY_TOOL_NAME" /> می‌خواهد تنظیمات Chrome شما را به پیش‌فرض‌های اصلی‌شان بازیابی کند. با این کار صفحه اصلی، صفحه برگه جدید، و موتور جستجویتان بازنشانی می‌شود، افزونه‌های شما غیرفعال می‌شوند و سنجاق همه برگه‌ها برداشته می‌شود. همچنین سایر داده‌های موقت و داده‌های ذخیره‌شده در حافظه موقت مانند کوکی‌ها، اطلاعات سایت و محتوا پاک می‌شوند.</translation>
@@ -5170,6 +5171,7 @@
 <translation id="4953808748584563296">چهرک پیش‌فرض نارنجی</translation>
 <translation id="4955707703665801001">رؤیت‌پذیری <ph name="FEATURE_NAME" /></translation>
 <translation id="4955710816792587366">پین خودتان را انتخاب کنید</translation>
+<translation id="4956847150856741762">۱</translation>
 <translation id="4959262764292427323">‏گذرواژه‌ها در حساب Google شما ذخیره می‌شود تا بتوانید در همه دستگاه‌هایتان از آن‌ها استفاده کنید</translation>
 <translation id="4960020053211143927">برخی برنامه‌ها از آن پشتیبانی نمی‌کنند</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
@@ -8277,7 +8279,6 @@
 <translation id="7424153922653300265">«بهینه‌سازی انرژی» روشن است</translation>
 <translation id="7424818322350938336">شبکه اضافه شد</translation>
 <translation id="7425037327577270384">کمک به نوشتن</translation>
-<translation id="7425292366411265498">افزونه‌هایی که سرپرست شما نصب کرده است همچنان می‌توانند سایت‌ها را بخوانند و تغییر دهند</translation>
 <translation id="7427315069950454694">خاطرات امروز شما</translation>
 <translation id="7427348830195639090">صفحه پس‌زمینه: <ph name="BACKGROUND_PAGE_URL" /></translation>
 <translation id="7427798576651127129">تماس از <ph name="DEVICE_NAME" /></translation>

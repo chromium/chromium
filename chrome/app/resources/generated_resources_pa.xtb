@@ -111,6 +111,7 @@
 <translation id="1078037449555275327">ChromeVox ਸੈਟਿੰਗਾਂ</translation>
 <translation id="1079285777677001938">ਸ਼ਾਇਦ ਕੁਝ ਸਾਈਟਾਂ 'ਤੇ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਕੰਮ ਨਾ ਕਰਨ।</translation>
 <translation id="1079766198702302550">ਹਮੇਸ਼ਾਂ ਕੈਮਰਾ ਪਹੁੰਚ ਨੂੰ ਬਲੌਕ ਕਰੋ</translation>
+<translation id="1080365971383768617">ਤੁਹਾਡੇ ਸਾਰੇ ਡੀਵਾਈਸਾਂ 'ਤੇ ਪਾਸਵਰਡ</translation>
 <translation id="1081956462909987459">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> - 1 ਟੈਬ}one{<ph name="GROUP_TITLE" /> - # ਟੈਬ}other{<ph name="GROUP_TITLE" /> - # ਟੈਬ}}</translation>
 <translation id="1082214733466244292">ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਨੇ ਇਸ ਡੀਵਾਈਸ ਲਈ ਕੁਝ ਪ੍ਰਕਾਰਜਾਤਮਕਤਾ ਨੂੰ ਬਲਾਕ ਕਰ ਦਿੱਤਾ ਹੈ</translation>
 <translation id="1082398631555931481"><ph name="THIRD_PARTY_TOOL_NAME" /> ਤੁਹਾਡੀਆਂ Chrome ਸੈਟਿੰਗਾਂ ਨੂੰ ਉਨ੍ਹਾਂ ਦੇ ਅਸਲੀ ਪੂਰਵ-ਨਿਰਧਾਰਤ ਰੂਪ 'ਤੇ ਰੀਸਟੋਰ ਕਰਨਾ ਚਾਹੁੰਦਾ ਹੈ। ਇਹ ਤੁਹਾਡਾ ਹੋਮ ਪੰਨਾ, ਨਵਾਂ ਟੈਬ ਪੰਨਾ ਅਤੇ ਖੋਜ ਇੰਜਣ ਰੀਸੈੱਟ ਕਰੇਗਾ, ਤੁਹਾਡੀਆਂ ਐਕਸਟੈਂਸ਼ਨਾਂ ਨੂੰ ਬੰਦ ਕਰੇਗਾ ਅਤੇ ਸਾਰੀਆਂ ਟੈਬਾਂ ਨੂੰ ਅਣਪਿੰਨ ਕਰੇਗਾ। ਇਹ ਹੋਰ ਅਸਥਾਈ ਅਤੇ ਕੈਸ਼ੇ ਕੀਤਾ ਡਾਟਾ ਵੀ ਹਟਾ ਦੇਵੇਗਾ, ਜਿਵੇਂ ਕੁਕੀਜ਼, ਸਮੱਗਰੀ ਅਤੇ ਸਾਈਟ ਡਾਟਾ।</translation>
@@ -5175,6 +5176,7 @@
 <translation id="4953808748584563296">ਪੂਰਵ-ਨਿਰਧਾਰਤ ਸੰਤਰੀ ਅਵਤਾਰ</translation>
 <translation id="4955707703665801001"><ph name="FEATURE_NAME" /> ਦਿਖਣਯੋਗਤਾ</translation>
 <translation id="4955710816792587366">ਆਪਣਾ ਪਿੰਨ ਚੁਣੋ</translation>
+<translation id="4956847150856741762">1</translation>
 <translation id="4959262764292427323">ਪਾਸਵਰਡ ਤੁਹਾਡੇ 'Google ਖਾਤੇ' ਵਿੱਚ ਰੱਖਿਅਤ ਕੀਤੇ ਜਾਂਦੇ ਹਨ ਤਾਂ ਕਿ ਤੁਸੀਂ ਉਹਨਾਂ ਨੂੰ ਕਿਸੇ ਡੀਵਾਈਸ 'ਤੇ ਵਰਤ ਸਕੋ</translation>
 <translation id="4960020053211143927">ਕੁਝ ਐਪਾਂ ਵੱਲੋਂ ਸਮਰਥਿਤ ਨਹੀਂ</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
@@ -8282,7 +8284,6 @@
 <translation id="7424153922653300265">ਊਰਜਾ ਸੇਵਰ ਨੂੰ ਚਾਲੂ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="7424818322350938336">ਨੈੱਟਵਰਕ ਸ਼ਾਮਲ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="7425037327577270384">ਲਿਖਣ ਵਿੱਚ ਮੇਰੀ ਮਦਦ ਕਰੋ</translation>
-<translation id="7425292366411265498">ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਵੱਲੋਂ ਸਥਾਪਤ ਕੀਤੀਆਂ ਐਕਸਟੈਂਸ਼ਨਾਂ ਹਾਲੇ ਵੀ ਸਾਈਟਾਂ ਨੂੰ ਪੜ੍ਹ ਅਤੇ ਬਦਲ ਸਕਦੀਆਂ ਹਨ</translation>
 <translation id="7427315069950454694">ਅੱਜ ਦੇ ਲਈ ਤੁਹਾਡੀਆਂ ਯਾਦਾਂ</translation>
 <translation id="7427348830195639090">ਪਿਛੋਕੜ ਸਫ਼ਾ: <ph name="BACKGROUND_PAGE_URL" /></translation>
 <translation id="7427798576651127129"><ph name="DEVICE_NAME" /> ਵੱਲੋਂ ਕਾਲ</translation>

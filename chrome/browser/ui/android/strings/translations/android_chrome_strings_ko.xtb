@@ -334,6 +334,7 @@
 <translation id="2870560284913253234">사이트</translation>
 <translation id="2871733351037274014">페이지 미리 로드</translation>
 <translation id="2876136027428473467"><ph name="CHILD_NAME" />님이 다음 웹사이트의 승인을 요청했습니다.</translation>
+<translation id="2876194821763651818">비밀번호가 <ph name="USERNAME" />에 저장되었습니다</translation>
 <translation id="2876628302275096482"><ph name="BEGIN_LINK" />Chrome에서 데이터를 비공개로 유지하는 방법<ph name="END_LINK" /> 자세히 알아보기</translation>
 <translation id="2888126860611144412">Chrome 정보</translation>
 <translation id="2891154217021530873">페이지 로딩 중지</translation>
@@ -672,6 +673,7 @@
 <translation id="4699172675775169585">캐시된 이미지 및 파일</translation>
 <translation id="4710167854527459075">최신 기준 정렬</translation>
 <translation id="4719927025381752090">번역 옵션 제공</translation>
+<translation id="4720556299488643018">수신 거부</translation>
 <translation id="4732120983431207637">스택 언와인더</translation>
 <translation id="4736934858538408121">가상 카드</translation>
 <translation id="473775607612524610">업데이트</translation>
@@ -1194,6 +1196,7 @@
 <translation id="7313188324932846546">동기화를 설정하려면 탭하세요.</translation>
 <translation id="7324354302972299151">'Do Not Track' 요청 전송</translation>
 <translation id="7332075081379534664">로그인 성공</translation>
+<translation id="7333041109965360609">알림을 수신 거부했습니다</translation>
 <translation id="7333232495927792353">동기화하여 Google에서 가장 관련 있는 콘텐츠를 확인하세요.</translation>
 <translation id="7339898014177206373">새 창</translation>
 <translation id="7340958967809483333">디스커버용 옵션</translation>
@@ -1452,6 +1455,7 @@
 <translation id="8503813439785031346">사용자 이름</translation>
 <translation id="8505766168025405649">알림에서 다운로드 상태를 확인하세요.</translation>
 <translation id="8506357771923193001">여기에서 다운로드한 파일을 확인할 수 있습니다.</translation>
+<translation id="8512053371384421952">더 이상 <ph name="DOMAIN" />에서 알림을 받지 않습니다.</translation>
 <translation id="8514477925623180633">Chrome으로 저장한 비밀번호 내보내기</translation>
 <translation id="8516012719330875537">이미지 편집기</translation>
 <translation id="8523928698583292556">저장된 암호 삭제</translation>
@@ -1536,6 +1540,7 @@
 <translation id="8996847606757455498">다른 제공업체 선택</translation>
 <translation id="8998289560386111590">내 기기에서 사용할 수 없음</translation>
 <translation id="8998729206196772491"><ph name="MANAGED_DOMAIN" />에서 관리하는 계정으로 로그인합니다. 계정 관리자가 내 Chrome 데이터를 관리하게 되며 데이터는 이 계정에 영구적으로 연결됩니다. Chrome에서 로그아웃하면 데이터가 이 기기에서 삭제되지만 Google 계정에는 그대로 유지됩니다.</translation>
+<translation id="8998837250940831980">탭을 최소화할 수 없습니다. 나중에 다시 시도해 주세요.</translation>
 <translation id="9012585441087414258">위험한 것으로 알려진 사이트, 다운로드 항목, 확장 프로그램으로부터 보호합니다. 페이지에서 의심스러운 작업을 수행하면 URL 및 페이지 콘텐츠 일부가 Google 세이프 브라우징으로 전송됩니다.</translation>
 <translation id="9019199799064251516">자동차 프로필 잠금 없이 계속하시겠습니까?</translation>
 <translation id="9022774213089566801">자주 방문한 웹사이트</translation>

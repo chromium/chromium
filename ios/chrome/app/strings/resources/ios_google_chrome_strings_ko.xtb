@@ -177,12 +177,15 @@
 <translation id="6054613632208573261">Chrome을 기본 브라우저로 사용</translation>
 <translation id="6063091872902370735">Chrome 로그인 허용</translation>
 <translation id="6110625574506755980">일부 Chrome 기능을 더 이상 사용할 수 없게 됩니다</translation>
+<translation id="6132149203299792222">Google 계정으로 로그인하여 비밀번호, 북마크 등을 동기화하세요.</translation>
 <translation id="6177442314419606057">Chrome에서 검색</translation>
 <translation id="6181930887571472871">Chrome으로 전환</translation>
 <translation id="6238746320622508509">Chrome에서 시크릿 탭을 잠그도록 허용합니다.</translation>
 <translation id="6247557882553405851">Google 비밀번호 관리자</translation>
+<translation id="6272822675004864999">Chrome에서 알림을 받으려면 iOS 설정에서 알림을 사용 설정하세요.</translation>
 <translation id="630693926528731525">비밀번호가 공유되지 않았습니다. 인터넷 연결을 확인하고 Chrome에 로그인되어 있는지 확인하세요. 다시 시도해 보세요.</translation>
 <translation id="6348855835728304880">이 기기의 다른 앱에서 Chrome 비밀번호 등에 액세스합니다.</translation>
+<translation id="6389317667633680932">Chrome을 최대한 활용하는 데 도움이 되는 새로운 기능을 살펴보세요.</translation>
 <translation id="6412673304250309937">Chrome에 저장된 안전하지 않은 사이트 목록을 사용하여 URL을 검사합니다. 사이트에서 사용자의 비밀번호를 도용하려고 하거나 사용자가 유해한 파일을 다운로드하는 경우, Chrome에서 페이지 콘텐츠 일부를 비롯한 URL을 세이프 브라우징 서비스에 보낼 수 있습니다.</translation>
 <translation id="6427126399757991875">조직에서 Chrome을 설정하는 중...</translation>
 <translation id="6484712497741564393"><ph name="EMAIL" /> 계정으로 로그인되었습니다.
@@ -214,6 +217,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="7124339256045485976">Chrome을 최신 상태로 유지합니다.</translation>
 <translation id="7161390184744336561">Chrome이 최신 버전이 아닙니다.</translation>
 <translation id="7165736900384873061">Chrome QR 스캐너 사용 시작</translation>
+<translation id="7175129790242719365">Chrome 도움말: Chrome에 로그인하기</translation>
 <translation id="7187993566681480880">로그인 상태일 때 Chrome에서 사용자를 보호하고 기타 Google 앱에서 사용자의 보안을 강화하는 데 사용될 수 있습니다.</translation>
 <translation id="7200524487407690471">Chrome은 매일 자동으로 안전 확인을 실행하여 정보 유출 및 안전하지 않은 웹사이트 등으로부터 사용자를 보호합니다. 설정에서 안전 확인에 관해 자세히 알아볼 수 있습니다.</translation>
 <translation id="72119412072970160">Google 비밀번호 관리자에 저장된 비밀번호를 iPad의 다른 앱에서 사용할 수 있습니다</translation>
@@ -244,6 +248,8 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="7897703007638178753">Chrome 최근 탭 보기</translation>
 <translation id="7925119591961387184">'Chrome'을 선택합니다.</translation>
 <translation id="7933491483529363150">Chrome에서 내 최신 탭을 엽니다.</translation>
+<translation id="7948283758957877064">Chrome의 새로운 기능</translation>
+<translation id="8006014511203279255">언제든지 메시지 또는 기타 앱에서 링크를 탭하여 Chrome을 사용해 보세요.</translation>
 <translation id="8022947259858476807">링크를 열고, 위젯에서 검색하고, 다른 앱에서 비밀번호를 자동 완성할 기본 브라우저로 Chrome을 사용합니다.</translation>
 <translation id="804638182476029347">Chrome에서 가격 인하 알림을 받도록 허용</translation>
 <translation id="8065292699993359127">Chrome에서 시크릿 모드로 URL 열기</translation>
@@ -280,6 +286,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="8765470054473112089">주소 표시줄이나 검색창에 검색어를 입력하면 Chrome은 더 나은 추천을 위해 사용자가 입력한 내용을 기본 검색엔진에 전송합니다. 시크릿 모드에서는 이 기능이 사용 중지되어 있습니다.</translation>
 <translation id="8772179140489533211">Chrome에 로그인하기 위한 메시지를 표시합니다.</translation>
 <translation id="8788269841521769222">이 비밀번호를 기억하지 않아도 됩니다. <ph name="EMAIL" />의 Google 비밀번호 관리자에 비밀번호가 저장됩니다.</translation>
+<translation id="878917453316810648">Chrome 도움말: Chrome을 기본 브라우저로 사용하기</translation>
 <translation id="8808828119384186784">Chrome 설정</translation>
 <translation id="8855781063981781621">Chrome에서 잠금 모드를 사용 중지하려면 iPad에서 사용 중지하세요</translation>
 <translation id="8856877214925961642">결제 수단 및 주소는 암호로 암호화되지 않습니다.

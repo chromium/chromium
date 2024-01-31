@@ -12,6 +12,7 @@
 <translation id="1024111578869940408">Odatda shubhali kimsalar sayt manzilida kichik oʻzgarishlar kiritib, saytlarga soxta nusxalar yasaydi.</translation>
 <translation id="1024913885641459127">Mahsulot sharhlari va narxlarni taqqoslash</translation>
 <translation id="1028781062521375153">Tafsilotlar</translation>
+<translation id="102916930470544692">Kalit</translation>
 <translation id="1030706264415084469"><ph name="URL" /> saytidan katta hajmdagi ma’lumotlarni mobil qurilmangizda saqlashga ruxsat so‘rovi keldi</translation>
 <translation id="1030949145805074938">{COUNT,plural, =0{Hech qanday}=1{1 ta saytdan. Bir nechta saytlardagi hisobingizdan chiqasiz. }other{# ta saytdan. Bir nechta saytlardagi hisobingizdan chiqasiz. }}</translation>
 <translation id="1033329911862281889">Inkognito rejimida ayrim axborotlar yashirilmaydi:
@@ -3180,6 +3181,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="7251437084390964440">Ba’zi tarmoq sozlamalarini import qilib bo‘lmaydi, chunki ular ONC standartiga to‘g‘ri kelmaydi.
 Batafsil axborot:
 <ph name="DEBUG_INFO" /></translation>
+<translation id="7251635775446614726">Administrator xabari: “<ph name="CUSTOM_MESSAGE" />”</translation>
 <translation id="7256634549594854023">Orqa tarnov</translation>
 <translation id="725866823122871198"><ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> domeni bilan tizimdagi sana va vaqt sozlamalari (<ph name="DATE_AND_TIME" />) noto‘g‘ri bo‘lganligi uchun havfsiz aloqa o‘rnatib bo'lmadi.</translation>
 <translation id="7260075294900977274">Barcha xarid sahifalaringizni bir joyda saqlashga va narxlarni avtomatik kuzatishga, narxlar haqidagi maʼlumotga ega boʻlishga yordam beruvchi yangi smart jild</translation>

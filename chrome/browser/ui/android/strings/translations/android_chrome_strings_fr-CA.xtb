@@ -1188,7 +1188,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="7304072650267745798">Il est possible que votre appareil Android ait un paramètre similaire. Si ce paramètre est activé dans Chrome et sur votre appareil Android, une entreprise peut être capable de mesurer l'efficacité d'une annonce sur les sites Web que vous visitez et les applications que vous utilisez.</translation>
 <translation id="7304873321153398381">Hors ligne. Chrome ne peut pas vérifier vos mots de passe.</translation>
 <translation id="7313188324932846546">Touchez pour configurer la synchronisation</translation>
-<translation id="7324354302972299151">Envoyer une demande « Ne pas suivre »</translation>
+<translation id="7324354302972299151">Envoyer une demande « Do Not Track »</translation>
 <translation id="7332075081379534664">Connexion réussie</translation>
 <translation id="7333232495927792353">Synchronisez vos données pour accéder à du contenu plus pertinent de Google</translation>
 <translation id="7339898014177206373">Nouvelle fenêtre</translation>
@@ -1531,6 +1531,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="8996847606757455498">Choisir un autre fournisseur</translation>
 <translation id="8998289560386111590">Non accessible sur votre appareil</translation>
 <translation id="8998729206196772491">Vous vous connectez avec un compte géré par <ph name="MANAGED_DOMAIN" />, et son administrateur pourra contrôler vos données Google Chrome. Celles-ci seront définitivement liées à votre compte. En vous déconnectant de Chrome, vous supprimerez vos données sur cet appareil, mais celles-ci resteront stockées dans votre compte Google.</translation>
+<translation id="8998837250940831980">Impossible de réduire l'onglet. Réessayez plus tard.</translation>
 <translation id="9012585441087414258">Protège contre les sites, les téléchargements et les extensions qui sont réputés être dangereux. Si une page fait quelque chose de suspect, les URL et les éléments de contenu de la page sont envoyés à la navigation sécurisée Google.</translation>
 <translation id="9019199799064251516">Continuer sans verrouillage de profil du véhicule?</translation>
 <translation id="9022774213089566801">Fréquemment consultés</translation>

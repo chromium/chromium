@@ -111,6 +111,7 @@
 <translation id="1078037449555275327">ChromeVoxi seaded</translation>
 <translation id="1079285777677001938">Funktsioonid ei pruugi mõnel saidil toimida.</translation>
 <translation id="1079766198702302550">Blokeeri alati juurdepääs kaamerale</translation>
+<translation id="1080365971383768617">Paroolid kõigis teie seadmetes</translation>
 <translation id="1081956462909987459">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> – 1 vaheleht}other{<ph name="GROUP_TITLE" /> – # vahelehte}}</translation>
 <translation id="1082214733466244292">Administraator blokeeris selle seadme teatud funktsioonid</translation>
 <translation id="1082398631555931481">Tööriist <ph name="THIRD_PARTY_TOOL_NAME" /> soovib teie Chrome'i seaded lähtestada algsetele vaikevalikutele. See lähtestab teie avalehe, uue vahelehe ja otsingumootori, keelab laiendused ning vabastab kõik vahelehed. Peale selle kustutatakse kõik muud ajutised ja vahemällu salvestatud andmed, nagu küpsisefailid ning sisu- ja saidiandmed.</translation>
@@ -5163,6 +5164,7 @@ Väljasuumimiseks kasutage klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamin
 <translation id="4953808748584563296">Oranž vaikeavatar</translation>
 <translation id="4955707703665801001">Funktsiooni <ph name="FEATURE_NAME" /> nähtavus</translation>
 <translation id="4955710816792587366">Valige PIN-kood</translation>
+<translation id="4956847150856741762">1</translation>
 <translation id="4959262764292427323">Paroolid salvestatakse teie Google'i kontole, et saaksite neid kasutada mis tahes seadmes</translation>
 <translation id="4960020053211143927">Ei toetata osades rakendustes</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> – <ph name="PROFILE_NAME" /></translation>
@@ -8268,7 +8270,6 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="7424153922653300265">Energiasäästja on sisse lülitatud</translation>
 <translation id="7424818322350938336">Võrk lisati</translation>
 <translation id="7425037327577270384">Aita mul kirjutada</translation>
-<translation id="7425292366411265498">Teie administraatori installitud laiendused saavad siiski saitide teavet lugeda ja muuta</translation>
 <translation id="7427315069950454694">teie tänased mälestused</translation>
 <translation id="7427348830195639090">Taustleht: <ph name="BACKGROUND_PAGE_URL" /></translation>
 <translation id="7427798576651127129">Kõne seadmest <ph name="DEVICE_NAME" /></translation>

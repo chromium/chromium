@@ -12,6 +12,7 @@
 <translation id="1024111578869940408">Napadači ponekad imitiraju sajtove tako što skoro neprimetno izmene veb-adresu.</translation>
 <translation id="1024913885641459127">Recenzije proizvoda i poređenje cena</translation>
 <translation id="1028781062521375153">Prikaži detalje</translation>
+<translation id="102916930470544692">Pristupni ključ</translation>
 <translation id="1030706264415084469"><ph name="URL" /> želi trajno da skladišti velike količine podataka na uređaju</translation>
 <translation id="1030949145805074938">{COUNT,plural, =0{Nijedan}=1{Sa 1 sajta. Odjaviće vas sa većine sajtova. }one{Sa # sajta. Odjaviće vas sa većine sajtova. }few{Sa # sajta. Odjaviće vas sa većine sajtova. }other{Sa # sajtova. Odjaviće vas sa većine sajtova. }}</translation>
 <translation id="1033329911862281889">Režim bez arhiviranja vas ne čini nevidljivim onlajn:
@@ -3178,6 +3179,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="7251437084390964440">Konfiguracija mreže nije u skladu sa ONC standardom. Delovi konfiguracije možda nisu uvezeni.
 Dodatni detalji:
 <ph name="DEBUG_INFO" /></translation>
+<translation id="7251635775446614726">Administrator kaže: „<ph name="CUSTOM_MESSAGE" />“</translation>
 <translation id="7256634549594854023">Zadnja fioka</translation>
 <translation id="725866823122871198">Nije moguće uspostaviti privatnu vezu sa domenom <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> jer vreme i datum na računaru (<ph name="DATE_AND_TIME" />) nisu tačni.</translation>
 <translation id="7260075294900977274">Nov pametni folder koji vam pomaže da sačuvate sve stranice za kupovinu na jednom mestu i automatski pratite cene, dobijate uvid u cene i drugo</translation>

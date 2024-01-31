@@ -12,6 +12,7 @@
 <translation id="1024111578869940408">Kadangkala penyerang meniru tapak dengan membuat perubahan yang sukar dilihat pada alamat web.</translation>
 <translation id="1024913885641459127">Ulasan Produk &amp; Perbandingan Harga</translation>
 <translation id="1028781062521375153">Lihat butiran</translation>
+<translation id="102916930470544692">Kunci laluan</translation>
 <translation id="1030706264415084469"><ph name="URL" /> mahu menyimpan data bersaiz besar pada peranti anda secara kekal</translation>
 <translation id="1030949145805074938">{COUNT,plural, =0{Tiada}=1{Daripada 1 laman. Mengelog anda keluar dari kebanyakan laman. }other{Daripada # laman. Mengelog anda keluar dari kebanyakan laman. }}</translation>
 <translation id="1033329911862281889">Inkognito tidak menjadikan anda halimunan dalam talian:
@@ -3180,6 +3181,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="7251437084390964440">Konfigurasi rangkaian tidak mematuhi standard ONC. Sebahagian konfigurasi tidak boleh diimport.
 Butiran tambahan:
 <ph name="DEBUG_INFO" /></translation>
+<translation id="7251635775446614726">Pentadbir anda berkata: "<ph name="CUSTOM_MESSAGE" />"</translation>
 <translation id="7256634549594854023">Dulang Belakang</translation>
 <translation id="725866823122871198">Sambungan peribadi ke <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> tidak boleh diwujudkan kerana tarikh dan masa komputer anda (<ph name="DATE_AND_TIME" />) tidak betul.</translation>
 <translation id="7260075294900977274">Folder pintar baharu yang membantu anda menyimpan semua halaman beli-belah anda pada satu tempat dan menjejaki harga, mendapatkan cerapan harga dan banyak lagi secara automatik</translation>

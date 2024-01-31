@@ -12,6 +12,7 @@
 <translation id="1024111578869940408">Ás veces, os atacantes imitan sitios facendo cambios no enderezo web que son difíciles de ver.</translation>
 <translation id="1024913885641459127">Recensións de produtos e comparativas de prezos</translation>
 <translation id="1028781062521375153">Ver detalles</translation>
+<translation id="102916930470544692">Clave de acceso</translation>
 <translation id="1030706264415084469">O URL <ph name="URL" /> quere almacenar un gran volume de datos de forma permanente no teu dispositivo</translation>
 <translation id="1030949145805074938">{COUNT,plural, =0{Ningún}=1{De 1 sitio. Pecha a túa sesión na maioría dos sitios. }other{De # sitios. Pecha a túa sesión na maioría dos sitios. }}</translation>
 <translation id="1033329911862281889">O modo de incógnito non te fai invisible en liña:
@@ -397,6 +398,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="1711528724596764268">Aprendizaxe automática e intelixencia artificial</translation>
 <translation id="1712552549805331520">O URL <ph name="URL" /> quere almacenar datos de forma permanente no teu ordenador local</translation>
 <translation id="1713628304598226412">Bandexa 2</translation>
+<translation id="1713819065634160212">Usar e gardar enderezos da túa Conta de Google</translation>
 <translation id="1714807406136741351">Modo de navegación, podes cambiar ao modo de formularios para usar a frecha dereita ou a esquerda se queres revisar os cambios de prezo no gráfico</translation>
 <translation id="1717218214683051432">Sensores de movemento</translation>
 <translation id="1717494416764505390">Caixa de correo 3</translation>
@@ -1087,6 +1089,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="3120807611504813890">Sobre (lixeiro)</translation>
 <translation id="3121994479408824897">Ir a <ph name="DOMAIN" /></translation>
 <translation id="3126023634486644099">Etiquetas (permanente)</translation>
+<translation id="3133565499688974786"><ph name="SEARCH_ENGINE_NAME" /> agora é o teu buscador predeterminado</translation>
 <translation id="3140646734028448730">Servizos para empresas</translation>
 <translation id="3141093262818886744">Abrir de todas formas</translation>
 <translation id="3141641372357166056">Ningunha decisión de consentimento</translation>
@@ -1510,6 +1513,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="3943857333388298514">Pegar</translation>
 <translation id="3946209740501886391">Preguntar sempre sobre este sitio</translation>
 <translation id="3948588869002647271">Esta aplicación está danada ou non está instalada</translation>
+<translation id="3949297482798028668">A persoa administradora bloqueou a opción de pegar este contido aquí.</translation>
 <translation id="3949571496842715403">Este servidor non puido demostrar que é <ph name="DOMAIN" /> porque o seu certificado de seguranza non especifica nomes de asunto alternativos. É posible que isto se deba a un erro de configuración ou a que un pirata informático interceptase a túa conexión.</translation>
 <translation id="3949601375789751990">O teu historial de navegación aparece aquí</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
@@ -1926,6 +1930,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="4764680219299728632">Fogóns, placas de cociña e fornos</translation>
 <translation id="4764776831041365478">É posible que a páxina web de <ph name="URL" /> estea temporalmente inactiva ou que se trasladase definitivamente a outro enderezo web.</translation>
 <translation id="4766713847338118463">Dúas grampas na parte inferior</translation>
+<translation id="4768864802656530630">Rexistros do sistema detallados. <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
 <translation id="4771973620359291008">Produciuse un erro descoñecido.</translation>
 <translation id="4774055414220872623">Artigos de plástica e traballos manuais</translation>
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{Bloqueouse a ventá emerxente}other{Bloqueáronse # ventás emerxentes}}</translation>
@@ -2231,6 +2236,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="5377026284221673050">"O reloxo está atrasado", "O reloxo está adiantado" ou "&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;"</translation>
 <translation id="5383478552402031184">Pavimentos</translation>
 <translation id="5385857628869214740">Humor</translation>
+<translation id="5385966243497224160">Os URL que non sexan HTTPS non se poden previsualizar</translation>
 <translation id="5386426401304769735">A cadea de certificados deste sitio contén un certificado que se asinou con SHA-1.</translation>
 <translation id="5392506727170022660">Metal (semibrillo)</translation>
 <translation id="5396631636586785122">Grampa no bordo dereito</translation>
@@ -2454,6 +2460,8 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="5838732667866024867">Podes usar a frecha dereita ou esquerda para revisar os cambios de prezo no gráfico</translation>
 <translation id="5840318881868981258">Na túa Conta de Google, <ph name="ACCOUNT" /></translation>
 <translation id="5841338463993781099">Queres gardalo na conta?</translation>
+<translation id="5843987376989109187">Este idioma aínda non está dispoñible.
+    <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
 <translation id="5847181246682413476">Subministracións eléctricas</translation>
 <translation id="5851548754964597211">Lista de pestanas</translation>
 <translation id="5852909432155870672">RA4</translation>
@@ -3179,6 +3187,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="7251437084390964440">A configuración da rede non cumpre co estándar ONC. É posible que non se importen partes da configuración.
 Detalles adicionais:
 <ph name="DEBUG_INFO" /></translation>
+<translation id="7251635775446614726">O teu administrador di o seguinte: "<ph name="CUSTOM_MESSAGE" />"</translation>
 <translation id="7256634549594854023">Bandexa traseira</translation>
 <translation id="725866823122871198">Non se pode establecer unha conexión privada con <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> porque a data e a hora do ordenador (<ph name="DATE_AND_TIME" />) non son correctas.</translation>
 <translation id="7260075294900977274">Un novo cartafol intelixente que che axuda a gardar todas as páxinas de compras nun mesmo lugar, a facer un seguimento automático dos prezos e a obter estatísticas relacionadas con eles, entre outras cousas</translation>
@@ -3665,6 +3674,7 @@ Detalles adicionais:
 <translation id="8194797478851900357">&amp;Desfacer movemento</translation>
 <translation id="8194956568907463262">Xogos de disparos</translation>
 <translation id="8199437620497683918">Disco óptico (brillo)</translation>
+<translation id="8199730148066603000">Non se permite previsualizar os URL que non sexan HTTPS.</translation>
 <translation id="8200772114523450471">Retomar</translation>
 <translation id="8202097416529803614">Resumo do pedido</translation>
 <translation id="8202370299023114387">Conflito</translation>
@@ -4102,6 +4112,8 @@ Detalles adicionais:
 <translation id="9049981332609050619">Intentaches acceder a <ph name="DOMAIN" />, pero o servidor presentou un certificado non válido.</translation>
 <translation id="9050666287014529139">Frase de acceso</translation>
 <translation id="9051072642122229460">Cafeteiras</translation>
+<translation id="9051260467258969162"><ph name="BEGIN_LINK" />Inicia sesión<ph name="END_LINK" /> 
+    de novo e despois volve a esta pestana se queres obter axuda para escribir</translation>
 <translation id="9053840549256861041">Imos lanzar unha nova función de privacidade nos anuncios chamada Medición de anuncios. Chrome só comparte información moi limitada entre os sitios (como, por exemplo, cando se che mostrou un anuncio) co fin de axudarlles a medir o rendemento dos anuncios.</translation>
 <translation id="9056953843249698117">Tenda</translation>
 <translation id="9062620674789239642">É posible que se movese, editase ou eliminase.</translation>

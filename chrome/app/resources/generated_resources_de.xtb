@@ -111,6 +111,7 @@
 <translation id="1078037449555275327">ChromeVox-Einstellungen</translation>
 <translation id="1079285777677001938">Einige Websites funktionieren dann möglicherweise nicht mehr richtig.</translation>
 <translation id="1079766198702302550">Zugriff auf die Kamera immer blockieren</translation>
+<translation id="1080365971383768617">Deine Passwörter auf allen deinen Geräten abrufen</translation>
 <translation id="1081956462909987459">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> – 1 Tab}other{<ph name="GROUP_TITLE" /> – # Tabs}}</translation>
 <translation id="1082214733466244292">Dein Administrator hat einige Funktionen für dieses Gerät blockiert</translation>
 <translation id="1082398631555931481"><ph name="THIRD_PARTY_TOOL_NAME" /> möchte deine Chrome-Einstellungen auf ihre ursprünglichen Standardwerte zurücksetzen. Hierdurch werden deine Startseite, die "Neuer Tab"-Seite und die Suchmaschine zurückgesetzt, deine Erweiterungen deaktiviert und sämtliche Tabs losgelöst. Außerdem werden sonstige temporäre und im Cache gespeicherte Daten wie Cookies, Inhalte und Websitedaten gelöscht.</translation>
@@ -5154,6 +5155,7 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="4953808748584563296">Orangefarbener Standardavatar</translation>
 <translation id="4955707703665801001"><ph name="FEATURE_NAME" />-Sichtbarkeit</translation>
 <translation id="4955710816792587366">PIN wählen</translation>
+<translation id="4956847150856741762">1</translation>
 <translation id="4959262764292427323">Passwörter werden in deinem Google-Konto gespeichert, sodass du sie auf jedem Gerät verwenden kannst</translation>
 <translation id="4960020053211143927">Wird von manchen Apps nicht unterstützt</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> – <ph name="PROFILE_NAME" /></translation>
@@ -8256,7 +8258,6 @@ Du hast # weitere gehackte Passwörter. Der Google Passwortmanager empfiehlt, d
 <translation id="7424153922653300265">Energiesparmodus aktiviert</translation>
 <translation id="7424818322350938336">Netzwerk hinzugefügt</translation>
 <translation id="7425037327577270384">Hilfe beim Verfassen</translation>
-<translation id="7425292366411265498">Von deinem Administrator installierte Erweiterungen können Websites weiterhin lesen und ändern</translation>
 <translation id="7427315069950454694">Meine Erinnerungen heute</translation>
 <translation id="7427348830195639090">Hintergrundseite: <ph name="BACKGROUND_PAGE_URL" /></translation>
 <translation id="7427798576651127129">Mit <ph name="DEVICE_NAME" /> anrufen</translation>

@@ -111,6 +111,7 @@
 <translation id="1078037449555275327">Ustawienia ChromeVoksa</translation>
 <translation id="1079285777677001938">W niektórych witrynach mogą nie działać funkcje.</translation>
 <translation id="1079766198702302550">Zawsze blokuj dostęp do kamery</translation>
+<translation id="1080365971383768617">Hasła na wszystkich Twoich urządzeniach</translation>
 <translation id="1081956462909987459">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> – 1 karta}few{<ph name="GROUP_TITLE" /> – # karty}many{<ph name="GROUP_TITLE" /> – # kart}other{<ph name="GROUP_TITLE" /> – # karty}}</translation>
 <translation id="1082214733466244292">Administrator zablokował niektóre funkcje tego urządzenia</translation>
 <translation id="1082398631555931481"><ph name="THIRD_PARTY_TOOL_NAME" /> chce przywrócić ustawienia Chrome do wartości domyślnych. Spowoduje to zresetowanie strony głównej, strony nowej karty i wyszukiwarki oraz wyłączenie rozszerzeń i odpięcie wszystkich kart. Zostaną też wyczyszczone dane tymczasowe i znajdujące się w pamięci podręcznej – w tym pliki cookie oraz treści i dane stron.</translation>
@@ -5139,6 +5140,7 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="4953808748584563296">Domyślny pomarańczowy awatar</translation>
 <translation id="4955707703665801001"><ph name="FEATURE_NAME" /> – widoczność</translation>
 <translation id="4955710816792587366">Ustaw kod PIN</translation>
+<translation id="4956847150856741762">1</translation>
 <translation id="4959262764292427323">Hasła są zapisywane na Twoim koncie Google, dzięki czemu możesz ich używać na dowolnym urządzeniu</translation>
 <translation id="4960020053211143927">Nieobsługiwane przez niektóre aplikacje</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> – <ph name="PROFILE_NAME" /></translation>
@@ -8245,7 +8247,6 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="7424153922653300265">Oszczędzanie energii włączone</translation>
 <translation id="7424818322350938336">Dodano sieć</translation>
 <translation id="7425037327577270384">Pomóż mi w pisaniu</translation>
-<translation id="7425292366411265498">Rozszerzenia zainstalowane przez administratora nadal mogą odczytywać witryny i wprowadzać w nich zmiany</translation>
 <translation id="7427315069950454694">swoje wspomnienia na dziś</translation>
 <translation id="7427348830195639090">Strona w tle: <ph name="BACKGROUND_PAGE_URL" /></translation>
 <translation id="7427798576651127129">Zadzwoń z urządzenia <ph name="DEVICE_NAME" /></translation>

@@ -607,9 +607,11 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="3526440770046466733">Buka link di tab baru dan tetap di tab saat ini</translation>
 <translation id="353086728817903341">Terhubung ke <ph name="NUM_DEVICES" /> perangkat</translation>
 <translation id="3533126039236445965">Aplikasi di rak</translation>
+<translation id="3537350467437346467">Anda melihat</translation>
 <translation id="3539957339480430241">Hotspot <ph name="DEVICE_NAME" /></translation>
 <translation id="3540893133818942399">Tutup penyiapan untuk melihat foto dan media terbaru ponsel Anda</translation>
 <translation id="3542066395059568317">Rekomendasi akan ditampilkan sehingga Anda dapat melanjutkan aktivitas terakhir yang Anda lakukan. Anda dapat mengklik kanan untuk menghapus rekomendasi.</translation>
+<translation id="3547318469722231257">Anda mengubah</translation>
 <translation id="3552189655002856821">Wi-Fi dinonaktifkan</translation>
 <translation id="3554215588514239132">Tampilkan atau sembunyikan panel Developer Tools</translation>
 <translation id="3554637740840164787"><ph name="ITEM_TITLE" /> telah dipasangi pin</translation>
@@ -701,6 +703,7 @@ Hubungkan perangkat ke sumber listrik.</translation>
 <translation id="385300504083504382">Awal</translation>
 <translation id="3859364108019690">Tidak dapat men-streaming aplikasi</translation>
 <translation id="3861651314799684201">Tekan Enter untuk merekam dalam layar penuh</translation>
+<translation id="3882323608730650973">Diubah</translation>
 <translation id="3886872229787704059">Dibuka hari ini</translation>
 <translation id="3891340733213178823">Tekan Ctrl+Shift+Q dua kali untuk keluar.</translation>
 <translation id="3893630138897523026">ChromeVox (respons lisan)</translation>
@@ -894,6 +897,7 @@ Beberapa fitur dibatasi untuk meningkatkan daya tahan baterai.</translation>
 <translation id="4582666543382004902">Hotspot telah dinonaktifkan untuk menggunakan Wi-Fi. Untuk menggunakan hotspot, nonaktifkan Wi-Fi.</translation>
 <translation id="4585337515783392668">Hentikan transmisi pada penerima yang tidak dikenal</translation>
 <translation id="4596144739579517758">Tema gelap nonaktif</translation>
+<translation id="4596442969149038771"><ph name="USER" /> berbagi</translation>
 <translation id="4611292653554630842">Login</translation>
 <translation id="462160925400706389"><ph name="NAME" /> terhubung</translation>
 <translation id="4623167406982293031">Verifikasi akun</translation>
@@ -1815,6 +1819,7 @@ Untuk mematikan perangkat, tekan dan tahan tombol daya di perangkat lagi.</trans
 <translation id="8314772463905284467">Caps Lock aktif</translation>
 <translation id="8315514906653279104">Mengaktifkan...</translation>
 <translation id="8331351032546853669">Download tertunda</translation>
+<translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
 <translation id="8345019317483336363">Jendela <ph name="WINDOW_TITLE" /> dipilih</translation>
 <translation id="8349826889576450703">peluncur</translation>
@@ -2034,6 +2039,7 @@ Untuk mematikan perangkat, tekan dan tahan tombol daya di perangkat lagi.</trans
 <translation id="953431725143473984">Matikan perangkat?</translation>
 <translation id="954052413789300507">Ruang penyimpanan tidak cukup untuk <ph name="FILENAME" />. Kosongkan ruang penyimpanan.</translation>
 <translation id="954520015070501466">30 mnt</translation>
+<translation id="954786879461589145"><ph name="USER" /> mengubah</translation>
 <translation id="974545358917229949">Menampilkan <ph name="RESULT_COUNT" /> hasil untuk <ph name="QUERY" /></translation>
 <translation id="981011780479609956">Tidak ada tenggat</translation>
 <translation id="98120814841227350">Membuka akhir dokumen</translation>

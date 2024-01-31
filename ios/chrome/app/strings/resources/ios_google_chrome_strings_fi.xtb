@@ -177,12 +177,15 @@ Salattua dataa voi lukea vain tunnuslauseen avulla. Tunnuslausetta ei lähetetä
 <translation id="6054613632208573261">Käytä oletuksena Chromea</translation>
 <translation id="6063091872902370735">Salli Chrome-kirjautuminen</translation>
 <translation id="6110625574506755980">Jotkin Chromen ominaisuudet eivät ole enää käytettävissä.</translation>
+<translation id="6132149203299792222">Kirjaudu sisään Google-tililläsi, niin voit synkronoida esimerkiksi salasanat ja kirjanmerkit.</translation>
 <translation id="6177442314419606057">Hae Chromesta</translation>
 <translation id="6181930887571472871">Vaihda Chromeen</translation>
 <translation id="6238746320622508509">Anna Chromen lukita incognito-välilehtesi.</translation>
 <translation id="6247557882553405851">Googlen Salasanojen ylläpito</translation>
+<translation id="6272822675004864999">Jos haluat saada ilmoituksia Chromesta, laita ilmoitukset päälle iOS-asetuksista.</translation>
 <translation id="630693926528731525">Salasanaasi ei jaettu. Tarkista internetyhteytesi ja varmista, että olet kirjautunut Chromeen. Yritä sitten uudelleen.</translation>
 <translation id="6348855835728304880">Käytä esimerkiksi Chromen salasanoja tällä laitteella muissa sovelluksissa.</translation>
+<translation id="6389317667633680932">Tutustu uusiin ominaisuuksiin, joiden avulla saat parhaan hyödyn Chromesta.</translation>
 <translation id="6412673304250309937">Tarkistaa URL-osoitteet Chromeen tallennetun vaarallisten sivustojen luettelon avulla. Jos sivusto yrittää varastaa salasanaasi tai jos lataat haitallisen tiedoston, Chrome voi myös lähettää Selaussuojan tarkistettavaksi URL-osoitteita, mukaan lukien osia sivujen sisällöstä.</translation>
 <translation id="6427126399757991875">Organisaatiosi ottaa käyttöön Chromea…</translation>
 <translation id="6484712497741564393">Kirjautuneena tilillä <ph name="EMAIL" />.
@@ -214,6 +217,7 @@ Siirry <ph name="BEGIN_LINK" />Googlen palveluihin<ph name="END_LINK" />, jos ha
 <translation id="7124339256045485976">Pidä Chrome ajan tasalla</translation>
 <translation id="7161390184744336561">Google Chrome on vanhentunut</translation>
 <translation id="7165736900384873061">Aloita Google Chromen QR-lukijan käyttö</translation>
+<translation id="7175129790242719365">Chrome-vinkki: Kirjaudu sisään Chromeen</translation>
 <translation id="7187993566681480880">Pitää sinut turvassa Chromessa ja voi parantaa suojaustasi muissa Google-sovelluksissa, kun olet sisäänkirjautuneena.</translation>
 <translation id="7200524487407690471">Chrome tekee turvatarkistuksen automaattisesti joka päivä suojatakseen sinua esimerkiksi tietosuojaloukkauksilta ja riskialttiilta verkkosivustoilta. Asetuksista löytyy lisätietoa turvatarkistuksesta.</translation>
 <translation id="72119412072970160">Voit käyttää Googlen Salasanojen ylläpitoon tallennettuja salasanoja muissa iPadisi sovelluksissa.</translation>
@@ -244,6 +248,8 @@ Siirry <ph name="BEGIN_LINK" />Googlen palveluihin<ph name="END_LINK" />, jos ha
 <translation id="7897703007638178753">Näytä Chromen viimeaikaiset välilehdet</translation>
 <translation id="7925119591961387184">Valitse Chrome.</translation>
 <translation id="7933491483529363150">Avaa edellinen välilehti Chromessa.</translation>
+<translation id="7948283758957877064">Uutta Chromessa</translation>
+<translation id="8006014511203279255">Käytä Chromea, kun napautat linkkejä viesteissä tai muissa sovelluksissa.</translation>
 <translation id="8022947259858476807">Käytä Chromea oletuksena ja avaa linkkejä, hae widgeteistä ja täytä salasanoja automaattisesti muissa sovelluksissa</translation>
 <translation id="804638182476029347">Salli Chrome-ilmoitukset, jotta saat ilmoituksia hinnan laskusta</translation>
 <translation id="8065292699993359127">Avaa URL-osoitteet Chromen incognito-tilassa</translation>
@@ -280,6 +286,7 @@ Datasi salataan tunnuslauseella <ph name="TIME" />. Lisää se, niin voit käytt
 <translation id="8765470054473112089">Kun kirjoitat osoitepalkkiin tai hakukenttään, Chrome lähettää kirjoittamasi tekstin oletushakukoneellesi, niin saat parempia ehdotuksia. Tämä on poissa päältä incognito-tilassa.</translation>
 <translation id="8772179140489533211">Näytä kehotteet kirjautua Chromeen.</translation>
 <translation id="8788269841521769222">Sinun ei tarvitse muistaa tätä salasanaa. Se tallennetaan Googlen Salasanojen ylläpitoon sähköpostiosoitteella <ph name="EMAIL" /></translation>
+<translation id="878917453316810648">Chrome-vinkki: Käytä Chromea oletuksena</translation>
 <translation id="8808828119384186784">Chromen asetukset</translation>
 <translation id="8855781063981781621">Voit poistaa lukitustilan käytöstä Chromessa laittamalla sen pois päältä iPadillasi.</translation>
 <translation id="8856877214925961642">Tunnuslauseella ei salata maksutapoja ja osoitteita.

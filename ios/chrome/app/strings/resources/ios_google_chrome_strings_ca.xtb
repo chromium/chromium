@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ca">
+<translation id="1021782183249308751">Mantén premuda la icona de Chrome i fes clic a Edita la pantalla d'inici</translation>
 <translation id="1066101356081285416">Chrome detectarà els números de seguiment als llocs web que visitis i et mostrarà novetats sobre els paquets a la pàgina Pestanya nova. El número de seguiment de l'enviament i el nom del lloc web s'enviaran a Google per oferir aquesta funció i millorar les funcions de compra a Google per a tothom. Pots actualitzar-ho en qualsevol moment a la <ph name="BEGIN_LINK" />configuració del seguiment d'enviaments<ph name="END_LINK" />.</translation>
 <translation id="1085696779717592361">Utilitza Chrome de manera predeterminada</translation>
 <translation id="1105362920864247682">Esborra les dades de navegació a Chrome.</translation>
@@ -96,6 +97,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="3345341804167540816">Utilitzeu Chrome a tot arreu</translation>
 <translation id="3360031466389132716">{THRESHOLD,plural, =1{Es produeix quan Chrome no s'utilitza durant {THRESHOLD} minut}other{Es produeix quan Chrome no s'utilitza durant {THRESHOLD} minuts}}</translation>
 <translation id="3399930248910934354">Obre la configuració de Chrome</translation>
+<translation id="344736123700721678">Accedeix a Chrome més de pressa des de la base de la pantalla d'inici</translation>
 <translation id="3472587960215700950">Chrome utilitza Google Maps per oferir-te indicacions i informació local sobre les adreces detectades.</translation>
 <translation id="3503014945441706099">Obtén també Navegació segura millorada per a aquest perfil de Chrome</translation>
 <translation id="3522659714780527202">Per veure les pestanyes des de tots els llocs on facis servir Chrome, activa la sincronització</translation>

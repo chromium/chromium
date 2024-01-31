@@ -12,6 +12,7 @@
 <translation id="1024111578869940408">Útočníci někdy weby napodobují provedením snadno přehlédnutelných změn ve webové adrese.</translation>
 <translation id="1024913885641459127">Recenze výrobků a srovnávání cen</translation>
 <translation id="1028781062521375153">Zobrazit podrobnosti</translation>
+<translation id="102916930470544692">Přístupový klíč</translation>
 <translation id="1030706264415084469">Stránka <ph name="URL" /> chce v zařízení trvale ukládat velké množství dat</translation>
 <translation id="1030949145805074938">{COUNT,plural, =0{Žádné}=1{Z 1 webu. Budete odhlášeni z většiny webů. }few{Ze # webů. Budete odhlášeni z většiny webů. }many{Z # webu. Budete odhlášeni z většiny webů. }other{Z # webů. Budete odhlášeni z většiny webů. }}</translation>
 <translation id="1033329911862281889">Anonymní režim neznamená, že jste neviditelní:
@@ -3173,6 +3174,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="724691107663265825">Webové stránky, které chcete otevřít, obsahují malware</translation>
 <translation id="7251437084390964440">Konfigurace sítě neodpovídá standardu ONC. Může se stát, že některé části konfigurace nebudou importovány. Další podrobnosti:
 <ph name="DEBUG_INFO" /></translation>
+<translation id="7251635775446614726">Váš administrátor říká: „<ph name="CUSTOM_MESSAGE" />“</translation>
 <translation id="7256634549594854023">Zadní zásobník</translation>
 <translation id="725866823122871198">Soukromé připojení k doméně <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> nelze navázat, protože máte v počítači nastaveno chybné datum a čas (<ph name="DATE_AND_TIME" />).</translation>
 <translation id="7260075294900977274">Nová chytrá složka, která umožňuje uložit si všechny nákupní stránky na jednom místě, automaticky sledovat ceny, získat informace o cenách a nejen to</translation>

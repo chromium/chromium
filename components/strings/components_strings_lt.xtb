@@ -12,6 +12,7 @@
 <translation id="1024111578869940408">Kartais atakos vykdytojai kurdami svetainių kopijas atlieka sunkiai pastebimų žiniatinklio adreso pakeitimų.</translation>
 <translation id="1024913885641459127">Produktų apžvalgos ir kainų palyginimai</translation>
 <translation id="1028781062521375153">Žr. išsamią informaciją</translation>
+<translation id="102916930470544692">Prieigos raktas</translation>
 <translation id="1030706264415084469"><ph name="URL" /> prašo leidimo nuolat saugoti daug duomenų įrenginyje</translation>
 <translation id="1030949145805074938">{COUNT,plural, =0{Nėra}=1{Iš vienos svetainės. Būsite atjungti nuo daugelio svetainių. }one{Iš # svetainės. Būsite atjungti nuo daugelio svetainių. }few{Iš # svetainių. Būsite atjungti nuo daugelio svetainių. }many{Iš # svetainės. Būsite atjungti nuo daugelio svetainių. }other{Iš # svetainių. Būsite atjungti nuo daugelio svetainių. }}</translation>
 <translation id="1033329911862281889">Naudodami inkognito režimą netampate nematomi internete:
@@ -3187,6 +3188,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="7251437084390964440">Tinklo konfigūracija neatitinka ONC standarto. Kai kurių konfigūracijos dalių negalima importuoti.
 Papildoma išsami informacija:
 <ph name="DEBUG_INFO" /></translation>
+<translation id="7251635775446614726">Administratorius sako: „<ph name="CUSTOM_MESSAGE" />“</translation>
 <translation id="7256634549594854023">Galinis dėklas</translation>
 <translation id="725866823122871198">Nepavyksta užmegzti privataus ryšio su <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" />, nes kompiuterio data ir laikas (<ph name="DATE_AND_TIME" />) yra netinkami.</translation>
 <translation id="7260075294900977274">Naujas išmanusis aplankas, kurį naudodami galite išsaugoti visus apsipirkimo puslapius vienoje vietoje ir automatiškai stebėti kainas, gauti kainų įžvalgų ir kt.</translation>

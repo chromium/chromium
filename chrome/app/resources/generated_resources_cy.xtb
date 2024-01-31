@@ -111,6 +111,7 @@
 <translation id="1078037449555275327">Gosodiadau ChromeVox</translation>
 <translation id="1079285777677001938">Mae'n bosib na fydd nodweddion ar rai gwefannau yn gweithio.</translation>
 <translation id="1079766198702302550">Rhwystro mynediad camera bob amser</translation>
+<translation id="1080365971383768617">Cyfrineiriau ar eich holl ddyfeisiau</translation>
 <translation id="1081956462909987459">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> - 1 Tab}zero{<ph name="GROUP_TITLE" /> - # Tab}two{<ph name="GROUP_TITLE" /> - # Tab}few{<ph name="GROUP_TITLE" /> - # Tab}many{<ph name="GROUP_TITLE" /> - # Tab}other{<ph name="GROUP_TITLE" /> - # Tab}}</translation>
 <translation id="1082214733466244292">Mae eich gweinyddwr wedi rhwystro rhywfaint o swyddogaeth ar gyfer y ddyfais hon</translation>
 <translation id="1082398631555931481">Mae <ph name="THIRD_PARTY_TOOL_NAME" /> eisiau adfer eich gosodiadau Chrome i'r gosodiadau gwreiddiol. Bydd hyn yn ailosod eich tudalen hafan, eich tudalen tab newydd a'ch peiriant chwilio, yn analluogi'ch estyniadau, ac yn dadbinio pob tab. Bydd hefyd yn clirio data dros dro a data sydd wedi'u storio eraill, megis cwcis, cynnwys a data gwefan.</translation>
@@ -8288,7 +8289,6 @@ Mae gennych # cyfrinair arall sydd wedi'u darganfod. Mae Rheolwr Cyfrineiriau Go
 <translation id="7424153922653300265">Mae'r Arbedwr Ynni wedi'i Droi Ymlaen</translation>
 <translation id="7424818322350938336">Ychwanegwyd y rhwydwaith</translation>
 <translation id="7425037327577270384">Helpu fi i ysgrifennu</translation>
-<translation id="7425292366411265498">Gall estyniadau a osodwyd gan eich gweinyddwr ddarllen a newid gwefannau o hyd</translation>
 <translation id="7427315069950454694">eich atgofion am heddiw</translation>
 <translation id="7427348830195639090">Tudalen Gefndir: <ph name="BACKGROUND_PAGE_URL" /></translation>
 <translation id="7427798576651127129">Galwad gan <ph name="DEVICE_NAME" /></translation>

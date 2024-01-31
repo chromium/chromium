@@ -177,12 +177,15 @@ Hanya orang yang memiliki frasa sandi Anda yang dapat membaca data terenkripsi A
 <translation id="6054613632208573261">Gunakan Chrome secara Default</translation>
 <translation id="6063091872902370735">Izinkan Login Chrome</translation>
 <translation id="6110625574506755980">Beberapa fitur Chrome tidak akan tersedia lagi.</translation>
+<translation id="6132149203299792222">Login dengan Akun Google Anda untuk menyinkronkan sandi, bookmark, dan lainnya.</translation>
 <translation id="6177442314419606057">Penelusuran di Chrome</translation>
 <translation id="6181930887571472871">Beralih ke Chrome</translation>
 <translation id="6238746320622508509">Izinkan Chrome mengunci tab Samaran Anda.</translation>
 <translation id="6247557882553405851">Pengelola Sandi Google</translation>
+<translation id="6272822675004864999">Untuk menerima notifikasi dari Chrome, aktifkan notifikasi di aplikasi Settings iOS Anda.</translation>
 <translation id="630693926528731525">Sandi Anda tidak dibagikan. Periksa koneksi internet dan pastikan Anda login ke Chrome. Lalu, coba lagi.</translation>
 <translation id="6348855835728304880">Akses sandi Chrome dan lainnya di seluruh aplikasi lain pada perangkat ini.</translation>
+<translation id="6389317667633680932">Pelajari beragam fitur baru yang membantu Anda mengoptimalkan penggunaan Chrome.</translation>
 <translation id="6412673304250309937">Memeriksa kesesuaian URL dengan daftar situs tidak aman yang disimpan di Chrome. Jika situs berusaha mencuri sandi Anda, atau jika Anda mendownload file berbahaya, Chrome mungkin juga mengirim URL, termasuk bit konten halaman, ke Safe Browsing.</translation>
 <translation id="6427126399757991875">Organisasi Anda sedang menyiapkan Chrome ...</translation>
 <translation id="6484712497741564393">Login sebagai <ph name="EMAIL" />.
@@ -214,6 +217,7 @@ Untuk setelan lainnya yang menggunakan data guna meningkatkan pengalaman Chrome 
 <translation id="7124339256045485976">Pastikan Chrome selalu terupdate</translation>
 <translation id="7161390184744336561">Versi Google Chrome sudah usang</translation>
 <translation id="7165736900384873061">Mulai menggunakan pemindai QR Google Chrome</translation>
+<translation id="7175129790242719365">Tips Chrome: Login ke Chrome</translation>
 <translation id="7187993566681480880">Memastikan Anda tetap aman di Chrome dan dapat digunakan untuk menyempurnakan keamanan Anda di aplikasi Google lainnya saat login.</translation>
 <translation id="7200524487407690471">Chrome otomatis menjalankan Pemeriksaan Keamanan setiap hari untuk membuat Anda tetap aman dari pelanggaran data, situs yang tidak aman, dan lainnya. Anda dapat menemukan informasi selengkapnya tentang Pemeriksaan Keamanan di Setelan.</translation>
 <translation id="72119412072970160">Anda dapat menggunakan sandi yang Anda simpan ke Pengelola Sandi Google di aplikasi lain pada iPad.</translation>
@@ -244,6 +248,8 @@ Untuk setelan lainnya yang menggunakan data guna meningkatkan pengalaman Chrome 
 <translation id="7897703007638178753">Lihat Tab Terbaru Chrome</translation>
 <translation id="7925119591961387184">Pilih "Chrome".</translation>
 <translation id="7933491483529363150">Buka Tab Terbaru Saya di Chrome.</translation>
+<translation id="7948283758957877064">Yang Baru di Chrome</translation>
+<translation id="8006014511203279255">Gunakan Chrome kapan saja dengan mengetuk link di pesan atau aplikasi lainnya.</translation>
 <translation id="8022947259858476807">Gunakan Chrome secara default untuk membuka link, menelusuri dari widget, dan mengisi otomatis sandi di aplikasi lainnya</translation>
 <translation id="804638182476029347">Izinkan notifikasi Chrome mendapatkan notifikasi diskon</translation>
 <translation id="8065292699993359127">Buka URL di Chrome dalam mode Samaran</translation>
@@ -280,6 +286,7 @@ Data Anda dienkripsi dengan frasa sandi pada <ph name="TIME" />. Masukkan frasa 
 <translation id="8765470054473112089">Saat Anda mengetik di kolom URL atau kotak penelusuran, Chrome akan mengirimkan hal yang Anda ketik ke mesin telusur default untuk mendapatkan saran yang lebih baik. Fitur ini nonaktif dalam mode Samaran.</translation>
 <translation id="8772179140489533211">Menampilkan perintah untuk login ke Chrome.</translation>
 <translation id="8788269841521769222">Anda tidak perlu mengingat sandi ini. Sandi akan disimpan ke Pengelola Sandi Google untuk <ph name="EMAIL" /></translation>
+<translation id="878917453316810648">Tips Chrome: Gunakan Chrome secara Default</translation>
 <translation id="8808828119384186784">Setelan Chrome</translation>
 <translation id="8855781063981781621">Untuk menonaktifkan Mode Kunci Total di Chrome, nonaktifkan di iPad Anda.</translation>
 <translation id="8856877214925961642">Enkripsi frasa sandi tidak mencakup alamat dan metode pembayaran.

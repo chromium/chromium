@@ -12,6 +12,7 @@
 <translation id="1024111578869940408">A veces los atacantes hacen cambios difíciles de detectar en la dirección web para imitar sitios.</translation>
 <translation id="1024913885641459127">Opiniones sobre productos y comparaciones de precios</translation>
 <translation id="1028781062521375153">Ver detalles</translation>
+<translation id="102916930470544692">Llave de acceso</translation>
 <translation id="1030706264415084469"><ph name="URL" /> quiere almacenar datos de gran tamaño de forma permanente en tu dispositivo</translation>
 <translation id="1030949145805074938">{COUNT,plural, =0{Ninguno}=1{De 1 sitio. Saldrás de la mayoría de los sitios. }other{De # sitios. Saldrás de la mayoría de los sitios. }}</translation>
 <translation id="1033329911862281889">El modo Incógnito no hace que seas invisible en línea:
@@ -3180,6 +3181,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="7251437084390964440">La configuración de red no cumple con el estándar ONC. Es posible que no se importen algunas partes de la configuración.
 Detalles adicionales:
 <ph name="DEBUG_INFO" /></translation>
+<translation id="7251635775446614726">Tu administrador dice "<ph name="CUSTOM_MESSAGE" />".</translation>
 <translation id="7256634549594854023">Bandeja trasera</translation>
 <translation id="725866823122871198">No se puede establecer una conexión privada a <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> porque la fecha y la hora del equipo (<ph name="DATE_AND_TIME" />) son incorrectas.</translation>
 <translation id="7260075294900977274">Una nueva carpeta inteligente que te ayuda a guardar todas tus páginas de compras en un solo lugar, realizar un seguimiento automático de los precios, obtener información sobre los precios y mucho más</translation>

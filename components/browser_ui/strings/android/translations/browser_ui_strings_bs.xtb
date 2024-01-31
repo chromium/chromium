@@ -66,6 +66,7 @@
 <translation id="2228071138934252756">Da omogućite aplikaciji <ph name="APP_NAME" /> pristup kameri, također uključite kameru u <ph name="BEGIN_LINK" />Postavkama Androida<ph name="END_LINK" />.</translation>
 <translation id="2235344399760031203">Kolačići treće strane su blokirani</translation>
 <translation id="2238944249568001759">Predložena pretraživanja na osnovu vaše posljednje kartice</translation>
+<translation id="2241587408274973373">Kartice na stranici nove kartice</translation>
 <translation id="2241634353105152135">Samo ovaj put</translation>
 <translation id="2253414712144136228">Uklanjanje stavke <ph name="NAME_OF_LIST_ITEM" /></translation>
 <translation id="2253989982043948086">{NUM_SELECTED,plural, =1{Blokirano je za 1 web lokaciju}one{Blokirano je za # web lokaciju}few{Blokirano je za # web lokacije}other{Blokirano je za # web lokacija}}</translation>
@@ -281,6 +282,7 @@
 <translation id="5706552988683188916">Ovim se brišu kolačići i drugi podaci web lokacije za <ph name="WEBSITE" /></translation>
 <translation id="5723967018671998714">Kolačići trećih strana su blokirani u anonimnom načinu rada</translation>
 <translation id="5740126560802162366">Web lokacije mogu pohranjivati podatke na vaš uređaj</translation>
+<translation id="5749158352074143502">Nastavi s ovom karticom</translation>
 <translation id="5771720122942595109">Blokirano: <ph name="PERMISSION_1" /></translation>
 <translation id="5804241973901381774">Odobrenja</translation>
 <translation id="5844448279347999754">Kada je postavka uključena, web lokacije mogu zatražiti da vide tekst i slike sačuvane u međumemoriji. Kada je postavka isključena, web lokacije ne mogu vidjeti tekst ni slike sačuvane u međumemoriji.</translation>
@@ -421,6 +423,7 @@
 <translation id="7990211076305263060">Kada je postavka uključena, web lokacije mogu zatražiti da koriste vaš mikrofon. Kada je postavka isključena, web lokacije ne mogu koristiti vaš mikrofon.</translation>
 <translation id="8007176423574883786">Isključeno za ovaj uređaj</translation>
 <translation id="802154636333426148">Preuzimanje nije uspjelo</translation>
+<translation id="8024161440284949905">Nastavi s ovim karticama</translation>
 <translation id="8042586301629853791">Poredaj po:</translation>
 <translation id="8067883171444229417">Reproduciraj videozapis</translation>
 <translation id="8068648041423924542">Nije moguće odabrati potvrdu.</translation>

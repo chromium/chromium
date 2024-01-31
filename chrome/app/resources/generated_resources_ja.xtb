@@ -111,6 +111,7 @@
 <translation id="1078037449555275327">ChromeVox の設定</translation>
 <translation id="1079285777677001938">一部のサイトで機能を使用できなくなる可能性があります。</translation>
 <translation id="1079766198702302550">カメラへのアクセスを常にブロックする</translation>
+<translation id="1080365971383768617">すべてのデバイスでパスワードを使用</translation>
 <translation id="1081956462909987459">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> - 1 個のタブ}other{<ph name="GROUP_TITLE" /> - # 個のタブ}}</translation>
 <translation id="1082214733466244292">このデバイスの一部の機能は、管理者によってブロックされています</translation>
 <translation id="1082398631555931481"><ph name="THIRD_PARTY_TOOL_NAME" /> が Chrome 設定を元のデフォルトに戻すことを求めています。これにより、ホームページ、新しいタブの画面、検索エンジンがリセットされ、拡張機能が無効となり、すべてのタブの固定が解除されます。また、その他の一時的なキャッシュ データ（Cookie、コンテンツ データ、サイトデータなど）も消去されます。</translation>
@@ -5149,6 +5150,7 @@
 <translation id="4953808748584563296">デフォルトのオレンジのアバター</translation>
 <translation id="4955707703665801001"><ph name="FEATURE_NAME" /> の公開設定</translation>
 <translation id="4955710816792587366">PIN の選択</translation>
+<translation id="4956847150856741762">1</translation>
 <translation id="4959262764292427323">パスワードは Google アカウントに保存されるため、どのデバイスからでも使用できます</translation>
 <translation id="4960020053211143927">一部のアプリではサポート対象外</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
@@ -8249,7 +8251,6 @@
 <translation id="7424153922653300265">省エネツールがオンになっています</translation>
 <translation id="7424818322350938336">ネットワークを追加しました</translation>
 <translation id="7425037327577270384">文書作成サポート</translation>
-<translation id="7425292366411265498">管理者がインストールした拡張機能では、サイトの読み取りや変更が可能です</translation>
 <translation id="7427315069950454694">今日の思い出</translation>
 <translation id="7427348830195639090">バックグラウンド ページ: <ph name="BACKGROUND_PAGE_URL" /></translation>
 <translation id="7427798576651127129"><ph name="DEVICE_NAME" /> から発信</translation>

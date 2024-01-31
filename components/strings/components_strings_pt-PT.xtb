@@ -12,6 +12,7 @@
 <translation id="1024111578869940408">Por vezes, os atacantes imitam sites ao efetuarem alterações difíceis de detetar no endereço Web.</translation>
 <translation id="1024913885641459127">Críticas sobre produtos e comparações de preços</translation>
 <translation id="1028781062521375153">Veja detalhes</translation>
+<translation id="102916930470544692">Chave de acesso</translation>
 <translation id="1030706264415084469"><ph name="URL" /> quer armazenar permanentemente dados de grandes dimensões no seu dispositivo.</translation>
 <translation id="1030949145805074938">{COUNT,plural, =0{Nenhum}=1{De 1 site A sua sessão é terminada na maioria dos sites. }other{De # sites. A sua sessão é terminada na maioria dos sites. }}</translation>
 <translation id="1033329911862281889">A Navegação anónima não faz com que esteja invisível online:
@@ -3179,6 +3180,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="7251437084390964440">A configuração de rede não cumpre a norma ONC. Partes da configuração podem não ser importadas.
 Detalhes adicionais:
 <ph name="DEBUG_INFO" /></translation>
+<translation id="7251635775446614726">O administrador diz "<ph name="CUSTOM_MESSAGE" />"</translation>
 <translation id="7256634549594854023">Tabuleiro posterior</translation>
 <translation id="725866823122871198">Não é possível estabelecer uma ligação privada a <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" />, porque a data e a hora do computador (<ph name="DATE_AND_TIME" />) estão incorretas.</translation>
 <translation id="7260075294900977274">Uma nova pasta inteligente que ajuda a guardar todas as páginas de compras num único lugar, bem como a monitorizar preços automaticamente, extrair estatísticas de preço e muito mais</translation>

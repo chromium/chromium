@@ -12,6 +12,7 @@
 <translation id="1024111578869940408">A volte gli utenti malintenzionati imitano i siti modificando l'indirizzo web in modo poco evidente.</translation>
 <translation id="1024913885641459127">Recensioni di prodotti e confronti di prezzi</translation>
 <translation id="1028781062521375153">Scopri i dettagli</translation>
+<translation id="102916930470544692">Passkey</translation>
 <translation id="1030706264415084469"><ph name="URL" /> vuole memorizzare in modo definitivo grandi quantità di dati sul dispositivo</translation>
 <translation id="1030949145805074938">{COUNT,plural, =0{Nessuno}=1{Da 1 sito. Uscirai dalla maggior parte dei siti. }other{Da # siti. Uscirai dalla maggior parte dei siti. }}</translation>
 <translation id="1033329911862281889">La modalità di navigazione in incognito non ti rende invisibile online:
@@ -3175,6 +3176,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="7251437084390964440">La configurazione di rete non è conforme allo standard ONC. Parti della configurazione potrebbero non essere importate.
 Ulteriori dettagli:
 <ph name="DEBUG_INFO" /></translation>
+<translation id="7251635775446614726">Messaggio dell'amministratore: "<ph name="CUSTOM_MESSAGE" />"</translation>
 <translation id="7256634549594854023">Vassoio posteriore</translation>
 <translation id="725866823122871198">Impossibile stabilire una connessione privata con il sito <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> perché data e ora del computer (<ph name="DATE_AND_TIME" />) sono sbagliate.</translation>
 <translation id="7260075294900977274">Una nuova cartella intelligente che ti consente di salvare tutte le tue pagine di shopping in un unico posto, monitorare automaticamente i prezzi, ottenere approfondimenti sul prezzo e altro ancora</translation>

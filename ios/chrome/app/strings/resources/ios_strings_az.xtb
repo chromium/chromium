@@ -148,6 +148,7 @@
 <translation id="1753905327828125965">Ən çox ziyarət olunan</translation>
 <translation id="1757699834933698436">{count,plural, =1{{count} zəif parol}other{{count} zəif parol}}</translation>
 <translation id="1767766085187034454">Google Tərcümə</translation>
+<translation id="1769106850515800431">Fərdiləşdirilmiş kontent</translation>
 <translation id="1789803444939621101">Təkrar xoş gəldiniz, <ph name="USER_NAME" /></translation>
 <translation id="1803264062614276815">Kart Sahibinin Adı</translation>
 <translation id="1809939268435598390">Qovluğu Silin</translation>
@@ -818,7 +819,6 @@ Axtarış tarixçənizi silmək üçün axtarış mexanizminizin təlimatlarına
 <translation id="5245322853195994030">Sinxronizasiyanı Ləğv Edin</translation>
 <translation id="5248640482715684545">Bu sayt başqa tətbiq açmağa çalışır.</translation>
 <translation id="5256661381001734217">Bu sayt tətbiq açmağa çalışır.  Anonim rejimdən çıxacaqsınız.</translation>
-<translation id="5266104675489036658">Yeni Qrupa Tab Əlavə Edin</translation>
 <translation id="5271265092610673171">{count,plural, =1{Lazımi sahə boşdur. Yadda saxlamazdan əvvəl doldurun.}other{Bəzi lazımi sahələr boşdur. Yadda saxlamazdan əvvəl doldurun.}}</translation>
 <translation id="5271549068863921519">Şifrəni yadda saxlayın</translation>
 <translation id="5283494734135414249">Ünvan panelinin altındakı qısayola toxunun.</translation>
@@ -829,6 +829,7 @@ Axtarış tarixçənizi silmək üçün axtarış mexanizminizin təlimatlarına
 <translation id="5327753393331509826">Kontent bildirişləri alın</translation>
 <translation id="5329451663851195956">Təzələmək üçün aşağı çəkə bilərsiniz.</translation>
 <translation id="5339316356165661760">Sinxronizasiyanı aktiv edin</translation>
+<translation id="5343472494710226394">Maraqlarınıza əsasən xəbərlər, idman və kontent.</translation>
 <translation id="5345660046352249607">{COUNT,plural, =1{Bu paket izlənsin?}other{{COUNT} paket izlənsin?}}</translation>
 <translation id="536067926684072644">Əlfəcinləri göstərin</translation>
 <translation id="5360976571138293719">Məxfilik, təhlükəsizlik və datanın toplanması ilə bağlı daha çox ayarlar üçün <ph name="BEGIN_LINK" />Google Xidmətləri<ph name="END_LINK" /> səhifəsinə baxın.</translation>
@@ -899,6 +900,7 @@ Handoff Ayarların Ümumi bölməsindən də aktiv edilə bilər və cihazların
 <translation id="5737974891429562743">Hesaba avtomatik giriş detallarının vaxtı keçib. Sinxronizasiyanı başlamaq üçün yeniləyin.</translation>
 <translation id="5738385766833540397">İzlədiyiniz məhsullar üçün qiymət endirimi xəbərdarlıqlarını necə alacağınızı idarə edin</translation>
 <translation id="5738887413654608789">Ətrafınızda uyğun veb səhifələri kəşf etməyə imkan verir.</translation>
+<translation id="5744274077973758795"><ph name="FEATURE_NAME" /> bildirişləri aktivdir</translation>
 <translation id="5745916533876677730">Əvvəlki taba keçin</translation>
 <translation id="574762237186762643">Tədbirlər</translation>
 <translation id="5748177854685749242"><ph name="DATE" /> tarixində çatacaq</translation>
@@ -923,6 +925,7 @@ Handoff Ayarların Ümumi bölməsindən də aktiv edilə bilər və cihazların
 <translation id="5850913622988109693">Paket izləmə seçimləri</translation>
 <translation id="5854790677617711513">30 gündən çox</translation>
 <translation id="5857090052475505287">Yeni Qovluq</translation>
+<translation id="5857361196621230935">Qrupa tab əlavə edin</translation>
 <translation id="5857770089550859117">Sinxronizasiyanı başlamaq üçün parol söz tələb olunur.</translation>
 <translation id="5859715514067755465">Yönləndirin</translation>
 <translation id="5860033963881614850">Deaktiv</translation>
@@ -1275,6 +1278,7 @@ Anonim rejimdə olduqda saytlar müxtəlif saytlarda baxış tarixçənizi görm
 <translation id="7649070708921625228">Yardım</translation>
 <translation id="7658239707568436148">Ləğv edin</translation>
 <translation id="7666861622396822790">Bunu <ph name="BEGIN_LINK" />Kontent ayarlarında<ph name="END_LINK" /> idarə edə bilərsiniz.</translation>
+<translation id="7669493687462784703"><ph name="WEBSITE" /> veb-saytından konfiqurasiya profilinin endirilməsinə davam edilsin?</translation>
 <translation id="7671141431838911305">QURAŞDIRIN</translation>
 <translation id="7673346542062368520">Sola çəkərək Anonim rejimdə baxa bilərsiniz.</translation>
 <translation id="7679915578945954324">Sayt ünvanları kopyalanıb</translation>
@@ -1523,6 +1527,7 @@ Saytlar müxtəlif saytlarda baxış fəaliyyətinizi görmək üçün kukilərd
 <translation id="891282356902782456">Bu parol yalnız bu cihazda saxlanır. Onu digər cihazlarda istifadə etmək üçün Google Hesabında (<ph name="EMAIL" />) yadda saxlayın.</translation>
 <translation id="8917490105272468696">Bəli, razıyam</translation>
 <translation id="8928133177108699615">Masaüstü</translation>
+<translation id="8937676484307616731"><ph name="FEATURE_NAME" /> bildirişlərini aktiv edin</translation>
 <translation id="894191600409472540">Güclü parollar yaradın</translation>
 <translation id="8952559610785099500">Parol əlavə edin</translation>
 <translation id="8953046091948372197">Parolları burada tapa bilərsiniz</translation>

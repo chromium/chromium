@@ -148,6 +148,7 @@
 <translation id="1753905327828125965">Leggyakrabban látogatott</translation>
 <translation id="1757699834933698436">{count,plural, =1{{count} gyenge jelszó}other{{count} gyenge jelszó}}</translation>
 <translation id="1767766085187034454">Google Fordító</translation>
+<translation id="1769106850515800431">Személyre szabott tartalmak</translation>
 <translation id="1789803444939621101">Üdvözöljük ismét, kedves <ph name="USER_NAME" />!</translation>
 <translation id="1803264062614276815">Kártyatulajdonos neve</translation>
 <translation id="1809939268435598390">Mappa törlése</translation>
@@ -818,7 +819,6 @@ A keresési előzmények törléséről a keresőmotorja útmutatójából táj�
 <translation id="5245322853195994030">Szinkronizálás megszakítása</translation>
 <translation id="5248640482715684545">Ez a webhely egy másik alkalmazást próbál megnyitni.</translation>
 <translation id="5256661381001734217">Ez a webhely egy alkalmazást próbál megnyitni.  Ezzel kilép az inkognitó módból.</translation>
-<translation id="5266104675489036658">Lap hozzáadása új csoporthoz</translation>
 <translation id="5271265092610673171">{count,plural, =1{Egy kötelező mező üres. A mentés előtt töltse ki.}other{Néhány kötelező mező üres. A mentés előtt töltse ki őket.}}</translation>
 <translation id="5271549068863921519">Jelszó mentése</translation>
 <translation id="5283494734135414249">Koppintson a címsáv alatt megjelenő gyorsparancsra.</translation>
@@ -829,6 +829,7 @@ A keresési előzmények törléséről a keresőmotorja útmutatójából táj�
 <translation id="5327753393331509826">Tartalomértesítések kérése</translation>
 <translation id="5329451663851195956">Az oldalt ujja lefelé húzásával frissítheti.</translation>
 <translation id="5339316356165661760">Szinkronizálás bekapcsolása</translation>
+<translation id="5343472494710226394">Hírek, sport és egyéb tartalmak az érdeklődési körei alapján.</translation>
 <translation id="5345660046352249607">{COUNT,plural, =1{Nyomon követi ezt a csomagot?}other{Nyomon követi ezt a(z) {COUNT} csomagot?}}</translation>
 <translation id="536067926684072644">Könyvjelzők megjelenítése</translation>
 <translation id="5360976571138293719">A <ph name="BEGIN_LINK" />Google-szolgáltatások<ph name="END_LINK" /> részben további beállításokat talál az adatvédelemre, a biztonságra és az adatgyűjtésre vonatkozóan.</translation>
@@ -899,6 +900,7 @@ Az Átadást engedélyezni kell a Beállítások általános részében is, és 
 <translation id="5737974891429562743">A fiók bejelentkezési adatai elavultak. Frissítsen a szinkronizálás megkezdéséhez.</translation>
 <translation id="5738385766833540397">Kezelheti a nyomon követett termékekkel kapcsolatos árcsökkenési értesítések fogadásának módját</translation>
 <translation id="5738887413654608789">Lehetővé teszi a felhasználó számára, hogy közvetlen környezete alapján fedezzen fel releváns weboldalakat.</translation>
+<translation id="5744274077973758795">Bekapcsolta a következő értesítéseit: <ph name="FEATURE_NAME" /></translation>
 <translation id="5745916533876677730">Ugrás az előző lapra</translation>
 <translation id="574762237186762643">Események</translation>
 <translation id="5748177854685749242">Ekkor érkezik: <ph name="DATE" /></translation>
@@ -923,6 +925,7 @@ Az Átadást engedélyezni kell a Beállítások általános részében is, és 
 <translation id="5850913622988109693">Csomagok nyomon követésére vonatkozó beállítások</translation>
 <translation id="5854790677617711513">30 napnál régebbi</translation>
 <translation id="5857090052475505287">Új mappa</translation>
+<translation id="5857361196621230935">Lap hozzáadása csoporthoz</translation>
 <translation id="5857770089550859117">A szinkronizálás megkezdéséhez összetett jelszó megadása szükséges.</translation>
 <translation id="5859715514067755465">Előre</translation>
 <translation id="5860033963881614850">Kikapcsolva</translation>
@@ -1275,6 +1278,7 @@ Inkognitó módban a webhelyek nem használhatnak cookie-kat arra, hogy megfigye
 <translation id="7649070708921625228">Súgó</translation>
 <translation id="7658239707568436148">Mégse</translation>
 <translation id="7666861622396822790">Ezt a <ph name="BEGIN_LINK" />Tartalombeállítások<ph name="END_LINK" /> között kezelheti.</translation>
+<translation id="7669493687462784703">Folytatja a konfigurációs profil letöltését a(z) <ph name="WEBSITE" /> webhelyről?</translation>
 <translation id="7671141431838911305">TELEPÍTÉS</translation>
 <translation id="7673346542062368520">Balra csúsztatva inkognitó módban böngészhet.</translation>
 <translation id="7679915578945954324">Webhelycímek másolva</translation>
@@ -1523,6 +1527,7 @@ A webhelyek használhatnak cookie-kat arra, hogy megfigyeljék más webhelyekre 
 <translation id="891282356902782456">Ezt a jelszót csak erre az eszközre menti a rendszer. Ha szeretné más eszközökön is használni, mentse Google-fiókjába (<ph name="EMAIL" />).</translation>
 <translation id="8917490105272468696">Igen, elfogadom</translation>
 <translation id="8928133177108699615">Asztali</translation>
+<translation id="8937676484307616731">A következő értesítéseinek bekapcsolása: <ph name="FEATURE_NAME" /></translation>
 <translation id="894191600409472540">Hozzon létre erős jelszavakat</translation>
 <translation id="8952559610785099500">Jelszó hozzáadása</translation>
 <translation id="8953046091948372197">Itt láthatja majd a jelszavait</translation>

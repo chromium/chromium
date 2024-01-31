@@ -111,6 +111,7 @@
 <translation id="1078037449555275327">Налады ChromeVox</translation>
 <translation id="1079285777677001938">На некаторых сайтах можа не працаваць частка функцый.</translation>
 <translation id="1079766198702302550">Заўсёды блакіраваць доступ да камеры</translation>
+<translation id="1080365971383768617">Паролі на ўсіх вашых прыладах</translation>
 <translation id="1081956462909987459">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> – 1 укладка}one{<ph name="GROUP_TITLE" /> – # укладка}few{<ph name="GROUP_TITLE" /> – # укладкі}many{<ph name="GROUP_TITLE" /> – # укладак}other{<ph name="GROUP_TITLE" /> – # укладкі}}</translation>
 <translation id="1082214733466244292">Адміністратар заблакіраваў пэўныя функцыі для гэтай прылады</translation>
 <translation id="1082398631555931481"><ph name="THIRD_PARTY_TOOL_NAME" /> спрабуе аднавіць налады Chrome да стандартных значэнняў. Будуць скінуты налады галоўнай старонкі, старонкі новай укладкі і пошукавай сістэмы, а таксама выключаны пашырэнні і адмацаваны ўсе ўкладкі. Таксама будуць выдалены ўсе часовыя і кэшаваныя даныя, такія як файлы cookie, даныя сайтаў і змесціва.</translation>
@@ -8264,7 +8265,6 @@
 <translation id="7424153922653300265">Эканомія энергіі ўключана</translation>
 <translation id="7424818322350938336">Сетка дададзена</translation>
 <translation id="7425037327577270384">Дапамога з напісаннем</translation>
-<translation id="7425292366411265498">Пашырэнні, усталяваныя адміністратарам, усё яшчэ могуць чытаць і змяняць даныя сайтаў</translation>
 <translation id="7427315069950454694">успаміны на сёння</translation>
 <translation id="7427348830195639090">Фонавая старонка: <ph name="BACKGROUND_PAGE_URL" /></translation>
 <translation id="7427798576651127129">Выклік з прылады <ph name="DEVICE_NAME" /></translation>

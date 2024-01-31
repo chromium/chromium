@@ -111,6 +111,7 @@
 <translation id="1078037449555275327">Налаштування ChromeVox</translation>
 <translation id="1079285777677001938">Функції на деяких сайтах можуть не працювати.</translation>
 <translation id="1079766198702302550">Завжди блокувати доступ до камери</translation>
+<translation id="1080365971383768617">Паролі на всіх ваших пристроях</translation>
 <translation id="1081956462909987459">{NUM_TABS,plural, =1{"<ph name="GROUP_TITLE" />" – 1 вкладка}one{"<ph name="GROUP_TITLE" />" – # вкладка}few{"<ph name="GROUP_TITLE" />" – # вкладки}many{"<ph name="GROUP_TITLE" />" – # вкладок}other{"<ph name="GROUP_TITLE" />" – # вкладки}}</translation>
 <translation id="1082214733466244292">Адміністратор заблокував деякі функції на цьому пристрої</translation>
 <translation id="1082398631555931481"><ph name="THIRD_PARTY_TOOL_NAME" /> хоче скинути ваші налаштування Chrome. Буде скинуто домашню сторінку, сторінку нової вкладки та пошукову систему. Буде вимкнено розширення та відкріплено всі закладки. Також буде видалено інші тимчасові й кешовані дані, як-от файли cookie, вміст і дані із сайтів.</translation>
@@ -5176,6 +5177,7 @@
 <translation id="4953808748584563296">Стандартний оранжевий аватар</translation>
 <translation id="4955707703665801001">Видимість для функції <ph name="FEATURE_NAME" /></translation>
 <translation id="4955710816792587366">Придумайте PIN-код</translation>
+<translation id="4956847150856741762">1</translation>
 <translation id="4959262764292427323">Паролі зберігаються в обліковому записі Google, щоб ви могли користуватися ними на будь-якому пристрої</translation>
 <translation id="4960020053211143927">Не підтримується певними додатками</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> – <ph name="PROFILE_NAME" /></translation>
@@ -8284,7 +8286,6 @@
 <translation id="7424153922653300265">Режим енергозбереження ввімкнено</translation>
 <translation id="7424818322350938336">Мережу додано</translation>
 <translation id="7425037327577270384">Допомога з текстом</translation>
-<translation id="7425292366411265498">Розширення, установлені адміністратором, усе одно зможуть переглядати й змінювати дані на сайтах</translation>
 <translation id="7427315069950454694">спогади на сьогодні</translation>
 <translation id="7427348830195639090">Фонова сторінка: <ph name="BACKGROUND_PAGE_URL" /></translation>
 <translation id="7427798576651127129">Телефонувати з пристрою <ph name="DEVICE_NAME" /></translation>

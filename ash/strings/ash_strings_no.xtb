@@ -607,9 +607,11 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="3526440770046466733">Åpne link i en ny fane, og bli værende på den gjeldende fanen</translation>
 <translation id="353086728817903341">Koblet til <ph name="NUM_DEVICES" /> enheter</translation>
 <translation id="3533126039236445965">Apper på hyllen</translation>
+<translation id="3537350467437346467">Sett på av deg</translation>
 <translation id="3539957339480430241"><ph name="DEVICE_NAME" />-wifi-sone</translation>
 <translation id="3540893133818942399">Lukk konfigurering av visning av nylige bilder og medier fra telefonen din</translation>
 <translation id="3542066395059568317">Du ser anbefalinger, slik at du kan fortsette der du slapp. Høyreklikk for å fjerne anbefalinger.</translation>
+<translation id="3547318469722231257">Endret av deg</translation>
 <translation id="3552189655002856821">Wifi er slått av</translation>
 <translation id="3554215588514239132">Vis eller skjul utviklerverktøy-panelet</translation>
 <translation id="3554637740840164787">Festet <ph name="ITEM_TITLE" /></translation>
@@ -701,6 +703,7 @@ Koble enheten til strøm.</translation>
 <translation id="385300504083504382">Begynnelsen</translation>
 <translation id="3859364108019690">Kan ikke strømme apper</translation>
 <translation id="3861651314799684201">Trykk på Enter for å ta opp hele skjermen</translation>
+<translation id="3882323608730650973">Endret</translation>
 <translation id="3886872229787704059">Åpnet i dag</translation>
 <translation id="3891340733213178823">Trykk på Control+Shift+Q to ganger for å logge av.</translation>
 <translation id="3893630138897523026">ChromeVox (muntlig tilbakemelding)</translation>
@@ -894,6 +897,7 @@ Noen funksjoner er begrenset for å forlenge batterilevetiden.</translation>
 <translation id="4582666543382004902">Wifi-sonen er slått av, slik at enheten kan bruke wifi. Slå av wifi for å bruke wifi-sonen.</translation>
 <translation id="4585337515783392668">Stopp casting på en ukjent mottaker</translation>
 <translation id="4596144739579517758">Mørkt tema er av</translation>
+<translation id="4596442969149038771">Delt av <ph name="USER" /></translation>
 <translation id="4611292653554630842">Logg på</translation>
 <translation id="462160925400706389"><ph name="NAME" /> er tilkoblet</translation>
 <translation id="4623167406982293031">Bekreft kontoen</translation>
@@ -1815,6 +1819,7 @@ For å slå av enheten, trykk og hold på av/på-knappen på enheten igjen.</tra
 <translation id="8314772463905284467">Caps Lock er på</translation>
 <translation id="8315514906653279104">Slår på …</translation>
 <translation id="8331351032546853669">Nedlasting venter</translation>
+<translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" /><ph name="GET_STARTED" /></translation>
 <translation id="8345019317483336363">Vinduet <ph name="WINDOW_TITLE" /> er valgt</translation>
 <translation id="8349826889576450703">appoversikt</translation>
@@ -2034,6 +2039,7 @@ For å slå av enheten, trykk og hold på av/på-knappen på enheten igjen.</tra
 <translation id="953431725143473984">Vil du slå av enheten?</translation>
 <translation id="954052413789300507">Ikke nok plass til <ph name="FILENAME" />. Frigjør plass.</translation>
 <translation id="954520015070501466">30 min</translation>
+<translation id="954786879461589145">Endret av <ph name="USER" /></translation>
 <translation id="974545358917229949">Viser <ph name="RESULT_COUNT" /> resultater for <ph name="QUERY" /></translation>
 <translation id="981011780479609956">Ingen frist</translation>
 <translation id="98120814841227350">Gå til slutten av dokumentet</translation>

@@ -148,6 +148,7 @@
 <translation id="1753905327828125965">Most Visited</translation>
 <translation id="1757699834933698436">{count,plural, =1{{count} Mahinang Password}one{{count} Mahinang Password}other{{count} na Mahinang Password}}</translation>
 <translation id="1767766085187034454">Google Translate</translation>
+<translation id="1769106850515800431">Naka-personalize na Content</translation>
 <translation id="1789803444939621101">Maligayang Pagbabalik, <ph name="USER_NAME" /></translation>
 <translation id="1803264062614276815">Pangalan ng Cardholder</translation>
 <translation id="1809939268435598390">I-delete ang Folder</translation>
@@ -818,7 +819,6 @@ Tingnan ang mga tagubilin ng iyong search engine para sa pag-delete sa history n
 <translation id="5245322853195994030">Kanselahin ang Pag-sync</translation>
 <translation id="5248640482715684545">Sinusubukan ng site na ito na magbukas ng isa pang application.</translation>
 <translation id="5256661381001734217">Sinusubukan ng site na ito na magbukas ng application.  Dadalhin ka nito palabas ng Incognito.</translation>
-<translation id="5266104675489036658">Magdagdag ng Tab sa Bagong Pangkat</translation>
 <translation id="5271265092610673171">{count,plural, =1{Walang laman ang isang nire-require na field. Sagutan ito bago i-save.}one{Walang laman ang ilang nire-require na field. Sagutan ang mga ito bago i-save.}other{Walang laman ang ilang nire-require na field. Sagutan ang mga ito bago i-save.}}</translation>
 <translation id="5271549068863921519">I-save ang password</translation>
 <translation id="5283494734135414249">I-tap ang shortcut na lalabas sa ilalim ng address bar.</translation>
@@ -829,6 +829,7 @@ Tingnan ang mga tagubilin ng iyong search engine para sa pag-delete sa history n
 <translation id="5327753393331509826">Makatanggap ng Mga Notification sa Content</translation>
 <translation id="5329451663851195956">Puwede kang mag-swipe pababa para mag-refresh.</translation>
 <translation id="5339316356165661760">I-on ang Pag-sync</translation>
+<translation id="5343472494710226394">Balita, sports, at content batay sa iyong mga interes.</translation>
 <translation id="5345660046352249607">{COUNT,plural, =1{Subaybayan ang Package na Ito?}one{Subaybayan ang {COUNT} Package?}other{Subaybayan ang {COUNT} na Package?}}</translation>
 <translation id="536067926684072644">Ipakita ang Mga Bookmark</translation>
 <translation id="5360976571138293719">Para sa higit pang setting na nauugnay sa privacy, seguridad, at pangongolekta ng data, tingnan ang <ph name="BEGIN_LINK" />Mga Serbisyo ng Google<ph name="END_LINK" />.</translation>
@@ -899,6 +900,7 @@ Dapat ding naka-enable ang handoff sa Pangkalahatang seksyon ng Mga Setting, at 
 <translation id="5737974891429562743">Luma na ang mga detalye ng pag-sign in sa account. I-update upang simulan ang pag-sync.</translation>
 <translation id="5738385766833540397">Pamahalaan kung paano mo matatanggap ang mga alerto sa pagbaba ng presyo para sa mga produktong tina-track mo</translation>
 <translation id="5738887413654608789">Nagbibigay-daan ito sa iyo na tumuklas ng mga nauugnay na web page batay sa iyong paligid.</translation>
+<translation id="5744274077973758795">Na-on ang mga notification sa <ph name="FEATURE_NAME" /></translation>
 <translation id="5745916533876677730">Pumunta sa Nakaraang Tab</translation>
 <translation id="574762237186762643">Mga Event</translation>
 <translation id="5748177854685749242">Darating ng <ph name="DATE" /></translation>
@@ -923,6 +925,7 @@ Dapat ding naka-enable ang handoff sa Pangkalahatang seksyon ng Mga Setting, at 
 <translation id="5850913622988109693">Mga Opsyon para Masubaybayan ang Mga Package</translation>
 <translation id="5854790677617711513">Mas matagal sa 30 araw</translation>
 <translation id="5857090052475505287">Bagong Folder</translation>
+<translation id="5857361196621230935">Magdagdag ng Tab sa Grupo</translation>
 <translation id="5857770089550859117">Kinakailangan ang passphrase upang masimulan ang pag-sync.</translation>
 <translation id="5859715514067755465">I-forward</translation>
 <translation id="5860033963881614850">Naka-off</translation>
@@ -1275,6 +1278,7 @@ Habang nasa Incognito, hindi magagamit ng mga site ang cookies para makita ang i
 <translation id="7649070708921625228">Tulong</translation>
 <translation id="7658239707568436148">Kanselahin</translation>
 <translation id="7666861622396822790">Mapapamahalaan mo ito sa <ph name="BEGIN_LINK" />Mga Setting ng Content<ph name="END_LINK" />.</translation>
+<translation id="7669493687462784703">Ipagpatuloy ang pag-download ng profile ng configuration mula sa <ph name="WEBSITE" />?</translation>
 <translation id="7671141431838911305">INSTALL</translation>
 <translation id="7673346542062368520">Puwede kang mag-swipe pakaliwa para mag-browse sa Incognito.</translation>
 <translation id="7679915578945954324">Nakopya ang address ng site</translation>
@@ -1523,6 +1527,7 @@ Puwedeng gumamit ng cookies ang mga site para makita ang iyong aktibidad sa pag-
 <translation id="891282356902782456">Mase-save lang ang password na ito sa device na ito. Para magamit ito sa iba mo pang device, i-save ito sa iyong Google Account, <ph name="EMAIL" />.</translation>
 <translation id="8917490105272468696">Oo, Tinatanggap Ko</translation>
 <translation id="8928133177108699615">Desktop</translation>
+<translation id="8937676484307616731">I-on ang Mga Notification para sa <ph name="FEATURE_NAME" /></translation>
 <translation id="894191600409472540">Gumawa ng malalakas na password</translation>
 <translation id="8952559610785099500">Magdagdag ng Password</translation>
 <translation id="8953046091948372197">Makikita mo rito ang iyong mga password</translation>

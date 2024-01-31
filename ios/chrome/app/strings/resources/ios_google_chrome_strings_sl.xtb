@@ -177,12 +177,15 @@ Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni pos
 <translation id="6054613632208573261">Privzeto uporabljajte Chrome</translation>
 <translation id="6063091872902370735">Omogočanje prijave v Chrome</translation>
 <translation id="6110625574506755980">Nekatere Chromove funkcije ne bodo več na voljo.</translation>
+<translation id="6132149203299792222">Prijavite se z računom Google, če želite sinhronizirati gesla, zaznamke in drugo.</translation>
 <translation id="6177442314419606057">Iskanje v Chromu</translation>
 <translation id="6181930887571472871">Preklop na Chrome</translation>
 <translation id="6238746320622508509">Naj Chrome zaklene vaše anonimne zavihke.</translation>
 <translation id="6247557882553405851">Googlov upravitelj gesel</translation>
+<translation id="6272822675004864999">Če želite prejemati Chromova obvestila, v nastavitvah sistema iOS vklopite obvestila.</translation>
 <translation id="630693926528731525">Geslo ni bilo deljeno. Preverite internetno povezavo in se prepričajte, ali ste prijavljeni v Chrome. Nato poskusite znova.</translation>
 <translation id="6348855835728304880">Dostopajte do gesel v Chromu in drugega v drugih aplikacijah v tej napravi.</translation>
+<translation id="6389317667633680932">Raziščite nove funkcije, s katerimi boste lahko najbolje izkoristili Chrome.</translation>
 <translation id="6412673304250309937">Preveri URL-je, tako da jih primerja s seznamom spletnih mest, ki niso varna, shranjenim v Chromu. Če vam spletno mesto poskusi ukrasti geslo ali ko prenašate škodljivo datoteko, lahko Chrome prav tako pošlje URL-je, vključno z delčki vsebine strani, Varnemu brskanju.</translation>
 <translation id="6427126399757991875">Vaša organizacija nastavlja Chrome …</translation>
 <translation id="6484712497741564393">Prijavljeni ste kot <ph name="EMAIL" />.
@@ -214,6 +217,7 @@ Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni pos
 <translation id="7124339256045485976">Posodobitev Chroma</translation>
 <translation id="7161390184744336561">Google Chrome je zastarel</translation>
 <translation id="7165736900384873061">Začetek uporabe bralnika kod QR Google Chroma</translation>
+<translation id="7175129790242719365">Nasvet za Chrome: Prijavite se v Chrome</translation>
 <translation id="7187993566681480880">Skrbi za vašo varnost v Chromu in ga je mogoče uporabiti za okrepitev varnosti v drugih Googlovih aplikacijah, ko ste prijavljeni.</translation>
 <translation id="7200524487407690471">Chrome vsak dan samodejno zažene varnostno preverjanje, da vas varuje pred podatkovnimi kršitvami, spletnimi mesti, ki niso varna, in drugim. Več o varnostnem preverjanju lahko preberete v nastavitvah.</translation>
 <translation id="72119412072970160">Gesla, ki ste jih shranili v Googlovem upravitelju gesel, lahko uporabite v drugih aplikacijah v iPadu.</translation>
@@ -244,6 +248,8 @@ Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni pos
 <translation id="7897703007638178753">Ogled nedavnih zavihkov v Chromu</translation>
 <translation id="7925119591961387184">Izberite »Chrome«.</translation>
 <translation id="7933491483529363150">Odpiranje zadnjega zavihka v Chromu.</translation>
+<translation id="7948283758957877064">Novosti v Chromu</translation>
+<translation id="8006014511203279255">Chrome lahko uporabljate, kadar koli se dotaknete povezav v sporočilih ali drugih aplikacijah.</translation>
 <translation id="8022947259858476807">Uporabljajte Chrome kot privzeto možnost odpiranja povezav, iskanja v pripomočkih in samodejnega izpolnjevanja gesel v drugih aplikacijah.</translation>
 <translation id="804638182476029347">Dovolite obvestila za Chrome, če želite prejemati opozorila o znižanju cen</translation>
 <translation id="8065292699993359127">Odprite URL-je v Chromu v anonimnem načinu</translation>
@@ -280,6 +286,7 @@ Podatki so bili šifrirani z geslom dne <ph name="TIME" />. Vnesite ga, če žel
 <translation id="8765470054473112089">Ko tipkate v naslovno vrstico ali iskalno polje, Chrome vaše vnose pošlje v privzeti iskalnik zaradi boljših predlogov. V anonimnem načinu je to izklopljeno.</translation>
 <translation id="8772179140489533211">Pokaže pozive za prijavo v Chrome.</translation>
 <translation id="8788269841521769222">Tega gesla si ne bo treba zapomniti. Shranjeno bo v Google Upravitelju gesel za račun <ph name="EMAIL" />.</translation>
+<translation id="878917453316810648">Nasvet za Chrome: Privzeto uporabljajte Chrome</translation>
 <translation id="8808828119384186784">Chromove nastavitve</translation>
 <translation id="8855781063981781621">Če želite onemogočiti način zaklepa v Chromu, ga izklopite v iPadu.</translation>
 <translation id="8856877214925961642">Šifriranje gesla ne vključuje plačilnih sredstev in naslovov.

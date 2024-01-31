@@ -12,6 +12,7 @@
 <translation id="1024111578869940408">Abahlaseli kwesinye isikhathi balingisa amasayithi ngokwenza kube nzima ukubona ushintsho kukheli lewebhu.</translation>
 <translation id="1024913885641459127">Ukubuyekezwa Komkhiqizo Nokuqhathaniswa Kwezintengo</translation>
 <translation id="1028781062521375153">Bona imininingwane</translation>
+<translation id="102916930470544692">Ukhiye wokudlula</translation>
 <translation id="1030706264415084469">I-<ph name="URL" /> ifuna ukugcina ingunaphakade idatha enkulu kudivayisi yakho</translation>
 <translation id="1030949145805074938">{COUNT,plural, =0{Lutho}=1{Kusukela kusayithi engu-1. Ikukhipha kumasayithi amaningi. }one{Kusukela kumasayithi angu-#. Ikukhipha kumasayithi amaningi. }other{Kusukela kumasayithi angu-#. Ikukhipha kumasayithi amaningi. }}</translation>
 <translation id="1033329911862281889">I-Incognito ayikwenzi ukuthi ungabonakali ku-inthanethi:
@@ -3176,6 +3177,7 @@ Lokhu uma kungenjalo kuzovinjelwa izilungiselelo zakho zobumfihlo. Lokhu kuzovum
 <translation id="7251437084390964440">Ukulungiselelwa kwenethiwekhi akuthobelani nokujwayelekile kwe-ONC. Izingxenye zokulungiselelwa kungenzeka zingangenizwa.
 Imininingwane engeziwe:
 <ph name="DEBUG_INFO" /></translation>
+<translation id="7251635775446614726">Umlawuli wakho uthi: "<ph name="CUSTOM_MESSAGE" />".</translation>
 <translation id="7256634549594854023">Ithileyi Yasemuva</translation>
 <translation id="725866823122871198">Uxhumano oluyimfihlo oluya ku-<ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> alukwazi ukusungulwa ngoba idethi nesikhathi sekhompyutha yakho (<ph name="DATE_AND_TIME" />) azilungile.</translation>
 <translation id="7260075294900977274">Ifolda entsha ehlakaniphile ekusiza ukuthi ulondoloze wonke amakhasi akho okuthenga endaweni eyodwa, futhi ulandelele ngokuzenzakalelayo amanani, uthole imininingwane yenani, nokuningi</translation>

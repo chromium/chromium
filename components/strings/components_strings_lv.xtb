@@ -12,6 +12,7 @@
 <translation id="1024111578869940408">Uzbrucēji dažkārt atdarina vietnes, veicot grūti pamanāmas izmaiņas tīmekļa adresē.</translation>
 <translation id="1024913885641459127">Produktu apskati un cenu salīdzinājumi</translation>
 <translation id="1028781062521375153">Skatīt informāciju</translation>
+<translation id="102916930470544692">Piekļuves atslēga</translation>
 <translation id="1030706264415084469">Vietnē <ph name="URL" /> tika pieprasīta atļauja pastāvīgi glabāt jūsu ierīcē lielu datu apjomu.</translation>
 <translation id="1030949145805074938">{COUNT,plural, =0{Nav}=1{No vienas vietnes. Jūs tiksiet izrakstīts no lielākās daļas vietņu. }zero{No # vietnēm. Jūs tiksiet izrakstīts no lielākās daļas vietņu. }one{No # vietnes. Jūs tiksiet izrakstīts no lielākās daļas vietņu. }other{No # vietnēm. Jūs tiksiet izrakstīts no lielākās daļas vietņu. }}</translation>
 <translation id="1033329911862281889">Inkognito režīms nenozīmē, ka jūs tiešsaistē būsiet neredzams:
@@ -3178,6 +3179,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="7251437084390964440">Tīkla konfigurācija neatbilst standartam ONC. Iespējams, konfigurācijas daļas netiks importētas.
 Papildu informācija:
 <ph name="DEBUG_INFO" /></translation>
+<translation id="7251635775446614726">Ziņojums no administratora: “<ph name="CUSTOM_MESSAGE" />”.</translation>
 <translation id="7256634549594854023">Aizmugurējā paplāte</translation>
 <translation id="725866823122871198">Nevar izveidot privātu savienojumu ar <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" />, jo jūsu datora datums un laiks (<ph name="DATE_AND_TIME" />) nav pareizs.</translation>
 <translation id="7260075294900977274">Jauna viedā mape, kas palīdz vienuviet saglabāt visas pirkumu lapas un automātiski izsekot cenām, gūt cenu ieskatus un veikt citas darbības.</translation>

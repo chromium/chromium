@@ -334,6 +334,7 @@
 <translation id="2870560284913253234">Локација</translation>
 <translation id="2871733351037274014">Вчитување на страниците однапред</translation>
 <translation id="2876136027428473467"><ph name="CHILD_NAME" /> сака да го одобрите веб-сајтов:</translation>
+<translation id="2876194821763651818">Лозинките се зачувани во <ph name="USERNAME" />.</translation>
 <translation id="2876628302275096482">Дознајте повеќе за тоа <ph name="BEGIN_LINK" />како Chrome ја штити приватноста на вашите податоци<ph name="END_LINK" /></translation>
 <translation id="2888126860611144412">За Chrome</translation>
 <translation id="2891154217021530873">Сопри го вчитувањето на страницата</translation>
@@ -672,6 +673,7 @@
 <translation id="4699172675775169585">Кеширани слики и датотеки</translation>
 <translation id="4710167854527459075">Подредување по најнови</translation>
 <translation id="4719927025381752090">Понудувај превод</translation>
+<translation id="4720556299488643018">Отпишете се</translation>
 <translation id="4732120983431207637">Модул за продолжување претходни задачи</translation>
 <translation id="4736934858538408121">Виртуелна картичка</translation>
 <translation id="473775607612524610">Ажурирај</translation>
@@ -1194,6 +1196,7 @@
 <translation id="7313188324932846546">Допрете за да поставите синхронизација</translation>
 <translation id="7324354302972299151">Испраќање барање „Do Not Track“</translation>
 <translation id="7332075081379534664">Успешно најавување</translation>
+<translation id="7333041109965360609">Се отпишавте од добивањето известувања</translation>
 <translation id="7333232495927792353">Синхронизирајте за да ги добиете најрелевантните содржини од Google</translation>
 <translation id="7339898014177206373">Нов прозорец</translation>
 <translation id="7340958967809483333">Опции за Discover</translation>
@@ -1452,6 +1455,7 @@
 <translation id="8503813439785031346">Корисничко име</translation>
 <translation id="8505766168025405649">Погледнете го известувањето за статусот на преземање</translation>
 <translation id="8506357771923193001">Вашите преземања ќе ги најдете тука</translation>
+<translation id="8512053371384421952">Веќе нема да добивате известувања од <ph name="DOMAIN" />.</translation>
 <translation id="8514477925623180633">Извезете ги лозинките зачувани во Chrome</translation>
 <translation id="8516012719330875537">Уредувач на слики</translation>
 <translation id="8523928698583292556">Избриши ја зачуваната лозинка</translation>
@@ -1536,6 +1540,7 @@
 <translation id="8996847606757455498">Изберете друг одредувач</translation>
 <translation id="8998289560386111590">Не е достапен на вашиот уред</translation>
 <translation id="8998729206196772491">Се најавувате со сметка управувана од <ph name="MANAGED_DOMAIN" /> и му давате контрола над податоците на Chrome на нејзиниот администратор. Вашите податоци ќе бидат трајно врзани за оваа сметка. Одјавувањето од Chrome ќе ги избрише податоците од уредов, но тие ќе останат зачувани на сметката на Google.</translation>
+<translation id="8998837250940831980">Картичката не можеше да се минимизира. Обидете се повторно подоцна.</translation>
 <translation id="9012585441087414258">Штити од сајтови, преземања и екстензии за коишто се знае дека се опасни. Ако конкретна страница направи нешто сомнително, URL-адресите и делови од содржините на страницата се испраќаат до „Безбедно прелистување со Google“.</translation>
 <translation id="9019199799064251516">Да се продолжи без „Заклучување на профилот“ на автомобилот?</translation>
 <translation id="9022774213089566801">Често посетувани</translation>

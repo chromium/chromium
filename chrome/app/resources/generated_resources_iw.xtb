@@ -111,6 +111,7 @@
 <translation id="1078037449555275327">‏הגדרות ChromeVox</translation>
 <translation id="1079285777677001938">יכול להיות שתכונות באתרים מסוימים לא יפעלו.</translation>
 <translation id="1079766198702302550">תמיד לחסום גישה למצלמה</translation>
+<translation id="1080365971383768617">סיסמאות בכל המכשירים</translation>
 <translation id="1081956462909987459">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> – כרטיסייה אחת}one{<ph name="GROUP_TITLE" /> – # כרטיסיות}two{<ph name="GROUP_TITLE" /> – # כרטיסיות}other{<ph name="GROUP_TITLE" /> – # כרטיסיות}}</translation>
 <translation id="1082214733466244292">פונקציות מסוימות במכשיר הזה נחסמו על ידי מנהל המערכת</translation>
 <translation id="1082398631555931481">‏<ph name="THIRD_PARTY_TOOL_NAME" /> רוצה לשחזר את הגדרות Chrome לברירת המחדל המקורית שלהן. הפעולה הזו תגרום לאיפוס דף הבית, דף הכרטיסייה החדשה ומנוע החיפוש, תשבית את התוספים, ותבטל את ההצמדה של כל הכרטיסיות. כתוצאה מכך יימחקו גם נתונים אחרים מאחסון זמני ומהקובץ השמור, כמו נתונים של קובצי cookie, תוכן ואתרים.</translation>
@@ -5174,6 +5175,7 @@
 <translation id="4953808748584563296">דמות ברירת מחדל כתומה</translation>
 <translation id="4955707703665801001">הרשאות הגישה של <ph name="FEATURE_NAME" /></translation>
 <translation id="4955710816792587366">בחירת קוד</translation>
+<translation id="4956847150856741762">1</translation>
 <translation id="4959262764292427323">‏סיסמאות נשמרות בחשבון Google כדי לאפשר לך להשתמש בהן בכל המכשירים</translation>
 <translation id="4960020053211143927">בחלק מהאפליקציות אין תמיכה בשיטה הזו</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
@@ -8283,7 +8285,6 @@
 <translation id="7424153922653300265">מצב החיסכון באנרגיה פועל</translation>
 <translation id="7424818322350938336">הרשת התווספה</translation>
 <translation id="7425037327577270384">עזרה בכתיבה</translation>
-<translation id="7425292366411265498">לתוספים שהותקנו על ידי האדמין עדיין יש הרשאה לקרוא ולשנות אתרים</translation>
 <translation id="7427315069950454694">הזיכרונות שלך להיום</translation>
 <translation id="7427348830195639090">דף רקע: <ph name="BACKGROUND_PAGE_URL" /></translation>
 <translation id="7427798576651127129">שיחה מ-<ph name="DEVICE_NAME" /></translation>

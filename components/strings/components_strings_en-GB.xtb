@@ -12,6 +12,7 @@
 <translation id="1024111578869940408">Attackers sometimes mimic sites by making hard-to-see changes to the web address.</translation>
 <translation id="1024913885641459127">Product Reviews and Price Comparisons</translation>
 <translation id="1028781062521375153">See details</translation>
+<translation id="102916930470544692">Passkey</translation>
 <translation id="1030706264415084469"><ph name="URL" /> wants to permanently store large data on your device</translation>
 <translation id="1030949145805074938">{COUNT,plural, =0{None}=1{From 1 site. Signs you out of most sites. }other{From # sites. Signs you out of most sites. }}</translation>
 <translation id="1033329911862281889">Incognito does not make you invisible online:
@@ -397,6 +398,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1711528724596764268">Machine learning and artificial intelligence</translation>
 <translation id="1712552549805331520"><ph name="URL" /> wants to permanently store data on your local computer</translation>
 <translation id="1713628304598226412">Tray 2</translation>
+<translation id="1713819065634160212">Use and save addresses from your Google Account</translation>
 <translation id="1714807406136741351">Browse mode: You can change to Forms mode to use the left/right arrow to review price changes on the graph</translation>
 <translation id="1717218214683051432">Motion sensors</translation>
 <translation id="1717494416764505390">Mailbox 3</translation>
@@ -1087,6 +1089,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3120807611504813890">Envelope (lightweight)</translation>
 <translation id="3121994479408824897">Go to <ph name="DOMAIN" /></translation>
 <translation id="3126023634486644099">Labels (permanent)</translation>
+<translation id="3133565499688974786"><ph name="SEARCH_ENGINE_NAME" /> is now your default search engine</translation>
 <translation id="3140646734028448730">Business Services</translation>
 <translation id="3141093262818886744">Open anyway</translation>
 <translation id="3141641372357166056">No consent decision</translation>
@@ -1510,6 +1513,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3943857333388298514">Paste</translation>
 <translation id="3946209740501886391">Always ask on this site</translation>
 <translation id="3948588869002647271">This application is missing or damaged</translation>
+<translation id="3949297482798028668">Pasting this content here is blocked by your administrator.</translation>
 <translation id="3949571496842715403">This server could not prove that it is <ph name="DOMAIN" />; its security certificate does not specify Subject Alternative Names. This may be caused by a misconfiguration or an attacker intercepting your connection.</translation>
 <translation id="3949601375789751990">Your browsing history appears here</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
@@ -1926,6 +1930,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4764680219299728632">Ranges, Hobs and Ovens</translation>
 <translation id="4764776831041365478">The web page at <ph name="URL" /> might be temporarily down or it may have moved permanently to a new web address.</translation>
 <translation id="4766713847338118463">Dual staple bottom</translation>
+<translation id="4768864802656530630">Detailed system logs. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="4771973620359291008">An unknown error has occurred.</translation>
 <translation id="4774055414220872623">Art and Craft Supplies</translation>
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{Pop-up blocked}other{# pop-ups blocked}}</translation>
@@ -2231,6 +2236,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5377026284221673050">'Your clock is behind' or 'Your clock is ahead' or "&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;"</translation>
 <translation id="5383478552402031184">Flooring</translation>
 <translation id="5385857628869214740">Humour</translation>
+<translation id="5385966243497224160">Can't preview non-HTTPS URL</translation>
 <translation id="5386426401304769735">The certificate chain for this site contains a certificate signed using SHA-1.</translation>
 <translation id="5392506727170022660">Metal (semi-gloss)</translation>
 <translation id="5396631636586785122">Edge stitch right</translation>
@@ -2454,6 +2460,8 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5838732667866024867">You can use the left/right arrow to review price changes on the graph</translation>
 <translation id="5840318881868981258">In your Google Account, <ph name="ACCOUNT" /></translation>
 <translation id="5841338463993781099">Save in account?</translation>
+<translation id="5843987376989109187">This language is not yet supported.
+    <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="5847181246682413476">Power Supplies</translation>
 <translation id="5851548754964597211">Tab list</translation>
 <translation id="5852909432155870672">RA4</translation>
@@ -3179,6 +3187,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="7251437084390964440">The network configuration doesn't comply to the ONC standard. Parts of the configuration may not be imported.
 Additional details:
 <ph name="DEBUG_INFO" /></translation>
+<translation id="7251635775446614726">Your administrator says: '<ph name="CUSTOM_MESSAGE" />'</translation>
 <translation id="7256634549594854023">Rear tray</translation>
 <translation id="725866823122871198">A private connection to <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> can't be established because your computer's date and time (<ph name="DATE_AND_TIME" />) are incorrect.</translation>
 <translation id="7260075294900977274">A new smart folder that helps you save all your shopping pages in one place, and automatically track prices, get price insights, and more</translation>
@@ -3665,6 +3674,7 @@ Additional details:
 <translation id="8194797478851900357">&amp;Undo Move</translation>
 <translation id="8194956568907463262">Shooter Games</translation>
 <translation id="8199437620497683918">Optical disc (glossy)</translation>
+<translation id="8199730148066603000">Previewing non-HTTPS URL is not allowed.</translation>
 <translation id="8200772114523450471">Resume</translation>
 <translation id="8202097416529803614">Order summary</translation>
 <translation id="8202370299023114387">Conflict</translation>
@@ -4102,6 +4112,8 @@ Additional details:
 <translation id="9049981332609050619">You attempted to reach <ph name="DOMAIN" />, but the server presented an invalid certificate.</translation>
 <translation id="9050666287014529139">Passphrase</translation>
 <translation id="9051072642122229460">Coffee and Espresso Makers</translation>
+<translation id="9051260467258969162"><ph name="BEGIN_LINK" />Sign in<ph name="END_LINK" /> 
+    again, then come back to this tab to get writing help</translation>
 <translation id="9053840549256861041">We're launching a new ads privacy feature called ads measurement. Chrome shares only very limited information between sites, such as when an ad was shown to you, to help sites measure the performance of ads.</translation>
 <translation id="9056953843249698117">Store</translation>
 <translation id="9062620674789239642">It may have been moved, edited or deleted.</translation>

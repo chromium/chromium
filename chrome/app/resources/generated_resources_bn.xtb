@@ -111,6 +111,7 @@
 <translation id="1078037449555275327">ChromeVox সেটিংস</translation>
 <translation id="1079285777677001938">কিছু সাইটের ফিচার কাজ নাও করতে পারে।</translation>
 <translation id="1079766198702302550">সর্বদা ক্যামেরার অ্যাক্সেস অবরুদ্ধ রাখুন</translation>
+<translation id="1080365971383768617">আপনার সমস্ত ডিভাইসে পাসওয়ার্ড</translation>
 <translation id="1081956462909987459">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> - ১টি ট্যাব}one{<ph name="GROUP_TITLE" /> - #টি ট্যাব}other{<ph name="GROUP_TITLE" /> - #টি ট্যাব}}</translation>
 <translation id="1082214733466244292">আপনার অ্যাডমিনিস্ট্রেটর এই ডিভাইসের কয়েকটি ফিচার বন্ধ করে দিয়েছে</translation>
 <translation id="1082398631555931481"><ph name="THIRD_PARTY_TOOL_NAME" /> আপনার Chrome সেটিংসকে তাদের মূল ডিফল্টে পুনঃস্থাপন করতে চায়। এটি আপনার হোম পৃষ্ঠা, নতুন ট্যাব পৃষ্ঠা এবং সার্চ ইঞ্জিন আবার সেট করবে, আপনার এক্সটেনশনগুলি বন্ধ করবে এবং সমস্ত ট্যাবগুলি আনপিন করবে। এছাড়াও কুকিজ, কন্টেন্ট এবং সাইট ডেটার মত অন্যান্য অস্থায়ী এবং ক্যাশে ডেটা সাফ করবে।</translation>
@@ -5175,6 +5176,7 @@
 <translation id="4953808748584563296">ডিফল্ট কমলা রঙের অবতার</translation>
 <translation id="4955707703665801001"><ph name="FEATURE_NAME" /> দৃশ্যমানতা</translation>
 <translation id="4955710816792587366">আপনার পিন বেছে নিন</translation>
+<translation id="4956847150856741762">১</translation>
 <translation id="4959262764292427323">পাসওয়ার্ডগুলি আপনার Google অ্যাকাউন্টে সেভ করা হয়েছে যাতে আপনি আপনার যেকোনও ডিভাইসে সেগুলি ব্যবহার করতে পারেন</translation>
 <translation id="4960020053211143927">কিছু অ্যাপে কাজ করে না</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
@@ -8284,7 +8286,6 @@
 <translation id="7424153922653300265">'পাওয়ার সেভার' মোড চালু করা হয়েছে</translation>
 <translation id="7424818322350938336">নেটওয়ার্ক যোগ করা হয়েছে</translation>
 <translation id="7425037327577270384">আমাকে লিখতে সাহায্য করো</translation>
-<translation id="7425292366411265498">আপনার অ্যাডমিনিস্ট্রেটরের ইনস্টল করা এক্সটেনশন এখনও সাইটের কন্টেন্ট পড়তে এবং পরিবর্তন করতে পারবে</translation>
 <translation id="7427315069950454694">আপনার আজকের স্মৃতি</translation>
 <translation id="7427348830195639090">ব্যাকগ্রাউন্ড পৃষ্ঠা:<ph name="BACKGROUND_PAGE_URL" /></translation>
 <translation id="7427798576651127129"><ph name="DEVICE_NAME" /> থেকে কল করুন</translation>

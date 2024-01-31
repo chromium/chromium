@@ -565,6 +565,7 @@ Lihat arahan enjin carian anda untuk memadamkan sejarah carian anda, jika berken
 <translation id="3929457972718048006">Alamat</translation>
 <translation id="3948600256434252210">Anda boleh meleret ke kanan untuk menyemak imbas dalam Inkognito.</translation>
 <translation id="3955822496205734389">Anda mempunyai kata laluan lemah.</translation>
+<translation id="3958312024468322930">Seret ikon tersebut kepada dok pada bahagian bawah Skrin Utama anda</translation>
 <translation id="3959736869653157332">Menu → Tab Inkognito Baharu</translation>
 <translation id="3962326069546168954">Simpan</translation>
 <translation id="3967822245660637423">Muat turun selesai</translation>
@@ -818,7 +819,6 @@ Lihat arahan enjin carian anda untuk memadamkan sejarah carian anda, jika berken
 <translation id="5245322853195994030">Batalkan Penyegerakan</translation>
 <translation id="5248640482715684545">Laman ini sedang mencuba membuka aplikasi lain.</translation>
 <translation id="5256661381001734217">Laman ini sedang mencuba membuka aplikasi.  Tindakan ini akan membawa anda keluar daripada Inkognito.</translation>
-<translation id="5266104675489036658">Tambahkan Tab pada Kumpulan Baharu</translation>
 <translation id="5271265092610673171">{count,plural, =1{Medan yang diperlukan adalah kosong. Isi medan sebelum menyimpan perubahan.}other{Beberapa medan yang diperlukan adalah kosong. Isi medan sebelum menyimpan perubahan.}}</translation>
 <translation id="5271549068863921519">Simpan kata laluan</translation>
 <translation id="5283494734135414249">Ketik pintasan yang dipaparkan di bawah bar alamat.</translation>
@@ -1462,6 +1462,7 @@ Tapak boleh menggunakan kuki untuk melihat aktiviti penyemakan imbas anda merent
 <translation id="8620640915598389714">Edit</translation>
 <translation id="8624447588354561276">Nombor Pakej</translation>
 <translation id="8624753446837753970">Tetapkan Kedudukan</translation>
+<translation id="8625706492572042370">Edit Skrin Utama</translation>
 <translation id="8626393685701737946">Anda boleh menukar paparan laman lalai pada desktop dalam Tetapan &gt; Tetapan Kandungan</translation>
 <translation id="8636825310635137004">Hidupkan penyegerakan untuk mendapatkan tab daripada peranti anda yang lain.</translation>
 <translation id="8637431369725868556">Dapatkan perlindungan daripada laman berbahaya.</translation>

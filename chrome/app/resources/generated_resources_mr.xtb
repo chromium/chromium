@@ -111,6 +111,7 @@
 <translation id="1078037449555275327">ChromeVox सेटिंग्ज</translation>
 <translation id="1079285777677001938">काही साइटवरील वैशिष्ट्ये कदाचित काम करणार नाहीत.</translation>
 <translation id="1079766198702302550">कॅमेरा ॲक्सेस नेहमी ब्लॉक करा</translation>
+<translation id="1080365971383768617">तुमच्या सर्व डिव्हाइसवरील पासवर्ड</translation>
 <translation id="1081956462909987459">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> - एक टॅब}other{<ph name="GROUP_TITLE" /> - # टॅब}}</translation>
 <translation id="1082214733466244292">तुमच्ये अ‍ॅडमिनिस्ट्रेटरने या डिव्हाइससाठी काही कार्यक्षमता ब्लॉक केल्या आहेत</translation>
 <translation id="1082398631555931481"><ph name="THIRD_PARTY_TOOL_NAME" /> तुमच्या Chrome सेटिंग्ज त्यांच्या मूळ डीफॉल्टवर रिस्टोअर करू इच्छित आहे. हे तुमचे मुख्यपेज, नवीन टॅब पेज आणि शोध इंजीन रीसेट करेल, तुमच्या एक्स्टेंशनांना अक्षम करेल आणि सर्व टॅबना अनपिन करेल. ते कुकीज, आशय आणि साइट डेटासारखा इतर तात्पुरता आणि कॅशे केलेला डेटा देखील साफ करेल.</translation>
@@ -5170,6 +5171,7 @@
 <translation id="4953808748584563296">डीफॉल्ट नारिंगी अवतार</translation>
 <translation id="4955707703665801001"><ph name="FEATURE_NAME" /> ची दृश्यमानता</translation>
 <translation id="4955710816792587366">तुमचा पिन निवडा</translation>
+<translation id="4956847150856741762">1</translation>
 <translation id="4959262764292427323">तुम्हाला कोणत्याही डिव्हाइसवर वापरता यावे यासाठी तुमच्या Google खात्यामध्ये पासवर्ड सेव्ह केले जातात</translation>
 <translation id="4960020053211143927">काही ॲप्स सपोर्ट करत नाहीत</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
@@ -8276,7 +8278,6 @@
 <translation id="7424153922653300265">एनर्जी सेव्हर सुरू केला</translation>
 <translation id="7424818322350938336">नेटवर्क जोडले</translation>
 <translation id="7425037327577270384">मला लिहिण्यात मदत करा</translation>
-<translation id="7425292366411265498">तुमच्या अ‍ॅडमिनिस्ट्रेटरने इंस्टॉल केलेली एक्स्टेंशन अद्याप साइट वाचू आणि बदलू शकतात</translation>
 <translation id="7427315069950454694">तुमची आजची मेमरी</translation>
 <translation id="7427348830195639090">बॅकग्राउंड पेज: <ph name="BACKGROUND_PAGE_URL" /></translation>
 <translation id="7427798576651127129"><ph name="DEVICE_NAME" /> चा कॉल</translation>

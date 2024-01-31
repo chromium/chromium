@@ -12,6 +12,7 @@
 <translation id="1024111578869940408">Noen ganger etterligner angripere nettsteder ved å gjøre endringer i nettadressen som er vanskelige å se.</translation>
 <translation id="1024913885641459127">Produktanmeldelser og prissammenligninger</translation>
 <translation id="1028781062521375153">Se detaljer</translation>
+<translation id="102916930470544692">Passnøkkel</translation>
 <translation id="1030706264415084469"><ph name="URL" /> ber om å lagre store datamengder permanent på enheten din</translation>
 <translation id="1030949145805074938">{COUNT,plural, =0{Ingen}=1{Fra 1 nettsted. Du blir logget av de fleste nettsteder. }other{Fra # nettsteder. Du blir logget av de fleste nettsteder. }}</translation>
 <translation id="1033329911862281889">Inkognito gjør deg ikke usynlig på nettet:
@@ -397,6 +398,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="1711528724596764268">Maskinlæring og kunstig intelligens</translation>
 <translation id="1712552549805331520"><ph name="URL" /> ber om å lagre data permanent på datamaskinen din</translation>
 <translation id="1713628304598226412">Skuff 2</translation>
+<translation id="1713819065634160212">Bruk og lagre adresser fra Google-kontoen din</translation>
 <translation id="1714807406136741351">Surfemodus – du kan bytte til skjemamodus for å bruke venstrepil og høyrepil for å se prisendringene i diagrammet</translation>
 <translation id="1717218214683051432">Bevegelsessensorer</translation>
 <translation id="1717494416764505390">Postkasse 3</translation>
@@ -1087,6 +1089,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="3120807611504813890">Konvolutt (lett)</translation>
 <translation id="3121994479408824897">Gå til <ph name="DOMAIN" /></translation>
 <translation id="3126023634486644099">Etiketter (permanente)</translation>
+<translation id="3133565499688974786"><ph name="SEARCH_ENGINE_NAME" /> er nå standardsøkemotoren din</translation>
 <translation id="3140646734028448730">Bedriftstjenester</translation>
 <translation id="3141093262818886744">Åpne likevel</translation>
 <translation id="3141641372357166056">Ingen beslutning om samtykke</translation>
@@ -1510,6 +1513,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="3943857333388298514">Lim inn</translation>
 <translation id="3946209740501886391">Spør alltid på dette nettstedet</translation>
 <translation id="3948588869002647271">Denne appen mangler eller er skadet</translation>
+<translation id="3949297482798028668">Administratoren din har blokkert innliming av dette innholdet her.</translation>
 <translation id="3949571496842715403">Denne tjeneren kunne ikke bevise at den er <ph name="DOMAIN" />. Det er ikke angitt noen alternative emnenavn i tjenerens sikkerhetssertifikat. Dette kan være forårsaket av en feilkonfigurering eller en angriper som avskjærer tilkoblingen din.</translation>
 <translation id="3949601375789751990">Nettleserloggen din vises her</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
@@ -1926,6 +1930,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="4764680219299728632">Komfyrer, platetopper og ovner</translation>
 <translation id="4764776831041365478">Det kan hende at nettsiden på <ph name="URL" /> er midlertidig nede eller flyttet permanent til en ny nettadresse.</translation>
 <translation id="4766713847338118463">To stifter bunn</translation>
+<translation id="4768864802656530630">Detaljerte systemlogger. <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>
 <translation id="4771973620359291008">Det har oppstått en ukjent feil.</translation>
 <translation id="4774055414220872623">Utstyr til kunst og kunsthåndverk</translation>
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{Et forgrunnsvindu er blokkert}other{# forgrunnsvinduer er blokkert}}</translation>
@@ -2231,6 +2236,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="5377026284221673050">«Klokken går for sent», «Klokken går for fort» eller «&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;»</translation>
 <translation id="5383478552402031184">Gulv</translation>
 <translation id="5385857628869214740">Humor</translation>
+<translation id="5385966243497224160">Kan ikke forhåndsvise ikke-HTTPS-nettadresser</translation>
 <translation id="5386426401304769735">Sertifikatkjeden for dette nettstedet inneholder et sertifikat som er signert med SHA-1.</translation>
 <translation id="5392506727170022660">Metall (halvglans)</translation>
 <translation id="5396631636586785122">Kantstifting høyre</translation>
@@ -2454,6 +2460,8 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="5838732667866024867">Du kan bruke venstre eller høyre pil for å se prisendringene i diagrammet</translation>
 <translation id="5840318881868981258">I Google-kontoen din, <ph name="ACCOUNT" /></translation>
 <translation id="5841338463993781099">Vil du lagre adressen i kontoen?</translation>
+<translation id="5843987376989109187">Dette språket støttes ikke ennå.
+    <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>
 <translation id="5847181246682413476">Strømforsyninger</translation>
 <translation id="5851548754964597211">Faneliste</translation>
 <translation id="5852909432155870672">RA4</translation>
@@ -3178,6 +3186,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="724691107663265825">Nettstedet du er på vei til, inneholder skadelig programvare</translation>
 <translation id="7251437084390964440">Nettverkskonfigurasjonen overholder ikke ONC-standarden. Deler av konfigurasjonen kan muligens ikke importeres. Mer informasjon:
 <ph name="DEBUG_INFO" /></translation>
+<translation id="7251635775446614726">Administratoren din sier «<ph name="CUSTOM_MESSAGE" />».</translation>
 <translation id="7256634549594854023">Bakskuff</translation>
 <translation id="725866823122871198">En privat forbindelse til <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> kan ikke opprettes fordi datoen og klokkeslettet (<ph name="DATE_AND_TIME" />) på datamaskinen er feil.</translation>
 <translation id="7260075294900977274">En ny smart mappe du kan bruke til å lagre alle handlesidene dine på ett sted, slik at du kan spore priser automatisk, få prisstatistikk med mer</translation>
@@ -3664,6 +3673,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="8194797478851900357">&amp;Angre flyttingen</translation>
 <translation id="8194956568907463262">Skytespill</translation>
 <translation id="8199437620497683918">Optisk disk (glans)</translation>
+<translation id="8199730148066603000">Forhåndsvisning av ikke-HTTPS-nettadresser er ikke tillatt.</translation>
 <translation id="8200772114523450471">Fortsett</translation>
 <translation id="8202097416529803614">Bestillingssammendrag</translation>
 <translation id="8202370299023114387">Konflikt</translation>
@@ -4101,6 +4111,8 @@ Mer informasjon:
 <translation id="9049981332609050619">Du forsøkte å nå <ph name="DOMAIN" />, men tjeneren oppga et ugyldig sertifikat.</translation>
 <translation id="9050666287014529139">Passordfrase</translation>
 <translation id="9051072642122229460">Kaffe- og espressomaskiner</translation>
+<translation id="9051260467258969162"><ph name="BEGIN_LINK" />Logg på<ph name="END_LINK" />
+    igjen, og kom tilbake til denne fanen for å få skrivehjelp</translation>
 <translation id="9053840549256861041">Nå lanserer vi en funksjon for annonsepersonvern som kalles annonsemåling. Chrome deler kun svært begrenset informasjon mellom nettsteder, for eksempel når du ble vist annonser, for å hjelpe nettsteder med å måle annonseresultatene.</translation>
 <translation id="9056953843249698117">Butikk</translation>
 <translation id="9062620674789239642">Den kan ha blitt flyttet, redigert eller slettet.</translation>

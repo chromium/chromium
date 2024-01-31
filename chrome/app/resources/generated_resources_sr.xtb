@@ -111,6 +111,7 @@
 <translation id="1078037449555275327">Подешавања ChromeVox-а</translation>
 <translation id="1079285777677001938">Функције на неким сајтовима можда не раде.</translation>
 <translation id="1079766198702302550">Увек блокирај приступ камери</translation>
+<translation id="1080365971383768617">Лозинке на свим уређајима</translation>
 <translation id="1081956462909987459">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> – 1 картица}one{<ph name="GROUP_TITLE" /> – # картица}few{<ph name="GROUP_TITLE" /> – # картице}other{<ph name="GROUP_TITLE" /> – # картица}}</translation>
 <translation id="1082214733466244292">Администратор је блокирао неке функционалности за овај уређај</translation>
 <translation id="1082398631555931481">Алатка <ph name="THIRD_PARTY_TOOL_NAME" /> жели да врати подешавања Chrome-а на првобитне подразумеване вредности. То ће ресетовати почетну страницу, страницу нове картице и претраживач, онемогућиће додатке и откачити све картице. Такође ће обрисати друге привремене и кеширане податке, попут колачића, садржаја и података о сајтовима.</translation>
@@ -5155,6 +5156,7 @@
 <translation id="4953808748584563296">Подразумевани наранџасти аватар</translation>
 <translation id="4955707703665801001">Видљивост за <ph name="FEATURE_NAME" /></translation>
 <translation id="4955710816792587366">Одаберите PIN</translation>
+<translation id="4956847150856741762">1</translation>
 <translation id="4959262764292427323">Лозинке се чувају на Google налогу да бисте могли да их користите на било ком уређају</translation>
 <translation id="4960020053211143927">Неке апликације не подржавају ово</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> – <ph name="PROFILE_NAME" /></translation>
@@ -8264,7 +8266,6 @@
 <translation id="7424153922653300265">Уштеда енергије је укључена</translation>
 <translation id="7424818322350938336">Мрежа је додата</translation>
 <translation id="7425037327577270384">Помоћ при писању</translation>
-<translation id="7425292366411265498">Додаци које је инсталирао администратор и даље могу да читају и мењају сајтове</translation>
 <translation id="7427315069950454694">ваше успомене за данас</translation>
 <translation id="7427348830195639090">Страница у позадини: <ph name="BACKGROUND_PAGE_URL" /></translation>
 <translation id="7427798576651127129">Позив са уређаја <ph name="DEVICE_NAME" /></translation>

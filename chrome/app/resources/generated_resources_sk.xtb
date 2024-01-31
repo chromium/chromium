@@ -111,6 +111,7 @@
 <translation id="1078037449555275327">Nastavenia čítačky ChromeVox</translation>
 <translation id="1079285777677001938">Funkcie na niektorých weboch nemusia fungovať.</translation>
 <translation id="1079766198702302550">Vždy blokovať prístup ku kamere</translation>
+<translation id="1080365971383768617">Heslá vo všetkých vašich zariadeniach</translation>
 <translation id="1081956462909987459">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> – 1 karta}few{<ph name="GROUP_TITLE" /> – # karty}many{<ph name="GROUP_TITLE" /> - # Tabs}other{<ph name="GROUP_TITLE" /> – # kariet}}</translation>
 <translation id="1082214733466244292">Váš správca niektoré funkcie tohto zariadenia zablokoval</translation>
 <translation id="1082398631555931481">Nástroj <ph name="THIRD_PARTY_TOOL_NAME" /> chce obnoviť vaše nastavenia prehliadača Chrome na predvolené hodnoty. Týmto sa obnoví domovská stránka, stránka na novej karte a vyhľadávač, zakážu sa rozšírenia a odopnú všetky karty. Vymažú sa tiež ďalšie dočasné údaje a údaje vyrovnávacej pamäte, ako sú napríklad súbory cookie či údaje obsahu a stránok.</translation>
@@ -5159,6 +5160,7 @@ Ak chcete zobrazenie oddialiť, stlačte Ctrl + Alt + zníženie jasu.</translat
 <translation id="4953808748584563296">Predvolený oranžový avatar</translation>
 <translation id="4955707703665801001">Viditeľnosť funkcie <ph name="FEATURE_NAME" /></translation>
 <translation id="4955710816792587366">Vyberte si PIN</translation>
+<translation id="4956847150856741762">1</translation>
 <translation id="4959262764292427323">Heslá sa ukladajú do účtu Google, takže ich môžete používať v ľubovoľnom zariadení</translation>
 <translation id="4960020053211143927">Niektoré aplikácie to nepodporujú</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> – <ph name="PROFILE_NAME" /></translation>
@@ -8268,7 +8270,6 @@ Máte ešte # ďalších. Správca hesiel Google odporúča okamžite dané hes
 <translation id="7424153922653300265">Šetrič energie je zapnutý</translation>
 <translation id="7424818322350938336">Bola pridaná sieť</translation>
 <translation id="7425037327577270384">Asistent písania</translation>
-<translation id="7425292366411265498">Rozšírenia nainštalované správcom môžu stále čítať a meniť weby</translation>
 <translation id="7427315069950454694">vaše dnešné spomienky</translation>
 <translation id="7427348830195639090">Stránka na pozadí: <ph name="BACKGROUND_PAGE_URL" /></translation>
 <translation id="7427798576651127129">Volať zo zariadenia <ph name="DEVICE_NAME" /></translation>

@@ -334,6 +334,7 @@ Vaše šifrirane podatke može čitati samo osoba koja ima vaš pristupni izraz.
 <translation id="2870560284913253234">Web lokacija</translation>
 <translation id="2871733351037274014">Predučitavanje stranica</translation>
 <translation id="2876136027428473467"><ph name="CHILD_NAME" /> želi da odobrite ovu web lokaciju:</translation>
+<translation id="2876194821763651818">Zaporke su spremljene na <ph name="USERNAME" />.</translation>
 <translation id="2876628302275096482">Saznajte više o tome <ph name="BEGIN_LINK" />kako Chrome štiti privatnost vaših podataka<ph name="END_LINK" /></translation>
 <translation id="2888126860611144412">O Chromeu</translation>
 <translation id="2891154217021530873">Zaustavljanje učitavanja stranice</translation>
@@ -672,6 +673,7 @@ Vaš Google račun može imati druge oblike historije pregledanja kao što su pr
 <translation id="4699172675775169585">Slike i fajlovi u keš memoriji</translation>
 <translation id="4710167854527459075">Poredaj od najnovijeg</translation>
 <translation id="4719927025381752090">Ponudi prijevod</translation>
+<translation id="4720556299488643018">Otkaži pretplatu</translation>
 <translation id="4732120983431207637">Rastvarač grupe</translation>
 <translation id="4736934858538408121">Virtuelna kartica</translation>
 <translation id="473775607612524610">Ažuriraj</translation>
@@ -1194,6 +1196,7 @@ Naprimjer, neke web lokacije mogu reagirati na ovaj zahtjev prikazivanjem oglasa
 <translation id="7313188324932846546">Dodirnite da postavite sinhronizaciju</translation>
 <translation id="7324354302972299151">Pošalji zahtjev za "Do Not Track"</translation>
 <translation id="7332075081379534664">Prijava je uspjela</translation>
+<translation id="7333041109965360609">Otkazana je pretplata na obavijesti</translation>
 <translation id="7333232495927792353">Sinhronizirajte da preuzmete najrelevantniji sadržaj s Googlea</translation>
 <translation id="7339898014177206373">Novi prozor</translation>
 <translation id="7340958967809483333">Opcije za Discover</translation>
@@ -1452,6 +1455,7 @@ Naprimjer, neke web lokacije mogu reagirati na ovaj zahtjev prikazivanjem oglasa
 <translation id="8503813439785031346">Korisničko ime</translation>
 <translation id="8505766168025405649">Status preuzimanja provjerite u obavještenju</translation>
 <translation id="8506357771923193001">Ovdje ćete pronaći preuzimanja</translation>
+<translation id="8512053371384421952">Više nećete primati obavijesti s web-lokacije <ph name="DOMAIN" />.</translation>
 <translation id="8514477925623180633">Izvoz lozinki pohranjenih u Chromeu</translation>
 <translation id="8516012719330875537">Uređivač slika</translation>
 <translation id="8523928698583292556">Izbriši sačuvane lozinke</translation>
@@ -1536,6 +1540,7 @@ Naprimjer, neke web lokacije mogu reagirati na ovaj zahtjev prikazivanjem oglasa
 <translation id="8996847606757455498">Odaberite drugog pružaoca</translation>
 <translation id="8998289560386111590">Nije dostupno na vašem uređaju</translation>
 <translation id="8998729206196772491">Prijavljujete se pomoću računa kojim upravlja domena <ph name="MANAGED_DOMAIN" /> te njenom administratoru dajete kontrolu nad svojim Chrome podacima. Vaši podaci će se trajno povezati s ovim računom. Odjavljivanjem iz Chromea ćete izbrisati podatke s ovog uređaja, ali će oni ostati pohranjeni na vašem Google računu.</translation>
+<translation id="8998837250940831980">Minimiziranje kartice nije uspjelo. Pokušajte ponovo kasnije.</translation>
 <translation id="9012585441087414258">Štiti od web lokacija, preuzimanja i ekstenzija za koje se zna da su opasni. Ako stranica uradi nešto sumnjivo, URL-ovi i dijelovi sadržaja stranice se šalju na Sigurno pregledanje na Googleu.</translation>
 <translation id="9019199799064251516">Nastaviti bez zaključavanja profila u automobilu?</translation>
 <translation id="9022774213089566801">Često posjećivano</translation>
