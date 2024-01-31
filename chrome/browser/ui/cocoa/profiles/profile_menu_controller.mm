@@ -4,6 +4,7 @@
 
 #import "chrome/browser/ui/cocoa/profiles/profile_menu_controller.h"
 
+#include <AppKit/AppKit.h>
 #include <stddef.h>
 
 #include <memory>
@@ -159,18 +160,25 @@ class Observer : public BrowserListObserver, public AvatarMenuObserver {
 - (BOOL)insertItemsIntoMenu:(NSMenu*)menu
                    atOffset:(NSInteger)offset
                    fromDock:(BOOL)dock {
-  if (!_avatarMenu)
+  if (!_avatarMenu) {
     return NO;
+  }
 
   // Don't show the list of profiles in the dock if only one profile exists.
-  if (dock && _avatarMenu->GetNumberOfItems() <= 1)
+  if (dock && _avatarMenu->GetNumberOfItems() <= 1) {
     return NO;
+  }
 
   if (dock) {
-    NSMenuItem* header = [[NSMenuItem alloc] initWithTitle:GetProfileMenuTitle()
-                                                    action:nil
-                                             keyEquivalent:@""];
-    header.enabled = NO;
+    NSMenuItem* header;
+    if (@available(macOS 14, *)) {
+      header = [NSMenuItem sectionHeaderWithTitle:GetProfileMenuTitle()];
+    } else {
+      header = [[NSMenuItem alloc] initWithTitle:GetProfileMenuTitle()
+                                          action:nil
+                                   keyEquivalent:@""];
+      header.enabled = NO;
+    }
     [menu insertItem:header atIndex:offset++];
   }
 
@@ -179,12 +187,9 @@ class Observer : public BrowserListObserver, public AvatarMenuObserver {
     NSString* name = base::SysUTF16ToNSString(itemData.name);
     SEL action = dock ? @selector(switchToProfileFromDock:)
                       : @selector(switchToProfileFromMenu:);
-    NSMenuItem* item = [self createItemWithTitle:name
-                                          action:action];
+    NSMenuItem* item = [self createItemWithTitle:name action:action];
     item.tag = itemData.menu_index;
-    if (dock) {
-      item.indentationLevel = 1;
-    } else {
+    if (!dock) {
       gfx::Image itemIcon =
           profiles::GetAvatarIconForNSMenu(itemData.profile_path);
       item.image = itemIcon.ToNSImage();

@@ -324,6 +324,7 @@ NSMenuItem* BuildHistoryMenu(NSApplication* nsapp,
                   .remove_if(is_pwa),
               Item(IDS_HISTORY_CLOSED_MAC)
                   .tag(HistoryMenuBridge::kRecentlyClosedTitle)
+                  .is_section_header()
                   .remove_if(is_pwa),
               Item()
                   .tag(HistoryMenuBridge::kVisitedSeparator)
@@ -331,6 +332,7 @@ NSMenuItem* BuildHistoryMenu(NSApplication* nsapp,
                   .remove_if(is_pwa),
               Item(IDS_HISTORY_VISITED_MAC)
                   .tag(HistoryMenuBridge::kVisitedTitle)
+                  .is_section_header()
                   .remove_if(is_pwa),
               Item()
                   .tag(HistoryMenuBridge::kShowFullSeparator)
@@ -532,9 +534,33 @@ NSMenuItem* MenuItemBuilder::Build() const {
   if (is_separator_) {
     NSMenuItem* item = [NSMenuItem separatorItem];
     if (tag_) {
-      [item setTag:tag_];
+      item.tag = tag_;
     }
-    [item setHidden:is_hidden_];
+    item.hidden = is_hidden_;
+    return item;
+  }
+
+  NSString* title;
+  if (!string_arg1_.empty()) {
+    title = l10n_util::GetNSStringFWithFixup(string_id_, string_arg1_);
+  } else {
+    title = l10n_util::GetNSStringWithFixup(string_id_);
+  }
+
+  if (is_section_header_) {
+    NSMenuItem* item;
+    if (@available(macOS 14, *)) {
+      item = [NSMenuItem sectionHeaderWithTitle:title];
+    } else {
+      item = [[NSMenuItem alloc] initWithTitle:title
+                                        action:nil
+                                 keyEquivalent:@""];
+      item.enabled = NO;
+    }
+    if (tag_) {
+      item.tag = tag_;
+    }
+    item.hidden = is_hidden_;
     return item;
   }
 
@@ -552,12 +578,6 @@ NSMenuItem* MenuItemBuilder::Build() const {
       key_equivalent_flags = equivalent.modifierMask;
     }
   }
-
-  NSString* title;
-  if (!string_arg1_.empty())
-    title = l10n_util::GetNSStringFWithFixup(string_id_, string_arg1_);
-  else
-    title = l10n_util::GetNSStringWithFixup(string_id_);
 
   SEL action = !submenu_.has_value() ? action_ : nil;
 
@@ -577,7 +597,7 @@ NSMenuItem* MenuItemBuilder::Build() const {
       if (ns_subitem)
         [menu addItem:ns_subitem];
     }
-    [item setSubmenu:menu];
+    item.submenu = menu;
   }
 
   return item;
