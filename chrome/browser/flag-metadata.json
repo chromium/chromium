@@ -1050,6 +1050,11 @@
     "expiry_milestone": 140
   },
   {
+    "name": "captive-portal-popup-window",
+    "owners": [ "stevenjb@chromium.org", "cros-network-health@google.com"],
+    "expiry_milestone": 126
+  },
+  {
     "name": "captured-surface-control",
     "owners": [
       "eladalon@chromium.org",

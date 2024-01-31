@@ -20018,6 +20018,7 @@ from previous Chrome versions.
   <int value="-296203212"
       label="AutofillEnableMerchantDomainInUnmaskCardRequest:enabled"/>
   <int value="-296179618" label="CookiesWithoutSameSiteMustBeSecure:enabled"/>
+  <int value="-295753272" label="CaptivePortalPopupWindow:disabled"/>
   <int value="-295237704" label="EnableRemovingAllThirdPartyCookies:enabled"/>
   <int value="-293546827" label="HideIncognitoMediaMetadata:enabled"/>
   <int value="-292450031"
@@ -21917,6 +21918,7 @@ from previous Chrome versions.
   <int value="589394614" label="OmniboxSuggestionButtonRow:enabled"/>
   <int value="589924262" label="CryptAuthV2DeviceActivityStatus:enabled"/>
   <int value="591007879" label="UseClientGmbInterface:enabled"/>
+  <int value="592001554" label="CaptivePortalPopupWindow:enabled"/>
   <int value="592050831" label="disable-slimming-paint"/>
   <int value="593707592" label="disable-network-portal-notification"/>
   <int value="594756372" label="MyFilesVolume:disabled"/>

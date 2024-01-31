@@ -11101,6 +11101,13 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(chromeos::features::kDeskProfiles)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+#if BUILDFLAG(IS_CHROMEOS)
+    {"captive-portal-popup-window",
+     flag_descriptions::kCaptivePortalPopupWindowName,
+     flag_descriptions::kCaptivePortalPopupWindowDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(chromeos::features::kCaptivePortalPopupWindow)},
+#endif
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the
