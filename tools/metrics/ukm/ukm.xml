@@ -13900,32 +13900,32 @@ be describing additional metrics about the same event.
     foreground and background. Records may be aggregated based on PlayerID and
     correlated with the Media.WebMediaPlayerState event.
   </summary>
-  <metric name="AudioCodec">
+  <metric name="AudioCodec" enum="AudioCodec">
     <summary>
       media::AudioCodec enum value. Can be kUnknownAudioCodec even when HasAudio
       is true because we don't always know the codec.
     </summary>
   </metric>
-  <metric name="AudioCodecProfile">
+  <metric name="AudioCodecProfile" enum="AudioCodecProfile">
     <summary>
       media::AudioCodecProfile enum value. Can be AudioCodecProfile::kUnknown
       even when HasAudio is true because we don't always know the codec profile.
     </summary>
   </metric>
-  <metric name="AudioDecoderName">
+  <metric name="AudioDecoderName" enum="AudioDecoderType">
     <summary>
       Enumeration of audio decoder implementations, zero if none or unknown
       (Cast, HLS, etc). See AudioDecoderType (media/base/decoder.h) for expected
       values.
     </summary>
   </metric>
-  <metric name="AudioEncryptionScheme">
+  <metric name="AudioEncryptionScheme" enum="EncryptionScheme">
     <summary>
-      media::EncryptionMode enum value. Can be kUnencrypted if IsEME is false or
-      if the audio track is unencrypted.
+      media::EncryptionScheme enum value (media/base/encryption_scheme.h). Can
+      be kUnencrypted if IsEME is false or if the audio track is unencrypted.
     </summary>
   </metric>
-  <metric name="AutoplayInitiated">
+  <metric name="AutoplayInitiated" enum="Boolean">
     <summary>
       Boolean value indicating whether the initial playback was initiated via
       autoplay. Multilpe chunk records of the same player should have the same
@@ -13951,38 +13951,38 @@ be describing additional metrics about the same event.
       media being played. May be missing if the duration is unknown or infinite.
     </summary>
   </metric>
-  <metric name="HasAudio">
+  <metric name="HasAudio" enum="Boolean">
     <summary>
       Boolean value indicating the presence of audio.
     </summary>
   </metric>
-  <metric name="HasVideo">
+  <metric name="HasVideo" enum="Boolean">
     <summary>
       Boolean value indicating the presence of video.
     </summary>
   </metric>
-  <metric name="IsBackground">
+  <metric name="IsBackground" enum="Boolean">
     <summary>
       Boolean value indicating if this event is for a background playback.
     </summary>
   </metric>
-  <metric name="IsEME">
+  <metric name="IsEME" enum="Boolean">
     <summary>
       Boolean value indicating if this event is for an EME playback.
     </summary>
   </metric>
-  <metric name="IsMSE">
+  <metric name="IsMSE" enum="Boolean">
     <summary>
       Boolean value indicating if this event is for an MSE playback. If false it
       means this was a SRC playback.
     </summary>
   </metric>
-  <metric name="IsMuted">
+  <metric name="IsMuted" enum="Boolean">
     <summary>
       Boolean value indicating if this event is for a muted playback.
     </summary>
   </metric>
-  <metric name="IsTopFrame">
+  <metric name="IsTopFrame" enum="Boolean">
     <summary>
       Flag indicating whether the report comes from the top frame or some inner
       frame. For privacy, metrics from inner frames are recorded with the top
@@ -13990,10 +13990,11 @@ be describing additional metrics about the same event.
       playbacks.
     </summary>
   </metric>
-  <metric name="LastPipelineStatus">
+  <metric name="LastPipelineStatus" enum="PipelineStatus">
     <summary>
-      media::PipelineStatus enum value. Always 0 if the playback succeeded; all
-      other values indicate the playback ended in an error.
+      media::PipelineStatusCodes enum value (media/base/pipeline_status.h).
+      Always 0 if the playback succeeded; all other values indicate the playback
+      ended in an error.
     </summary>
   </metric>
   <metric name="MeanTimeBetweenRebuffers">
@@ -14020,29 +14021,29 @@ be describing additional metrics about the same event.
       Integer count of the number of times playback experienced rebuffering.
     </summary>
   </metric>
-  <metric name="VideoCodec">
+  <metric name="VideoCodec" enum="VideoCodec">
     <summary>
       media::VideoCodec enum value. Can be kUnknownVideoCodec even when HasVideo
       is true because we don't always know the codec.
     </summary>
   </metric>
-  <metric name="VideoCodecProfile">
+  <metric name="VideoCodecProfile" enum="VideoCodecProfile">
     <summary>
       media::VideoCodecProfile enum value. Can be VIDEO_CODEC_PROFILE_UNKNOWN
       even when HasVideo is true because we don't always know the codec profile.
     </summary>
   </metric>
-  <metric name="VideoDecoderName">
+  <metric name="VideoDecoderName" enum="VideoDecoderType">
     <summary>
       Enumeration of video decoder implementations, zero if none or unknown
       (Cast, HLS, etc). See VideoDecoderType (media/base/decoder.h) for expected
       values.
     </summary>
   </metric>
-  <metric name="VideoEncryptionScheme">
+  <metric name="VideoEncryptionScheme" enum="EncryptionScheme">
     <summary>
-      media::EncryptionMode enum value. Can be kUnencrypted if IsEME is false or
-      if the video track is unencrypted.
+      media::EncryptionScheme enum value (media/base/encryption_scheme.h). Can
+      be kUnencrypted if IsEME is false or if the video track is unencrypted.
     </summary>
   </metric>
   <metric name="VideoFramesDecoded">

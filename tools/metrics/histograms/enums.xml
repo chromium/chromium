@@ -885,6 +885,26 @@ uploading your change for review.  These are checked by presubmit scripts.
   <int value="22" label="kCodecIAMF"/>
 </enum>
 
+<enum name="AudioCodecProfile">
+  <int value="0" label="kUnknown"/>
+  <int value="1" label="kXHE_AAC"/>
+  <int value="2" label="kIAMF_SIMPLE"/>
+  <int value="3" label="kIAMF_BASE"/>
+</enum>
+
+<enum name="AudioDecoderType">
+  <int value="0" label="kUnknown"/>
+  <int value="1" label="kFFmpeg"/>
+  <int value="2" label="kMojo"/>
+  <int value="3" label="kDecrypting"/>
+  <int value="4" label="kMediaCodec"/>
+  <int value="5" label="kBroker"/>
+  <int value="6" label="kTesting"/>
+  <int value="7" label="kAudioToolbox"/>
+  <int value="8" label="kMediaFoundation"/>
+  <int value="9" label="kPassthroughDTS"/>
+</enum>
+
 <enum name="AudioPermissionState">
   <int value="0" label="Granted"/>
   <int value="1" label="Denied but can ask again"/>
@@ -5470,6 +5490,12 @@ Called by update_document_policy_enum.py.-->
   <int value="15" label="kSystemAPICallError"/>
   <int value="16" label="kInvalidInputFrame"/>
   <int value="17" label="kInvalidOutputBuffer"/>
+</enum>
+
+<enum name="EncryptionScheme">
+  <int value="0" label="kUnencrypted"/>
+  <int value="1" label="kCenc"/>
+  <int value="2" label="kCbcs"/>
 </enum>
 
 <enum name="EnrollmentStatus">
@@ -33751,6 +33777,25 @@ would be helpful to identify which type is being sent.
   <int value="49" label="VVC Main10 444 Still-picture"/>
   <int value="50" label="VVC Main12 444 Still-picture"/>
   <int value="51" label="VVC Main16 444 Still-picture"/>
+</enum>
+
+<enum name="VideoDecoderType">
+  <int value="0" label="None"/>
+  <int value="2" label="FFmpeg Video Decoder"/>
+  <int value="3" label="VPX Video Decoder"/>
+  <int value="4" label="AOM Video Decoder"/>
+  <int value="5" label="Mojo Video Decoder"/>
+  <int value="6" label="Decrypting Video Decoder"/>
+  <int value="7" label="Dav1d Video Decoder"/>
+  <int value="8" label="Fuchsia Video Decoder"/>
+  <int value="9" label="MediaCodec Video Decoder"/>
+  <int value="11" label="D3D11 Video Decoder"/>
+  <int value="12" label="Vaapi Video Decoder"/>
+  <int value="13" label="Broker Video Decoder"/>
+  <int value="14" label="VDA Video Decoder"/>
+  <int value="16" label="V4l2 Video Decoder"/>
+  <int value="18" label="OOP Video Decoder"/>
+  <int value="19" label="VideoToolbox Video Decoder"/>
 </enum>
 
 <enum name="VideoEncoderUseCase">
