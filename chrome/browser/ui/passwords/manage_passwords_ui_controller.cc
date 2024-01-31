@@ -809,6 +809,7 @@ void ManagePasswordsUIController::MovePasswordToAccountStore() {
   if (base::FeatureList::IsEnabled(
           password_manager::features::kButterOnDesktopFollowup)) {
     MovePendingPasswordToAccountStoreUsingHelper(
+        GetPendingPassword(),
         GetState() == password_manager::ui::MOVE_CREDENTIAL_AFTER_LOG_IN_STATE
             ? password_manager::metrics_util::MoveToAccountStoreTrigger::
                   kSuccessfulLoginWithProfileStorePassword
@@ -1028,14 +1029,15 @@ bool ManagePasswordsUIController::HasBrowserWindow() const {
 
 std::unique_ptr<MovePasswordToAccountStoreHelper>
 ManagePasswordsUIController::CreateMovePasswordToAccountStoreHelper(
+    const password_manager::PasswordForm& form,
     password_manager::metrics_util::MoveToAccountStoreTrigger trigger,
     base::OnceCallback<void()> on_move_finished) {
   return std::make_unique<MovePasswordToAccountStoreHelper>(
-      GetPendingPassword(), passwords_data_.client(), trigger,
-      std::move(on_move_finished));
+      form, passwords_data_.client(), trigger, std::move(on_move_finished));
 }
 
 void ManagePasswordsUIController::MovePendingPasswordToAccountStoreUsingHelper(
+    const password_manager::PasswordForm& form,
     password_manager::metrics_util::MoveToAccountStoreTrigger trigger) {
   // Insert nullptr first to obtain the iterator passed to the callback.
   auto helper_it = move_to_account_store_helpers_.insert(
@@ -1046,7 +1048,7 @@ void ManagePasswordsUIController::MovePendingPasswordToAccountStoreUsingHelper(
                          OnMoveJustSavedPasswordAfterAccountStoreOptInCompleted,
                      base::Unretained(this), helper_it);
   *helper_it = CreateMovePasswordToAccountStoreHelper(
-      trigger, std::move(on_move_finished));
+      form, trigger, std::move(on_move_finished));
 }
 
 void ManagePasswordsUIController::PrimaryPageChanged(content::Page& page) {
@@ -1172,14 +1174,14 @@ void ManagePasswordsUIController::OnTriggerPostSaveCompromisedBubble(
 }
 
 void ManagePasswordsUIController::MoveJustSavedPasswordAfterAccountStoreOptIn(
-    password_manager::PasswordForm form,
+    const password_manager::PasswordForm& form,
     password_manager::PasswordManagerClient::ReauthSucceeded reauth_succeeded) {
   // Successful opt-in means that the just-saved password should be moved to the
   // account.
   if (reauth_succeeded) {
     MovePendingPasswordToAccountStoreUsingHelper(
-        password_manager::metrics_util::MoveToAccountStoreTrigger::
-            kUserOptedInAfterSavingLocally);
+        form, password_manager::metrics_util::MoveToAccountStoreTrigger::
+                  kUserOptedInAfterSavingLocally);
   } else {
     // Failed or canceled opt-in means the user has (implicitly) chosen to save
     // locally. This is already the default value, but setting it explicitly

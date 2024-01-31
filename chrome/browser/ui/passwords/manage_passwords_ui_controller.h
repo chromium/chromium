@@ -235,6 +235,7 @@ class ManagePasswordsUIController
   // moving process for the pending password.
   virtual std::unique_ptr<password_manager::MovePasswordToAccountStoreHelper>
   CreateMovePasswordToAccountStoreHelper(
+      const password_manager::PasswordForm& form,
       password_manager::metrics_util::MoveToAccountStoreTrigger trigger,
       base::OnceCallback<void()> on_move_finished);
 
@@ -315,7 +316,7 @@ class ManagePasswordsUIController
   // account-storage-eligible user saved a password locally. If the opt-in was
   // successful, this moves the just-saved password into the account store.
   void MoveJustSavedPasswordAfterAccountStoreOptIn(
-      password_manager::PasswordForm form,
+      const password_manager::PasswordForm& form,
       password_manager::PasswordManagerClient::ReauthSucceeded
           reauth_succeeded);
 
@@ -333,6 +334,7 @@ class ManagePasswordsUIController
 
   // Moves pending password to the account storage.
   void MovePendingPasswordToAccountStoreUsingHelper(
+      const password_manager::PasswordForm& form,
       password_manager::metrics_util::MoveToAccountStoreTrigger trigger);
 
   // Timeout in seconds for the manual fallback for saving.

@@ -173,9 +173,10 @@ class TestManagePasswordsUIController : public ManagePasswordsUIController {
   MOCK_METHOD(
       std::unique_ptr<password_manager::MovePasswordToAccountStoreHelper>,
       CreateMovePasswordToAccountStoreHelper,
-      (password_manager::metrics_util::MoveToAccountStoreTrigger trigger,
+      (const password_manager::PasswordForm& form,
+       password_manager::metrics_util::MoveToAccountStoreTrigger trigger,
        base::OnceCallback<void()>),
-      ());
+      (override));
 
  private:
   void UpdateBubbleAndIconVisibility() override;
@@ -1646,6 +1647,7 @@ TEST_F(ManagePasswordsUIControllerTest, OpenMoveBubbleFromManagementBubble) {
 
   EXPECT_CALL(*controller(),
               CreateMovePasswordToAccountStoreHelper(
+                  controller()->GetPendingPassword(),
                   password_manager::metrics_util::MoveToAccountStoreTrigger::
                       kExplicitlyTriggeredInPasswordsManagementBubble,
                   _));
