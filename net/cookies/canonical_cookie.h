@@ -261,10 +261,17 @@ class NET_EXPORT CanonicalCookie {
   // Returns whether this cookie is Partitioned and its partition key matches a
   // a same-site context by checking if the cookies domain site is the same as
   // the partition key's site.
+  // This function should not be used for third-party cookie blocking
+  // enforcement-related decisions. That logic should rely on `IsPartitioned`.
+  // These functions are for recording metrics about partitioned cookie usage.
   // Returns false if the cookie has no partition key.
   bool IsFirstPartyPartitioned() const;
 
   // Returns whether the cookie is partitioned in a third-party context.
+  // This function should not be used for third-party cookie blocking
+  // enforcement-related decisions. That logic should rely on `IsPartitioned`.
+  // These functions are for recording metrics about partitioned cookie usage.
+  // Returns false if the cookie has no partition key.
   bool IsThirdPartyPartitioned() const;
 
   // Returns the cookie's domain, with the leading dot removed, if present.
