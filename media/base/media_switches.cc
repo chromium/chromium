@@ -410,9 +410,12 @@ BASE_FEATURE(kUseAndroidOverlayForSecureOnly,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Allows usage of OS-level (platform) audio encoders.
+// TODO(crbug.com/1522976): re-enable platform audio encoders on arm64 win when
+//                          querying for OS support works as expected.
 BASE_FEATURE(kPlatformAudioEncoder,
              "PlatformAudioEncoder",
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
+#if (BUILDFLAG(IS_WIN) && !defined(ARCH_CPU_ARM64)) || BUILDFLAG(IS_MAC) || \
+    BUILDFLAG(IS_ANDROID)
              base::FEATURE_ENABLED_BY_DEFAULT
 #else
              base::FEATURE_DISABLED_BY_DEFAULT
