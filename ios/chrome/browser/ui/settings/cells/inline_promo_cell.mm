@@ -428,7 +428,7 @@ constexpr CGFloat kPromoTextLabelMinHeightWideLayout = 60;
   CGFloat moreInfoButtonLeftEdgeInset = 0;
 
   if (self.shouldHaveWideLayout) {
-    promoTextLabel.textAlignment = NSTextAlignmentLeft;
+    promoTextLabel.textAlignment = NSTextAlignmentNatural;
     moreInfoButton.contentHorizontalAlignment =
         UIControlContentHorizontalAlignmentLeft;
     verticalStackView.alignment = UIStackViewAlignmentFill;
