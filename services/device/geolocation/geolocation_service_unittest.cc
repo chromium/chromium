@@ -68,7 +68,7 @@ class GeolocationServiceUnitTest : public DeviceServiceTestBase {
     device_service()->BindGeolocationContext(
         geolocation_context_.BindNewPipeAndPassReceiver());
     geolocation_context_->BindGeolocation(
-        geolocation_.BindNewPipeAndPassReceiver(), GURL::EmptyGURL());
+        geolocation_.BindNewPipeAndPassReceiver(), GURL());
   }
 
   void TearDown() override {
