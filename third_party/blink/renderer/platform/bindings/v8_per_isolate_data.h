@@ -123,7 +123,6 @@ class PLATFORM_EXPORT V8PerIsolateData final {
 
   static void WillBeDestroyed(v8::Isolate*);
   static void Destroy(v8::Isolate*);
-  static v8::Isolate* MainThreadIsolate();
 
   static void EnableIdleTasks(v8::Isolate*,
                               std::unique_ptr<gin::V8IdleTaskRunner>);
