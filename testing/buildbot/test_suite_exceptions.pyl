@@ -5134,6 +5134,15 @@
       },
     },
   },
+  'webkit_unit_tests_v2':{
+    'modifications': {
+      'win10-code-coverage': {
+        'swarming': {
+          'shards': 6,
+        },
+      },
+    },
+  },
   'webview_64_cts_tests': {
     'modifications': {
       'android-pie-arm64-rel': {
