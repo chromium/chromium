@@ -2242,7 +2242,7 @@ TEST_F(PartialRasterTileManagerTest, CancelledTasksHaveNoContentId) {
   pending_layer->SetDrawsContent(true);
 
   // The bounds() just mirror the raster source size.
-  pending_layer->SetBounds(pending_layer->raster_source()->GetSize());
+  pending_layer->SetBounds(pending_layer->raster_source()->size());
   SetupRootProperties(pending_layer.get());
   pending_tree->SetRootLayerForTesting(std::move(pending_layer));
 
@@ -2345,7 +2345,7 @@ void RunPartialRasterCheck(std::unique_ptr<LayerTreeHostImpl> host_impl,
   pending_layer->SetDrawsContent(true);
 
   // The bounds() just mirror the raster source size.
-  pending_layer->SetBounds(pending_layer->raster_source()->GetSize());
+  pending_layer->SetBounds(pending_layer->raster_source()->size());
   SetupRootProperties(pending_layer.get());
   pending_tree->SetRootLayerForTesting(std::move(pending_layer));
 
@@ -2431,7 +2431,7 @@ void RunPartialTileDecodeCheck(std::unique_ptr<LayerTreeHostImpl> host_impl,
   pending_layer->SetDrawsContent(true);
 
   // The bounds() just mirror the raster source size.
-  pending_layer->SetBounds(pending_layer->raster_source()->GetSize());
+  pending_layer->SetBounds(pending_layer->raster_source()->size());
   SetupRootProperties(pending_layer.get());
   pending_tree->SetRootLayerForTesting(std::move(pending_layer));
 

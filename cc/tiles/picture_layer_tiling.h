@@ -155,8 +155,8 @@ class CC_EXPORT PictureLayerTiling {
   const PaintWorkletRecordMap& GetPaintWorkletRecords() const {
     return client_->GetPaintWorkletRecords();
   }
-  gfx::Size tiling_size() const { return tiling_data_.tiling_rect().size(); }
-  gfx::Rect live_tiles_rect() const { return live_tiles_rect_; }
+  const gfx::Rect& tiling_rect() const { return tiling_data_.tiling_rect(); }
+  const gfx::Rect& live_tiles_rect() const { return live_tiles_rect_; }
   gfx::Size tile_size() const { return tiling_data_.max_texture_size(); }
   // PictureLayerTilingSet uses the scale component of the raster transform
   // as the key for indexing and sorting. In theory we can have multiple
@@ -292,7 +292,7 @@ class CC_EXPORT PictureLayerTiling {
     // profiler data and tab_search:top100:2020.
     RAW_PTR_EXCLUSION const PictureLayerTiling* tiling_ = nullptr;
 
-    gfx::Size coverage_rect_max_bounds_;
+    gfx::Rect coverage_rect_max_bounds_;
     gfx::Rect coverage_rect_;
     gfx::AxisTransform2d coverage_to_content_;
 
@@ -385,8 +385,11 @@ class CC_EXPORT PictureLayerTiling {
       if (!active_twin || !TilingMatchesTileIndices(active_twin))
         return true;
 
-      if (active_twin->raster_source()->GetSize() != raster_source()->GetSize())
+      if (active_twin->raster_source()->size() != raster_source()->size() ||
+          active_twin->raster_source()->recorded_bounds() !=
+              raster_source()->recorded_bounds()) {
         return true;
+      }
 
       if (active_twin->current_visible_rect_ != current_visible_rect_)
         return true;
@@ -508,7 +511,8 @@ class CC_EXPORT PictureLayerTiling {
   gfx::Rect EnclosingLayerRectFromContentsRect(
       const gfx::Rect& contents_rect) const;
 
-  void SetTilingSize(const gfx::Size& tiling_size);
+  gfx::Rect ComputeTilingRect() const;
+  void SetTilingRect(const gfx::Rect& tiling_rect);
 
   // Given properties.
   const gfx::AxisTransform2d raster_transform_;

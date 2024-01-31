@@ -144,7 +144,7 @@ void TestLayerTreeHostBase::SetupPendingTree(
 
   // The bounds() just mirror the raster source size.
   if (raster_source) {
-    pending_layer_->SetBounds(raster_source->GetSize());
+    pending_layer_->SetBounds(raster_source->size());
     pending_layer_->SetRasterSource(raster_source, invalidation);
   }
 

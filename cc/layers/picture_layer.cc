@@ -127,6 +127,7 @@ bool PictureLayer::Update() {
   recording_source->SetBackgroundColor(SafeOpaqueBackgroundColor());
   recording_source->SetRequiresClear(!contents_opaque() &&
                                      !client_->FillsBoundsCompletely());
+  recording_source->SetCanUseRecordedBounds(CanUseRecordedBoundsForTiling());
 
   TRACE_EVENT1(TRACE_DISABLED_BY_DEFAULT("cc.debug"), "PictureLayer::Update",
                "source_frame_number", layer_tree_host()->SourceFrameNumber());
@@ -149,6 +150,31 @@ bool PictureLayer::Update() {
 
   SetNeedsPushProperties();
   IncreasePaintCount();
+  return true;
+}
+
+bool PictureLayer::CanUseRecordedBoundsForTiling() const {
+  // For now the feature is for blink (using layer list mode) only.
+  if (!IsUsingLayerLists()) {
+    return false;
+  }
+  if (!base::FeatureList::IsEnabled(features::kUseRecordedBoundsForTiling)) {
+    return false;
+  }
+
+  // For a mask layer, we must include the empty areas in tilings because they
+  // mask off the drawings of the masked layer.
+  if (is_backdrop_filter_mask_) {
+    return false;
+  }
+  if (const EffectNode* node =
+          layer_tree_host()->property_trees()->effect_tree().Node(
+              effect_tree_index())) {
+    if (node->blend_mode == SkBlendMode::kDstIn) {
+      return false;
+    }
+  }
+
   return true;
 }
 
@@ -232,19 +258,19 @@ void PictureLayer::CaptureContent(const gfx::Rect& rect,
 
 void PictureLayer::DropRecordingSourceContentIfInvalid(
     int source_frame_number) {
-  gfx::Size recording_source_bounds = recording_source_.Read(*this)->GetSize();
+  gfx::Size recording_source_size = recording_source_.Read(*this)->size();
 
   gfx::Size layer_bounds = bounds();
 
   // If update called, then recording source size must match bounds pushed to
   // impl layer.
   DCHECK(update_source_frame_number_.Read(*this) != source_frame_number ||
-         layer_bounds == recording_source_bounds)
+         layer_bounds == recording_source_size)
       << " bounds " << layer_bounds.ToString() << " recording source "
-      << recording_source_bounds.ToString();
+      << recording_source_size.ToString();
 
   if (update_source_frame_number_.Read(*this) != source_frame_number &&
-      recording_source_bounds != layer_bounds) {
+      recording_source_size != layer_bounds) {
     // Update may not get called for the layer (if it's not in the viewport
     // for example), even though it has resized making the recording source no
     // longer valid. In this case just destroy the recording source.

@@ -2159,9 +2159,7 @@ TEST_P(IntersectingQuadSoftwareTest, PictureQuads) {
   cc::PaintFlags green_flags;
   green_flags.setColor(SkColors::kGreen);
 
-  std::unique_ptr<cc::FakeRecordingSource> blue_recording =
-      cc::FakeRecordingSource::CreateFilledRecordingSource(
-          this->quad_rect_.size());
+  auto blue_recording = cc::FakeRecordingSource::Create(quad_rect_.size());
   blue_recording->add_draw_rect_with_flags(outer_rect, black_flags);
   blue_recording->add_draw_rect_with_flags(inner_rect, blue_flags);
   blue_recording->Rerecord();
@@ -2176,9 +2174,7 @@ TEST_P(IntersectingQuadSoftwareTest, PictureQuads) {
                     this->quad_rect_.size(), false, this->quad_rect_, 1.f, {},
                     blue_raster_source->GetDisplayItemList());
 
-  std::unique_ptr<cc::FakeRecordingSource> green_recording =
-      cc::FakeRecordingSource::CreateFilledRecordingSource(
-          this->quad_rect_.size());
+  auto green_recording = cc::FakeRecordingSource::Create(quad_rect_.size());
   green_recording->add_draw_rect_with_flags(outer_rect, green_flags);
   green_recording->add_draw_rect_with_flags(inner_rect, black_flags);
   green_recording->Rerecord();
@@ -4261,8 +4257,7 @@ TEST_F(SoftwareRendererPixelTest, PictureDrawQuadIdentityScale) {
   gfx::Rect blue_rect(gfx::Size(100, 100));
   gfx::Rect blue_clip_rect(gfx::Point(50, 50), gfx::Size(50, 50));
 
-  std::unique_ptr<cc::FakeRecordingSource> blue_recording =
-      cc::FakeRecordingSource::CreateFilledRecordingSource(blue_rect.size());
+  auto blue_recording = cc::FakeRecordingSource::Create(blue_rect.size());
   cc::PaintFlags red_flags;
   red_flags.setColor(SkColors::kRed);
   blue_recording->add_draw_rect_with_flags(blue_rect, red_flags);
@@ -4293,8 +4288,7 @@ TEST_F(SoftwareRendererPixelTest, PictureDrawQuadIdentityScale) {
                     blue_raster_source->GetDisplayItemList());
 
   // One viewport-filling green quad.
-  std::unique_ptr<cc::FakeRecordingSource> green_recording =
-      cc::FakeRecordingSource::CreateFilledRecordingSource(viewport.size());
+  auto green_recording = cc::FakeRecordingSource::Create(viewport.size());
   cc::PaintFlags green_flags;
   green_flags.setColor(SkColors::kGreen);
   green_recording->add_draw_rect_with_flags(viewport, green_flags);
@@ -4332,8 +4326,7 @@ TEST_F(SoftwareRendererPixelTest, PictureDrawQuadOpacity) {
   auto pass = CreateTestRenderPass(id, viewport, transform_to_root);
 
   // One viewport-filling 0.5-opacity green quad.
-  std::unique_ptr<cc::FakeRecordingSource> green_recording =
-      cc::FakeRecordingSource::CreateFilledRecordingSource(viewport.size());
+  auto green_recording = cc::FakeRecordingSource::Create(viewport.size());
   cc::PaintFlags green_flags;
   green_flags.setColor(SkColors::kGreen);
   green_recording->add_draw_rect_with_flags(viewport, green_flags);
@@ -4353,8 +4346,7 @@ TEST_F(SoftwareRendererPixelTest, PictureDrawQuadOpacity) {
                      green_raster_source->GetDisplayItemList());
 
   // One viewport-filling white quad.
-  std::unique_ptr<cc::FakeRecordingSource> white_recording =
-      cc::FakeRecordingSource::CreateFilledRecordingSource(viewport.size());
+  auto white_recording = cc::FakeRecordingSource::Create(viewport.size());
   cc::PaintFlags white_flags;
   white_flags.setColor(SkColors::kWhite);
   white_recording->add_draw_rect_with_flags(viewport, white_flags);
@@ -4390,8 +4382,7 @@ TEST_F(SoftwareRendererPixelTest, PictureDrawQuadOpacityWithAlpha) {
   auto pass = CreateTestRenderPass(id, viewport, transform_to_root);
 
   // One viewport-filling 0.5-opacity transparent quad.
-  std::unique_ptr<cc::FakeRecordingSource> transparent_recording =
-      cc::FakeRecordingSource::CreateFilledRecordingSource(viewport.size());
+  auto transparent_recording = cc::FakeRecordingSource::Create(viewport.size());
   cc::PaintFlags transparent_flags;
   transparent_flags.setColor(SkColors::kTransparent);
   transparent_recording->add_draw_rect_with_flags(viewport, transparent_flags);
@@ -4411,8 +4402,7 @@ TEST_F(SoftwareRendererPixelTest, PictureDrawQuadOpacityWithAlpha) {
                            transparent_raster_source->GetDisplayItemList());
 
   // One viewport-filling white quad.
-  std::unique_ptr<cc::FakeRecordingSource> white_recording =
-      cc::FakeRecordingSource::CreateFilledRecordingSource(viewport.size());
+  auto white_recording = cc::FakeRecordingSource::Create(viewport.size());
   cc::PaintFlags white_flags;
   white_flags.setColor(SkColors::kWhite);
   white_recording->add_draw_rect_with_flags(viewport, white_flags);
@@ -4467,8 +4457,7 @@ TEST_F(SoftwareRendererPixelTest, PictureDrawQuadDisableImageFiltering) {
   draw_point_color(canvas, 1, 0, SkColors::kBlue);
   draw_point_color(canvas, 1, 1, SkColors::kGreen);
 
-  std::unique_ptr<cc::FakeRecordingSource> recording =
-      cc::FakeRecordingSource::CreateFilledRecordingSource(viewport.size());
+  auto recording = cc::FakeRecordingSource::Create(viewport.size());
   recording->add_draw_image_with_flags(
       surface->makeImageSnapshot(), gfx::Point(),
       SkSamplingOptions(SkFilterMode::kLinear), cc::PaintFlags());
@@ -4517,8 +4506,7 @@ TEST_F(SoftwareRendererPixelTest, PictureDrawQuadNearestNeighbor) {
   draw_point_color(canvas, 1, 0, SkColors::kBlue);
   draw_point_color(canvas, 1, 1, SkColors::kGreen);
 
-  std::unique_ptr<cc::FakeRecordingSource> recording =
-      cc::FakeRecordingSource::CreateFilledRecordingSource(viewport.size());
+  auto recording = cc::FakeRecordingSource::Create(viewport.size());
   recording->add_draw_image_with_flags(
       surface->makeImageSnapshot(), gfx::Point(),
       SkSamplingOptions(SkFilterMode::kLinear), cc::PaintFlags());
@@ -4733,8 +4721,7 @@ TEST_F(SoftwareRendererPixelTest, PictureDrawQuadNonIdentityScale) {
   gfx::Rect green_rect1(gfx::Point(80, 0), gfx::Size(20, 100));
   gfx::Rect green_rect2(gfx::Point(0, 80), gfx::Size(100, 20));
 
-  std::unique_ptr<cc::FakeRecordingSource> green_recording =
-      cc::FakeRecordingSource::CreateFilledRecordingSource(viewport.size());
+  auto green_recording = cc::FakeRecordingSource::Create(viewport.size());
 
   cc::PaintFlags red_flags;
   red_flags.setColor(SkColors::kRed);
@@ -4795,8 +4782,7 @@ TEST_F(SoftwareRendererPixelTest, PictureDrawQuadNonIdentityScale) {
   blue_layer_rect1.Inset(inset);
   blue_layer_rect2.Inset(inset);
 
-  std::unique_ptr<cc::FakeRecordingSource> recording =
-      cc::FakeRecordingSource::CreateFilledRecordingSource(layer_rect.size());
+  auto recording = cc::FakeRecordingSource::Create(layer_rect.size());
 
   cc::Region outside(layer_rect);
   outside.Subtract(gfx::ToEnclosingRect(union_layer_rect));

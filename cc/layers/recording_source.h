@@ -34,12 +34,13 @@ class CC_EXPORT RecordingSource {
               float recording_scale_factor,
               ContentLayerClient& content_layer_client,
               Region& invalidation);
-  gfx::Size GetSize() const;
+  gfx::Size size() const { return size_; }
   const DisplayItemList* display_list() const { return display_list_.get(); }
   void SetEmptyBounds();
   void SetSlowdownRasterScaleFactor(int factor);
   void SetBackgroundColor(SkColor4f background_color);
   void SetRequiresClear(bool requires_clear);
+  void SetCanUseRecordedBounds(bool can_use_recorded_bounds);
 
   void SetNeedsDisplayRect(const gfx::Rect& layer_rect);
 
@@ -53,13 +54,12 @@ class CC_EXPORT RecordingSource {
   }
 
  protected:
-  // TODO(crbug.com/1157714): For now this is different from gfx::Rect(size_)
-  // in unit tests only. Remove this field and use display_list_->bounds().
-  gfx::Rect recorded_viewport_;
+  gfx::Rect recorded_bounds_;
   gfx::Size size_;
   int slow_down_raster_scale_factor_for_debug_ = 0;
   bool requires_clear_ = false;
   bool is_solid_color_ = false;
+  bool can_use_recorded_bounds_ = false;
   SkColor4f solid_color_ = SkColors::kTransparent;
   SkColor4f background_color_ = SkColors::kTransparent;
   scoped_refptr<DisplayItemList> display_list_;
@@ -67,13 +67,9 @@ class CC_EXPORT RecordingSource {
   std::optional<DirectlyCompositedImageInfo> directly_composited_image_info_;
 
  private:
-  void UpdateInvalidationForNewViewport(const gfx::Rect& old_recorded_viewport,
-                                        const gfx::Rect& new_recorded_viewport,
-                                        Region& invalidation);
-
-  void UpdateDisplayItemList(scoped_refptr<DisplayItemList> display_list,
-                             float recording_scale_factor,
-                             Region& invalidation);
+  void UpdateInvalidationForRecordedBounds(const gfx::Rect& old_recorded_bounds,
+                                           const gfx::Rect& new_recorded_bounds,
+                                           Region& invalidation);
   void FinishDisplayItemListUpdate();
 
   friend class RasterSource;

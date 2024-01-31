@@ -29,12 +29,15 @@ RasterSource::RasterSource(const RecordingSource* other)
       requires_clear_(other->requires_clear_),
       is_solid_color_(other->is_solid_color_),
       solid_color_(other->solid_color_),
-      recorded_viewport_(other->recorded_viewport_),
+      recorded_bounds_(other->recorded_bounds_),
       size_(other->size_),
       slow_down_raster_scale_factor_for_debug_(
           other->slow_down_raster_scale_factor_for_debug_),
       recording_scale_factor_(other->recording_scale_factor_),
-      directly_composited_image_info_(other->directly_composited_image_info_) {}
+      directly_composited_image_info_(other->directly_composited_image_info_) {
+  DCHECK(recorded_bounds_.IsEmpty() ||
+         gfx::Rect(size_).Contains(recorded_bounds_));
+}
 
 RasterSource::~RasterSource() = default;
 
@@ -152,30 +155,12 @@ RasterSource::TakeDecodingModeMap() {
 }
 
 bool RasterSource::IntersectsRect(const gfx::Rect& layer_rect) const {
-  if (size_.IsEmpty())
-    return false;
-
-  // Directly composited images by definition have a single DrawImageRectOp that
-  // covers the entire layer, so return true for these raster sources.
-  // TODO(crbug.com/1117174): This will miss cases when the raster source
-  // partially covers the layer rect.
-  if (directly_composited_image_info_.has_value()) {
-    return true;
-  }
-
-  gfx::Rect bounded_rect = layer_rect;
-  bounded_rect.Intersect(gfx::Rect(size_));
-  return recorded_viewport_.Intersects(bounded_rect);
-}
-
-gfx::Size RasterSource::GetSize() const {
-  return size_;
+  return recorded_bounds().Intersects(layer_rect);
 }
 
 gfx::Size RasterSource::GetContentSize(
     const gfx::Vector2dF& content_scale) const {
-  return gfx::ScaleToCeiledSize(GetSize(), content_scale.x(),
-                                content_scale.y());
+  return gfx::ScaleToCeiledSize(size_, content_scale.x(), content_scale.y());
 }
 
 bool RasterSource::IsSolidColor() const {
@@ -188,11 +173,7 @@ SkColor4f RasterSource::GetSolidColor() const {
 }
 
 bool RasterSource::HasRecordings() const {
-  return !!display_list_.get();
-}
-
-gfx::Rect RasterSource::RecordedViewport() const {
-  return recorded_viewport_;
+  return display_list_ && !recorded_bounds_.IsEmpty();
 }
 
 void RasterSource::AsValueInto(base::trace_event::TracedValue* array) const {

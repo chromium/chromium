@@ -80,7 +80,7 @@ TEST(PictureLayerTest, NoTilesIfEmptyBounds) {
                           host->GetThreadUnsafeCommitState());
   EXPECT_FALSE(layer_impl->CanHaveTilings());
   EXPECT_TRUE(layer_impl->bounds() == gfx::Size(0, 0));
-  EXPECT_EQ(gfx::Size(), layer_impl->raster_source()->GetSize());
+  EXPECT_EQ(gfx::Size(), layer_impl->raster_source()->size());
   EXPECT_FALSE(layer_impl->raster_source()->HasRecordings());
 }
 
@@ -382,8 +382,7 @@ TEST(PictureLayerTest, ChangingHostsWithCollidingFrames) {
 
   // Make the layer not update.
   layer->SetHideLayerAndSubtree(true);
-  EXPECT_EQ(gfx::Size(500, 500),
-            layer->GetRecordingSourceForTesting()->GetSize());
+  EXPECT_EQ(gfx::Size(500, 500), layer->GetRecordingSourceForTesting()->size());
 
   // Change its bounds while it's in a state that can't update.
   layer->SetBounds(gfx::Size(600, 600));
@@ -395,7 +394,7 @@ TEST(PictureLayerTest, ChangingHostsWithCollidingFrames) {
 
   // This layer should also drop its recording source because it was resized
   // and not recorded.
-  EXPECT_EQ(gfx::Size(), layer->GetRecordingSourceForTesting()->GetSize());
+  EXPECT_EQ(gfx::Size(), layer->GetRecordingSourceForTesting()->size());
 
   host_client1.SetLayerTreeHost(nullptr);
   host_client2.SetLayerTreeHost(nullptr);
