@@ -9,6 +9,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
+#include "v8/include/v8-forward.h"
 
 class SkImage;
 class SkSurface;
@@ -35,6 +36,12 @@ sk_sp<SkSurface> CreateSkiaSurfaceForTesting(const gfx::Size& size,
 
 // Creates a Skia image with dimensions `size` and filled with `color`.
 sk_sp<SkImage> CreateSkiaImageForTesting(const gfx::Size& size, SkColor color);
+
+// Retrieves the `v8::Isolate` the test harness created when initializing blink.
+v8::Isolate* GetBlinkIsolate();
+
+// Stores the `v8::Isolate` the test harness created when initializing blink.
+void SetBlinkIsolate(v8::Isolate* isolate);
 
 }  // namespace chrome_pdf
 
