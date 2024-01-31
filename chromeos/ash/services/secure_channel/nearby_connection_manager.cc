@@ -12,9 +12,12 @@ namespace ash::secure_channel {
 
 NearbyConnectionManager::InitiatorConnectionAttemptMetadata::
     InitiatorConnectionAttemptMetadata(
+        const BleDiscoveryStateChangeCallback&
+            ble_discovery_state_change_callback,
         ConnectionSuccessCallback success_callback,
         const FailureCallback& failure_callback)
-    : success_callback(std::move(success_callback)),
+    : ble_discovery_state_change_callback(ble_discovery_state_change_callback),
+      success_callback(std::move(success_callback)),
       failure_callback(failure_callback) {}
 
 NearbyConnectionManager::InitiatorConnectionAttemptMetadata::
@@ -38,6 +41,7 @@ bool NearbyConnectionManager::IsNearbyConnectorSet() const {
 
 void NearbyConnectionManager::AttemptNearbyInitiatorConnection(
     const DeviceIdPair& device_id_pair,
+    const BleDiscoveryStateChangeCallback& ble_discovery_state_change_callback,
     ConnectionSuccessCallback success_callback,
     const FailureCallback& failure_callback) {
   if (base::Contains(id_pair_to_initiator_metadata_map_, device_id_pair)) {
@@ -49,6 +53,7 @@ void NearbyConnectionManager::AttemptNearbyInitiatorConnection(
 
   id_pair_to_initiator_metadata_map_.emplace(std::make_pair(
       device_id_pair, std::make_unique<InitiatorConnectionAttemptMetadata>(
+                          ble_discovery_state_change_callback,
                           std::move(success_callback), failure_callback)));
   remote_device_id_to_id_pair_map_[device_id_pair.remote_device_id()].insert(
       device_id_pair);
@@ -103,6 +108,17 @@ void NearbyConnectionManager::NotifyNearbyInitiatorConnectionSuccess(
       std::move(GetInitiatorEntry(device_id_pair).success_callback);
   RemoveRequestMetadata(device_id_pair);
   std::move(success_callback).Run(std::move(authenticated_channel));
+}
+
+void NearbyConnectionManager::NotifyBleDiscoveryStateChanged(
+    const DeviceIdPair& device_id_pair,
+    mojom::DiscoveryResult discovery_result,
+    absl::optional<mojom::DiscoveryErrorCode> potential_error_code) {
+  if (id_pair_to_initiator_metadata_map_.contains(device_id_pair)) {
+    GetInitiatorEntry(device_id_pair)
+        .ble_discovery_state_change_callback.Run(discovery_result,
+                                                 potential_error_code);
+  }
 }
 
 NearbyConnectionManager::InitiatorConnectionAttemptMetadata&

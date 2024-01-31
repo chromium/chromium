@@ -113,6 +113,8 @@ class BleScannerImpl : public BleScanner,
       const BluetoothHelper::DeviceWithBackgroundBool& potential_result,
       device::BluetoothDevice* bluetooth_device);
 
+  void SetDiscoverySeissionFailed(mojom::DiscoveryErrorCode error_code);
+
   void SetServiceDataProviderForTesting(
       std::unique_ptr<ServiceDataProvider> service_data_provider);
 

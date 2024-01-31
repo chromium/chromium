@@ -50,6 +50,13 @@ void FakeClientConnectionParameters::PerformSetConnectionSucceeded(
           message_receiver_.get(), std::move(message_receiver_receiver));
 }
 
+void FakeClientConnectionParameters::UpdateBleDiscoveryState(
+    mojom::DiscoveryResult discovery_result,
+    absl::optional<mojom::DiscoveryErrorCode> potential_error_code) {
+  ble_discovery_result_ = discovery_result;
+  potential_ble_discovery_error_code_ = potential_error_code;
+}
+
 void FakeClientConnectionParameters::OnChannelDisconnected(
     uint32_t disconnection_reason,
     const std::string& disconnection_description) {

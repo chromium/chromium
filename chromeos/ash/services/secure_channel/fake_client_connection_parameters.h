@@ -8,6 +8,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ash/services/secure_channel/client_connection_parameters.h"
+#include "chromeos/ash/services/secure_channel/public/mojom/secure_channel.mojom-shared.h"
 #include "chromeos/ash/services/secure_channel/public/mojom/secure_channel.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -58,6 +59,10 @@ class FakeClientConnectionParameters : public ClientConnectionParameters {
       mojo::PendingReceiver<mojom::MessageReceiver> message_receiver_receiver)
       override;
 
+  void UpdateBleDiscoveryState(
+      mojom::DiscoveryResult discovery_result,
+      absl::optional<mojom::DiscoveryErrorCode> potential_error_code) override;
+
   void OnChannelDisconnected(uint32_t disconnection_reason,
                              const std::string& disconnection_description);
 
@@ -68,6 +73,9 @@ class FakeClientConnectionParameters : public ClientConnectionParameters {
       message_receiver_receiver_;
 
   std::optional<mojom::ConnectionAttemptFailureReason> failure_reason_;
+
+  mojom::DiscoveryResult ble_discovery_result_;
+  absl::optional<mojom::DiscoveryErrorCode> potential_ble_discovery_error_code_;
 
   mojo::Remote<mojom::Channel> channel_;
   uint32_t disconnection_reason_ = 0u;

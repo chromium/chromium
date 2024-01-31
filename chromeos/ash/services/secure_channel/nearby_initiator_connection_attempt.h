@@ -62,6 +62,9 @@ class NearbyInitiatorConnectionAttempt
           ConnectionFailedCallback& failure_callback) override;
 
   raw_ptr<NearbyConnectionManager> nearby_connection_manager_;
+
+  base::WeakPtrFactory<NearbyInitiatorConnectionAttempt> weak_ptr_factory_{
+      this};
 };
 
 }  // namespace ash::secure_channel

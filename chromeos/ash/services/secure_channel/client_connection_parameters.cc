@@ -46,6 +46,12 @@ void ClientConnectionParameters::SetConnectionSucceeded(
                                 std::move(message_receiver_receiver));
 }
 
+void ClientConnectionParameters::SetBleDiscoveryState(
+    mojom::DiscoveryResult discovery_result,
+    absl::optional<mojom::DiscoveryErrorCode> potential_error_code) {
+  UpdateBleDiscoveryState(discovery_result, potential_error_code);
+}
+
 bool ClientConnectionParameters::operator==(
     const ClientConnectionParameters& other) const {
   return id() == other.id();

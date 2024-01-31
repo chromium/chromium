@@ -19,6 +19,7 @@
 #include "chromeos/ash/services/secure_channel/connection_details.h"
 #include "chromeos/ash/services/secure_channel/pending_connection_request.h"
 #include "chromeos/ash/services/secure_channel/public/cpp/shared/connection_priority.h"
+#include "chromeos/ash/services/secure_channel/public/mojom/secure_channel.mojom-shared.h"
 
 namespace ash::secure_channel {
 
@@ -66,6 +67,17 @@ class ConnectionAttemptBase : public ConnectionAttempt<FailureDetailType> {
           FailureDetailType>::ConnectionSuccessCallback success_callback,
       const typename ConnectToDeviceOperation<
           FailureDetailType>::ConnectionFailedCallback& failure_callback) = 0;
+
+  void OnBleDiscoveryStateChanged(
+      mojom::DiscoveryResult discovery_result,
+      std::optional<mojom::DiscoveryErrorCode> potential_result) {
+    for (auto it = id_to_request_map_.begin();
+         it != id_to_request_map_.end();) {
+      auto it_copy = it++;
+      it_copy->second->HandleBleDiscoveryStateChange(discovery_result,
+                                                     potential_result);
+    }
+  }
 
  private:
   // ConnectionAttempt<FailureDetailType>:
