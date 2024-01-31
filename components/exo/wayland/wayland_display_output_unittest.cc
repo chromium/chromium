@@ -135,21 +135,4 @@ TEST_F(WaylandDisplayOutputTest, MaintainsNonEmptyOutputList) {
                 /*generate_new_ids=*/true);
 }
 
-// Ensures metrics are correctly initialized and updated.
-TEST_F(WaylandDisplayOutputTest, InitializesAndUpdatesMetrics) {
-  // Start with a typical display configuration and confirm dimensions are
-  // reflected in the metrics.
-  UpdateDisplay("800x600");
-  const int64_t display_id =
-      display::Screen::GetScreen()->GetAllDisplays()[0].id();
-  WaylandDisplayOutput* display_output =
-      server_->output_controller_for_testing()
-          ->GetWaylandDisplayOutputForTesting(display_id);
-  EXPECT_EQ(gfx::Size(800, 600), display_output->metrics().logical_size);
-
-  // Update display dimensions, this should be reflected in the metrics.
-  UpdateDisplay("1200x800");
-  EXPECT_EQ(gfx::Size(1200, 800), display_output->metrics().logical_size);
-}
-
 }  // namespace exo::wayland

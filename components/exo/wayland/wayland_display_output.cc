@@ -48,8 +48,7 @@ void DoDelete(WaylandDisplayOutput* output, int retry_count) {
 
 }  // namespace
 
-WaylandDisplayOutput::WaylandDisplayOutput(const display::Display& display)
-    : id_(display.id()), metrics_(display) {}
+WaylandDisplayOutput::WaylandDisplayOutput(int64_t id) : id_(id) {}
 
 WaylandDisplayOutput::~WaylandDisplayOutput() {
   // Empty the output_ids_ so that Unregister will be no op.
@@ -90,6 +89,14 @@ void WaylandDisplayOutput::OnDisplayRemoved() {
                  << id();
     delete this;
   }
+}
+
+int64_t WaylandDisplayOutput::id() const {
+  return id_;
+}
+
+void WaylandDisplayOutput::set_global(wl_global* global) {
+  global_ = global;
 }
 
 void WaylandDisplayOutput::UnregisterOutput(wl_resource* output_resource) {
@@ -134,9 +141,6 @@ void WaylandDisplayOutput::SendDisplayMetricsChanges(
     const display::Display& display,
     uint32_t changed_metrics) {
   CHECK_EQ(display.id(), id_);
-  // Update output metrics before propagating display changes.
-  metrics_ = OutputMetrics(display);
-
   for (auto& pair : output_ids_) {
     if (auto* handler = GetUserDataAs<WaylandDisplayHandler>(pair.second)) {
       handler->SendDisplayMetricsChanges(display, changed_metrics);
