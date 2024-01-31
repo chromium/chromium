@@ -15,6 +15,7 @@
 #include "chromeos/ash/services/libassistant/grpc/assistant_client.h"
 #include "chromeos/ash/services/libassistant/grpc/external_services/action_service.h"
 #include "chromeos/ash/services/libassistant/grpc/grpc_libassistant_client.h"
+#include "chromeos/ash/services/libassistant/grpc/grpc_util.h"
 #include "chromeos/ash/services/libassistant/grpc/services_status_observer.h"
 #include "chromeos/ash/services/libassistant/grpc/utils/media_status_utils.h"
 #include "chromeos/ash/services/libassistant/grpc/utils/timer_utils.h"
@@ -23,7 +24,6 @@
 #include "chromeos/assistant/internal/internal_constants.h"
 #include "chromeos/assistant/internal/internal_util.h"
 #include "chromeos/assistant/internal/libassistant/shared_headers.h"
-#include "chromeos/assistant/internal/libassistant_util.h"
 #include "chromeos/assistant/internal/proto/shared/proto/settings_ui.pb.h"
 #include "chromeos/assistant/internal/proto/shared/proto/v2/alarm_timer_interface.pb.h"
 #include "chromeos/assistant/internal/proto/shared/proto/v2/audio_utils_interface.pb.h"
@@ -467,8 +467,8 @@ std::unique_ptr<AssistantClient> AssistantClient::Create(
   const bool is_chromeos_device = base::SysInfo::IsRunningOnChromeOS();
   return std::make_unique<AssistantClientImpl>(
       std::move(assistant_manager),
-      chromeos::assistant::GetLibassistantServiceAddress(is_chromeos_device),
-      chromeos::assistant::GetAssistantServiceAddress(is_chromeos_device));
+      GetLibassistantServiceAddress(is_chromeos_device),
+      GetAssistantServiceAddress(is_chromeos_device));
 }
 
 }  // namespace ash::libassistant

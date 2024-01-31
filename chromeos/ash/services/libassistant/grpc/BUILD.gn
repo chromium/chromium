@@ -23,6 +23,7 @@ source_set("assistant_client") {
 
   deps = [
     ":grpc_service",
+    ":grpc_util",
     ":libassistant_client",
     "external_services:grpc_services_initializer",
     "external_services:grpc_services_observer",
@@ -89,9 +90,12 @@ source_set("grpc_util") {
 
   deps = [
     "//base",
+    "//chromeos/assistant/internal:support",
     "//third_party/grpc:grpc++",
     "//third_party/protobuf:protobuf_lite",
   ]
+
+  all_dependent_configs = [ "//third_party/grpc:grpc_config" ]
 }
 
 source_set("libassistant_client") {
@@ -145,6 +149,7 @@ source_set("unit_tests") {
   deps = [
     ":assistant_client",
     ":grpc_service",
+    ":grpc_util",
     ":http_connection_client",
     "external_services:grpc_services_initializer",
     "//base/test:test_support",

@@ -8,8 +8,8 @@
 #include "base/files/file_util.h"
 #include "base/system/sys_info.h"
 #include "chromeos/ash/services/libassistant/constants.h"
+#include "chromeos/ash/services/libassistant/grpc/grpc_util.h"
 #include "chromeos/ash/services/libassistant/libassistant_loader_impl.h"
-#include "chromeos/assistant/internal/libassistant_util.h"
 #include "sandbox/linux/syscall_broker/broker_command.h"
 #include "sandbox/linux/syscall_broker/broker_file_permission.h"
 #include "sandbox/policy/linux/sandbox_linux.h"
@@ -43,12 +43,12 @@ std::vector<BrokerFilePermission> GetLibassistantFilePermissions() {
 
   // Socket files used for gRPC.
   const bool is_chromeos_device = base::SysInfo::IsRunningOnChromeOS();
-  base::FilePath assistant_socket = base::FilePath(
-      chromeos::assistant::GetAssistantSocketFileName(is_chromeos_device));
-  base::FilePath libassistant_socket = base::FilePath(
-      chromeos::assistant::GetLibassistantSocketFileName(is_chromeos_device));
-  base::FilePath http_connection_socket = base::FilePath(
-      chromeos::assistant::GetHttpConnectionSocketFileName(is_chromeos_device));
+  base::FilePath assistant_socket =
+      base::FilePath(GetAssistantSocketFileName(is_chromeos_device));
+  base::FilePath libassistant_socket =
+      base::FilePath(GetLibassistantSocketFileName(is_chromeos_device));
+  base::FilePath http_connection_socket =
+      base::FilePath(GetHttpConnectionSocketFileName(is_chromeos_device));
 
   std::vector<BrokerFilePermission> permissions{
       // Required by Libassistant to generate random string.

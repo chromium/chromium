@@ -5,8 +5,8 @@
 #include "chromeos/ash/services/libassistant/grpc/external_services/grpc_services_initializer.h"
 
 #include "base/test/task_environment.h"
+#include "chromeos/ash/services/libassistant/grpc/grpc_util.h"
 #include "chromeos/assistant/internal/libassistant/shared_headers.h"
-#include "chromeos/assistant/internal/libassistant_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -29,10 +29,11 @@ class GrpcServicesInitializerTest : public testing::Test {
 
 TEST_F(GrpcServicesInitializerTest, StartService) {
   // Should not crash at the end of the test.
-  grpc_services_ = std::make_unique<GrpcServicesInitializer>(chromeos::assistant::GetLibassistantServiceAddress(
-                           /*is_chromeos_device=*/false),
-                       chromeos::assistant::GetAssistantServiceAddress(
-                           /*is_chromeos_device=*/false));
+  grpc_services_ = std::make_unique<GrpcServicesInitializer>(
+      GetLibassistantServiceAddress(
+          /*is_chromeos_device=*/false),
+      GetAssistantServiceAddress(
+          /*is_chromeos_device=*/false));
   grpc_services_->Start();
   grpc_services_.reset();
 }
