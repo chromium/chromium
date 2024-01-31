@@ -401,6 +401,10 @@ HTMLElement* HTMLFormControlElement::invokeTargetElement() {
     return nullptr;
   }
 
+  if (!RuntimeEnabledFeatures::HTMLInvokeTargetAttributeEnabled()) {
+    return nullptr;
+  }
+
   return DynamicTo<HTMLElement>(
       GetElementAttribute(html_names::kInvoketargetAttr));
 }
