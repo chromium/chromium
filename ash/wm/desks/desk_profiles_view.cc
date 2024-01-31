@@ -37,6 +37,7 @@ DeskProfilesButton::DeskProfilesButton(Desk* desk, bool owner_bar_is_overview)
   SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
   SetPreferredSize(kIconButtonSize);
   SetPaintToLayer();
+  layer()->SetFillsBoundsOpaquely(false);
 
   auto* focus_ring = views::FocusRing::Get(this);
   focus_ring->SetOutsetFocusRingDisabled(true);
@@ -112,14 +113,11 @@ void DeskProfilesButton::LoadIconForProfile() {
 
   if (auto* summary = delegate->GetProfilesSnapshotByProfileId(
           desk_->lacros_profile_id())) {
-    gfx::ImageSkia icon = gfx::ImageSkiaOperations::CreateResizedImage(
-        summary->icon, skia::ImageOperations::RESIZE_BEST, kIconButtonSize);
-
-    auto image_model = ui::ImageModel::FromImageSkia(
-        gfx::ImageSkiaOperations::CreateImageWithRoundRectClip(
-            kIconButtonSize.width(), icon));
-
-    SetImageModel(ButtonState::STATE_NORMAL, image_model);
+    SetImageModel(
+        ButtonState::STATE_NORMAL,
+        ui::ImageModel::FromImageSkia(
+            gfx::ImageSkiaOperations::CreateCroppedCenteredRoundRectImage(
+                kIconButtonSize, kIconButtonSize.width() / 2, summary->icon)));
     SetTooltipText(base::UTF8ToUTF16(summary->name));
   } else {
     SetImageModel(ButtonState::STATE_NORMAL, ui::ImageModel());
