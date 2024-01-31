@@ -403,7 +403,7 @@ Puedes revisar las contraseñas en cualquier momento, en <ph name="GOOGLE_PASSWO
 <translation id="1307165550267142340">Se creó tu PIN</translation>
 <translation id="1307431692088049276">No volver a preguntarme</translation>
 <translation id="1307559529304613120">El sistema no pudo obtener un token de acceso a la API a largo plazo para este dispositivo.</translation>
-<translation id="131112695174432497">Se borran los datos que afectan la personalización de anuncios.</translation>
+<translation id="131112695174432497">Se borran los datos que afectan la personalización de anuncios</translation>
 <translation id="1311294419381837540">Estás transmitiendo una pestaña. Puedes pausar o detener la transmisión en cualquier momento.</translation>
 <translation id="1312811472299082263">Crear a partir de un archivo de copia de seguridad de Crostini o de playbook de Ansible</translation>
 <translation id="13130607084115184">Las contraseñas guardadas aparecerán aquí. Para importar contraseñas al <ph name="BRAND" /> en este dispositivo, <ph name="BEGIN_LINK" />selecciona un archivo CSV.<ph name="END_LINK" /></translation>
@@ -3600,7 +3600,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3776508619697147021">Permitir que los sitios soliciten permiso para descargar múltiples archivos de forma automática</translation>
 <translation id="3776796446459804932">Esta extensión infringe la política de Chrome Web Store.</translation>
 <translation id="3777483481409781352">No se pudo activar el dispositivo celular</translation>
-<translation id="3777796259512476958">Saldrás de la mayoría de los sitios</translation>
+<translation id="3777796259512476958">Saldrás de la mayoría de los sitios.</translation>
 <translation id="3778208826288864398">Se ingresó el PIN de forma incorrecta demasiadas veces; por lo tanto, se bloqueó la llave de seguridad. Deberás restablecerla.</translation>
 <translation id="3778740492972734840">&amp;Herramientas del desarrollador</translation>
 <translation id="3778868487658107119">Hazle preguntas. Encárgale tareas. Es tu versión personal de Google, está siempre lista para ayudarte.</translation>
