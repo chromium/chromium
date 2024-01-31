@@ -480,7 +480,10 @@ void ChannelPosix::AcceptUpgradeOffer() {
 
 void ChannelPosix::OnWriteError(Error error) {
   DCHECK(io_task_runner_->RunsTasksInCurrentSequence());
-  DCHECK(reject_writes_);
+  DCHECK([&]() {
+    base::AutoLock lock(write_lock_);
+    return reject_writes_;
+  }());
 
   if (error == Error::kDisconnected) {
     // If we can't write because the pipe is disconnected then continue
