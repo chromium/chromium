@@ -55,31 +55,30 @@ def main():
       env=env, stdout=subprocess.PIPE, check=False
   )
 
-  if process_result.returncode != 0:
-    # If we couldn't run the fuzztest binary itself, we'll
-    # regard that as fine. This is a best-efforts check that the
-    # gn 'fuzztests' variable is correct, and sometimes fuzzers don't
-    # run on LUCI e.g. due to lack of dependencies.
-    sys.exit(0)
+  if process_result.returncode == 0:
+    test_list = process_result.stdout.decode('utf-8')
 
-  test_list = process_result.stdout.decode('utf-8')
+    actual_tests = set(re.findall('Fuzz test: (.*)', test_list))
 
-  actual_tests = set(re.findall('Fuzz test: (.*)', test_list))
+    if expected_tests != actual_tests:
+      print(
+          'Unexpected fuzztests found in this binary.\nFuzztest binary: '
+          + args.executable
+          + '\n'
+          + 'Expected fuzztests (as declared by the gn "fuzztests" variable on'
+          ' this target): '
+          + str(expected_tests)
+          + '\nActual tests (as found in the binary): '
+          + str(actual_tests)
+          + '\nYou probably need to update the gn variable to match the tests'
+          ' actually in the binary.'
+      )
+      sys.exit(-1)
 
-  if expected_tests != actual_tests:
-    print(
-        'Unexpected fuzztests found in this binary.\nFuzztest binary: '
-        + args.executable
-        + '\n'
-        + 'Expected fuzztests (as declared by the gn "fuzztests" variable on'
-        ' this target): '
-        + str(expected_tests)
-        + '\nActual tests (as found in the binary): '
-        + str(actual_tests)
-        + '\nYou probably need to update the gn variable to match the tests'
-        ' actually in the binary.'
-    )
-    sys.exit(-1)
+  # If we couldn't run the fuzztest binary itself, we'll
+  # regard that as fine. This is a best-efforts check that the
+  # gn 'fuzztests' variable is correct, and sometimes fuzzers don't
+  # run on LUCI e.g. due to lack of dependencies.
 
   with action_helpers.atomic_output(args.output) as output:
     output.write(''.encode('utf-8'))
