@@ -46,6 +46,19 @@ class HostIndexedContentSettings {
     explicit Iterator(const HostIndexedContentSettings& index, bool begin);
     ~Iterator();
 
+    Iterator(Iterator&&) = delete;
+    Iterator& operator=(Iterator&&) = delete;
+    Iterator(const Iterator& other)
+        : index_(other.index_),
+          stage_(other.stage_),
+          next_map_iterator_(other.next_map_iterator_),
+          next_map_end_(other.next_map_end_),
+          current_iterator_(other.current_iterator_),
+          current_end_(other.current_end_) {
+      index_->iterating_++;
+    }
+    Iterator& operator=(const Iterator&) = delete;
+
     reference operator*() const { return *current_iterator_; }
     pointer operator->() { return &*current_iterator_; }
 
@@ -81,6 +94,8 @@ class HostIndexedContentSettings {
 
   Iterator begin() const;
   Iterator end() const;
+
+  size_t size() const;
 
   // Finds the RuleEntry with highest precedence that matches both the primary
   // and secondary urls or returns nullptr if no match is found. The pointer is

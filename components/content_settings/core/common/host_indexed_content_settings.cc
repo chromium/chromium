@@ -4,6 +4,7 @@
 
 #include "components/content_settings/core/common/host_indexed_content_settings.h"
 
+#include <cstddef>
 #include <map>
 #include <memory>
 #include <optional>
@@ -23,8 +24,6 @@
 
 namespace content_settings {
 namespace {
-inline constexpr char kAnyHost[] = "";
-
 bool InsertValue(Rules& rules,
                  const ContentSettingsPattern& primary_pattern,
                  const ContentSettingsPattern& secondary_pattern,
@@ -73,20 +72,33 @@ const RuleEntry* FindContentSetting(const GURL& primary_url,
   return it == settings.end() ? nullptr : &*it;
 }
 
-}  // namespace
-
 const RuleEntry* FindInHostToContentSettings(
     const GURL& primary_url,
     const GURL& secondary_url,
     std::reference_wrapper<
         const HostIndexedContentSettings::HostToContentSettings>
         indexed_content_setting,
-    const std::string& host) {
-  // The value for a pattern without a host in the indexed settings is an
-  // empty string.
-  if (!host.empty()) {
-    if (primary_url.HostIsIPAddress()) {
-      auto it = indexed_content_setting.get().find(host);
+    std::string_view host) {
+  if (host.empty() || indexed_content_setting.get().empty()) {
+    return nullptr;
+  }
+
+  // Trim ending dot in host.
+  if (host.back() == '.') {
+    host.remove_suffix(1);
+  }
+  if (primary_url.HostIsIPAddress()) {
+    auto it = indexed_content_setting.get().find(host);
+    if (it != indexed_content_setting.get().end()) {
+      auto* result = FindContentSetting(primary_url, secondary_url, it->second);
+      if (result) {
+        return result;
+      }
+    }
+  } else {
+    std::string_view subdomain(host);
+    while (!subdomain.empty()) {
+      auto it = indexed_content_setting.get().find(subdomain);
       if (it != indexed_content_setting.get().end()) {
         auto* result =
             FindContentSetting(primary_url, secondary_url, it->second);
@@ -94,29 +106,15 @@ const RuleEntry* FindInHostToContentSettings(
           return result;
         }
       }
-    } else {
-      std::string_view subdomain(host);
-      while (!subdomain.empty()) {
-        auto it = indexed_content_setting.get().find(subdomain);
-        if (it != indexed_content_setting.get().end()) {
-          auto* result =
-              FindContentSetting(primary_url, secondary_url, it->second);
-          if (result) {
-            return result;
-          }
-        }
-        size_t found = subdomain.find(".");
-        subdomain = found != std::string::npos ? subdomain.substr(found + 1)
-                                               : std::string_view();
-      }
+      size_t found = subdomain.find(".");
+      subdomain = found != std::string::npos ? subdomain.substr(found + 1)
+                                             : std::string_view();
     }
-  }
-  auto it = indexed_content_setting.get().find(kAnyHost);
-  if (it != indexed_content_setting.get().end()) {
-    return FindContentSetting(primary_url, secondary_url, it->second);
   }
   return nullptr;
 }
+
+}  // namespace
 
 const ContentSettingPatternSource* FindContentSetting(
     const GURL& primary_url,
@@ -247,13 +245,14 @@ const RuleEntry* HostIndexedContentSettings::Find(
     const GURL& primary_url,
     const GURL& secondary_url) const {
   const RuleEntry* found = FindInHostToContentSettings(
-      primary_url, secondary_url, primary_host_indexed_, primary_url.host());
+      primary_url, secondary_url, primary_host_indexed_,
+      primary_url.host_piece());
   if (found) {
     return found;
   }
   found = FindInHostToContentSettings(primary_url, secondary_url,
                                       secondary_host_indexed_,
-                                      secondary_url.host());
+                                      secondary_url.host_piece());
   if (found) {
     return found;
   }
@@ -304,6 +303,18 @@ void HostIndexedContentSettings::Clear() {
   primary_host_indexed_.clear();
   secondary_host_indexed_.clear();
   wildcard_settings_.clear();
+}
+
+size_t HostIndexedContentSettings::size() const {
+  size_t size = 0;
+  for (const auto& it : primary_host_indexed_) {
+    size += it.second.size();
+  }
+  for (const auto& it : secondary_host_indexed_) {
+    size += it.second.size();
+  }
+  size += wildcard_settings_.size();
+  return size;
 }
 
 #if DCHECK_IS_ON()

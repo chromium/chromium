@@ -1904,7 +1904,7 @@ TEST_P(IndexedHostContentSettingsMapTest, GetPatternsFromScopingType) {
   }
 }
 
-TEST_F(HostContentSettingsMapTest, GetPatternsForContentSettingsType) {
+TEST_P(IndexedHostContentSettingsMapTest, GetPatternsForContentSettingsType) {
   const GURL primary_url("http://a.b.example1.com:8080");
   const GURL secondary_url("http://a.b.example2.com:8080");
 
@@ -2464,7 +2464,7 @@ TEST_P(IndexedHostContentSettingsMapTest, IncognitoInheritSaaAndRenew) {
   EXPECT_EQ(CONTENT_SETTING_ASK, otr_map->GetContentSetting(host, host, type));
 }
 
-TEST_F(HostContentSettingsMapTest, ShutdownDuringExpirationAsanTest) {
+TEST_P(IndexedHostContentSettingsMapTest, ShutdownDuringExpirationAsanTest) {
   TestingProfile profile;
 
   auto host_content_settings_map = base::MakeRefCounted<HostContentSettingsMap>(
