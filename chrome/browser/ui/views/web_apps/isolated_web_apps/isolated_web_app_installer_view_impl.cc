@@ -417,7 +417,9 @@ void IsolatedWebAppInstallerViewImpl::Dim(bool dim) {
   if (!dim) {
     for (views::View* child : root->children()) {
       if (child->GetObjectName().compare("DimOverlayView") == 0) {
-        root->RemoveChildView(child);
+        // |RemoveChildViewT()| returns the ownership of the child, which gets
+        // dropped, effectively deleting the child from memory.
+        root->RemoveChildViewT(child);
       }
     }
     return;
