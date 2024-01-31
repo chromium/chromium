@@ -1056,7 +1056,7 @@ Status ProcessExtension(const std::string& extension,
         std::string(reinterpret_cast<char*>(&public_key_vector.front()),
                     public_key_vector.size());
     id = GenerateExtensionId(public_key);
-    base::Base64Encode(public_key, &public_key_base64);
+    public_key_base64 = base::Base64Encode(public_key);
   }
 
   // Unzip the crx file.

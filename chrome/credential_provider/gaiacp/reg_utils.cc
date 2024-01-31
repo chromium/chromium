@@ -595,7 +595,7 @@ HRESULT GetDmToken(std::string* dm_token) {
       GetMachineRegBinaryInternal(kEnrollmentRegKey, kDmTokenRegKey,
                                   &binary_dm_token, KEY_READ | KEY_WOW64_32KEY);
   if (SUCCEEDED(hr)) {
-    base::Base64Encode(binary_dm_token, dm_token);
+    *dm_token = base::Base64Encode(binary_dm_token);
   }
   return hr;
 }

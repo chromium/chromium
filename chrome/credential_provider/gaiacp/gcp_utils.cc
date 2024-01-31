@@ -1221,7 +1221,7 @@ HRESULT GenerateDeviceId(std::string* device_id) {
   }
 
   // Store the base64encoded device id json blob in the output.
-  base::Base64Encode(device_id_str, device_id);
+  *device_id = base::Base64Encode(device_id_str);
   return S_OK;
 }
 

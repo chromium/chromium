@@ -281,9 +281,8 @@ void WebSocket::OnReadDuringHandshake(const char* data, int len) {
     return;
 
   const char kMagicKey[] = "258EAFA5-E914-47DA-95CA-C5AB0DC85B11";
-  std::string websocket_accept;
-  base::Base64Encode(base::SHA1HashString(sec_key_ + kMagicKey),
-                     &websocket_accept);
+  std::string websocket_accept =
+      base::Base64Encode(base::SHA1HashString(sec_key_ + kMagicKey));
   auto headers = base::MakeRefCounted<net::HttpResponseHeaders>(
       net::HttpUtil::AssembleRawHeaders(
           base::StringPiece(handshake_response_.data(), headers_end)));

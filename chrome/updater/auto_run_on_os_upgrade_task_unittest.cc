@@ -63,11 +63,8 @@ class AutoRunOnOsUpgradeTaskTest : public testing::Test {
   void SetLastOSVersion(const OSVERSIONINFOEX& os_version) {
     EXPECT_TRUE(pref_service_);
 
-    std::string encoded_os_version;
-    base::Base64Encode(
-        base::StringPiece(reinterpret_cast<const char*>(&os_version),
-                          sizeof(OSVERSIONINFOEX)),
-        &encoded_os_version);
+    std::string encoded_os_version = base::Base64Encode(base::StringPiece(
+        reinterpret_cast<const char*>(&os_version), sizeof(OSVERSIONINFOEX)));
     pref_service_->SetString(kLastOSVersion, encoded_os_version);
   }
 

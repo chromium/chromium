@@ -195,15 +195,13 @@ class ReportClientTest : public ::testing::TestWithParam<bool> {
 
   base::Value::Dict GetEncryptionKeyResponse() {
     base::Value::Dict encryption_settings;
-    std::string public_key;
-    base::Base64Encode(signed_encryption_key_.public_asymmetric_key(),
-                       &public_key);
+    std::string public_key =
+        base::Base64Encode(signed_encryption_key_.public_asymmetric_key());
     encryption_settings.Set(json_keys::kPublicKey, public_key);
     encryption_settings.Set(json_keys::kPublicKeyId,
                             signed_encryption_key_.public_key_id());
-    std::string public_key_signature;
-    base::Base64Encode(signed_encryption_key_.signature(),
-                       &public_key_signature);
+    std::string public_key_signature =
+        base::Base64Encode(signed_encryption_key_.signature());
     encryption_settings.Set(json_keys::kPublicKeySignature,
                             public_key_signature);
     base::Value::Dict response;

@@ -598,11 +598,9 @@ void PersistedData::SetLastOSVersion() {
   }
 
   // The os version is internally stored as a base-64-encoded string.
-  std::string encoded_os_version;
-  base::Base64Encode(
-      base::StringPiece(reinterpret_cast<const char*>(&os_version.value()),
-                        sizeof(OSVERSIONINFOEX)),
-      &encoded_os_version);
+  std::string encoded_os_version =
+      base::Base64Encode(base::as_bytes(base::span(&os_version.value(), 1u)));
+
   return pref_service_->SetString(kLastOSVersion, encoded_os_version);
 }
 #endif

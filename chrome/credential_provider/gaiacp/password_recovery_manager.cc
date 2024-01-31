@@ -317,11 +317,7 @@ HRESULT EncryptUserPasswordUsingEscrowService(
     return E_FAIL;
   }
 
-  std::string cipher_text;
-  base::Base64Encode(
-      base::StringPiece(reinterpret_cast<const char*>(opt->data()),
-                        opt->size()),
-      &cipher_text);
+  std::string cipher_text = base::Base64Encode(base::span(*opt));
 
   encrypted_data =
       base::Value::Dict()

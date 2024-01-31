@@ -571,10 +571,9 @@ void DiscardsGraphDumpImpl::SendFaviconNotification(
       discards::mojom::FavIconInfo::New();
   icon_info->node_id = serialization_id;
 
-  base::Base64Encode(
+  icon_info->icon_data = base::Base64Encode(
       base::StringPiece(reinterpret_cast<const char*>(bitmap_data->front()),
-                        bitmap_data->size()),
-      &icon_info->icon_data);
+                        bitmap_data->size()));
 
   change_subscriber_->FavIconDataAvailable(std::move(icon_info));
 }

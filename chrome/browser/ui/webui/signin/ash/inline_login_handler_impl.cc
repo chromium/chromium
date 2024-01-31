@@ -77,11 +77,8 @@ std::string AnonymizeAccountEmail(const std::string& email) {
 // Returns a base64-encoded hash code of "signin_scoped_device_id:gaia_id".
 std::string GetAccountDeviceId(const std::string& signin_scoped_device_id,
                                const std::string& gaia_id) {
-  std::string account_device_id;
-  base::Base64Encode(
-      crypto::SHA256HashString(signin_scoped_device_id + ":" + gaia_id),
-      &account_device_id);
-  return account_device_id;
+  return base::Base64Encode(
+      crypto::SHA256HashString(signin_scoped_device_id + ":" + gaia_id));
 }
 
 bool IsPrimaryAccountBeingReauthenticated(

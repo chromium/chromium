@@ -43,11 +43,9 @@ privacy::ppn::PrivacyPassTokenData CreateMockPrivacyPassToken(
 
   // The PrivacyPassTokenData values get base64-encoded by BSA, so simulate that
   // here.
-  std::string encoded_token_value;
-  std::string encoded_extension_value;
-
-  base::Base64Encode(token_value, &encoded_token_value);
-  base::Base64Encode("mock-extension-value", &encoded_extension_value);
+  std::string encoded_token_value = base::Base64Encode(token_value);
+  std::string encoded_extension_value =
+      base::Base64Encode("mock-extension-value");
 
   privacy_pass_token_data.set_token(std::move(encoded_token_value));
   privacy_pass_token_data.set_encoded_extensions(

@@ -62,10 +62,8 @@ constexpr char kSAMLResponse[] = R"(
 
 std::string BuildSAMLResponse(const std::string& domain,
                               const std::string& token = "token-value") {
-  std::string encoded_saml_response;
-  base::Base64Encode(
-      base::StringPrintf(kSAMLResponse, domain.c_str(), token.c_str()),
-      &encoded_saml_response);
+  std::string encoded_saml_response = base::Base64Encode(
+      base::StringPrintf(kSAMLResponse, domain.c_str(), token.c_str()));
   return base::StringPrintf(kHTMLTemplate, encoded_saml_response.c_str());
 }
 

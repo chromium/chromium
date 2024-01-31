@@ -807,12 +807,8 @@ class SSLUITestIgnoreCertErrors : public SSLUITest {
 
 static std::string MakeCertSPKIFingerprint(net::X509Certificate* cert) {
   net::HashValue hash = GetSPKIHash(cert->cert_buffer());
-  std::string hash_base64;
-  base::Base64Encode(
-      base::StringPiece(reinterpret_cast<const char*>(hash.data()),
-                        hash.size()),
-      &hash_base64);
-  return hash_base64;
+  return base::Base64Encode(base::StringPiece(
+      reinterpret_cast<const char*>(hash.data()), hash.size()));
 }
 
 class SSLUITestIgnoreCertErrorsBySPKIHTTPS : public SSLUITest {

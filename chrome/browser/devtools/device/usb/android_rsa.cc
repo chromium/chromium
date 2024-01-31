@@ -207,7 +207,7 @@ std::unique_ptr<crypto::RSAPrivateKey> AndroidRSAPrivateKey(Profile* profile) {
       return nullptr;
 
     std::string key_string(key_info.begin(), key_info.end());
-    base::Base64Encode(key_string, &encoded_key);
+    encoded_key = base::Base64Encode(key_string);
     profile->GetPrefs()->SetString(prefs::kDevToolsAdbKey,
                                    encoded_key);
   }
@@ -262,11 +262,7 @@ std::string AndroidRSAPublicKey(crypto::RSAPrivateKey* key) {
   BnFree(n);
   BnFree(r);
   BnFree(rr);
-
-  std::string output;
-  std::string input(reinterpret_cast<char*>(&pkey), sizeof(pkey));
-  base::Base64Encode(input, &output);
-  return output;
+  return base::Base64Encode(base::as_bytes(base::span(&pkey, 1u)));
 }
 
 std::string AndroidRSASign(crypto::RSAPrivateKey* key,

@@ -2728,7 +2728,7 @@ IN_PROC_BROWSER_TEST_F(DownloadTest, MAYBE_SaveLargeImage) {
     CHECK(base::ReadFileToString(data_file, &png_data));
   }
 
-  base::Base64Encode(png_data, &data_url);
+  data_url = base::Base64Encode(png_data);
   data_url.insert(0, "data:image/png;base64,");
 
   ASSERT_GE(data_url.size(), url::kMaxURLChars);

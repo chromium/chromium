@@ -503,7 +503,7 @@ void CloudBinaryUploadService::OnGetRequestData(Request::Id request_id,
 
   std::string metadata;
   request->SerializeToString(&metadata);
-  base::Base64Encode(metadata, &metadata);
+  metadata = base::Base64Encode(metadata);
 
   GURL url = request->GetUrlWithParams();
   if (!url.is_valid())
