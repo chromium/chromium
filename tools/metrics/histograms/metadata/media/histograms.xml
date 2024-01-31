@@ -5528,6 +5528,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Media.VideoCapture.Device.Effect.{VideoEffect}"
+    enum="BooleanSupported" expires_after="2025-01-23">
+  <owner>mfoltz@chromium.org</owner>
+  <owner>openscreen-eng@google.com</owner>
+  <summary>
+    Records {VideoEffect} support for each video capture device opened. Recorded
+    in DeviceMediaToMojoAdapter::StartInternal in the video capture service.
+  </summary>
+  <token key="VideoEffect">
+    <variant name="BackgroundBlur" summary="Background Blur"/>
+    <variant name="EyeGazeCorrection" summary="Eye Gaze Correction"/>
+    <variant name="FaceFraming" summary="Face Framing"/>
+  </token>
+</histogram>
+
 <histogram name="Media.VideoCapture.Device.Opened.ByModelId" units="usb_id"
     expires_after="2024-07-28">
   <owner>atadres@chromium.org</owner>
