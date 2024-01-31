@@ -5634,11 +5634,21 @@ TEST_F(CreditCardSaveManagerTest, OnDidUploadCard_VirtualCardEnrollment) {
     for (bool is_update_virtual_card_enrollment_enabled : {true, false}) {
       base::test::ScopedFeatureList feature_list;
       if (is_update_virtual_card_enrollment_enabled) {
+#if BUILDFLAG(IS_IOS)
+        feature_list.InitAndEnableFeature(
+            features::kAutofillEnableVirtualCards);
+#else
         feature_list.InitAndEnableFeature(
             features::kAutofillEnableUpdateVirtualCardEnrollment);
+#endif
       } else {
+#if BUILDFLAG(IS_IOS)
+        feature_list.InitAndDisableFeature(
+            features::kAutofillEnableVirtualCards);
+#else
         feature_list.InitAndDisableFeature(
             features::kAutofillEnableUpdateVirtualCardEnrollment);
+#endif
       }
       payments::PaymentsNetworkInterface::UploadCardResponseDetails
           upload_card_response_details;
@@ -5692,8 +5702,12 @@ TEST_F(
     CreditCardSaveManagerTest,
     OnDidUploadCard_VirtualCardEnrollment_GetDetailsForEnrollmentResponseDetailsReturned) {
   base::test::ScopedFeatureList feature_list;
+#if BUILDFLAG(IS_IOS)
+  feature_list.InitAndEnableFeature(features::kAutofillEnableVirtualCards);
+#else
   feature_list.InitAndEnableFeature(
       features::kAutofillEnableUpdateVirtualCardEnrollment);
+#endif
   payments::PaymentsNetworkInterface::UploadCardResponseDetails
       upload_card_response_details;
   upload_card_response_details.card_art_url = GURL("https://example.com/");

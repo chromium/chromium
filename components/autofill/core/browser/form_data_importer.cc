@@ -109,10 +109,16 @@ bool IsValidFieldTypeAndValue(
 bool ShouldOfferVirtualCardEnrollment(
     const std::optional<CreditCard>& extracted_credit_card,
     std::optional<int64_t> fetched_card_instrument_id) {
+#if BUILDFLAG(IS_IOS)
+  if (!base::FeatureList::IsEnabled(features::kAutofillEnableVirtualCards)) {
+    return false;
+  }
+#else
   if (!base::FeatureList::IsEnabled(
           features::kAutofillEnableUpdateVirtualCardEnrollment)) {
     return false;
   }
+#endif
 
   if (!extracted_credit_card) {
     return false;
