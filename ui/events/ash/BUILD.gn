@@ -17,12 +17,15 @@ source_set("ash") {
     "event_rewriter_ash.h",
     "event_rewriter_metrics.cc",
     "event_rewriter_metrics.h",
+    "event_rewriter_utils.h",
     "keyboard_capability.cc",
     "keyboard_capability.h",
     "keyboard_device_id_event_rewriter.cc",
     "keyboard_device_id_event_rewriter.h",
     "keyboard_layout_util.cc",
     "keyboard_layout_util.h",
+    "keyboard_modifier_event_rewriter.cc",
+    "keyboard_modifier_event_rewriter.h",
     "pref_names.h",
   ]
   deps = [

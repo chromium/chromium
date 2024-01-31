@@ -3026,6 +3026,11 @@
     "expiry_milestone": 105
   },
   {
+    "name": "enable-keyboard-rewriter-fix",
+    "owners": [ "hidehiko@chromium.org" ],
+    "expiry_milestone": 140
+  },
+  {
     "name": "enable-lacros-in-chrome-kiosk",
     "owners": ["bfranz@chromium.org", "chromeos-kiosk-eng@google.com"],
     "expiry_milestone": 140

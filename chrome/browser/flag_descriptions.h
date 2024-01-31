@@ -3563,6 +3563,9 @@ extern const char kDiagnosticsAppJellyDescription[];
 extern const char kEnableKeyboardBacklightToggleName[];
 extern const char kEnableKeyboardBacklightToggleDescription[];
 
+extern const char kEnableKeyboardRewriterFixName[];
+extern const char kEnableKeyboardRewriterFixDescription[];
+
 extern const char kEnableLibinputToHandleTouchpadName[];
 extern const char kEnableLibinputToHandleTouchpadDescription[];
 

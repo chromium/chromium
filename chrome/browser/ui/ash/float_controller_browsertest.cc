@@ -95,8 +95,8 @@ IN_PROC_BROWSER_TEST_F(FloatControllerBrowserTest,
   // Float and then tuck the background window repeatedly. This emulates the
   // steps listed in the bug.
   ui::test::EventGenerator event_generator(browser_window1->GetRootWindow());
-  event_generator.PressAndReleaseKey(ui::VKEY_F,
-                                     ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
+  event_generator.PressAndReleaseKeyAndModifierKeys(
+      ui::VKEY_F, ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
   ASSERT_TRUE(ash::WindowState::Get(browser_window2)->IsFloated());
   TuckWindow(browser_window2);
   ash::ShellTestApi().WaitForWindowFinishAnimating(browser_window2);
@@ -105,8 +105,8 @@ IN_PROC_BROWSER_TEST_F(FloatControllerBrowserTest,
 
   // Float `browser_window1` using accelerator and tuck it.
   wm::ActivateWindow(browser_window1);
-  event_generator.PressAndReleaseKey(ui::VKEY_F,
-                                     ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
+  event_generator.PressAndReleaseKeyAndModifierKeys(
+      ui::VKEY_F, ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
   ASSERT_TRUE(ash::WindowState::Get(browser_window1)->IsFloated());
   ASSERT_TRUE(ash::WindowState::Get(browser_window2)->IsMaximized());
   TuckWindow(browser_window1);
@@ -118,8 +118,8 @@ IN_PROC_BROWSER_TEST_F(FloatControllerBrowserTest,
   // `TuckWindow` should tuck the window otherwise the window has frozen and the
   // test will hang.
   wm::ActivateWindow(browser_window2);
-  event_generator.PressAndReleaseKey(ui::VKEY_F,
-                                     ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
+  event_generator.PressAndReleaseKeyAndModifierKeys(
+      ui::VKEY_F, ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
   ASSERT_TRUE(ash::WindowState::Get(browser_window2)->IsFloated());
   ASSERT_TRUE(ash::WindowState::Get(browser_window1)->IsMaximized());
   TuckWindow(browser_window2);
@@ -137,8 +137,8 @@ IN_PROC_BROWSER_TEST_F(FloatControllerBrowserTest,
   // A floated window is magnetized to the bottom right by default.
   aura::Window* window = browser()->window()->GetNativeWindow();
   ui::test::EventGenerator event_generator(window->GetRootWindow(), window);
-  event_generator.PressAndReleaseKey(ui::VKEY_F,
-                                     ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
+  event_generator.PressAndReleaseKeyAndModifierKeys(
+      ui::VKEY_F, ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
   ASSERT_TRUE(ash::WindowState::Get(window)->IsFloated());
   ASSERT_EQ(ash::FloatController::MagnetismCorner::kBottomRight,
             ash::FloatTestApi::GetMagnetismCornerForBounds(

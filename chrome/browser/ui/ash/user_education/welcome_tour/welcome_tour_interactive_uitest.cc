@@ -329,8 +329,8 @@ IN_PROC_BROWSER_TEST_F(WelcomeTourInteractiveUiTest,
           // Lock screen through accelerator.
           Do([]() {
             ui::test::EventGenerator(ash::Shell::GetPrimaryRootWindow())
-                .PressAndReleaseKey(ui::KeyboardCode::VKEY_L,
-                                    ui::EF_COMMAND_DOWN);
+                .PressAndReleaseKeyAndModifierKeys(ui::KeyboardCode::VKEY_L,
+                                                   ui::EF_COMMAND_DOWN);
           }),
 
           // Wait for the Welcome Tour dialog to hide.
