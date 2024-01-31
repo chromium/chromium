@@ -24,7 +24,6 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/accessibility/magnification_manager.h"
 #include "chrome/browser/ash/arc/accessibility/arc_accessibility_helper_bridge.h"
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
@@ -52,20 +51,17 @@
 #include "extensions/common/manifest_handlers/background_info.h"
 #include "services/accessibility/public/mojom/assistive_technology_type.mojom.h"
 #include "ui/accessibility/accessibility_features.h"
-#include "ui/aura/client/cursor_client.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
-#include "ui/events/base_event_utils.h"
 #include "ui/events/keycodes/dom/dom_codes_array.h"
 #include "ui/events/keycodes/keyboard_code_conversion.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/events/ozone/layout/keyboard_layout_engine.h"
 #include "ui/events/ozone/layout/keyboard_layout_engine_manager.h"
 #include "ui/strings/grit/ui_strings.h"
-#include "ui/wm/core/coordinate_conversion.h"
 
 namespace {
 
@@ -564,43 +560,8 @@ AccessibilityPrivateSendSyntheticMouseEventFunction::Run() {
 
   // Locations are assumed to be in screen coordinates.
   gfx::Point location_in_screen(mouse_data->x, mouse_data->y);
-  const display::Display display =
-      display::Screen::GetScreen()->GetDisplayNearestPoint(location_in_screen);
-  auto* host = ash::GetWindowTreeHostForDisplay(display.id());
-  if (!host) {
-    return RespondNow(NoArguments());
-  }
-
-  aura::Window* root_window = host->window();
-  if (!root_window) {
-    return RespondNow(NoArguments());
-  }
-
-  aura::client::CursorClient* cursor_client =
-      aura::client::GetCursorClient(root_window);
-
-  bool is_mouse_events_enabled = cursor_client->IsMouseEventsEnabled();
-  if (!is_mouse_events_enabled) {
-    cursor_client->EnableMouseEvents();
-  }
-
-  ::wm::ConvertPointFromScreen(root_window, &location_in_screen);
-
-  ui::MouseEvent synthetic_mouse_event(
-      type, location_in_screen, location_in_screen, ui::EventTimeForNow(),
-      flags, changed_button_flags);
-
-  // Transforming the coordinate to the root will apply the screen scale factor
-  // to the event's location and also the screen rotation degree.
-  synthetic_mouse_event.UpdateForRootTransform(
-      host->GetRootTransform(),
-      host->GetRootTransformForLocalEventCoordinates());
-  // This skips rewriters.
-  host->DeliverEventToSink(&synthetic_mouse_event);
-
-  if (!is_mouse_events_enabled) {
-    cursor_client->DisableMouseEvents();
-  }
+  AccessibilityManager::Get()->SendSyntheticMouseEvent(
+      type, flags, changed_button_flags, location_in_screen);
 
   return RespondNow(NoArguments());
 }

@@ -64,6 +64,57 @@ class AtpAccessibilityPrivate {
     KEYDOWN: 'keydown',
   };
 
+  /** @enum {string} */
+  SyntheticMouseEventType = {
+    PRESS: 'press',
+    RELEASE: 'release',
+    DRAG: 'drag',
+    MOVE: 'move',
+    ENTER: 'enter',
+    EXIT: 'exit',
+  };
+
+  /** @enum {string} */
+  SyntheticMouseEventButton = {
+    LEFT: 'left',
+    MIDDLE: 'middle',
+    RIGHT: 'right',
+    BACK: 'back',
+    FORWARD: 'forward',
+  };
+
+  /**
+   * @typedef {{
+   *   alt: (boolean|undefined),
+   *   ctrl: (boolean|undefined),
+   *   search: (boolean|undefined),
+   *   shift: (boolean|undefined),
+   * }}
+   */
+  SyntheticKeyboardModifiers;
+
+  /**
+   * @typedef {{
+   *   type: !chrome.accessibilityPrivate.SyntheticKeyboardEventType,
+   *   keyCode: number,
+   *   modifiers:
+   * (!chrome.accessibilityPrivate.SyntheticKeyboardModifiers|undefined),
+   * }}
+   */
+  SyntheticKeyboardEvent;
+
+  /**
+   * @typedef {{
+   *   type: !chrome.accessibilityPrivate.SyntheticMouseEventType,
+   *   x: number,
+   *   y: number,
+   *   mouseButton:
+   * (!chrome.accessibilityPrivate.SyntheticMouseEventButton|undefined),
+   *   touchAccessibility: (boolean|undefined),
+   * }}
+   */
+  SyntheticMouseEvent;
+
   constructor() {
     // This is a singleton.
     console.assert(!chrome.accessibilityPrivate);
@@ -186,6 +237,70 @@ class AtpAccessibilityPrivate {
 
     this.getUserInputRemote_().sendSyntheticKeyEventForShortcutOrNavigation(
         mojomKeyEvent);
+  }
+
+  /**
+   * Sends the given synthetic mouse event.
+   * @param {!chrome.accessibilityPrivate.SyntheticMouseEvent} mouseEvent
+   */
+  sendSyntheticMouseEvent(mouseEvent) {
+    let mojomMouseEvent = new ax.mojom.SyntheticMouseEvent();
+    switch (mouseEvent.type) {
+      case this.SyntheticMouseEventType.PRESS:
+        mojomMouseEvent.type = ui.mojom.EventType.MOUSE_PRESSED_EVENT;
+        break;
+      case this.SyntheticMouseEventType.RELEASE:
+        mojomMouseEvent.type = ui.mojom.EventType.MOUSE_RELEASED_EVENT;
+        break;
+      case this.SyntheticMouseEventType.DRAG:
+        mojomMouseEvent.type = ui.mojom.EventType.MOUSE_DRAGGED_EVENT;
+        break;
+      case this.SyntheticMouseEventType.MOVE:
+        mojomMouseEvent.type = ui.mojom.EventType.MOUSE_MOVED_EVENT;
+        break;
+      case this.SyntheticMouseEventType.ENTER:
+        mojomMouseEvent.type = ui.mojom.EventType.MOUSE_ENTERED_EVENT;
+        break;
+      case this.SyntheticMouseEventType.EXIT:
+        mojomMouseEvent.type = ui.mojom.EventType.MOUSE_EXITED_EVENT;
+        break;
+      default:
+        console.error('Unknown mouse event type', mouseEvent.type);
+        return;
+    }
+    mojomMouseEvent.point = new gfx.mojom.Point();
+    mojomMouseEvent.point.x = mouseEvent.x;
+    mojomMouseEvent.point.y = mouseEvent.y;
+    if (mouseEvent.touchAccessibility !== undefined) {
+      mojomMouseEvent.touchAccessibility = mouseEvent.touchAccessibility;
+    }
+    switch (mouseEvent.mouseButton) {
+      case undefined:
+        // This is expected, as mouseButton is optional.
+        break;
+      case this.SyntheticMouseEventButton.LEFT:
+        mojomMouseEvent.mouseButton = ax.mojom.SyntheticMouseEventButton.kLeft;
+        break;
+      case this.SyntheticMouseEventButton.MIDDLE:
+        mojomMouseEvent.mouseButton =
+            ax.mojom.SyntheticMouseEventButton.kMiddle;
+        break;
+      case this.SyntheticMouseEventButton.RIGHT:
+        mojomMouseEvent.mouseButton = ax.mojom.SyntheticMouseEventButton.kRight;
+        break;
+      case this.SyntheticMouseEventButton.BACK:
+        mojomMouseEvent.mouseButton = ax.mojom.SyntheticMouseEventButton.kBack;
+        break;
+      case this.SyntheticMouseEventButton.FORWARD:
+        mojomMouseEvent.mouseButton =
+            ax.mojom.SyntheticMouseEventButton.kForward;
+        break;
+      default:
+        console.error('Unknown mouse button', mouseEvent.mouseButton);
+        return;
+    }
+
+    this.getUserInputRemote_().sendSyntheticMouseEvent(mojomMouseEvent);
   }
 
   /**

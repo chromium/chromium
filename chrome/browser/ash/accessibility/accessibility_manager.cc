@@ -2901,4 +2901,48 @@ void AccessibilityManager::SetDlcPathForTest(base::FilePath path) {
   dlc_path_for_test_ = std::move(path);
 }
 
+void AccessibilityManager::SendSyntheticMouseEvent(
+    ui::EventType type,
+    int flags,
+    int changed_button_flags,
+    gfx::Point location_in_screen) {
+  const display::Display& display =
+      display::Screen::GetScreen()->GetDisplayNearestPoint(location_in_screen);
+  auto* host = ash::GetWindowTreeHostForDisplay(display.id());
+  if (!host) {
+    return;
+  }
+
+  aura::Window* root_window = host->window();
+  if (!root_window) {
+    return;
+  }
+
+  aura::client::CursorClient* cursor_client =
+      aura::client::GetCursorClient(root_window);
+
+  bool is_mouse_events_enabled = cursor_client->IsMouseEventsEnabled();
+  if (!is_mouse_events_enabled) {
+    cursor_client->EnableMouseEvents();
+  }
+
+  ::wm::ConvertPointFromScreen(root_window, &location_in_screen);
+
+  ui::MouseEvent synthetic_mouse_event(
+      type, location_in_screen, location_in_screen, ui::EventTimeForNow(),
+      flags, changed_button_flags);
+
+  // Transforming the coordinates to the root will apply the screen scale factor
+  // to the event's location and also the screen rotation degree.
+  synthetic_mouse_event.UpdateForRootTransform(
+      host->GetRootTransform(),
+      host->GetRootTransformForLocalEventCoordinates());
+  // This skips rewriters.
+  host->DeliverEventToSink(&synthetic_mouse_event);
+
+  if (!is_mouse_events_enabled) {
+    cursor_client->DisableMouseEvents();
+  }
+}
+
 }  // namespace ash

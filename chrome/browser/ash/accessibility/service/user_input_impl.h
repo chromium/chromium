@@ -29,6 +29,9 @@ class UserInputImpl : public ax::mojom::UserInput {
   void SendSyntheticKeyEventForShortcutOrNavigation(
       ax::mojom::SyntheticKeyEventPtr key_event) override;
 
+  void SendSyntheticMouseEvent(
+      ax::mojom::SyntheticMouseEventPtr mouse_event) override;
+
  private:
   mojo::ReceiverSet<ax::mojom::UserInput> ui_receivers_;
 };

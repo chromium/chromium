@@ -957,6 +957,118 @@ TEST_F(AccessibilityPrivateJSApiTest,
   waiter.Run();
 }
 
+TEST_F(AccessibilityPrivateJSApiTest, SendSyntheticMouseEvent) {
+  base::RunLoop waiter;
+  client_->SetSyntheticMouseEventCallback(base::BindLambdaForTesting([&waiter,
+                                                                      this]() {
+    const auto& events = client_->GetMouseEvents();
+    // Wait for all the events to be fired.
+    if (events.size() < 6) {
+      return;
+    }
+
+    // Confirm there are no extra events.
+    ASSERT_EQ(events.size(), 6u);
+
+    auto& press_event = events[0];
+    EXPECT_EQ(press_event->type, ui::mojom::EventType::MOUSE_PRESSED_EVENT);
+    EXPECT_EQ(press_event->point.x(), 20);
+    EXPECT_EQ(press_event->point.y(), 30);
+    ASSERT_FALSE(press_event->touch_accessibility.has_value());
+    ASSERT_TRUE(press_event->mouse_button.has_value());
+    EXPECT_EQ(press_event->mouse_button.value(),
+              mojom::SyntheticMouseEventButton::kLeft);
+
+    auto& release_event = events[1];
+    EXPECT_EQ(release_event->type, ui::mojom::EventType::MOUSE_RELEASED_EVENT);
+    EXPECT_EQ(release_event->point.x(), 21);
+    EXPECT_EQ(release_event->point.y(), 31);
+    ASSERT_TRUE(release_event->touch_accessibility.has_value());
+    EXPECT_FALSE(release_event->touch_accessibility.value());
+    ASSERT_TRUE(release_event->mouse_button.has_value());
+    EXPECT_EQ(release_event->mouse_button.value(),
+              mojom::SyntheticMouseEventButton::kMiddle);
+
+    auto& drag_event = events[2];
+    EXPECT_EQ(drag_event->type, ui::mojom::EventType::MOUSE_DRAGGED_EVENT);
+    EXPECT_EQ(drag_event->point.x(), 22);
+    EXPECT_EQ(drag_event->point.y(), 32);
+    ASSERT_TRUE(drag_event->touch_accessibility.has_value());
+    EXPECT_TRUE(drag_event->touch_accessibility.value());
+    ASSERT_TRUE(drag_event->mouse_button.has_value());
+    EXPECT_EQ(drag_event->mouse_button.value(),
+              mojom::SyntheticMouseEventButton::kRight);
+
+    auto& move_event = events[3];
+    EXPECT_EQ(move_event->type, ui::mojom::EventType::MOUSE_MOVED_EVENT);
+    EXPECT_EQ(move_event->point.x(), 23);
+    EXPECT_EQ(move_event->point.y(), 33);
+    ASSERT_FALSE(move_event->touch_accessibility.has_value());
+    ASSERT_FALSE(move_event->mouse_button.has_value());
+
+    auto& enter_event = events[4];
+    EXPECT_EQ(enter_event->type, ui::mojom::EventType::MOUSE_ENTERED_EVENT);
+    EXPECT_EQ(enter_event->point.x(), 24);
+    EXPECT_EQ(enter_event->point.y(), 34);
+    ASSERT_FALSE(enter_event->touch_accessibility.has_value());
+    ASSERT_TRUE(enter_event->mouse_button.has_value());
+    EXPECT_EQ(enter_event->mouse_button.value(),
+              mojom::SyntheticMouseEventButton::kBack);
+
+    auto& exit_event = events[5];
+    EXPECT_EQ(exit_event->type, ui::mojom::EventType::MOUSE_EXITED_EVENT);
+    EXPECT_EQ(exit_event->point.x(), 25);
+    EXPECT_EQ(exit_event->point.y(), 35);
+    ASSERT_FALSE(exit_event->touch_accessibility.has_value());
+    ASSERT_TRUE(exit_event->mouse_button.has_value());
+    EXPECT_EQ(exit_event->mouse_button.value(),
+              mojom::SyntheticMouseEventButton::kForward);
+
+    waiter.Quit();
+  }));
+
+  ExecuteJS(R"JS(
+    chrome.accessibilityPrivate.sendSyntheticMouseEvent({
+      type: 'press',
+      x: 20,
+      y: 30,
+      mouseButton: 'left',
+    });
+    chrome.accessibilityPrivate.sendSyntheticMouseEvent({
+      type: 'release',
+      x: 21,
+      y: 31,
+      mouseButton: 'middle',
+      touchAccessibility: false,
+    });
+    chrome.accessibilityPrivate.sendSyntheticMouseEvent({
+      type: 'drag',
+      x: 22,
+      y: 32,
+      mouseButton: 'right',
+      touchAccessibility: true,
+    });
+    chrome.accessibilityPrivate.sendSyntheticMouseEvent({
+      type: 'move',
+      x: 23,
+      y: 33,
+    });
+    chrome.accessibilityPrivate.sendSyntheticMouseEvent({
+      type: 'enter',
+      x: 24,
+      y: 34,
+      mouseButton: 'back',
+    });
+    chrome.accessibilityPrivate.sendSyntheticMouseEvent({
+      type: 'exit',
+      x: 25,
+      y: 35,
+      mouseButton: 'forward',
+    });
+  )JS");
+  waiter.Run();
+}
+
 class SpeechRecognitionJSApiTest : public AtpJSApiTest {
  public:
   SpeechRecognitionJSApiTest() = default;
