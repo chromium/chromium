@@ -1,4 +1,4 @@
-{% from "templates/macros.tmpl" import license, source_files_for_generated_file %}
+{% from "templates/macros.tmpl" import license, source_files_for_generated_file, platform_buildflag %}
 {{ license() }}
 
 {{source_files_for_generated_file(template_file, input_files)}}
@@ -11,46 +11,33 @@
 
 namespace blink {
 
-// TODO(fs): Move per-platform defaults into the JSON file.
-namespace {
-
-// NOTEs
-//  1) EditingMacBehavior comprises builds on Mac;
-//  2) EditingWindowsBehavior comprises builds on Windows;
-//  3) EditingUnixBehavior comprises all unix-based systems, but
-//     Darwin/MacOS/Android (and then abusing the terminology);
-//  4) EditingAndroidBehavior comprises Android builds.
-// 99) MacEditingBehavior is used a fallback.
-static mojom::blink::EditingBehavior EditingBehaviorTypeForPlatform() {
-  return
-#if BUILDFLAG(IS_MAC)
-      mojom::blink::EditingBehavior::kEditingMacBehavior
-#elif BUILDFLAG(IS_WIN)
-      mojom::blink::EditingBehavior::kEditingWindowsBehavior
-#elif BUILDFLAG(IS_ANDROID)
-      mojom::blink::EditingBehavior::kEditingAndroidBehavior
-#elif BUILDFLAG(IS_CHROMEOS)
-      mojom::blink::EditingBehavior::kEditingChromeOSBehavior
-#else  // Rest of the UNIX-like systems
-      mojom::blink::EditingBehavior::kEditingUnixBehavior
-#endif
-      ;
-}
-
-#if BUILDFLAG(IS_WIN)
-static const bool kDefaultSelectTrailingWhitespaceEnabled = true;
-#else
-static const bool kDefaultSelectTrailingWhitespaceEnabled = false;
-#endif
-}  // namespace
-
 SettingsBase::SettingsBase()
     : delegate_(nullptr)
 {% for setting in settings if setting.initial is not none and setting.type != 'bool' %}
+  {% if setting.initial is mapping %}
+    {% for platform in setting.initial_platforms %}
+#{% if not loop.first %}el{% endif %}if {{platform_buildflag(platform)}}
+    , {{setting.name.to_class_data_member()}}({{setting.initial[platform]}})
+    {% endfor %}
+#else
+    , {{setting.name.to_class_data_member()}}({{setting.initial['default']}})
+#endif
+  {% else %}
     , {{setting.name.to_class_data_member()}}({{setting.initial}})
+  {% endif %}
 {% endfor %}
 {% for setting in settings if setting.initial is not none and setting.type == 'bool' %}
+  {% if setting.initial is mapping %}
+    {% for platform in setting.initial_platforms %}
+#{% if not loop.first %}el{% endif %}if {{platform_buildflag(platform)}}
+    , {{setting.name.to_class_data_member()}}({{setting.initial[platform]|cpp_bool}})
+    {% endfor %}
+#else
+    , {{setting.name.to_class_data_member()}}({{setting.initial['default']|cpp_bool}})
+#endif
+  {% else %}
     , {{setting.name.to_class_data_member()}}({{setting.initial|cpp_bool}})
+  {% endif %}
 {% endfor %}
     {}
 

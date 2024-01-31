@@ -66,10 +66,29 @@ class MakeSettingsWriter(json5_generator.Writer):
         self.json5_file.name_dictionaries.sort(
             key=lambda entry: entry['name'].original)
 
+        for setting in self.json5_file.name_dictionaries:
+            # If 'initial' is a dict, extract a list of specified platforms.
+            if isinstance(setting['initial'], dict):
+                assert 'default' in setting[
+                    'initial'], "a 'default' initial value is required for '{}'".format(
+                        setting['name'])
+                setting[
+                    'initial_platforms'] = self._platforms_with_initial_values(
+                        setting['initial'])
+
         self._outputs = {
             'settings_base.cc': self.generate_cc,
             'settings_base.h': self.generate_h,
         }
+
+    def _platforms_with_initial_values(self, initial):
+        initial_platforms = set(initial.keys()) & set(self._all_platforms())
+        return list(sorted(initial_platforms))
+
+    def _all_platforms(self):
+        # Remove all occurrences of 'default' from 'valid_keys'
+        platforms = self.json5_file.parameters['initial']['valid_keys']
+        return [platform for platform in platforms if platform != 'default']
 
     def _get_include_paths(self):
         include_paths = set()

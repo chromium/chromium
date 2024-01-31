@@ -36,7 +36,15 @@
       default: [],
       valid_type: "list",
     },
-    initial: {},
+    // The initial value. Can be a boolean, integer or string representing the
+    // value.
+    // Can be set per platform using an object with keys being any of the
+    // platforms listed in valid_keys below. The 'default' key will cover any
+    // platforms that has not been explicitly specified and should always be
+    // present.
+    initial: {
+      valid_keys: ["Android", "Win", "ChromeOS_Ash", "ChromeOS_Lacros", "Mac", "Linux"],
+    },
     invalidate: {
       default: [],
       valid_type: "list",
@@ -107,7 +115,21 @@
 
     {
       name: "editingBehaviorType",
-      initial: "EditingBehaviorTypeForPlatform()",
+      // NOTEs
+      //  1) EditingMacBehavior comprises builds on Mac;
+      //  2) EditingWindowsBehavior comprises builds on Windows;
+      //  3) EditingUnixBehavior comprises all unix-based systems, but
+      //     Darwin/MacOS/Android (and then abusing the terminology);
+      //  4) EditingAndroidBehavior comprises Android builds.
+      // 99) MacEditingBehavior is used a fallback.
+      initial: {
+        "Mac": "mojom::blink::EditingBehavior::kEditingMacBehavior",
+        "Win": "mojom::blink::EditingBehavior::kEditingWindowsBehavior",
+        "Android": "mojom::blink::EditingBehavior::kEditingAndroidBehavior",
+        "ChromeOS_Ash": "mojom::blink::EditingBehavior::kEditingChromeOSBehavior",
+        "ChromeOS_Lacros": "mojom::blink::EditingBehavior::kEditingChromeOSBehavior",
+        "default": "mojom::blink::EditingBehavior::kEditingUnixBehavior",
+      },
       type: "mojom::EditingBehavior",
       include_paths: [
         "third_party/blink/public/mojom/webpreferences/web_preferences.mojom-blink.h"
@@ -357,7 +379,7 @@
     },
     {
       name: "selectTrailingWhitespaceEnabled",
-      initial: "kDefaultSelectTrailingWhitespaceEnabled",
+      initial: {"Win": true, "default": false},
     },
 
     {
