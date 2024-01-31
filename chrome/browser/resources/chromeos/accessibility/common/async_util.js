@@ -8,7 +8,7 @@ import {Key} from './key_code.js';
  * @fileoverview Wraps automation and accessibility_private callbacks
  * in Promises.
  */
-const AutomationNode = chrome.automation.AutomationNode;
+const AutomationNode = chrome.automation?.AutomationNode;
 
 export class AsyncUtil {
   /** @return {!Promise<!AutomationNode>} */

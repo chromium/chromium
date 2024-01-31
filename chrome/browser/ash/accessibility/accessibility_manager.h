@@ -466,6 +466,8 @@ class AccessibilityManager
       const language_packs::PackResult& pack_result);
   void SetDlcPathForTest(base::FilePath path);
 
+  void LoadEnhancedNetworkTtsForTest();
+
  protected:
   AccessibilityManager();
   ~AccessibilityManager() override;

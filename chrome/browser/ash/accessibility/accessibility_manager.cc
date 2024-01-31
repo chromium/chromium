@@ -2032,6 +2032,10 @@ void AccessibilityManager::UpdateEnhancedNetworkTts() {
   }
 }
 
+void AccessibilityManager::LoadEnhancedNetworkTtsForTest() {
+  LoadEnhancedNetworkTts();
+}
+
 void AccessibilityManager::LoadEnhancedNetworkTts() {
   if (!profile_)
     return;
