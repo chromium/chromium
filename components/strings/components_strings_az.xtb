@@ -2455,6 +2455,8 @@
 <translation id="5838732667866024867">Qrafikdə qiymət dəyişikliklərini nəzərdən keçirmək üçün sol/sağ oxdan istifadə edə bilərsiniz</translation>
 <translation id="5840318881868981258"><ph name="ACCOUNT" /> Google Hesabınızda</translation>
 <translation id="5841338463993781099">Hesabda saxlansın?</translation>
+<translation id="5843987376989109187">Bu dil dəstəklənmir.
+    <ph name="BEGIN_LINK" />Ətraflı məlumat<ph name="END_LINK" /></translation>
 <translation id="5847181246682413476">Enerji ləvazimatları</translation>
 <translation id="5851548754964597211">Panel siyahısı</translation>
 <translation id="5852909432155870672">RA4</translation>
@@ -4104,6 +4106,8 @@
 <translation id="9049981332609050619"><ph name="DOMAIN" /> domeninə giriş cəhdi etdiniz, amma server yanlış sertifikat təqdim etdi.</translation>
 <translation id="9050666287014529139">Parol ifadəsi</translation>
 <translation id="9051072642122229460">Qəhvə və espresso maşınları</translation>
+<translation id="9051260467258969162">Yazarkən kömək almaq
+    üçün yenidən <ph name="BEGIN_LINK" />daxil olun<ph name="END_LINK" />, sonra bu taba qayıdın</translation>
 <translation id="9053840549256861041">"Reklam dəyərləndirməsi" adlı yeni reklam məxfiliyi funksiyasını işə salırıq. Reklam performansını dəyərləndirmək üçün Chrome reklamın göstərildiyi vaxt kimi məhdud məlumatları saytlar arasında paylaşır.</translation>
 <translation id="9056953843249698117">Mağaza</translation>
 <translation id="9062620674789239642">Köçürülmüş, redaktə edilmiş və ya silinmiş ola bilər.</translation>

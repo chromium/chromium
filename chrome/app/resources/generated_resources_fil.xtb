@@ -4914,6 +4914,7 @@ Gamitin ang Ctrl + Alt + Bawasan ang Liwanag para mag-zoom out.</translation>
 <translation id="4744268813103118742">Pumunta Sa Site</translation>
 <translation id="4744571849207727284">Excel</translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{I-unmute ang site}one{I-unmute ang mga site}other{I-unmute ang mga site}}</translation>
+<translation id="4745500401920035244">Gumawa ang iyong administrator ng pagbabago sa buong system na nagdi-disable sa ilang lumang profile. Hindi mo na maa-access ang profile na ito pero puwede mo pa rin itong alisin</translation>
 <translation id="474609389162964566">I-access ang iyong Assistant gamit ang "Hey Google"</translation>
 <translation id="4748783296226936791">Karaniwang kumokonekta ang mga site sa mga HID device para sa mga feature na gumagamit ng mga hindi pangkaraniwang keyboard, game controller, at iba pang device</translation>
 <translation id="4749960740855309258">Magbukas ng bagong tab</translation>
@@ -6323,6 +6324,7 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="586567932979200359">Pinapatakbo mo ang <ph name="PRODUCT_NAME" /> mula sa larawan nito sa disk. Ang pag-install nito ay magbibigay-daan sa iyong patakbuhin ito nang walang larawan ng disk, at makakatiyak na pananatilihin itong napapanahon.</translation>
 <translation id="5865733239029070421">Awtomatikong nagpapadala sa Google ng mga istatistika ng paggamit at ulat ng pag-crash</translation>
 <translation id="5868434909835797817">Naka-off ang mikropono sa iyong device</translation>
+<translation id="5868479397518301468">Nag-time out ang pag-sign in</translation>
 <translation id="5868822853313956582">Sundin ang mga kulay ng device</translation>
 <translation id="5869029295770560994">OK, Nakuha Ko</translation>
 <translation id="5869522115854928033">Mga naka-save na password</translation>
@@ -6674,6 +6676,7 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
     Makikita bilang <ph name="QUICK_START_DEVICE_DISPLAY_NAME" />...</translation>
 <translation id="6146409560350811147">Hindi gumagana ang pag-sync. Subukang mag-sign in ulit.</translation>
 <translation id="6147020289383635445">Nabigo ang preview ng pag-print.</translation>
+<translation id="6147253937684562370">Para ma-unlock ang profile, mag-sign in gamit ang iyong pangunahing email ng account: <ph name="EMAIL" /></translation>
 <translation id="6148576794665275391">Buksan ngayon</translation>
 <translation id="614890671148262506">Palaging payagan ang mga notification mula sa site na ito</translation>
 <translation id="6149015141270619212">Hindi makakonekta sa internet</translation>
@@ -10064,6 +10067,7 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="8756969031206844760">I-update ang password?</translation>
 <translation id="8757368836647541092">Inalis si <ph name="USER_NAME_OR_EMAIL" /></translation>
 <translation id="8759753423332885148">Matuto pa.</translation>
+<translation id="876161309768861172">Hindi ka ma-sign in, pakisubukan ulit</translation>
 <translation id="8761945298804995673">May ganito nang user</translation>
 <translation id="8762886931014513155">Kailangang i-update ang iyong <ph name="DEVICE_TYPE" /></translation>
 <translation id="8763927697961133303">USB device</translation>
@@ -10576,6 +10580,7 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="9138978632494473300">Magdagdag ng mga shortcut sa mga sumusunod na lugar:</translation>
 <translation id="9139988741193276691">Kino-configure ang Linux</translation>
 <translation id="9140067245205650184">Gumagamit ka ng hindi sinusuportahang flag ng feature: <ph name="BAD_FLAG" />. Mababawasan ang stability at seguridad.</translation>
+<translation id="914031120300235526">Hindi ma-unlock ang profile</translation>
 <translation id="9142637293078737510">Image Alias</translation>
 <translation id="9143298529634201539">Alisin ang suhestyon?</translation>
 <translation id="9143922477019434797">Protektahan ang iyong mga password</translation>

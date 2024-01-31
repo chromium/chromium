@@ -2459,6 +2459,8 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="5838732667866024867">Podes usar a frecha dereita ou esquerda para revisar os cambios de prezo no gráfico</translation>
 <translation id="5840318881868981258">Na túa Conta de Google, <ph name="ACCOUNT" /></translation>
 <translation id="5841338463993781099">Queres gardalo na conta?</translation>
+<translation id="5843987376989109187">Este idioma aínda non está dispoñible.
+    <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
 <translation id="5847181246682413476">Subministracións eléctricas</translation>
 <translation id="5851548754964597211">Lista de pestanas</translation>
 <translation id="5852909432155870672">RA4</translation>
@@ -4108,6 +4110,8 @@ Detalles adicionais:
 <translation id="9049981332609050619">Intentaches acceder a <ph name="DOMAIN" />, pero o servidor presentou un certificado non válido.</translation>
 <translation id="9050666287014529139">Frase de acceso</translation>
 <translation id="9051072642122229460">Cafeteiras</translation>
+<translation id="9051260467258969162"><ph name="BEGIN_LINK" />Inicia sesión<ph name="END_LINK" /> 
+    de novo e despois volve a esta pestana se queres obter axuda para escribir</translation>
 <translation id="9053840549256861041">Imos lanzar unha nova función de privacidade nos anuncios chamada Medición de anuncios. Chrome só comparte información moi limitada entre os sitios (como, por exemplo, cando se che mostrou un anuncio) co fin de axudarlles a medir o rendemento dos anuncios.</translation>
 <translation id="9056953843249698117">Tenda</translation>
 <translation id="9062620674789239642">É posible que se movese, editase ou eliminase.</translation>

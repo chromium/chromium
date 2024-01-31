@@ -4531,6 +4531,21 @@ None으로 설정하거나 설정하지 않으면 ARC 앱에서 <ph name="PRODUC
 <translation id="4726895359147376813">영구 ID에서 VM 구성에 매핑합니다.</translation>
 <translation id="4733471537137819387">통합 HTTP 인증과 관련된 정책입니다.</translation>
 <translation id="473613500147803115">다음 사이트에서 MIDI 권한 차단</translation>
+<translation id="4736591493257545761">원하는 DNS-over-HTTPS 리졸버의 URI 템플릿입니다. 여러 개의 DNS-over-HTTPS 리졸버를 지정하려면 해당하는 URI 템플릿을 공백으로 구분하세요. 지정한 경우 이 정책은 매우 유사한 <ph name="DOH_TEMPLATES_POLICY_NAME" /> 정책을 재정의합니다.
+<ph name="DOH_TEMPLATES_POLICY_NAME" /> 정책과 달리, 이 정책은 신원 정보 지정을 지원합니다.
+식별자는 <ph name="PRODUCT_NAME" />에서 사용자 또는 기기 정보로 대체되는 변수 자리표시자를 사용하여 지정됩니다. 식별자는 DNS 서버에 일반 텍스트로 전송되지 않습니다. 대신 <ph name="SHA256" /> 알고리즘으로 해싱되고 대문자 16진수로 인코딩됩니다.
+
+식별자는 앞에 달러 기호가 있는 중괄호로 지정됩니다. 사용자 식별의 경우 <ph name="USER_EMAIL" />, <ph name="USER_EMAIL_DOMAIN" />, <ph name="USER_EMAIL_NAME" /> 자리표시자를, 기기 식별의 경우 <ph name="DEVICE_DIRECTORY_ID" />, <ph name="DEVICE_SERIAL_NUMBER" />, <ph name="DEVICE_ASSET_ID" />, <ph name="DEVICE_ANNOTATED_LOCATION" /> 자리표시자를 사용합니다.
+
+버전 122 이전에는 연결되지 않은 사용자의 기기 식별자가 대체되지 않았습니다. 버전 122부터는 기기 자리표시자가 해싱되고 16진수로 인코딩된 <ph name="DEVICE_NOT_MANAGED" /> 값으로 대체됩니다.
+
+<ph name="DOH_MODE_POLICY_NAME" /> 정책을 <ph name="SECURE_DNS_MODE_SECURE" /> 모드로 설정하면 이 정책 또는 <ph name="DOH_TEMPLATES_POLICY_NAME" /> 정책을 설정해야 하며, 비워 둘 수 없습니다.
+
+<ph name="DOH_MODE_POLICY_NAME" /> 정책을 <ph name="SECURE_DNS_MODE_AUTOMATIC" /> 모드로 설정하고, 이 정책을 설정하면 지정된 URI 템플릿이 사용됩니다. 이 정책을 설정하지 않으면 하드코딩된 매핑이 사용되어 사용자의 현재 DNS 리졸버를 동일한 제공업체가 운영하는 DoH 리졸버로 업그레이드하려고 시도합니다.
+
+URI 템플릿에 <ph name="HTTP_VARIABLE_DNS" /> 변수가 포함된 경우 리졸버에 관한 요청에서 <ph name="HTTP_METHOD_GET" /> 메서드를 사용하며, 그 외의 경우에는 <ph name="HTTP_METHOD_POST" /> 메서드를 사용합니다.
+
+버전 114 이상에서 이 정책이 설정된 경우 <ph name="DOH_SALT_POLICY_NAME" />는 선택사항입니다.</translation>
 <translation id="473673197014866318">정책을 설정하면 기존 확장 프로그램 관련 정책으로 제어되는 설정을 포함해 <ph name="PRODUCT_NAME" />의 확장 프로그램 관리 설정을 제어할 수 있습니다. 기존에 설정된 정책이 있을 경우 이 정책으로 대체됩니다.
 
 이 정책은 확장 프로그램 ID 또는 업데이트 URL을 특정 설정에만 매핑합니다. 특수 ID <ph name="DEFAULT_SCOPE" />에 기본 구성을 설정할 수 있으며, 정책에서 맞춤 구성이 설정되지 않은 모든 확장 프로그램에 기본 구성이 적용됩니다. 업데이트 URL이 있으면 구성은 확장 프로그램 매니페스트(http://support.google.com/chrome/a?p=Configure_ExtensionSettings_policy)에 규정된 정확한 업데이트 URL을 포함하는 확장 프로그램에 적용됩니다. 'override_update_url' 플래그가 true로 설정된 경우 <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" /> 정책 또는 이 정책의 'update_url' 필드에 지정된 'update' URL을 사용하여 확장 프로그램이 설치 및 업데이트됩니다. 'update_url'이 Chrome 웹 스토어 url인 경우 'override_update_url' 플래그가 무시됩니다.

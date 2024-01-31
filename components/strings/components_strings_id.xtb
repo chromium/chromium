@@ -2459,6 +2459,8 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="5838732667866024867">Anda dapat menggunakan panah kiri/kanan untuk meninjau perubahan harga pada grafik</translation>
 <translation id="5840318881868981258">Di Akun Google Anda, <ph name="ACCOUNT" /></translation>
 <translation id="5841338463993781099">Simpan di akun?</translation>
+<translation id="5843987376989109187">Bahasa ini belum didukung.
+    <ph name="BEGIN_LINK" />Pelajari lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="5847181246682413476">Catu Daya Listrik</translation>
 <translation id="5851548754964597211">Daftar tab</translation>
 <translation id="5852909432155870672">RA4</translation>
@@ -4104,6 +4106,8 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="9049981332609050619">Anda berupaya menjangkau <ph name="DOMAIN" />, tetapi server menyajikan sertifikat yang tidak valid.</translation>
 <translation id="9050666287014529139">Frasa sandi</translation>
 <translation id="9051072642122229460">Mesin Pembuat Kopi &amp; Espreso</translation>
+<translation id="9051260467258969162"><ph name="BEGIN_LINK" />Login<ph name="END_LINK" /> 
+    lagi, lalu kembali ke tab ini untuk mendapatkan bantuan menulis</translation>
 <translation id="9053840549256861041">Kami meluncurkan fitur privasi iklan baru yang disebut pengukuran iklan. Chrome hanya membagikan informasi yang sangat terbatas antar situs, seperti kapan iklan ditampilkan kepada Anda, untuk membantu situs mengukur performa iklan.</translation>
 <translation id="9056953843249698117">Toko</translation>
 <translation id="9062620674789239642">File mungkin telah dipindahkan, diedit, atau dihapus.</translation>

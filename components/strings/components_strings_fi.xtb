@@ -2460,6 +2460,8 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="5838732667866024867">Voit tarkistaa hinnanmuutokset kaaviossa vasemmalla tai oikealla nuolella</translation>
 <translation id="5840318881868981258">Google-tililläsi, <ph name="ACCOUNT" /></translation>
 <translation id="5841338463993781099">Tallennetaanko osoite tilille?</translation>
+<translation id="5843987376989109187">Kieltä ei vielä tueta.
+    <ph name="BEGIN_LINK" />Lue lisää<ph name="END_LINK" /></translation>
 <translation id="5847181246682413476">Virtalaitteet</translation>
 <translation id="5851548754964597211">Välilehtiluettelo</translation>
 <translation id="5852909432155870672">RA4</translation>
@@ -4110,6 +4112,8 @@ Lisätietoja:
 <translation id="9049981332609050619">Yritit muodostaa yhteyden verkkotunnukseen <ph name="DOMAIN" />, mutta palvelin esitti virheellisen varmenteen.</translation>
 <translation id="9050666287014529139">Tunnuslause</translation>
 <translation id="9051072642122229460">Kahvinkeittimet ja espressokeittimet</translation>
+<translation id="9051260467258969162"><ph name="BEGIN_LINK" />Kirjaudu uudelleen sisään<ph name="END_LINK" /> 
+    ja palaa sitten tälle välilehdelle, niin saat apua kirjoittamiseen</translation>
 <translation id="9053840549256861041">Julkaisemme uuden yksityisyyteen liittyvän mainosominaisuuden, jota kutsutaan mainosmittaukseksi. Chrome jakaa vain hyvin rajallisia tietoja sivustojen ja sovellusten välillä (esim. kun mainos on näytetty sinulle), jotta mainosten tuloksia voidaan mitata.</translation>
 <translation id="9056953843249698117">Kauppa</translation>
 <translation id="9062620674789239642">Sitä on voitu muokata tai se on voitu siirtää tai poistaa.</translation>

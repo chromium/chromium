@@ -4905,6 +4905,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="4744268813103118742">Gå til nettstedet</translation>
 <translation id="4744571849207727284">Excel</translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{Slå på lyden for nettstedet}other{Slå på lyden for nettstedene}}</translation>
+<translation id="4745500401920035244">Administratoren din har gjort en endring for hele systemet som deaktiverer enkelte gamle profiler. Du har ikke lenger tilgang til denne profilen, men du kan fortsatt fjerne den</translation>
 <translation id="474609389162964566">Bruk assistenten med «Hey Google»</translation>
 <translation id="4748783296226936791">Nettsteder kobler vanligvis til HID-enheter for å kunne tilby funksjoner som bruker uvanlige tastaturer, spillkontrollere og andre enheter</translation>
 <translation id="4749960740855309258">Åpne en ny fane</translation>
@@ -6313,6 +6314,7 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="586567932979200359">Du kjører <ph name="PRODUCT_NAME" /> fra diskavbildningen. Hvis du installer produktet på datamaskinen, kan du kjøre det uten diskavbildningen og sikre at det holdes oppdatert.</translation>
 <translation id="5865733239029070421">Sender automatisk brukerstatistikk og programstopprapporter til Google</translation>
 <translation id="5868434909835797817">Mikrofonen er av på enheten</translation>
+<translation id="5868479397518301468">Påloggingen ble tidsavbrutt</translation>
 <translation id="5868822853313956582">Følg enhetsfargene</translation>
 <translation id="5869029295770560994">Greit</translation>
 <translation id="5869522115854928033">Lagrede passord</translation>
@@ -6664,6 +6666,7 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
     Vises som <ph name="QUICK_START_DEVICE_DISPLAY_NAME" /> …</translation>
 <translation id="6146409560350811147">Synkroniseringen fungerer ikke. Prøv å logge på igjen.</translation>
 <translation id="6147020289383635445">Forhåndsvisning mislyktes.</translation>
+<translation id="6147253937684562370">For å låse opp profilen, logg på med e-postadressen for hovedkontoen din: <ph name="EMAIL" /></translation>
 <translation id="6148576794665275391">Åpne nå</translation>
 <translation id="614890671148262506">Tillat alltid varsler fra dette nettstedet</translation>
 <translation id="6149015141270619212">Kan ikke koble til internett</translation>
@@ -10051,6 +10054,7 @@ Oppbevar nøkkelfilen på et trygt sted. Du får bruk for den når du skal oppre
 <translation id="8756969031206844760">Vil du oppdatere passordet?</translation>
 <translation id="8757368836647541092">Fjernet <ph name="USER_NAME_OR_EMAIL" /></translation>
 <translation id="8759753423332885148">Finn ut mer</translation>
+<translation id="876161309768861172">Kunne ikke logge deg på. Prøv på nytt</translation>
 <translation id="8761945298804995673">Denne brukeren finnes allerede</translation>
 <translation id="8762886931014513155"><ph name="DEVICE_TYPE" /> trenger en oppdatering</translation>
 <translation id="8763927697961133303">USB-enhet</translation>
@@ -10561,6 +10565,7 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="9138978632494473300">Legg til hurtigtaster til disse stedene:</translation>
 <translation id="9139988741193276691">Konfigurerer Linux</translation>
 <translation id="9140067245205650184">Du bruker et funksjonsflagg som ikke støttes: <ph name="BAD_FLAG" />. Dette reduserer stabiliteten og sikkerheten.</translation>
+<translation id="914031120300235526">Kan ikke låse opp profilen</translation>
 <translation id="9142637293078737510">Avbildningsalias</translation>
 <translation id="9143298529634201539">Vil du fjerne forslaget?</translation>
 <translation id="9143922477019434797">Beskytt passordene dine</translation>

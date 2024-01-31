@@ -1538,6 +1538,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="8996847606757455498">Choose another provider</translation>
 <translation id="8998289560386111590">Not available on your device</translation>
 <translation id="8998729206196772491">You are signing in with an account managed by <ph name="MANAGED_DOMAIN" /> and giving its administrator control over your Chrome data. Your data will become permanently tied to this account. Signing out of Chrome will delete your data from this device, but it will remain stored in your Google Account.</translation>
+<translation id="8998837250940831980">Couldn’t minimise tab. Please try again later.</translation>
 <translation id="9012585441087414258">Protects against sites, downloads and extensions that are known to be dangerous. If a page does something suspicious, URLs and bits of page content are sent to Google Safe Browsing.</translation>
 <translation id="9019199799064251516">Continue without a car profile lock?</translation>
 <translation id="9022774213089566801">Frequently visited</translation>

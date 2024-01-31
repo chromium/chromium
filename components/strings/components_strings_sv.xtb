@@ -2459,6 +2459,8 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="5838732667866024867">Du kan se prisändringarna i diagrammet med hjälp av vänster-/högerpil</translation>
 <translation id="5840318881868981258">I Google-kontot <ph name="ACCOUNT" /></translation>
 <translation id="5841338463993781099">Vill du spara i kontot?</translation>
+<translation id="5843987376989109187">Det här språket stöds inte än.
+    <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
 <translation id="5847181246682413476">Kraftförsörjning</translation>
 <translation id="5851548754964597211">Fliklista</translation>
 <translation id="5852909432155870672">RA4</translation>
@@ -4109,6 +4111,8 @@ Mer information:
 <translation id="9049981332609050619">Du försökte nå <ph name="DOMAIN" /> men servern angav ett ogiltigt certifikat.</translation>
 <translation id="9050666287014529139">Lösenfras</translation>
 <translation id="9051072642122229460">Kaffe- och espressobryggare</translation>
+<translation id="9051260467258969162"><ph name="BEGIN_LINK" />Logga in<ph name="END_LINK" /> 
+    igen och återgå sedan till den här fliken för att få hjälp med att skriva</translation>
 <translation id="9053840549256861041">Vi lanserar en ny funktion för annonsintegritet som kallas annonsmätning. Chrome delar bara mycket begränsad information mellan webbplatser, till exempel när en annons visades för dig, för att hjälpa webbplatser att mäta annonsernas resultat.</translation>
 <translation id="9056953843249698117">Butik</translation>
 <translation id="9062620674789239642">Den kan ha flyttats, ändrats eller tagits bort.</translation>

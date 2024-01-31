@@ -2457,6 +2457,8 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="5838732667866024867">A balra/jobbra nyíllal áttekintheti a diagramon ábrázolt árváltozásokat</translation>
 <translation id="5840318881868981258">A Google-fiókjában (<ph name="ACCOUNT" />)</translation>
 <translation id="5841338463993781099">Mentés a fiókba?</translation>
+<translation id="5843987376989109187">Ez a nyelv még nem támogatott.
+    <ph name="BEGIN_LINK" />További információ<ph name="END_LINK" />.</translation>
 <translation id="5847181246682413476">Tápegységek</translation>
 <translation id="5851548754964597211">Laplista</translation>
 <translation id="5852909432155870672">RA4</translation>
@@ -4107,6 +4109,8 @@ További részletek:
 <translation id="9049981332609050619">Megpróbálta elérni a(z) <ph name="DOMAIN" /> webhelyet, de a szerver érvénytelen tanúsítványt mutatott be.</translation>
 <translation id="9050666287014529139">Összetett jelszó</translation>
 <translation id="9051072642122229460">Kávé- és eszpresszógépek</translation>
+<translation id="9051260467258969162"><ph name="BEGIN_LINK" />Jelentkezzen be<ph name="END_LINK" />
+    újra, majd térjen vissza erre a lapra, hogy segítséget kaphasson az írással kapcsolatban</translation>
 <translation id="9053840549256861041">Új, hirdetésekhez kapcsolódó adatvédelmi funkciót vezetünk be, melynek neve hirdetésmérés. A Chrome csak nagyon korlátozott információkat oszt meg webhelyek között (például arról, hogy mikor jelent meg Önnek egy adott hirdetés), hogy segítsen a webhelyeknek a hirdetések teljesítményének mérésében.</translation>
 <translation id="9056953843249698117">Áruház</translation>
 <translation id="9062620674789239642">Előfordulhat, hogy át lett helyezve, illetve szerkesztve vagy törölve lett</translation>

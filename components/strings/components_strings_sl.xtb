@@ -2459,6 +2459,8 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="5838732667866024867">S puščico levo/desno lahko pregledujete spremembe cen na grafikonu</translation>
 <translation id="5840318881868981258">V računu Google, <ph name="ACCOUNT" /></translation>
 <translation id="5841338463993781099">Želite shraniti v račun?</translation>
+<translation id="5843987376989109187">Ta jezik še ni podprt.
+    <ph name="BEGIN_LINK" />Več o tem<ph name="END_LINK" /></translation>
 <translation id="5847181246682413476">Dobava energije</translation>
 <translation id="5851548754964597211">Seznam zavihkov</translation>
 <translation id="5852909432155870672">RA4</translation>
@@ -4108,6 +4110,8 @@ Dodatne podrobnosti:
 <translation id="9049981332609050619">Skušali ste dostopati do domene <ph name="DOMAIN" />, vendar je strežnik predložil neveljavno potrdilo.</translation>
 <translation id="9050666287014529139">Geslo</translation>
 <translation id="9051072642122229460">Kavni avtomati</translation>
+<translation id="9051260467258969162">Znova <ph name="BEGIN_LINK" />se prijavite<ph name="END_LINK" />, 
+    nato se vrnite na ta zavihek, če želite pomoč pri pisanju</translation>
 <translation id="9053840549256861041">Uvajamo novo funkcijo za zasebnost pri oglaševanju, ki se imenuje merjenje oglasov. Chrome deli samo zelo omejene podatke s spletnimi mesti, na primer kdaj vam je bil oglas prikazan, da bi spletnim mestom pomagal meriti uspešnost oglasov.</translation>
 <translation id="9056953843249698117">Trgovina</translation>
 <translation id="9062620674789239642">Morda je premaknjena, urejena ali izbrisana.</translation>

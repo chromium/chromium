@@ -4671,6 +4671,21 @@ Kebijakan ini tidak akan berpengaruh jika kebijakan <ph name="DEVICE_SCREENSAVER
 <translation id="4726895359147376813">Pemetaan dari ID persisten ke konfigurasi VM</translation>
 <translation id="4733471537137819387">Kebijakan yang terkait dengan autentikasi HTTP terintegrasi.</translation>
 <translation id="473613500147803115">Memblokir izin MIDI di situs ini</translation>
+<translation id="4736591493257545761">Template URI pada resolver DNS-over-HTTPS yang diinginkan. Untuk menentukan beberapa resolver DNS-over-HTTPS, pisahkan template URI terkait dengan spasi. Kebijakan ini sangat mirip dengan <ph name="DOH_TEMPLATES_POLICY_NAME" /> yang akan diganti jika ditentukan.
+Berbeda dengan kebijakan <ph name="DOH_TEMPLATES_POLICY_NAME" />, kebijakan ini mendukung penentuan informasi identitas.
+ID ditentukan menggunakan placeholder variabel yang diganti dengan informasi pengguna atau perangkat di <ph name="PRODUCT_NAME" />. ID tidak dikirim ke server DNS dalam bentuk teks biasa, tetapi ID akan di-hash dengan algoritma <ph name="SHA256" /> dan dienkode dengan heksadesimal huruf besar.
+
+ID ditentukan di antara tanda kurung kurawal, yang didahului dengan tanda dolar. Untuk identifikasi pengguna, gunakan placeholder berikut <ph name="USER_EMAIL" />, <ph name="USER_EMAIL_DOMAIN" />, dan <ph name="USER_EMAIL_NAME" />. Untuk identifikasi perangkat, gunakan placeholder berikut <ph name="DEVICE_DIRECTORY_ID" />, <ph name="DEVICE_SERIAL_NUMBER" />, <ph name="DEVICE_ASSET_ID" />, dan <ph name="DEVICE_ANNOTATED_LOCATION" />.
+
+Sebelum versi 122, ID perangkat tidak diganti untuk pengguna yang tidak berafiliasi. Mulai versi 122, placeholder perangkat diganti dengan nilai <ph name="DEVICE_NOT_MANAGED" />, yang di-hash dan dienkode dengan heksadesimal.
+
+Jika <ph name="DOH_MODE_POLICY_NAME" /> disetel ke <ph name="SECURE_DNS_MODE_SECURE" />, kebijakan ini atau <ph name="DOH_TEMPLATES_POLICY_NAME" /> harus disetel dan tidak boleh kosong.
+
+Jika <ph name="DOH_MODE_POLICY_NAME" /> disetel ke <ph name="SECURE_DNS_MODE_AUTOMATIC" /> dan kebijakan ini disetel, template URI yang ditentukan akan digunakan. Namun, jika kebijakan ini tidak disetel, pemetaan yang di-hardcode akan digunakan sebagai upaya untuk mengupgrade DNS resolver pengguna saat ini ke resolver DoH yang dioperasikan oleh penyedia yang sama.
+
+Jika template URI berisi variabel <ph name="HTTP_VARIABLE_DNS" />, permintaan untuk resolver akan menggunakan <ph name="HTTP_METHOD_GET" />; jika tidak, permintaan akan menggunakan <ph name="HTTP_METHOD_POST" />.
+
+Pada versi 114 dan yang lebih baru, <ph name="DOH_SALT_POLICY_NAME" /> bersifat opsional jika kebijakan ini disetel.</translation>
 <translation id="473673197014866318">Menyetel kebijakan akan mengontrol setelan pengelolaan ekstensi untuk <ph name="PRODUCT_NAME" />, termasuk setelan apa pun yang dikontrol oleh kebijakan terkait ekstensi yang sudah ada. Kebijakan ini akan menggantikan kebijakan lama apa pun yang mungkin disetel.
 
 Kebijakan ini hanya memetakan ID ekstensi atau URL update ke setelan khususnya. Konfigurasi default dapat disetel bagi ID khusus <ph name="DEFAULT_SCOPE" />, yang berlaku untuk semua ekstensi tanpa konfigurasi khusus dalam kebijakan ini. Dengan URL update, konfigurasi akan berlaku untuk ekstensi dengan URL update tepat yang disebutkan dalam manifes ekstensi ( http://support.google.com/chrome/a?p=Configure_ExtensionSettings_policy ). Jika tanda 'override_update_url' disetel ke benar (true), ekstensi akan diinstal dan diupdate menggunakan URL "update" yang ditentukan dalam kebijakan <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" /> atau kolom 'update_url' dalam kebijakan ini. Tanda 'override_update_url' akan diabaikan jika 'update_url' adalah URL Chrome Web Store.

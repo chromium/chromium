@@ -2455,6 +2455,8 @@
 <translation id="5838732667866024867">您可以使用向左/向右箭头在图表中查看价格变动</translation>
 <translation id="5840318881868981258">在您的 Google 账号 <ph name="ACCOUNT" /> 中更新</translation>
 <translation id="5841338463993781099">要保存到账号吗？</translation>
+<translation id="5843987376989109187">尚不支持此语言。
+    <ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="5847181246682413476">电力供应</translation>
 <translation id="5851548754964597211">标签列表</translation>
 <translation id="5852909432155870672">RA4</translation>
@@ -4104,6 +4106,7 @@
 <translation id="9049981332609050619">您试图访问 <ph name="DOMAIN" />，但服务器提供的证书无效。</translation>
 <translation id="9050666287014529139">密码</translation>
 <translation id="9051072642122229460">咖啡机和浓缩咖啡机</translation>
+<translation id="9051260467258969162">请<ph name="BEGIN_LINK" />重新登录<ph name="END_LINK" />，然后返回此标签页以获取写作帮助</translation>
 <translation id="9053840549256861041">我们推出了一项名为“广告效果衡量”的全新广告隐私权功能。Chrome 只会在网站之间分享非常有限的信息（例如向您展示广告的时段），以帮助网站衡量广告效果。</translation>
 <translation id="9056953843249698117">网上应用店</translation>
 <translation id="9062620674789239642">该文件可能已被移至别处、修改或删除。</translation>

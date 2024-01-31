@@ -2459,6 +2459,8 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="5838732667866024867">Možete koristiti strelicu ulijevo/udesno da pregledate promjene cijena na grafikonu</translation>
 <translation id="5840318881868981258">Na vašem Google računu, <ph name="ACCOUNT" /></translation>
 <translation id="5841338463993781099">Sačuvati na račun?</translation>
+<translation id="5843987376989109187">Taj jezik još nije podržan.
+    <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="5847181246682413476">Napajanja električnom energijom</translation>
 <translation id="5851548754964597211">Lista kartica</translation>
 <translation id="5852909432155870672">RA4</translation>
@@ -4108,6 +4110,7 @@ Dodatni detalji:
 <translation id="9049981332609050619">Pokušali ste pristupiti domeni <ph name="DOMAIN" />, ali je server prikazao nevažeću potvrdu.</translation>
 <translation id="9050666287014529139">Pristupni izraz</translation>
 <translation id="9051072642122229460">Aparati za kafu i espresso</translation>
+<translation id="9051260467258969162">Ponovo se <ph name="BEGIN_LINK" />prijavite<ph name="END_LINK" />, a zatim se vratite na ovu karticu da biste dobili pomoć pri pisanju</translation>
 <translation id="9053840549256861041">Pokrećemo novu funkciju privatnosti pri izloženosti oglasima koja se naziva mjerenje oglasa. Da pomogne web lokacijama da izmjere performanse oglasa, Chrome dijeli samo veoma ograničene informacije među web lokacijama, npr., kada vam se prikaže oglas.</translation>
 <translation id="9056953843249698117">Trgovina</translation>
 <translation id="9062620674789239642">Moguće je da je premješten, uređen ili izbrisan.</translation>

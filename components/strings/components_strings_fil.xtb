@@ -2459,6 +2459,8 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="5838732667866024867">Puwede mong gamitin ang pakaliwa/pakanang arrow para suriin ang mga pagbabago ng presyo sa graph</translation>
 <translation id="5840318881868981258">Sa iyong Google Account, <ph name="ACCOUNT" /></translation>
 <translation id="5841338463993781099">I-save sa account?</translation>
+<translation id="5843987376989109187">Hindi pa sinusuportahan ang wikang ito.
+    <ph name="BEGIN_LINK" />Matuto pa<ph name="END_LINK" /></translation>
 <translation id="5847181246682413476">Mga Power Supply</translation>
 <translation id="5851548754964597211">Listahan ng tab</translation>
 <translation id="5852909432155870672">RA4</translation>
@@ -4108,6 +4110,8 @@ Mga karagdagang detalye:
 <translation id="9049981332609050619">Tinangka mong maabot ang <ph name="DOMAIN" />, ngunit nagpakita ang server ng isang di-wastong certificate.</translation>
 <translation id="9050666287014529139">Passphrase</translation>
 <translation id="9051072642122229460">Mga Coffee at Espresso Maker</translation>
+<translation id="9051260467258969162"><ph name="BEGIN_LINK" />Mag-sign in<ph name="END_LINK" /> 
+    ulit, at pagkatapos ay bumalik sa tab na ito para makakuha ng tulong sa pagsusulat</translation>
 <translation id="9053840549256861041">Maglulunsad kami ng bagong feature ng privacy sa ad na tinatawag na pagsukat sa ad. Napakalimitado lang ng impormasyong shine-share ng Chrome sa pagitan ng mga site, gaya kapag may ipinakitang ad sa iyo, para matulungan ang mga site na sukatin ang performance ng mga ad.</translation>
 <translation id="9056953843249698117">Store</translation>
 <translation id="9062620674789239642">Posibleng nailipat, na-edit, o na-delete ito.</translation>

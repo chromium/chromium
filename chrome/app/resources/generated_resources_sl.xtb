@@ -4916,6 +4916,7 @@ Za pomanjšavo pritisnite Ctrl + Alt + tipko za zmanjšanje svetlosti.</translat
 <translation id="4744268813103118742">Na spletno mesto</translation>
 <translation id="4744571849207727284">Excel</translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{Vklopi zvok spletnega mesta}one{Vklopi zvok spletnih mest}two{Vklopi zvok spletnih mest}few{Vklopi zvok spletnih mest}other{Vklopi zvok spletnih mest}}</translation>
+<translation id="4745500401920035244">Skrbnik je naredil sistemsko spremembo, s katero je onemogočil nekatere stare profile. Ne morete več dostopati do tega profila, vendar ga lahko še vedno odstranite.</translation>
 <translation id="474609389162964566">Dostop do Pomočnika z ukazom »Hey Google«</translation>
 <translation id="4748783296226936791">Spletna mesta običajno vzpostavijo povezavo z napravami HID zaradi funkcij, ki uporabljajo redke tipkovnico, krmilnike za igre in druge naprave.</translation>
 <translation id="4749960740855309258">Odpiranje novega zavihka</translation>
@@ -6327,6 +6328,7 @@ Poskrbite, da ne boste razkrili morebitnih občutljivih podatkov.</translation>
 <translation id="586567932979200359"><ph name="PRODUCT_NAME" /> izvajate s posnetka diska. Če ga namestite v računalnik, ga lahko izvajate brez posnetka diska in s tem zagotovite, da bo vedno posodobljen.</translation>
 <translation id="5865733239029070421">Samodejno pošilja statistične podatke o uporabi in poročila o zrušitvah Googlu</translation>
 <translation id="5868434909835797817">Mikrofon je izklopljen v napravi</translation>
+<translation id="5868479397518301468">Časovna omejitev za prijavo je potekla</translation>
 <translation id="5868822853313956582">Upoštevaj barve naprave</translation>
 <translation id="5869029295770560994">V redu, razumem</translation>
 <translation id="5869522115854928033">Shranjena gesla</translation>
@@ -6678,6 +6680,7 @@ Poskrbite, da ne boste razkrili morebitnih občutljivih podatkov.</translation>
     Vidno kot <ph name="QUICK_START_DEVICE_DISPLAY_NAME" /> …</translation>
 <translation id="6146409560350811147">Sinhronizacija ne deluje. Poskusite se znova prijaviti.</translation>
 <translation id="6147020289383635445">Predogled tiskanja ni uspel</translation>
+<translation id="6147253937684562370">Če želite odkleniti profil, se prijavite z e-poštnim naslovom glavnega računa: <ph name="EMAIL" /></translation>
 <translation id="6148576794665275391">Odpri</translation>
 <translation id="614890671148262506">Vedno dovoli obvestila s tega spletnega mesta</translation>
 <translation id="6149015141270619212">Internetne povezave ni mogoče vzpostaviti</translation>
@@ -10071,6 +10074,7 @@ Datoteko s ključem shranite na varnem. Potrebovali jo boste za izdelavo novih r
 <translation id="8756969031206844760">Želite posodobiti geslo?</translation>
 <translation id="8757368836647541092">Uporabnik <ph name="USER_NAME_OR_EMAIL" /> je odstranjen</translation>
 <translation id="8759753423332885148">Več o tem</translation>
+<translation id="876161309768861172">Prijava ni bila mogoča. Poskusite znova.</translation>
 <translation id="8761945298804995673">Ta uporabnik že obstaja</translation>
 <translation id="8762886931014513155">Naprava <ph name="DEVICE_TYPE" /> potrebuje posodobitev</translation>
 <translation id="8763927697961133303">Naprava USB</translation>
@@ -10584,6 +10588,7 @@ Dovoljenja, ki ste jih že odobrili spletnim mestom in aplikacijam, morda veljaj
 <translation id="9138978632494473300">Dodajte bližnjice tem mestom:</translation>
 <translation id="9139988741193276691">Konfiguriranje Linuxa</translation>
 <translation id="9140067245205650184">Uporabljate nepodprto zastavico funkcije: <ph name="BAD_FLAG" />. Ogroženi bosta stabilnost in varnost.</translation>
+<translation id="914031120300235526">Profila ni mogoče odkleniti</translation>
 <translation id="9142637293078737510">Vzdevek za sliko</translation>
 <translation id="9143298529634201539">Želite odstraniti predlog?</translation>
 <translation id="9143922477019434797">Zaščitite gesla.</translation>

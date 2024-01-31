@@ -4888,6 +4888,7 @@
 <translation id="4744268813103118742">前往网站</translation>
 <translation id="4744571849207727284">Excel</translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{将这个网站取消静音}other{将这些网站取消静音}}</translation>
+<translation id="4745500401920035244">您的管理员做了一项系统级更改，致使一些旧个人资料遭到停用。您无法再访问此个人资料，但仍然可以将其移除</translation>
 <translation id="474609389162964566">说“Hey Google”即可启动 Google 助理</translation>
 <translation id="4748783296226936791">网站通常会连接到 HID 设备以实现某些需要使用非标准键盘、游戏控制器和其他设备的功能</translation>
 <translation id="4749960740855309258">打开新标签页</translation>
@@ -6295,6 +6296,7 @@
 <translation id="586567932979200359">您正在通过磁盘映像运行 <ph name="PRODUCT_NAME" />。您只需在计算机上安装该软件，即可在没有磁盘映像的情况下运行它，并可确保使用最新版本。</translation>
 <translation id="5865733239029070421">自动将使用情况统计信息和崩溃报告发送至 Google</translation>
 <translation id="5868434909835797817">您设备的麦克风处于关闭状态</translation>
+<translation id="5868479397518301468">登录超时</translation>
 <translation id="5868822853313956582">遵循设备配色方案</translation>
 <translation id="5869029295770560994">知道了</translation>
 <translation id="5869522115854928033">已保存的密码</translation>
@@ -6645,6 +6647,7 @@
     显示为：<ph name="QUICK_START_DEVICE_DISPLAY_NAME" />…</translation>
 <translation id="6146409560350811147">同步功能无法正常运行。请尝试重新登录。</translation>
 <translation id="6147020289383635445">打印预览失败。</translation>
+<translation id="6147253937684562370">要解锁该个人资料，请使用您的主账号电子邮件地址登录：<ph name="EMAIL" /></translation>
 <translation id="6148576794665275391">立即打开</translation>
 <translation id="614890671148262506">始终允许此网站传送通知</translation>
 <translation id="6149015141270619212">无法连接到互联网</translation>
@@ -10032,6 +10035,7 @@
 <translation id="8756969031206844760">要更新密码吗？</translation>
 <translation id="8757368836647541092">已移除<ph name="USER_NAME_OR_EMAIL" /></translation>
 <translation id="8759753423332885148">了解详情。</translation>
+<translation id="876161309768861172">无法登录，请重试</translation>
 <translation id="8761945298804995673">该用户已存在</translation>
 <translation id="8762886931014513155">您的 <ph name="DEVICE_TYPE" /> 需要更新</translation>
 <translation id="8763927697961133303">USB 设备</translation>
@@ -10542,6 +10546,7 @@
 <translation id="9138978632494473300">在以下位置添加快捷方式：</translation>
 <translation id="9139988741193276691">正在配置 Linux</translation>
 <translation id="9140067245205650184">您使用的是不受支持的功能标记：<ph name="BAD_FLAG" />。稳定性和安全性会有所下降。</translation>
+<translation id="914031120300235526">无法解锁该个人资料</translation>
 <translation id="9142637293078737510">映像别名</translation>
 <translation id="9143298529634201539">要移除推荐内容吗？</translation>
 <translation id="9143922477019434797">保护您的密码</translation>

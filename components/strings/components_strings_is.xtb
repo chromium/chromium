@@ -2459,6 +2459,8 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="5838732667866024867">Þú getur notað ör til hægri/vinstri til að yfirfara verðbreytingar á myndritinu</translation>
 <translation id="5840318881868981258">Á Google-reikningnum þínum, <ph name="ACCOUNT" /></translation>
 <translation id="5841338463993781099">Vista á reikningi?</translation>
+<translation id="5843987376989109187">Þetta tungumál er ekki stutt enn sem komið er
+    <ph name="BEGIN_LINK" />Nánar<ph name="END_LINK" /></translation>
 <translation id="5847181246682413476">Aflgjafar</translation>
 <translation id="5851548754964597211">Flipalisti</translation>
 <translation id="5852909432155870672">RA4</translation>
@@ -4108,6 +4110,8 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="9049981332609050619">Þú reyndir að tengjast <ph name="DOMAIN" /> en netþjónninn framvísaði ógildu vottorði.</translation>
 <translation id="9050666287014529139">Aðgangsorð</translation>
 <translation id="9051072642122229460">Kaffivélar og espressovélar</translation>
+<translation id="9051260467258969162"><ph name="BEGIN_LINK" />Skráðu þig<ph name="END_LINK" /> 
+    aftur inn og opnaðu síðan þennan flipa aftur til að fá aðstoð við skrif</translation>
 <translation id="9053840549256861041">Við erum að gefa út nýjan persónuverndareiginleika auglýsinga sem kallast auglýsingamælingar. Chrome deilir aðeins mjög takmörkuðum upplýsingum á milli vefsvæða s.s. um hvenær auglýsing birtist þér, til að auðvelda vefsvæðum að mæla árangur auglýsinga.</translation>
 <translation id="9056953843249698117">Verslun</translation>
 <translation id="9062620674789239642">Hugsanlega var hún færð, henni breytt eða eytt.</translation>
