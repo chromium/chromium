@@ -1162,6 +1162,27 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Accessibility.EventProcessingTime{Variation}"
+    units="microseconds" expires_after="2024-07-25">
+  <owner>grt@chromium.org</owner>
+  <owner>aleventhal@chromium.org</owner>
+  <summary>
+    The round-trip time to send a set of accessibility mode flags from the
+    browser process to a renderer and receive and process the first set of
+    updates and events. Recorded once each time the browser process receives the
+    first set of updates and events from a renderer following {Variation} call
+    to RenderAccessibility::SetMode.
+
+    Drops reports on clients with low-resolution clocks, biasing to a portion of
+    the population on Windows. See Windows.HasHighResolutionTimeTicks for the
+    affected sample.
+  </summary>
+  <token key="Variation">
+    <variant name=".First" summary="the very first"/>
+    <variant name=".NotFirst" summary="all but the first"/>
+  </token>
+</histogram>
+
 <histogram name="Accessibility.ExperimentalModeFlag.FormControls"
     enum="BooleanEnabled" expires_after="2024-06-30">
   <owner>aldietz@google.com</owner>

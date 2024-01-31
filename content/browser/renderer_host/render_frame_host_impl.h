@@ -4480,6 +4480,19 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // this renderer (delegate_->GetAccessibilityMode().is_mode_off()).
   std::optional<uint32_t> accessibility_reset_token_;
 
+  // The instant just before a set of accessibility mode flags are sent to the
+  // renderer. This is used at the starting point when measuring the time to
+  // receive and process a response from the renderer. When
+  // `is_first_accessibility_request_` is true, this includes the time to bind
+  // to the renderer's `RenderAccessibility` interface.
+  base::TimeTicks accessibility_reset_start_;
+
+  // True when the first set of accessibility mode flags are sent to the
+  // renderer. This is used to split timing-related accessibility metrics into
+  // two groups: one for the initial request when accessibility is first enabled
+  // for a WebContents' frames, and one for all subsequent requests.
+  bool is_first_accessibility_request_ = true;
+
   // A count of the number of times we received an unexpected fatal
   // accessibility error and needed to reset accessibility, so we don't keep
   // trying to reset forever.
