@@ -95,6 +95,12 @@ enum class HidePopoverTransitionBehavior {
   kNoEventsNoWaiting,
 };
 
+enum class TopLayerElementType {
+  kPopover,
+  kDialog,
+  kFullscreen,
+};
+
 class CORE_EXPORT HTMLElement : public Element {
   DEFINE_WRAPPERTYPEINFO();
 
@@ -258,9 +264,14 @@ class CORE_EXPORT HTMLElement : public Element {
                            ExceptionState* exception_state);
   void PopoverHideFinishIfNeeded(bool immediate);
   static const HTMLElement* FindTopmostPopoverAncestor(
-      HTMLElement& new_popover,
+      Element& new_popover_or_top_layer_element,
       HeapVector<Member<HTMLElement>>& stack_to_check,
-      Element* new_popovers_invoker);
+      Element* new_popovers_invoker,
+      TopLayerElementType top_layer_element_type =
+          TopLayerElementType::kPopover);
+  static const HTMLElement* TopLayerElementPopoverAncestor(
+      Element& top_layer_element,
+      TopLayerElementType top_layer_element_type);
 
   static void HandlePopoverLightDismiss(const Event& event, const Node& node);
   void InvokePopover(Element& invoker);
