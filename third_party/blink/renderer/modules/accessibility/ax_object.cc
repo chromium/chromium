@@ -587,14 +587,6 @@ AXObject::AXObject(AXObjectCacheImpl& ax_object_cache)
       parent_(nullptr),
       role_(ax::mojom::blink::Role::kUnknown),
       explicit_container_id_(0),
-      cached_values_need_update_(true),
-      cached_is_ignored_(false),
-      cached_is_ignored_but_included_in_tree_(false),
-      cached_is_inert_(false),
-      cached_is_aria_hidden_(false),
-      cached_is_hidden_by_child_tree_(false),
-      cached_is_descendant_of_disabled_node_(false),
-      cached_can_set_focus_attribute_(false),
       cached_live_region_root_(nullptr),
       ax_object_cache_(&ax_object_cache) {
   ++number_of_live_ax_objects_;
@@ -696,6 +688,7 @@ void AXObject::Init(AXObject* parent) {
                   << "\n* Child = " << GetNode() << " / " << GetLayoutObject()
                   << "\n* Parent = " << parent_->ToString(true, true)
                   << "\n* Equal to passed-in parent? " << (parent == parent_);
+  // Every AXObject must have a parent unless it's the root.
   CHECK(parent || IsRoot())
       << "The following node should have a parent: " << GetNode();
   CHECK(!AXObjectCache().IsFrozen());
@@ -704,9 +697,11 @@ void AXObject::Init(AXObject* parent) {
   base::AutoReset<bool> reentrancy_protector(&is_initializing_, true);
 #endif  // DCHECK_IS_ON()
 
-  // Determine the parent as soon as possible.
-  // Every AXObject must have a parent unless it's the root.
-  SetParent(parent);
+  // Set the parent as soon as possible, so that we can use it in computations
+  // for the role and cached value. We will set it again at the end of the
+  // method using SetParent(), to ensure all of the normal code paths for
+  // setting the parent are followed.
+  parent_ = parent;
 
   // The role must be determined immediately.
   // Note: in order to avoid reentrancy, the role computation cannot use the
@@ -740,37 +735,9 @@ void AXObject::Init(AXObject* parent) {
   DCHECK(GetDocument()) << "All AXObjects must have a document: "
                         << ToString(true, true);
 
-  // Set the dirty bit for the root AX object when created. For all other
-  // objects, this is set by a descendant needing to be updated, and
-  // AXObjectCacheImpl::UpdateTreeIfNeeded will therefore process an object
-  // if its parent has has_dirty_descendants_ set. The root, however, has no
-  // parent, so there is no parent to mark in order to cause the root to update
-  // itself. Therefore this bit serves a second purpose of determining
-  // whether AXObjectCacheImpl::UpdateTreeIfNeeded needs to update the root
-  // object.
-  if (IsRoot()) {
-    SetHasDirtyDescendants(true);
-  } else if (AXObjectCache().UpdatingTree()) {
-    if (children_dirty_ && LastKnownIsIncludedInTreeValue()) {
-      // If we're in the updating tree loop, and a new object is created, we
-      // need to make sure to fill out all descendants of the new object.
-      SetHasDirtyDescendants(true);
-      // We also need to tell the new object's parent to iterate through
-      // all of its children to look for the has dirty descendants flag.
-      // However, we do not set the flag on higher ancestors since
-      // they have already been walked by the tree update loop.
-      if (AXObject* ax_included_parent = ParentObjectIncludedInTree()) {
-        ax_included_parent->SetHasDirtyDescendants(true);
-      }
-    }
-  } else {
-    DCHECK(ParentObjectIncludedInTree()->HasDirtyDescendants())
-        << "When adding a new child to a parent, and not updating the entire "
-           "tree from the top down, the included parent must be "
-           "flagged as having dirty descendants:"
-        << "\n* Object: " << ToString(true, true) << "* Included parent: "
-        << ParentObjectIncludedInTree()->ToString(true, true);
-  }
+  // Set the parent again, this time via SetParent(), so that all related checks
+  // and calls occur now that we have the role and updated cached values.
+  SetParent(parent_);
 }
 
 void AXObject::Detach() {
@@ -3145,7 +3112,6 @@ void AXObject::UpdateCachedAttributeValuesIfNeeded(
       // nodes, so it should not be set on nodes that becomes unincluded.
       has_dirty_descendants_ = false;
     }
-
     // If the child's "included in tree" state changes, we will be notifying the
     // parent to recompute its children.
     // Exceptions:
@@ -3154,8 +3120,7 @@ void AXObject::UpdateCachedAttributeValuesIfNeeded(
     //   adding this child, and doing this would be redundant.
     // - Inline text boxes: their "included in tree" state is entirely dependent
     //   on their static text parent.
-    if (notify_parent_of_ignored_changes &&
-        RoleValue() != ax::mojom::blink::Role::kInlineTextBox) {
+    if (notify_parent_of_ignored_changes) {
       notify_included_in_tree_changed = true;
     }
   }
@@ -3166,24 +3131,44 @@ void AXObject::UpdateCachedAttributeValuesIfNeeded(
     is_changing_inherited_values = true;
   }
 
-  // Call children changed on included ancestor.
+  // If the child's "included in tree" state changes, we will be notifying the
+  // parent to recompute it's children.
+  // Exceptions:
+  // - Caller passes in |notify_parent_of_ignored_changes = false| -- this
+  //   occurs when this is a new child, or when a parent is in the middle of
+  //   adding this child, and doing this would be redundant.
+  // - Inline text boxes: their "included in tree" state is entirely dependent
+  //   on their static text parent.
   // This must be called before cached_is_ignored_* are updated, otherwise a
   // performance optimization depending on LastKnownIsIncludedInTreeValue()
   // may misfire.
-  if (notify_included_in_tree_changed) {
-    if (AXObject* parent = CachedParentObject()) {
-      SANITIZER_CHECK(!AXObjectCache().IsFrozen())
-          << "Objects cannot change their inclusion state during "
-             "serialization:\n"
-          << "* Object: " << ToString(true, true) << "\n* Ignored will become "
-          << is_ignored << "\n* Included in tree will become "
-          << (!is_ignored || is_ignored_but_included_in_tree)
-          << "\n* Parent: " << parent->ToString(true, true);
-      // Defers a ChildrenChanged() on the first included ancestor.
-      // Must defer it, otherwise it can cause reentry into
-      // UpdateCachedAttributeValuesIfNeeded() on |this|.
-      // ParentObjectUnignored()->SetNeedsToUpdateChildren();
-      AXObjectCache().ChildrenChangedOnAncestorOf(const_cast<AXObject*>(this));
+  if (RoleValue() != ax::mojom::blink::Role::kInlineTextBox) {
+    if (notify_included_in_tree_changed) {
+      if (AXObject* parent = CachedParentObject()) {
+        SANITIZER_CHECK(!AXObjectCache().IsFrozen())
+            << "Objects cannot change their inclusion state during "
+               "serialization:\n"
+            << "* Object: " << ToString(true, true)
+            << "\n* Ignored will become " << is_ignored
+            << "\n* Included in tree will become "
+            << (!is_ignored || is_ignored_but_included_in_tree)
+            << "\n* Parent: " << parent->ToString(true, true);
+        // Defers a ChildrenChanged() on the first included ancestor.
+        // Must defer it, otherwise it can cause reentry into
+        // UpdateCachedAttributeValuesIfNeeded() on |this|.
+        // ParentObjectUnignored()->SetNeedsToUpdateChildren();
+        AXObjectCache().ChildrenChangedOnAncestorOf(
+            const_cast<AXObject*>(this));
+      }
+    } else if (included_in_tree_changed && AXObjectCache().UpdatingTree()) {
+      // In some cases changes to inherited properties can cause an object
+      // inclusion change in the tree updating phase, where it's too late to use
+      // the usual dirty object mechanisms, but we can still queue the dirty
+      // object for the serializer. The dirty object is the parent.
+      // TODO(accessibility) Do we need to de-dupe these?
+      AXObject* unignored_parent = ParentObjectUnignored();
+      CHECK(unignored_parent);
+      AXObjectCache().AddDirtyObjectToSerializationQueue(unignored_parent);
     }
   }
 
@@ -3219,8 +3204,13 @@ void AXObject::UpdateCachedAttributeValuesIfNeeded(
     OnInheritedCachedValuesChanged();
   }
 
+#if DCHECK_IS_ON()
   DCHECK(!NeedsToUpdateCachedValues())
       << "While recomputing cached values, they were invalidated again.";
+  if (included_in_tree_changed) {
+    AXObjectCache().UpdateIncludedNodeCount(this);
+  }
+#endif
 }
 
 void AXObject::OnInheritedCachedValuesChanged() const {
@@ -5803,19 +5793,6 @@ void AXObject::SetNeedsToUpdateChildren(bool update) const {
 #endif
 
   if (children_dirty_) {
-#if DCHECK_IS_ON()
-    if (!AXObjectCache().EntireDocumentIsDirty()) {
-      // Already dirty. In this case, the first included parent should have
-      // the "has dirty descendants" flag.
-      // This check is skipped when marking the entire document dirty, because
-      // that path only marks the root as having dirty descendants.
-      AXObject* ancestor = CachedParentObject();
-      while (ancestor && !ancestor->LastKnownIsIncludedInTreeValue()) {
-        ancestor = ancestor->CachedParentObject();
-      }
-      DCHECK(!ancestor || ancestor->HasDirtyDescendants());
-    }
-#endif
     return;
   }
 
@@ -7683,6 +7660,11 @@ String AXObject::ToString(bool verbose, bool cached_values_only) const {
     if (child_cached_values_need_update_) {
       string_builder = string_builder + " childCachedValuesNeedUpdate";
     }
+    if (!GetDocument()) {
+      string_builder = string_builder + " missingDocument";
+    } else if (!GetDocument()->GetFrame()) {
+      string_builder = string_builder + " closedDocument";
+    }
 
     // Add properties of interest that often contribute to errors:
     if (HasARIAOwns(GetElement())) {
@@ -7698,6 +7680,10 @@ String AXObject::ToString(bool verbose, bool cached_values_only) const {
     }
     if (IsFocused())
       string_builder = string_builder + " focused";
+    if (cached_values_only ? cached_can_set_focus_attribute_
+                           : CanSetFocusAttribute()) {
+      string_builder = string_builder + " focusable";
+    }
     if (!IsDetached() && AXObjectCache().IsAriaOwned(this))
       string_builder = string_builder + " isAriaOwned";
     if (cached_values_only ? LastKnownIsIgnoredValue()

@@ -1494,21 +1494,24 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   mutable bool children_dirty_ : 1 = false;
 
   // Do the rest of the cached_* member variables need to be recomputed?
-  mutable bool cached_values_need_update_ : 1;
+  mutable bool cached_values_need_update_ : 1 = true;
   // Do children need to recompute their cached values?
-  mutable bool child_cached_values_need_update_ : 1;
+  mutable bool child_cached_values_need_update_ : 1 = false;
 
-  // The following cached attribute values (the ones starting with m_cached*)
-  // are only valid if last_modification_count_ matches
-  // AXObjectCacheImpl::ModificationCount().
-  mutable bool cached_is_ignored_ : 1;
-  mutable bool cached_is_ignored_but_included_in_tree_ : 1;
-  mutable bool cached_is_inert_ : 1;
-  mutable bool cached_is_aria_hidden_ : 1;
-  mutable bool cached_is_hidden_by_child_tree_ : 1;
-  mutable bool cached_is_hidden_via_style_ : 1;
-  mutable bool cached_is_descendant_of_disabled_node_ : 1;
-  mutable bool cached_can_set_focus_attribute_ : 1;
+  // The following cached attribute values (the ones starting with cached_**)
+  // are only valid if cached_values_need_update_ is false.
+  // Objects are marked ignored at construction time (and thus by default they
+  // not included in the tree), so that if object becomes included in Init()
+  // or in a future page update, the included node count will be incremented via
+  // AXObjectCacheImpl::UpdateIncludedNodeCount().
+  mutable bool cached_is_ignored_ : 1 = true;
+  mutable bool cached_is_ignored_but_included_in_tree_ : 1 = false;
+  mutable bool cached_is_inert_ : 1 = false;
+  mutable bool cached_is_aria_hidden_ : 1 = false;
+  mutable bool cached_is_hidden_by_child_tree_ : 1 = false;
+  mutable bool cached_is_hidden_via_style_ : 1 = false;
+  mutable bool cached_is_descendant_of_disabled_node_ : 1 = false;
+  mutable bool cached_can_set_focus_attribute_ : 1 = false;
 
   mutable Member<AXObject> cached_live_region_root_;
   mutable gfx::RectF cached_local_bounding_box_rect_for_accessibility_;

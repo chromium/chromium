@@ -116,6 +116,9 @@
 #include "ui/accessibility/ax_event.h"
 #include "ui/accessibility/ax_role_properties.h"
 #include "ui/accessibility/mojom/ax_relative_bounds.mojom-blink.h"
+#if DCHECK_IS_ON()
+#include "third_party/blink/renderer/modules/accessibility/ax_debug_utils.h"
+#endif
 
 // Prevent code that runs during the lifetime of the stack from altering the
 // document lifecycle, for the main document, and the popup document if present.
@@ -1763,6 +1766,12 @@ void AXObjectCacheImpl::Remove(AXID ax_id, bool notify_parent) {
   AXObject* obj = it != objects_.end() ? it->value : nullptr;
   if (!obj)
     return;
+
+#if DCHECK_IS_ON()
+  if (obj->LastKnownIsIncludedInTreeValue()) {
+    --included_node_count_;
+  }
+#endif
 
   if (notify_parent && !has_been_disposed_) {
     ChildrenChangedOnAncestorOf(obj);
@@ -3683,8 +3692,7 @@ void AXObjectCacheImpl::FireAXEventImmediately(
 }
 
 bool AXObjectCacheImpl::IsAriaOwned(const AXObject* object) const {
-  CHECK(relation_cache_);
-  return relation_cache_->IsAriaOwned(object);
+  return relation_cache_ ? relation_cache_->IsAriaOwned(object) : false;
 }
 
 AXObject* AXObjectCacheImpl::ValidatedAriaOwner(const AXObject* object) const {
@@ -4820,29 +4828,6 @@ AXObject* AXObjectCacheImpl::GetSerializationTarget(AXObject* obj) {
     return nullptr;
   }
 
-  // A <slot> descendant of a node that is still in the DOM but no longer
-  // rendered will return true for Node::isConnected() and false for
-  // AXObject::IsDetached(). But from the perspective of platform ATs, this
-  // subtree is not connected and is detached.
-  // TODO(accessibility): The relevance check probably applies to all nodes
-  // not just slot elements.
-  if (const HTMLSlotElement* slot =
-          ToHTMLSlotElementIfSupportsAssignmentOrNull(obj->GetNode())) {
-    if (!AXObjectCacheImpl::IsRelevantSlotElement(*slot))
-      return nullptr;
-  }
-
-  // Ensure still in tree.
-  if (obj->IsMissingParent()) {
-    // TODO(accessibility) Only needed because of <select> size changes.
-    // This should become a DCHECK(!obj->IsMissingParent()) once the shadow DOM
-    // is used for <select> elements instead of AXMenuList* and AXListBox*
-    // classes.
-    if (!RestoreParentOrPruneWithCleanLayout(obj)) {
-      return nullptr;
-    }
-  }
-
   // Return included in tree object.
   if (obj->AccessibilityIsIncludedInTree())
     return obj;
@@ -5139,7 +5124,9 @@ void AXObjectCacheImpl::SerializeDirtyObjectsAndEvents(
     DCHECK_GT(update.nodes.size(), 0U);
 
     for (auto& node_data : update.nodes) {
-      DCHECK(node_data.id);
+      AXID id = node_data.id;
+      DCHECK(id);
+      VLOG(1) << "*** AX Serialize: " << ObjectFromAXID(id)->ToString(true);
       auto result = already_serialized_ids.insert(node_data.id);
       if (!result.is_new_entry) {
         redundant_serialization_count++;
@@ -5219,7 +5206,23 @@ void AXObjectCacheImpl::SerializeDirtyObjectsAndEvents(
     VLOG(1) << "AXEvent: " << event.event_type << " on "
             << ObjectFromAXID(event.id);
   }
+
+#if DCHECK_IS_ON()
+  if (!HasDirtyObjects()) {
+    CheckTreeConsistency(*this, *ax_tree_serializer_);
+  }
+#endif
 }
+
+#if DCHECK_IS_ON()
+void AXObjectCacheImpl::UpdateIncludedNodeCount(const AXObject* obj) {
+  if (obj->LastKnownIsIncludedInTreeValue()) {
+    ++included_node_count_;
+  } else {
+    --included_node_count_;
+  }
+}
+#endif
 
 void AXObjectCacheImpl::GetImagesToAnnotate(
     ui::AXTreeUpdate& update,

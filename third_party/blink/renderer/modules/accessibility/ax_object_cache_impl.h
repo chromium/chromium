@@ -514,10 +514,12 @@ class MODULES_EXPORT AXObjectCacheImpl
   // Marks an object as dirty to be serialized in the next serialization.
   void AddDirtyObjectToSerializationQueue(
       AXObject* obj,
-      bool subtree,
-      ax::mojom::blink::EventFrom event_from,
-      ax::mojom::blink::Action event_from_action,
-      const std::vector<ui::AXEventIntent>& event_intents) override;
+      bool subtree = false,
+      ax::mojom::blink::EventFrom event_from =
+          ax::mojom::blink::EventFrom::kNone,
+      ax::mojom::blink::Action event_from_action =
+          ax::mojom::blink::Action::kNone,
+      const std::vector<ui::AXEventIntent>& event_intents = {}) override;
 
   void SerializeDirtyObjectsAndEvents(
       bool has_plugin_tree_source,
@@ -604,6 +606,15 @@ class MODULES_EXPORT AXObjectCacheImpl
   // Used by outside classes, mainly RenderAccessibilityImpl, to inform
   // AXObjectCacheImpl that a serialization was sent.
   void OnSerializationStartSend() override;
+
+#if DCHECK_IS_ON()
+  // This is called after a node's included status changes, to update the
+  // included_node_count_ which is used to debug tree mismatches between the the
+  // AXObjectCache and AXTreeSerializer.
+  void UpdateIncludedNodeCount(const AXObject* obj);
+  size_t GetIncludedNodeCount() const { return included_node_count_; }
+  HeapHashMap<AXID, Member<AXObject>>& GetObjects() { return objects_; }
+#endif
 
  protected:
   bool IsImmediateProcessingRequiredForEvent(const ui::AXEvent& event) const;
@@ -849,6 +860,9 @@ class MODULES_EXPORT AXObjectCacheImpl
   HeapHashMap<Member<const Node>, AXID> node_object_mapping_;
   HeapHashMap<Member<AbstractInlineTextBox>, AXID>
       inline_text_box_object_mapping_;
+#if DCHECK_IS_ON()
+  size_t included_node_count_ = 0;
+#endif
 
   // Used for a mock AXObject representing the message displayed in the
   // validation message bubble.
