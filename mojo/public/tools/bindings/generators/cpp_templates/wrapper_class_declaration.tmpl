@@ -23,7 +23,7 @@ class {{export_attribute}} {{struct.name}} {
   template <typename... Args>
   static {{struct.name}}Ptr New(Args&&... args) {
     return {{struct.name}}Ptr(
-        absl::in_place, std::forward<Args>(args)...);
+        std::in_place, std::forward<Args>(args)...);
   }
 
   template <typename U>

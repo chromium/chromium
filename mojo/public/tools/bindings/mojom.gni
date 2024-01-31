@@ -484,8 +484,8 @@ if (enable_scrambled_message_ids) {
 #             traits for the type must define IsNull and SetToNull methods.
 #
 #             When false, nullable fields are represented by wrapping the C++
-#             type with absl::optional, and null values are simply
-#             absl::nullopt.
+#             type with std::optional, and null values are simply
+#             std::nullopt.
 #
 # Additional typemap scope parameters:
 #
