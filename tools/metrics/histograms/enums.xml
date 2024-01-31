@@ -11189,6 +11189,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4791"
       label="StorageAccessAPI_requestStorageAccess_BeyondCookies_cookies"/>
   <int value="4792" label="VisualViewportScrollEndFired"/>
+  <int value="4793" label="AttributionReportingCrossAppWebSupportHeader"/>
 </enum>
 
 <enum name="FeaturePolicyFeature">

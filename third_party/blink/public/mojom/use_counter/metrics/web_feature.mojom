@@ -4154,6 +4154,7 @@ enum WebFeature {
   kStorageAccessAPI_hasUnpartitionedCookieAccess = 4790,
   kStorageAccessAPI_requestStorageAccess_BeyondCookies_cookies = 4791,
   kVisualViewportScrollEndFired = 4792,
+  kAttributionReportingCrossAppWebSupportHeader = 4793,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.
