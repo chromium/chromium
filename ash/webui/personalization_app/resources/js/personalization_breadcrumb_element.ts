@@ -23,7 +23,7 @@ import {getSeaPenTemplates, SeaPenTemplate} from 'chrome://resources/ash/common/
 import {isSeaPenEnabled} from 'chrome://resources/ash/common/sea_pen/load_time_booleans.js';
 import {SeaPenTemplateId} from 'chrome://resources/ash/common/sea_pen/sea_pen_generated.mojom-webui.js';
 import {isNonEmptyArray} from 'chrome://resources/ash/common/sea_pen/sea_pen_utils.js';
-import {AnchorAlignment} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
+import {AnchorAlignment, CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {IronA11yKeysElement} from 'chrome://resources/polymer/v3_0/iron-a11y-keys/iron-a11y-keys.js';
 import {IronSelectorElement} from 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
 
@@ -316,11 +316,22 @@ export class PersonalizationBreadcrumbElement extends WithPersonalizationStore {
 
   private onClickMenuIcon_(e: Event) {
     const targetElement = e.currentTarget as HTMLElement;
+    const rect = targetElement.getBoundingClientRect();
+    // Anchors the menu at the top-left corner of the chip while also
+    // accounting for the scrolling of the page.
     const config = {
       anchorAlignmentX: AnchorAlignment.AFTER_START,
       anchorAlignmentY: AnchorAlignment.AFTER_START,
+      minX: 0,
+      minY: 0,
+      maxX: window.innerWidth,
+      maxY: window.innerHeight,
+      top: rect.top - document.scrollingElement!.scrollTop,
+      left: rect.left - document.scrollingElement!.scrollLeft,
     };
-    const menuElement = this.shadowRoot!.querySelector('cr-action-menu');
+    const menuElement =
+        this.shadowRoot!.querySelector<CrActionMenuElement>('cr-action-menu');
+    menuElement!.shadowRoot!.getElementById('dialog')!.style.position = 'fixed';
     menuElement!.showAt(targetElement, config);
   }
 
