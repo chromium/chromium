@@ -8092,6 +8092,13 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAutofillGranularFillingAvailableDescription, kOsAll,
      FEATURE_VALUE_TYPE(autofill::features::kAutofillGranularFillingAvailable)},
 
+    {"autofill-for-unclassified-fields-available",
+     flag_descriptions::kAutofillForUnclassifiedFieldsAvailableName,
+     flag_descriptions::kAutofillForUnclassifiedFieldsAvailableDescription,
+     kOsAll,
+     FEATURE_VALUE_TYPE(
+         autofill::features::kAutofillForUnclassifiedFieldsAvailable)},
+
 #if BUILDFLAG(ENABLE_PAINT_PREVIEW) && BUILDFLAG(IS_ANDROID)
     {"paint-preview-demo", flag_descriptions::kPaintPreviewDemoName,
      flag_descriptions::kPaintPreviewDemoDescription, kOsAndroid,

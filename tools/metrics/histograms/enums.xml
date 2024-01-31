@@ -20654,6 +20654,8 @@ from previous Chrome versions.
   <int value="-5492723" label="CCTIncognito:enabled"/>
   <int value="-5305648" label="OmniboxClosePopupWithEscape:enabled"/>
   <int value="-5052940" label="enable-simplified-fullscreen"/>
+  <int value="-3694064"
+      label="AutofillForUnclassifiedFieldsAvailable:disabled"/>
   <int value="-3093629" label="DcheckIsFatal:disabled"/>
   <int value="-2953333" label="AndroidHistoryManager:disabled"/>
   <int value="-2512468" label="OmniboxMaterialDesignWeatherIcons:disabled"/>
@@ -20925,6 +20927,8 @@ from previous Chrome versions.
   <int value="121858954" label="enable-supervised-user-safesites"/>
   <int value="121911155" label="DesktopPWAsElidedExtensionsMenu:enabled"/>
   <int value="121994167" label="kOmniboxCR23SteadyStateIcons:disabled"/>
+  <int value="122502620"
+      label="AutofillForUnclassifiedFieldsAvailable:enabled"/>
   <int value="122959683" label="WebViewJavaJsBridgeMojo:enabled"/>
   <int value="123008918" label="EnableProtoApiForClassifyUrl:disabled"/>
   <int value="123097915" label="FaviconsFromWebManifest:enabled"/>

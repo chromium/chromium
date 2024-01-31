@@ -493,6 +493,12 @@ const char kAutofillGranularFillingAvailableDescription[] =
     "When enabled, autofill address suggestions contain child suggestions for "
     "group and granular field filling.";
 
+const char kAutofillForUnclassifiedFieldsAvailableName[] =
+    "Enable address and payments autofill for unclassified fields";
+const char kAutofillForUnclassifiedFieldsAvailableDescription[] =
+    "When enabled, address and payments autofill can be triggered on "
+    "unclassified fields via the Chrome context menu.";
+
 const char kAutofillEnableIbanAndroidBottomSheetName[] =
     "Enable Autofill save IBAN bottom sheet";
 const char kAutofillEnableIbanAndroidBottomSheetDescription[] =
