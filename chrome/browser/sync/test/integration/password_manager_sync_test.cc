@@ -161,11 +161,8 @@ class PasswordManagerSyncTest : public SyncTest {
     // page load. This is important because if a password is autofilled, then
     // all Javascript changes to it are discarded, and thus any tests that cover
     // updating a password become flaky.
-    feature_list_.InitWithFeatures(
-        /*enabled_features=*/{password_manager::features::
-                                  kEnablePasswordsAccountStorage,
-                              password_manager::features::kFillOnAccountSelect},
-        /*disabled_features=*/{switches::kUnoDesktop});
+    feature_list_.InitAndEnableFeature(
+        password_manager::features::kFillOnAccountSelect);
   }
 
   ~PasswordManagerSyncTest() override = default;
