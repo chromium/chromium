@@ -28,16 +28,6 @@
 
 namespace ash {
 
-namespace {
-
-std::unique_ptr<PowerSoundsController> MaybeCreatePowerSoundsController() {
-  return features::AreSystemSoundsEnabled()
-             ? std::make_unique<PowerSoundsController>()
-             : nullptr;
-}
-
-}  // namespace
-
 SystemNotificationController::SystemNotificationController()
     : auto_connect_(std::make_unique<AutoConnectNotifier>()),
       caps_lock_(std::make_unique<CapsLockNotificationController>()),
@@ -47,7 +37,7 @@ SystemNotificationController::SystemNotificationController()
       lock_screen_(std::make_unique<LockScreenNotificationController>()),
       power_(std::make_unique<PowerNotificationController>(
           message_center::MessageCenter::Get())),
-      power_sounds_(MaybeCreatePowerSoundsController()),
+      power_sounds_(std::make_unique<PowerSoundsController>()),
       privacy_hub_(std::make_unique<PrivacyHubNotificationController>()),
       screen_security_controller_(std::make_unique<ScreenSecurityController>()),
       session_limit_(std::make_unique<SessionLimitNotificationController>()),

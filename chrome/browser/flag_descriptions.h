@@ -1903,9 +1903,6 @@ extern const char kSuppressToolbarCapturesDescription[];
 extern const char kSystemKeyboardLockName[];
 extern const char kSystemKeyboardLockDescription[];
 
-extern const char kSystemSoundsName[];
-extern const char kSystemSoundsDescription[];
-
 extern const char kSyncAutofillWalletCredentialDataName[];
 extern const char kSyncAutofillWalletCredentialDataDescription[];
 

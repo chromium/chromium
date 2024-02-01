@@ -9599,9 +9599,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableExternalKeyboardsInDiagnosticsAppDescription,
      kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kEnableExternalKeyboardsInDiagnostics)},
-    {"enable-power-sounds", flag_descriptions::kSystemSoundsName,
-     flag_descriptions::kSystemSoundsDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kSystemSounds)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
     {"autofill-enable-virtual-card-metadata",

@@ -409,10 +409,6 @@ export class SettingsAudioElement extends SettingsAudioElementBase {
   }
 
   private computePowerSoundsHidden_(): boolean {
-    if (!loadTimeData.getBoolean('areSystemSoundsEnabled')) {
-      return true;
-    }
-
     return !this.batteryStatus_?.present;
   }
 }

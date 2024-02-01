@@ -2673,9 +2673,6 @@ BASE_FEATURE(kSystemNudgeMigration,
              "SystemNudgeMigration",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables the ability to play sounds for system services.
-BASE_FEATURE(kSystemSounds, "SystemSounds", base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables or disables the shadows of system tray bubbles.
 BASE_FEATURE(kSystemTrayShadow,
              "SystemTrayShadow",
@@ -3075,10 +3072,6 @@ bool AreSideAlignedToastsEnabled() {
   // Side aligned toasts are launching together with Notifier Collision.
   return IsNotifierCollisionEnabled() ||
          base::FeatureList::IsEnabled(kSideAlignedToasts);
-}
-
-bool AreSystemSoundsEnabled() {
-  return base::FeatureList::IsEnabled(kSystemSounds);
 }
 
 bool IsAudioHFPMicSRToggleEnabled() {

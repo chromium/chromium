@@ -3317,11 +3317,6 @@
     "expiry_milestone": 128
   },
   {
-    "name": "enable-power-sounds",
-    "owners": [ "afakhry@chromium.org", "bicioglu@chromium.org", "hongyulong@chromium.org", "nupurjain@chromium.org" ],
-    "expiry_milestone": 130
-  },
-  {
     "name": "enable-preferences-account-storage",
     "owners": [ "ankushkush@google.com", "treib@chromium.org" ],
     "expiry_milestone": 126

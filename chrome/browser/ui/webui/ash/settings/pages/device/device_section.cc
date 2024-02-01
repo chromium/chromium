@@ -987,9 +987,6 @@ void AddDeviceAudioStrings(content::WebUIDataSource* html_source) {
   };
 
   html_source->AddLocalizedStrings(kAudioStrings);
-
-  html_source->AddBoolean("areSystemSoundsEnabled",
-                          ash::features::AreSystemSoundsEnabled());
 }
 
 // Mirrors enum of the same name in enums.xml.
@@ -1052,11 +1049,7 @@ DeviceSection::DeviceSection(Profile* profile,
     updater.AddSearchTags(GetKeyboardSearchConcepts());
   }
 
-  // Only when the feature is enabled, the toggle buttons for charging sounds
-  // and the low battery sound will be shown up.
-  if (ash::features::AreSystemSoundsEnabled()) {
-    updater.AddSearchTags(GetAudioPowerSoundsSearchConcepts());
-  }
+  updater.AddSearchTags(GetAudioPowerSoundsSearchConcepts());
 
   // Keyboard/mouse search tags are added/removed dynamically.
   pointer_device_observer_.Init();
