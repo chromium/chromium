@@ -180,7 +180,7 @@ gfx::ImageSkia PhotoView::GetVisibleImageForTesting() {
   return image_views_.at(image_index_)->GetCurrentImage();
 }
 
-BEGIN_METADATA(PhotoView, views::View)
+BEGIN_METADATA(PhotoView)
 END_METADATA
 
 }  // namespace ash

@@ -522,7 +522,7 @@ ui::Layer* AppListSearchView::GetPageAnimationLayer() const {
   return scroll_view_->contents()->layer();
 }
 
-BEGIN_METADATA(AppListSearchView, views::View)
+BEGIN_METADATA(AppListSearchView)
 END_METADATA
 
 }  // namespace ash

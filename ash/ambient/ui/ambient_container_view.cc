@@ -42,7 +42,7 @@ void AmbientContainerView::InitializeCommonSettings() {
   SetLayoutManager(std::make_unique<views::FillLayout>());
 }
 
-BEGIN_METADATA(AmbientContainerView, views::View)
+BEGIN_METADATA(AmbientContainerView)
 END_METADATA
 
 }  // namespace ash

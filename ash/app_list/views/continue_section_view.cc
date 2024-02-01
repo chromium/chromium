@@ -491,7 +491,7 @@ void ContinueSectionView::ConfigureLayoutForAvailableWidth(
   }
 }
 
-BEGIN_METADATA(ContinueSectionView, views::View)
+BEGIN_METADATA(ContinueSectionView)
 END_METADATA
 
 }  // namespace ash

@@ -522,7 +522,7 @@ InputModality AssistantDialogPlate::input_modality() const {
   return AssistantInteractionController::Get()->GetModel()->input_modality();
 }
 
-BEGIN_METADATA(AssistantDialogPlate, views::View)
+BEGIN_METADATA(AssistantDialogPlate)
 END_METADATA
 
 }  // namespace ash

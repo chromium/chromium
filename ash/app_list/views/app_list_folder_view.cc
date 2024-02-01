@@ -1297,7 +1297,7 @@ void AppListFolderView::CancelReparentDragFromRootGrid() {
   items_grid_view_->EndDrag(/*cancel=*/true);
 }
 
-BEGIN_METADATA(AppListFolderView, views::View)
+BEGIN_METADATA(AppListFolderView)
 END_METADATA
 
 }  // namespace ash

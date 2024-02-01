@@ -31,6 +31,8 @@ class MediaStringView : public views::View,
                         public views::ViewObserver,
                         public media_session::mojom::MediaControllerObserver,
                         public ui::ImplicitAnimationObserver {
+  METADATA_HEADER(MediaStringView, views::View)
+
  public:
   struct Settings {
     SkColor icon_light_mode_color;
@@ -47,8 +49,6 @@ class MediaStringView : public views::View,
     // Returns the settings for |MediaStringView|.
     virtual Settings GetSettings() = 0;
   };
-
-  METADATA_HEADER(MediaStringView);
 
   explicit MediaStringView(MediaStringView::Delegate* delegate);
   MediaStringView(const MediaStringView&) = delete;

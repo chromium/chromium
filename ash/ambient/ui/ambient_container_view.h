@@ -21,9 +21,9 @@ class AmbientOrientationMetricsRecorder;
 // Container view to display all Ambient Mode related views, i.e. photo frame,
 // weather info.
 class ASH_EXPORT AmbientContainerView : public views::View {
- public:
-  METADATA_HEADER(AmbientContainerView);
+  METADATA_HEADER(AmbientContainerView, views::View)
 
+ public:
   // |main_rendering_view| should contain the primary content; it becomes a
   // child of |AmbientContainerView|, and |AmbientContainerView| sets up some
   // parameters in the view hierarchy that are common to all ambient UIs.

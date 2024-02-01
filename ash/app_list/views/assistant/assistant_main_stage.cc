@@ -510,7 +510,7 @@ void AppListAssistantMainStage::InitializeUIForStartingSession(
   }
 }
 
-BEGIN_METADATA(AppListAssistantMainStage, views::View)
+BEGIN_METADATA(AppListAssistantMainStage)
 END_METADATA
 
 }  // namespace ash

@@ -38,9 +38,9 @@ class SearchResultImageListView;
 class ASH_EXPORT AppListSearchView : public views::View,
                                      public SearchResultContainerView::Delegate,
                                      public AppListModelProvider::Observer {
- public:
-  METADATA_HEADER(AppListSearchView);
+  METADATA_HEADER(AppListSearchView, views::View)
 
+ public:
   AppListSearchView(AppListViewDelegate* view_delegate,
                     SearchResultPageDialogController* dialog_controller,
                     SearchBoxView* search_box_view);

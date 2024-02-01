@@ -1600,7 +1600,7 @@ bool SearchResultView::IsSearchResultHoveredOrSelected() {
   return IsMouseHovered() || selected();
 }
 
-BEGIN_METADATA(SearchResultView, SearchResultBaseView)
+BEGIN_METADATA(SearchResultView)
 END_METADATA
 
 }  // namespace ash

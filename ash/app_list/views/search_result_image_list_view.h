@@ -23,8 +23,9 @@ namespace ash {
 // SearchResultImageListView displays a horizontal strip of
 // SearchResultImageViews inside the AppListSearchView.
 class ASH_EXPORT SearchResultImageListView : public SearchResultContainerView {
+  METADATA_HEADER(SearchResultImageListView, SearchResultContainerView)
+
  public:
-  METADATA_HEADER(SearchResultImageListView);
   explicit SearchResultImageListView(AppListViewDelegate* view_delegate);
   SearchResultImageListView(const SearchResultImageListView&) = delete;
   SearchResultImageListView& operator=(const SearchResultImageListView&) =

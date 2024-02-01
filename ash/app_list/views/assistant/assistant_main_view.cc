@@ -133,7 +133,7 @@ void AssistantMainView::InitLayout() {
   layout->SetFlexForView(main_stage_, 1);
 }
 
-BEGIN_METADATA(AssistantMainView, views::View)
+BEGIN_METADATA(AssistantMainView)
 END_METADATA
 
 }  // namespace ash

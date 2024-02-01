@@ -38,6 +38,8 @@ class ASH_EXPORT ContinueTaskView : public views::Button,
                                     public views::ContextMenuController,
                                     public ui::SimpleMenuModel::Delegate,
                                     public SearchResultObserver {
+  METADATA_HEADER(ContinueTaskView, views::Button)
+
  public:
   // The type of result for the task.
   // These values are used for metrics and should not be changed.
@@ -47,8 +49,6 @@ class ASH_EXPORT ContinueTaskView : public views::Button,
     kUnknown = 2,
     kMaxValue = kUnknown,
   };
-
-  METADATA_HEADER(ContinueTaskView);
 
   ContinueTaskView(AppListViewDelegate* view_delegate, bool tablet_mode);
   ContinueTaskView(const ContinueTaskView&) = delete;

@@ -376,7 +376,7 @@ const gfx::Vector2d ScrollableAppsGridView::CalculateTransitionOffset(
   return gfx::Vector2d();
 }
 
-BEGIN_METADATA(ScrollableAppsGridView, AppsGridView)
+BEGIN_METADATA(ScrollableAppsGridView)
 END_METADATA
 
 }  // namespace ash

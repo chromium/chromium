@@ -70,9 +70,9 @@ class ASH_EXPORT AppsGridView : public views::View,
                                 public AppListItemListObserver,
                                 public AppListItemObserver,
                                 public AppListModelObserver {
- public:
-  METADATA_HEADER(AppsGridView);
+  METADATA_HEADER(AppsGridView, views::View)
 
+ public:
   enum Pointer {
     NONE,
     MOUSE,

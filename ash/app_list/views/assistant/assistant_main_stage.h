@@ -37,9 +37,9 @@ class ASH_EXPORT AppListAssistantMainStage
       public AssistantControllerObserver,
       public AssistantInteractionModelObserver,
       public AssistantUiModelObserver {
- public:
-  METADATA_HEADER(AppListAssistantMainStage);
+  METADATA_HEADER(AppListAssistantMainStage, views::View)
 
+ public:
   explicit AppListAssistantMainStage(AssistantViewDelegate* delegate);
   AppListAssistantMainStage(const AppListAssistantMainStage&) = delete;
   AppListAssistantMainStage& operator=(const AppListAssistantMainStage&) =

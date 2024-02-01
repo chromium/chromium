@@ -26,9 +26,9 @@ class GlanceableInfoView;
 
 class ASH_EXPORT AmbientInfoView : public views::View,
                                    public GlanceableInfoView::Delegate {
- public:
-  METADATA_HEADER(AmbientInfoView);
+  METADATA_HEADER(AmbientInfoView, views::View)
 
+ public:
   explicit AmbientInfoView(AmbientViewDelegate* delegate);
   AmbientInfoView(const AmbientInfoView&) = delete;
   AmbientInfoView& operator=(AmbientInfoView&) = delete;

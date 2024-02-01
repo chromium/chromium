@@ -21,8 +21,9 @@ class SearchResultImageViewDelegate;
 
 // Displays a search result in the form of an unlabeled image.
 class ASH_EXPORT SearchResultImageView : public SearchResultBaseView {
+  METADATA_HEADER(SearchResultImageView, SearchResultBaseView)
+
  public:
-  METADATA_HEADER(SearchResultImageView);
   SearchResultImageView(int index,
                         SearchResultImageListView* list_view,
                         SearchResultImageViewDelegate* image_view_delegate);

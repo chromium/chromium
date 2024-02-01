@@ -27,9 +27,9 @@ namespace ash {
 // interacts with the background photos.
 class ASH_EXPORT AmbientBackgroundImageView : public views::View,
                                               public views::ViewObserver {
- public:
-  METADATA_HEADER(AmbientBackgroundImageView);
+  METADATA_HEADER(AmbientBackgroundImageView, views::View)
 
+ public:
   explicit AmbientBackgroundImageView(AmbientViewDelegate* delegate);
   AmbientBackgroundImageView(const AmbientBackgroundImageView&) = delete;
   AmbientBackgroundImageView& operator=(const AmbientBackgroundImageView&) =

@@ -27,6 +27,8 @@ class TimeView;
 // Container for displaying a glanceable clock and weather info.
 class ASH_EXPORT GlanceableInfoView : public views::View,
                                       public AmbientWeatherModelObserver {
+  METADATA_HEADER(GlanceableInfoView, views::View)
+
  public:
   class Delegate {
    public:
@@ -35,8 +37,6 @@ class ASH_EXPORT GlanceableInfoView : public views::View,
     // Returns the color for time and temperature text in |GlanceableInfoView|.
     virtual SkColor GetTimeTemperatureFontColor() = 0;
   };
-
-  METADATA_HEADER(GlanceableInfoView);
 
   GlanceableInfoView(
       AmbientViewDelegate* delegate,

@@ -47,9 +47,9 @@ class ASH_EXPORT AppListFolderView : public views::View,
                                      public AppListModelObserver,
                                      public views::ViewObserver,
                                      public AppsGridViewFolderDelegate {
- public:
-  METADATA_HEADER(AppListFolderView);
+  METADATA_HEADER(AppListFolderView, views::View)
 
+ public:
   // The maximum number of columns a folder can have.
   static constexpr int kMaxFolderColumns = 4;
 

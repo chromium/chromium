@@ -38,9 +38,9 @@ struct ASH_EXPORT PhotoViewConfig {
 class ASH_EXPORT PhotoView : public views::View,
                              public AmbientBackendModelObserver,
                              public ui::ImplicitAnimationObserver {
- public:
-  METADATA_HEADER(PhotoView);
+  METADATA_HEADER(PhotoView, views::View)
 
+ public:
   explicit PhotoView(AmbientViewDelegateImpl* delegate,
                      PhotoViewConfig view_config = PhotoViewConfig());
 

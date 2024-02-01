@@ -983,7 +983,7 @@ void AppListBubbleAppsPage::OnToggleContinueSection() {
   }
 }
 
-BEGIN_METADATA(AppListBubbleAppsPage, views::View)
+BEGIN_METADATA(AppListBubbleAppsPage)
 END_METADATA
 
 }  // namespace ash

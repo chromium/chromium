@@ -406,7 +406,7 @@ void AppWindowFrameView::SetButtonImagesForFrame() {
   }
 }
 
-BEGIN_METADATA(AppWindowFrameView, views::NonClientFrameView)
+BEGIN_METADATA(AppWindowFrameView)
 END_METADATA
 
 }  // namespace apps

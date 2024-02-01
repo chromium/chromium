@@ -3728,7 +3728,7 @@ void AppsGridView::OnIdealBoundsAnimationDone() {
   DestroyLayerItemsIfNotNeeded();
 }
 
-BEGIN_METADATA(AppsGridView, views::View)
+BEGIN_METADATA(AppsGridView)
 END_METADATA
 
 }  // namespace ash

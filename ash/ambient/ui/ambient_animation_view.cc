@@ -454,7 +454,7 @@ JitterCalculator* AmbientAnimationView::GetJitterCalculatorForTesting() {
   return &animation_jitter_calculator_;
 }
 
-BEGIN_METADATA(AmbientAnimationView, views::View)
+BEGIN_METADATA(AmbientAnimationView)
 END_METADATA
 
 }  // namespace ash

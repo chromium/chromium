@@ -592,7 +592,7 @@ int ContinueTaskContainerView::GetIndexOfFocusedTaskView() const {
   return -1;
 }
 
-BEGIN_METADATA(ContinueTaskContainerView, views::View)
+BEGIN_METADATA(ContinueTaskContainerView)
 END_METADATA
 
 }  // namespace ash

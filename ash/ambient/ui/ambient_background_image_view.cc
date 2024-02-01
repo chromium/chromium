@@ -316,7 +316,7 @@ bool AmbientBackgroundImageView::HasPairedImages() const {
   return !image_unscaled_.isNull() && !related_image_unscaled_.isNull();
 }
 
-BEGIN_METADATA(AmbientBackgroundImageView, views::View)
+BEGIN_METADATA(AmbientBackgroundImageView)
 END_METADATA
 
 }  // namespace ash

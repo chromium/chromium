@@ -341,7 +341,7 @@ int RecentAppsView::CalculateTilePadding() const {
   return width_to_distribute / ((kMaxRecommendedApps - 1) * 2);
 }
 
-BEGIN_METADATA(RecentAppsView, views::View)
+BEGIN_METADATA(RecentAppsView)
 END_METADATA
 
 }  // namespace ash

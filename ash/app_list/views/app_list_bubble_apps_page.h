@@ -61,9 +61,9 @@ class ASH_EXPORT AppListBubbleAppsPage
       public AppListModelProvider::Observer,
       public AppListToastContainerView::Delegate,
       public AppListViewProvider {
- public:
-  METADATA_HEADER(AppListBubbleAppsPage);
+  METADATA_HEADER(AppListBubbleAppsPage, views::View)
 
+ public:
   AppListBubbleAppsPage(AppListViewDelegate* view_delegate,
                         ApplicationDragAndDropHost* drag_and_drop_host,
                         AppListConfig* app_list_config,

@@ -64,9 +64,9 @@ class ASH_EXPORT AppListItemView : public views::Button,
                                    public views::ContextMenuController,
                                    public AppListItemObserver,
                                    public ui::ImplicitAnimationObserver {
- public:
-  METADATA_HEADER(AppListItemView);
+  METADATA_HEADER(AppListItemView, views::Button)
 
+ public:
   // The types of context where the app list item view is shown.
   enum class Context {
     // The item is shown in an AppsGridView.

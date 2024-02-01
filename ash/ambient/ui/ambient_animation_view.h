@@ -45,9 +45,9 @@ class ASH_EXPORT AmbientAnimationView : public views::View,
                                         public views::ViewObserver,
                                         public GlanceableInfoView::Delegate,
                                         public MediaStringView::Delegate {
- public:
-  METADATA_HEADER(AmbientAnimationView);
+  METADATA_HEADER(AmbientAnimationView, views::View)
 
+ public:
   AmbientAnimationView(
       AmbientViewDelegateImpl* view_delegate,
       AmbientAnimationProgressTracker* progress_tracker,

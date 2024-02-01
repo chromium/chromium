@@ -116,9 +116,9 @@ class ASH_EXPORT AppListToastView : public views::View {
 
  private:
   class ToastPillButton : public PillButton {
-   public:
-    METADATA_HEADER(ToastPillButton);
+    METADATA_HEADER(ToastPillButton, PillButton)
 
+   public:
     ToastPillButton(AppListViewDelegate* view_delegate,
                     PressedCallback callback,
                     const std::u16string& text,

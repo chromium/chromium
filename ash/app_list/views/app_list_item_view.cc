@@ -2313,7 +2313,7 @@ bool AppListItemView::AlwaysPaintsToLayer() {
   return is_promise_app_ || progress_indicator_;
 }
 
-BEGIN_METADATA(AppListItemView, views::Button)
+BEGIN_METADATA(AppListItemView)
 END_METADATA
 
 }  // namespace ash

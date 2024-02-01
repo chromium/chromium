@@ -22,8 +22,9 @@ class SearchResultActionsView;
 // Base class for views that observe and display a search result
 class ASH_EXPORT SearchResultBaseView : public views::Button,
                                         public SearchResultObserver {
+  METADATA_HEADER(SearchResultBaseView, views::Button)
+
  public:
-  METADATA_HEADER(SearchResultBaseView);
   SearchResultBaseView();
 
   SearchResultBaseView(const SearchResultBaseView&) = delete;

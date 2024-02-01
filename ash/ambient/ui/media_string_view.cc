@@ -310,7 +310,7 @@ void MediaStringView::StartScrolling(bool is_initial) {
   }
 }
 
-BEGIN_METADATA(MediaStringView, views::View)
+BEGIN_METADATA(MediaStringView)
 END_METADATA
 
 }  // namespace ash
