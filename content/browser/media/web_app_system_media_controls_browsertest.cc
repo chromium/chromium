@@ -11,6 +11,7 @@
 #include "base/unguessable_token.h"
 #include "content/browser/browser_main_loop.h"
 #include "content/browser/media/media_keys_listener_manager_impl.h"
+#include "content/browser/media/session/media_session_impl.h"
 #include "content/browser/media/web_app_system_media_controls.h"
 #include "content/browser/media/web_app_system_media_controls_manager.h"
 #include "content/public/common/content_features.h"
@@ -137,14 +138,9 @@ class WebAppSystemMediaControlsBrowserTest
         true;
   }
 
-  // This mechanism allows us to wait for the browser to be added to
-  // WebAppSystemMediaControls bookkeeping.
-  void OnBrowserAdded() override { browser_added_run_loop_->Quit(); }
-
-  void WaitForBrowserAdded() {
-    browser_added_run_loop_->Run();
-    // Reset the runloop for the next use.
-    browser_added_run_loop_.emplace();
+  void SetAlwaysIgnoreMediaSessionForTesting(WebContents* web_contents) {
+    MediaSessionImpl* media_session = MediaSessionImpl::Get(web_contents);
+    media_session->always_ignore_for_active_session_for_testing_ = true;
   }
 
   // This mechanism allows us to wait for a web app to be added to the
@@ -218,19 +214,9 @@ IN_PROC_BROWSER_TEST_F(WebAppSystemMediaControlsBrowserTest,
   // Check video is playing.
   EXPECT_TRUE(IsPlaying(shell(), "long-video-loop"));
 
-  // Wait till the WebAppSystemMediaControlsManager adds the browser.
-  WaitForBrowserAdded();
-
   // Hit pause via simulating SMTC pause.
   MediaKeysListenerManagerImpl* media_keys_listener_manager_impl =
       BrowserMainLoop::GetInstance()->media_keys_listener_manager();
-
-  // Unfortunately, even though we wait for the browser to be added the
-  // MediaKeysListenerManager can still not have the browser registered
-  // properly. We have to wait for MediaKeysListenerManager to also add it to
-  // it's bookkeeping.
-  bool is_for_pwa = WaitForStartWatchingMediaKey();
-  EXPECT_FALSE(is_for_pwa);
 
   // Check video is still playing.
   EXPECT_TRUE(IsPlaying(shell(), "long-video-loop"));
@@ -263,10 +249,7 @@ IN_PROC_BROWSER_TEST_F(WebAppSystemMediaControlsBrowserTest, ThreeBrowserTest) {
   // Now we have 3 things playing at the same time. Browser 3 should have
   // control and be shown in SMTC.
 
-  // Wait till the WebAppSystemMediaControlsManager adds the browser.
-  WaitForBrowserAdded();
-
-  // Also wait until MediaKeysListenerManagerImpl starts listening for keys.
+  // Wait until MediaKeysListenerManagerImpl starts listening for keys.
   bool is_for_pwa = WaitForStartWatchingMediaKey();
   EXPECT_FALSE(is_for_pwa);
 
@@ -292,10 +275,7 @@ IN_PROC_BROWSER_TEST_F(WebAppSystemMediaControlsBrowserTest,
   Shell* web_app = CreateBrowser();
   EXPECT_TRUE(NavigateToURL(web_app, http_url));
 
-  EXPECT_TRUE(NavigateToURL(shell(), http_url));
-  EXPECT_TRUE(NavigateToURL(web_app, http_url));
-
-  // Start two playbacks, but set the testing flag so that the second window
+  // Start two playbacks, but set the testing flags so that the second window
   // will register as a web app to WebAppSystemMediaControlsManager.
   {
     StartPlaybackAndWait(shell(), "long-video-loop");
@@ -310,6 +290,10 @@ IN_PROC_BROWSER_TEST_F(WebAppSystemMediaControlsBrowserTest,
   }
 
   SetAlwaysAssumeWebAppForTesting();
+  SetAlwaysIgnoreMediaSessionForTesting(web_app->web_contents());
+
+  // Start the playback in the web app, wait for state to be ready, then hit
+  // pause to the web app.
 
   StartPlaybackAndWait(web_app, "long-video-loop");
   base::UnguessableToken request_id = WaitForWebAppAdded();
@@ -318,17 +302,16 @@ IN_PROC_BROWSER_TEST_F(WebAppSystemMediaControlsBrowserTest,
 
   EXPECT_FALSE(request_id.is_empty());
 
+  // Wait for MediaKeysListenerManagerImpl to also start watching.
+  bool is_for_pwa = WaitForStartWatchingMediaKey();
+  EXPECT_TRUE(is_for_pwa);
+
   // Now retrieve the SMC and make a call to pause the video.
   system_media_controls::SystemMediaControls* system_media_controls =
       GetSystemMediaControlsForWebApp(request_id);
 
   MediaKeysListenerManagerImpl* media_keys_listener_manager_impl =
       BrowserMainLoop::GetInstance()->media_keys_listener_manager();
-
-  // Also wait for MediaKeysListenerManagerImpl to also start watching.
-  bool is_for_pwa = WaitForStartWatchingMediaKey();
-  EXPECT_TRUE(is_for_pwa);
-
   media_keys_listener_manager_impl->OnPause(system_media_controls);
 
   // The "web app" should be paused.
@@ -359,6 +342,9 @@ IN_PROC_BROWSER_TEST_F(WebAppSystemMediaControlsBrowserTest, ThreeWebAppTest) {
 
   // Start all the playbacks.
   SetAlwaysAssumeWebAppForTesting();
+  SetAlwaysIgnoreMediaSessionForTesting(web_app1->web_contents());
+  SetAlwaysIgnoreMediaSessionForTesting(web_app2->web_contents());
+  SetAlwaysIgnoreMediaSessionForTesting(web_app3->web_contents());
 
   base::UnguessableToken web_app1_request_id;
   base::UnguessableToken web_app2_request_id;
@@ -436,6 +422,8 @@ IN_PROC_BROWSER_TEST_F(WebAppSystemMediaControlsBrowserTest, TelemetryTest) {
 
   // Start playback.
   SetAlwaysAssumeWebAppForTesting();
+  SetAlwaysIgnoreMediaSessionForTesting(web_app1->web_contents());
+  SetAlwaysIgnoreMediaSessionForTesting(web_app2->web_contents());
 
   // Load a video from web_app1.
   StartPlaybackAndWait(web_app1, "long-video-loop");
@@ -511,6 +499,63 @@ IN_PROC_BROWSER_TEST_F(WebAppSystemMediaControlsBrowserTest, TelemetryTest) {
         "WebApp.Media.SystemMediaControls",
         WebAppSystemMediaControlsEvent::kPwaSmcSeekTo, 1);
   }
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppSystemMediaControlsBrowserTest, TwoBrowserTest) {
+  // Navigate two shells to the page.
+  GURL http_url(https_server()->GetURL("/media/session/media-session.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), http_url));
+
+  Shell* browser2 = CreateBrowser();
+  EXPECT_TRUE(NavigateToURL(browser2, http_url));
+
+  EXPECT_TRUE(NavigateToURL(shell(), http_url));
+  EXPECT_TRUE(NavigateToURL(browser2, http_url));
+
+  // Start two playbacks, both from the browser.
+  {
+    StartPlaybackAndWait(shell(), "long-video-loop");
+    EXPECT_TRUE(IsPlaying(shell(), "long-video-loop"));
+
+    // Wait for the playing audio to register in the media keys listener
+    // manager.
+    WaitForStartWatchingMediaKey();
+
+    StartPlaybackAndWait(browser2, "long-video-loop");
+    EXPECT_TRUE(IsPlaying(browser2, "long-video-loop"));
+
+    WaitForStartWatchingMediaKey();
+  }
+
+  // Now retrieve the SMC used for the browser and make a call to pause the
+  // video.
+  system_media_controls::SystemMediaControls* system_media_controls =
+      GetBrowserSystemMediaControls();
+
+  MediaKeysListenerManagerImpl* media_keys_listener_manager_impl =
+      BrowserMainLoop::GetInstance()->media_keys_listener_manager();
+
+  media_keys_listener_manager_impl->OnPause(system_media_controls);
+
+  // The browser2 should be paused.
+  WaitForStop(browser2);
+
+  // The shell is still playing.
+  EXPECT_TRUE(IsPlaying(shell(), "long-video-loop"));
+
+  // Close browser2, this will cause the controlled browser to fall back to
+  // shell.
+  browser2->Close();
+
+  // Wait a little for the fallback to occur.
+  WaitForStartWatchingMediaKey();
+
+  // Now hit pause again, it should pause shell().
+  media_keys_listener_manager_impl->OnPause(system_media_controls);
+  WaitForStop(shell());
+
+  // The browser is still playing.
+  EXPECT_FALSE(IsPlaying(shell(), "long-video-loop"));
 }
 
 }  // namespace content

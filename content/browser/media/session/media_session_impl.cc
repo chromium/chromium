@@ -1038,6 +1038,22 @@ MediaSessionImpl::GetMediaSessionInfoSync() {
   // If we have Pepper players then we should force ducking.
   info->force_duck = HasPepper();
 
+#if BUILDFLAG(IS_WIN)
+  // If this is a webapp, and instanced media controls are on, mark this session
+  // as a pwa session so that the browser sessions can stay isolated. This is
+  // used to differentiate webapp sessions for different handling.
+  auto* web_contents_delegate = web_contents()->GetDelegate();
+  info->ignore_for_active_session =
+      web_contents_delegate &&
+      web_contents_delegate->ShouldUseInstancedSystemMediaControls();
+#else
+  info->ignore_for_active_session = false;
+#endif
+
+  if (always_ignore_for_active_session_for_testing_) {
+    info->ignore_for_active_session = true;
+  }
+
   // The playback state should use |IsActive| to determine whether we are
   // playing or not. However, if there is a |routed_service_| which is playing
   // then we should force the playback state to be playing.
