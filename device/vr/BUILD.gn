@@ -156,6 +156,8 @@ if (enable_vr) {
         "openxr/exit_xr_present_reason.h",
         "openxr/fb/openxr_hand_tracker_fb.cc",
         "openxr/fb/openxr_hand_tracker_fb.h",
+        "openxr/msft/openxr_anchor_manager_msft.cc",
+        "openxr/msft/openxr_anchor_manager_msft.h",
         "openxr/msft/openxr_scene_bounds_msft.cc",
         "openxr/msft/openxr_scene_bounds_msft.h",
         "openxr/msft/openxr_scene_msft.cc",
