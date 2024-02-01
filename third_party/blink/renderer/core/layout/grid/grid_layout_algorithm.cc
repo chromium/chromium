@@ -774,10 +774,13 @@ FirstSetGeometry ComputeFirstSetGeometry(
       return geometry;
     }
     case ContentDistributionType::kSpaceAround: {
-      // Default behavior for 'space-around' is to center content.
+      // Default behavior for 'space-around' is to safe center content.
       const wtf_size_t track_count = track_collection.NonCollapsedTrackCount();
       const LayoutUnit free_space = FreeSpace();
-      if (track_count < 1 || free_space < LayoutUnit()) {
+      if (free_space < LayoutUnit()) {
+        return geometry;
+      }
+      if (track_count < 1) {
         geometry.start_offset += free_space / 2;
         return geometry;
       }
@@ -788,11 +791,10 @@ FirstSetGeometry ComputeFirstSetGeometry(
       return geometry;
     }
     case ContentDistributionType::kSpaceEvenly: {
-      // Default behavior for 'space-evenly' is to center content.
+      // Default behavior for 'space-evenly' is to safe center content.
       const wtf_size_t track_count = track_collection.NonCollapsedTrackCount();
       const LayoutUnit free_space = FreeSpace();
       if (free_space < LayoutUnit()) {
-        geometry.start_offset += free_space / 2;
         return geometry;
       }
 
