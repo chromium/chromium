@@ -38,6 +38,13 @@ namespace blink {
 
 namespace {
 const uint32_t kBacktrackLimit = 1'000'000;
+
+ScriptState* GetScriptState(v8::Isolate* isolate) {
+  v8::HandleScope handle_scope(isolate);
+  return ScriptState::From(
+      V8PerIsolateData::From(isolate)->EnsureScriptRegexpContext());
+}
+
 }  // namespace
 
 ScriptRegexp::ScriptRegexp(v8::Isolate* isolate,
@@ -45,8 +52,7 @@ ScriptRegexp::ScriptRegexp(v8::Isolate* isolate,
                            TextCaseSensitivity case_sensitivity,
                            MultilineMode multiline_mode,
                            UnicodeMode unicode_mode)
-    : script_state_(
-          V8PerIsolateData::From(isolate)->EnsureScriptRegexpScriptState()) {
+    : script_state_(GetScriptState(isolate)) {
   ScriptState::Scope scope(script_state_);
   v8::TryCatch try_catch(isolate);
 

@@ -95,7 +95,7 @@ class PLATFORM_EXPORT DOMWrapperWorld : public RefCounted<DOMWrapperWorld> {
     // internally.
     kInspectorIsolated,
     // A utility world that is not considered an isolated world.
-    kBlinkInternalNonJSExposed,
+    kRegExp,
     // A utility world for context snapshotting that is not considered an
     // isolated world.
     kForV8ContextSnapshotNonMain,

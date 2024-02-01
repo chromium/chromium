@@ -29,8 +29,8 @@ _DISALLOW_NON_BLINK_MOJOM = (
     'Warning')
 
 _DISALLOW_CONTINUATION_DATA_ = (
-    '.*(Get|Set|Ensure)ContinuationPreservedEmbedderData.*',
-    '[Get|Set|Ensure]ContinuationPreservedEmbedderData does not support multiple '
+    '.*(Get|Set)ContinuationPreservedEmbedderData.*',
+    '[Get|Set]ContinuationPreservedEmbedderData does not support multiple '
     'clients.')
 
 _CONFIG = [

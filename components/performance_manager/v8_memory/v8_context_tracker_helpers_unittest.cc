@@ -336,12 +336,10 @@ TEST_F(V8ContextTrackerHelpersTest,
                 /* world_name */ std::nullopt, blink::AudioWorkletToken())));
 }
 
-TEST_F(V8ContextTrackerHelpersTest,
-       ValidateV8ContextDescriptionNonJSExposedWorld) {
-  // A valid internal non-js exposed world.
+TEST_F(V8ContextTrackerHelpersTest, ValidateV8ContextDescriptionRegExpWorld) {
+  // A valid regexp world.
   auto desc = mojom::V8ContextDescription(
-      blink::V8ContextToken(),
-      mojom::V8ContextWorldType::kBlinkInternalNonJSExposed,
+      blink::V8ContextToken(), mojom::V8ContextWorldType::kRegExp,
       /* world_name */ std::nullopt,
       /* execution_context_token */ std::nullopt);
   EXPECT_EQ(V8ContextDescriptionStatus::kValid,
@@ -349,21 +347,18 @@ TEST_F(V8ContextTrackerHelpersTest,
   EXPECT_EQ(false,
             ExpectIframeAttributionDataForV8ContextDescription(desc, graph()));
 
-  // An internal non-js exposed world must not have a |world_name|.
-  EXPECT_EQ(
-      V8ContextDescriptionStatus::kUnexpectedWorldName,
-      ValidateV8ContextDescription(mojom::V8ContextDescription(
-          blink::V8ContextToken(),
-          mojom::V8ContextWorldType::kBlinkInternalNonJSExposed, kWorldName,
-          /* execution_context_token */ std::nullopt)));
+  // A regexp world must not have a |world_name|.
+  EXPECT_EQ(V8ContextDescriptionStatus::kUnexpectedWorldName,
+            ValidateV8ContextDescription(mojom::V8ContextDescription(
+                blink::V8ContextToken(), mojom::V8ContextWorldType::kRegExp,
+                kWorldName,
+                /* execution_context_token */ std::nullopt)));
 
-  // An internal non-js exposed world must not have an
-  // |execution_context_token|.
+  // A regexp world must not have an |execution_context_token|.
   EXPECT_EQ(
       V8ContextDescriptionStatus::kUnexpectedExecutionContextToken,
       ValidateV8ContextDescription(mojom::V8ContextDescription(
-          blink::V8ContextToken(),
-          mojom::V8ContextWorldType::kBlinkInternalNonJSExposed,
+          blink::V8ContextToken(), mojom::V8ContextWorldType::kRegExp,
           /* world_name */ std::nullopt, mock_graph->frame->GetFrameToken())));
 }
 
