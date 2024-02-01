@@ -1367,8 +1367,6 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kStopInBackground);
 
 // Stylus gestures for editable web content.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kStylusRichGestures);
-// Stylus handwriting recognition to text input feature.
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kStylusWritingToInput);
 // Apply touch adjustment for stylus pointer events. This feature allows
 // enabling functions like writing into a nearby input element.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kStylusPointerAdjustment);

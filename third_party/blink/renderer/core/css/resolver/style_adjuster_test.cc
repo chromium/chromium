@@ -199,7 +199,6 @@ TEST_F(StyleAdjusterTest, TouchActionNoPanXScrollsWhenNoPanX) {
 
 TEST_F(StyleAdjusterTest, TouchActionNotWritableReEnabledByScrollers) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures({blink::features::kStylusWritingToInput}, {});
   ScopedStylusHandwritingForTest stylus_handwriting(true);
 
   GetDocument().SetBaseURLOverride(KURL("http://test.com"));
@@ -219,7 +218,6 @@ TEST_F(StyleAdjusterTest, TouchActionNotWritableReEnabledByScrollers) {
 
 TEST_F(StyleAdjusterTest, TouchActionWritableArea) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures({blink::features::kStylusWritingToInput}, {});
   ScopedStylusHandwritingForTest stylus_handwriting(true);
 
   GetDocument().SetBaseURLOverride(KURL("http://test.com"));

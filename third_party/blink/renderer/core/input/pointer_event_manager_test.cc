@@ -650,8 +650,7 @@ class PanActionTrackingWebFrameWidget
 class PanActionPointerEventTest : public PointerEventManagerTest {
  public:
   PanActionPointerEventTest() {
-    feature_list_.InitWithFeatures({blink::features::kStylusWritingToInput,
-                                    blink::features::kStylusPointerAdjustment},
+    feature_list_.InitWithFeatures({blink::features::kStylusPointerAdjustment},
                                    {});
   }
 
