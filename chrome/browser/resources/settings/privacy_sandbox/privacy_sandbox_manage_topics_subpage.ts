@@ -7,6 +7,7 @@ import './privacy_sandbox_icons.html.js';
 import '../simple_confirmation_dialog.js';
 
 import type {CrToggleElement} from '//resources/cr_elements/cr_toggle/cr_toggle.js';
+import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import type {DomRepeatEvent} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -15,7 +16,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 import {loadTimeData} from '../i18n_setup.js';
 import {routes} from '../route.js';
 import type {Route} from '../router.js';
-import {RouteObserverMixin} from '../router.js';
+import {RouteObserverMixin, Router} from '../router.js';
 
 import type {FirstLevelTopicsState, PrivacySandboxBrowserProxy, PrivacySandboxInterest} from './privacy_sandbox_browser_proxy.js';
 import {PrivacySandboxBrowserProxyImpl} from './privacy_sandbox_browser_proxy.js';
@@ -27,7 +28,7 @@ export interface SettingsPrivacySandboxManageTopicsSubpageElement {
   };
 }
 const SettingsPrivacySandboxManageTopicsSubpageElementBase =
-    RouteObserverMixin(I18nMixin(PolymerElement));
+    RouteObserverMixin(I18nMixin(PrefsMixin(PolymerElement)));
 
 // First Level Topics for Taxonomy v2
 // This list comes from here:
@@ -69,6 +70,14 @@ export class SettingsPrivacySandboxManageTopicsSubpageElement extends
 
   static get properties() {
     return {
+      /**
+       * Preferences state.
+       */
+      prefs: {
+        type: Object,
+        notify: true,
+      },
+
       firstLevelTopicsList_: {
         type: Array,
         value() {
@@ -113,6 +122,12 @@ export class SettingsPrivacySandboxManageTopicsSubpageElement extends
 
   override currentRouteChanged(newRoute: Route) {
     if (newRoute === routes.PRIVACY_SANDBOX_MANAGE_TOPICS) {
+      // Should not be able to navigate to Manage Topics page when topics is
+      // disabled.
+      if (!this.getPref('privacy_sandbox.m1.topics_enabled').value) {
+        Router.getInstance().navigateTo(routes.PRIVACY_SANDBOX_TOPICS);
+        return;
+      }
       // Updating the FirstLevelTopicsState because it can be changed by being
       // blocked/unblocked in the Ad Topics Page. Need to keep the data between
       // the two pages up to date.

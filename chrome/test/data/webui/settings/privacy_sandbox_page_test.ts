@@ -1173,17 +1173,32 @@ suite('TopicsSubpageWithProactiveTopicsBlockingEnabled', function() {
         routes.PRIVACY_SANDBOX_MANAGE_TOPICS,
         Router.getInstance().getCurrentRoute());
   });
+
+  test('navigateToManageTopicsPrefDisabled', async function() {
+    page.setPrefValue('privacy_sandbox.m1.topics_enabled', false);
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    const manageTopicsPage = document.createElement(
+        'settings-privacy-sandbox-manage-topics-subpage');
+    manageTopicsPage.prefs = settingsPrefs.prefs!;
+    Router.getInstance().navigateTo(routes.PRIVACY_SANDBOX_MANAGE_TOPICS);
+    document.body.appendChild(manageTopicsPage);
+    assertEquals(
+        Router.getInstance().getCurrentRoute(), routes.PRIVACY_SANDBOX_TOPICS);
+  });
 });
 
 suite('ManageTopics', function() {
   let page: SettingsPrivacySandboxManageTopicsSubpageElement;
   let testPrivacySandboxBrowserProxy: TestPrivacySandboxBrowserProxy;
+  let settingsPrefs: SettingsPrefsElement;
 
   suiteSetup(function() {
     loadTimeData.overrideValues({
       isPrivacySandboxRestricted: false,
       isProactiveTopicsBlockingEnabled: true,
     });
+    settingsPrefs = document.createElement('settings-prefs');
+    return CrSettingsPrefs.initialized;
   });
 
   setup(async function() {
@@ -1192,8 +1207,11 @@ suite('ManageTopics', function() {
     testPrivacySandboxBrowserProxy.setFirstLevelTopicsState(
         getFirstLevelTopicsState());
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    document.body.appendChild(settingsPrefs);
     page = document.createElement(
         'settings-privacy-sandbox-manage-topics-subpage');
+    page.prefs = settingsPrefs.prefs!;
+    page.set('prefs.privacy_sandbox.m1.topics_enabled', {value: true});
     Router.getInstance().navigateTo(routes.PRIVACY_SANDBOX_MANAGE_TOPICS);
     document.body.appendChild(page);
     await testPrivacySandboxBrowserProxy.whenCalled('getFirstLevelTopics');
@@ -1364,6 +1382,7 @@ suite('ManageTopicsAndAdTopicsPageState', function() {
     adTopicsPage =
         document.createElement('settings-privacy-sandbox-topics-subpage');
     adTopicsPage.prefs = settingsPrefs.prefs;
+    adTopicsPage.set('prefs.privacy_sandbox.m1.topics_enabled', {value: true});
     Router.getInstance().navigateTo(routes.PRIVACY_SANDBOX_TOPICS);
     document.body.appendChild(adTopicsPage);
     await testPrivacySandboxBrowserProxy.whenCalled('getTopicsState');
@@ -1483,6 +1502,7 @@ suite('ManageTopicsAndAdTopicsPageState', function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     const manageTopicsPage = document.createElement(
         'settings-privacy-sandbox-manage-topics-subpage');
+    manageTopicsPage.prefs = settingsPrefs.prefs!;
     Router.getInstance().navigateTo(routes.PRIVACY_SANDBOX_MANAGE_TOPICS);
     document.body.appendChild(manageTopicsPage);
     await testPrivacySandboxBrowserProxy.whenCalled('getFirstLevelTopics');
