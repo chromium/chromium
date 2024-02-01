@@ -211,7 +211,7 @@ InterestGroupAuctionReporter::InterestGroupAuctionReporter(
           url_loader_factory_,
           browser_context,
           /*direct_seller_is_seller=*/
-          !component_seller_winning_bid_info.has_value(),
+          !component_seller_winning_bid_info_.has_value(),
           private_aggregation_manager_,
           main_frame_origin_,
           winning_bid_info_.storage_interest_group->interest_group.owner,

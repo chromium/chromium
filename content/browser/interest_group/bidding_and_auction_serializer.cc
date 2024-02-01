@@ -231,7 +231,7 @@ BiddingAndAuctionData BiddingAndAuctionSerializer::Build() {
     std::string compressed_groups;
     bool success = compression::GzipCompress(maybe_sub_message.value(),
                                              &compressed_groups);
-    DCHECK(success);
+    CHECK(success);
     uncompressed_size += maybe_sub_message->size();
     compressed_size += compressed_groups.size();
 
@@ -241,6 +241,7 @@ BiddingAndAuctionData BiddingAndAuctionSerializer::Build() {
   }
 
   // UMA requires integers, so we scale the relative compressed size by 100.
+  CHECK(uncompressed_size);
   int relative_compressed_size = (100 * compressed_size) / uncompressed_size;
   base::UmaHistogramPercentage(
       "Ads.InterestGroup.ServerAuction.Request.RelativeCompressedSize",

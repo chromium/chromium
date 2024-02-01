@@ -46,7 +46,7 @@ void DebuggableAuctionWorkletTracker::NotifyCreated(
 void DebuggableAuctionWorkletTracker::NotifyDestroyed(
     DebuggableAuctionWorklet* worklet) {
   size_t result = live_worklets_.erase(worklet);
-  DCHECK_EQ(result, 1u);
+  CHECK_EQ(result, 1u);
   for (auto& observer : observer_list_)
     observer.AuctionWorkletDestroyed(worklet);
 }
