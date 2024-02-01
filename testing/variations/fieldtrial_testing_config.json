@@ -17093,7 +17093,7 @@
                 {
                     "name": "Enabled",
                     "params": {
-                        "prob": "1",
+                        "probability": "1",
                         "security-page-time": "15s",
                         "security-page-trigger-id": "c4dvJ3Sz70ugnJ3q1cK0SkwJZodD"
                     },
