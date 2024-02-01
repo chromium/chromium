@@ -166,11 +166,10 @@ TEST_F(SessionRestorationWebStateListObserverTest, Insert_Unserializable) {
 
   web::WebState* const web_state =
       InsertWebState(CreateWebState(CreateWebStateAs::kRestoreInProgress));
-  const web::WebStateID web_state_id = web_state->GetUniqueIdentifier();
 
   EXPECT_TRUE(observer.is_web_state_list_dirty());
-  EXPECT_TRUE(observer.dirty_web_states().empty());
-  EXPECT_TRUE(base::Contains(observer.inserted_web_states(), web_state_id));
+  EXPECT_TRUE(base::Contains(observer.dirty_web_states(), web_state));
+  EXPECT_TRUE(observer.inserted_web_states().empty());
   EXPECT_TRUE(observer.detached_web_states().empty());
   EXPECT_TRUE(observer.closed_web_states().empty());
   EXPECT_EQ(call_count, 1u);
@@ -435,7 +434,9 @@ TEST_F(SessionRestorationWebStateListObserverTest, Detach_DirtyUnserializable) {
       web_state_list(), base::IgnoreArgs<WebStateList*>(base::BindRepeating(
                             &IncrementCounter, &call_count)));
 
-  InsertWebState(CreateWebState(CreateWebStateAs::kRestoreInProgress));
+  web::WebState* const web_state =
+      InsertWebState(CreateWebState(CreateWebStateAs::kRestoreInProgress));
+  const web::WebStateID web_state_id = web_state->GetUniqueIdentifier();
 
   ASSERT_GT(web_state_list()->count(), 0);
   web_state_list()->DetachWebStateAt(/*index*/ 0);
@@ -443,7 +444,7 @@ TEST_F(SessionRestorationWebStateListObserverTest, Detach_DirtyUnserializable) {
   EXPECT_TRUE(observer.is_web_state_list_dirty());
   EXPECT_TRUE(observer.dirty_web_states().empty());
   EXPECT_TRUE(observer.inserted_web_states().empty());
-  EXPECT_TRUE(observer.detached_web_states().empty());
+  EXPECT_TRUE(base::Contains(observer.detached_web_states(), web_state_id));
   EXPECT_TRUE(observer.closed_web_states().empty());
   EXPECT_EQ(call_count, 1u);  // The callback is only called once!
 
@@ -853,9 +854,9 @@ TEST_F(SessionRestorationWebStateListObserverTest, WebStateDirty) {
   EXPECT_TRUE(observer.closed_web_states().empty());
 }
 
-// Tests that SessionRestorationWebStateListObserverTest does not call the
-// callback when an WebState whose navigation restoration is still in progress
-// becomes dirty.
+// Tests that SessionRestorationWebStateListObserverTest call the callback
+// when an WebState whose navigation restoration is still in progress becomes
+// dirty.
 TEST_F(SessionRestorationWebStateListObserverTest,
        WebStateDirty_Unserializable) {
   size_t call_count = 0;
@@ -874,11 +875,11 @@ TEST_F(SessionRestorationWebStateListObserverTest,
   web_state->OnNavigationFinished(&context);
 
   EXPECT_FALSE(observer.is_web_state_list_dirty());
-  EXPECT_TRUE(observer.dirty_web_states().empty());
+  EXPECT_TRUE(base::Contains(observer.dirty_web_states(), web_state));
   EXPECT_TRUE(observer.inserted_web_states().empty());
   EXPECT_TRUE(observer.detached_web_states().empty());
   EXPECT_TRUE(observer.closed_web_states().empty());
-  EXPECT_EQ(call_count, 0u);  // Callback is not called!
+  EXPECT_EQ(call_count, 1u);
 
   // Check that calling ClearDirty() leaves the observer in a non-dirty state.
   observer.ClearDirty();
