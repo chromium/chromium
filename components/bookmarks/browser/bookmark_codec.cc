@@ -21,7 +21,6 @@
 #include "base/time/time.h"
 #include "base/uuid.h"
 #include "base/values.h"
-#include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_uuids.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -68,12 +67,6 @@ base::Value EncodeSyncMetadata(std::string sync_metadata_str) {
 BookmarkCodec::BookmarkCodec() = default;
 
 BookmarkCodec::~BookmarkCodec() = default;
-
-base::Value::Dict BookmarkCodec::Encode(BookmarkModel* model,
-                                        std::string sync_metadata_str) {
-  return Encode(model->bookmark_bar_node(), model->other_node(),
-                model->mobile_node(), std::move(sync_metadata_str));
-}
 
 base::Value::Dict BookmarkCodec::Encode(
     const BookmarkNode* bookmark_bar_node,

@@ -74,11 +74,12 @@ void BookmarkStorage::ScheduleSave() {
 base::ImportantFileWriter::BackgroundDataProducerCallback
 BookmarkStorage::GetSerializedDataProducerForBackgroundSequence() {
   BookmarkCodec codec;
-  base::Value value(
-      codec.Encode(model_, model_->client()->EncodeBookmarkSyncMetadata()));
+  base::Value::Dict value = codec.Encode(
+      model_->bookmark_bar_node(), model_->other_node(), model_->mobile_node(),
+      model_->client()->EncodeBookmarkSyncMetadata());
 
   return base::BindOnce(
-      [](base::Value value) -> std::optional<std::string> {
+      [](base::Value::Dict value) -> std::optional<std::string> {
         // This runs on the background sequence.
         std::string output;
         if (!base::JSONWriter::WriteWithOptions(

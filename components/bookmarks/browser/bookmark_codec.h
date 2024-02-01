@@ -18,8 +18,6 @@
 
 namespace bookmarks {
 
-class BookmarkModel;
-
 // BookmarkCodec is responsible for encoding and decoding the BookmarkModel
 // into JSON values. The encoded values are written to disk via the
 // BookmarkStorage.
@@ -35,11 +33,6 @@ class BookmarkCodec {
   BookmarkCodec& operator=(const BookmarkCodec&) = delete;
 
   ~BookmarkCodec();
-
-  // Encodes the model to a JSON value. This is invoked to encode the contents
-  // of the bookmark bar model and is currently a convenience to invoking Encode
-  // that takes the bookmark bar node and other folder node.
-  base::Value::Dict Encode(BookmarkModel* model, std::string sync_metadata_str);
 
   // Encodes the bookmark bar and other folders returning the JSON value.
   base::Value::Dict Encode(
