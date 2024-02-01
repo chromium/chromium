@@ -235,6 +235,20 @@ void DocumentSpeculationRules::AddRuleSet(SpeculationRuleSet* rule_set) {
 
   probe::DidAddSpeculationRuleSet(*GetSupplementable(), *rule_set);
 
+  // Record some use counters about the kinds of actions being proposed.
+  if (rule_set->prefetch_rules().size()) {
+    UseCounter::Count(GetSupplementable(),
+                      rule_set->source()->IsFromBrowserInjected()
+                          ? WebFeature::kSpeculationRulesBrowserPrefetchRule
+                          : WebFeature::kSpeculationRulesAuthorPrefetchRule);
+  }
+  if (rule_set->prerender_rules().size()) {
+    UseCounter::Count(GetSupplementable(),
+                      rule_set->source()->IsFromBrowserInjected()
+                          ? WebFeature::kSpeculationRulesBrowserPrerenderRule
+                          : WebFeature::kSpeculationRulesAuthorPrerenderRule);
+  }
+
   if (!rule_set->source()->IsFromBrowserInjected()) {
     HeapVector<Member<SpeculationRuleSet>> to_remove;
     for (const auto& other_rule_set : rule_sets_) {

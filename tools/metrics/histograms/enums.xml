@@ -11267,6 +11267,12 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4825"
       label="V8ElementInternals_AriaOwnsElements_AttributeSetter"/>
   <int value="4826" label="IdentityDigitalCredentials"/>
+  <int value="4827" label="CSSSelectorPseudoState"/>
+  <int value="4828" label="SpeculationRulesPrefetch"/>
+  <int value="4829" label="SpeculationRulesAuthorPrefetchRule"/>
+  <int value="4830" label="SpeculationRulesAuthorPrerenderRule"/>
+  <int value="4831" label="SpeculationRulesBrowserPrefetchRule"/>
+  <int value="4832" label="SpeculationRulesBrowserPrerenderRule"/>
 </enum>
 
 <enum name="FeaturePolicyFeature">
