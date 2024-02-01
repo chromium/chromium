@@ -1813,7 +1813,7 @@ class CONTENT_EXPORT ContentBrowserClient {
   //
   // |ukm_source_id| can be used to record UKM events associated with the
   // page or worker this URLLoaderFactory is intended for (it may be
-  // kInvalidUkmSourceId if there is no such ID available).
+  // ukm::kInvalidSourceIdObj if there is no such ID available).
   //
   // |factory_builder| is used to add interceptors for requests for the
   // URLLoaderFactory.
