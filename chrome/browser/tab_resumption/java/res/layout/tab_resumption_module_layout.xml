@@ -26,7 +26,6 @@ found in the LICENSE file.
         android:layout_height="wrap_content"
         android:gravity="start"
         android:singleLine="true"
-        android:text="@string/tab_resumption_module_title"
         android:textAlignment="viewStart"
         android:textAppearance="@style/TextAppearance.TextAccentMediumThick.Secondary"
         android:paddingLeft="@dimen/tab_resumption_module_tile_bleed"

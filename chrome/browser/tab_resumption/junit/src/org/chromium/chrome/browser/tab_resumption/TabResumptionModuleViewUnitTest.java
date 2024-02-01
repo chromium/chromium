@@ -104,7 +104,7 @@ public class TabResumptionModuleViewUnitTest extends TestSupport {
         mModuleView.setSuggestionBundleThenRender(mSuggestionBundle);
         Assert.assertEquals(1, mTileContainerView.getChildCount());
         Assert.assertEquals(
-                "Continue browsing",
+                "Continue with this tab",
                 ((TextView) mModuleView.findViewById(R.id.tab_resumption_title_description))
                         .getText());
 
@@ -164,7 +164,7 @@ public class TabResumptionModuleViewUnitTest extends TestSupport {
         mModuleView.setSuggestionBundleThenRender(mSuggestionBundle);
         Assert.assertEquals(3, mTileContainerView.getChildCount()); // 2 tiles, 1 divider.
         Assert.assertEquals(
-                "Continue browsing",
+                "Continue with these tabs",
                 ((TextView) mModuleView.findViewById(R.id.tab_resumption_title_description))
                         .getText());
 

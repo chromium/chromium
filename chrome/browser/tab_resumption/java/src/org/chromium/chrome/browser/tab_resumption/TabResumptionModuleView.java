@@ -5,8 +5,10 @@
 package org.chromium.chrome.browser.tab_resumption;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.util.AttributeSet;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 
@@ -35,6 +37,12 @@ public class TabResumptionModuleView extends LinearLayout {
         mTileContainerView.destroy();
     }
 
+    void updateTitle(int numTiles) {
+        Resources res = getResources();
+        String title = res.getQuantityString(R.plurals.home_modules_tab_resumption_title, numTiles);
+        ((TextView) findViewById(R.id.tab_resumption_title_description)).setText(title);
+    }
+
     void setUrlImageProvider(UrlImageProvider urlImageProvider) {
         mUrlImageProvider = urlImageProvider;
     }
@@ -52,6 +60,7 @@ public class TabResumptionModuleView extends LinearLayout {
             assert mUrlImageProvider != null;
             assert mClickCallback != null;
             mTileContainerView.renderAllTiles(mBundle, mUrlImageProvider, mClickCallback);
+            updateTitle(mBundle.entries.size());
         }
     }
 
