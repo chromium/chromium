@@ -131,7 +131,7 @@ const char kMultiloginInvalidTokenResponse[] =
 // GMock matcher that checks that the cookie has the expected parameters.
 MATCHER_P3(CookieMatcher, name, value, domain, "") {
   return arg.Name() == name && arg.Value() == value && arg.Domain() == domain &&
-         arg.Path() == "/" && arg.IsSecure() && !arg.IsHttpOnly();
+         arg.Path() == "/" && arg.SecureAttribute() && !arg.IsHttpOnly();
 }
 
 // Checks that the argument (a GURL) is secure and has the given hostname.

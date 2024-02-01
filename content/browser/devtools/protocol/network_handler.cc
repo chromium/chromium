@@ -185,7 +185,7 @@ std::unique_ptr<Network::Cookie> BuildCookie(
                           : cookie.ExpiryDate().InSecondsFSinceUnixEpoch())
           .SetSize(cookie.Name().length() + cookie.Value().length())
           .SetHttpOnly(cookie.IsHttpOnly())
-          .SetSecure(cookie.IsSecure())
+          .SetSecure(cookie.SecureAttribute())
           .SetSession(!cookie.IsPersistent())
           .SetPriority(BuildCookiePriority(cookie.Priority()))
           .SetSameParty(false)
@@ -257,7 +257,7 @@ class CookieRetrieverNetworkService
       }
       std::string key = base::StringPrintf(
           "%s::%s::%s::%d::%s", cookie.Name().c_str(), cookie.Domain().c_str(),
-          cookie.Path().c_str(), cookie.IsSecure(),
+          cookie.Path().c_str(), cookie.SecureAttribute(),
           serialized_partition_key.c_str());
       all_cookies_.emplace(std::move(key), cookie);
     }
@@ -450,7 +450,7 @@ MakeCookieFromProtocolValues(const std::string& name,
     }
     net::CookieSourceScheme cookie_source_scheme =
         absl::get<net::CookieSourceScheme>(cookie_source_scheme_or_error);
-    if (cookie->IsSecure() &&
+    if (cookie->SecureAttribute() &&
         cookie_source_scheme == net::CookieSourceScheme::kNonSecure) {
       return Response::InvalidParams(
           "Secure attribute cannot be set for a cookie with an insecure source "

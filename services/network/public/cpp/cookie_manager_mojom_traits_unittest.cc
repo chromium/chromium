@@ -40,7 +40,7 @@ TEST(CookieManagerTraitsTest, Roundtrips_CanonicalCookie) {
   EXPECT_EQ(original->LastAccessDate(), copied.LastAccessDate());
   EXPECT_EQ(original->ExpiryDate(), copied.ExpiryDate());
   EXPECT_EQ(original->LastUpdateDate(), copied.LastUpdateDate());
-  EXPECT_EQ(original->IsSecure(), copied.IsSecure());
+  EXPECT_EQ(original->SecureAttribute(), copied.SecureAttribute());
   EXPECT_EQ(original->IsHttpOnly(), copied.IsHttpOnly());
   EXPECT_EQ(original->SameSite(), copied.SameSite());
   EXPECT_EQ(original->Priority(), copied.Priority());
@@ -137,7 +137,7 @@ TEST(CookieManagerTraitsTest, Rountrips_CookieWithAccessResult) {
   EXPECT_EQ(original.cookie.LastAccessDate(), copied.cookie.LastAccessDate());
   EXPECT_EQ(original.cookie.ExpiryDate(), copied.cookie.ExpiryDate());
   EXPECT_EQ(original.cookie.LastUpdateDate(), copied.cookie.LastUpdateDate());
-  EXPECT_EQ(original.cookie.IsSecure(), copied.cookie.IsSecure());
+  EXPECT_EQ(original.cookie.SecureAttribute(), copied.cookie.SecureAttribute());
   EXPECT_EQ(original.cookie.IsHttpOnly(), copied.cookie.IsHttpOnly());
   EXPECT_EQ(original.cookie.SameSite(), copied.cookie.SameSite());
   EXPECT_EQ(original.cookie.Priority(), copied.cookie.Priority());
@@ -169,7 +169,8 @@ TEST(CookieManagerTraitsTest, Roundtrips_CookieAndLineWithAccessResult) {
   EXPECT_EQ(original.cookie->LastAccessDate(), copied.cookie->LastAccessDate());
   EXPECT_EQ(original.cookie->ExpiryDate(), copied.cookie->ExpiryDate());
   EXPECT_EQ(original.cookie->LastUpdateDate(), copied.cookie->LastUpdateDate());
-  EXPECT_EQ(original.cookie->IsSecure(), copied.cookie->IsSecure());
+  EXPECT_EQ(original.cookie->SecureAttribute(),
+            copied.cookie->SecureAttribute());
   EXPECT_EQ(original.cookie->IsHttpOnly(), copied.cookie->IsHttpOnly());
   EXPECT_EQ(original.cookie->SameSite(), copied.cookie->SameSite());
   EXPECT_EQ(original.cookie->Priority(), copied.cookie->Priority());
@@ -508,7 +509,7 @@ TEST(CookieManagerTraitsTest, Roundtrips_CookieChangeInfo) {
   EXPECT_EQ(original.cookie.LastAccessDate(), copied.cookie.LastAccessDate());
   EXPECT_EQ(original.cookie.ExpiryDate(), copied.cookie.ExpiryDate());
   EXPECT_EQ(original.cookie.LastUpdateDate(), copied.cookie.LastUpdateDate());
-  EXPECT_EQ(original.cookie.IsSecure(), copied.cookie.IsSecure());
+  EXPECT_EQ(original.cookie.SecureAttribute(), copied.cookie.SecureAttribute());
   EXPECT_EQ(original.cookie.IsHttpOnly(), copied.cookie.IsHttpOnly());
   EXPECT_EQ(original.cookie.SameSite(), copied.cookie.SameSite());
   EXPECT_EQ(original.cookie.Priority(), copied.cookie.Priority());

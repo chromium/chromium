@@ -107,8 +107,9 @@ NSHTTPCookie* SystemCookieFromCanonicalCookie(
     properties[NSHTTPCookieSameSitePolicy] = same_site;
   }
 
-  if (cookie.IsSecure())
+  if (cookie.SecureAttribute()) {
     [properties setObject:@"Y" forKey:NSHTTPCookieSecure];
+  }
   if (cookie.IsHttpOnly())
     [properties setObject:@YES forKey:kNSHTTPCookieHttpOnly];
   NSHTTPCookie* system_cookie = [NSHTTPCookie cookieWithProperties:properties];

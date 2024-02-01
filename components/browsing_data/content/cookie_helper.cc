@@ -44,7 +44,7 @@ void CookieHelper::DeleteCookie(const net::CanonicalCookie& cookie) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (delete_disabled_callback_ &&
       delete_disabled_callback_.Run(net::cookie_util::CookieOriginToURL(
-          cookie.Domain(), cookie.IsSecure()))) {
+          cookie.Domain(), cookie.SecureAttribute()))) {
     return;
   }
   storage_partition_->GetCookieManagerForBrowserProcess()

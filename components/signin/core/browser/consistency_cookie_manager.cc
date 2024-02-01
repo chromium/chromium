@@ -121,7 +121,7 @@ ConsistencyCookieManager::CreateConsistencyCookie(const std::string& value) {
 // static
 bool ConsistencyCookieManager::IsConsistencyCookie(
     const net::CanonicalCookie& cookie) {
-  return cookie.IsSecure() && cookie.Path() == "/" &&
+  return cookie.SecureAttribute() && cookie.Path() == "/" &&
          cookie.DomainWithoutDot() ==
              GaiaUrls::GetInstance()->gaia_url().host() &&
          cookie.Name() == kCookieName;

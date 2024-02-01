@@ -243,7 +243,7 @@ void CookieStoreIOS::SetCanonicalCookieAsync(
     access_result = *cookie_access_result;
   }
 
-  if (cookie->IsSecure() &&
+  if (cookie->SecureAttribute() &&
       access_scheme == CookieAccessScheme::kNonCryptographic) {
     if (!callback.is_null()) {
       access_result.status.AddExclusionReason(

@@ -360,7 +360,7 @@ class CookieMonsterTestBase : public CookieStoreTest<T> {
 
     for (auto& cookie : cookies) {
       GURL source_url = cookie_util::SimulatedCookieSource(
-          *cookie, cookie->IsSecure() ? "https" : "http");
+          *cookie, cookie->SecureAttribute() ? "https" : "http");
       EXPECT_TRUE(this->SetCanonicalCookie(cm, std::move(cookie), source_url,
                                            true /* modify_httponly */));
     }
@@ -645,10 +645,11 @@ class CookieMonsterTestBase : public CookieStoreTest<T> {
     size_t total_secure_cookies = 0;
     size_t total_non_secure_cookies = 0;
     for (const auto& cookie : cookies) {
-      if (cookie.IsSecure())
+      if (cookie.SecureAttribute()) {
         ++total_secure_cookies;
-      else
+      } else {
         ++total_non_secure_cookies;
+      }
     }
 
     EXPECT_EQ(expected_secure_cookies, total_secure_cookies);
@@ -934,7 +935,7 @@ class CookieMonsterTestBase : public CookieStoreTest<T> {
           c.ExpiryDate() == cookie.ExpiryDate() &&
           c.LastAccessDate() == cookie.LastAccessDate() &&
           c.LastUpdateDate() == cookie.LastUpdateDate() &&
-          c.IsSecure() == cookie.IsSecure() &&
+          c.SecureAttribute() == cookie.SecureAttribute() &&
           c.IsHttpOnly() == cookie.IsHttpOnly() &&
           c.Priority() == cookie.Priority()) {
         return true;
@@ -1641,7 +1642,7 @@ TEST_F(CookieMonsterTest, TestCookieDeleteMatchingCookies) {
   EXPECT_EQ(2u, DeleteMatchingCookies(
                     cm.get(),
                     base::BindRepeating([](const net::CanonicalCookie& cookie) {
-                      return !cookie.IsSecure();
+                      return !cookie.SecureAttribute();
                     })));
   EXPECT_THAT(GetAllCookies(cm.get()),
               ElementsAre(MatchesCookieNameDomain("a1", "a.com"),
@@ -2742,7 +2743,7 @@ TEST_F(CookieMonsterTest, BackingStoreCommunication) {
       EXPECT_EQ(input->path, output->Path());
       EXPECT_LE(current.ToInternalValue(),
                 output->CreationDate().ToInternalValue());
-      EXPECT_EQ(input->secure, output->IsSecure());
+      EXPECT_EQ(input->secure, output->SecureAttribute());
       EXPECT_EQ(input->http_only, output->IsHttpOnly());
       EXPECT_EQ(input->same_site, output->SameSite());
       EXPECT_TRUE(output->IsPersistent());
@@ -4003,7 +4004,7 @@ TEST_F(CookieMonsterTest, SecureCookieLocalhost) {
     callback.WaitUntilDone();
     EXPECT_EQ(2u, callback.cookies_with_access_results().size());
     for (const auto& cookie_item : callback.cookies_with_access_results()) {
-      EXPECT_TRUE(cookie_item.cookie.IsSecure());
+      EXPECT_TRUE(cookie_item.cookie.SecureAttribute());
       EXPECT_TRUE(cookie_item.access_result.status.IsInclude());
       EXPECT_TRUE(
           cookie_item.access_result.status.HasExactlyWarningReasonsForTesting(
@@ -4021,7 +4022,7 @@ TEST_F(CookieMonsterTest, SecureCookieLocalhost) {
     callback.WaitUntilDone();
     EXPECT_EQ(2u, callback.cookies_with_access_results().size());
     for (const auto& cookie_item : callback.cookies_with_access_results()) {
-      EXPECT_TRUE(cookie_item.cookie.IsSecure());
+      EXPECT_TRUE(cookie_item.cookie.SecureAttribute());
       EXPECT_EQ(CookieInclusionStatus(), cookie_item.access_result.status);
     }
   }

@@ -1711,7 +1711,7 @@ bool AddV17CookiesToDB(sql::Database* db) {
     statement.BindBlob(5, base::span<uint8_t>());  // encrypted_value
     statement.BindString(6, cookie.Path());
     statement.BindTime(7, cookie.ExpiryDate());
-    statement.BindInt(8, cookie.IsSecure());
+    statement.BindInt(8, cookie.SecureAttribute());
     statement.BindInt(9, cookie.IsHttpOnly());
     // Note that this, Priority(), and SourceScheme() below nominally rely on
     // the enums in sqlite_persistent_cookie_store.cc having the same values as
@@ -1770,7 +1770,7 @@ bool AddV18CookiesToDB(sql::Database* db,
     statement.BindBlob(5, base::span<uint8_t>());  // encrypted_value
     statement.BindString(6, cookie.Path());
     statement.BindTime(7, std::min(cookie.ExpiryDate(), max_expiration));
-    statement.BindInt(8, cookie.IsSecure());
+    statement.BindInt(8, cookie.SecureAttribute());
     statement.BindInt(9, cookie.IsHttpOnly());
     // Note that this, Priority(), and SourceScheme() below nominally rely on
     // the enums in sqlite_persistent_cookie_store.cc having the same values as
@@ -1813,7 +1813,7 @@ void ConfirmCookiesAfterMigrationTest(
   EXPECT_EQ("B", read_in_cookies[i]->Value());
   EXPECT_EQ("example.com", read_in_cookies[i]->Domain());
   EXPECT_EQ("/", read_in_cookies[i]->Path());
-  EXPECT_TRUE(read_in_cookies[i]->IsSecure());
+  EXPECT_TRUE(read_in_cookies[i]->SecureAttribute());
   EXPECT_EQ(CookieSourceScheme::kUnset, read_in_cookies[i]->SourceScheme());
   EXPECT_EQ(read_in_cookies[i]->LastUpdateDate(),
             expect_last_update_date ? read_in_cookies[i]->CreationDate()
@@ -1826,7 +1826,7 @@ void ConfirmCookiesAfterMigrationTest(
   EXPECT_EQ("B", read_in_cookies[i]->Value());
   EXPECT_EQ("example.com", read_in_cookies[i]->Domain());
   EXPECT_EQ("/path", read_in_cookies[i]->Path());
-  EXPECT_FALSE(read_in_cookies[i]->IsSecure());
+  EXPECT_FALSE(read_in_cookies[i]->SecureAttribute());
   EXPECT_EQ(CookieSourceScheme::kUnset, read_in_cookies[i]->SourceScheme());
   EXPECT_EQ(read_in_cookies[i]->LastUpdateDate(),
             expect_last_update_date ? read_in_cookies[i]->CreationDate()
@@ -1839,7 +1839,7 @@ void ConfirmCookiesAfterMigrationTest(
   EXPECT_EQ("B", read_in_cookies[i]->Value());
   EXPECT_EQ("example2.com", read_in_cookies[i]->Domain());
   EXPECT_EQ("/", read_in_cookies[i]->Path());
-  EXPECT_TRUE(read_in_cookies[i]->IsSecure());
+  EXPECT_TRUE(read_in_cookies[i]->SecureAttribute());
   EXPECT_EQ(CookieSourceScheme::kUnset, read_in_cookies[i]->SourceScheme());
   EXPECT_EQ(read_in_cookies[i]->LastUpdateDate(),
             expect_last_update_date ? read_in_cookies[i]->CreationDate()
@@ -1852,7 +1852,7 @@ void ConfirmCookiesAfterMigrationTest(
   EXPECT_EQ("B", read_in_cookies[i]->Value());
   EXPECT_EQ("example.com", read_in_cookies[i]->Domain());
   EXPECT_EQ("/", read_in_cookies[i]->Path());
-  EXPECT_TRUE(read_in_cookies[i]->IsSecure());
+  EXPECT_TRUE(read_in_cookies[i]->SecureAttribute());
   EXPECT_EQ(CookieSourceScheme::kUnset, read_in_cookies[i]->SourceScheme());
   EXPECT_EQ(read_in_cookies[i]->LastUpdateDate(),
             expect_last_update_date ? read_in_cookies[i]->CreationDate()
@@ -1865,7 +1865,7 @@ void ConfirmCookiesAfterMigrationTest(
   EXPECT_EQ("B", read_in_cookies[i]->Value());
   EXPECT_EQ("example.com", read_in_cookies[i]->Domain());
   EXPECT_EQ("/path", read_in_cookies[i]->Path());
-  EXPECT_FALSE(read_in_cookies[i]->IsSecure());
+  EXPECT_FALSE(read_in_cookies[i]->SecureAttribute());
   EXPECT_EQ(CookieSourceScheme::kUnset, read_in_cookies[i]->SourceScheme());
   EXPECT_EQ(read_in_cookies[i]->LastUpdateDate(),
             expect_last_update_date ? read_in_cookies[i]->CreationDate()
@@ -1881,7 +1881,7 @@ void ConfirmCookiesAfterMigrationTest(
   EXPECT_EQ("B", read_in_cookies[i]->Value());
   EXPECT_EQ("example2.com", read_in_cookies[i]->Domain());
   EXPECT_EQ("/", read_in_cookies[i]->Path());
-  EXPECT_FALSE(read_in_cookies[i]->IsSecure());
+  EXPECT_FALSE(read_in_cookies[i]->SecureAttribute());
   EXPECT_EQ(CookieSourceScheme::kUnset, read_in_cookies[i]->SourceScheme());
   EXPECT_EQ(read_in_cookies[i]->LastUpdateDate(),
             expect_last_update_date ? read_in_cookies[i]->CreationDate()

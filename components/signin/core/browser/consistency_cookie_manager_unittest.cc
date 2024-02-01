@@ -93,7 +93,7 @@ class ConsistencyCookieManagerTest : public testing::Test {
                 testing::Property(&net::CanonicalCookie::Domain,
                                   expected_domain),
                 testing::Property(&net::CanonicalCookie::Path, "/"),
-                testing::Property(&net::CanonicalCookie::IsSecure, true),
+                testing::Property(&net::CanonicalCookie::SecureAttribute, true),
                 testing::Property(&net::CanonicalCookie::IsHttpOnly, false),
                 testing::Property(&net::CanonicalCookie::SameSite,
                                   net::CookieSameSite::STRICT_MODE)),

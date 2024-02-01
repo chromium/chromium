@@ -28,7 +28,7 @@ base::Value::Dict NetLogCookieMonsterCookieAdded(
   dict.Set("domain", cookie->Domain());
   dict.Set("path", cookie->Path());
   dict.Set("httponly", cookie->IsHttpOnly());
-  dict.Set("secure", cookie->IsSecure());
+  dict.Set("secure", cookie->SecureAttribute());
   dict.Set("priority", CookiePriorityToString(cookie->Priority()));
   dict.Set("same_site", CookieSameSiteToString(cookie->SameSite()));
   dict.Set("is_persistent", cookie->IsPersistent());

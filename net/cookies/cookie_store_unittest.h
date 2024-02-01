@@ -528,7 +528,7 @@ TYPED_TEST_P(CookieStoreTest, FilterTest) {
   // Some CookieStores don't store last access date.
   if (!it->LastAccessDate().is_null())
     EXPECT_EQ(one_hour_ago, it->LastAccessDate());
-  EXPECT_FALSE(it->IsSecure());
+  EXPECT_FALSE(it->SecureAttribute());
   EXPECT_FALSE(it->IsHttpOnly());
 
   ASSERT_TRUE(++it == cookies.end());
@@ -559,7 +559,7 @@ TYPED_TEST_P(CookieStoreTest, FilterTest) {
   // Some CookieStores don't store last access date.
   if (!it->LastAccessDate().is_null())
     EXPECT_EQ(one_hour_ago, it->LastAccessDate());
-  EXPECT_FALSE(it->IsSecure());
+  EXPECT_FALSE(it->SecureAttribute());
   EXPECT_TRUE(it->IsHttpOnly());
 
   EXPECT_TRUE(++it == cookies.end());
@@ -579,7 +579,7 @@ TYPED_TEST_P(CookieStoreTest, FilterTest) {
   // Some CookieStores don't store last access date.
   if (!it->LastAccessDate().is_null())
     EXPECT_EQ(it->CreationDate(), it->LastAccessDate());
-  EXPECT_TRUE(it->IsSecure());
+  EXPECT_TRUE(it->SecureAttribute());
   EXPECT_FALSE(it->IsHttpOnly());
 
   EXPECT_TRUE(++it == cookies.end());
@@ -631,7 +631,7 @@ TYPED_TEST_P(CookieStoreTest, SetCanonicalCookieTest) {
       this->http_www_foo_.url(), "foo=1; Secure", base::Time::Now(),
       /*server_time=*/absl::nullopt, /*cookie_partition_key=*/absl::nullopt,
       /*block_truncated=*/true, &status);
-  EXPECT_TRUE(cookie->IsSecure());
+  EXPECT_TRUE(cookie->SecureAttribute());
   EXPECT_TRUE(status.IsInclude());
   EXPECT_TRUE(this->SetCanonicalCookieReturnAccessResult(
                       cs, std::move(cookie), this->http_www_foo_.url(), true)
@@ -741,7 +741,7 @@ TYPED_TEST_P(CookieStoreTest, SetCanonicalCookieTest) {
   // Some CookieStores don't store last access date.
   if (!it->LastAccessDate().is_null())
     EXPECT_EQ(one_hour_ago, it->LastAccessDate());
-  EXPECT_FALSE(it->IsSecure());
+  EXPECT_FALSE(it->SecureAttribute());
   EXPECT_FALSE(it->IsHttpOnly());
 
   // Get the cookie using the wide open |options|:
@@ -758,7 +758,7 @@ TYPED_TEST_P(CookieStoreTest, SetCanonicalCookieTest) {
   // Some CookieStores don't store last access date.
   if (!it->LastAccessDate().is_null())
     EXPECT_EQ(one_hour_ago, it->LastAccessDate());
-  EXPECT_FALSE(it->IsSecure());
+  EXPECT_FALSE(it->SecureAttribute());
   EXPECT_TRUE(it->IsHttpOnly());
 
   cookies = this->GetAllCookiesForURL(cs, this->https_www_foo_.url());
@@ -776,7 +776,7 @@ TYPED_TEST_P(CookieStoreTest, SetCanonicalCookieTest) {
   // Some CookieStores don't store last access date.
   if (!it->LastAccessDate().is_null())
     EXPECT_EQ(it->CreationDate(), it->LastAccessDate());
-  EXPECT_TRUE(it->IsSecure());
+  EXPECT_TRUE(it->SecureAttribute());
   EXPECT_FALSE(it->IsHttpOnly());
 }
 

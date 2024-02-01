@@ -1223,7 +1223,7 @@ CookiesTreeModel::~CookiesTreeModel() = default;
 
 // static
 int CookiesTreeModel::GetSendForMessageID(const net::CanonicalCookie& cookie) {
-  if (cookie.IsSecure()) {
+  if (cookie.SecureAttribute()) {
     if (!cookie.IsEffectivelySameSiteNone())
       return IDS_COOKIES_COOKIE_SENDFOR_SECURE_SAME_SITE;
     return IDS_COOKIES_COOKIE_SENDFOR_SECURE;

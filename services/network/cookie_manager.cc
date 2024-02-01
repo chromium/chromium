@@ -140,7 +140,7 @@ void CookieManager::SetCanonicalCookie(const net::CanonicalCookie& cookie,
     cookie_ptr = net::CanonicalCookie::FromStorage(
         cookie.Name(), cookie.Value(), cookie.Domain(), cookie.Path(),
         cookie.CreationDate(), adjusted_expiry_date, cookie.LastAccessDate(),
-        cookie.LastUpdateDate(), cookie.IsSecure(), cookie.IsHttpOnly(),
+        cookie.LastUpdateDate(), cookie.SecureAttribute(), cookie.IsHttpOnly(),
         cookie.SameSite(), cookie.Priority(), cookie_partition_key,
         cookie.SourceScheme(), cookie.SourcePort());
     if (!cookie_ptr) {

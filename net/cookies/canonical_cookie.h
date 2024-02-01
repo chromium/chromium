@@ -236,7 +236,7 @@ class NET_EXPORT CanonicalCookie {
   const base::Time& LastAccessDate() const { return last_access_date_; }
   const base::Time& LastUpdateDate() const { return last_update_date_; }
   bool IsPersistent() const { return !expiry_date_.is_null(); }
-  bool IsSecure() const { return secure_; }
+  bool SecureAttribute() const { return secure_; }
   bool IsHttpOnly() const { return httponly_; }
   CookieSameSite SameSite() const { return same_site_; }
   CookiePriority Priority() const { return priority_; }

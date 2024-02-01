@@ -560,9 +560,9 @@ void OnCookiesInfoReady(const ScopedJavaGlobalRef<jobject>& java_callback,
       Java_WebsitePreferenceBridge_createCookiesInfoMap(env);
 
   for (const net::CanonicalCookie& cookie : entries) {
-    std::string origin =
-        net::cookie_util::CookieOriginToURL(cookie.Domain(), cookie.IsSecure())
-            .spec();
+    std::string origin = net::cookie_util::CookieOriginToURL(
+                             cookie.Domain(), cookie.SecureAttribute())
+                             .spec();
     ScopedJavaLocalRef<jstring> java_origin =
         ConvertUTF8ToJavaString(env, origin);
     Java_WebsitePreferenceBridge_insertCookieIntoMap(env, map, java_origin);

@@ -5612,7 +5612,8 @@ TEST_F(URLLoaderTest, RawResponseCookiesRedirect) {
     devtools_observer.WaitUntilRawResponse(1u);
     EXPECT_EQ(204, devtools_observer.raw_response_http_status_code());
     // On these failures the cookie object is created but not included.
-    EXPECT_TRUE(devtools_observer.raw_response_cookies()[0].cookie->IsSecure());
+    EXPECT_TRUE(
+        devtools_observer.raw_response_cookies()[0].cookie->SecureAttribute());
     EXPECT_TRUE(devtools_observer.raw_response_cookies()[0]
                     .access_result.status.HasExactlyExclusionReasonsForTesting(
                         {net::CookieInclusionStatus::EXCLUDE_SECURE_ONLY}));
@@ -5692,7 +5693,8 @@ TEST_F(URLLoaderTest, RawResponseCookiesAuth) {
     EXPECT_EQ(401, devtools_observer.raw_response_http_status_code());
     devtools_observer.WaitUntilRawResponse(1u);
     // On these failures the cookie object is created but not included.
-    EXPECT_TRUE(devtools_observer.raw_response_cookies()[0].cookie->IsSecure());
+    EXPECT_TRUE(
+        devtools_observer.raw_response_cookies()[0].cookie->SecureAttribute());
     EXPECT_TRUE(devtools_observer.raw_response_cookies()[0]
                     .access_result.status.HasExactlyExclusionReasonsForTesting(
                         {net::CookieInclusionStatus::EXCLUDE_SECURE_ONLY}));
