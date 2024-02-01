@@ -96,18 +96,11 @@ void ContentPasswordManagerDriverFactory::DidFinishNavigation(
   if (navigation->IsSameDocument() || !navigation->HasCommitted()) {
     return;
   }
+  GetDriverForFrame(navigation->GetRenderFrameHost())->DidNavigate();
 
-  // Unbind receiver if the frame is anonymous, noted that anonymous frames are
-  // always iframes.
   if (!navigation->IsInPrimaryMainFrame()) {
-    if (auto* driver = GetDriverForFrame(navigation->GetRenderFrameHost())) {
-      if (navigation->GetRenderFrameHost()->IsCredentialless()) {
-        driver->UnbindReceiver();
-      }
-    }
     return;
   }
-
   // Clear page specific data after main frame navigation.
   NotifyDidNavigateMainFrame(navigation->IsRendererInitiated(),
                              navigation->GetPageTransition(),

@@ -53,7 +53,7 @@ class ContentPasswordManagerDriver final
   void BindPendingReceiver(
       mojo::PendingAssociatedReceiver<autofill::mojom::PasswordManagerDriver>
           pending_receiver);
-  void UnbindReceiver();
+  void DidNavigate();
 
   // PasswordManagerDriver implementation.
   int GetId() const override;
@@ -179,12 +179,14 @@ class ContentPasswordManagerDriver final
 
   mojo::AssociatedRemote<autofill::mojom::PasswordAutofillAgent>
       password_autofill_agent_;
+  const mojo::AssociatedRemote<autofill::mojom::PasswordAutofillAgent>
+      password_autofill_agent_unbound_;
 
   mojo::AssociatedRemote<autofill::mojom::PasswordGenerationAgent>
       password_gen_agent_;
 
   mojo::AssociatedReceiver<autofill::mojom::PasswordManagerDriver>
-      password_manager_receiver_;
+      password_manager_receiver_{this};
 
   base::WeakPtrFactory<ContentPasswordManagerDriver> weak_factory_{this};
 };

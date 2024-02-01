@@ -68,6 +68,22 @@ bool HasValidURL(content::RenderFrameHost* render_frame_host) {
       password_manager::BadMessageReason::CPMD_BAD_ORIGIN_FORM_SUBMITTED);
 }
 
+bool IsRenderFrameHostSupported(content::RenderFrameHost* rfh) {
+  // [spec] https://wicg.github.io/anonymous-iframe/#spec-autofill
+  // > Browsers that implement autofill or password manager functionalities
+  //   should make them unavailable in credentialless iframes.
+  if (rfh->IsCredentialless()) {
+    return false;
+  }
+
+  if (rfh->GetLifecycleState() ==
+      content::RenderFrameHost::LifecycleState::kPrerendering) {
+    return false;
+  }
+
+  return true;
+}
+
 }  // namespace
 
 ContentPasswordManagerDriver::ContentPasswordManagerDriver(
@@ -80,22 +96,27 @@ ContentPasswordManagerDriver::ContentPasswordManagerDriver(
           this,
           autofill::ContentAutofillClient::FromWebContents(
               content::WebContents::FromRenderFrameHost(render_frame_host)),
-          client),
-      password_manager_receiver_(this) {
+          client) {
   static unsigned next_free_id = 0;
   id_ = next_free_id++;
+
+  render_frame_host_->GetRemoteAssociatedInterfaces()->GetInterface(
+      &password_autofill_agent_);
+
   // For some frames |this| may be instantiated before log manager creation, so
   // here we can not send logging state to renderer process for them. For such
   // cases, after the log manager got ready later,
   // ContentPasswordManagerDriverFactory::RequestSendLoggingAvailability() will
   // call ContentPasswordManagerDriver::SendLoggingAvailability() on |this| to
   // do it actually.
-  if (client_->GetLogManager()) {
-    if (const auto& agent = GetPasswordAutofillAgent()) {
-      // Do not call the virtual method SendLoggingAvailability from a
-      // constructor here, inline its steps instead.
-      agent->SetLoggingState(client_->GetLogManager()->IsLoggingActive());
-    }
+  if (autofill::LogManager* log_manager = client_->GetLogManager()) {
+    // RenderFrameHost might be a speculative one: it hasn't committed its
+    // document. We don't know if its is safe to use the whole
+    // PasswordAutofillAgent interface. For this reason, we use directly
+    // `password_autofill_agent_`, as opposed to `GetPasswordAutofillAgent()`.
+    // We know the `SetLoggingState()` is safe to be called no matter the state
+    // of the RenderFrameHost.
+    password_autofill_agent_->SetLoggingState(log_manager->IsLoggingActive());
   }
 }
 
@@ -114,13 +135,15 @@ ContentPasswordManagerDriver::GetForRenderFrameHost(
 void ContentPasswordManagerDriver::BindPendingReceiver(
     mojo::PendingAssociatedReceiver<autofill::mojom::PasswordManagerDriver>
         pending_receiver) {
-  if (render_frame_host_->IsCredentialless())
-    return;
-  password_manager_receiver_.Bind(std::move(pending_receiver));
+  if (IsRenderFrameHostSupported(render_frame_host_)) {
+    password_manager_receiver_.Bind(std::move(pending_receiver));
+  }
 }
 
-void ContentPasswordManagerDriver::UnbindReceiver() {
-  password_manager_receiver_.reset();
+void ContentPasswordManagerDriver::DidNavigate() {
+  if (!IsRenderFrameHostSupported(render_frame_host_)) {
+    password_manager_receiver_.reset();
+  }
 }
 
 int ContentPasswordManagerDriver::GetId() const {
@@ -536,22 +559,14 @@ ContentPasswordManagerDriver::GetAutofillAgent() {
 
 const mojo::AssociatedRemote<autofill::mojom::PasswordAutofillAgent>&
 ContentPasswordManagerDriver::GetPasswordAutofillAgent() {
-  if (render_frame_host_->IsCredentialless() ||
-      render_frame_host_->GetLifecycleState() ==
-          content::RenderFrameHost::LifecycleState::kPrerendering) {
-    password_autofill_agent_.reset();
-    return password_autofill_agent_;  // Unbound remote.
-  }
+  // Autofill is not expected to interact with a RenderFrameHost that hasn't yet
+  // committed its document.
+  CHECK_NE(render_frame_host_->GetLifecycleState(),
+           content::RenderFrameHost::LifecycleState::kPendingCommit);
 
-  if (!password_autofill_agent_) {
-    // Some test environments may have no remote interface support.
-    if (render_frame_host_->GetRemoteAssociatedInterfaces()) {
-      render_frame_host_->GetRemoteAssociatedInterfaces()->GetInterface(
-          &password_autofill_agent_);
-    }
-  }
-
-  return password_autofill_agent_;
+  return IsRenderFrameHostSupported(render_frame_host_)
+             ? password_autofill_agent_
+             : password_autofill_agent_unbound_;
 }
 
 const mojo::AssociatedRemote<autofill::mojom::PasswordGenerationAgent>&
