@@ -141,8 +141,9 @@ bool GLTextureImageBackingFactory::IsSupported(
 
   bool has_cpu_upload_usage = usage & SHARED_IMAGE_USAGE_CPU_UPLOAD;
 
-  if (for_cpu_upload_usage_ != has_cpu_upload_usage)
+  if (for_cpu_upload_usage_ != has_cpu_upload_usage) {
     return false;
+  }
 
   if (has_cpu_upload_usage) {
     if (!GLTextureImageBacking::SupportsPixelUploadWithFormat(format)) {

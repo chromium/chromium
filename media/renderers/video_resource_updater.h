@@ -149,7 +149,7 @@ class MEDIA_EXPORT VideoResourceUpdater
   bool software_compositor() const { return context_provider_ == nullptr; }
 
   // Reallocate |upload_pixels_| with the requested size.
-  bool ReallocateUploadPixels(size_t needed_size);
+  bool ReallocateUploadPixels(size_t needed_size, size_t plane);
 
   // Obtain a resource of the right format by either recycling an
   // unreferenced but appropriately formatted resource, or by
@@ -216,6 +216,15 @@ class MEDIA_EXPORT VideoResourceUpdater
                                           size_t bits_per_channel,
                                           size_t plane_index);
 
+  // Write/copy YUV pixels for all planes from video frame to hardware resource
+  // through WritePixelsYUV. Also perform bit downshifting for
+  // channel format mismatch between input frame and supported shared image
+  // format.
+  bool WriteYUVPixelsForAllPlanesToTexture(
+      scoped_refptr<VideoFrame> video_frame,
+      HardwarePlaneResource* resource,
+      size_t bits_per_channel);
+
   // Get resources ready to be appended into DrawQuads. This is always used for
   // software compositing. This is also used for GPU compositing when the input
   // video frame has no textures.
@@ -249,9 +258,10 @@ class MEDIA_EXPORT VideoResourceUpdater
   std::unique_ptr<PaintCanvasVideoRenderer> video_renderer_;
   uint32_t next_plane_resource_id_ = 1;
 
-  // Temporary pixel buffer when converting between formats.
-  std::unique_ptr<uint8_t[], base::UncheckedFreeDeleter> upload_pixels_;
-  size_t upload_pixels_size_ = 0;
+  // Temporary pixel buffers when converting between formats.
+  std::unique_ptr<uint8_t[], base::UncheckedFreeDeleter>
+      upload_pixels_[SkYUVAInfo::kMaxPlanes] = {};
+  size_t upload_pixels_size_[SkYUVAInfo::kMaxPlanes] = {};
 
   VideoFrameResourceType frame_resource_type_;
 
