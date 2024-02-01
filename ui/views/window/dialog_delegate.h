@@ -260,14 +260,14 @@ class VIEWS_EXPORT DialogDelegate : public WidgetDelegate {
   // dialog, false to leave the dialog open.
   void SetAcceptCallbackWithClose(base::RepeatingCallback<bool()> callback);
 
-  // Called when the user presses the dialog's "Cancel" button or presses the
-  // dialog close accelerator (which is always VKEY_ESCAPE). The dialog is
-  // closed after the callback is run.
+  // Called when the user cancels the dialog, which can happen either by:
+  //   * Clicking the Cancel button, if there is one, or
+  //   * Closing the dialog with the Esc key, if the dialog has a close button
+  //     but no close callback
+  // The dialog is closed after the callback is run. The callback variant which
+  // returns a bool decides whether the dialog actually closes or not; returning
+  // false prevents closing, returning true allows closing.
   void SetCancelCallback(base::OnceClosure callback);
-
-  // Called when the user presses the dialog's "Cancel" button or presses the
-  // dialog close accelerator (which is always VKEY_ESCAPE). Callbacks can
-  // return true to close the dialog, false to leave the dialog open.
   void SetCancelCallbackWithClose(base::RepeatingCallback<bool()> callback);
 
   // Called when:
