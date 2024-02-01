@@ -1,0 +1,2522 @@
+<!-- Structured metrics is under development and isn't available for use yet. -->
+
+<structured-metrics>
+
+<project name="Bluetooth">
+  <owner>chromeos-bt-kpi@google.com</owner>
+  <id>per-project</id>
+  <summary>
+    Project for recording bluetooth metrics.
+  </summary>
+
+  <event name="BluetoothAdapterStateChanged">
+    <summary>
+      Records the toggle of the adapter.
+    </summary>
+    <metric name="BootId" type="hmac-string">
+      <summary>
+        Random ID generated at boot time to detect reboots.
+      </summary>
+    </metric>
+    <metric name="SystemTime" type="int">
+      <summary>
+        The time elapsed since boot, in microseconds.
+      </summary>
+    </metric>
+    <metric name="IsFloss" type="int">
+      <summary>
+        Boolean indicating if the Bluetooth is using Floss.
+      </summary>
+    </metric>
+    <metric name="AdapterState" type="int">
+      <summary>
+        The state of the bluetooth adapter, 0 for disabled and 1 for enabled.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="BluetoothPairingStateChanged">
+    <summary>
+      Records the device pairing state change.
+    </summary>
+    <metric name="BootId" type="hmac-string">
+      <summary>
+        Random ID generated at boot time to detect reboots.
+      </summary>
+    </metric>
+    <metric name="SystemTime" type="int">
+      <summary>
+        The time elapsed since boot, in microseconds.
+      </summary>
+    </metric>
+    <metric name="DeviceId" type="hmac-string">
+      <summary>
+        The bluetooth device id.
+      </summary>
+    </metric>
+    <metric name="DeviceType" type="int">
+      <summary>
+        The bluetooth device type such as LE, BREDR.
+      </summary>
+    </metric>
+    <metric name="PairingState" type="int">
+      <summary>
+        The state of the pairing.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="BluetoothAclConnectionStateChanged">
+    <summary>
+      Records the ACL connection state change.
+    </summary>
+    <metric name="BootId" type="hmac-string">
+      <summary>
+        Random ID generated at boot time to detect reboots.
+      </summary>
+    </metric>
+    <metric name="SystemTime" type="int">
+      <summary>
+        The time elapsed since boot, in microseconds.
+      </summary>
+    </metric>
+    <metric name="IsFloss" type="int">
+      <summary>
+        Boolean indicating if the Bluetooth is using Floss.
+      </summary>
+    </metric>
+    <metric name="DeviceId" type="hmac-string">
+      <summary>
+        The bluetooth device id.
+      </summary>
+    </metric>
+    <metric name="DeviceType" type="int">
+      <summary>
+        The bluetooth device type such as LE, BREDR.
+      </summary>
+    </metric>
+    <metric name="ConnectionDirection" type="int">
+      <summary>
+        Whether it is an incoming or outgoing connection.
+      </summary>
+    </metric>
+    <metric name="ConnectionInitiator" type="int">
+      <summary>
+        Whether the connection is established by clients or system.
+      </summary>
+    </metric>
+    <metric name="StateChangeType" type="int">
+      <summary>
+        Whether it is a connection or disconnection state change.
+      </summary>
+    </metric>
+    <metric name="AclConnectionState" type="int">
+      <summary>
+        The state of the connection.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="BluetoothProfileConnectionStateChanged">
+    <summary>
+      Records the profile connection state change.
+    </summary>
+    <metric name="BootId" type="hmac-string">
+      <summary>
+        Random ID generated at boot time to detect reboots.
+      </summary>
+    </metric>
+    <metric name="SystemTime" type="int">
+      <summary>
+        The time elapsed since boot, in microseconds.
+      </summary>
+    </metric>
+    <metric name="DeviceId" type="hmac-string">
+      <summary>
+        The bluetooth device id.
+      </summary>
+    </metric>
+    <metric name="StateChangeType" type="int">
+      <summary>
+        Whether it is a connection or disconnection state change.
+      </summary>
+    </metric>
+    <metric name="Profile" type="int">
+      <summary>
+        The bluetooth profile.
+      </summary>
+    </metric>
+    <metric name="ProfileConnectionState" type="int">
+      <summary>
+        The state of the profile connection.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="BluetoothSuspendIdStateChanged">
+    <summary>
+      Records the state of suspend id at resume.
+    </summary>
+    <metric name="BootId" type="hmac-string">
+      <summary>
+        Random ID generated at boot time to detect reboots.
+      </summary>
+    </metric>
+    <metric name="SystemTime" type="int">
+      <summary>
+        The time elapsed since boot, in microseconds.
+      </summary>
+    </metric>
+    <metric name="SuspendIdState" type="int">
+      <summary>
+        The state of the suspend id at resume, 0 for not recorded and 1 for recorded.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="BluetoothDeviceInfoReport">
+    <summary>
+      Records the bluetooth device info.
+    </summary>
+    <metric name="BootId" type="hmac-string">
+      <summary>
+        Random ID generated at boot time to detect reboots.
+      </summary>
+    </metric>
+    <metric name="SystemTime" type="int">
+      <summary>
+        The time elapsed since boot, in microseconds.
+      </summary>
+    </metric>
+    <metric name="DeviceId" type="hmac-string">
+      <summary>
+        The bluetooth device id.
+      </summary>
+    </metric>
+    <metric name="DeviceType" type="int">
+      <summary>
+        The bluetooth device type such as LE, BREDR.
+      </summary>
+    </metric>
+    <metric name="DeviceClass" type="int">
+      <summary>
+        The major class of the BR/EDR device.
+      </summary>
+    </metric>
+    <metric name="DeviceCategory" type="int">
+      <summary>
+        The category of the BLE device.
+      </summary>
+    </metric>
+    <metric name="VendorId" type="int">
+      <summary>
+        The vendor id of the bluetooth device.
+      </summary>
+    </metric>
+    <metric name="VendorIdSource" type="int">
+      <summary>
+        The vendor id source such as SIG and USB.
+      </summary>
+    </metric>
+    <metric name="ProductId" type="int">
+      <summary>
+        The product id of the bluetooth device.
+      </summary>
+    </metric>
+    <metric name="ProductVersion" type="int">
+      <summary>
+        The product version of the bluetooth device.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="BluetoothAudioQualityReport">
+    <summary>
+      Records the quality of audio connection.
+    </summary>
+    <metric name="BootId" type="hmac-string">
+      <summary>
+        Random ID generated at boot time to detect reboots.
+      </summary>
+    </metric>
+    <metric name="SystemTime" type="int">
+      <summary>
+        The time elapsed since boot, in microseconds.
+      </summary>
+    </metric>
+    <metric name="DeviceId" type="hmac-string">
+      <summary>
+        The bluetooth device id.
+      </summary>
+    </metric>
+    <metric name="Profile" type="int">
+      <summary>
+        The bluetooth profile.
+      </summary>
+    </metric>
+    <metric name="QualityType" type="int">
+      <summary>
+        The type of measured indicator, e.g. RSSI, NAK_Count, No_Rx_Count.
+      </summary>
+    </metric>
+    <metric name="Average" type="int">
+      <summary>
+        The average value of the parameter.
+      </summary>
+    </metric>
+    <metric name="StdDev" type="int">
+      <summary>
+        The standard deviation value of the parameter.
+      </summary>
+    </metric>
+    <metric name="Percentile95" type="int">
+      <summary>
+        The 95th percentile value of the parameter.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="BluetoothChipsetInfoReport">
+    <summary>
+      Records the bluetooth chipset info.
+    </summary>
+    <metric name="BootId" type="hmac-string">
+      <summary>
+        Random ID generated at boot time to detect reboots.
+      </summary>
+    </metric>
+    <metric name="VendorId" type="int">
+      <summary>
+        The vendor id of the bluetooth controller.
+      </summary>
+    </metric>
+    <metric name="ProductId" type="int">
+      <summary>
+        The product id of the bluetooth controller.
+      </summary>
+    </metric>
+    <metric name="Transport" type="int">
+      <summary>
+        Which transport the bluetooth controller uses.
+      </summary>
+    </metric>
+    <metric name="ChipsetStringHashValue" type="int">
+      <summary>
+        The first 8 bytes of SHA-256 of modalias of the bluetooth controller.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="BluetoothA2dpAudioOverrun">
+    <summary>
+      Records the A2DP overrun event.
+    </summary>
+    <metric name="BootId" type="hmac-string">
+      <summary>
+        Random ID generated at boot time to detect reboots.
+      </summary>
+    </metric>
+    <metric name="SystemTime" type="int">
+      <summary>
+        The time elapsed since boot, in microseconds.
+      </summary>
+    </metric>
+    <metric name="DeviceId" type="hmac-string">
+      <summary>
+        The bluetooth device id.
+      </summary>
+    </metric>
+    <metric name="EncodingInterval" type="int">
+      <summary>
+        A2DP packet encoding interval in milliseconds.
+      </summary>
+    </metric>
+    <metric name="DroppedBuffers" type="int">
+      <summary>
+        Number of encoded buffers dropped from Tx queue.
+      </summary>
+    </metric>
+    <metric name="DroppedFrames" type="int">
+      <summary>
+        Number of encoded frames dropped from Tx queue.
+      </summary>
+    </metric>
+    <metric name="DroppedBytes" type="int">
+      <summary>
+        Number of encoded bytes dropped from Tx queue.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="BluetoothA2dpSession">
+    <summary>
+      Records the A2DP session metrics, filed when an A2DP session stops.
+    </summary>
+    <metric name="BootId" type="hmac-string">
+      <summary>
+        Random ID generated at boot time to detect reboots.
+      </summary>
+    </metric>
+    <metric name="SystemTime" type="int">
+      <summary>
+        The time elapsed since boot, in microseconds.
+      </summary>
+    </metric>
+    <metric name="DeviceId" type="hmac-string">
+      <summary>
+        The bluetooth device id.
+      </summary>
+    </metric>
+    <metric name="AudioDuration" type="int">
+      <summary>
+        The duration of the A2DP session, in milliseconds.
+      </summary>
+    </metric>
+    <metric name="MediaTimerMin" type="int">
+      <summary>
+        Minimum time interval for the media timer, in milliseconds.
+      </summary>
+    </metric>
+    <metric name="MediaTimerMax" type="int">
+      <summary>
+        Maximum time interval for the media timer, in milliseconds.
+      </summary>
+    </metric>
+    <metric name="MediaTimerAvg" type="int">
+      <summary>
+        Average time interval for the media timer, in milliseconds.
+      </summary>
+    </metric>
+    <metric name="TotalSchedulingCount" type="int">
+      <summary>
+        Total scheduling count.
+      </summary>
+    </metric>
+    <metric name="BufferOverrunsMaxCount" type="int">
+      <summary>
+        Maximum count of Tx queue messages dropped caused by buffer overruns.
+      </summary>
+    </metric>
+    <metric name="BufferOverrunsTotal" type="int">
+      <summary>
+        Total count of Tx queue messages dropped caused by buffer overruns.
+      </summary>
+    </metric>
+    <metric name="BufferUnderrunsAvg" type="double">
+      <summary>
+        Average number of bytes short in buffer underruns.
+      </summary>
+    </metric>
+    <metric name="BufferUnderrunsCount" type="int">
+      <summary>
+        Count of buffer underruns.
+      </summary>
+    </metric>
+    <metric name="CodecIndex" type="int">
+      <summary>
+        A2DP codec index defined in bt_av.h (SBC=0, AAC=1, etc...).
+      </summary>
+    </metric>
+    <metric name="IsA2dpOffload" type="int">
+      <summary>
+        Boolean to denote if A2DP is offload.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="BluetoothHfpPacketLoss">
+    <summary>
+      Records the Hfp packet loss.
+    </summary>
+    <metric name="BootId" type="hmac-string">
+      <summary>
+        Random ID generated at boot time to detect reboots.
+      </summary>
+    </metric>
+    <metric name="SystemTime" type="int">
+      <summary>
+        The time elapsed since boot, in microseconds.
+      </summary>
+    </metric>
+    <metric name="DeviceId" type="hmac-string">
+      <summary>
+        The bluetooth device id.
+      </summary>
+    </metric>
+    <metric name="DecodedFrames" type="int">
+      <summary>
+        The number of decoded frames.
+      </summary>
+    </metric>
+    <metric name="PacketLossRatio" type="double">
+      <summary>
+        The ratio of lost frames.
+      </summary>
+    </metric>
+    <metric name="CodecType" type="int">
+      <summary>
+        The codec ID such as mSBC(2), LC3(3).
+      </summary>
+    </metric>
+  </event>
+
+  <event name="BluetoothMmcTranscodeRtt">
+    <summary>
+        Records statistics on the round-trip time for transcoding data using
+        MMC.
+    </summary>
+    <metric name="BootId" type="hmac-string">
+      <summary>
+        Random ID generated at boot time to detect reboots.
+      </summary>
+    </metric>
+    <metric name="SystemTime" type="int">
+      <summary>
+        The time elapsed since boot, in microseconds.
+      </summary>
+    </metric>
+    <metric name="MaximumRtt" type="int">
+      <summary>
+        Maximum rtt in microsecond.
+      </summary>
+    </metric>
+    <metric name="MeanRtt" type="double">
+      <summary>
+        Average rtt in microsecond.
+      </summary>
+    </metric>
+    <metric name="NumRequests" type="int">
+      <summary>
+        The number of transcoding requests in the session.
+      </summary>
+    </metric>
+    <metric name="CodecType" type="int">
+      <summary>
+        The codec type used in the session. The value corresponds to the field
+        number described by |ConfigParam| in |mmc_config.proto|.
+      </summary>
+    </metric>
+  </event>
+</project>
+
+<project name="BluetoothDevice">
+  <owner>chromeos-bt-kpi@google.com</owner>
+  <id>none</id>
+  <summary>
+    Project for recording Bluetooth device information separately from the main
+    Bluetooth project to meet privacy constraints.
+  </summary>
+
+  <event name="BluetoothDeviceInfo">
+    <summary>
+      Records the bluetooth device info.
+    </summary>
+    <metric name="DeviceType" type="int">
+      <summary>
+        The bluetooth device type such as LE, BREDR.
+      </summary>
+    </metric>
+    <metric name="DeviceClass" type="int">
+      <summary>
+        The major class of the BR/EDR device.
+      </summary>
+    </metric>
+    <metric name="DeviceCategory" type="int">
+      <summary>
+        The category of the BLE device.
+      </summary>
+    </metric>
+    <metric name="VendorId" type="int">
+      <summary>
+        The vendor id of the bluetooth device.
+      </summary>
+    </metric>
+    <metric name="VendorIdSource" type="int">
+      <summary>
+        The vendor id source such as SIG and USB.
+      </summary>
+    </metric>
+    <metric name="ProductId" type="int">
+      <summary>
+        The product id of the bluetooth device.
+      </summary>
+    </metric>
+    <metric name="ProductVersion" type="int">
+      <summary>
+        The product version of the bluetooth device.
+      </summary>
+    </metric>
+  </event>
+</project>
+
+<project name="BluetoothChipset">
+  <owner>chromeos-bt-kpi@google.com</owner>
+  <id>none</id>
+  <summary>
+    Project for recording Bluetooth chipset information separately from the
+    main Bluetooth project to meet privacy constraints.
+  </summary>
+
+  <event name="BluetoothChipsetInfo">
+    <summary>
+      Records the bluetooth chipset info.
+    </summary>
+    <metric name="VendorId" type="int">
+      <summary>
+        The vendor id of the bluetooth controller.
+      </summary>
+    </metric>
+    <metric name="ProductId" type="int">
+      <summary>
+        The product id of the bluetooth controller.
+      </summary>
+    </metric>
+    <metric name="Transport" type="int">
+      <summary>
+        Which transport the bluetooth controller uses.
+      </summary>
+    </metric>
+    <metric name="ChipsetString" type="raw-string">
+      <summary>
+        The modalias of the bluetooth controller.
+      </summary>
+    </metric>
+  </event>
+</project>
+
+<project name="HardwareVerifier">
+  <owner>kevinptt@chromium.org</owner>
+  <id>per-project</id>
+  <summary>
+    Project for hardware_verifier to record HardwareVerifier metrics.
+    hardware_verifier is run once per boot.
+  </summary>
+
+  <event name="HwVerificationReport">
+    <summary>
+      Record a verification report once hardware_verifier runs.  The event will
+      be sent once per run.
+    </summary>
+    <metric name="IsCompliant" type="int">
+      <summary>
+        The qualification status of components that are probed by
+        hardware_verifier.
+      </summary>
+    </metric>
+    <metric name="QualificationStatusDisplayPanel" type="int">
+      <summary>The qualification status of display_panel components.</summary>
+    </metric>
+    <metric name="QualificationStatusStorage" type="int">
+      <summary>The qualification status of storage components.</summary>
+    </metric>
+  </event>
+  <event name="ComponentInfo">
+    <summary>
+      Record a hardware component on devices probed by hardware_verifier.
+      The event will be sent several times per run, depending on how many
+      hardware components are probed.  Since we only record display currently,
+      there are usually 1~2 events.  If we extend structured metrics to more
+      hardware categories, e.g. battery, memory, storage, network, it would be
+      about 10 events per run.
+    </summary>
+    <metric name="ComponentCategory" type="int">
+      <summary>The category of the recorded component.</summary>
+    </metric>
+    <metric name="DisplayPanelVendor" type="int">
+      <summary>The vendor of the display panel.</summary>
+    </metric>
+    <metric name="DisplayPanelProductId" type="int">
+      <summary>The product ID of the display panel.</summary>
+    </metric>
+    <metric name="DisplayPanelHeight" type="int">
+      <summary>The height of the display panel.</summary>
+    </metric>
+    <metric name="DisplayPanelWidth" type="int">
+      <summary>The width of the display panel.</summary>
+    </metric>
+    <metric name="StorageMmcManfid" type="int">
+      <summary>The manfid of the MMC storage.</summary>
+    </metric>
+    <metric name="StorageMmcHwrev" type="int">
+      <summary>The hwrev of the MMC storage.</summary>
+    </metric>
+    <metric name="StorageMmcOemid" type="int">
+      <summary>The oemid of the MMC storage.</summary>
+    </metric>
+    <metric name="StorageMmcPrv" type="int">
+      <summary>The prv of the MMC storage.</summary>
+    </metric>
+    <metric name="StoragePciVendor" type="int">
+      <summary>The vendor of the PCI (NVMe) storage.</summary>
+    </metric>
+    <metric name="StoragePciDevice" type="int">
+      <summary>The device ID of the PCI (NVMe) storage.</summary>
+    </metric>
+    <metric name="StoragePciClass" type="int">
+      <summary>The device class of the PCI (NVMe) storage.</summary>
+    </metric>
+  </event>
+</project>
+
+
+<project name="Cellular">
+  <owner>andrewlassalle@chromium.org</owner>
+  <owner>ejcaruso@chromium.org</owner>
+  <id>per-project</id>
+  <summary>
+    Project for recording Cellular metrics.
+  </summary>
+
+  <event name="CellularConnectionAttempt">
+    <summary>
+      Records information of the last cellular connection attempt. An entry is
+      logged immediately after the cellular connection fails or succeeds.
+    </summary>
+    <metric name="apn_id" type="int">
+      <summary>
+        The ID of the APN used to establish the connection. This ID is a hash
+        of the string uuid+apn_name+username+password.
+      </summary>
+    </metric>
+    <metric name="ipv4_config_method" type="int">
+      <summary>
+        The IPv4 config method(see IPConfig::Method) provided by the carrier.
+      </summary>
+    </metric>
+    <metric name="ipv6_config_method" type="int">
+      <summary>
+        The IPv6 config method(see IPConfig::Method) provided by the carrier.
+      </summary>
+    </metric>
+    <metric name="connect_result" type="int">
+      <summary>
+        The result of the connection. This uses the same values as the metric
+        Network.Shill.Cellular.ConnectResult.
+      </summary>
+    </metric>
+    <metric name="home_mccmnc" type="int">
+      <summary>
+        The MCCMNC of the home provider.
+      </summary>
+    </metric>
+    <metric name="serving_mccmnc" type="int">
+      <summary>
+        The MCCMNC of the serving provider.
+      </summary>
+    </metric>
+    <metric name="roaming_state" type="int">
+      <summary>
+        Indicates if the device is roaming.
+      </summary>
+    </metric>
+    <metric name="apn_types" type="int">
+      <summary>
+        Indicates the APN types supported by the current APN. This field will
+        represent the bitmask of combination of APN types. Below are the
+        supported values:
+        DEFAULT = 1
+        IA = 2
+        DUN = 4
+      </summary>
+    </metric>
+    <metric name="apn_source" type="int">
+      <summary>
+        Indicates the source of the APN. Options are: MODB == 0 , UI == 1,
+        MODEM == 2.
+        </summary>
+    </metric>
+    <metric name="tech_used" type="int">
+      <summary>
+        Indicates the technologies in use for the connect attempt.
+
+        Value is a bitmask, allowing multiple simultaneous technologies, for
+        instance for proper 5G-NSA reporting. Values are defined by the
+        MMModemAccessTechnology enum in ModemManager[1].
+
+        [1] freedesktop.org/software/ModemManager/api/latest/ModemManager-Flags-and-Enumerations.html#MMModemAccessTechnology
+        </summary>
+    </metric>
+    <metric name="iccid_length" type="int">
+      <summary>
+        Indicates the length of ICCID used.
+      </summary>
+    </metric>
+    <metric name="sim_type" type="int">
+      <summary>
+        Indicates the type of SIM used. pSIM or eSIM.
+        Options are Unknown == 0 , pSIM == 1 , eSIM == 2.
+      </summary>
+    </metric>
+    <metric name="modem_state" type="int">
+      <summary>
+        Indicates the modem state at the time of connection.
+        Options are: Failed == -1 , Unknown == 0 ,
+        Initializing == 1 , Locked == 2 , Disabled == 3 ,
+        Disabling == 4 , Enabling == 5 , Enabled == 6 ,
+        Searching == 7 , Registered == 8 , Disconnecting == 9 ,
+        Connecting == 10 , Connected == 11.
+      </summary>
+    </metric>
+    <metric name="connect_time" type="int">
+      <summary>
+        Indicates the time in milliseconds, it took to connect to
+        the cellular network.
+      </summary>
+    </metric>
+    <metric name="scan_connect_time" type="int">
+      <summary>
+        Indicates the time in milliseconds, it took to scan and
+        connect to the cellular network.
+      </summary>
+    </metric>
+    <metric name="detailed_error" type="int">
+      <summary>
+        Indicates more granular and precise error, reported by
+        modem manager, libmbim, libqmi etc.
+      </summary>
+    </metric>
+    <metric name="gid1" type="int">
+      <summary>
+        The contents of the GID1 file in the SIM card, limited to the
+        first 8 bytes.
+      </summary>
+    </metric>
+    <metric name="use_apn_revamp_ui" type="int">
+      <summary>
+        Indicates if the new APN revamp UI is being used.
+      </summary>
+    </metric>
+    <metric name="connection_attempt_type" type="int">
+      <summary>
+        Indicates the way the connection attempt was triggered.
+        Options are Unknown == 0 , UserConnect == 1 , AutoConnect == 2.
+      </summary>
+    </metric>
+    <metric name="subscription_error_seen" type="int">
+      <summary>
+        Indicates if modem has earlier reported subscription error for
+        this card.
+      </summary>
+    </metric>
+    <metric name="connection_apn_types" type="int">
+      <summary>
+        Indicates the APN type used in the connection attempt, and the APN
+        types of all other connected bearers. Each APN type is represented
+        by a digit, and the order of the digits represents the connection order
+        from first on the left, to last on the right.
+        For example, a value of 23 indicates that a Default connection exists,
+        and a new connection attempt is tried with a DUN APN.
+        Below are the supported digit values:
+        IA = 1
+        DEFAULT = 2
+        DUN = 3
+      </summary>
+    </metric>
+    <metric name="last_connected" type="int">
+      <summary>
+        Indicates the time in milliseconds, device last connected successfully to the cellular network.
+      </summary>
+    </metric>
+    <metric name="last_online" type="int">
+      <summary>
+        Indicates the time in milliseconds, device last connected successfully to the internet.
+      </summary>
+    </metric>
+  </event>
+  <event name="ModemFwdFwInstallResult">
+    <summary>
+      Records information about the firmware installation
+      operation performed by modemfwd. This includes details
+      of firmware types which were installed by the modemfwd
+      and information about the result of the firmware install operation.
+      In case fimmware install operation fails and modem helpers are
+      able to provide detailed error codes about reason of failure, they
+      will also be included as part of this event.
+    </summary>
+    <metric name="firmware_types" type="int">
+      <summary>
+        Indicates the set of firmware types modemfwd was trying to
+        install. Modemfwd could install multiple types of firmware
+        together based on the current status of the modem. This field
+        will represent the bitmask of combination of firmware types
+        being installed.Check ModemFirmwareType in modemfwd/metrics.h
+        for possible firmware types.
+      </summary>
+    </metric>
+    <metric name="fw_install_result" type="int">
+      <summary>
+        Indicates the result of firmware install operation.
+        Check FwInstallResult in modemfwd/metrics.h for list
+        of possible values.
+      </summary>
+    </metric>
+  </event>
+  <event name="HermesOp">
+    <summary>
+      Records information about eSIM operations
+    </summary>
+    <metric name="Operation" type="int">
+      <summary>
+        Indicates the eSIM operation being performed.
+      </summary>
+    </metric>
+    <metric name="Result" type="int">
+      <summary>
+        Indicates the result of the eSIM operation. See
+        hermes/lpa_util.cc for list of values.
+      </summary>
+    </metric>
+    <metric name="home_mccmnc" type="int">
+      <summary>
+        Indicates the mccmnc of the profile on which the eSIM operation was
+        performed.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="PowerOptimization">
+    <summary>
+      The event is submit when a power optimization action is performed.
+    </summary>
+    <metric name="power_state" type="int">
+      <summary>
+        Indicates the new modem power state.
+      </summary>
+    </metric>
+    <metric name="reason" type="int">
+      <summary>
+        Indicates the reason of setting the new power state.
+      </summary>
+    </metric>
+    <metric name="since_last_online_hours" type="int">
+      <summary>
+        Indicates hours passed since last online before this
+        power optimization action.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="CellularNetworkValidationAttempt">
+    <summary>
+      Records information of the network validation attempt over cellular.
+      An entry is logged immediately after portal detection fails or succeeds.
+    </summary>
+    <metric name="apn_id" type="int">
+      <summary>
+        The ID of the APN used to establish the connection. This ID is a hash
+        of the string uuid+apn_name+username+password.
+      </summary>
+    </metric>
+    <metric name="portal_detection_result" type="int">
+      <summary>
+        Result of the portal detection attempt(see Metrics::PortalDetectorResult).
+      </summary>
+    </metric>
+    <metric name="initial_result" type="int">
+      <summary>
+        Indicates if this is an initial portal attempt. Set to 1
+        for initial attempt else 0.
+      </summary>
+    </metric>
+    <metric name="ipv4_config_method" type="int">
+      <summary>
+        The IPv4 config method(see IPConfig::Method) provided by the carrier.
+      </summary>
+    </metric>
+    <metric name="ipv6_config_method" type="int">
+      <summary>
+        The IPv6 config method(see IPConfig::Method) provided by the carrier.
+      </summary>
+    </metric>
+    <metric name="home_mccmnc" type="int">
+      <summary>
+        The MCCMNC of the home provider.
+      </summary>
+    </metric>
+    <metric name="serving_mccmnc" type="int">
+      <summary>
+        The MCCMNC of the serving provider.
+      </summary>
+    </metric>
+    <metric name="roaming_state" type="int">
+      <summary>
+        Indicates if the device is roaming.
+      </summary>
+    </metric>
+    <metric name="tech_used" type="int">
+      <summary>
+        Indicates the technologies in use for the connect attempt.
+
+        Value is a bitmask, allowing multiple simultaneous technologies, for
+        instance for proper 5G-NSA reporting. Values are defined by the
+        MMModemAccessTechnology enum in ModemManager[1].
+
+        [1] freedesktop.org/software/ModemManager/api/latest/ModemManager-Flags-and-Enumerations.html#MMModemAccessTechnology
+        </summary>
+    </metric>
+    <metric name="sim_type" type="int">
+      <summary>
+        Indicates the type of SIM used. pSIM or eSIM.
+        Options are Unknown == 0 , pSIM == 1 , eSIM == 2.
+      </summary>
+    </metric>
+  </event>
+
+</project>
+
+<project name="GuestUsbDevice">
+  <owner>drmasquatch@google.com</owner>
+  <owner>clumptini@google.com</owner>
+  <id>none</id>
+  <summary>
+    Project for recording info about USB devices that get attached to Crostini.
+  </summary>
+
+  <event name="UsbDeviceInfo">
+    <summary>
+      Records the USB device info when an attempt to connect it to Crostini is
+      made.
+    </summary>
+    <metric name="VendorId" type="int">
+      <summary>
+        The vendor id of the USB device.
+      </summary>
+    </metric>
+    <metric name="VendorName" type="raw-string">
+      <summary>
+        The vendor name of the USB device.
+      </summary>
+    </metric>
+    <metric name="ProductId" type="int">
+      <summary>
+        The product id of the USB device.
+      </summary>
+    </metric>
+    <metric name="ProductName" type="raw-string">
+      <summary>
+        The product name of the USB device.
+      </summary>
+    </metric>
+    <metric name="DeviceClass" type="int">
+      <summary>
+        The device class of the USB device.
+      </summary>
+    </metric>
+    <metric name="InterfaceClass" type="int-array" max="20">
+      <summary>
+        The list of interface classes of the USB device. It is highly unlikely
+        that a single device has more than 20 interfaces, so max set to 20.
+      </summary>
+    </metric>
+    <metric name="CrostiniConnectionSuccess" type="int">
+      <summary>
+        Boolean to denote success of connecting device to Crostini.
+      </summary>
+    </metric>
+    <metric name="GuestType" type="int">
+      <summary>
+        Enum for which guest the USB device is being connected to. Value
+        corresponds to system_api/dbus/vm_applications/apps.proto:VmType.
+      </summary>
+    </metric>
+  </event>
+</project>
+
+<project name="RollbackEnterprise">
+  <owner>crisguerrero@chromium.org</owner>
+  <owner>mpolzer@google.com</owner>
+  <owner>chromeos-commercial-remote-management@google.com</owner>
+  <id>per-project</id>
+
+  <summary>
+    Project for recording Enterprise Rollback metrics. Rollback involves a
+    powerwash. To ensure the metrics are not lost, we track the events that
+    happen before powerwash in a file and preserve it. Tracked events are
+    reported after powerwash. It is possible that the date when the event is
+    reported does not correspond to the date when the event happened.
+  </summary>
+
+  <event name="RollbackPolicyActivated">
+    <summary>
+      The administrator has set the policy to roll back to a previous version.
+      This event happens before powerwash.
+    </summary>
+    <metric name="origin_chromeos_version_major" type="int">
+      <summary>ChromeOS major version of the device when the policy was set.</summary>
+    </metric>
+    <metric name="origin_chromeos_version_minor" type="int">
+      <summary>ChromeOS minor version of the device when the policy was set.</summary>
+    </metric>
+    <metric name="origin_chromeos_version_patch" type="int">
+      <summary>ChromeOS patch version of the device when the policy was set.</summary>
+    </metric>
+    <metric name="target_chromeos_version_major" type="int">
+      <summary>ChromeOS major target version selected in the policy.</summary>
+    </metric>
+    <metric name="target_chromeos_version_minor" type="int">
+      <summary>ChromeOS minor target version selected in the policy.</summary>
+    </metric>
+    <metric name="target_chromeos_version_patch" type="int">
+      <summary>ChromeOS patch target version selected by the policy.</summary>
+    </metric>
+  </event>
+
+  <event name="RollbackOobeConfigSave">
+    <summary>
+      Result of the process that encrypts and saves rollback data.
+      This event happens before powerwash.
+    </summary>
+    <metric name="origin_chromeos_version_major" type="int">
+      <summary>ChromeOS major version of the device when the policy was set.</summary>
+    </metric>
+    <metric name="origin_chromeos_version_minor" type="int">
+      <summary>ChromeOS minor version of the device when the policy was set.</summary>
+    </metric>
+    <metric name="origin_chromeos_version_patch" type="int">
+      <summary>ChromeOS patch version of the device when the policy was set.</summary>
+    </metric>
+    <metric name="target_chromeos_version_major" type="int">
+      <summary>ChromeOS major target version selected in the policy.</summary>
+    </metric>
+    <metric name="target_chromeos_version_minor" type="int">
+      <summary>ChromeOS minor target version selected in the policy.</summary>
+    </metric>
+    <metric name="target_chromeos_version_patch" type="int">
+      <summary>ChromeOS patch target version selected by the policy.</summary>
+    </metric>
+    <metric name="result" type="int">
+      <summary>
+        Result of running oobe_config_save:
+          0: Success.
+          1: Failure to save rollback data.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="RollbackOobeConfigRestore">
+    <summary>
+      Result of the process that decrypts and restores rollback data.
+      This event happens after powerwash.
+    </summary>
+    <metric name="origin_chromeos_version_major" type="int">
+      <summary>ChromeOS major version of the device when the policy was set.</summary>
+    </metric>
+    <metric name="origin_chromeos_version_minor" type="int">
+      <summary>ChromeOS minor version of the device when the policy was set.</summary>
+    </metric>
+    <metric name="origin_chromeos_version_patch" type="int">
+      <summary>ChromeOS patch version of the device when the policy was set.</summary>
+    </metric>
+    <metric name="target_chromeos_version_major" type="int">
+      <summary>ChromeOS major target version selected in the policy.</summary>
+    </metric>
+    <metric name="target_chromeos_version_minor" type="int">
+      <summary>ChromeOS minor target version selected in the policy.</summary>
+    </metric>
+    <metric name="target_chromeos_version_patch" type="int">
+      <summary>ChromeOS patch target version selected by the policy.</summary>
+    </metric>
+    <metric name="result_chromeos_version_major" type="int">
+      <summary>ChromeOS major version of the device when reporting the event.</summary>
+    </metric>
+    <metric name="result_chromeos_version_minor" type="int">
+      <summary>ChromeOS minor version of the device when reporting the event.</summary>
+    </metric>
+    <metric name="result_chromeos_version_patch" type="int">
+      <summary>ChromeOS patch version of the device when reporting the event.</summary>
+    </metric>
+    <metric name="result" type="int">
+      <summary>
+        Result of running oobe_config_restore:
+          0: Success.
+          1: Failure to decrypt rollback data.
+          2: Failure to read decrypted rollback data.
+          3: Failure to parse rollback data.
+          4: Failure to restore rollback data to config.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="RollbackUpdateFailure">
+    <summary>
+      Enterprise Rollback update failed. This event happens before powerwash.
+      However, a powerwash is not imminent because of an error so the event
+      should be reported immediately instead of being tracked in the file.
+    </summary>
+    <metric name="origin_chromeos_version_major" type="int">
+      <summary>ChromeOS major version of the device when the policy was set.</summary>
+    </metric>
+    <metric name="origin_chromeos_version_minor" type="int">
+      <summary>ChromeOS minor version of the device when the policy was set.</summary>
+    </metric>
+    <metric name="origin_chromeos_version_patch" type="int">
+      <summary>ChromeOS patch version of the device when the policy was set.</summary>
+    </metric>
+    <metric name="target_chromeos_version_major" type="int">
+      <summary>ChromeOS major target version selected in the policy.</summary>
+    </metric>
+    <metric name="target_chromeos_version_minor" type="int">
+      <summary>ChromeOS minor target version selected in the policy.</summary>
+    </metric>
+    <metric name="target_chromeos_version_patch" type="int">
+      <summary>ChromeOS patch target version selected by the policy.</summary>
+    </metric>
+  </event>
+
+  <event name="RollbackCompleted">
+    <summary>
+      Enterprise Rollback took place and the device is owned.
+      This event happens after powerwash.
+    </summary>
+    <metric name="origin_chromeos_version_major" type="int">
+      <summary>ChromeOS major version of the device when the policy was set.</summary>
+    </metric>
+    <metric name="origin_chromeos_version_minor" type="int">
+      <summary>ChromeOS minor version of the device when the policy was set.</summary>
+    </metric>
+    <metric name="origin_chromeos_version_patch" type="int">
+      <summary>ChromeOS patch version of the device when the policy was set.</summary>
+    </metric>
+    <metric name="target_chromeos_version_major" type="int">
+      <summary>ChromeOS major target version selected in the policy.</summary>
+    </metric>
+    <metric name="target_chromeos_version_minor" type="int">
+      <summary>ChromeOS minor target version selected in the policy.</summary>
+    </metric>
+    <metric name="target_chromeos_version_patch" type="int">
+      <summary>ChromeOS patch target version selected by the policy.</summary>
+    </metric>
+    <metric name="result_chromeos_version_major" type="int">
+      <summary>ChromeOS major version of the device when reporting the event.</summary>
+    </metric>
+    <metric name="result_chromeos_version_minor" type="int">
+      <summary>ChromeOS minor version of the device when reporting the event.</summary>
+    </metric>
+    <metric name="result_chromeos_version_patch" type="int">
+      <summary>ChromeOS patch version of the device when reporting the event.</summary>
+    </metric>
+  </event>
+  <!-- TODO(b/300861453): Add P2 Enterprise Rollback metrics -->
+</project>
+
+<project name="rmad">
+  <owner>genechang@google.com</owner>
+  <id>per-project</id>
+  <summary>
+    Project for rmad to record Shimless RMA metrics. The metrics of the whole
+    RMA procedure are only recorded once after it is completed or aborted.
+
+    Note: this project skips the platform2-side UMA consent check for technical
+    reasons, and relies on the chromium-side consent check instead.
+  </summary>
+
+  <event name="ShimlessRmaReport">
+    <summary>
+      Record a shimless rma report once it is completed or aborted.
+    </summary>
+    <metric name="OverallTime" type="double">
+      <summary>Overall time spent to complete the whole process in seconds.</summary>
+    </metric>
+    <metric name="RunningTime" type="double">
+      <summary>Time spent with RMA daemon running in seconds.</summary>
+    </metric>
+    <metric name="IsComplete" type="int">
+      <summary>
+        Invocation of Shimless RMA:
+          1: RMA is complete, 0: RMA is aborted.
+      </summary>
+    </metric>
+    <metric name="RoVerificationStatus" type="int">
+      <summary>
+        RO verification of Shimless RMA:
+          0: Shimless RMA runs with unknown RO verification status.
+          1: Shimless RMA runs with RO verification successful.
+          2: Shimless RMA runs with RO verification unsupported. This should
+             not happen because it's already deprecated.
+          3: RO verification is not triggered. This should not happen because
+             Shimless RMA would not run.
+          4: RO verification fails. This should not happen because the DUT
+             would not boot.
+          5: RO verification is unsupported and not triggered. This should not
+             happen because Shimless RMA would not run.
+          6: Shimless RMA runs with RO verification unsupported but triggered.
+      </summary>
+    </metric>
+    <metric name="ReturningOwner" type="int">
+      <summary>
+        Destination of Shimless RMA:
+          0: Shimless RMA haven't known the returning owner yet
+          1: Shimless RMA run with the device returning to the same owner
+          2: Shimless RMA run with the device returning to a different owner
+      </summary>
+    </metric>
+    <metric name="MainboardReplacement" type="int">
+      <summary>
+        Replacement MLB of Shimless RMA:
+          0: Shimless RMA haven't known the mainboard replacement status
+          1: Shimless RMA run with a replaced MLB
+          2: Shimless RMA run with the original MLB
+      </summary>
+    </metric>
+    <metric name="WriteProtectDisableMethod" type="int">
+      <summary>
+        Write protection disable status of Shimless RMA:
+          0: Shimless RMA haven't known the write-protect status
+          1: Shimless RMA skip disabling write-protect
+          2: Shimless RMA run with write-protect being disabled via RSU
+          3: Shimless RMA run with write-protect being manually disabled with
+             immediate re-enablement
+          4: Shimless RMA run with write-protect being manually disabled and
+             keep the device open
+      </summary>
+    </metric>
+  </event>
+  <event name="ReplacedComponent">
+    <summary>
+      Record a component replaced in Shimless RMA. The event will be sent
+      several times per run, depending on how many components are replaced.
+    </summary>
+    <metric name="ComponentCategory" type="int">
+      <summary>
+        The category of the recorded component.
+        Enum for components defined in rmad.proto.
+      </summary>
+    </metric>
+  </event>
+  <event name="OccurredError">
+    <summary>Shimless RMA run with triggering of Error XYZ.</summary>
+    <metric name="ErrorType" type="int">
+      <summary>
+        The type of the recorded error.
+        Enum for errors defined in rmad.proto.
+      </summary>
+    </metric>
+  </event>
+  <event name="AdditionalActivity">
+    <summary>
+      Shimless RMA completed and an additional activity undertaken.
+    </summary>
+    <metric name="ActivityType" type="int">
+      <summary>
+        1: shutdown
+        2: reboot
+        3: battery cutoff
+        4: diagnostics
+      </summary>
+    </metric>
+  </event>
+  <event name="ShimlessRmaStateReport">
+    <summary>
+      For each state. record a shimless rma state report once whole
+      process is completed or aborted.
+    </summary>
+    <metric name="StateCase" type="int">
+      <summary>
+        Please refer to the RmadState of rmad.proto for more info.
+      </summary>
+    </metric>
+    <metric name="IsAborted" type="int">
+      <summary>
+        0: Abort is not called in the state.
+        1: Abort is called in the state.
+      </summary>
+    </metric>
+    <metric name="OverallTime" type="double">
+      <summary>Overall time spent to complete the state in seconds.</summary>
+    </metric>
+    <metric name="TransitionCount" type="int">
+      <summary>How many transitions were taken in the state.</summary>
+    </metric>
+    <metric name="GetLogCount" type="int">
+      <summary>How many get log were taken in the state.</summary>
+    </metric>
+    <metric name="SaveLogCount" type="int">
+      <summary>How many save log were taken in the state.</summary>
+    </metric>
+  </event>
+</project>
+
+<project name="UsbCameraModule">
+  <owner>ribalda@google.com</owner>
+  <owner>chromeos-camera-eng@google.com</owner>
+  <id>none</id>
+  <summary>
+    Project for recording the most common camera modules in the field.
+  </summary>
+
+  <event name="UsbCameraModuleInfo">
+    <summary>
+      Records the information about the Internal USB Camera Module.
+    </summary>
+    <metric name="VendorId" type="int">
+      <summary>
+        The vendor id of the USB Camera Module.
+      </summary>
+    </metric>
+    <metric name="VendorName" type="raw-string">
+      <summary>
+        The vendor name of the USB Camera Module.
+      </summary>
+    </metric>
+    <metric name="ProductId" type="int">
+      <summary>
+        The product id of the USB Camera Module.
+      </summary>
+    </metric>
+    <metric name="ProductName" type="raw-string">
+      <summary>
+        The product name of the USB Camera Module.
+      </summary>
+    </metric>
+    <metric name="BcdDevice" type="int">
+      <summary>
+        Firmware version of the device.
+      </summary>
+    </metric>
+  </event>
+</project>
+
+<project name="UsbDevice">
+  <owner>wonchung@google.com</owner>
+  <owner>chromeos-usb@google.com</owner>
+  <id>none</id>
+  <summary>
+    Project for recording basic USB device information that meets privacy constraints.
+  </summary>
+
+  <event name="UsbDeviceInfo">
+    <summary>
+      Records the USB device info.
+    </summary>
+    <metric name="VendorId" type="int">
+      <summary>
+        The vendor id of the USB device.
+      </summary>
+    </metric>
+    <metric name="VendorName" type="raw-string">
+      <summary>
+        The vendor name of the USB device.
+      </summary>
+    </metric>
+    <metric name="ProductId" type="int">
+      <summary>
+        The product id of the USB device.
+      </summary>
+    </metric>
+    <metric name="ProductName" type="raw-string">
+      <summary>
+        The product name of the USB device.
+      </summary>
+    </metric>
+    <metric name="DeviceClass" type="int">
+      <summary>
+        The device class of the USB device.
+      </summary>
+    </metric>
+    <metric name="InterfaceClass" type="int-array" max="20">
+      <summary>
+        The list of interface classes of the USB device. It is highly unlikely
+        that a single device has more than 20 interfaces, so max set to 20.
+      </summary>
+    </metric>
+  </event>
+</project>
+
+<project name="UsbSession">
+  <owner>jthies@google.com</owner>
+  <owner>chromeos-usb@google.com</owner>
+  <id>per-project</id>
+  <summary>
+    Records events at various points of USB device connection for more detailed
+    metrics on peripheral devices. These metrics are only recorded for devices
+    in the USB metrics allowlist.
+  </summary>
+  <event name="UsbSessionEvent">
+    <summary>
+      Records events emitted by the kernel at notable points during a USB connection lifecycle.
+    </summary>
+    <metric name="BootId" type="hmac-string">
+      <summary>
+        Random ID generated at boot time to detect reboots.
+      </summary>
+    </metric>
+    <metric name="SystemTime" type="int">
+      <summary>
+        The time elapsed since boot, in microseconds.
+      </summary>
+    </metric>
+    <metric name="Action" type="int">
+      <summary>
+        USB device action which caused the metric to be recorded (attach,
+        remove, etc.).
+      </summary>
+    </metric>
+    <metric name="DeviceNum" type="int">
+      <summary>
+        USB device number assigned by the kernel to each connected USB device.
+        Will be 0-127 and increment on every new device connection.
+      </summary>
+    </metric>
+    <metric name="BusNum" type="int">
+      <summary>
+        Bus number the USB device is connected on.
+      </summary>
+    </metric>
+    <metric name="Depth" type="int">
+      <summary>
+        Depth of device in the USB topology. This defines the number of hubs
+        between a device and the host controller.
+      </summary>
+    </metric>
+    <metric name="VendorId" type="int">
+      <summary>
+        The vendor id of the USB device.
+      </summary>
+    </metric>
+    <metric name="ProductId" type="int">
+      <summary>
+        The product id of the USB device.
+      </summary>
+    </metric>
+  </event>
+</project>
+
+<project name="UsbError">
+  <owner>jthies@google.com</owner>
+  <owner>chromeos-usb@google.com</owner>
+  <id>none</id>
+  <summary>
+    Project to record metrics on errors returned by notable kernel driver
+    functions.
+  </summary>
+  <event name="HubError">
+    <summary>
+      Records error uevent sent by the Hub driver.
+    </summary>
+    <metric name="ErrorCode" type="int">
+      <summary>
+        Linux kernel error code returned by function which sent the uevent.
+      </summary>
+    </metric>
+    <metric name="DeviceClass" type="int">
+      <summary>
+        The device class of the USB device which sent the uevent.
+      </summary>
+    </metric>
+    <metric name="VendorId" type="int">
+      <summary>
+        The vendor ID of the USB device which sent the uevent. This is filtered
+        through an allow list to only record vendor ID for popular devices.
+      </summary>
+    </metric>
+    <metric name="ProductId" type="int">
+      <summary>
+        The product ID of the USB device which sent the uevent. This is filtered
+        through an allow list to only record product ID for popular devices.
+      </summary>
+    </metric>
+    <metric name="DevicePath" type="raw-string">
+      <summary>
+        The device path of the usb device which sent the uevent, this value is
+        taken from the devpath file in the device's sysfs directory.
+      </summary>
+    </metric>
+    <metric name="ConnectedDuration" type="int">
+      <summary>
+        Time, in milliseconds, that the USB device has been connected.
+      </summary>
+    </metric>
+  </event>
+  <event name="XhciError">
+    <summary>
+      Records error uevent sent by the xHCI driver.
+    </summary>
+    <metric name="ErrorCode" type="int">
+      <summary>
+        Linux kernel error code returned by function which sent the uevent.
+      </summary>
+    </metric>
+    <metric name="DeviceClass" type="int">
+      <summary>
+        The device class of the kernel device which sent the error uevent.
+      </summary>
+    </metric>
+  </event>
+</project>
+
+<project name="UsbPdDevice">
+  <owner>wonchung@google.com</owner>
+  <owner>chromeos-usb@google.com</owner>
+  <id>none</id>
+  <summary>
+    Project for recording basic USB PD device information that meets privacy constraints.
+  </summary>
+
+  <event name="UsbPdDeviceInfo">
+    <summary>
+      Records the USB PD device info.
+    </summary>
+    <metric name="VendorId" type="int">
+      <summary>
+        The vendor id of the USB PD device.
+      </summary>
+    </metric>
+    <metric name="ProductId" type="int">
+      <summary>
+        The product id of the USB PD device.
+      </summary>
+    </metric>
+    <metric name="ExitId" type="int">
+      <summary>
+        XID of the USB PD device that is uniquely assigned by USB-IF once it is
+        certified. Set to 0 if the device is not certified.
+      </summary>
+    </metric>
+    <metric name="SupportsPd" type="int">
+      <summary>
+        Boolean to indicate if the device supports USB PD.
+      </summary>
+    </metric>
+    <metric name="SupportsUsb" type="int">
+      <summary>
+        Boolean to indicate if the device supports USB.
+      </summary>
+    </metric>
+    <metric name="SupportsDp" type="int">
+      <summary>
+        Boolean to indicate if the device supports DP alt mode.
+      </summary>
+    </metric>
+    <metric name="SupportsTbt" type="int">
+      <summary>
+        Boolean to indicate if the device supports TBT alt mode.
+      </summary>
+    </metric>
+    <metric name="SupportsUsb4" type="int">
+      <summary>
+        Boolean to indicate if the device supports USB4 mode.
+      </summary>
+    </metric>
+    <metric name="DataRole" type="int">
+      <summary>
+        Enum for data role. 0: None, 1: Device, 2: Host.
+      </summary>
+    </metric>
+    <metric name="PowerRole" type="int">
+      <summary>
+        Enum for power role. 0: None, 1: Sink, 2: Source.
+      </summary>
+    </metric>
+    <metric name="PartnerType" type="int">
+      <summary>
+        Partner category derived from USB PD identity and mode support.
+      </summary>
+    </metric>
+  </event>
+</project>
+
+<project name="WiFiChipset">
+  <owner>druth@google.com</owner>
+  <owner>matthewmwang@chromium.org</owner>
+  <owner>norvez@chromium.org</owner>
+  <owner>cros-network-metrics@google.com</owner>
+  <id>none</id>
+  <summary>
+    Information about the WiFi adapter present on the system. Different
+    project from the main "WiFi" project to meet privacy requirements.
+  </summary>
+
+  <event name="WiFiChipsetInfo">
+    <summary>
+      Records which chipset is installed on the system.
+    </summary>
+    <metric name="EventVersion" type="int">
+      <summary>
+        Integer version number that indicates the format of the event.
+        Used by the event processor to know which metric is available in a
+        particular event.
+        v0: unknown (should not happen)
+        v1: initial version
+      </summary>
+    </metric>
+    <metric name="VendorId" type="int">
+      <summary>
+        Manufacturer ID of the WiFi adapter.
+      </summary>
+    </metric>
+    <metric name="ProductId" type="int">
+      <summary>
+        Product ID of the WiFi adapter.
+      </summary>
+    </metric>
+    <metric name="SubsystemId" type="int">
+      <summary>
+        Subsystem ID of the WiFi adapter.
+      </summary>
+    </metric>
+  </event>
+</project>
+
+<project name="WiFiAP">
+  <owner>druth@google.com</owner>
+  <owner>matthewmwang@chromium.org</owner>
+  <owner>norvez@chromium.org</owner>
+  <owner>cros-network-metrics@google.com</owner>
+  <id>none</id>
+  <summary>
+    Information (e.g. OUI) about the AP we're connected to. Different project
+    from the main "WiFi" project to meet privacy requirements.
+  </summary>
+  <event name="WiFiAPInfo">
+    <summary>
+      Records information about the AP the device is attempting to connect to.
+    </summary>
+    <metric name="EventVersion" type="int">
+      <summary>
+        Integer version number that indicates the format of the event.
+        Used by the event processor to know which metric is available in a
+        particular event.
+        v0: unknown (should not happen)
+        v1: initial version
+      </summary>
+    </metric>
+    <metric name="APOUI" type="int">
+      <summary>
+        OUI of the AP we're connecting to.
+      </summary>
+    </metric>
+  </event>
+</project>
+
+<project name="WiFi">
+  <owner>druth@google.com</owner>
+  <owner>matthewmwang@chromium.org</owner>
+  <owner>norvez@chromium.org</owner>
+  <owner>cros-network-metrics@google.com</owner>
+  <id>per-project</id>
+  <summary>
+    WiFi health metrics.
+  </summary>
+
+  <event name="WiFiAdapterStateChanged">
+    <summary>
+      Records when the adapter is enabled/disabled.
+    </summary>
+    <metric name="BootId" type="hmac-string">
+      <summary>
+        Random ID generated at boot time to detect reboots.
+      </summary>
+    </metric>
+    <metric name="SystemTime" type="int">
+      <summary>
+        The time elapsed since boot, in microseconds.
+      </summary>
+    </metric>
+    <metric name="EventVersion" type="int">
+      <summary>
+        Integer version number that indicates the format of the event.
+        Used by the event processor to know which metric is available in a
+        particular event.
+        v0: unknown (should not happen)
+        v1: initial version
+      </summary>
+    </metric>
+    <metric name="AdapterState" type="int">
+      <summary>
+        The state of the WiFi adapter, 0 for disabled and 1 for enabled.
+      </summary>
+    </metric>
+    <metric name="VendorId" type="int">
+      <summary>
+        Manufacturer ID of the WiFi adapter.
+      </summary>
+    </metric>
+    <metric name="ProductId" type="int">
+      <summary>
+        Product ID of the WiFi adapter.
+      </summary>
+    </metric>
+    <metric name="SubsystemId" type="int">
+      <summary>
+        Subsystem ID of the WiFi adapter.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="WiFiConnectionAttempt">
+    <summary>
+      Device starts to try to connect to a particular AP.
+    </summary>
+    <metric name="BootId" type="hmac-string">
+      <summary>
+        Random ID generated at boot time to detect reboots.
+      </summary>
+    </metric>
+    <metric name="SystemTime" type="int">
+      <summary>
+        The time elapsed since boot, in microseconds.
+      </summary>
+    </metric>
+    <metric name="EventVersion" type="int">
+      <summary>
+        Integer version number that indicates the format of the event.
+        Used by the event processor to know which metric is available in a
+        particular event.
+        v0: unknown (should not happen)
+        v1: initial version
+      </summary>
+    </metric>
+    <metric name="SessionTag" type="int">
+      <summary>
+        A SessionTag links a WiFiConnectionAttempt, WiFiConnectionAttemptResult
+        and WiFiConnectionEnd that correspond to the same connection.
+      </summary>
+    </metric>
+    <metric name="AttemptType" type="int">
+      <summary>
+        Type of connection attempt (e.g. autoconnect, manual connect, ...)
+      </summary>
+    </metric>
+    <metric name="APPhyMode" type="int">
+      <summary>
+        Enum |WiFiNetworkPhyMode| reporting if we are connecting to 802.11n,
+        802.11ac, 802.11ax, etc.
+      </summary>
+    </metric>
+    <metric name="APSecurityMode" type="int">
+      <summary>
+        Enum |WiFiSecurity| reporting the security mode: Open? WEP? WPA? 802.1X?
+      </summary>
+    </metric>
+    <metric name="APSecurityEAPInnerProtocol" type="int">
+      <summary>
+        Enum |EapInnerProtocol| reporting the EAP inner protocol for 802.1X.
+      </summary>
+    </metric>
+    <metric name="APSecurityEAPOuterProtocol" type="int">
+      <summary>
+        Enum |EapOuterProtocol| reporting the EAP outer protocol for 802.1X.
+      </summary>
+    </metric>
+    <metric name="APBand" type="int">
+      <summary>
+        Enum |WiFiFrequencyRange| reporting the band we're connecting to:
+        2.4GHz, 5GHz, 6GHz.
+      </summary>
+    </metric>
+    <metric name="APChannel" type="int">
+      <summary>
+        Enum |WiFiChannel| describing the frequency of the channel we're
+        connecting on.
+      </summary>
+    </metric>
+    <metric name="RSSI" type="int">
+      <summary>
+        RSSI of the AP we're trying to connect to.
+      </summary>
+    </metric>
+    <metric name="SSID" type="hmac-string">
+      <summary>
+        Pseudonymized SSID that we're connecting to.
+      </summary>
+    </metric>
+    <metric name="SSIDProvisioningMode" type="int">
+      <summary>
+        Enum describing how the SSID was provisioned. Was it configured through
+        policy? Was it manually added? Was it synced?
+      </summary>
+    </metric>
+    <metric name="SSIDHidden" type="int">
+      <summary>
+        Set to 1 if we're connecting to a hidden SSID, 0 otherwise.
+      </summary>
+    </metric>
+    <metric name="BSSID" type="hmac-string">
+      <summary>
+        Pseudonymized BSSID that we're connecting to.
+      </summary>
+    </metric>
+    <metric name="APOUI" type="int">
+      <summary>
+        OUI of the AP. The 24 least significant bits contain the OUI.
+      </summary>
+    </metric>
+    <metric name="AP_80211krv_NLSSupport" type="int">
+      <summary>
+        Boolean indicating if the AP supports 802.11k/r/v neighbour lists or
+        not. Set to -1 if detection failed.
+      </summary>
+    </metric>
+    <metric name="AP_80211krv_OTA_FTSupport" type="int">
+      <summary>
+        Boolean indicating if the AP supports 802.11k/r/v Fast Transition
+        Over The Air or not. Set to -1 if detection failed.
+      </summary>
+    </metric>
+    <metric name="AP_80211krv_OTDS_FTSupport" type="int">
+      <summary>
+        Boolean indicating if the AP supports 802.11k/r/v Fast Transition
+        Over The DS or not. Set to -1 if detection failed.
+      </summary>
+    </metric>
+    <metric name="AP_80211krv_DMSSupport" type="int">
+      <summary>
+        Boolean indicating if the AP supports 802.11k/r/v DMS or not.
+        Set to -1 if detection failed.
+      </summary>
+    </metric>
+    <metric name="AP_80211krv_BSSMaxIdleSupport" type="int">
+      <summary>
+        Boolean indicating if the AP supports 802.11k/r/v BSS Max Idle period
+        feature or not. Set to -1 if detection failed.
+      </summary>
+    </metric>
+    <metric name="AP_80211krv_BSSTMSupport" type="int">
+      <summary>
+        Boolean indicating if the AP supports 802.11k/r/v BSS Transition
+        Management or not. Set to -1 if detection failed.
+      </summary>
+    </metric>
+    <metric name="AP_HS20Support" type="int">
+      <summary>
+        Boolean indicating if the AP supports Hotspot 2.0 (aka Passpoint) or
+        not. Set to -1 if detection failed.
+      </summary>
+    </metric>
+    <metric name="AP_HS20Version" type="int">
+      <summary>
+        Version of the Hotspot 2.0 (aka Passpoint) support.
+        Set to -1 if detection failed.
+      </summary>
+    </metric>
+    <metric name="AP_MBOSupport" type="int">
+      <summary>
+        Boolean indicating if the AP supports MBO or not.
+        Set to -1 if detection failed.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="WiFiConnectionAttemptResult">
+    <summary>
+      Report if the connection attempt succeeded or not and the reason if not.
+    </summary>
+    <metric name="BootId" type="hmac-string">
+      <summary>
+        Random ID generated at boot time to detect reboots.
+      </summary>
+    </metric>
+    <metric name="SystemTime" type="int">
+      <summary>
+        The time elapsed since boot, in microseconds.
+      </summary>
+    </metric>
+    <metric name="EventVersion" type="int">
+      <summary>
+        Integer version number that indicates the format of the event.
+        Used by the event processor to know which metric is available in a
+        particular event.
+        v0: unknown (should not happen)
+        v1: initial version
+      </summary>
+    </metric>
+    <metric name="SessionTag" type="int">
+      <summary>
+        A SessionTag links a WiFiConnectionAttempt, WiFiConnectionAttemptResult
+        and WiFiConnectionEnd that correspond to the same connection.
+      </summary>
+    </metric>
+    <metric name="ResultCode" type="int">
+      <summary>
+        Enum |NetworkServiceError| reporting the status of the connection
+        attempt.
+        Reports the error code (e.g. "too-many-stas") if the connection attempt
+        failed.
+        Reports 0 (NetworkServiceError::kNetworkServiceErrorNone) if the
+        connection attempt succeeded.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="WiFiIPConnectivityStatus">
+    <summary>
+      WiFi link is up, report if the device is fully IP provisioned or if there
+      are still IP connectivity failures (e.g. failed to get an IP address).
+    </summary>
+    <metric name="BootId" type="hmac-string">
+      <summary>
+        Random ID generated at boot time to detect reboots.
+      </summary>
+    </metric>
+    <metric name="SystemTime" type="int">
+      <summary>
+        The time elapsed since boot, in microseconds.
+      </summary>
+    </metric>
+    <metric name="EventVersion" type="int">
+      <summary>
+        Integer version number that indicates the format of the event.
+        Used by the event processor to know which metric is available in a
+        particular event.
+        v0: unknown (should not happen)
+        v1: initial version
+      </summary>
+    </metric>
+    <metric name="IPConnectivityStatus" type="int">
+      <summary>
+        Enum reporting the connectivity status (Connection OK, DHCP issues, ...)
+      </summary>
+    </metric>
+    <metric name="IPConnectivityType" type="int">
+      <summary>
+        Enum |NetworkConnectionIPType| reporting the type of connectivity (IPv4
+        or IPv6).
+      </summary>
+    </metric>
+  </event>
+
+  <event name="WiFiPortalDetectionStatus">
+    <summary>
+      IP connectivity is up, report the state of captive portal detection.
+    </summary>
+    <metric name="BootId" type="hmac-string">
+      <summary>
+        Random ID generated at boot time to detect reboots.
+      </summary>
+    </metric>
+    <metric name="SystemTime" type="int">
+      <summary>
+        The time elapsed since boot, in microseconds.
+      </summary>
+    </metric>
+    <metric name="EventVersion" type="int">
+      <summary>
+        Integer version number that indicates the format of the event.
+        Used by the event processor to know which metric is available in a
+        particular event.
+        v0: unknown (should not happen)
+        v1: initial version
+      </summary>
+    </metric>
+    <metric name="PortalDetectionStatus" type="int">
+      <summary>
+        Enum |PortalResult| reporting the status of the detection of the captive
+        portal.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="WiFiConnectionEnd">
+    <summary>
+      Report when the device disconnects or is disconnected from the AP.
+    </summary>
+    <metric name="BootId" type="hmac-string">
+      <summary>
+        Random ID generated at boot time to detect reboots.
+      </summary>
+    </metric>
+    <metric name="SystemTime" type="int">
+      <summary>
+        The time elapsed since boot, in microseconds.
+      </summary>
+    </metric>
+    <metric name="EventVersion" type="int">
+      <summary>
+        Integer version number that indicates the format of the event.
+        Used by the event processor to know which metric is available in a
+        particular event.
+        v0: unknown (should not happen)
+        v1: initial version
+      </summary>
+    </metric>
+    <metric name="SessionTag" type="int">
+      <summary>
+        A SessionTag links a WiFiConnectionAttempt, WiFiConnectionAttemptResult
+        and WiFiConnectionEnd that correspond to the same connection.
+      </summary>
+    </metric>
+    <metric name="DisconnectionType" type="int">
+      <summary>
+        Log what type of disconnection happened:
+        - expected because of suspend or poweroff
+        - expected because of roaming
+        - unexpected because the AP disconnected the device
+        - unexpected because the device no longer hears the AP
+        - etc
+      </summary>
+    </metric>
+    <metric name="DisconnectionReasonCode" type="int">
+      <summary>
+        Enum |WiFiReasonCode| to report the reason there was an unexpected
+        disconnection.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="WiFiLinkQualityTrigger">
+    <summary>
+      Report when shill or wpa_supplicant requests a Link Quality Report from
+      the firmware/driver. It can happen when the kernel has notified userspace
+      that the wireless link may be having issues (e.g. low RSSI, beacon or
+      packet loss, IP-level failures...) or when userspace simply wants to
+      monitor the quality of the link periodically.
+    </summary>
+    <metric name="BootId" type="hmac-string">
+      <summary>
+        Random ID generated at boot time to detect reboots.
+      </summary>
+    </metric>
+    <metric name="SystemTime" type="int">
+      <summary>
+        The time elapsed since boot, in microseconds.
+      </summary>
+    </metric>
+    <metric name="EventVersion" type="int">
+      <summary>
+        Integer version number that indicates the format of the event.
+        Used by the event processor to know which metric is available in a
+        particular event.
+        v0: unknown (should not happen)
+        v1: initial version
+      </summary>
+    </metric>
+    <metric name="SessionTag" type="int">
+      <summary>
+        A SessionTag links a WiFiConnectionAttempt, WiFiConnectionAttemptResult
+        and WiFiConnectionEnd that correspond to the same connection.
+      </summary>
+    </metric>
+    <metric name="Type" type="int">
+      <summary>
+        Enum |WiFiLinkQualityTrigger| to report what type of event triggered a
+        Link Quality Report:
+        - CQM event
+        - IP level failure
+        - Periodic polling
+        - ...
+      </summary>
+    </metric>
+  </event>
+
+  <event name="WiFiLinkQualityReport">
+    <summary>
+      Report statistics about the WiFi link (e.g. bitrate, TX retransmit rates)
+      that can be used to diagnose if the wireless link is “good” or “bad”.
+      Most metrics are defined in nl80211_sta_info and nl80211_rate_info,
+      or derived from some of those attributes.
+    </summary>
+    <metric name="BootId" type="hmac-string">
+      <summary>
+        Random ID generated at boot time to detect reboots.
+      </summary>
+    </metric>
+    <metric name="SystemTime" type="int">
+      <summary>
+        The time elapsed since boot, in microseconds.
+      </summary>
+    </metric>
+    <metric name="EventVersion" type="int">
+      <summary>
+        Integer version number that indicates the format of the event.
+        Used by the event processor to know which metric is available in a
+        particular event.
+        v0: unknown (should not happen)
+        v1: initial version
+      </summary>
+    </metric>
+    <metric name="SessionTag" type="int">
+      <summary>
+        A SessionTag links a WiFiConnectionAttempt, WiFiConnectionAttemptResult
+        and WiFiConnectionEnd that correspond to the same connection.
+      </summary>
+    </metric>
+    <metric name="RXPackets" type="int">
+      <summary>
+        Number of packets received (NL80211_STA_INFO_RX_PACKETS).
+      </summary>
+    </metric>
+    <metric name="RXBytes" type="int">
+      <summary>
+        Number of bytes received (NL80211_STA_INFO_RX_BYTES).
+      </summary>
+    </metric>
+    <metric name="TXPackets" type="int">
+      <summary>
+        Number of packets transmitted (NL80211_STA_INFO_TX_PACKETS).
+      </summary>
+    </metric>
+    <metric name="TXBytes" type="int">
+      <summary>
+        Number of bytes transmitted (NL80211_STA_INFO_TX_BYTES).
+      </summary>
+    </metric>
+    <metric name="TXRetries" type="int">
+      <summary>
+        Number of TX retransmissions (NL80211_STA_INFO_TX_RETRIES).
+      </summary>
+    </metric>
+    <metric name="TXFailures" type="int">
+      <summary>
+        Number of TX failures (NL80211_STA_INFO_TX_FAILED).
+      </summary>
+    </metric>
+    <metric name="RXDrops" type="int">
+      <summary>
+        Number of RX packets dropped (NL80211_STA_INFO_RX_DROP_MISC).
+      </summary>
+    </metric>
+    <metric name="Chain0Signal" type="int">
+      <summary>
+        Signal strength of chain 0 (NL80211_STA_INFO_CHAIN_SIGNAL).
+      </summary>
+    </metric>
+    <metric name="Chain0SignalAvg" type="int">
+      <summary>
+        Average signal strength (NL80211_STA_INFO_CHAIN_SIGNAL_AVG).
+      </summary>
+    </metric>
+    <metric name="Chain1Signal" type="int">
+      <summary>
+        Signal strength of chain 1 (NL80211_STA_INFO_CHAIN_SIGNAL).
+      </summary>
+    </metric>
+    <metric name="Chain1SignalAvg" type="int">
+      <summary>
+        Average signal strength (NL80211_STA_INFO_CHAIN_SIGNAL_AVG).
+      </summary>
+    </metric>
+    <metric name="BeaconSignalAvg" type="int">
+      <summary>
+        Average signal strength of beacons (NL80211_STA_INFO_BEACON_SIGNAL_AVG).
+      </summary>
+    </metric>
+    <metric name="BeaconsReceived" type="int">
+      <summary>
+        Number of beacons received (NL80211_STA_INFO_BEACON_RX).
+      </summary>
+    </metric>
+    <metric name="BeaconsLost" type="int">
+      <summary>
+        Number of beacons lost (NL80211_STA_INFO_BEACON_LOSS).
+      </summary>
+    </metric>
+    <metric name="ExpectedThroughput" type="int">
+      <summary>
+        Expected throughput (NL80211_STA_EXPECTED_THROUGHPUT).
+      </summary>
+    </metric>
+    <metric name="RXRate" type="int">
+      <summary>
+        RX bitrate in 100Kb/s units (NL80211_RATE_INFO_BITRATE32).
+      </summary>
+    </metric>
+    <metric name="RXMCS" type="int">
+      <summary>
+        RX MCS index.
+        nl80211: NL80211_RATE_INFO_MCS, NL80211_RATE_INFO_VHT_MCS,
+        NL80211_RATE_INFO_HE_MCS, NL80211_RATE_INFO_EHT_MCS
+      </summary>
+    </metric>
+    <metric name="RXChannelWidth" type="int">
+      <summary>
+        Bandwidth of the channel (20MHz, 40MHz, etc.)
+        nl80211: NL80211_ATTR_CHANNEL_WIDTH
+        shill: WiFiChannelWidth enum
+      </summary>
+    </metric>
+    <metric name="RXMode" type="int">
+      <summary>
+        Is the link in HT, VHT, HE, EHT mode?
+        nl80211: NL80211_RATE_INFO_VHT_*, NL80211_RATE_INFO_HE_*,
+        NL80211_RATE_INFO_EHT_*
+        shill: WiFiLinkStatsMode enum
+      </summary>
+    </metric>
+    <metric name="RXGuardInterval" type="int">
+      <summary>
+        Is the guard interval 400ns, 800ns, 1.6us or 3.2 us?
+        nl80211: NL80211_RATE_INFO_SHORT_GI, NL80211_RATE_INFO_HE_GI
+        shill: WiFiLinkStatsGI enum
+      </summary>
+    </metric>
+    <metric name="RXNSS" type="int">
+      <summary>
+        RX NSS, number of spatial streams.
+        nl80211: NL80211_RATE_INFO_VHT_NSS, NL80211_RATE_INFO_HE_NSS
+      </summary>
+    </metric>
+    <metric name="RXDCM" type="int">
+      <summary>
+        RX HE DCM, dual carrier modulation (NL80211_RATE_INFO_HE_DCM).
+      </summary>
+    </metric>
+    <metric name="TXRate" type="int">
+      <summary>
+        TX bitrate in 100Kb/s units (NL80211_RATE_INFO_BITRATE32).
+      </summary>
+    </metric>
+    <metric name="TXMCS" type="int">
+      <summary>
+        TX MCS index.
+        nl80211: NL80211_RATE_INFO_MCS, NL80211_RATE_INFO_VHT_MCS,
+        NL80211_RATE_INFO_HE_MCS, NL80211_RATE_INFO_EHT_MCS
+      </summary>
+    </metric>
+    <metric name="TXChannelWidth" type="int">
+      <summary>
+        Bandwidth of the channel (20MHz, 40MHz, etc.). Identical to
+        RXChannelWidth, kept for compatibility reasons.
+        nl80211: NL80211_ATTR_CHANNEL_WIDTH
+        shill: WiFiChannelWidth enum
+        TODO(b/261499918): when we uprev EventVersion, only keep one of the
+        redundant fields.
+      </summary>
+    </metric>
+    <metric name="TXMode" type="int">
+      <summary>
+        Is the link in HT, VHT, HE, EHT mode?
+        nl80211: NL80211_RATE_INFO_VHT_*, NL80211_RATE_INFO_HE_*,
+        NL80211_RATE_INFO_EHT_*
+        shill: WiFiLinkStatsMode enum
+      </summary>
+    </metric>
+    <metric name="TXGuardInterval" type="int">
+      <summary>
+        Is the guard interval 400ns, 800ns, 1.6us or 3.2 us?
+        nl80211: NL80211_RATE_INFO_SHORT_GI, NL80211_RATE_INFO_HE_GI
+        shill: WiFiLinkStatsGI enum
+      </summary>
+    </metric>
+    <metric name="TXNSS" type="int">
+      <summary>
+        TX NSS, number of spatial streams.
+        nl80211: NL80211_RATE_INFO_VHT_NSS, NL80211_RATE_INFO_HE_NSS
+      </summary>
+    </metric>
+    <metric name="TXDCM" type="int">
+      <summary>
+        TX HE DCM, dual carrier modulation (NL80211_RATE_INFO_HE_DCM).
+      </summary>
+    </metric>
+    <metric name="BTEnabled" type="int">
+      <summary>
+        Boolean. Is Bluetooth enabled?
+      </summary>
+    </metric>
+    <metric name="BTStack" type="int">
+      <summary>
+        Enum describing which BT stack (BlueZ, Floss, ...) is in use.
+        shill: Metrics::BTStack enum
+      </summary>
+    </metric>
+    <metric name="BTHFP" type="int">
+      <summary>
+        Boolean. Is Bluetooth performing HFP?
+      </summary>
+    </metric>
+    <metric name="BTA2DP" type="int">
+      <summary>
+        Boolean. Is Bluetooth performing A2DP?
+      </summary>
+    </metric>
+    <metric name="BTActivelyScanning" type="int">
+      <summary>
+        Boolean. Is Bluetooth scanning actively?
+      </summary>
+    </metric>
+    <metric name="FCSErrors" type="int">
+      <summary>
+        FCS Errors (NL80211_STA_INFO_FCS_ERROR_COUNT).
+      </summary>
+    </metric>
+    <metric name="RXMPDUS" type="int">
+      <summary>
+        RX MPDUS (NL80211_STA_INFO_RX_MPDUS).
+      </summary>
+    </metric>
+    <metric name="InactiveTime" type="int">
+      <summary>
+        Inactive time (NL80211_STA_INFO_INACTIVE_TIME).
+      </summary>
+    </metric>
+    <metric name="Noise" type="int">
+      <summary>
+        Noise level of channel (NL80211_SURVEY_INFO_NOISE).
+      </summary>
+    </metric>
+    <metric name="AckSignalAverage" type="int">
+      <summary>
+        Ack Signal Average (NL80211_STA_INFO_ACK_SIGNAL_AVG).
+      </summary>
+    </metric>
+    <metric name="LastAckSignal" type="int">
+      <summary>
+        Last Ack Signal (NL80211_STA_INFO_ACK_SIGNAL).
+      </summary>
+    </metric>
+    <metric name="Signal" type="int">
+      <summary>
+        Signal (NL80211_STA_INFO_SIGNAL).
+      </summary>
+    </metric>
+    <metric name="SignalAverage" type="int">
+      <summary>
+        Signal Average (NL80211_STA_INFO_SIGNAL_AVG).
+      </summary>
+    </metric>
+  </event>
+
+</project>
+
+
+<project name="AudioPeripheralInfo">
+  <owner>chromeos-audio-bugs@google.com</owner>
+  <id>none</id>
+  <summary>
+    Project for audio peripheral popularity study. This is to get the list of top audio peripherals.
+  </summary>
+  <event name="Info">
+    <summary>
+      Emit before trying to use the device.
+    </summary>
+    <metric name="Type" type="int">
+      <summary>
+        enum CRAS_NODE_TYPE.
+      </summary>
+    </metric>
+    <metric name="VendorId" type="int">
+      <summary>
+        The vendor id of the device.
+      </summary>
+    </metric>
+    <metric name="ProductId" type="int">
+      <summary>
+        The product id of the device.
+      </summary>
+    </metric>
+  </event>
+</project>
+
+<project name="AudioPeripheral">
+  <owner>chromeos-audio-bugs@google.com</owner>
+  <id>per-project</id>
+  <summary>
+    Project for top audio peripherals running time and audio settings study.
+  </summary>
+<event name="Close">
+    <summary>
+      Emit when close the device.
+    </summary>
+    <metric name="Type" type="int">
+      <summary>
+        enum CRAS_NODE_TYPE.
+      </summary>
+    </metric>
+    <metric name="VendorId" type="int">
+      <summary>
+        The vendor id of the USB device.
+      </summary>
+    </metric>
+    <metric name="ProductId" type="int">
+      <summary>
+        The product id of the USB device.
+      </summary>
+    </metric>
+    <metric name="DeviceRuntime" type="int">
+      <summary>
+        The runtime is the duration between opening and closing a device. The value is recorded when the device is closed.
+      </summary>
+    </metric>
+    <metric name="SamplingRate" type="int">
+      <summary>
+        The sampling rate to open the device.
+      </summary>
+    </metric>
+    <metric name="Channel" type="int">
+      <summary>
+        The channel count to open the device.
+      </summary>
+    </metric>
+    <metric name="PCMFormat" type="int">
+      <summary>
+        The snd_pcm_format_t to open the device.
+      </summary>
+    </metric>
+  </event>
+</project>
+
+<project name="TestProjectOne">
+  <owner>tby@chromium.org</owner>
+  <id>none</id>
+  <summary>
+    Project for unit testing, do not use.
+  </summary>
+  <event name="TestEventOne">
+    <summary>
+      Event for unit testing, do not use.
+    </summary>
+    <metric name="TestMetricOne" type="hmac-string">
+      <summary>
+        A per-user keyed hashed value.
+      </summary>
+    </metric>
+    <metric name="TestMetricTwo" type="int">
+      <summary>
+        An unhashed value, recorded as-is.
+      </summary>
+    </metric>
+    <metric name="TestMetricThree" type="double">
+      <summary>
+        An unhashed double value, recorded as-is.
+      </summary>
+    </metric>
+  </event>
+  <event name="TestEventTwo">
+    <summary>
+      Event for unit testing, do not use.
+    </summary>
+    <metric name="TestMetricThree" type="int">
+      <summary>
+        A per-user keyed hashed value.
+      </summary>
+    </metric>
+  </event>
+</project>
+
+<project name="TestProjectTwo">
+  <owner>tby@chromium.org</owner>
+  <id>none</id>
+  <summary>
+    Project for unit testing, do not use.
+  </summary>
+  <event name="TestEventThree">
+    <summary>
+      Event for unit testing, do not use.
+    </summary>
+    <metric name="TestMetricFour" type="hmac-string">
+      <summary>
+        A per-user keyed hashed value.
+      </summary>
+    </metric>
+  </event>
+</project>
+
+<project name="TestProjectThree">
+  <owner>andrewbregger@google.com</owner>
+  <id>none</id>
+  <summary>
+    Project for unit testing, do not use.
+  </summary>
+  <event name="TestEventFour">
+    <summary>
+      Event for unit testing, do not use.
+    </summary>
+    <metric name="TestMetricFive" type="int-array" max="10">
+      <summary>
+        A per-user keyed hash array value.
+      </summary>
+    </metric>
+  </event>
+</project>
+
+</structured-metrics>
