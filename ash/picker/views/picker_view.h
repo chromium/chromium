@@ -31,7 +31,6 @@ class PickerSearchFieldView;
 class PickerSearchResult;
 class PickerSearchResults;
 class PickerSearchResultsView;
-class PickerUserEducationView;
 class PickerViewDelegate;
 class PickerZeroStateView;
 class PickerCategoryView;
@@ -124,7 +123,6 @@ class ASH_EXPORT PickerView : public views::WidgetDelegateView {
   raw_ptr<PickerZeroStateView> zero_state_view_ = nullptr;
   raw_ptr<PickerCategoryView> category_view_ = nullptr;
   raw_ptr<PickerSearchResultsView> search_results_view_ = nullptr;
-  raw_ptr<PickerUserEducationView> user_education_view_ = nullptr;
 
   base::WeakPtrFactory<PickerView> weak_ptr_factory_{this};
 };

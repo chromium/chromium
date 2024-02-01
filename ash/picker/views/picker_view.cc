@@ -13,7 +13,6 @@
 #include "ash/picker/views/picker_contents_view.h"
 #include "ash/picker/views/picker_search_field_view.h"
 #include "ash/picker/views/picker_search_results_view.h"
-#include "ash/picker/views/picker_user_education_view.h"
 #include "ash/picker/views/picker_view_delegate.h"
 #include "ash/picker/views/picker_zero_state_view.h"
 #include "base/check.h"
@@ -149,10 +148,8 @@ PickerView::PickerView(PickerViewDelegate* delegate,
       AddSearchFieldView();
       AddChildView(CreateSeparator());
       AddContentsView();
-      AddChildView(std::make_unique<PickerUserEducationView>());
       break;
     case PickerLayoutType::kResultsAboveSearchField:
-      AddChildView(std::make_unique<PickerUserEducationView>());
       AddContentsView();
       AddChildView(CreateSeparator());
       AddSearchFieldView();
