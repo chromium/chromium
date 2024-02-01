@@ -66,9 +66,9 @@ class CORE_EXPORT SoftNavigationHeuristics
                                  EventScopeType,
                                  bool is_new_interaction);
   void UserInitiatedInteraction();
-  void SameDocumentNavigationStarted(ScriptState*);
-  void SameDocumentNavigationCommitted(ScriptState*, const String& url);
-  bool ModifiedDOM(ScriptState*);
+  void SameDocumentNavigationStarted();
+  void SameDocumentNavigationCommitted(const String& url);
+  bool ModifiedDOM();
   uint32_t SoftNavigationCount() { return soft_navigation_count_; }
 
   // TaskAttributionTracker::Observer's implementation.
@@ -120,19 +120,18 @@ class CORE_EXPORT SoftNavigationHeuristics
   };
 
   void ReportSoftNavigationToMetrics(LocalFrame* frame) const;
-  void CheckSoftNavigationConditions(const PerInteractionData& data,
-                                     ScriptState* script_state);
+  void CheckSoftNavigationConditions(const PerInteractionData& data);
   void SetIsTrackingSoftNavigationHeuristicsOnDocument(bool value) const;
 
   absl::optional<scheduler::TaskAttributionId>
-  GetUserInteractionAncestorTaskIfAny(ScriptState*);
+  GetUserInteractionAncestorTaskIfAny();
   absl::optional<scheduler::TaskAttributionId> SetFlagIfDescendantAndCheck(
-      ScriptState*,
       FlagType);
   void ResetHeuristic();
   void ResetPaintsIfNeeded();
   void CommitPreviousPaints(LocalFrame*);
   void EmitSoftNavigationEntryIfAllConditionsMet(LocalFrame*);
+  LocalFrame* GetLocalFrameIfNotDetached() const;
 
   PerInteractionData* GetCurrentInteractionData(scheduler::TaskAttributionId);
 

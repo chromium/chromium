@@ -178,8 +178,7 @@ void SoftNavigationHeuristics::UserInitiatedInteraction() {
 }
 
 absl::optional<scheduler::TaskAttributionId>
-SoftNavigationHeuristics::GetUserInteractionAncestorTaskIfAny(
-    ScriptState* script_state) {
+SoftNavigationHeuristics::GetUserInteractionAncestorTaskIfAny() {
   using IterationStatus = scheduler::TaskAttributionTracker::IterationStatus;
 
   if (potential_soft_navigation_tasks_.empty()) {
@@ -189,7 +188,8 @@ SoftNavigationHeuristics::GetUserInteractionAncestorTaskIfAny(
   DCHECK(scheduler);
   if (scheduler::TaskAttributionTracker* tracker =
           scheduler->GetTaskAttributionTracker()) {
-    scheduler::TaskAttributionInfo* task = tracker->RunningTask(script_state);
+    scheduler::TaskAttributionInfo* task =
+        tracker->RunningTask(GetExecutionContext()->GetIsolate());
     if (!task) {
       return absl::nullopt;
     }
@@ -217,10 +217,9 @@ SoftNavigationHeuristics::GetUserInteractionAncestorTaskIfAny(
 }
 
 absl::optional<scheduler::TaskAttributionId>
-SoftNavigationHeuristics::SetFlagIfDescendantAndCheck(ScriptState* script_state,
-                                                      FlagType type) {
+SoftNavigationHeuristics::SetFlagIfDescendantAndCheck(FlagType type) {
   absl::optional<scheduler::TaskAttributionId> result =
-      GetUserInteractionAncestorTaskIfAny(script_state);
+      GetUserInteractionAncestorTaskIfAny();
   if (!result) {
     // A non-descendent URL change should not set the flag.
     return absl::nullopt;
@@ -230,20 +229,18 @@ SoftNavigationHeuristics::SetFlagIfDescendantAndCheck(ScriptState* script_state,
     return absl::nullopt;
   }
   data->flag_set.Put(type);
-  CheckSoftNavigationConditions(*data, script_state);
+  CheckSoftNavigationConditions(*data);
   return result;
 }
 
-void SoftNavigationHeuristics::SameDocumentNavigationStarted(
-    ScriptState* script_state) {
+void SoftNavigationHeuristics::SameDocumentNavigationStarted() {
   last_soft_navigation_ancestor_task_ =
-      SetFlagIfDescendantAndCheck(script_state, FlagType::kURLChange);
+      SetFlagIfDescendantAndCheck(FlagType::kURLChange);
   TRACE_EVENT1("scheduler",
                "SoftNavigationHeuristics::SameDocumentNavigationStarted",
                "descendant", !!last_soft_navigation_ancestor_task_);
 }
 void SoftNavigationHeuristics::SameDocumentNavigationCommitted(
-    ScriptState* script_state,
     const String& url) {
   if (!last_soft_navigation_ancestor_task_) {
     return;
@@ -256,24 +253,22 @@ void SoftNavigationHeuristics::SameDocumentNavigationCommitted(
   // This is overriding the URL, which is required to support history
   // modifications inside a popstate event.
   data->url = url;
-  CheckSoftNavigationConditions(*data, script_state);
+  CheckSoftNavigationConditions(*data);
   TRACE_EVENT1("scheduler",
                "SoftNavigationHeuristics::SameDocumentNavigationCommitted",
                "url", url);
 }
 
-bool SoftNavigationHeuristics::ModifiedDOM(ScriptState* script_state) {
+bool SoftNavigationHeuristics::ModifiedDOM() {
   bool descendant =
-      SetFlagIfDescendantAndCheck(script_state, FlagType::kMainModification)
-          .has_value();
+      SetFlagIfDescendantAndCheck(FlagType::kMainModification).has_value();
   TRACE_EVENT1("scheduler", "SoftNavigationHeuristics::ModifiedDOM",
                "descendant", descendant);
   return descendant;
 }
 
 void SoftNavigationHeuristics::CheckSoftNavigationConditions(
-    const SoftNavigationHeuristics::PerInteractionData& data,
-    ScriptState* script_state) {
+    const SoftNavigationHeuristics::PerInteractionData& data) {
   if (data.flag_set != FlagTypeSet::All()) {
     return;
   }
@@ -287,9 +282,7 @@ void SoftNavigationHeuristics::CheckSoftNavigationConditions(
   soft_navigation_conditions_met_ = true;
   soft_navigation_interaction_data_ = &data;
 
-  v8::HandleScope handle_scope(script_state->GetIsolate());
-  LocalFrame* frame = ToLocalFrameIfNotDetached(script_state->GetContext());
-  EmitSoftNavigationEntryIfAllConditionsMet(frame);
+  EmitSoftNavigationEntryIfAllConditionsMet(GetLocalFrameIfNotDetached());
 }
 
 void SoftNavigationHeuristics::EmitSoftNavigationEntryIfAllConditionsMet(
@@ -443,9 +436,7 @@ void SoftNavigationHeuristics::SetCurrentTimeAsStartTime() {
     // nested event scope).
     data->user_interaction_timestamp = base::TimeTicks::Now();
   }
-  LocalDOMWindow* window = GetSupplementable();
-  LocalFrame* frame =
-      window->IsCurrentlyDisplayedInFrame() ? window->GetFrame() : nullptr;
+  LocalFrame* frame = GetLocalFrameIfNotDetached();
   EmitSoftNavigationEntryIfAllConditionsMet(frame);
 }
 
@@ -485,17 +476,14 @@ void SoftNavigationHeuristics::ReportSoftNavigationToMetrics(
 }
 
 void SoftNavigationHeuristics::ResetPaintsIfNeeded() {
-  LocalDOMWindow* window = GetSupplementable();
-  LocalFrame* frame =
-      window->IsCurrentlyDisplayedInFrame() ? window->GetFrame() : nullptr;
+  LocalFrame* frame = GetLocalFrameIfNotDetached();
   if (!frame || !frame->IsOutermostMainFrame()) {
     return;
   }
   if (!did_reset_paints_) {
     LocalFrameView* local_frame_view = frame->View();
-
     CHECK(local_frame_view);
-
+    LocalDOMWindow* window = GetSupplementable();
     if (RuntimeEnabledFeatures::SoftNavigationHeuristicsEnabled(window)) {
       if (Document* document = window->document();
           document &&
@@ -582,7 +570,7 @@ void SoftNavigationHeuristics::OnCreateTaskScope(
                             current_event_parameters_->is_new_interaction);
   if (current_event_parameters_->type ==
       SoftNavigationHeuristics::EventScopeType::kNavigate) {
-    SameDocumentNavigationStarted(script_state);
+    SameDocumentNavigationStarted();
   }
 }
 
@@ -603,6 +591,11 @@ void SoftNavigationHeuristics::ProcessCustomWeakness(
 
 ExecutionContext* SoftNavigationHeuristics::GetExecutionContext() {
   return GetSupplementable();
+}
+
+LocalFrame* SoftNavigationHeuristics::GetLocalFrameIfNotDetached() const {
+  LocalDOMWindow* window = GetSupplementable();
+  return window->IsCurrentlyDisplayedInFrame() ? window->GetFrame() : nullptr;
 }
 
 // SoftNavigationEventScope implementation

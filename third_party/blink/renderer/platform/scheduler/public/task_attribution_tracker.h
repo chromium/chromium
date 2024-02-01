@@ -19,6 +19,10 @@ class ExecutionContext;
 class ScriptState;
 }  // namespace blink
 
+namespace v8 {
+class Isolate;
+}  // namespace v8
+
 namespace blink::scheduler {
 
 class TaskAttributionInfo;
@@ -72,7 +76,10 @@ class PLATFORM_EXPORT TaskAttributionTracker {
       AbortSignal* abort_source,
       DOMTaskSignal* priority_source) = 0;
 
-  // Get the ID of the currently running task.
+  // Get the `TaskAttributionInfo` for the currently running task.
+  virtual TaskAttributionInfo* RunningTask(v8::Isolate*) const = 0;
+  // TODO(crbug.com/1351643): Remove this overload once converting everything to
+  // the Isolate version.
   virtual TaskAttributionInfo* RunningTask(ScriptState*) const = 0;
 
   // Returns true iff `task` has an ancestor task with `ancestor_id`.

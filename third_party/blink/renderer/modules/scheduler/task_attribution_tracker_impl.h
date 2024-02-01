@@ -22,6 +22,10 @@ class DOMTaskSignal;
 class ScriptWrappableTaskState;
 }  // namespace blink
 
+namespace v8 {
+class Isolate;
+}  // namespace v8
+
 namespace blink::scheduler {
 
 // This class is used to keep track of tasks posted on the main thread and their
@@ -35,6 +39,7 @@ class MODULES_EXPORT TaskAttributionTrackerImpl
  public:
   TaskAttributionTrackerImpl();
 
+  TaskAttributionInfo* RunningTask(v8::Isolate*) const override;
   TaskAttributionInfo* RunningTask(ScriptState*) const override;
 
   bool IsAncestor(const TaskAttributionInfo& task,

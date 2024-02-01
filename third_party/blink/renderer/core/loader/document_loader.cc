@@ -999,31 +999,26 @@ void DocumentLoader::UpdateForSameDocumentNavigation(
 
   std::unique_ptr<SoftNavigationEventScope> soft_navigation_event_scope;
   SoftNavigationHeuristics* heuristics = nullptr;
-  ScriptState* script_state = nullptr;
   if (frame_->IsMainFrame() &&
       base::FeatureList::IsEnabled(features::kSoftNavigationDetection)) {
-    script_state = ToScriptStateForMainWorld(frame_);
-    if (script_state) {
-      CHECK(frame_->DomWindow());
-      heuristics = SoftNavigationHeuristics::From(*frame_->DomWindow());
-      if (is_browser_initiated) {
-        // For browser-initiated navigations, we never started the soft
-        // navigation (as this is the first we hear of it in the renderer). We
-        // need to do that now.
-        soft_navigation_event_scope =
-            std::make_unique<SoftNavigationEventScope>(
-                heuristics, SoftNavigationHeuristics::EventScopeType::kNavigate,
-                /*is_new_interaction=*/true);
-        heuristics->SameDocumentNavigationStarted(script_state);
-      }
+    CHECK(frame_->DomWindow());
+    heuristics = SoftNavigationHeuristics::From(*frame_->DomWindow());
+    if (is_browser_initiated) {
+      // For browser-initiated navigations, we never started the soft
+      // navigation (as this is the first we hear of it in the renderer). We
+      // need to do that now.
+      soft_navigation_event_scope = std::make_unique<SoftNavigationEventScope>(
+          heuristics, SoftNavigationHeuristics::EventScopeType::kNavigate,
+          /*is_new_interaction=*/true);
+      heuristics->SameDocumentNavigationStarted();
     }
   }
 
   scheduler::TaskAttributionInfo* parent_task = nullptr;
   if (heuristics && soft_navigation_heuristics_task_id) {
-    // if `heuristics` exists it means we're in an outermost main frame, and in
-    // the main world.
-
+    // If `heuristics` exists, it means we're in an outermost main frame; if
+    // `soft_navigation_heuristics_task_id` exists, it means the task state
+    // being propagated was captured in a main world history API call.
     CHECK(ThreadScheduler::Current());
     if (auto* tracker =
             ThreadScheduler::Current()->GetTaskAttributionTracker()) {
@@ -1055,10 +1050,11 @@ void DocumentLoader::UpdateForSameDocumentNavigation(
     }
   }
   if (heuristics && new_url != old_url) {
-    // if `heuristics` exists it means we're in an outermost main frame, and in
-    // the main world.
-    CHECK(script_state);
-    heuristics->SameDocumentNavigationCommitted(script_state, new_url);
+    // if `heuristics` exists it means we're in an outermost main frame.
+    //
+    // TODO(crbug.com/1521100): `heuristics` existing does not imply this
+    // navigation was initiated in the main world.
+    heuristics->SameDocumentNavigationCommitted(new_url);
   }
 }
 

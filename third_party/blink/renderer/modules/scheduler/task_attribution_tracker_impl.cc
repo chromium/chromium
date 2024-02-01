@@ -53,13 +53,19 @@ int64_t TaskAttributionIdToInt(absl::optional<TaskAttributionId> id) {
 TaskAttributionTrackerImpl::TaskAttributionTrackerImpl() : next_task_id_(0) {}
 
 TaskAttributionInfo* TaskAttributionTrackerImpl::RunningTask(
-    ScriptState* script_state) const {
+    v8::Isolate* isolate) const {
   ScriptWrappableTaskState* task_state =
-      ScriptWrappableTaskState::GetCurrent(script_state->GetIsolate());
+      ScriptWrappableTaskState::GetCurrent(isolate);
 
   // V8 embedder state may have no value in the case of a JSPromise that wasn't
   // yet resolved.
   return task_state ? task_state->GetTask() : running_task_.Get();
+}
+
+TaskAttributionInfo* TaskAttributionTrackerImpl::RunningTask(
+    ScriptState* script_state) const {
+  CHECK(script_state);
+  return RunningTask(script_state->GetIsolate());
 }
 
 bool TaskAttributionTrackerImpl::IsAncestor(const TaskAttributionInfo& task,

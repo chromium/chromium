@@ -908,14 +908,9 @@ void LocalDOMWindow::EnqueueHashchangeEvent(const String& old_url,
                                             const String& new_url) {
   DCHECK(GetFrame());
   if (GetFrame()->IsMainFrame()) {
-    if (auto* script_state = ToScriptStateForMainWorld(GetFrame())) {
-      // script_state can be nullptr here.
-      // TODO(yoav): get a better understanding of when this happens and add a
-      // test to guard against this.
-      SoftNavigationHeuristics* heuristics =
-          SoftNavigationHeuristics::From(*this);
-      heuristics->SameDocumentNavigationStarted(script_state);
-    }
+    SoftNavigationHeuristics* heuristics =
+        SoftNavigationHeuristics::From(*this);
+    heuristics->SameDocumentNavigationStarted();
   }
   // https://html.spec.whatwg.org/C/#history-traversal
   EnqueueWindowEvent(*HashChangeEvent::Create(old_url, new_url),
