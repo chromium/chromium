@@ -75,7 +75,7 @@ std::unique_ptr<KeyedService> CreateAutocompleteClassifier(
 
 }  // namespace
 
-TestWithBrowserView::~TestWithBrowserView() {}
+TestWithBrowserView::~TestWithBrowserView() = default;
 
 void TestWithBrowserView::SetUp() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -87,16 +87,22 @@ void TestWithBrowserView::SetUp() {
 }
 
 void TestWithBrowserView::TearDown() {
-  // Both BrowserView and BrowserWithTestWindowTest believe they have ownership
-  // of the Browser. Force BrowserWithTestWindowTest to give up ownership.
-  ASSERT_TRUE(release_browser());
+  // Because CreateBrowserWindow() is overridden to return null, a real
+  // BrowserView is created, and BrowserView has a unique_ptr that owns the
+  // Browser for which it is the view. This is a problem because
+  // BrowserWithTestWindowTest also has a unique_ptr to the Browser. Therefore,
+  // steal the BrowserWithTestWindowTest ownership and release it to fix the
+  // double-ownership problem.
+  ASSERT_TRUE(release_browser().release());
 
-  // Clean up any tabs we opened, otherwise Browser crashes in destruction.
+  // Then trigger the close of the browser window via the view. It's critical
+  // that the Browser is gone before BrowserWithTestWindowTest::TearDown() is
+  // called so that the dependencies aren't closed out from underneath the
+  // browser.
   browser_view_->browser()->tab_strip_model()->CloseAllTabs();
-  // Ensure the Browser is reset before BrowserWithTestWindowTest cleans up
-  // the Profile.
   browser_view_.ExtractAsDangling()->GetWidget()->CloseNow();
   content::RunAllTasksUntilIdle();
+
   BrowserWithTestWindowTest::TearDown();
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   ash::input_method::Shutdown();
@@ -117,7 +123,7 @@ TestingProfile* TestWithBrowserView::CreateProfile(
       profile, base::BindRepeating(&CreateAutocompleteClassifier));
   // ToolbarActionsModel must exist before the toolbar initializes the
   // extensions area.
-  extensions::LoadErrorReporter::Init(/* enable_noisy_errors */ false);
+  extensions::LoadErrorReporter::Init(/*enable_noisy_errors=*/false);
   extensions::extension_action_test_util::CreateToolbarModelForProfile(profile);
 
   // Configure the GaiaCookieManagerService to return no accounts.

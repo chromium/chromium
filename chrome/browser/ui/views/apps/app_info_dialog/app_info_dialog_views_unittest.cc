@@ -136,10 +136,10 @@ class AppInfoDialogViewsTest : public BrowserWithTestWindowTest,
 
     // The Browser class had dependencies on LocalState, which is owned by
     // |extension_environment_|.
-    auto* browser = release_browser();
+    std::unique_ptr<Browser> browser = release_browser();
     if (browser) {
       browser->tab_strip_model()->CloseAllTabs();
-      delete browser;
+      browser.reset();
       // Browser holds a ScopedProfileKeepAlive, which might post a task to the
       // UI thread on destruction.
       base::RunLoop().RunUntilIdle();
@@ -290,10 +290,10 @@ TEST_F(AppInfoDialogViewsTest, DestroyedProfileClosesDialog) {
 
     // First delete the test browser window. This ensures the test harness isn't
     // surprised by it being closed in response to the profile deletion below.
-    std::unique_ptr<Browser> browser(release_browser());
+    std::unique_ptr<Browser> browser = release_browser();
     browser->tab_strip_model()->CloseAllTabs();
     browser.reset();
-    std::unique_ptr<BrowserWindow> browser_window(release_browser_window());
+    std::unique_ptr<BrowserWindow> browser_window = release_browser_window();
     browser_window->Close();
     browser_window.reset();
 

@@ -240,10 +240,10 @@ TEST_F(ProfileMenuControllerTest, SetActiveAndRemove) {
                              __LINE__);
 
   // Close the browser.
-  std::unique_ptr<Browser> browser(release_browser());
+  std::unique_ptr<Browser> browser = release_browser();
   browser->tab_strip_model()->CloseAllTabs();
   browser.reset();
-  std::unique_ptr<BrowserWindow> browser_window(release_browser_window());
+  std::unique_ptr<BrowserWindow> browser_window = release_browser_window();
   browser_window->Close();
   browser_window.reset();
   EXPECT_TRUE(BrowserList::GetInstance()->empty());

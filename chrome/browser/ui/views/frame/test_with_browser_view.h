@@ -41,7 +41,10 @@ class TestWithBrowserView : public BrowserWithTestWindowTest {
   BrowserView* browser_view() { return browser_view_; }
 
  private:
-  raw_ptr<BrowserView> browser_view_;  // Not owned.
+  // The BrowserWindow created because GetBrowserWindow was overridden to return
+  // nil. While it's not actually "owned" by this code, this code is responsible
+  // for ensuring it gets cleaned up.
+  raw_ptr<BrowserView> browser_view_;
   base::test::ScopedFeatureList feature_list_;
 };
 
