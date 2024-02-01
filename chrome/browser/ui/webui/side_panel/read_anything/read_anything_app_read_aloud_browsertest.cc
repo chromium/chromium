@@ -113,6 +113,12 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingAppReadAloudTest,
 }
 
 IN_PROC_BROWSER_TEST_F(ReadAnythingAppReadAloudTest,
+                       ReadAloud_PreviousGranularityChangesUpdatesHighlight) {
+  ASSERT_TRUE(
+      RunTest("read_aloud_previous_highlight_with_granularity_changes.js"));
+}
+
+IN_PROC_BROWSER_TEST_F(ReadAnythingAppReadAloudTest,
                        HighlightCallback_TogglesHighlight) {
   ASSERT_TRUE(RunTest("highlight_callback_toggles_highlight.js"));
 }

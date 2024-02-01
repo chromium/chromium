@@ -1,10 +1,10 @@
-// Copyright 2023 The Chromium Authors
+// Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 // out/Debug/browser_tests \
 //    --gtest_filter=ReadAnythingAppReadAloudTest.
-//      ReadAloud_GranularityChangesUpdatesHighlight
+//      ReadAloud_PreviousGranularityChangesUpdatesHighlight
 
 // Do not call the real `onConnected()`. As defined in
 // ReadAnythingAppController, onConnected creates mojo pipes to connect to the
@@ -66,27 +66,7 @@
 
   // Speech doesn't actually run in tests, so manually call start
   readAnythingApp.playSpeech();
-
-  // First sentence is highlighted and nothing is before it
-  assertEquals(
-      container.querySelector('.current-read-highlight').textContent,
-      sentence1);
-  assertEquals(
-      container.querySelectorAll('.previous-read-highlight').length, 0);
-  readAnythingApp.resetPreviousHighlight();
-
-  // Second sentence is highlighted and first is before it
   readAnythingApp.playNextGranularity();
-  assertEquals(
-      container.querySelector('.current-read-highlight').textContent,
-      sentence2);
-  let previousHighlights =
-      container.querySelectorAll('.previous-read-highlight');
-  assertEquals(previousHighlights.length, 1);
-  assertEquals(previousHighlights[0].textContent, sentence1);
-  readAnythingApp.resetPreviousHighlight();
-
-  // Third sentence is next.
   readAnythingApp.playNextGranularity();
   assertEquals(
       container.querySelector('.current-read-highlight').textContent,
@@ -96,15 +76,45 @@
   assertEquals(previousHighlights[0].textContent, sentence1);
   assertEquals(previousHighlights[1].textContent, sentence2);
 
-  // Attempt to speak more utterance than are left.
-  readAnythingApp.playNextGranularity();
-  readAnythingApp.playNextGranularity();
-  readAnythingApp.playNextGranularity();
-
-  // After speech is stopped, playing the next / previous granularity cause no
-  // crashes, and don't change utterances.
-  readAnythingApp.playNextGranularity();
+  // Navigating backwards should highlight the 2nd sentence.
   readAnythingApp.playPreviousGranularity();
+  assertEquals(
+      container.querySelector('.current-read-highlight').textContent,
+      sentence2);
+  previousHighlights = container.querySelectorAll('.previous-read-highlight');
+  // TODO(b/322827035): The previous highlight should only include sentence 1,
+  // not sentence 3.
+  assertEquals(previousHighlights[0].textContent, sentence1);
+
+  // Navigating backwards should highlight the 1st sentence.
+  readAnythingApp.playPreviousGranularity();
+  assertEquals(
+      container.querySelector('.current-read-highlight').textContent,
+      sentence1);
+
+  // Going back further continues to highlight the first sentence and doesn't
+  // crash.
+  readAnythingApp.playPreviousGranularity();
+  readAnythingApp.playPreviousGranularity();
+  assertEquals(
+      container.querySelector('.current-read-highlight').textContent,
+      sentence1);
+
+  // Going forward after going backwards shows the correct highlights.
+  readAnythingApp.playNextGranularity();
+  assertEquals(
+      container.querySelector('.current-read-highlight').textContent,
+      sentence2);
+
+  readAnythingApp.playNextGranularity();
+  assertEquals(
+      container.querySelector('.current-read-highlight').textContent,
+      sentence3);
+
+  readAnythingApp.playNextGranularity();
+  assertEquals(
+      container.querySelector('.current-read-highlight').textContent,
+      sentence4);
 
   return result;
 })();
