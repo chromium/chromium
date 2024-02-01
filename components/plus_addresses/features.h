@@ -58,6 +58,11 @@ extern const base::FeatureParam<std::string> kPlusAddressExcludedSites;
 COMPONENT_EXPORT(PLUS_ADDRESSES_FEATURES)
 extern const base::FeatureParam<std::string> kPlusAddressErrorReportUrl;
 
+// Used to disable this feature when requests to the server repeatedly fail with
+// a 403.
+COMPONENT_EXPORT(PLUS_ADDRESSES_FEATURES)
+extern const base::FeatureParam<bool> kDisableForForbiddenUsers;
+
 }  // namespace plus_addresses
 
 #endif  // COMPONENTS_PLUS_ADDRESSES_FEATURES_H_
