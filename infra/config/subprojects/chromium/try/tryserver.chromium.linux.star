@@ -428,6 +428,11 @@ try_.builder(
         ],
     ),
     coverage_test_types = ["unit", "overall"],
+    tryjob = try_.job(
+        location_filters = [
+            "ui/ozone/platform/wayland/.+",
+        ],
+    ),
     use_clang_coverage = True,
 )
 
