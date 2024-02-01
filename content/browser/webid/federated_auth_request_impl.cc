@@ -2672,6 +2672,10 @@ bool FederatedAuthRequestImpl::OnResolve(GURL idp_config_url,
   // Close the pop-up window post user permission.
   OnClose();
 
+  permission_delegate_->GrantSharingPermission(
+      origin(), GetEmbeddingOrigin(), url::Origin::Create(idp_config_url),
+      account_id_);
+
   CompleteRequest(FederatedAuthRequestResult::kSuccess, TokenStatus::kSuccess,
                   /*token_error=*/std::nullopt, idp_config_url, token,
                   /*should_delay_callback=*/false);
