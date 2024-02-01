@@ -23,7 +23,7 @@ class AppliedDecorationPainter final {
                            const TextDecorationInfo& decoration_info)
       : context_(context), decoration_info_(decoration_info) {}
 
-  void Paint(const cc::PaintFlags* flags = nullptr);
+  void Paint(const Color& color, const cc::PaintFlags* flags = nullptr);
 
  private:
   void PaintWavyTextDecoration();

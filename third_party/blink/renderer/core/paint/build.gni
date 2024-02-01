@@ -183,6 +183,8 @@ blink_core_sources_paint = [
   "text_painter.h",
   "text_painter_base.cc",
   "text_painter_base.h",
+  "text_shadow_painter.cc",
+  "text_shadow_painter.h",
   "theme_painter.cc",
   "theme_painter_default.cc",
   "theme_painter_default.h",
