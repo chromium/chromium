@@ -800,5 +800,26 @@ TEST_F(AttributionSrcLoaderInBrowserMigrationEnabledTest,
   }
 }
 
+TEST_F(
+    AttributionSrcLoaderInBrowserMigrationEnabledTest,
+    MaybeRegisterAttributionHeadersNonKeepAlive_ResponseViaServiceWorkerProcessed) {
+  KURL test_url = ToKURL("https://example1.com/foo.html");
+
+  ResourceRequest request(test_url);
+  request.SetKeepalive(true);
+  request.SetAttributionReportingEligibility(
+      AttributionReportingEligibility::kTrigger);
+  auto* resource = MakeGarbageCollected<MockResource>(test_url);
+  ResourceResponse response(test_url);
+  response.SetHttpStatusCode(200);
+  response.SetHttpHeaderField(
+      http_names::kAttributionReportingRegisterTrigger,
+      AtomicString(R"({"event_trigger_data":[{"trigger_data": "7"}]})"));
+  response.SetWasFetchedViaServiceWorker(true);
+
+  EXPECT_TRUE(attribution_src_loader_->MaybeRegisterAttributionHeaders(
+      request, response, resource));
+}
+
 }  // namespace
 }  // namespace blink

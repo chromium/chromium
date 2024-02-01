@@ -139,6 +139,18 @@ bool KeepaliveResponsesHandledInBrowser() {
              blink::features::kAttributionReportingInBrowserMigration);
 }
 
+// Keepalive requests will be serviced by `KeepAliveAttributionRequestHelper`
+// except for requests fetched via a service worker as keep alive is not
+// supported in service workers, See https://crbug.com/1519958 for details.
+// TODO(https://crbug.com/1523862): Once service worker keep alive requests are
+// supported, remove the condition `WasFetchedViaServiceWorker` to prevent
+// responses from being processed twice.
+bool ResponseHandledInBrowser(const ResourceRequestHead& request,
+                              const ResourceResponse& response) {
+  return KeepaliveResponsesHandledInBrowser() && request.GetKeepalive() &&
+         !response.WasFetchedViaServiceWorker();
+}
+
 }  // namespace
 
 struct AttributionSrcLoader::AttributionHeaders {
@@ -439,29 +451,23 @@ bool AttributionSrcLoader::DoRegistration(
       &conversion_host);
 
   mojo::SharedRemote<mojom::blink::AttributionDataHost> data_host;
-  SourceType source_type;
 
-  if (KeepaliveResponsesHandledInBrowser()) {
-    // Since `attribution_src_loader` won't be responsible for handling the
-    // responses, there is no need to open a pipe. We still notify the browser
-    // of the number of expected background registrations tied to a navigation
-    // so that the navigation context be kept long enough (in the browser) for
-    // all background registrations to be processed.
-    if (attribution_src_token.has_value()) {
-      conversion_host->NotifyNavigationWithBackgroundRegistrationsWillStart(
-          *attribution_src_token,
-          /*expected_registrations=*/urls.size());
-    }
+  if (KeepaliveResponsesHandledInBrowser() &&
+      attribution_src_token.has_value()) {
+    conversion_host->NotifyNavigationWithBackgroundRegistrationsWillStart(
+        *attribution_src_token,
+        /*expected_registrations=*/urls.size());
+  }
+
+  SourceType source_type;
+  if (attribution_src_token.has_value()) {
+    conversion_host->RegisterNavigationDataHost(
+        data_host.BindNewPipeAndPassReceiver(), *attribution_src_token);
+    source_type = SourceType::kNavigation;
   } else {
-    if (attribution_src_token.has_value()) {
-      conversion_host->RegisterNavigationDataHost(
-          data_host.BindNewPipeAndPassReceiver(), *attribution_src_token);
-      source_type = SourceType::kNavigation;
-    } else {
-      conversion_host->RegisterDataHost(data_host.BindNewPipeAndPassReceiver(),
-                                        eligibility);
-      source_type = SourceType::kEvent;
-    }
+    conversion_host->RegisterDataHost(data_host.BindNewPipeAndPassReceiver(),
+                                      eligibility);
+    source_type = SourceType::kEvent;
   }
 
   for (const KURL& url : urls) {
@@ -489,12 +495,10 @@ bool AttributionSrcLoader::DoRegistration(
     params.MutableOptions().initiator_info.name =
         fetch_initiator_type_names::kAttributionsrc;
 
-    auto* client =
-        KeepaliveResponsesHandledInBrowser()
-            ? nullptr
-            : MakeGarbageCollected<ResourceClient>(
-                  this, eligibility, source_type, data_host, GetSupport());
-    RawResource::Fetch(params, local_frame_->DomWindow()->Fetcher(), client);
+    RawResource::Fetch(
+        params, local_frame_->DomWindow()->Fetcher(),
+        MakeGarbageCollected<ResourceClient>(this, eligibility, source_type,
+                                             data_host, GetSupport()));
 
     RecordAttributionSrcRequestStatus(AttributionSrcRequestStatus::kRequested);
   }
@@ -634,8 +638,7 @@ bool AttributionSrcLoader::MaybeRegisterAttributionHeaders(
     return false;
   }
 
-  // Keepalive requests will be serviced by `KeepAliveAttributionRequestHelper`.
-  if (request.GetKeepalive() && KeepaliveResponsesHandledInBrowser()) {
+  if (ResponseHandledInBrowser(request, response)) {
     return false;
   }
 
@@ -735,6 +738,9 @@ String AttributionSrcLoader::ResourceClient::DebugName() const {
 void AttributionSrcLoader::ResourceClient::ResponseReceived(
     Resource* resource,
     const ResourceResponse& response) {
+  if (ResponseHandledInBrowser(resource->GetResourceRequest(), response)) {
+    return;
+  }
   HandleResponseHeaders(response, resource->InspectorId());
 }
 
@@ -742,6 +748,9 @@ bool AttributionSrcLoader::ResourceClient::RedirectReceived(
     Resource* resource,
     const ResourceRequest& request,
     const ResourceResponse& response) {
+  if (ResponseHandledInBrowser(resource->GetResourceRequest(), response)) {
+    return true;
+  }
   HandleResponseHeaders(response, request.InspectorId());
   return true;
 }

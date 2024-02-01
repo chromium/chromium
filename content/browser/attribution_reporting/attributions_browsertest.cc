@@ -881,10 +881,8 @@ IN_PROC_BROWSER_TEST_P(
   expected_report.WaitForReport();
 }
 
-// TODO(https://crbug.com/1519958): fix service workers with keep alive
-// migration.
-IN_PROC_BROWSER_TEST_F(
-    AttributionsBrowserTestBase,
+IN_PROC_BROWSER_TEST_P(
+    AttributionsBrowserTest,
     ServiceWorkerPerformsAttributionSrcRedirect_ReporterSet) {
   auto register_response =
       std::make_unique<net::test_server::ControllableHttpResponse>(
