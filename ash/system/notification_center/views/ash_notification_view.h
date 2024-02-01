@@ -36,6 +36,7 @@ namespace ash {
 class RoundedImageView;
 class AshNotificationExpandButton;
 class IconButton;
+class TimestampView;
 
 // Customized NotificationView for notification on ChromeOS. This view is used
 // to displays all current types of notification on ChromeOS (web, basic, image,
@@ -193,8 +194,7 @@ class ASH_EXPORT AshNotificationView
     // Update title view's text.
     void UpdateTitle(const std::u16string& title);
 
-    // Update the text for `timestamp_in_collapsed_view_`. Also used the timer
-    // to re-update this timestamp view when the next update is needed.
+    // Update the text for `timestamp_in_collapsed_view_`.
     void UpdateTimestamp(base::Time timestamp);
 
     // Update children's visibility based on the state of expand/collapse.
@@ -219,14 +219,10 @@ class ASH_EXPORT AshNotificationView
 
     // Timestamp view shown alongside the title in collapsed state.
     const raw_ptr<views::Label> title_row_divider_;
-    const raw_ptr<views::Label> timestamp_in_collapsed_view_;
+    const raw_ptr<TimestampView> timestamp_in_collapsed_view_;
 
     // The maximum width available to the title row.
     int max_available_width_ = 0;
-
-    // Timer that updates the timestamp over time.
-    base::OneShotTimer timestamp_update_timer_;
-    std::optional<base::Time> timestamp_;
   };
 
   // message_center::MessageCenterObserver:

@@ -14,6 +14,7 @@
 #include "ash/system/notification_center/notification_style_utils.h"
 #include "ash/system/notification_center/views/ash_notification_expand_button.h"
 #include "ash/system/notification_center/views/conversation_item_view.h"
+#include "ash/system/notification_center/views/timestamp_view.h"
 #include "base/functional/bind.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -42,6 +43,7 @@ constexpr auto kConversationsContainerInteriorMargin =
 constexpr auto kExpandButtonContainerInteriorMargin =
     gfx::Insets::TLBR(0, 12, 0, 12);
 constexpr auto kTextContainerInteriorMargin = gfx::Insets::TLBR(12, 12, 0, 0);
+constexpr auto kTitleRowDefaultMargin = gfx::Insets::TLBR(0, 0, 0, 6);
 
 }  // namespace
 
@@ -96,6 +98,8 @@ void ConversationNotificationView::UpdateWithNotification(
   if (notification.items().empty()) {
     return;
   }
+
+  timestamp_->SetTimestamp(notification.timestamp());
 
   auto* conversation_container = GetViewByID(ViewId::kConversationContainer);
   // TODO(b/284512022): We should update the container with new
@@ -213,14 +217,6 @@ ConversationNotificationView::CreateTextContainer(
   text_container->SetInteriorMargin(kTextContainerInteriorMargin);
   text_container->SetCrossAxisAlignment(views::LayoutAlignment::kStart);
 
-  auto title = std::make_unique<views::Label>();
-  title->SetID(ViewId::kTitleLabel);
-  title->SetText(notification.title());
-
-  notification_style_utils::ConfigureLabelStyle(
-      title.get(), kNotificationTitleLabelSize, true,
-      gfx::Font::Weight::MEDIUM);
-
   auto collapsed_preview_container = std::make_unique<views::FlexLayoutView>();
   collapsed_preview_container->SetID(ViewId::kCollapsedPreviewContainer);
   collapsed_preview_container->SetInteriorMargin(
@@ -246,10 +242,42 @@ ConversationNotificationView::CreateTextContainer(
   collapsed_preview_container->AddChildView(
       std::move(collapsed_preview_message));
 
-  text_container->AddChildView(std::move(title));
+  text_container->AddChildView(CreateTitleRow(notification));
   collapsed_preview_container_ =
       text_container->AddChildView(std::move(collapsed_preview_container));
   return text_container;
+}
+
+std::unique_ptr<views::FlexLayoutView>
+ConversationNotificationView::CreateTitleRow(const Notification& notification) {
+  auto title_row = std::make_unique<views::FlexLayoutView>();
+  title_row->SetOrientation(views::LayoutOrientation::kHorizontal);
+  title_row->SetDefault(views::kMarginsKey, kTitleRowDefaultMargin);
+
+  auto title = std::make_unique<views::Label>();
+  title->SetID(ViewId::kTitleLabel);
+  title->SetText(notification.title());
+
+  notification_style_utils::ConfigureLabelStyle(
+      title.get(), kNotificationTitleLabelSize, true,
+      gfx::Font::Weight::MEDIUM);
+
+  auto divider = std::make_unique<views::Label>();
+  divider->SetText(kNotificationTitleRowDivider);
+  notification_style_utils::ConfigureLabelStyle(divider.get(),
+                                                kNotificationSecondaryLabelSize,
+                                                /*is_color_primary=*/false);
+
+  auto timestamp = std::make_unique<TimestampView>();
+  notification_style_utils::ConfigureLabelStyle(timestamp.get(),
+                                                kNotificationSecondaryLabelSize,
+                                                /*is_color_primary=*/false);
+
+  title_row->AddChildView(std::move(title));
+  title_row->AddChildView(std::move(divider));
+  timestamp_ = title_row->AddChildView(std::move(timestamp));
+
+  return title_row;
 }
 
 BEGIN_METADATA(ConversationNotificationView, MessageView)

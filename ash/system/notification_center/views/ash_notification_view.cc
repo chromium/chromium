@@ -34,6 +34,7 @@
 #include "ash/system/notification_center/notification_style_utils.h"
 #include "ash/system/notification_center/views/ash_notification_expand_button.h"
 #include "ash/system/notification_center/views/ash_notification_input_container.h"
+#include "ash/system/notification_center/views/timestamp_view.h"
 #include "ash/wm/work_area_insets.h"
 #include "base/base64.h"
 #include "base/check.h"
@@ -143,9 +144,6 @@ constexpr auto kRightContentExpandedPadding = gfx::Insets::TLBR(20, 16, 0, 0);
 constexpr auto kTimeStampInCollapsedStatePadding =
     gfx::Insets::TLBR(0, 0, 0, 16);
 
-// Bullet character. The divider symbol between the title and the timestamp.
-constexpr char16_t kTitleRowDivider[] = u"\u2022";
-
 constexpr char kGoogleSansFont[] = "Google Sans";
 
 constexpr int kTitleCharacterLimit =
@@ -153,7 +151,6 @@ constexpr int kTitleCharacterLimit =
     message_center::kMinPixelsPerTitleCharacter;
 constexpr int kTitleLabelExpandedMaxLines = 2;
 constexpr int kTitleLabelCollapsedMaxLines = 1;
-constexpr int kTimestampInCollapsedViewSize = 12;
 
 // The size for `icon_view_`, which is the icon within right content (between
 // title/message view and expand button).
@@ -333,10 +330,10 @@ AshNotificationView::NotificationTitleRow::NotificationTitleRow(
     const std::u16string& title)
     : title_view_(AddChildView(GenerateTitleView(title))),
       title_row_divider_(AddChildView(std::make_unique<views::Label>(
-          kTitleRowDivider,
+          kNotificationTitleRowDivider,
           views::style::CONTEXT_DIALOG_BODY_TEXT))),
       timestamp_in_collapsed_view_(
-          AddChildView(std::make_unique<views::Label>())) {
+          AddChildView(std::make_unique<TimestampView>())) {
   SetLayoutManager(std::make_unique<views::TableLayout>())
       ->AddColumn(views::LayoutAlignment::kStart,
                   views::LayoutAlignment::kCenter, 1.0,
@@ -365,11 +362,11 @@ AshNotificationView::NotificationTitleRow::NotificationTitleRow(
   title_view_->SetMaxLines(kTitleLabelExpandedMaxLines);
 
   notification_style_utils::ConfigureLabelStyle(title_row_divider_,
-                                                kTimestampInCollapsedViewSize,
+                                                kNotificationSecondaryLabelSize,
                                                 /*is_color_primary=*/false);
   message_center_utils::InitLayerForAnimations(title_row_divider_);
   notification_style_utils::ConfigureLabelStyle(timestamp_in_collapsed_view_,
-                                                kTimestampInCollapsedViewSize,
+                                                kNotificationSecondaryLabelSize,
                                                 /*is_color_primary=*/false);
   message_center_utils::InitLayerForAnimations(timestamp_in_collapsed_view_);
   notification_style_utils::ConfigureLabelStyle(
@@ -386,9 +383,7 @@ AshNotificationView::NotificationTitleRow::NotificationTitleRow(
       ash::TypographyToken::kCrosAnnotation1, *timestamp_in_collapsed_view_);
 }
 
-AshNotificationView::NotificationTitleRow::~NotificationTitleRow() {
-  timestamp_update_timer_.Stop();
-}
+AshNotificationView::NotificationTitleRow::~NotificationTitleRow() = default;
 
 void AshNotificationView::NotificationTitleRow::UpdateTitle(
     const std::u16string& title) {
@@ -397,19 +392,7 @@ void AshNotificationView::NotificationTitleRow::UpdateTitle(
 
 void AshNotificationView::NotificationTitleRow::UpdateTimestamp(
     base::Time timestamp) {
-  std::u16string relative_time;
-  base::TimeDelta next_update;
-  message_center::GetRelativeTimeStringAndNextUpdateTime(
-      timestamp - base::Time::Now(), &relative_time, &next_update);
-
-  timestamp_ = timestamp;
-  timestamp_in_collapsed_view_->SetText(relative_time);
-
-  // Unretained is safe as the timer cancels the task on destruction.
-  timestamp_update_timer_.Start(
-      FROM_HERE, next_update,
-      base::BindOnce(&NotificationTitleRow::UpdateTimestamp,
-                     base::Unretained(this), timestamp));
+  timestamp_in_collapsed_view_->SetTimestamp(timestamp);
 }
 
 void AshNotificationView::NotificationTitleRow::UpdateVisibility(
