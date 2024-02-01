@@ -89,6 +89,7 @@ class CORE_EXPORT ScriptPromiseResolverWithTracker
                                   ResultEnumType result) {
     RecordResultAndLatency(result);
     exception_state.ThrowDOMException(exception_code, message);
+    resolver_->Detach();
   }
 
   void RecordAndThrowTypeError(ExceptionState& exception_state,
@@ -96,6 +97,12 @@ class CORE_EXPORT ScriptPromiseResolverWithTracker
                                ResultEnumType result) {
     RecordResultAndLatency(result);
     exception_state.ThrowTypeError(message);
+    resolver_->Detach();
+  }
+
+  void RecordAndDetach(ResultEnumType result) {
+    RecordResultAndLatency(result);
+    resolver_->Detach();
   }
 
   void Resolve() { Resolve(ToV8UndefinedGenerator()); }

@@ -529,7 +529,8 @@ TEST_F(MediaDevicesTest, GetUserMediaCanBeCalled) {
       GetMediaDevices(scope.GetWindow())
           ->getUserMedia(scope.GetScriptState(), constraints,
                          scope.GetExceptionState());
-  ASSERT_TRUE(promise.IsEmpty());
+  // We return the created promise before it was resolved/rejected.
+  ASSERT_FALSE(promise.IsEmpty());
   // We expect a type error because the given constraints are empty.
   EXPECT_EQ(scope.GetExceptionState().Code(),
             ToExceptionCode(ESErrorType::kTypeError));
