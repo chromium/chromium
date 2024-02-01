@@ -115,7 +115,9 @@ void ReadAndTruncateOrDeleteMetricsFromFile(
     // Also nothing to collect.
     return;
   }
-  base::ScopedFD fd(open(filename.c_str(), O_RDWR));
+  // Only need to read/write if we're truncating.
+  int flag = delete_file ? O_RDONLY : O_RDWR;
+  base::ScopedFD fd(open(filename.c_str(), flag));
   if (fd.get() < 0) {
     DPLOG(ERROR) << "cannot open: " << filename;
     return;
