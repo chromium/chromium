@@ -2012,14 +2012,7 @@ void TabStrip::NewTabButtonPressed(const ui::Event& event) {
       return;
     }
   }
-  const int tab_count = GetTabCount();
   controller_->CreateNewTab();
-
-  if (GetTabCount() != tab_count + 1) {
-    UMA_HISTOGRAM_ENUMERATION("TabStrip.Failures.Action",
-                              TabFailureContext::kNewTabOpen,
-                              TabFailureContext::kMaxValue);
-  }
 }
 
 bool TabStrip::ShouldHighlightCloseButtonAfterRemove() {

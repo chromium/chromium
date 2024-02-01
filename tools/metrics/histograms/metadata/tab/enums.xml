@@ -206,10 +206,6 @@ chromium-metrics-reviews@google.com.
   <int value="11" label="Evicted due to OS terminating the renderer."/>
 </enum>
 
-<enum name="TabStripFailureContext">
-  <int value="0" label="New tab failed to open"/>
-</enum>
-
 </enums>
 
 </histogram-configuration>

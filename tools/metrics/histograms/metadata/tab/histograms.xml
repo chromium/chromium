@@ -2308,20 +2308,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="TabStrip.Failures.Action" enum="TabStripFailureContext"
-    expires_after="2024-01-01">
-  <owner>dayeung@chromium.org</owner>
-  <owner>kerenzhu@chromium.org</owner>
-  <owner>temao@chromium.org</owner>
-  <owner>yuhengh@chromium.org</owner>
-  <owner>tluk@chromium.org</owner>
-  <owner>robliao@chromium.org</owner>
-  <summary>
-    Reports a failure event in the tabstrip flow. This could be something like
-    mis-matching tab count when opening or closing a tab.
-  </summary>
-</histogram>
-
 <histogram name="TabStrip.Tab.{Framework}.ActivationAction"
     enum="TabActivationTypes" expires_after="2024-06-30">
   <owner>yuhengh@chromium.org</owner>
