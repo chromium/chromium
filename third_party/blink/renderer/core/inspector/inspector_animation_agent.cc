@@ -530,15 +530,22 @@ void InspectorAnimationAgent::AnimationPlayStateChanged(
   if (cleared_animations_.Contains(animation_id))
     return;
 
+  // We don't care about non document timeline animations before updating
+  // the animations panel for scroll driven animations.
+  if (!animation->timeline()->IsDocumentTimeline()) {
+    return;
+  }
+
   // Record newly starting animations only once, as |buildObjectForAnimation|
   // constructs and caches our internal representation of the given |animation|.
   if ((new_play_state == blink::Animation::kRunning ||
        new_play_state == blink::Animation::kFinished) &&
-      !id_to_animation_.Contains(animation_id))
+      !id_to_animation_.Contains(animation_id)) {
     GetFrontend()->animationStarted(BuildObjectForAnimation(*animation));
-  else if (new_play_state == blink::Animation::kIdle ||
-           new_play_state == blink::Animation::kPaused)
+  } else if (new_play_state == blink::Animation::kIdle ||
+             new_play_state == blink::Animation::kPaused) {
     GetFrontend()->animationCanceled(animation_id);
+  }
 }
 
 void InspectorAnimationAgent::DidClearDocumentOfWindowObject(
