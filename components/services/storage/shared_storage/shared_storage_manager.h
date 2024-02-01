@@ -132,7 +132,7 @@ class SharedStorageManager {
            std::u16string key,
            std::u16string value,
            base::OnceCallback<void(OperationResult)> callback,
-           SetBehavior behavior = SetBehavior::kDefault);
+           SetBehavior behavior);
 
   // Appends `value` to the end of the current `value` for `context_origin` and
   // `key`, if `key` exists. If `key` does not exist, creates an entry for `key`

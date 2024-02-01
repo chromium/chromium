@@ -49,8 +49,9 @@ void SharedStorageClearSiteDataTester::AddSharedStorageEntry(
 
   base::test::TestFuture<storage::SharedStorageDatabase::OperationResult>
       future;
-  shared_storage_manager->Set(std::move(origin), std::move(key),
-                              std::move(value), future.GetCallback());
+  shared_storage_manager->Set(
+      std::move(origin), std::move(key), std::move(value), future.GetCallback(),
+      storage::SharedStorageDatabase::SetBehavior::kDefault);
   EXPECT_EQ(storage::SharedStorageDatabase::OperationResult::kSet,
             future.Get());
 }

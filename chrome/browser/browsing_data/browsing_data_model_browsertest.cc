@@ -576,8 +576,9 @@ IN_PROC_BROWSER_TEST_P(BrowsingDataModelBrowserTest,
 
   base::test::TestFuture<OperationResult> future;
   url::Origin testOrigin = url::Origin::Create(GURL("https://a.test"));
-  shared_storage_manager->Set(testOrigin, u"key", u"value",
-                              future.GetCallback());
+  shared_storage_manager->Set(
+      testOrigin, u"key", u"value", future.GetCallback(),
+      storage::SharedStorageDatabase::SetBehavior::kDefault);
   EXPECT_EQ(OperationResult::kSet, future.Get());
 
   std::unique_ptr<BrowsingDataModel> browsing_data_model =
