@@ -35,6 +35,9 @@ class BLINK_COMMON_EXPORT AdCurrency {
   // Lets one set invalid values to cover mojo checking.
   void SetCurrencyCodeForTesting(const std::string& in) { currency_code_ = in; }
 
+  friend BLINK_COMMON_EXPORT bool operator==(const AdCurrency&,
+                                             const AdCurrency&);
+
  private:
   std::string currency_code_;
 };

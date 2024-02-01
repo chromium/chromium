@@ -31,4 +31,6 @@ std::string PrintableAdCurrency(const absl::optional<AdCurrency>& currency) {
                               : kUnspecifiedAdCurrency;
 }
 
+bool operator==(const AdCurrency&, const AdCurrency&) = default;
+
 }  // namespace blink

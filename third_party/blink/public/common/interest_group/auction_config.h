@@ -43,13 +43,13 @@ struct BLINK_COMMON_EXPORT DirectFromSellerSignalsSubresource {
   DirectFromSellerSignalsSubresource& operator=(
       DirectFromSellerSignalsSubresource&&);
 
+  friend BLINK_COMMON_EXPORT bool operator==(
+      const DirectFromSellerSignalsSubresource&,
+      const DirectFromSellerSignalsSubresource&);
+
   GURL bundle_url;
   base::UnguessableToken token;
 };
-
-bool BLINK_COMMON_EXPORT
-operator==(const DirectFromSellerSignalsSubresource& a,
-           const DirectFromSellerSignalsSubresource& b);
 
 // The set of directFromSellerSignals for a particular auction or component
 // auction.
@@ -67,6 +67,9 @@ struct BLINK_COMMON_EXPORT DirectFromSellerSignals {
       per_buyer_signals;
   absl::optional<DirectFromSellerSignalsSubresource> seller_signals;
   absl::optional<DirectFromSellerSignalsSubresource> auction_signals;
+
+  friend BLINK_COMMON_EXPORT bool operator==(const DirectFromSellerSignals&,
+                                             const DirectFromSellerSignals&);
 };
 
 // AuctionConfig class used by FLEDGE auctions. Typemapped to
@@ -103,6 +106,10 @@ struct BLINK_COMMON_EXPORT AuctionConfig {
       return result;
     }
 
+    friend BLINK_COMMON_EXPORT bool operator==(const MaybePromise<Value>&,
+                                               const MaybePromise<Value>&) =
+        default;
+
     Tag tag() const { return tag_; }
     const Value& value() const { return value_; }
     Value& mutable_value_for_testing() { return value_; }
@@ -136,6 +143,9 @@ struct BLINK_COMMON_EXPORT AuctionConfig {
     // Values restrict the runtime of particular buyer's generateBid() scripts.
     absl::optional<base::flat_map<url::Origin, base::TimeDelta>>
         per_buyer_timeouts;
+
+    friend BLINK_COMMON_EXPORT bool operator==(const BuyerTimeouts&,
+                                               const BuyerTimeouts&);
   };
 
   // Typemapped to blink::mojom::AuctionAdConfigMaybePromiseBuyerTimeouts
@@ -151,6 +161,9 @@ struct BLINK_COMMON_EXPORT AuctionConfig {
     // Currency expectations for buyer per their origin.
     absl::optional<base::flat_map<url::Origin, AdCurrency>>
         per_buyer_currencies;
+
+    friend BLINK_COMMON_EXPORT bool operator==(const BuyerCurrencies&,
+                                               const BuyerCurrencies&);
   };
 
   // Typemapped to blink::mojom::AuctionAdConfigMaybePromiseBuyerCurrencies
@@ -166,6 +179,9 @@ struct BLINK_COMMON_EXPORT AuctionConfig {
 
     ServerResponseConfig& operator=(const ServerResponseConfig&);
     ServerResponseConfig& operator=(ServerResponseConfig&&);
+
+    friend BLINK_COMMON_EXPORT bool operator==(const ServerResponseConfig&,
+                                               const ServerResponseConfig&);
 
     base::Uuid request_id;
     bool got_response = false;
@@ -197,12 +213,20 @@ struct BLINK_COMMON_EXPORT AuctionConfig {
       // reported values is subject to a privacy budget, so this controls how
       // much budget is spent on each report).
       double scale;
+
+      friend BLINK_COMMON_EXPORT bool operator==(
+          const AuctionReportBuyersConfig&,
+          const AuctionReportBuyersConfig&);
     };
 
     // Povides whether debug mode is enabled and, if it is, any debug key.
     struct BLINK_COMMON_EXPORT AuctionReportBuyerDebugModeConfig {
       bool is_enabled = false;
       absl::optional<uint64_t> debug_key;
+
+      friend BLINK_COMMON_EXPORT bool operator==(
+          const AuctionReportBuyerDebugModeConfig&,
+          const AuctionReportBuyerDebugModeConfig&);
     };
 
     NonSharedParams();
@@ -212,6 +236,9 @@ struct BLINK_COMMON_EXPORT AuctionConfig {
 
     NonSharedParams& operator=(const NonSharedParams&);
     NonSharedParams& operator=(NonSharedParams&&);
+
+    friend BLINK_COMMON_EXPORT bool operator==(const NonSharedParams&,
+                                               const NonSharedParams&);
 
     // Owners of interest groups allowed to participate in the auction.
     absl::optional<std::vector<url::Origin>> interest_group_buyers;
@@ -324,6 +351,9 @@ struct BLINK_COMMON_EXPORT AuctionConfig {
 
   AuctionConfig& operator=(const AuctionConfig&);
   AuctionConfig& operator=(AuctionConfig&&);
+
+  friend BLINK_COMMON_EXPORT bool operator==(const AuctionConfig&,
+                                             const AuctionConfig&);
 
   // Returns how many of the params are promises. Includes component auctions.
   int NumPromises() const;

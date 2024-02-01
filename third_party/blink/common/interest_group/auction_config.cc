@@ -288,11 +288,8 @@ DirectFromSellerSignalsSubresource::operator=(
 DirectFromSellerSignalsSubresource&
 DirectFromSellerSignalsSubresource::operator=(
     DirectFromSellerSignalsSubresource&&) = default;
-
-bool operator==(const DirectFromSellerSignalsSubresource& a,
-                const DirectFromSellerSignalsSubresource& b) {
-  return std::tie(a.bundle_url, a.token) == std::tie(b.bundle_url, b.token);
-}
+bool operator==(const DirectFromSellerSignalsSubresource&,
+                const DirectFromSellerSignalsSubresource&) = default;
 
 DirectFromSellerSignals::DirectFromSellerSignals() = default;
 DirectFromSellerSignals::DirectFromSellerSignals(
@@ -305,6 +302,14 @@ DirectFromSellerSignals& DirectFromSellerSignals::operator=(
     const DirectFromSellerSignals&) = default;
 DirectFromSellerSignals& DirectFromSellerSignals::operator=(
     DirectFromSellerSignals&&) = default;
+bool operator==(const DirectFromSellerSignals&,
+                const DirectFromSellerSignals&) = default;
+
+bool operator==(const AuctionConfig::BuyerTimeouts&,
+                const AuctionConfig::BuyerTimeouts&) = default;
+
+bool operator==(const AuctionConfig::BuyerCurrencies&,
+                const AuctionConfig::BuyerCurrencies&) = default;
 
 AuctionConfig::NonSharedParams::NonSharedParams() = default;
 AuctionConfig::NonSharedParams::NonSharedParams(const NonSharedParams&) =
@@ -316,6 +321,17 @@ AuctionConfig::NonSharedParams& AuctionConfig::NonSharedParams::operator=(
     const NonSharedParams&) = default;
 AuctionConfig::NonSharedParams& AuctionConfig::NonSharedParams::operator=(
     NonSharedParams&&) = default;
+bool operator==(const AuctionConfig::NonSharedParams&,
+                const AuctionConfig::NonSharedParams&) = default;
+
+bool operator==(
+    const AuctionConfig::NonSharedParams::AuctionReportBuyersConfig&,
+    const AuctionConfig::NonSharedParams::AuctionReportBuyersConfig&) = default;
+
+bool operator==(
+    const AuctionConfig::NonSharedParams::AuctionReportBuyerDebugModeConfig&,
+    const AuctionConfig::NonSharedParams::AuctionReportBuyerDebugModeConfig&) =
+    default;
 
 AuctionConfig::ServerResponseConfig::ServerResponseConfig() = default;
 AuctionConfig::ServerResponseConfig::ServerResponseConfig(
@@ -332,6 +348,9 @@ AuctionConfig::ServerResponseConfig&
 AuctionConfig::ServerResponseConfig::operator=(ServerResponseConfig&&) =
     default;
 
+bool operator==(const AuctionConfig::ServerResponseConfig&,
+                const AuctionConfig::ServerResponseConfig&) = default;
+
 AuctionConfig::AuctionConfig() = default;
 AuctionConfig::AuctionConfig(const AuctionConfig&) = default;
 AuctionConfig::AuctionConfig(AuctionConfig&&) = default;
@@ -339,6 +358,8 @@ AuctionConfig::~AuctionConfig() = default;
 
 AuctionConfig& AuctionConfig::operator=(const AuctionConfig&) = default;
 AuctionConfig& AuctionConfig::operator=(AuctionConfig&&) = default;
+
+bool operator==(const AuctionConfig&, const AuctionConfig&) = default;
 
 int AuctionConfig::NumPromises() const {
   int total = 0;
