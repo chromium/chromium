@@ -5040,6 +5040,8 @@ static_library("ui") {
       "views/autofill/payments/promo_code_label_button.h",
       "views/autofill/payments/promo_code_label_view.cc",
       "views/autofill/payments/promo_code_label_view.h",
+      "views/autofill/payments/save_card_and_virtual_card_enroll_confirmation_bubble_views.cc",
+      "views/autofill/payments/save_card_and_virtual_card_enroll_confirmation_bubble_views.h",
       "views/autofill/payments/save_card_bubble_views.cc",
       "views/autofill/payments/save_card_bubble_views.h",
       "views/autofill/payments/save_card_manage_cards_bubble_views.cc",

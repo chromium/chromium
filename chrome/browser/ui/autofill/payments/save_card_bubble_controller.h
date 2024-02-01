@@ -62,6 +62,11 @@ class SaveCardBubbleController {
   // Returns the card that will be uploaded if the user accepts.
   virtual const CreditCard& GetCard() const = 0;
 
+  // Returns a once callback for the save card bubble controller's
+  // OnBubbleClosed() method.
+  virtual base::OnceCallback<void(PaymentsBubbleClosedReason)>
+  GetOnBubbleClosedCallback() = 0;
+
   // Returns whether the dialog should include a textfield requesting the user
   // to confirm/provide cardholder name.
   virtual bool ShouldRequestNameFromUser() const = 0;

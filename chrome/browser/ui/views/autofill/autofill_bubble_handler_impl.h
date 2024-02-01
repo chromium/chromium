@@ -9,8 +9,10 @@
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_handler.h"
 #include "chrome/browser/ui/views/profiles/avatar_toolbar_button.h"
+#include "components/autofill/core/browser/ui/payments/payments_bubble_closed_reasons.h"
 
 class Browser;
+class PageActionIconView;
 class ToolbarButtonProvider;
 
 namespace content {
@@ -75,6 +77,9 @@ class AutofillBubbleHandlerImpl : public AutofillBubbleHandler,
       MandatoryReauthBubbleController* controller,
       bool is_user_gesture,
       MandatoryReauthBubbleType bubble_type) override;
+  AutofillBubbleBase* ShowSaveCardConfirmationBubble(
+      content::WebContents* web_contents,
+      SaveCardBubbleController* controller) override;
 
   // AvatarToolbarButton::Observer:
   void OnAvatarHighlightAnimationFinished() override;
@@ -82,6 +87,14 @@ class AutofillBubbleHandlerImpl : public AutofillBubbleHandler,
  private:
   // Executes highlight animation on toolbar's avatar icon.
   void ShowAvatarHighlightAnimation();
+
+  // Show the save card and virtual card enrollment confirmation bubble.
+  AutofillBubbleBase* ShowSaveCardAndVirtualCardEnrollConfirmationBubble(
+      views::View* anchor_view,
+      content::WebContents* web_contents,
+      base::OnceCallback<void(PaymentsBubbleClosedReason)>
+          controller_hide_callback,
+      PageActionIconView* icon_view);
 
   raw_ptr<Browser> browser_ = nullptr;
 
