@@ -64,7 +64,13 @@ const routerRules = {
       source: 'network'
     },
     {condition: {urlPattern: '/**/direct.html'}, source: 'network'}
-  ]
+  ],
+  'condition-urlpattern-string-source-race-network-and-fetch-handler': [
+    {
+      condition: {urlPattern: '/**/direct.py'},
+      source: 'race-network-and-fetch-handler'
+    },
+  ],
 };
 
 export {routerRules};
