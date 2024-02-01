@@ -313,42 +313,41 @@ static void JNI_TraceEvent_InstantAndroidToolbar(JNIEnv* env,
 static void JNI_TraceEvent_WebViewStartupTotalFactoryInit(JNIEnv* env,
                                                           jlong start_time_ms,
                                                           jlong duration_ms) {
-  // The following code does nothing if base tracing is disabled.
-  // TODO(b/283286049): set the track name explicitly after the Perfetto SDK
-  // migration is finished (crbug/1006541).
-  [[maybe_unused]] auto t =
-      perfetto::Track(trace_event::GetNextGlobalTraceId());
+#if BUILDFLAG(ENABLE_BASE_TRACING)
+  auto t = perfetto::Track::ThreadScoped(env);
+  auto desc = t.Serialize();
+  desc.set_name("android_webview.timeline");
   TRACE_EVENT_BEGIN("android_webview.timeline",
                     "WebView.Startup.CreationTime.TotalFactoryInitTime", t,
                     TimeTicks() + Milliseconds(start_time_ms));
   TRACE_EVENT_END("android_webview.timeline", t,
                   TimeTicks() + Milliseconds(start_time_ms + duration_ms));
+#endif  // BUILDFLAG(ENABLE_BASE_TRACING)
 }
 
 static void JNI_TraceEvent_WebViewStartupStage1(JNIEnv* env,
                                                 jlong start_time_ms,
                                                 jlong duration_ms) {
-  // The following code does nothing if base tracing is disabled.
-  // TODO(b/283286049): set the track name explicitly after the Perfetto SDK
-  // migration is finished (crbug/1006541).
-  [[maybe_unused]] auto t =
-      perfetto::Track(trace_event::GetNextGlobalTraceId());
+#if BUILDFLAG(ENABLE_BASE_TRACING)
+  auto t = perfetto::Track::ThreadScoped(env);
+  auto desc = t.Serialize();
+  desc.set_name("android_webview.timeline");
   TRACE_EVENT_BEGIN("android_webview.timeline",
                     "WebView.Startup.CreationTime.Stage1.FactoryInit", t,
                     TimeTicks() + Milliseconds(start_time_ms));
   TRACE_EVENT_END("android_webview.timeline", t,
                   TimeTicks() + Milliseconds(start_time_ms + duration_ms));
+#endif  // BUILDFLAG(ENABLE_BASE_TRACING)
 }
 
 static void JNI_TraceEvent_WebViewStartupStage2(JNIEnv* env,
                                                 jlong start_time_ms,
                                                 jlong duration_ms,
                                                 jboolean is_cold_startup) {
-  // The following code does nothing if base tracing is disabled.
-  // TODO(b/283286049): set the track name explicitly after the Perfetto SDK
-  // migration is finished (crbug/1006541).
-  [[maybe_unused]] auto t =
-      perfetto::Track(trace_event::GetNextGlobalTraceId());
+#if BUILDFLAG(ENABLE_BASE_TRACING)
+  auto t = perfetto::Track::ThreadScoped(env);
+  auto desc = t.Serialize();
+  desc.set_name("android_webview.timeline");
   if (is_cold_startup) {
     TRACE_EVENT_BEGIN("android_webview.timeline",
                       "WebView.Startup.CreationTime.Stage2.ProviderInit.Cold",
@@ -361,6 +360,24 @@ static void JNI_TraceEvent_WebViewStartupStage2(JNIEnv* env,
 
   TRACE_EVENT_END("android_webview.timeline", t,
                   TimeTicks() + Milliseconds(start_time_ms + duration_ms));
+#endif  // BUILDFLAG(ENABLE_BASE_TRACING)
+}
+
+static void JNI_TraceEvent_WebViewStartupStartChromiumLocked(
+    JNIEnv* env,
+    jlong start_time_ms,
+    jlong duration_ms) {
+#if BUILDFLAG(ENABLE_BASE_TRACING)
+  auto t = perfetto::Track::ThreadScoped(env);
+  auto desc = t.Serialize();
+  desc.set_name("android_webview.timeline");
+  TrackEvent::SetTrackDescriptor(t, desc);
+  TRACE_EVENT_BEGIN("android_webview.timeline",
+                    "WebView.Startup.CreationTime.StartChromiumLocked", t,
+                    TimeTicks() + Milliseconds(start_time_ms));
+  TRACE_EVENT_END("android_webview.timeline", t,
+                  TimeTicks() + Milliseconds(start_time_ms + duration_ms));
+#endif  // BUILDFLAG(ENABLE_BASE_TRACING)
 }
 
 static void JNI_TraceEvent_StartupActivityStart(JNIEnv* env,
