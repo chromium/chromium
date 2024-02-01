@@ -818,6 +818,27 @@ bool IsChromeLikelyDefaultBrowser7Days() {
                                              base::Days(7));
 }
 
+bool IsChromePotentiallyNoLongerDefaultBrowser(int likelyDefaultInterval,
+                                               int likelyNotDefaultInterval) {
+  bool wasLikelyDefaultBrowser =
+      IsChromeLikelyDefaultBrowserXDays(likelyDefaultInterval);
+  bool isStillLikelyDefaultBrowser =
+      IsChromeLikelyDefaultBrowserXDays(likelyNotDefaultInterval);
+  return wasLikelyDefaultBrowser && !isStillLikelyDefaultBrowser;
+}
+
+bool IsChromePotentiallyNoLongerDefaultBrowser21To7() {
+  return IsChromePotentiallyNoLongerDefaultBrowser(21, 7);
+}
+
+bool IsChromePotentiallyNoLongerDefaultBrowser28To14() {
+  return IsChromePotentiallyNoLongerDefaultBrowser(28, 14);
+}
+
+bool IsChromePotentiallyNoLongerDefaultBrowser35To14() {
+  return IsChromePotentiallyNoLongerDefaultBrowser(35, 14);
+}
+
 bool IsLikelyInterestedDefaultBrowserUser(DefaultPromoType promo_type) {
   std::vector<base::Time> times = LoadTimestampsForPromoType(promo_type);
   return !times.empty();
