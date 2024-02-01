@@ -434,6 +434,14 @@ void LoadingPredictor::HandleHintByOrigin(const GURL& url,
   }
 
   const url::Origin origin = url::Origin::Create(url);
+  // When constructing an Origin from a GURL results in an opaque origin, the
+  // resulting origin is guaranteed to be unique; trying to create another
+  // origin from the same URL will result in a different unique opaque origin,
+  // so any preconnect attempt would never be used anyway.
+  if (origin.opaque()) {
+    return;
+  }
+
   // Tracking whether this is a new origin request. If so, then
   // preconnect/presolve immediately. If the origins are the same, then
   // preconnect/presolve after a given threshold.
