@@ -704,17 +704,12 @@ void AutofillAgent::ApplyFormAction(mojom::ActionType action_type,
     }
 
     if (auto* render_frame = unsafe_render_frame()) {
-      WebFormElement updated_form_element =
-          form_util::GetFormByRendererId(form.renderer_id);
-      std::optional<FormData> updated_form_data = form_util::ExtractFormData(
-          render_frame->GetWebFrame()->GetDocument(), updated_form_element,
-          field_data_manager());
       if (auto* autofill_driver = unsafe_autofill_driver();
-          autofill_driver && updated_form_data) {
+          autofill_driver && last_interacted_.saved_state) {
         CHECK_EQ(action_persistence, mojom::ActionPersistence::kFill);
-        autofill_driver->DidFillAutofillFormData(*updated_form_data,
+        autofill_driver->DidFillAutofillFormData(*last_interacted_.saved_state,
                                                  base::TimeTicks::Now());
-        autofill_driver->FormsSeen({std::move(*updated_form_data)},
+        autofill_driver->FormsSeen({*last_interacted_.saved_state},
                                    /*removed_forms=*/{});
       }
     }
@@ -1673,6 +1668,18 @@ std::optional<FormData> AutofillAgent::GetSubmittedForm() const {
     if (std::optional<FormData> extracted_form_data =
             form_util::ExtractFormData(document, WebFormElement(),
                                        field_data_manager())) {
+      auto has_been_user_edited = [this](const FormFieldData& field) {
+        return formless_elements_user_edited_.contains(
+            field.unique_renderer_id);
+      };
+      if (base::FeatureList::IsEnabled(
+              features::
+                  kAutofillPreferProvisionalFormWhenFormlessFormIsRemoved) &&
+          !formless_elements_user_edited_.empty() &&
+          base::ranges::none_of(extracted_form_data->fields,
+                                has_been_user_edited)) {
+        return last_interacted_.saved_state;
+      }
       return extracted_form_data;
     }
     return last_interacted_.saved_state;
