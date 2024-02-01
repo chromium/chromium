@@ -1361,12 +1361,13 @@ void ShellSurfaceBase::GetWidgetHitTestMask(SkPath* mask) const {
 
   GetHitTestMask(mask);
 
-  gfx::Point origin = host_window()->bounds().origin();
   SkMatrix matrix;
-  float scale = GetScale();
-  matrix.setScaleTranslate(
-      SkFloatToScalar(1.0f / scale), SkFloatToScalar(1.0f / scale),
-      SkIntToScalar(origin.x()), SkIntToScalar(origin.y()));
+  const float scale = GetScale();
+  // `matrix` should be on Widget space, so use `origin_` as an origin instead
+  // of the root surface origin.
+  matrix.setScaleTranslate(SkFloatToScalar(1.0f / scale),
+                           SkFloatToScalar(1.0f / scale), origin_.x(),
+                           origin_.y());
   mask->transform(matrix);
 }
 
