@@ -666,11 +666,13 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   private playText(utteranceText: string) {
     // This check is needed due limits of TTS audio for remote voices. See
     // crbug.com/1176078 for more details.
-    // TODO(crbug.com/1474951): Since the TTS bug only impacts remote voices,
-    // we should be able to ignore this check when the current voice is set
-    // to a local voice. This would mean that we won't end up calling
-    // #getAccessibleTextLength in the majority of cases.
-    const isTextTooLong = utteranceText.length > this.maxSpeechLength;
+    // Since the TTS bug only impacts remote voices, no need to check for
+    // maximum text length if we're using a local voice. If we do somehow
+    // attempt to speak text that's too long, this will be able to be handled
+    // by listening for a text-too-long error in message.onerror.
+    const isTextTooLong = this.selectedVoice?.localService ?
+        false :
+        utteranceText.length > this.maxSpeechLength;
     const endBoundary = isTextTooLong ?
         this.getAccessibleTextLength(utteranceText) :
         utteranceText.length;
