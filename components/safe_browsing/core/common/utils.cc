@@ -101,8 +101,8 @@ bool CanGetReputationOfUrl(const GURL& url) {
     return false;
   }
   const std::string hostname = url.host();
-  // A valid hostname should be longer than 3 characters and have at least 1
-  // dot.
+  // There is no reason to send URLs with very short or single-label hosts.
+  // The Safe Browsing server does not check them.
   if (hostname.size() < 4 || base::ranges::count(hostname, '.') < 1) {
     return false;
   }
