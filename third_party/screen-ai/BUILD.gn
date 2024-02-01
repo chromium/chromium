@@ -2,10 +2,10 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-group("screen_ai_linux") {
+group("screen_ai") {
   # Note that this group depends on data that must be used only for test. If we
   # need to remove/update the testonly variable below, we must go through a
   # security review.
   testonly = true
-  data_deps = [ "//third_party/screen-ai/linux:screen_ai_resources" ]
+  data = [ "//third_party/screen-ai/" ]
 }

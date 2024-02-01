@@ -69,7 +69,7 @@
 
 // TODO(crbug.com/1516559): Add a dummy library that is built with Chrome for
 // memory sanitizer tests.
-#if BUILDFLAG(IS_LINUX) && !defined(MEMORY_SANITIZER)
+#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)) && !defined(MEMORY_SANITIZER)
 #define PDF_OCR_INTEGRATION_TEST_ENABLED
 #endif
 
@@ -190,6 +190,7 @@ constexpr char kExpectedPDFAXTree[] =
     "        inlineTextBox '3'\n";
 
 #if defined(PDF_OCR_INTEGRATION_TEST_ENABLED)
+
 constexpr char kExpectedHelloWorldPDFAXTreeWithOcrResults[] =
     "pdfRoot 'PDF document containing 1 page'\n"
     "  banner\n"
