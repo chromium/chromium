@@ -410,6 +410,57 @@
                       children:addToGroupMenuElements];
 }
 
+- (UIAction*)actionToRenameTabGroupWithBlock:(ProceduralBlock)block {
+  CHECK(base::FeatureList::IsEnabled(kTabGroupsInGrid));
+  UIImage* image =
+      DefaultSymbolWithPointSize(kEditActionSymbol, kSymbolActionPointSize);
+  UIAction* action =
+      [self actionWithTitle:l10n_util::GetNSString(
+                                IDS_IOS_CONTENT_CONTEXT_RENAMEGROUP)
+                      image:image
+                       type:MenuActionType::RenameTabGroup
+                      block:block];
+  return action;
+}
+
+- (UIAction*)actionToAddNewTabInGroupWithBlock:(ProceduralBlock)block {
+  CHECK(base::FeatureList::IsEnabled(kTabGroupsInGrid));
+  UIImage* image = DefaultSymbolWithPointSize(kNewTabGroupActionSymbol,
+                                              kSymbolActionPointSize);
+  UIAction* action =
+      [self actionWithTitle:l10n_util::GetNSString(
+                                IDS_IOS_CONTENT_CONTEXT_NEWTABINGROUP)
+                      image:image
+                       type:MenuActionType::NewTabInGroup
+                      block:block];
+  return action;
+}
+
+- (UIAction*)actionToUngroupTabGroupWithBlock:(ProceduralBlock)block {
+  CHECK(base::FeatureList::IsEnabled(kTabGroupsInGrid));
+  UIImage* image = DefaultSymbolWithPointSize(kUngroupTabGroupSymbol,
+                                              kSymbolActionPointSize);
+  UIAction* action = [self
+      actionWithTitle:l10n_util::GetNSString(IDS_IOS_CONTENT_CONTEXT_UNGROUP)
+                image:image
+                 type:MenuActionType::UngroupTabGroup
+                block:block];
+  return action;
+}
+
+- (UIAction*)actionToCloseTabGroupWithBlock:(ProceduralBlock)block {
+  CHECK(base::FeatureList::IsEnabled(kTabGroupsInGrid));
+  UIImage* image =
+      DefaultSymbolWithPointSize(kXMarkSymbol, kSymbolActionPointSize);
+  UIAction* action = [self
+      actionWithTitle:l10n_util::GetNSString(IDS_IOS_CONTENT_CONTEXT_CLOSEGROUP)
+                image:image
+                 type:MenuActionType::ClaseTabGroup
+                block:block];
+  action.attributes = UIMenuElementAttributesDestructive;
+  return action;
+}
+
 #pragma mark - Private
 
 // Creates a UIAction instance for closing a tab with a provided `title`.

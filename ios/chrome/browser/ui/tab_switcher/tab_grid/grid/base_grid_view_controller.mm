@@ -655,13 +655,13 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
   UICollectionViewCell* collectionViewCell =
       [self.collectionView cellForItemAtIndexPath:indexPath];
   if ([collectionViewCell isKindOfClass:[GroupGridCell class]]) {
-    // TODO(crbug.com/1501837): Change the scenario to handle the context menu
-    // for group cells.
     return [self.menuProvider
-        contextMenuConfigurationForTabCell:ObjCCastStrict<GroupGridCell>(
-                                               collectionViewCell)
-                              menuScenario:kMenuScenarioHistogramTabGridEntry];
+        contextMenuConfigurationForTabGroupCell:ObjCCastStrict<GroupGridCell>(
+                                                    collectionViewCell)
+                                   menuScenario:
+                                       kMenuScenarioHistogramTabGroupGridEntry];
   }
+
   GridCell* cell = ObjCCastStrict<GridCell>(collectionViewCell);
 
   MenuScenarioHistogram scenario;

@@ -939,11 +939,17 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_CONTENT_CONTEXT_CLOSETAB" desc="The iOS context menu item for closing a tab. [iOS only]" meaning="Close the current tab [Title Case].">
         Close Tab
       </message>
+      <message name="IDS_IOS_CONTENT_CONTEXT_CLOSEGROUP" desc="The iOS context menu item for closing a tab group. Title case. [iOS only]">
+        Close Group
+      </message>
       <message name="IDS_IOS_CONTENT_CONTEXT_COPY" desc="The iOS menu item for copying a link's URL into the pasteboard. Shorter than the desktop version [iOS only]">
         Copy Link URL
       </message>
       <message name="IDS_IOS_CONTENT_CONTEXT_COPYIMAGE" desc="The name of the Copy Image command in the content area context menu.">
         Copy Image
+      </message>
+      <message name="IDS_IOS_CONTENT_CONTEXT_NEWTABINGROUP" desc="The iOS context menu item for adding a new tab in a tab group. [iOS only]">
+        New Tab in Group
       </message>
       <message name="IDS_IOS_CONTENT_NOTIFICATION_SNACKBAR_ACTION_MANAGE" desc="Text for the Chrome content notifications confirmation snackbar action.">
         Manage
@@ -975,11 +981,17 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_CONTENT_CONTEXT_PINTAB" desc="The iOS context menu item for pinning a tab.[iOS only]">
         Pin Tab
       </message>
+      <message name="IDS_IOS_CONTENT_CONTEXT_RENAMEGROUP" desc="The iOS context menu item for renaming a tab group. Title case. [iOS only]">
+        Rename Group
+      </message>
       <message name="IDS_IOS_CONTENT_CONTEXT_SAVEIMAGE" desc="The name of the Save Image As command in the content area context menu">
         Save in Photos
       </message>
       <message name="IDS_IOS_CONTENT_CONTEXT_SELECTTABS" desc="The iOS context menu item for entering into the selection mode, where users can select tabs to perform bulk actions on them.[iOS only]">
         Select Tabs
+      </message>
+      <message name="IDS_IOS_CONTENT_CONTEXT_UNGROUP" desc="The iOS context menu item for ungrouping a tab group. Title case. [iOS only]">
+        Ungroup
       </message>
       <message name="IDS_IOS_CONTENT_CONTEXT_UNPINTAB" desc="The iOS context menu item for unpinning a tab.[iOS only]">
         Unpin Tab

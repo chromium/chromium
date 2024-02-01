@@ -139,6 +139,18 @@
                                                      block:(void (^)(NSString*))
                                                                block;
 
+// Creates a UIAction instance for renaming a tab group.
+- (UIAction*)actionToRenameTabGroupWithBlock:(ProceduralBlock)block;
+
+// Creates a UIAction instance for adding a new tab to the tab group.
+- (UIAction*)actionToAddNewTabInGroupWithBlock:(ProceduralBlock)block;
+
+// Creates a UIAction instance for ungrouping a tab group.
+- (UIAction*)actionToUngroupTabGroupWithBlock:(ProceduralBlock)block;
+
+// Creates a UIAction instance for closing a tab group.
+- (UIAction*)actionToCloseTabGroupWithBlock:(ProceduralBlock)block;
+
 @end
 
 // This object holds the necessary elements (id and title) to identify a tab

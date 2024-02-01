@@ -210,6 +210,10 @@ chromium-metrics-reviews@google.com.
   <int value="43" label="Close Other Tabs"/>
   <int value="44" label="Add Tab to New Group"/>
   <int value="45" label="Add Tab to Existing Group"/>
+  <int value="46" label="Rename Tab Group"/>
+  <int value="47" label="New Tab in Tab Group"/>
+  <int value="48" label="Ungroup Tab Group"/>
+  <int value="49" label="Close Tab Group Group"/>
 </enum>
 
 <enum name="IOSMenuScenario">
@@ -233,6 +237,7 @@ chromium-metrics-reviews@google.com.
   <int value="17" label="Pinned Tabs entry"/>
   <int value="18" label="Tab Strip entry"/>
   <int value="19" label="Inactive Tabs entry"/>
+  <int value="20" label="Tab Group Grid Entry"/>
 </enum>
 
 <enum name="IOSShareAction">
