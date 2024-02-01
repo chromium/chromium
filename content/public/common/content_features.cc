@@ -1260,6 +1260,13 @@ BASE_FEATURE(kAccessibilityIncludeLongClickAction,
              "AccessibilityIncludeLongClickAction",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, the Android accessibility code will use an experimental code
+// path that is an alternative to the existing JNI path to see if the path
+// can be made more performant.
+BASE_FEATURE(kAccessibilityJNIOptimizations,
+             "AccessibilityJNIOptimizations",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Allows the use of page zoom in place of accessibility text autosizing, and
 // updated UI to replace existing Chrome Accessibility Settings.
 BASE_FEATURE(kAccessibilityPageZoom,
