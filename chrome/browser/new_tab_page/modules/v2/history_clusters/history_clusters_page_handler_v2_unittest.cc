@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/metrics/metrics_hashes.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/supports_user_data.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "base/test/gmock_callback_support.h"
@@ -373,18 +374,22 @@ TEST_F(HistoryClustersPageHandlerV2Test, EventsRecorded) {
   base::HistogramTester histogram_tester;
 
   const int64_t kSampleClusterId = 123;
+  const std::string kSampleCategory1 = "category1";
+  const std::string kSampleCategory2 = "category2";
   EXPECT_CALL(mock_history_clusters_module_service(),
               GetClusters(testing::_, testing::_, testing::_))
       .WillOnce(testing::Invoke(
-          [&kSampleClusterId](
+          [&kSampleClusterId, &kSampleCategory1, &kSampleCategory2](
               const history_clusters::QueryClustersFilterParams filter_params,
               size_t min_required_related_searches,
               base::OnceCallback<void(
                   std::vector<history::Cluster>,
                   base::flat_map<int64_t, HistoryClustersModuleRankingSignals>)>
                   callback) {
-            std::vector<history::Cluster> sample_clusters = {
-                SampleCluster(kSampleClusterId, 1, 2)};
+            std::vector<history::Cluster> sample_clusters = {SampleCluster(
+                kSampleClusterId, 1, 2,
+                {"fruits", "red fruits", "healthy fruits"},
+                {{kSampleCategory1, 90}, {kSampleCategory2, 85}})};
             base::flat_map<int64_t, HistoryClustersModuleRankingSignals>
                 ranking_signals = {
                     {kSampleClusterId, HistoryClustersModuleRankingSignals()}};
@@ -396,13 +401,18 @@ TEST_F(HistoryClustersPageHandlerV2Test, EventsRecorded) {
   EXPECT_CALL(*mock_segmentation_platform_service(), GetDatabaseClient())
       .WillRepeatedly(testing::Return(mock_database_client.get()));
 
-  std::vector<segmentation_platform::UkmEventHash> event_ids;
+  std::vector<
+      std::pair<segmentation_platform::UkmEventHash,
+                std::map<segmentation_platform::UkmMetricHash, int64_t>>>
+      events;
   EXPECT_CALL(*mock_database_client, AddEvent(testing::_))
-      .Times(2)
+      .Times(4)
       .WillRepeatedly(testing::Invoke(
-          [&event_ids](
+          [&events](
               const segmentation_platform::DatabaseClient::StructuredEvent&
-                  event) { event_ids.push_back(event.event_id); }));
+                  event) {
+            events.emplace_back(event.event_id, event.metric_hash_to_value);
+          }));
 
   base::MockCallback<HistoryClustersPageHandlerV2::GetClustersCallback>
       callback;
@@ -416,14 +426,38 @@ TEST_F(HistoryClustersPageHandlerV2Test, EventsRecorded) {
 
   ResetHandler();
 
+  segmentation_platform::UkmMetricHash cluster_id_metric_hash =
+      segmentation_platform::UkmMetricHash::FromUnsafeValue(
+          base::HashMetricName(base::NumberToString(kSampleClusterId)));
+  segmentation_platform::UkmMetricHash category1_metric_hash =
+      segmentation_platform::UkmMetricHash::FromUnsafeValue(
+          base::HashMetricName(kSampleCategory1));
+  segmentation_platform::UkmMetricHash category2_metric_hash =
+      segmentation_platform::UkmMetricHash::FromUnsafeValue(
+          base::HashMetricName(kSampleCategory2));
   ASSERT_EQ(segmentation_platform::UkmEventHash::FromUnsafeValue(
                 base::HashMetricName(kHistoryClusterSeenEventName)),
-            event_ids.at(0));
+            events.at(0).first);
+  ASSERT_EQ(events.at(0).second.count(cluster_id_metric_hash), 1u);
+  ASSERT_EQ(segmentation_platform::UkmEventHash::FromUnsafeValue(
+                base::HashMetricName(kHistoryClustersSeenCategoriesEventName)),
+            events.at(1).first);
+  ASSERT_EQ(events.at(1).second.count(category1_metric_hash), 1u);
+  ASSERT_EQ(events.at(1).second.count(category2_metric_hash), 0u);
   ASSERT_EQ(segmentation_platform::UkmEventHash::FromUnsafeValue(
                 base::HashMetricName(kHistoryClusterUsedEventName)),
-            event_ids.at(1));
+            events.at(2).first);
+  ASSERT_EQ(events.at(2).second.count(cluster_id_metric_hash), 1u);
+  ASSERT_EQ(segmentation_platform::UkmEventHash::FromUnsafeValue(
+                base::HashMetricName(kHistoryClustersUsedCategoriesEventName)),
+            events.at(3).first);
+  ASSERT_EQ(events.at(3).second.count(category1_metric_hash), 1u);
+  ASSERT_EQ(events.at(3).second.count(category2_metric_hash), 0u);
+
   histogram_tester.ExpectTotalCount(
-      "NewTabPage.Modules.SegmentationPlatformClientReady", 2);
+      "NewTabPage.HistoryClusters.SegmentationPlatformClientReadyAtSeen", 1);
+  histogram_tester.ExpectTotalCount(
+      "NewTabPage.HistoryClusters.SegmentationPlatformClientReadyAtUsed", 1);
 }
 
 TEST_F(HistoryClustersPageHandlerV2Test, RecordClick) {

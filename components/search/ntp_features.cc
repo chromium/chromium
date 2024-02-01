@@ -458,6 +458,10 @@ const char kNtpHistoryClustersModuleCategoriesBoostlistParam[] =
     "NtpHistoryClustersModuleCategoriesBoostlistParam";
 const char kNtpHistoryClustersModuleMaxClustersParam[] =
     "NtpHistoryClustersModuleMaxClustersParam";
+const char kNtpHistoryClustersModuleMaxCategoriesToRecordParam[] =
+    "NtpHistoryClustersModuleMaxCategoriesToRecordParam";
+const char kNtpHistoryClustersModuleMinCategoryWeightToRecordParam[] =
+    "NtpHistoryClustersModuleMinCategoryWeightToRecordParam";
 const char kNtpHistoryClustersModuleRankingMetricsQueryDaysParam[] =
     "NtpHistoryClustersModuleRankingMetricsQueryDaysParam";
 const char kNtpHistoryClustersModuleScoreThresholdParam[] =

@@ -18,6 +18,7 @@
 #include "components/history/core/browser/history_types.h"
 #include "components/history_clusters/core/history_clusters_types.h"
 #include "components/history_clusters/public/mojom/history_cluster_types.mojom.h"
+#include "components/segmentation_platform/public/database_client.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
@@ -69,6 +70,12 @@ class HistoryClustersPageHandlerV2
       base::flat_map<int64_t, HistoryClustersModuleRankingSignals>
           ranking_signals);
 
+  // Record cluster associated metrics used for ranking if the segmentation
+  // platform is ready. Return true if successful, false otherwise.
+  bool MaybeRecordEvents(
+      const std::vector<
+          segmentation_platform::DatabaseClient::StructuredEvent*>& events);
+
   raw_ptr<Profile> profile_;
   raw_ptr<content::WebContents> web_contents_;
   base::CancelableTaskTracker update_visits_task_tracker_;
@@ -79,6 +86,18 @@ class HistoryClustersPageHandlerV2
   // returned in the callback.
   std::unique_ptr<HistoryClustersModuleRankingMetricsLogger>
       ranking_metrics_logger_;
+
+  // Used to record cluster category frequency events for seen and used
+  // clusters.
+  std::map<int64_t, std::vector<std::string>> cluster_categories_;
+
+  // Determines the minimum weight a category should have to be considered
+  // relevant for recording in category frequency events.
+  int min_category_weight_to_record_;
+
+  // Determines how many categories per cluster are leveraged when recording
+  // category frequency events.
+  size_t max_categories_to_record_per_cluster_;
 
   // Located at the end of the list of member variables to ensure the WebUI page
   // is disconnected before other members are destroyed.
