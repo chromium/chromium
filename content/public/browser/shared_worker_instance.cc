@@ -30,12 +30,9 @@ SharedWorkerInstance::SharedWorkerInstance(
          GetContentClient()->browser()->DoesSchemeAllowCrossOriginSharedWorker(
              storage_key.origin().scheme()) ||
          storage_key.origin().IsSameOriginWith(url));
-  // TODO(crbug.com/1484966): This option should allow a first-party context to
-  // use kAll or kNone but restrict a third-party context to kNone.
-  DCHECK(same_site_cookies ==
-         (storage_key.IsFirstPartyContext()
-              ? blink::mojom::SharedWorkerSameSiteCookies::kAll
-              : blink::mojom::SharedWorkerSameSiteCookies::kNone));
+  // Ensure only first-party contexts can ask for SameSite Lax/Strict cookies.
+  DCHECK(storage_key.IsFirstPartyContext() ||
+         same_site_cookies == blink::mojom::SharedWorkerSameSiteCookies::kNone);
 }
 
 SharedWorkerInstance::SharedWorkerInstance(const SharedWorkerInstance& other) =

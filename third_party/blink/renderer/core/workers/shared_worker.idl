@@ -29,6 +29,14 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+// SharedWorkers also support the `sameSiteCookies` option outlined in:
+// https://privacycg.github.io/saa-non-cookie-storage/shared-workers.html
+dictionary SharedWorkerOptions : WorkerOptions {
+    [RuntimeEnabled=StorageAccessAPIBeyondCookies] SharedWorkerSameSiteCookies sameSiteCookies;
+};
+
+enum SharedWorkerSameSiteCookies { "all", "none" };
+
 // https://html.spec.whatwg.org/C/#shared-workers-and-the-sharedworker-interface
 
 [
@@ -37,7 +45,7 @@
     Exposed=Window,
     RuntimeEnabled=SharedWorker
 ] interface SharedWorker : EventTarget {
-    [CallWith=ExecutionContext, RaisesException] constructor(ScriptURLString scriptURL, optional (DOMString or WorkerOptions) options = {});
+    [CallWith=ExecutionContext, RaisesException] constructor(ScriptURLString scriptURL, optional (DOMString or SharedWorkerOptions) options = {});
     readonly attribute MessagePort port;
 };
 

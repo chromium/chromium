@@ -78,6 +78,7 @@ class CORE_EXPORT SharedWorkerClientHolder final
                const KURL&,
                mojo::PendingRemote<mojom::blink::BlobURLToken>,
                mojom::blink::WorkerOptionsPtr options,
+               mojom::blink::SharedWorkerSameSiteCookies same_site_cookies,
                ukm::SourceId client_ukm_source_id);
 
   void Trace(Visitor* visitor) const override;

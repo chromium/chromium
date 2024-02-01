@@ -132,12 +132,10 @@ void SharedWorkerServiceImpl::ConnectToWorker(
     return;
   }
 
-  // TODO(crbug.com/1484966): This option should allow a first-party context to
-  // use kAll or kNone but restrict a third-party context to kNone.
-  if (info->same_site_cookies !=
-      (render_frame_host->GetStorageKey().IsFirstPartyContext()
-           ? blink::mojom::SharedWorkerSameSiteCookies::kAll
-           : blink::mojom::SharedWorkerSameSiteCookies::kNone)) {
+  if (render_frame_host->GetStorageKey().IsThirdPartyContext() &&
+      info->same_site_cookies !=
+          blink::mojom::SharedWorkerSameSiteCookies::kNone) {
+    // Only first-party contexts can request SameSite Strict and Lax cookies.
     ScriptLoadFailed(std::move(client), /*error_message=*/"");
     return;
   }

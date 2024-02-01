@@ -88,6 +88,7 @@ void SharedWorkerClientHolder::Connect(
     const KURL& url,
     mojo::PendingRemote<mojom::blink::BlobURLToken> blob_url_token,
     mojom::blink::WorkerOptionsPtr options,
+    mojom::blink::SharedWorkerSameSiteCookies same_site_cookies,
     ukm::SourceId client_ukm_source_id) {
   DCHECK(IsMainThread());
   DCHECK(options);
@@ -119,12 +120,7 @@ void SharedWorkerClientHolder::Connect(
           outside_fetch_client_settings_object->GetReferrerPolicy(),
           KURL(outside_fetch_client_settings_object->GetOutgoingReferrer()),
           insecure_requests_policy),
-      // TODO(crbug.com/1484966): This option should be settable via IDL and it
-      // should allow a first-party context to use kAll or kNone but restrict
-      // a third-party context to kNone.
-      GetSupplementable()->GetStorageKey().IsFirstPartyContext()
-          ? mojom::blink::SharedWorkerSameSiteCookies::kAll
-          : mojom::blink::SharedWorkerSameSiteCookies::kNone);
+      same_site_cookies);
 
   connector_->Connect(
       std::move(info), std::move(client),

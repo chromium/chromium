@@ -11273,6 +11273,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4830" label="SpeculationRulesAuthorPrerenderRule"/>
   <int value="4831" label="SpeculationRulesBrowserPrefetchRule"/>
   <int value="4832" label="SpeculationRulesBrowserPrerenderRule"/>
+  <int value="4833" label="FirstPartySharedWorkerSameSiteCookiesNone"/>
 </enum>
 
 <enum name="FeaturePolicyFeature">
