@@ -415,13 +415,9 @@ class DemoSessionLoginWithGrowthCampaignTest : public DemoSessionLoginTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-#if BUILDFLAG(IS_LINUX)
-#define MAYBE_DemoSWALaunchesOnSessionStartupWithPayload DISABLED_DemoSWALaunchesOnSessionStartupWithPayload
-#else
-#define MAYBE_DemoSWALaunchesOnSessionStartupWithPayload DemoSWALaunchesOnSessionStartupWithPayload
-#endif
+// TODO(b/318756868): Re-enable flaky test.
 IN_PROC_BROWSER_TEST_F(DemoSessionLoginWithGrowthCampaignTest,
-                       MAYBE_DemoSWALaunchesOnSessionStartupWithPayload) {
+                       DISABLED_DemoSWALaunchesOnSessionStartupWithPayload) {
   base::ScopedAllowBlockingForTesting scoped_allow_blocking;
 
   CreateTestCampaignsFile(R"({
