@@ -2,12 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "content/browser/media/cdm_storage_manager.h"
+
 #include <string>
 
 #include "base/test/task_environment.h"
 #include "base/test/test_file_util.h"
 #include "base/test/test_future.h"
-#include "content/browser/media/cdm_storage_manager.h"
 #include "media/mojo/mojom/cdm_storage.mojom.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -26,6 +27,7 @@ const char kFileName[] = "file.txt";
 const char kFileNameTwo[] = "file2.txt";
 
 const std::vector<uint8_t> kPopulatedFileValue = {1, 2, 3};
+const std::vector<uint8_t> kPopulatedFileValueTwo = {1, 2, 3, 4};
 
 std::vector<uint8_t> kEmptyFileValue;
 
@@ -342,6 +344,67 @@ TEST_P(CdmStorageManagerMultipleTest, DeleteFileNoDatabase) {
                                    base::DoNothing());
   cdm_storage_manager_two_->DeleteFile(kTestStorageKey, kCdmType, kFileNameTwo,
                                        base::DoNothing());
+}
+
+TEST_P(CdmStorageManagerMultipleTest, GetSizeForFileNoDatabase) {
+  base::test::TestFuture<uint64_t> get_size_future;
+  cdm_storage_manager_->GetSizeForFile(kTestStorageKey, kCdmType, kFileNameTwo,
+                                       get_size_future.GetCallback());
+  EXPECT_EQ(get_size_future.Get(), 0u);
+
+  base::test::TestFuture<uint64_t> get_size_future_two;
+  cdm_storage_manager_two_->GetSizeForFile(kTestStorageKey, kCdmType,
+                                           kFileNameTwo,
+                                           get_size_future_two.GetCallback());
+  EXPECT_EQ(get_size_future_two.Get(), 0u);
+}
+
+TEST_P(CdmStorageManagerMultipleTest, GetSizeForTests) {
+  auto time_test_started = base::Time::Now();
+  cdm_storage_manager_->OpenCdmStorage(
+      CdmStorageBindingContext(kTestStorageKey, kCdmType),
+      cdm_storage_.BindNewPipeAndPassReceiver());
+
+  auto cdm_file_for_remote_one = OpenCdmFile(cdm_storage_, kFileName);
+  Write(cdm_file_for_remote_one, kPopulatedFileValue);
+  ASSERT_TRUE(cdm_file_for_remote_one.is_bound());
+
+  auto cdm_file_two_for_remote_one = OpenCdmFile(cdm_storage_, kFileNameTwo);
+  Write(cdm_file_two_for_remote_one, kPopulatedFileValueTwo);
+  ASSERT_TRUE(cdm_file_two_for_remote_one.is_bound());
+
+  cdm_storage_manager_two_->OpenCdmStorage(
+      CdmStorageBindingContext(kTestStorageKey, kCdmType),
+      cdm_storage_two_.BindNewPipeAndPassReceiver());
+
+  auto cdm_file_for_remote_two = OpenCdmFile(cdm_storage_two_, kFileNameTwo);
+  Write(cdm_file_for_remote_two, kPopulatedFileValue);
+  ASSERT_TRUE(cdm_file_for_remote_two.is_bound());
+
+  base::test::TestFuture<uint64_t> get_size_time_frame_future;
+  cdm_storage_manager_->GetSizeForTimeFrame(
+      base::Time::Min(), base::Time::Max(),
+      get_size_time_frame_future.GetCallback());
+  EXPECT_EQ(get_size_time_frame_future.Get(),
+            kPopulatedFileValue.size() + kPopulatedFileValueTwo.size());
+
+  base::test::TestFuture<uint64_t> get_size_time_frame_future_two;
+  cdm_storage_manager_two_->GetSizeForTimeFrame(
+      time_test_started, base::Time::Max(),
+      get_size_time_frame_future_two.GetCallback());
+  EXPECT_EQ(get_size_time_frame_future_two.Get(), kPopulatedFileValue.size());
+
+  base::test::TestFuture<uint64_t> get_size_storage_key;
+  cdm_storage_manager_->GetSizeForStorageKey(
+      kTestStorageKey, time_test_started, base::Time::Max(),
+      get_size_storage_key.GetCallback());
+  EXPECT_EQ(get_size_storage_key.Get(),
+            kPopulatedFileValue.size() + kPopulatedFileValueTwo.size());
+
+  base::test::TestFuture<uint64_t> get_size_file;
+  cdm_storage_manager_->GetSizeForFile(kTestStorageKey, kCdmType, kFileName,
+                                       get_size_file.GetCallback());
+  EXPECT_EQ(get_size_file.Get(), kPopulatedFileValue.size());
 }
 
 // `testing::Bool()` represents either incognito, or a non incognito profile, so

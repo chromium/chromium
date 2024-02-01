@@ -48,6 +48,20 @@ class CONTENT_EXPORT CdmStorageManager : public media::mojom::CdmStorage {
                  const std::vector<uint8_t>& data,
                  base::OnceCallback<void(bool)> callback);
 
+  void GetSizeForFile(const blink::StorageKey& storage_key,
+                      const media::CdmType& cdm_type,
+                      const std::string& file_name,
+                      base::OnceCallback<void(uint64_t)> callback);
+
+  void GetSizeForStorageKey(const blink::StorageKey& storage_key,
+                            const base::Time begin,
+                            const base::Time end,
+                            base::OnceCallback<void(uint64_t)> callback);
+
+  void GetSizeForTimeFrame(const base::Time begin,
+                           const base::Time end,
+                           base::OnceCallback<void(uint64_t)> callback);
+
   void DeleteFile(const blink::StorageKey& storage_key,
                   const media::CdmType& cdm_type,
                   const std::string& file_name,
@@ -96,6 +110,10 @@ class CONTENT_EXPORT CdmStorageManager : public media::mojom::CdmStorage {
       std::optional<std::vector<uint8_t>> data);
 
   void DidWriteFile(base::OnceCallback<void(bool)> callback, bool success);
+
+  void DidGetSize(base::OnceCallback<void(uint64_t)> callback,
+                  const std::string& operation,
+                  absl::optional<uint64_t> size);
 
   void DidDelete(base::OnceCallback<void(bool)> callback,
                  const std::string& operation,
