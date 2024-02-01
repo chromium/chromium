@@ -619,12 +619,14 @@ void AutofillAgent::DataListOptionsChanged(const WebInputElement& element) {
   datalist_option_change_batch_timer_.Start(
       FROM_HERE, kWaitTimeForOptionsChanges,
       base::BindRepeating(&AutofillAgent::BatchDataListOptionChange,
-                          weak_ptr_factory_.GetWeakPtr(), element));
+                          weak_ptr_factory_.GetWeakPtr(),
+                          form_util::GetFieldRendererId(element)));
 }
 
-void AutofillAgent::BatchDataListOptionChange(
-    const blink::WebFormControlElement& element) {
-  if (element.GetDocument().IsNull()) {
+void AutofillAgent::BatchDataListOptionChange(FieldRendererId element_id) {
+  WebFormControlElement element =
+      form_util::GetFormControlByRendererId(element_id);
+  if (element.IsNull() || element.GetDocument().IsNull()) {
     return;
   }
 
@@ -1290,12 +1292,15 @@ void AutofillAgent::SelectOrSelectListFieldOptionsChanged(
   select_or_selectlist_option_change_batch_timer_.Start(
       FROM_HERE, kWaitTimeForOptionsChanges,
       base::BindRepeating(&AutofillAgent::BatchSelectOrSelectListOptionChange,
-                          weak_ptr_factory_.GetWeakPtr(), element));
+                          weak_ptr_factory_.GetWeakPtr(),
+                          form_util::GetFieldRendererId(element)));
 }
 
 void AutofillAgent::BatchSelectOrSelectListOptionChange(
-    const blink::WebFormControlElement& element) {
-  if (element.GetDocument().IsNull()) {
+    FieldRendererId element_id) {
+  WebFormControlElement element =
+      form_util::GetFormControlByRendererId(element_id);
+  if (element.IsNull() || element.GetDocument().IsNull()) {
     return;
   }
 

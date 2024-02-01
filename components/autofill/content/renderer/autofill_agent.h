@@ -24,6 +24,7 @@
 #include "components/autofill/content/renderer/form_autofill_util.h"
 #include "components/autofill/content/renderer/form_tracker.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
+#include "components/autofill/core/common/unique_ids.h"
 #include "content/public/renderer/render_frame_observer.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
@@ -403,9 +404,8 @@ class AutofillAgent : public content::RenderFrameObserver,
   // Helpers for SelectOrSelectListFieldOptionsChanged() and
   // DataListOptionsChanged(), which get called after a timer that is restarted
   // when another event of the same type started.
-  void BatchSelectOrSelectListOptionChange(
-      const blink::WebFormControlElement& element);
-  void BatchDataListOptionChange(const blink::WebFormControlElement& element);
+  void BatchSelectOrSelectListOptionChange(FieldRendererId element_id);
+  void BatchDataListOptionChange(FieldRendererId element_id);
 
   // Stores immutable configuration this agent was created with. It contains
   // features and settings that are available for the lifetime of this class.
