@@ -457,6 +457,11 @@ bool ServiceWorkerMainResourceLoader::MaybeStartAutoPreload(
     return false;
   }
 
+  // AutoPreload is triggered only in a main frame.
+  if (!resource_request_.is_outermost_main_frame) {
+    return false;
+  }
+
   bool use_allowlist = base::GetFieldTrialParamByFeatureAsBool(
       features::kServiceWorkerAutoPreload, "use_allowlist",
       /*default_value=*/false);
@@ -558,12 +563,6 @@ bool ServiceWorkerMainResourceLoader::StartRaceNetworkRequest(
 
   // RaceNetworkRequest only supports GET method.
   if (resource_request_.method != net::HttpRequestHeaders::kGetMethod) {
-    return false;
-  }
-
-  // RaceNetworkRequest is triggered only in a main frame.
-  if (resource_request_.destination !=
-      network::mojom::RequestDestination::kDocument) {
     return false;
   }
 
