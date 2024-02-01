@@ -209,7 +209,6 @@ extern const char kShowEula[];
 extern const char kStoreDMToken[];
 extern const char kSystemLevel[];
 extern const char kTriggerActiveSetup[];
-extern const char kUncompressedArchive[];
 extern const char kUninstall[];
 extern const char kUpdateSetupExe[];
 extern const char kVerboseLogging[];
