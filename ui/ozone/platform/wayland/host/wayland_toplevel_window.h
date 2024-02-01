@@ -60,7 +60,8 @@ class WaylandToplevelWindow : public WaylandWindow,
   void UpdateWindowScale(bool update_bounds) override;
   void LockFrame() override;
   void UnlockFrame() override;
-  void OcclusionStateChanged(uint32_t mode) override;
+  void OcclusionStateChanged(
+      PlatformWindowOcclusionState occlusion_state) override;
   void DeskChanged(int state) override;
   void StartThrottle() override;
   void EndThrottle() override;
@@ -238,9 +239,6 @@ class WaylandToplevelWindow : public WaylandWindow,
   // Called when frame is locked to normal state or unlocked from
   // previously locked state.
   void OnFrameLockingChanged(bool lock);
-
-  // Called when the occlusion state is updated.
-  void OnOcclusionStateChanged(PlatformWindowOcclusionState occlusion_state);
 
   // Called when a window is moved to another desk or assigned to
   // all desks state.

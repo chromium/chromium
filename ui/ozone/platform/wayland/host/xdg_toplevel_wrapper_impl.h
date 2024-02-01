@@ -137,9 +137,6 @@ class XDGToplevelWrapperImpl : public ShellToplevelWrapper {
   // Initializes the xdg-decoration protocol extension, if available.
   void InitializeXdgDecoration();
 
-  // Called when raster scale is changed.
-  void OnConfigureRasterScale(double scale);
-
   // Creates a wl_region from `shape_rects`.
   wl::Object<wl_region> CreateAndAddRegion(const ShapeRects& shape_rects);
 
