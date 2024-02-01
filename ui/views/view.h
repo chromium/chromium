@@ -2335,6 +2335,10 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   // to LayoutSuperclass() outside the implementation of Layout().
   bool layout_allowed_ = false;
 
+  // How many times this view has done layout since the last time it was
+  // painted. This is used to compute metrics around unnecessary layout calls.
+  int layouts_since_last_paint_ = 0;
+
   // The View's LayoutManager defines the sizing heuristics applied to child
   // Views. The default is absolute positioning according to bounds_.
   std::unique_ptr<LayoutManager> layout_manager_;

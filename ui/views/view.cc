@@ -19,6 +19,7 @@
 #include "base/i18n/rtl.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/observer_list.h"
@@ -238,6 +239,11 @@ View::View() {
 }
 
 View::~View() {
+  if (layouts_since_last_paint_) {
+    UMA_HISTOGRAM_COUNTS_100("Views.UnnecessaryLayouts",
+                             layouts_since_last_paint_);
+  }
+
   for (ViewObserver& observer : observers_) {
     observer.OnViewHierarchyWillBeDeleted(this);
   }
@@ -1241,6 +1247,11 @@ void View::Paint(const PaintInfo& parent_paint_info) {
   }
 
   TRACE_EVENT1("views", "View::Paint", "class", GetClassName());
+  if (layouts_since_last_paint_) {
+    UMA_HISTOGRAM_COUNTS_100("Views.UnnecessaryLayouts",
+                             layouts_since_last_paint_ - 1);
+    layouts_since_last_paint_ = 0;
+  }
 
   // If the view is backed by a layer, it should paint with itself as the origin
   // rather than relative to its parent.
@@ -3420,6 +3431,7 @@ void View::LayoutImmediately(bool collect_trace) {
   if (collect_trace) {
     TRACE_EVENT1("ui", "View::LayoutImmediately", "view class", GetClassName());
   }
+  ++layouts_since_last_paint_;
   base::AutoReset allow_layout(&layout_allowed_, true);
   Layout(PassKey());
 }

@@ -104,6 +104,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Views.UnnecessaryLayouts" units="count"
+    expires_after="2024-12-31">
+  <owner>elainechien@chromium.org</owner>
+  <owner>kylixrd@chromium.org</owner>
+  <owner>pkasting@chromium.org</owner>
+  <summary>
+    Records excess layouts of a view that will not be visible. This includes
+    doing more than one layout between paints, or any layouts after the final
+    paint. While some such layouts might be unavoidable in computing
+    layout-related properties during other operations, these mostly represent
+    unnecessary work. The zero bucket counts cases where all the layouts we did
+    were necessary, i.e. paints that had a single preceding layout.
+  </summary>
+</histogram>
+
 <histogram
     name="Views.{Process}.NumColorProvidersInitializedDuringOnNativeThemeUpdated"
     units="providers" expires_after="2024-06-16">
