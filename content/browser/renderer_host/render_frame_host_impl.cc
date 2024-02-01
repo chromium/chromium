@@ -10520,14 +10520,17 @@ void RenderFrameHostImpl::CommitNavigation(
 
       mojo::PendingRemote<network::mojom::URLLoaderFactory>
           pending_factory_proxy;
-      network::URLLoaderFactoryBuilder factory_builder;
-      WillCreateURLLoaderFactory(
-          subresource_loader_factories_config.origin(), factory_builder,
-          subresource_loader_factories_config.ukm_source_id());
-
-      std::move(factory_builder)
-          .Finish(pending_factory_proxy.InitWithNewPipeAndPassReceiver(),
-                  std::move(original_pending_factory));
+      url_loader_factory::CreateAndConnectToPendingReceiver(
+          pending_factory_proxy.InitWithNewPipeAndPassReceiver(),
+          ContentBrowserClient::URLLoaderFactoryType::kDocumentSubResource,
+          url_loader_factory::TerminalParams::ForNonNetwork(
+              std::move(original_pending_factory)),
+          url_loader_factory::ContentClientParams(
+              GetBrowserContext(), this, GetProcess()->GetID(),
+              subresource_loader_factories_config.origin(),
+              subresource_loader_factories_config.ukm_source_id()),
+          devtools_instrumentation::WillCreateURLLoaderFactoryParams::ForFrame(
+              this));
       subresource_loader_factories->pending_scheme_specific_factories().emplace(
           scheme, std::move(pending_factory_proxy));
     }
@@ -11537,29 +11540,6 @@ bool RenderFrameHostImpl::CreateNetworkServiceDefaultFactoryInternal(
       devtools_instrumentation::WillCreateURLLoaderFactoryParams::ForFrame(
           this));
   return bypass_redirect_checks;
-}
-
-void RenderFrameHostImpl::WillCreateURLLoaderFactory(
-    const url::Origin& request_initiator,
-    network::URLLoaderFactoryBuilder& factory_builder,
-    ukm::SourceIdObj ukm_source_id,
-    mojo::PendingRemote<network::mojom::TrustedURLLoaderHeaderClient>*
-        header_client,
-    bool* bypass_redirect_checks,
-    bool* disable_secure_dns,
-    network::mojom::URLLoaderFactoryOverridePtr* factory_override) {
-  GetContentClient()->browser()->WillCreateURLLoaderFactory(
-      GetBrowserContext(), this, GetProcess()->GetID(),
-      ContentBrowserClient::URLLoaderFactoryType::kDocumentSubResource,
-      request_initiator, /*navigation_id=*/std::nullopt, ukm_source_id,
-      factory_builder, header_client, bypass_redirect_checks,
-      disable_secure_dns, factory_override, /*navigation_task_runner=*/nullptr);
-
-  // Keep DevTools proxy last, i.e. closest to the network.
-  devtools_instrumentation::WillCreateURLLoaderFactoryParams::ForFrame(this)
-      .Run(
-          /*is_navigation=*/false, /*is_download=*/false, factory_builder,
-          factory_override);
 }
 
 bool RenderFrameHostImpl::CanExecuteJavaScript() {
