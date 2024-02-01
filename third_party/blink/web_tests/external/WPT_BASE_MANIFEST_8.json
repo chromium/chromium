@@ -265998,6 +265998,32 @@
          {}
         ]
        ],
+       "2d.layer.clearRect.full.html": [
+        "579c6e10533002fd539f8124908b77a97d67eead",
+        [
+         null,
+         [
+          [
+           "/html/canvas/element/layers/2d.layer.clearRect.full-expected.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "2d.layer.clearRect.partial.html": [
+        "8323ffb93164a4cf6d4f9011dd4605ff54ea6817",
+        [
+         null,
+         [
+          [
+           "/html/canvas/element/layers/2d.layer.clearRect.partial-expected.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
        "2d.layer.clip-inside-and-outside.html": [
         "1a727bbd3cc8f8ca15f30a4aee2ec47e3ad5e2c8",
         [
@@ -268202,6 +268228,58 @@
          [
           [
            "/html/canvas/offscreen/layers/2d.layer.blur-from-outside-canvas.with-clipping-expected.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "2d.layer.clearRect.full.html": [
+        "ec9f453b69ef379653debd215ae1dc66a0672382",
+        [
+         null,
+         [
+          [
+           "/html/canvas/offscreen/layers/2d.layer.clearRect.full-expected.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "2d.layer.clearRect.full.w.html": [
+        "a6f4021dd50e12f17c46ba5565384b31dbfe2916",
+        [
+         null,
+         [
+          [
+           "/html/canvas/offscreen/layers/2d.layer.clearRect.full-expected.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "2d.layer.clearRect.partial.html": [
+        "88509a8a40be36c5c3c6b1541e6ba1f6f517e4e1",
+        [
+         null,
+         [
+          [
+           "/html/canvas/offscreen/layers/2d.layer.clearRect.partial-expected.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "2d.layer.clearRect.partial.w.html": [
+        "c6ba41afd76c79a63eb332ce247dea75d066db26",
+        [
+         null,
+         [
+          [
+           "/html/canvas/offscreen/layers/2d.layer.clearRect.partial-expected.html",
            "=="
           ]
          ],
@@ -279557,6 +279635,19 @@
         {}
        ]
       ],
+      "frac-created-dynamically-4.html": [
+       "66665620e38aa8e53583b8794fe33c4c60689e8b",
+       [
+        null,
+        [
+         [
+          "/mathml/presentation-markup/fractions/frac-created-dynamically-4-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "frac-created-dynamically.html": [
        "8f65e8d9cf85b5e40798b83f9d01c144e2d3b081",
        [
@@ -279668,6 +279759,58 @@
         [
          [
           "/mathml/presentation-markup/fractions/frac-linethickness-004-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "frac-linethickness-005.html": [
+       "9ecc636215a898717a9560c42698389814e2a399",
+       [
+        null,
+        [
+         [
+          "/mathml/presentation-markup/fractions/frac-linethickness-005-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "frac-linethickness-006.html": [
+       "4ee477b81399cd863c28b42f4ce95b53dfd79b61",
+       [
+        null,
+        [
+         [
+          "/mathml/presentation-markup/fractions/frac-linethickness-006-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "frac-linethickness-007.html": [
+       "8702c3c698c13a179ef995cf66a6f8832e92c98a",
+       [
+        null,
+        [
+         [
+          "/mathml/presentation-markup/fractions/frac-linethickness-007-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "frac-linethickness-008.html": [
+       "8e5bfe89f517a2f4da5aa34ea4ffc0fe1d531928",
+       [
+        null,
+        [
+         [
+          "/mathml/presentation-markup/fractions/frac-linethickness-008-ref.html",
           "=="
          ]
         ],
@@ -280196,6 +280339,32 @@
         [
          [
           "/mathml/presentation-markup/operators/mo-form-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "mo-invisibleoperators-2.html": [
+       "d5511a8ea84cad0189d62b103ae6baa0d7b9db1d",
+       [
+        null,
+        [
+         [
+          "/mathml/presentation-markup/operators/mo-invisibleoperators-2-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "mo-invisibleoperators.html": [
+       "d027b6491ffe208c73e2ec2468b465c83563f10a",
+       [
+        null,
+        [
+         [
+          "/mathml/presentation-markup/operators/mo-invisibleoperators-ref.html",
           "=="
          ]
         ],
@@ -281138,6 +281307,19 @@
         [
          [
           "/mathml/presentation-markup/spaces/space-2-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "space-3.html": [
+       "d4f79ed25a3169d0c94fc5f0bf7b43db15a016fa",
+       [
+        null,
+        [
+         [
+          "/mathml/presentation-markup/spaces/space-3-ref.html",
           "=="
          ]
         ],
@@ -347611,10 +347793,6 @@
       "sheet-going-away-002-ref.html": [
        "67841617736730e588f5659fd485fb09a159bd33",
        []
-      ],
-      "state-in-has-expected.txt": [
-       "97c90323f5d849ebd66ce4c5b7379bdbb69fac66",
-       []
       ]
      },
      "is-where-error-recovery-expected.txt": [
@@ -347842,10 +348020,6 @@
       ],
       "parse-part-expected.txt": [
        "38fa882ed293e36958083068e3fe47df753a73d0",
-       []
-      ],
-      "parse-state-expected.txt": [
-       "9f273b4a145e8585c7799442575f13acaf15d4e5",
        []
       ]
      },
@@ -348329,10 +348503,6 @@
       "README.md": [
        "b11784bd07e689b16b316cefb7a9cb03ba8fc56c",
        []
-      ],
-      "state-pseudo-class-expected.txt": [
-       "bd09854b09badc9d711caec10a7eecfc7bc6f294",
-       []
       ]
      }
     }
@@ -348342,20 +348512,8 @@
      "ee34d8b900423cdc4de0876f4909c528b835dad6",
      []
     ],
-    "custom-state-set-strong-ref.tentative-expected.txt": [
-     "2780a11acd9198308f00246c2e5d5ade2325a0d3",
-     []
-    ],
     "idlharness.window-expected.txt": [
      "5dd81d3304bae67d1b64c724f60d388c5edfce50",
-     []
-    ],
-    "state-css-selector-shadow-dom.tentative-expected.txt": [
-     "86346c4dff39df756b51087b4d81809eaf5abb9a",
-     []
-    ],
-    "state-css-selector.tentative-expected.txt": [
-     "709774f0268723a048c8bb345731ce841449014e",
      []
     ]
    },
@@ -361047,6 +361205,14 @@
         "1823f789839a973121269406f387ae8a66b6f8e1",
         []
        ],
+       "2d.layer.clearRect.full-expected.html": [
+        "5a47f8e11884e0905cd85c5f19bc6da1b303e04e",
+        []
+       ],
+       "2d.layer.clearRect.partial-expected.html": [
+        "ac75105cecbe93e46b60596346795f1817fd9a68",
+        []
+       ],
        "2d.layer.clip-inside-and-outside-expected.html": [
         "14e6d56245c0e0687cdaa050869175df1037d1c7",
         []
@@ -362187,6 +362353,14 @@
         "1823f789839a973121269406f387ae8a66b6f8e1",
         []
        ],
+       "2d.layer.clearRect.full-expected.html": [
+        "5a47f8e11884e0905cd85c5f19bc6da1b303e04e",
+        []
+       ],
+       "2d.layer.clearRect.partial-expected.html": [
+        "ac75105cecbe93e46b60596346795f1817fd9a68",
+        []
+       ],
        "2d.layer.clip-inside-and-outside-expected.html": [
         "14e6d56245c0e0687cdaa050869175df1037d1c7",
         []
@@ -362702,7 +362876,7 @@
         []
        ],
        "layers.yaml": [
-        "34f16ce51519f2e81bdd88cd6d3abed956d4de63",
+        "dd020a04ba94feab1d0a071c735d4b4b68387e89",
         []
        ],
        "line-styles.yaml": [
@@ -378784,6 +378958,10 @@
        "f8db144cfe69ba23452da6aeffdd9c71d8696491",
        []
       ],
+      "frac-created-dynamically-4-ref.html": [
+       "a084a81f0bb4d0743a205dbb065dd9bce86c82c7",
+       []
+      ],
       "frac-created-dynamically-ref.html": [
        "e10405c572fcf04e0913e0d3bc3e144565330fea",
        []
@@ -378818,6 +378996,22 @@
       ],
       "frac-linethickness-004-ref.html": [
        "8014f0a895252f4d37527c381c7c2b933ca32ca9",
+       []
+      ],
+      "frac-linethickness-005-ref.html": [
+       "1c231455bf5c0079b37972db099e7117d2b05589",
+       []
+      ],
+      "frac-linethickness-006-ref.html": [
+       "1c231455bf5c0079b37972db099e7117d2b05589",
+       []
+      ],
+      "frac-linethickness-007-ref.html": [
+       "c5d73a9bba77f4623bb79fbf5a9c8a1014156d68",
+       []
+      ],
+      "frac-linethickness-008-ref.html": [
+       "0a6155e7859b64f4b1b4528422cbae18481a288c",
        []
       ],
       "frac-mrow-001-ref.html": [
@@ -378982,6 +379176,14 @@
       ],
       "mo-form-ref.html": [
        "b249fe43b591b70bed7e9f75962497db56ba119a",
+       []
+      ],
+      "mo-invisibleoperators-2-ref.html": [
+       "c13f9b1739ab4bce78cf03c8451ad8edb010ab58",
+       []
+      ],
+      "mo-invisibleoperators-ref.html": [
+       "2b7d9c6add50043aa0bf860213b8cb89383edc11",
        []
       ],
       "mo-lspace-rspace-2-ref.html": [
@@ -379226,6 +379428,10 @@
       ],
       "space-2-ref.html": [
        "5a8b39e1898c4f8d5555ee11d5757965162780e7",
+       []
+      ],
+      "space-3-ref.html": [
+       "135a1475e237de6169c3bfabc83b33f3d762c9f6",
        []
       ],
       "space-vertical-align.tentative-ref.html": [
@@ -466998,7 +467204,7 @@
        ]
       ],
       "transition-timing-function.html": [
-       "0184b29a796140f423f72097f57875a629598c6b",
+       "6dc42f55292fee20a35b04d0732f724ac09b0ce8",
        [
         null,
         {}
@@ -478582,14 +478788,14 @@
     "state": {
      "tentative": {
       "ElementInternals-states.html": [
-       "016a2bcc438d573444d5af24aaadbebc4ee43526",
+       "b71bd0a07dfd5f585fd216f151a189143c7e3074",
        [
         null,
         {}
        ]
       ],
       "state-pseudo-class.html": [
-       "5ef526eb12c727128a9f5cf7f7ecc1dd4798cc40",
+       "684540fdfac41ee0f5d10e886241b389b5843a83",
        [
         null,
         {}
@@ -594562,10 +594768,36 @@
      ]
     ],
     "MediaRecorder-pause-resume.html": [
-     "84efe52e06b7788d71bc44fbec7c9963216f2734",
+     "8dc231279a0233b19ef6b87b4318d1a98e23fb69",
      [
-      null,
-      {}
+      "mediacapture-record/MediaRecorder-pause-resume.html?mimeType=''",
+      {
+       "timeout": "long"
+      }
+     ],
+     [
+      "mediacapture-record/MediaRecorder-pause-resume.html?mimeType=video/mp4;codecs=avc1,mp4a.40.2",
+      {
+       "timeout": "long"
+      }
+     ],
+     [
+      "mediacapture-record/MediaRecorder-pause-resume.html?mimeType=video/webm;codecs=av1,opus",
+      {
+       "timeout": "long"
+      }
+     ],
+     [
+      "mediacapture-record/MediaRecorder-pause-resume.html?mimeType=video/webm;codecs=vp8,opus",
+      {
+       "timeout": "long"
+      }
+     ],
+     [
+      "mediacapture-record/MediaRecorder-pause-resume.html?mimeType=video/webm;codecs=vp9,opus",
+      {
+       "timeout": "long"
+      }
      ]
     ],
     "MediaRecorder-peerconnection-no-sink.https.html": [
