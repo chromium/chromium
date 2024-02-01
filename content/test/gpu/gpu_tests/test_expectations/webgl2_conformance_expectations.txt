@@ -599,7 +599,6 @@ crbug.com/1457723 [ bigsur nvidia-0xfe9 angle-opengl ] conformance2/textures/can
 crbug.com/1475765 [ bigsur nvidia-0xfe9 angle-opengl ] conformance/textures/canvas_sub_rectangle/tex-2d-rgba-rgba-unsigned_short_5_5_5_1.html [ Failure ]
 crbug.com/1475765 [ bigsur nvidia-0xfe9 angle-opengl ] conformance2/textures/canvas_sub_rectangle/tex-2d-rgb5_a1-rgba-unsigned_short_5_5_5_1.html [ Failure ]
 crbug.com/1488444 [ mac-x86_64 nvidia-0xfe9 angle-opengl passthrough ] conformance2/rendering/vertex-id-large-count.html [ Failure ]
-crbug.com/1518884 [ mac nvidia ] conformance2/transform_feedback/transform_feedback.html [ Slow ]
 
 ## Mac AMD ##
 
