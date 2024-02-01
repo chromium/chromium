@@ -93,7 +93,9 @@ enum class OfficeDriveOpenErrors {
   kNoDriveService = 9,
   kDriveAuthenticationNotReady = 10,
   kMeteredConnection = 11,
-  kMaxValue = kMeteredConnection,
+  kEmptyAlternateUrl = 12,
+  kWaitingForUpload = 13,
+  kMaxValue = kWaitingForUpload,
 };
 
 // List of UMA enum values for opening Office files from OneDrive, with the

@@ -151,6 +151,8 @@ void CloudOpenMetrics::CheckForInconsistencies(
               case OfficeDriveOpenErrors::kInvalidAlternateUrl:
               case OfficeDriveOpenErrors::kDriveAlternateUrl:
               case OfficeDriveOpenErrors::kUnexpectedAlternateUrl:
+              case OfficeDriveOpenErrors::kEmptyAlternateUrl:
+              case OfficeDriveOpenErrors::kWaitingForUpload:
               case OfficeDriveOpenErrors::kSuccess:
                 SetWrongValueLogged(drive_open_error);
                 break;
@@ -254,6 +256,8 @@ void CloudOpenMetrics::CheckForInconsistencies(
               case OfficeDriveOpenErrors::kNoDriveService:
               case OfficeDriveOpenErrors::kDriveAuthenticationNotReady:
               case OfficeDriveOpenErrors::kMeteredConnection:
+              case OfficeDriveOpenErrors::kEmptyAlternateUrl:
+              case OfficeDriveOpenErrors::kWaitingForUpload:
                 break;
               case OfficeDriveOpenErrors::kSuccess:
                 SetWrongValueLogged(drive_open_error);
@@ -306,6 +310,8 @@ void CloudOpenMetrics::CheckForInconsistencies(
               case OfficeDriveOpenErrors::kNoDriveService:
               case OfficeDriveOpenErrors::kDriveAuthenticationNotReady:
               case OfficeDriveOpenErrors::kMeteredConnection:
+              case OfficeDriveOpenErrors::kEmptyAlternateUrl:
+              case OfficeDriveOpenErrors::kWaitingForUpload:
                 SetWrongValueLogged(drive_open_error);
                 break;
             }
