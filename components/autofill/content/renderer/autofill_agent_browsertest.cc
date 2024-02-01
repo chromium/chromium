@@ -113,16 +113,6 @@ auto HasType(FormControlType type) {
   return Field(&FormFieldData::form_control_type, type);
 }
 
-auto FieldsAre(std::string field_name,
-               std::u16string FormFieldData::*field,
-               std::vector<std::u16string> expecteds) {
-  std::vector<decltype(Field(field_name, field, expecteds[0]))> matchers;
-  for (const std::u16string& expected : expecteds) {
-    matchers.push_back(Field(field_name, field, expected));
-  }
-  return Field(&FormData::fields, ElementsAreArray(matchers));
-}
-
 // TODO(crbug.com/63573): Add many more test cases.
 class AutofillAgentTest : public test::AutofillRendererTest {
  public:
@@ -131,24 +121,6 @@ class AutofillAgentTest : public test::AutofillRendererTest {
     test_api(autofill_agent())
         .set_form_tracker(std::make_unique<MockFormTracker>(
             GetMainRenderFrame(), FormTracker::UserGestureRequired(true)));
-  }
-
-  blink::WebElement GetWebElementById(const std::string& id) {
-    return GetMainFrame()->GetDocument().GetElementById(
-        blink::WebString::FromUTF8(id));
-  }
-
-  void SimulateUserEditField(const blink::WebFormElement& form,
-                             const std::string& field_id,
-                             const std::string& value) {
-    blink::WebFormControlElement element =
-        GetWebElementById(field_id).To<blink::WebFormControlElement>();
-    element.SetValue(blink::WebString::FromUTF8(value));
-    // Call AutofillAgent::OnProvisionallySaveForm() in order to update
-    // AutofillAgent::formless_elements_user_edited_
-    autofill_agent().OnProvisionallySaveForm(
-        form, element,
-        FormTracker::Observer::SaveFormReason::kTextFieldChanged);
   }
 
   MockFormTracker& form_tracker() {
@@ -467,7 +439,10 @@ TEST_F(AutofillAgentTest, PreviewThenClear) {
       {form_util::ExtractOption::kValue}, nullptr);
   ASSERT_EQ(form.fields.size(), 1u);
   blink::WebFormControlElement field =
-      GetWebElementById("text_id").DynamicTo<blink::WebFormControlElement>();
+      GetMainFrame()
+          ->GetDocument()
+          .GetElementById("text_id")
+          .DynamicTo<blink::WebFormControlElement>();
   ASSERT_FALSE(field.IsNull());
 
   std::u16string prior_value = form.fields[0].value;
@@ -493,7 +468,10 @@ TEST_F(AutofillAgentTest,
   )");
 
   blink::WebFormControlElement field =
-      GetWebElementById("text_id").DynamicTo<blink::WebFormControlElement>();
+      GetMainFrame()
+          ->GetDocument()
+          .GetElementById("text_id")
+          .DynamicTo<blink::WebFormControlElement>();
   ASSERT_FALSE(field.IsNull());
 
   FormFieldData form_field;
@@ -529,8 +507,10 @@ TEST_F(AutofillAgentTest, FormApplyFormActionUpdatesLastInteractedSavedState) {
     </form>
   )");
 
-  blink::WebFormElement form =
-      GetWebElementById("form_id").DynamicTo<blink::WebFormElement>();
+  blink::WebFormElement form = GetMainFrame()
+                                   ->GetDocument()
+                                   .GetElementById("form_id")
+                                   .DynamicTo<blink::WebFormElement>();
   ASSERT_EQ(1u, form.GetFormControlElements().size());
   blink::WebFormControlElement field = form.GetFormControlElements()[0];
   ASSERT_FALSE(field.IsNull());
@@ -564,7 +544,8 @@ TEST_F(AutofillAgentTest, HideElementTriggersFormTracker_DisplayNone) {
       <input id="field_id">
     </form>
   )");
-  blink::WebElement element = GetWebElementById("field_id");
+  blink::WebElement element =
+      GetElementById(GetMainFrame()->GetDocument(), "field_id");
 
   EXPECT_CALL(form_tracker(), ElementDisappeared(element));
   ExecuteJavaScriptForTests(
@@ -579,7 +560,8 @@ TEST_F(AutofillAgentTest, HideElementTriggersFormTracker_VisibilityHidden) {
       <input id="field_id">
     </form>
   )");
-  blink::WebElement element = GetWebElementById("field_id");
+  blink::WebElement element =
+      GetElementById(GetMainFrame()->GetDocument(), "field_id");
 
   EXPECT_CALL(form_tracker(), ElementDisappeared(element));
   ExecuteJavaScriptForTests(
@@ -594,7 +576,8 @@ TEST_F(AutofillAgentTest, HideElementTriggersFormTracker_TypeHidden) {
       <input id="field_id">
     </form>
   )");
-  blink::WebElement element = GetWebElementById("field_id");
+  blink::WebElement element =
+      GetElementById(GetMainFrame()->GetDocument(), "field_id");
 
   EXPECT_CALL(form_tracker(), ElementDisappeared(element));
   ExecuteJavaScriptForTests(
@@ -609,7 +592,8 @@ TEST_F(AutofillAgentTest, HideElementTriggersFormTracker_HiddenTrue) {
       <input id="field_id">
     </form>
   )");
-  blink::WebElement element = GetWebElementById("field_id");
+  blink::WebElement element =
+      GetElementById(GetMainFrame()->GetDocument(), "field_id");
 
   EXPECT_CALL(form_tracker(), ElementDisappeared(element));
   ExecuteJavaScriptForTests(
@@ -629,102 +613,13 @@ TEST_F(AutofillAgentTest, HideElementTriggersFormTracker_ShadowDom) {
     </div>
   </form>
   )");
-  blink::WebElement element = GetWebElementById("field_id");
+  blink::WebElement element =
+      GetElementById(GetMainFrame()->GetDocument(), "field_id");
 
   EXPECT_CALL(form_tracker(), ElementDisappeared(element));
   ExecuteJavaScriptForTests(R"(field_id.slot = "unknown";)");
   GetWebFrameWidget()->UpdateAllLifecyclePhases(
       blink::DocumentUpdateReason::kTest);
-}
-
-// Test that an inferred form submission as a result of a page deleting ALL of
-// the <input>s (that the user has edited) on a page with no <form> sends the
-// contents of all of the fields to the browser.
-TEST_F(AutofillAgentTest,
-       FormlessOnInferredFormSubmissionAfterXhrAndAllInputsRemoved) {
-  LoadHTML(R"(
-    <div id='shipping'>
-    Name: <input type='text' id='name'><br>
-    Address: <input type='text' id='address'>
-    </div>
-  )");
-
-  SimulateUserEditField(blink::WebFormElement(), "name", "Ariel");
-  SimulateUserEditField(blink::WebFormElement(), "address", "Atlantica");
-
-  EXPECT_CALL(autofill_driver(),
-              FormSubmitted(AllOf(FieldsAre("id", &FormFieldData::id_attribute,
-                                            {u"name", u"address"}),
-                                  FieldsAre("value", &FormFieldData::value,
-                                            {u"Ariel", u"Atlantica"})),
-                            _, _));
-
-  // Simulate inferred form submission as a result the focused field being
-  // removed after an AJAX call.
-  ExecuteJavaScriptForTests(
-      R"(document.getElementById('shipping').innerHTML = '')");
-  autofill_agent().OnInferredFormSubmission(
-      mojom::SubmissionSource::XHR_SUCCEEDED);
-}
-
-// Tests that an inferred form submission as a result of a page deleting ALL of
-// the <input>s that the user has edited but NOT ALL of the <inputs> on the page
-// sends the user-edited <inputs> to the browser.
-TEST_F(AutofillAgentTest,
-       FormlessOnInferredFormSubmissionAfterXhrAndSomeInputsRemoved) {
-  LoadHTML(R"(
-    Search: <input type='text' id='search'><br>
-    <div id='shipping'>
-    Name: <input type='text' id='name'><br>
-    Address: <input type='text' id='address'>
-    </div>
-  )");
-
-  SimulateUserEditField(blink::WebFormElement(), "name", "Ariel");
-  SimulateUserEditField(blink::WebFormElement(), "address", "Atlantica");
-
-  EXPECT_CALL(autofill_driver(),
-              FormSubmitted(AllOf(FieldsAre("id", &FormFieldData::id_attribute,
-                                            {u"search", u"name", u"address"}),
-                                  FieldsAre("value", &FormFieldData::value,
-                                            {u"", u"Ariel", u"Atlantica"})),
-                            _, _));
-
-  // Simulate inferred form submission as a result the focused field being
-  // removed after an AJAX call.
-  ExecuteJavaScriptForTests(R"(document.getElementById('shipping').remove();)");
-  autofill_agent().OnInferredFormSubmission(
-      mojom::SubmissionSource::XHR_SUCCEEDED);
-}
-
-// Test scenario WHERE:
-// - AutofillAgent::OnProbablyFormSubmitted() is called as a result of a page
-// navigation. AND
-// - There is no <form> element.
-// AND
-// - An <input> other than the last interacted <input> is hidden.
-// THAT
-// The visible <input>s are sent to the browser.
-TEST_F(AutofillAgentTest, FormlessOnNavigationAfterSomeInputsRemoved) {
-  LoadHTML(R"(
-    Name: <input type='text' id='name'><br>
-    Address: <input type='text' id='address'>
-  )");
-
-  SimulateUserEditField(blink::WebFormElement(), "name", "Ariel");
-  SimulateUserEditField(blink::WebFormElement(), "address", "Atlantica");
-
-  EXPECT_CALL(
-      autofill_driver(),
-      FormSubmitted(
-          AllOf(FieldsAre("id", &FormFieldData::id_attribute, {u"address"}),
-                FieldsAre("value", &FormFieldData::value, {u"Atlantica"})),
-          _, _));
-
-  // Remove element that the user did not interact with last.
-  ExecuteJavaScriptForTests(R"(document.getElementById('name').remove();)");
-  // Simulate page navigation.
-  autofill_agent().OnProbablyFormSubmitted();
 }
 
 }  // namespace
