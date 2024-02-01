@@ -95,7 +95,7 @@ ContentSettingImageView::ContentSettingImageView(
       bubble_view_(nullptr) {
   DCHECK(delegate_);
   SetUpForInOutAnimation();
-  image()->SetFlipCanvasOnPaintForRTLUI(true);
+  image_container_view()->SetFlipCanvasOnPaintForRTLUI(true);
 
   std::optional<ViewID> view_id =
       GetViewID(content_setting_image_model_->image_type());

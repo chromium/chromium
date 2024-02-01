@@ -480,12 +480,13 @@ class LanguageLabelButton : public views::LabelButton {
   }
 
   void SetTranslateIconVisible(bool visible) {
-    image()->SetVisible(visible);
+    image_container_view()->SetVisible(visible);
 
     if (visible) {
-      image()->SetPreferredSize(gfx::Size(kButtonDip, kButtonDip));
+      image_container_view()->SetPreferredSize(
+          gfx::Size(kButtonDip, kButtonDip));
     } else {
-      image()->SetPreferredSize(gfx::Size(0, 0));
+      image_container_view()->SetPreferredSize(gfx::Size(0, 0));
     }
   }
 

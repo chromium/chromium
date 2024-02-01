@@ -43,6 +43,7 @@
 #include "ui/views/test/views_test_utils.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/view_test_api.h"
+#include "ui/views/view_utils.h"
 #include "ui/views/widget/widget_utils.h"
 
 namespace views {
@@ -64,7 +65,6 @@ class TestLabelButton : public LabelButton {
   void SetMultiLine(bool multi_line) { label()->SetMultiLine(multi_line); }
 
   using LabelButton::GetVisualState;
-  using LabelButton::image;
   using LabelButton::image_container_view;
   using LabelButton::label;
   using LabelButton::OnThemeChanged;
@@ -795,7 +795,10 @@ TEST_F(LabelButtonTest, ImageOrLabelGetClipped) {
 
 TEST_F(LabelButtonTest, UpdateImageAfterSettingImageModel) {
   auto is_showing_image = [&](const gfx::ImageSkia& image) {
-    return button()->image()->GetImage().BackedBySameObjectAs(image);
+    const auto* image_view =
+        AsViewClass<ImageView>(button()->image_container_view());
+    CHECK(image_view);
+    return image_view->GetImage().BackedBySameObjectAs(image);
   };
 
   auto normal_image = gfx::test::CreateImageSkia(/*size=*/16);

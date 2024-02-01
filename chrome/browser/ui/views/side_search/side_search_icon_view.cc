@@ -44,7 +44,7 @@ SideSearchIconView::SideSearchIconView(
               ->RegisterIconChangedSubscription(
                   base::BindRepeating(&SideSearchIconView::UpdateIconImage,
                                       base::Unretained(this)))) {
-  image()->SetFlipCanvasOnPaintForRTLUI(false);
+  image_container_view()->SetFlipCanvasOnPaintForRTLUI(false);
   SetProperty(views::kElementIdentifierKey, kSideSearchButtonElementId);
   SetVisible(false);
   SetLabel(l10n_util::GetStringUTF16(IDS_SIDE_SEARCH_ENTRYPOINT_LABEL));

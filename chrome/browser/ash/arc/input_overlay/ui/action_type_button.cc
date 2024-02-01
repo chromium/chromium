@@ -108,7 +108,7 @@ void ActionTypeButton::Layout() {
   label_origin.Offset((local_content_bounds.width() - label_size.width()) / 2,
                       kTopSpacing + kActionTypeIconSize + kLabelIconSpacing);
 
-  image()->SetBoundsRect(gfx::Rect(
+  image_container_view()->SetBoundsRect(gfx::Rect(
       image_origin, gfx::Size(kActionTypeIconSize, kActionTypeIconSize)));
   label->SetBoundsRect(gfx::Rect(label_origin, label_size));
   LayoutSuperclass<Button>(this);

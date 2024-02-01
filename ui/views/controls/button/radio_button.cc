@@ -141,7 +141,8 @@ gfx::ImageSkia RadioButton::GetImage(ButtonState for_state) const {
 
 SkPath RadioButton::GetFocusRingPath() const {
   SkPath path;
-  const gfx::Point center = image()->GetMirroredBounds().CenterPoint();
+  const gfx::Point center =
+      image_container_view()->GetMirroredBounds().CenterPoint();
   path.addCircle(center.x(), center.y(), kFocusRingRadius);
   return path;
 }

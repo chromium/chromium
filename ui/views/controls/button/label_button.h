@@ -183,11 +183,6 @@ class VIEWS_EXPORT LabelButton : public Button, public NativeThemeDelegate {
     return image_container_->GetView();
   }
   View* image_container_view() { return image_container_->GetView(); }
-  // TODO(ahmedmoussa): `image()` to be removed in the following CL.
-  const ImageView* image() const {
-    return static_cast<const ImageView*>(image_container_view());
-  }
-  ImageView* image() { return static_cast<ImageView*>(image_container_view()); }
   Label* label() const { return label_; }
   InkDropContainerView* ink_drop_container() const {
     return ink_drop_container_;

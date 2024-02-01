@@ -265,7 +265,8 @@ int WebAppToolbarButtonContainer::GetPageActionIconSize() const {
 
 gfx::Insets WebAppToolbarButtonContainer::GetPageActionIconInsets(
     const PageActionIconView* icon_view) const {
-  const int icon_size = icon_view->GetImageView()->GetPreferredSize().height();
+  const int icon_size =
+      icon_view->GetImageContainerView()->GetPreferredSize().height();
   if (icon_size == 0) {
     return gfx::Insets();
   }

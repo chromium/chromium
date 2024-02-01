@@ -30,7 +30,6 @@ class FontList;
 
 namespace views {
 class AXVirtualView;
-class ImageView;
 }  // namespace views
 
 // View used to draw a bubble, containing an icon and a label. We use this as a
@@ -105,8 +104,10 @@ class IconLabelBubbleView : public views::InkDropObserver,
                 const std::u16string& accessible_name);
   void SetFontList(const gfx::FontList& font_list);
 
-  const views::ImageView* GetImageView() const { return image(); }
-  views::ImageView* GetImageView() { return image(); }
+  const views::View* GetImageContainerView() const {
+    return image_container_view();
+  }
+  views::View* GetImageContainerView() { return image_container_view(); }
 
   // Exposed for testing.
   views::View* separator_view() const { return separator_view_; }

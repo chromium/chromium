@@ -846,7 +846,7 @@ void DownloadToolbarButtonView::ShowPendingDownloadStartedAnimation() {
   const ui::ColorProvider* color_provider = GetColorProvider();
   // Animation cleans itself up after it's done.
   new DownloadBubbleStartedAnimationViews(
-      web_contents, image()->GetBoundsInScreen(),
+      web_contents, image_container_view()->GetBoundsInScreen(),
       color_provider->GetColor(kColorDownloadToolbarButtonAnimationForeground),
       color_provider->GetColor(kColorDownloadToolbarButtonAnimationBackground));
 }

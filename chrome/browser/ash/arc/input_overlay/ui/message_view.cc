@@ -73,7 +73,6 @@ MessageView::MessageView(DisplayOverlayController* controller,
   label()->SetMultiLine(true);
 
   SetImageLabelSpacing(kImageLabelSpace);
-  image()->SetHorizontalAlignment(views::ImageView::Alignment::kLeading);
   switch (message_type) {
     case MessageType::kInfo:
       SetImageModel(

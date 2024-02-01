@@ -29,7 +29,7 @@ ManagePasswordsIconViews::ManagePasswordsIconViews(
                          page_action_icon_delegate,
                          "ManagePasswords") {
   // Password icon should not be mirrored in RTL.
-  image()->SetFlipCanvasOnPaintForRTLUI(false);
+  image_container_view()->SetFlipCanvasOnPaintForRTLUI(false);
   SetProperty(views::kElementIdentifierKey, kPasswordsOmniboxKeyIconElementId);
   SetAccessibilityProperties(/*role*/ std::nullopt,
                              GetTextForTooltipAndAccessibleName());

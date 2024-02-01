@@ -206,7 +206,8 @@ void IconLabelBubbleView::InkDropRippleAnimationEnded(
 
 bool IconLabelBubbleView::ShouldShowLabel() const {
   if (slide_animation_.is_animating() || is_animation_paused_) {
-    return !IsShrinking() || (width() > image()->GetPreferredSize().width());
+    return !IsShrinking() ||
+           (width() > image_container_view()->GetPreferredSize().width());
   }
   return label()->GetVisible() && !label()->GetText().empty();
 }
@@ -396,7 +397,7 @@ void IconLabelBubbleView::Layout() {
   // image. When the view is contracting (or hidden-label steady state), whittle
   // away at the trailing padding instead.
   int bubble_trailing_padding = GetEndPaddingWithSeparator();
-  int image_width = image()->GetPreferredSize().width();
+  int image_width = image_container_view()->GetPreferredSize().width();
   const int space_shortage = image_width + bubble_trailing_padding - width();
   if (space_shortage > 0) {
     if (ShouldShowLabel()) {
@@ -405,13 +406,15 @@ void IconLabelBubbleView::Layout() {
       bubble_trailing_padding -= space_shortage;
     }
   }
-  image()->SetBounds(GetInsets().left(), 0, image_width, height());
+  image_container_view()->SetBounds(GetInsets().left(), 0, image_width,
+                                    height());
 
   // Compute the label bounds. The label gets whatever size is left over after
   // accounting for the preferred image width and padding amounts. Note that if
   // the label has zero size it doesn't actually matter what we compute its X
   // value to be, since it won't be visible.
-  const int label_x = image()->bounds().right() + GetInternalSpacing();
+  const int label_x =
+      image_container_view()->bounds().right() + GetInternalSpacing();
   int label_width = std::max(0, width() - label_x - bubble_trailing_padding -
                                     GetWidthBetweenIconAndSeparator());
   label()->SetBounds(label_x, 0, label_width, height());
@@ -424,8 +427,9 @@ void IconLabelBubbleView::Layout() {
 
   float separator_width =
       GetWidthBetweenIconAndSeparator() + GetEndPaddingWithSeparator();
-  int separator_x = label()->GetText().empty() ? image()->bounds().right()
-                                               : label()->bounds().right();
+  int separator_x = label()->GetText().empty()
+                        ? image_container_view()->bounds().right()
+                        : label()->bounds().right();
   separator_view_->SetBounds(separator_x, separator_bounds.y(), separator_width,
                              separator_height);
 
@@ -526,7 +530,7 @@ void IconLabelBubbleView::SetImageModel(const ui::ImageModel& image_model) {
 }
 
 gfx::Size IconLabelBubbleView::GetSizeForLabelWidth(int label_width) const {
-  gfx::Size image_size = image()->GetPreferredSize();
+  gfx::Size image_size = image_container_view()->GetPreferredSize();
   image_size.Enlarge(GetInsets().left() + GetWidthBetweenIconAndSeparator() +
                          GetEndPaddingWithSeparator(),
                      GetInsets().height());
@@ -558,7 +562,7 @@ void IconLabelBubbleView::UpdateBorder() {
 }
 
 int IconLabelBubbleView::GetInternalSpacing() const {
-  if (image()->GetPreferredSize().IsEmpty()) {
+  if (image_container_view()->GetPreferredSize().IsEmpty()) {
     return 0;
   }
 
