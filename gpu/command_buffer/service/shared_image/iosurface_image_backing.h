@@ -6,6 +6,7 @@
 #define GPU_COMMAND_BUFFER_SERVICE_SHARED_IMAGE_IOSURFACE_IMAGE_BACKING_H_
 
 #include "base/apple/scoped_nsobject.h"
+#include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_backing.h"
@@ -23,8 +24,8 @@ class ScopedEGLSurfaceIOSurface;
 namespace gpu {
 
 // The state associated with an EGL texture representation of an IOSurface.
-// This is used by the representations GLTextureIOSurfaceRepresentation and
-// SkiaGaneshIOSurfaceRepresentation (when the underlying GrContext uses GL).
+// This is used by the representations GLTextureIRepresentation and
+// SkiaGaneshRepresentation (when the underlying GrContext uses GL).
 struct IOSurfaceBackingEGLState : base::RefCounted<IOSurfaceBackingEGLState> {
   // The interface through which IOSurfaceBackingEGLState calls into
   // IOSurfaceImageBacking.
@@ -131,12 +132,11 @@ class GPU_GLES2_EXPORT IOSurfaceImageBacking
   void SetReleaseFence(gfx::GpuFenceHandle release_fence);
 
  private:
-  class SharedEventAndSignalValue;
-  class GLTextureIOSurfaceRepresentation;
-  class DawnIOSurfaceRepresentation;
-  class SkiaGaneshIOSurfaceRepresentation;
-  class SkiaGraphiteIOSurfaceRepresentation;
-  class OverlayIOSurfaceRepresentation;
+  class GLTextureIRepresentation;
+  class DawnRepresentation;
+  class SkiaGaneshRepresentation;
+  class SkiaGraphiteRepresentation;
+  class OverlayRepresentation;
 
   // SharedImageBacking:
   base::trace_event::MemoryAllocatorDump* OnMemoryDump(
@@ -186,6 +186,15 @@ class GPU_GLES2_EXPORT IOSurfaceImageBacking
   void IOSurfaceBackingEGLStateBeingDestroyed(
       IOSurfaceBackingEGLState* egl_state,
       bool have_context) override;
+
+  bool BeginAccess(bool readonly);
+  void EndAccess(bool readonly);
+
+  void AddSharedEventForEndAccess(id<MTLSharedEvent> shared_event,
+                                  uint64_t signal_value,
+                                  bool readonly);
+  template <typename Fn>
+  void ProcessSharedEventsForBeginAccess(bool readonly, const Fn& fn);
 
   // Updates the read and write accesses tracker variables on BeginAccess and
   // waits on `release_fence_` if fence is not null.
@@ -246,7 +255,20 @@ class GPU_GLES2_EXPORT IOSurfaceImageBacking
   // Wait on this fence before allowing another access.
   gfx::GpuFenceHandle release_fence_;
 
-  std::vector<std::unique_ptr<SharedEventAndSignalValue>> shared_events_;
+  using ScopedMLTSharedEvent =
+      base::apple::scoped_nsprotocol<id<MTLSharedEvent>>;
+  struct SharedEventCompare {
+    bool operator()(const ScopedMLTSharedEvent& lhs,
+                    const ScopedMLTSharedEvent& rhs) const {
+      return lhs.get() < rhs.get();
+    }
+  };
+  using SharedEventMap =
+      base::flat_map<ScopedMLTSharedEvent, uint64_t, SharedEventCompare>;
+  // Shared events and signals for exclusive accesses.
+  SharedEventMap exclusive_shared_events_;
+  // Shared events and signals for non-exclusive accesses.
+  SharedEventMap non_exclusive_shared_events_;
 
   base::WeakPtrFactory<IOSurfaceImageBacking> weak_factory_;
 };
