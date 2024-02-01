@@ -105,8 +105,6 @@ class CORE_EXPORT DevToolsAgent : public GarbageCollected<DevToolsAgent>,
   void ReportChildTargets(bool report,
                           bool wait_for_debugger,
                           base::OnceClosure callback) override;
-  void GetUniqueFormControlId(int nodeId,
-                              GetUniqueFormControlIdCallback callback) override;
 
   void ReportChildTargetsPostCallbackToIO(bool report,
                                           bool wait_for_debugger,

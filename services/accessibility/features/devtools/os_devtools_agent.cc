@@ -99,12 +99,6 @@ void OSDevToolsAgent::ReportChildTargets(bool report,
   NOTIMPLEMENTED();  // Should not be used with this.
 }
 
-void OSDevToolsAgent::GetUniqueFormControlId(
-    int32_t nodeId,
-    GetUniqueFormControlIdCallback callback) {
-  NOTIMPLEMENTED();  // Should not be used with this.
-}
-
 void OSDevToolsAgent::runMessageLoopOnPause(int context_group_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(v8_sequence_checker_);
   // NO-OP --- TODO(b/290815208).

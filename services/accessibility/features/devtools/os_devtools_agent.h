@@ -60,8 +60,6 @@ class OSDevToolsAgent : public blink::mojom::DevToolsAgent,
   void ReportChildTargets(bool report,
                           bool wait_for_debugger,
                           ReportChildTargetsCallback callback) override;
-  void GetUniqueFormControlId(int32_t nodeId,
-                              GetUniqueFormControlIdCallback callback) override;
   // V8InspectorClient implementation.
 
   // TODO(b/290815208): Implement after source files are able to be loaded.

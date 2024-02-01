@@ -163,14 +163,6 @@ class DevToolsAgent::IOAgent : public mojom::blink::DevToolsAgent {
     }
   }
 
-  void GetUniqueFormControlId(
-      int nodeId,
-      GetUniqueFormControlIdCallback callback) override {
-    // GetUniqueFormControlId on a worker doesn't make sense because there is no
-    // DOM.
-    NOTREACHED();
-  }
-
  private:
   scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;
   scoped_refptr<InspectorTaskRunner> inspector_task_runner_;
@@ -353,17 +345,6 @@ void DevToolsAgent::ReportChildTargets(bool report,
     io_agent_->ReportChildTargets(report, wait_for_debugger,
                                   std::move(callback));
   }
-}
-
-void DevToolsAgent::GetUniqueFormControlId(
-    int nodeId,
-    GetUniqueFormControlIdCallback callback) {
-  auto* node = blink::DOMNodeIds::NodeForId(nodeId);
-  if (auto* form_control = DynamicTo<HTMLFormControlElement>(node)) {
-    std::move(callback).Run(form_control->GetDomNodeId());
-    return;
-  }
-  std::move(callback).Run(0);  // invalid ID.
 }
 
 // static

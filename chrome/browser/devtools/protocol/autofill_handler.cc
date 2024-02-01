@@ -76,32 +76,13 @@ AutofillHandler::AutofillHandler(protocol::UberDispatcher* dispatcher,
 
 AutofillHandler::~AutofillHandler() = default;
 
-void AutofillHandler::Trigger(
+protocol::Response AutofillHandler::Trigger(
     int field_id,
     Maybe<String> frame_id,
-    std::unique_ptr<protocol::Autofill::CreditCard> card,
-    std::unique_ptr<TriggerCallback> callback) {
+    std::unique_ptr<protocol::Autofill::CreditCard> card) {
   auto host = content::DevToolsAgentHost::GetForId(target_id_);
   if (!host) {
-    std::move(callback)->sendFailure(Response::ServerError("Target not found"));
-    return;
-  }
-  host->GetUniqueFormControlId(
-      field_id,
-      base::BindOnce(&AutofillHandler::FinishTrigger,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(frame_id),
-                     std::move(card), std::move(callback)));
-}
-
-void AutofillHandler::FinishTrigger(
-    Maybe<String> frame_id,
-    std::unique_ptr<protocol::Autofill::CreditCard> card,
-    std::unique_ptr<TriggerCallback> callback,
-    uint64_t field_id) {
-  auto host = content::DevToolsAgentHost::GetForId(target_id_);
-  if (!host) {
-    std::move(callback)->sendFailure(Response::ServerError("Target not found"));
-    return;
+    return Response::ServerError("Target not found");
   }
 
   content::RenderFrameHost* outermost_primary_rfh =
@@ -116,9 +97,7 @@ void AutofillHandler::FinishTrigger(
           }
         });
     if (!frame_rfh) {
-      std::move(callback)->sendFailure(
-          Response::ServerError("Frame not found"));
-      return;
+      return Response::ServerError("Frame not found");
     }
   } else {
     frame_rfh = outermost_primary_rfh;
@@ -147,15 +126,11 @@ void AutofillHandler::FinishTrigger(
   }
 
   if (!field_data.has_value()) {
-    std::move(callback)->sendFailure(
-        Response::InvalidRequest("Field not found"));
-    return;
+    return Response::InvalidRequest("Field not found");
   }
 
   if (!autofill_driver) {
-    std::move(callback)->sendFailure(
-        Response::ServerError("RenderFrameHost is being destroyed"));
-    return;
+    return Response::ServerError("RenderFrameHost is being destroyed");
   }
 
   CreditCard tmp_autofill_card;
@@ -176,7 +151,7 @@ void AutofillHandler::FinishTrigger(
                           tmp_autofill_card, base::UTF8ToUTF16(card->GetCvc()),
                           {.trigger_source = AutofillTriggerSource::kPopup});
 
-  std::move(callback)->sendSuccess();
+  return Response::Success();
 }
 
 void AutofillHandler::SetAddresses(

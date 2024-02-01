@@ -374,12 +374,6 @@ void DevToolsAgentHostImpl::InspectElement(RenderFrameHost* frame_host,
                                            int x,
                                            int y) {}
 
-void DevToolsAgentHostImpl::GetUniqueFormControlId(
-    int node_id,
-    GetUniqueFormControlIdCallback callback) {
-  NOTREACHED();
-}
-
 std::string DevToolsAgentHostImpl::GetId() {
   return id_;
 }

@@ -58,7 +58,6 @@ class DevToolsRendererChannel : public blink::mojom::DevToolsAgentHost {
   void AttachSession(DevToolsSession* session);
   void InspectElement(const gfx::Point& point);
   using GetUniqueFormCallback = base::OnceCallback<void(uint64_t)>;
-  void GetUniqueFormControlId(int node_id, GetUniqueFormCallback callback);
   void ForceDetachWorkerSessions();
 
   using ChildTargetCreatedCallback =
