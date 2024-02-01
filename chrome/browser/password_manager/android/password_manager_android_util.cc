@@ -27,10 +27,6 @@ namespace password_manager_android_util {
 
 namespace {
 
-// TODO(crbug.com/1495626): Make the min GmsCore version a base::FeatureParam
-// and update the default value (233106000 is too low).
-int kMinGmsVersionCodeForLocalUpm = 233106000;
-
 enum class LocalUpmUserType {
   kNotEligible,
   kNotSyncingAndMigrationNeeded,
@@ -59,10 +55,10 @@ LocalUpmUserType GetLocalUpmUserType(PrefService* pref_service,
   int gms_version = 0;
   // `gms_version_str` must be converted to int for comparison, because it can
   // have legacy values "3(...)" and those evaluate > "2023(...)".
-  if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
-          kSkipLocalUpmGmsCoreVersionCheckForTesting) &&
-      (!base::StringToInt(gms_version_str, &gms_version) ||
-       gms_version < kMinGmsVersionCodeForLocalUpm)) {
+  if (!base::StringToInt(gms_version_str, &gms_version) ||
+      gms_version <
+          password_manager::features::kUPMLocalPasswordsMinGmsVersionCode
+              .Get()) {
     return LocalUpmUserType::kNotEligible;
   }
 

@@ -115,6 +115,12 @@ BASE_DECLARE_FEATURE(kSkipUndecryptablePasswords);
 // passwords.
 BASE_DECLARE_FEATURE(kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration);
 
+// The min value of base::android::BuildInfo::gms_version_code() for the flag
+// above to take effect.
+// WARNING: this is a param of the NoMigration flag, not the WithMigration one!
+extern constinit const base::FeatureParam<int>
+    kUPMLocalPasswordsMinGmsVersionCode;
+
 // Enables use of Google Mobile services for non-synced password storage add for
 // users who have local passwords saved.
 BASE_DECLARE_FEATURE(kUnifiedPasswordManagerLocalPasswordsAndroidWithMigration);

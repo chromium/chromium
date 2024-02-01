@@ -190,8 +190,6 @@ class UsesSplitStoresAndUPMForLocalTest : public ::testing::Test {
   UsesSplitStoresAndUPMForLocalTest() {
     base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
         syncer::kSyncDeferredStartupTimeoutSeconds, "0");
-    base::CommandLine::ForCurrentProcess()->AppendSwitch(
-        kSkipLocalUpmGmsCoreVersionCheckForTesting);
   }
 
   // Can be invoked more than once, calling DestroyProfile() in-between.

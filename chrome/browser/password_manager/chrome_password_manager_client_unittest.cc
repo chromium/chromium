@@ -1476,9 +1476,6 @@ class ChromePasswordManagerClientWithAccountStoreAndroidTest
              kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration,
          password_manager::features::kSharedPasswordNotificationUI},
         {});
-    base::CommandLine::ForCurrentProcess()->AppendSwitch(
-        password_manager_android_util::
-            kSkipLocalUpmGmsCoreVersionCheckForTesting);
 
     ChromePasswordManagerClientAndroidTest::SetUp();
 
