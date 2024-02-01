@@ -165,58 +165,6 @@ void RunSynchronousOnceClosure(base::OnceClosure closure,
 
 // Converter functions from Blink types to WebRTC types.
 
-HeapVector<Member<const GoogMediaConstraintsSet>> AllMediaConstraintSets(
-    GoogMediaConstraints* media_constraints) {
-  HeapVector<Member<const GoogMediaConstraintsSet>> result;
-  if (media_constraints->hasMandatory()) {
-    result.push_back(media_constraints->mandatory());
-  }
-  if (media_constraints->hasOptional()) {
-    for (const GoogMediaConstraintsSet* optional_constraints_set :
-         media_constraints->optional()) {
-      result.push_back(optional_constraints_set);
-    }
-  }
-  return result;
-}
-
-void CopyConstraintsIntoRtcConfiguration(
-    ExecutionContext* context,
-    GoogMediaConstraints* media_constraints,
-    webrtc::PeerConnectionInterface::RTCConfiguration* configuration) {
-  if (!media_constraints) {
-    return;
-  }
-
-  // Legacy constraints parsing looks at both mandatory and optional constraints
-  // sets (similar to how ScanConstraintsForExactValue() looks at basic and
-  // advanced constraints). The sets are iterated until a value is found.
-  HeapVector<Member<const GoogMediaConstraintsSet>> all_constraints_sets =
-      AllMediaConstraintSets(media_constraints);
-
-  // TODO(crbug.com/804275): Delete when Fuchsia no longer depends on it.
-  absl::optional<bool> dtls_srtp_key_agreement;
-  for (auto& constraints_set : all_constraints_sets) {
-    if (constraints_set->hasDtlsSrtpKeyAgreement()) {
-      dtls_srtp_key_agreement = constraints_set->dtlsSrtpKeyAgreement();
-      break;
-    }
-  }
-  if (dtls_srtp_key_agreement.has_value()) {
-    if (dtls_srtp_key_agreement.value()) {
-      Deprecation::CountDeprecation(
-          context, WebFeature::kRTCConstraintEnableDtlsSrtpTrue);
-    } else {
-      Deprecation::CountDeprecation(
-          context, WebFeature::kRTCConstraintEnableDtlsSrtpFalse);
-    }
-  }
-#if BUILDFLAG(IS_FUCHSIA) && BUILDFLAG(ENABLE_CAST_RECEIVER)
-  // TODO(crbug.com/804275): Delete when Fuchsia no longer needs it.
-  configuration->enable_dtls_srtp = dtls_srtp_key_agreement;
-#endif
-}
-
 // Class mapping responses from calls to libjingle CreateOffer/Answer and
 // the blink::RTCSessionDescriptionRequest.
 class CreateSessionDescriptionRequest
@@ -872,10 +820,6 @@ bool RTCPeerConnectionHandler::Initialize(
 
   // Apply 40 ms worth of bursting. See webrtc::TaskQueuePacedSender.
   configuration_.pacer_burst_interval = webrtc::TimeDelta::Millis(40);
-
-  // Copy all the relevant constraints into `config`.
-  CopyConstraintsIntoRtcConfiguration(context, media_constraints,
-                                      &configuration_);
 
   configuration_.media_config.video.enable_send_packet_batching =
       base::FeatureList::IsEnabled(features::kWebRtcSendPacketBatch);

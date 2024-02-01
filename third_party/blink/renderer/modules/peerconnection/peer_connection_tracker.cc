@@ -107,23 +107,6 @@ String SerializeServers(
   return result.ToString();
 }
 
-// TODO(https://crbug.com/1318448): When goog-constraints have been removed,
-// this serialization code is no longer needed.
-String SerializePeerConnectionMediaConstraints(
-    const webrtc::PeerConnectionInterface::RTCConfiguration& config) {
-  StringBuilder builder;
-#if BUILDFLAG(IS_FUCHSIA) && BUILDFLAG(ENABLE_CAST_RECEIVER)
-  // TODO(crbug.com/804275): Delete when Fuchsia no longer needs it.
-  if (config.enable_dtls_srtp.has_value()) {
-    if (builder.length())
-      builder.Append(", ");
-    builder.Append("DtlsSrtpKeyAgreement: ");
-    builder.Append(config.enable_dtls_srtp.value() ? "true" : "false");
-  }
-#endif
-  return builder.ToString();
-}
-
 String SerializeGetUserMediaMediaConstraints(
     const MediaConstraints& constraints) {
   return String(constraints.ToString());
@@ -400,9 +383,7 @@ String SerializeRtcpMuxPolicy(
   return policy_str;
 }
 
-// Serializes things that are of interest from the RTCConfiguration. Note that
-// this does not include some parameters that were passed down via
-// GoogMediaConstraints; see SerializePeerConnectionMediaConstraints() for that.
+// Serializes things that are of interest from the RTCConfiguration.
 String SerializeConfiguration(
     const webrtc::PeerConnectionInterface::RTCConfiguration& config,
     bool usesInsertableStreams) {
@@ -745,7 +726,9 @@ void PeerConnectionTracker::RegisterPeerConnection(
   info->rtc_configuration =
       SerializeConfiguration(config, pc_handler->encoded_insertable_streams());
 
-  info->constraints = SerializePeerConnectionMediaConstraints(config);
+  // TODO(https://crbug.com/1318448): Remove this line when mojo is updated.
+  info->constraints = "";
+
   if (frame)
     info->url = frame->GetDocument().Url().GetString();
   else
