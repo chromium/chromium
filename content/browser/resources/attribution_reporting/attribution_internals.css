@@ -15,28 +15,12 @@ body {
   display: flex;
   flex-direction: column;
   font-size: 13px;
-  margin: 15px;
+  margin: 1rem;
   overflow: auto;
-}
-
-h1 {
-  color: rgb(92, 97, 102);
-  font-size: 1.5rem;
-  padding-bottom: 10px;
-}
-
-#feature-status-content {
-  font-weight: bold;
 }
 
 #feature-status-content.disabled {
   color: red;
-}
-
-main {
-  border-top: 1px solid rgb(48, 57, 66);
-  margin-top: 1rem;
-  padding-top: 1rem;
 }
 
 cr-tab-box, cr-tab-box * {
@@ -47,12 +31,13 @@ attribution-internals-table {
   overflow-x: auto;
 }
 
-.content {
+div[slot='panel'] {
   background-color: #fbfbfb;
-  border: 1px solid #cecece;
-  border-radius: 3px;
-  line-height: 1.5;
-  padding: 19px;
+  padding-top: 1rem;
+}
+
+.controls {
+  padding-bottom: 1rem;
 }
 
 button {

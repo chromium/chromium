@@ -176,7 +176,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
   ASSERT_TRUE(NavigateToURL(shell(), GURL(kAttributionInternalsUrl)));
 
   static constexpr char kScript[] = R"(
-    document.body.innerHTML.search('Attribution Reporting API Internals') >= 0;
+    document.body.innerHTML.search('Attribution Reporting') >= 0;
   )";
 
   // Execute script to ensure the page has loaded correctly, executing similarly
@@ -194,7 +194,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
   // Waiting on calls to `MockAttributionManager` is not sufficient because the
   // results are returned in promises.
   static constexpr char kScript[] = R"(
-    const status = document.getElementById('feature-status-content');
+    const status = document.getElementById('feature-status');
     const setTitleIfDone = (_, obs) => {
       if (status.innerText.trim() === 'enabled') {
         if (obs) {
@@ -234,7 +234,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
   // Waiting on calls to `MockAttributionManager` is not sufficient because the
   // results are returned in promises.
   static constexpr char kScript[] = R"(
-    const status = document.getElementById('feature-status-content');
+    const status = document.getElementById('feature-status');
     const setTitleIfDone = (_, obs) => {
       if (status.innerText.trim() === 'disabled') {
         if (obs) {

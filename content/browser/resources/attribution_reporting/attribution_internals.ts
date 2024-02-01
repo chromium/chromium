@@ -361,7 +361,7 @@ class SourceTableModel extends ArrayTableModel<Source> {
           urlColumn('Source Origin', (e) => e.sourceOrigin),
           new ListColumn('Destinations', (e) => e.destinations, renderUrl),
           urlColumn('Reporting Origin', (e) => e.reportingOrigin),
-          dateColumn('Source Registration Time', (e) => e.sourceTime),
+          dateColumn('Registration Time', (e) => e.sourceTime),
           dateColumn('Expiry Time', (e) => e.expiryTime),
           new CodeColumn<Source>('Trigger Specs', (e) => e.triggerSpecs),
           dateColumn(
@@ -390,7 +390,7 @@ class SourceTableModel extends ArrayTableModel<Source> {
               'Aggregatable Dedup Keys', (e) => e.aggregatableDedupKeys,
               setInnerText, numberClass),
         ],
-        5,  // Sort by source registration time by default.
+        5,  // Sort by registration time by default.
         'No sources.',
     );
   }
@@ -763,7 +763,7 @@ class OsRegistrationTableModel extends ArrayTableModel<OsRegistration> {
           stringOrBoolColumn('Result', (e) => e.result),
         ],
         0,
-        'No OS Registrations',
+        'No OS registrations.',
     );
   }
 }
@@ -1092,11 +1092,10 @@ class AttributionInternals implements ObserverInterface {
 
   refresh(): void {
     this.handler.isAttributionReportingEnabled().then((response) => {
-      const featureStatusContent =
-          document.querySelector<HTMLElement>('#feature-status-content')!;
-      featureStatusContent.innerText =
-          response.enabled ? 'enabled' : 'disabled';
-      featureStatusContent.classList.toggle('disabled', !response.enabled);
+      const featureStatus =
+          document.querySelector<HTMLElement>('#feature-status')!;
+      featureStatus.innerText = response.enabled ? 'enabled' : 'disabled';
+      featureStatus.classList.toggle('disabled', !response.enabled);
 
       const reportDelaysContent =
           document.querySelector<HTMLElement>('#report-delays')!;
