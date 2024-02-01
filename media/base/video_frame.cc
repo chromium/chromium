@@ -1456,13 +1456,17 @@ VideoFrame::~VideoFrame() {
         .Run(release_sync_token, std::move(gpu_memory_buffer_));
   }
 
+  // Prevents dangling raw ptr, see https://docs.google.com/document/d/156O7kBZqIhe1dUcqTMcN5T-6YEAcg0yNnj5QlnZu9xU/edit?usp=sharing.
+  shm_region_ = nullptr;
+
   std::vector<base::OnceClosure> done_callbacks;
   {
     base::AutoLock lock(done_callbacks_lock_);
     done_callbacks = std::move(done_callbacks_);
   }
-  for (auto& callback : done_callbacks)
+  for (auto& callback : done_callbacks) {
     std::move(callback).Run();
+  }
 }
 
 // static
