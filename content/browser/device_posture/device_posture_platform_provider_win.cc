@@ -4,12 +4,13 @@
 
 #include "content/browser/device_posture/device_posture_platform_provider_win.h"
 
+#include <optional>
+
 #include "base/containers/contains.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/json/json_reader.h"
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using blink::mojom::DevicePostureType;
 
@@ -66,8 +67,8 @@ void DevicePosturePlatformProviderWin::StopListening() {
   registry_key_ = absl::nullopt;
 }
 
-absl::optional<DevicePostureType>
-DevicePosturePlatformProviderWin::ParsePosture(std::string_view posture_state) {
+std::optional<DevicePostureType> DevicePosturePlatformProviderWin::ParsePosture(
+    std::string_view posture_state) {
   static constexpr auto kPostureStateToPostureType =
       base::MakeFixedFlatMap<std::string_view, DevicePostureType>(
           {{"MODE_HANDHELD", DevicePostureType::kFolded},
@@ -96,7 +97,7 @@ void DevicePosturePlatformProviderWin::ComputeFoldableState(
     return;
   }
 
-  absl::optional<base::Value::Dict> dict =
+  std::optional<base::Value::Dict> dict =
       base::JSONReader::ReadDict(base::WideToUTF8(postureData));
   if (!dict) {
     DVLOG(1) << "Could not read the foldable status.";
@@ -108,8 +109,7 @@ void DevicePosturePlatformProviderWin::ComputeFoldableState(
   }
 
   const DevicePostureType old_posture = current_posture_;
-  absl::optional<DevicePostureType> posture =
-      ParsePosture(*posture_state);
+  std::optional<DevicePostureType> posture = ParsePosture(*posture_state);
 
   if (posture) {
     current_posture_ = posture.value();
@@ -124,7 +124,7 @@ void DevicePosturePlatformProviderWin::ComputeFoldableState(
     return;
   }
 
-  absl::optional<std::vector<gfx::Rect>> segments =
+  std::optional<std::vector<gfx::Rect>> segments =
       ParseViewportSegments(*viewport_segments);
   if (!segments) {
     return;
@@ -136,7 +136,7 @@ void DevicePosturePlatformProviderWin::ComputeFoldableState(
   }
 }
 
-absl::optional<std::vector<gfx::Rect>>
+std::optional<std::vector<gfx::Rect>>
 DevicePosturePlatformProviderWin::ParseViewportSegments(
     const base::Value::List& viewport_segments) {
   if (viewport_segments.empty()) {

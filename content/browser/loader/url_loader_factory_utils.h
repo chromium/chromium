@@ -43,7 +43,7 @@ class CONTENT_EXPORT ContentClientParams final {
                       const url::Origin& request_initiator,
                       ukm::SourceIdObj ukm_source_id,
                       bool* bypass_redirect_checks = nullptr,
-                      absl::optional<int64_t> navigation_id = absl::nullopt,
+                      std::optional<int64_t> navigation_id = absl::nullopt,
                       scoped_refptr<base::SequencedTaskRunner>
                           navigation_response_task_runner = nullptr);
 
@@ -69,7 +69,7 @@ class CONTENT_EXPORT ContentClientParams final {
   raw_ref<const url::Origin> request_initiator_;
   ukm::SourceIdObj ukm_source_id_;
   raw_ptr<bool> bypass_redirect_checks_;
-  absl::optional<int64_t> navigation_id_;
+  std::optional<int64_t> navigation_id_;
   scoped_refptr<base::SequencedTaskRunner> navigation_response_task_runner_;
 };
 

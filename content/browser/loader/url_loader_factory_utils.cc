@@ -120,7 +120,7 @@ ContentClientParams::ContentClientParams(
     const url::Origin& request_initiator,
     ukm::SourceIdObj ukm_source_id,
     bool* bypass_redirect_checks,
-    absl::optional<int64_t> navigation_id,
+    std::optional<int64_t> navigation_id,
     scoped_refptr<base::SequencedTaskRunner> navigation_response_task_runner)
     : browser_context_(browser_context),
       frame_(frame),

@@ -50,11 +50,11 @@ struct CONTENT_EXPORT InterestGroupUpdate {
   std::optional<std::vector<std::string>> trusted_bidding_signals_keys;
   std::optional<blink::InterestGroup::TrustedBiddingSignalsSlotSizeMode>
       trusted_bidding_signals_slot_size_mode;
-  absl::optional<int32_t> max_trusted_bidding_signals_url_length;
-  absl::optional<std::string> user_bidding_signals;
-  absl::optional<std::vector<blink::InterestGroup::Ad>> ads, ad_components;
-  absl::optional<base::flat_map<std::string, blink::AdSize>> ad_sizes;
-  absl::optional<base::flat_map<std::string, std::vector<std::string>>>
+  std::optional<int32_t> max_trusted_bidding_signals_url_length;
+  std::optional<std::string> user_bidding_signals;
+  std::optional<std::vector<blink::InterestGroup::Ad>> ads, ad_components;
+  std::optional<base::flat_map<std::string, blink::AdSize>> ad_sizes;
+  std::optional<base::flat_map<std::string, std::vector<std::string>>>
       size_groups;
   std::optional<blink::AuctionServerRequestFlags> auction_server_request_flags;
   std::optional<url::Origin> aggregation_coordinator_origin;

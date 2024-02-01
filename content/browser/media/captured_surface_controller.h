@@ -138,7 +138,7 @@ class CONTENT_EXPORT CapturedSurfaceController {
   // fail gracefully. Subsequent calls are valid and can succeed.
   // TODO(crbug.com/1520375): Add UMA to measure how often this happens
   // and determine whether it's worth the effort to fix.
-  absl::optional<base::WeakPtr<WebContents>> captured_wc_;
+  std::optional<base::WeakPtr<WebContents>> captured_wc_;
 
   // Counts the pending resolutions, so that `captured_wc_` would only
   // be set to a concrete values when the last one resolves.

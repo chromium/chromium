@@ -115,7 +115,7 @@ void FencedFrame::Navigate(
   // should be ignored.
   if (base::FeatureList::IsEnabled(
           blink::features::kFencedFramesLocalUnpartitionedDataAccess)) {
-    const absl::optional<
+    const std::optional<
         FencedFrameProperties>& embedder_fenced_frame_properties =
         owner_render_frame_host_->frame_tree_node()->GetFencedFrameProperties(
             FencedFramePropertiesNodeSource::kFrameTreeRoot);

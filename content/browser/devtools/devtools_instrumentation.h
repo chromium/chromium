@@ -127,7 +127,7 @@ class WillCreateURLLoaderFactoryParams final {
 
   static std::optional<WillCreateURLLoaderFactoryParams>
   ForServiceWorkerMainScript(const ServiceWorkerContextWrapper* context_wrapper,
-                             absl::optional<int64_t> version_id);
+                             std::optional<int64_t> version_id);
 
   static std::optional<WillCreateURLLoaderFactoryParams> ForSharedWorker(
       SharedWorkerHost* host);

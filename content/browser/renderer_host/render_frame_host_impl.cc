@@ -9039,7 +9039,7 @@ void RenderFrameHostImpl::DisableUntrustedNetworkInFencedFrame(
     return;
   }
 
-  absl::optional<FencedFrameProperties>& properties =
+  std::optional<FencedFrameProperties>& properties =
       frame_tree_node_->GetFencedFrameProperties();
 
   if (!properties.has_value() || !properties->can_disable_untrusted_network()) {

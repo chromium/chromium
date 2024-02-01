@@ -108,7 +108,7 @@ class BackForwardTransitionAnimationManagerAndroid::AnimationManagerImpl
 
   // Tracks the `NavigationRequest` created by the gesture back navigation of a
   // primary main frame.
-  absl::optional<int64_t>
+  std::optional<int64_t>
       primary_main_frame_navigation_request_id_of_gesture_nav_;
 
   enum class NavigationTerminalState {
@@ -388,7 +388,7 @@ void BackForwardTransitionAnimationManagerAndroid::AnimationManagerImpl::
   // We must have a live new widget.
   CHECK(new_widget_host);
   // `render_frame_metadata_provider()` is guaranteed non-null.
-  absl::optional<viz::LocalSurfaceId> last_frame_local_surface_id =
+  std::optional<viz::LocalSurfaceId> last_frame_local_surface_id =
       static_cast<RenderWidgetHostImpl*>(new_widget_host)
           ->render_frame_metadata_provider()
           ->LastRenderFrameMetadata()
@@ -444,7 +444,7 @@ void BackForwardTransitionAnimationManagerAndroid::OnGestureStarted(
     const ui::BackGestureEvent& gesture,
     SwipeEdge edge,
     HistoryNavType navigation_type) {
-  absl::optional<int> index =
+  std::optional<int> index =
       navigation_type == HistoryNavType::kForward
           ? navigation_controller_->GetIndexForGoForward()
           : navigation_controller_->GetIndexForGoBack();

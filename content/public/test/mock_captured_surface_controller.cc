@@ -27,7 +27,7 @@ void MockCapturedSurfaceController::SendWheel(
     blink::mojom::CapturedWheelActionPtr action,
     base::OnceCallback<void(blink::mojom::CapturedSurfaceControlResult)>
         reply_callback) {
-  absl::optional<blink::mojom::CapturedSurfaceControlResult> send_wheel_result;
+  std::optional<blink::mojom::CapturedSurfaceControlResult> send_wheel_result;
   std::swap(send_wheel_result_, send_wheel_result);
 
   CHECK(send_wheel_result);

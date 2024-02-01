@@ -7488,7 +7488,7 @@ class InterestGroupAuctionReportBuyersEnableDebugModeTest
       int bucket,
       int value,
       AggregatableReportSharedInfo::DebugMode debug_mode,
-      absl::optional<uint64_t> debug_key = absl::nullopt) {
+      std::optional<uint64_t> debug_key = absl::nullopt) {
     ASSERT_FALSE(run_loop_);
     run_loop_ = std::make_unique<base::RunLoop>();
 

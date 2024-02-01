@@ -18,13 +18,13 @@ class DevicePosturePlatformProviderWinTest : public testing::Test {
 
   ~DevicePosturePlatformProviderWinTest() override = default;
 
-  static absl::optional<std::vector<gfx::Rect>> ParseViewportSegments(
+  static std::optional<std::vector<gfx::Rect>> ParseViewportSegments(
       const base::Value::List& viewport_segments) {
     return DevicePosturePlatformProviderWin::ParseViewportSegments(
         viewport_segments);
   }
 
-  static absl::optional<blink::mojom::DevicePostureType> ParsePosture(
+  static std::optional<blink::mojom::DevicePostureType> ParsePosture(
       std::string_view posture_state) {
     return DevicePosturePlatformProviderWin::ParsePosture(posture_state);
   }
@@ -53,7 +53,7 @@ TEST_F(DevicePosturePlatformProviderWinTest, ValidPostureData) {
 
 TEST_F(DevicePosturePlatformProviderWinTest, InvalidViewportSegmentsData) {
   base::Value::List list;
-  absl::optional<std::vector<gfx::Rect>> result_viewport_segments =
+  std::optional<std::vector<gfx::Rect>> result_viewport_segments =
       ParseViewportSegments(list);
   EXPECT_FALSE(result_viewport_segments);
 
@@ -150,7 +150,7 @@ TEST_F(DevicePosturePlatformProviderWinTest, InvalidViewportSegmentsData) {
 }
 
 TEST_F(DevicePosturePlatformProviderWinTest, ValidViewportSegmentsData) {
-  absl::optional<std::vector<gfx::Rect>> result_viewport_segments;
+  std::optional<std::vector<gfx::Rect>> result_viewport_segments;
   base::Value::List list = base::test::ParseJsonList(R"([
     "132, 123, 123, 123"
   ])");

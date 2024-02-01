@@ -1330,7 +1330,7 @@ WillCreateURLLoaderFactoryParams::ForServiceWorker(RenderProcessHost& rph,
 std::optional<WillCreateURLLoaderFactoryParams>
 WillCreateURLLoaderFactoryParams::ForServiceWorkerMainScript(
     const ServiceWorkerContextWrapper* context_wrapper,
-    absl::optional<int64_t> version_id) {
+    std::optional<int64_t> version_id) {
   if (!version_id.has_value()) {
     return std::nullopt;
   }
