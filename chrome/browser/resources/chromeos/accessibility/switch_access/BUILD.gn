@@ -39,6 +39,7 @@ ts_modules = [
   "navigator_interfaces.ts",
   "point_scan_manager.ts",
   "settings_manager.ts",
+  "switch_access_constants.ts",
   "switch_access_loader.ts",
 ]
 
@@ -61,7 +62,6 @@ js_modules = [
   "nodes/tab_node.js",
   "nodes/window_node.js",
   "switch_access.js",
-  "switch_access_constants.js",
   "switch_access_predicate.js",
   "text_navigation_manager.js",
 ]
