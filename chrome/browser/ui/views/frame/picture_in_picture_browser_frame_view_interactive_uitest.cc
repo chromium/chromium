@@ -340,4 +340,16 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureBrowserFrameViewTest,
   }
 }
 
+IN_PROC_BROWSER_TEST_F(PictureInPictureBrowserFrameViewTest,
+                       WindowTitleUsesOpenersTitle) {
+  ASSERT_NO_FATAL_FAILURE(SetUpDocumentPIP());
+
+  // The window title for the document picture-in-picture window should use the
+  // title from the opener page.
+  EXPECT_EQ(
+      u"Document Picture-in-Picture",
+      pip_frame_view()->browser_view()->browser()->GetWindowTitleForCurrentTab(
+          /*include_app_name=*/false));
+}
+
 }  // namespace
