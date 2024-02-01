@@ -2638,8 +2638,7 @@
     "expires": "Dec 1, 2024",
     "owners": ["jarhar@chromium.org", "dom-dev@chromium.org"],
     "bases": [
-      "external/wpt/custom-elements/state",
-      "external/wpt/custom-state-pseudo-class"
+      "external/wpt/custom-elements/state"
     ]
   },
   {
@@ -2650,8 +2649,7 @@
     "expires": "Dec 1, 2024",
     "owners": ["jarhar@chromium.org", "dom-dev@chromium.org"],
     "bases": [
-      "external/wpt/custom-elements/state",
-      "external/wpt/custom-state-pseudo-class"
+      "external/wpt/custom-elements/state"
     ]
   }
 ]
