@@ -8,6 +8,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/auto_reset.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/containers/adapters.h"
@@ -3419,6 +3420,7 @@ void View::LayoutImmediately(bool collect_trace) {
   if (collect_trace) {
     TRACE_EVENT1("ui", "View::LayoutImmediately", "view class", GetClassName());
   }
+  base::AutoReset allow_layout(&layout_allowed_, true);
   Layout(PassKey());
 }
 

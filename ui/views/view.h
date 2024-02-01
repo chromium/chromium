@@ -15,6 +15,7 @@
 #include <vector>
 
 #include "base/callback_list.h"
+#include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
@@ -1849,6 +1850,7 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
     requires std::derived_from<Super, View> && std::derived_from<This, Super> &&
              (!std::same_as<Super, This>)
   void LayoutSuperclass(This* ptr) {
+    CHECK(layout_allowed_);
     static_cast<Super*>(ptr)->Super::Layout(PassKey());
   }
 
@@ -2328,6 +2330,10 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
 
   // Whether the view needs to be laid out.
   bool needs_layout_ = true;
+
+  // Whether Layout() access is currently legal. This is used to prevent calls
+  // to LayoutSuperclass() outside the implementation of Layout().
+  bool layout_allowed_ = false;
 
   // The View's LayoutManager defines the sizing heuristics applied to child
   // Views. The default is absolute positioning according to bounds_.

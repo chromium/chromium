@@ -22,6 +22,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/gtest_util.h"
 #include "base/test/icu_test_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
@@ -63,6 +64,7 @@
 #include "ui/views/test/ax_event_counter.h"
 #include "ui/views/test/view_metadata_test_utils.h"
 #include "ui/views/test/views_test_base.h"
+#include "ui/views/test/views_test_utils.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_observer.h"
@@ -306,6 +308,62 @@ class TestView : public View {
   base::OnceClosure destruction_callback_;
 };
 
+void TestView::OnBoundsChanged(const gfx::Rect& previous_bounds) {
+  did_change_bounds_ = true;
+  new_bounds_ = bounds();
+}
+
+bool TestView::OnMousePressed(const ui::MouseEvent& event) {
+  last_mouse_event_type_ = event.type();
+  location_.SetPoint(event.x(), event.y());
+  if (delete_on_pressed_) {
+    delete this;
+  }
+  return true;
+}
+
+bool TestView::OnMouseDragged(const ui::MouseEvent& event) {
+  last_mouse_event_type_ = event.type();
+  location_.SetPoint(event.x(), event.y());
+  return true;
+}
+
+void TestView::OnMouseReleased(const ui::MouseEvent& event) {
+  last_mouse_event_type_ = event.type();
+  location_.SetPoint(event.x(), event.y());
+}
+
+void TestView::OnMouseEntered(const ui::MouseEvent& event) {
+  received_mouse_enter_ = true;
+}
+
+void TestView::OnMouseExited(const ui::MouseEvent& event) {
+  received_mouse_exit_ = true;
+}
+
+void TestView::OnPaint(gfx::Canvas* canvas) {
+  did_paint_ = true;
+}
+
+void TestView::OnDidSchedulePaint(const gfx::Rect& rect) {
+  scheduled_paint_rects_.push_back(rect);
+  View::OnDidSchedulePaint(rect);
+}
+
+bool TestView::AcceleratorPressed(const ui::Accelerator& accelerator) {
+  accelerator_count_map_[accelerator]++;
+  return true;
+}
+
+void TestView::OnThemeChanged() {
+  View::OnThemeChanged();
+  native_theme_ = GetNativeTheme();
+}
+
+void TestView::OnAccessibilityEvent(ax::mojom::Event event_type) {
+  last_a11y_event_ = event_type;
+}
+
 BEGIN_METADATA(TestView)
 END_METADATA
 
@@ -413,8 +471,42 @@ TEST_F(ViewTest, SizeToPreferredSizeInducesLayout) {
   EXPECT_TRUE(example_view.did_layout_);
 }
 
-void TestView::OnAccessibilityEvent(ax::mojom::Event event_type) {
-  last_a11y_event_ = event_type;
+namespace {
+
+// A view that provides direct and indirect ways to trigger
+// `LayoutSuperclass<>()`.
+class SuperclassLayoutTestView : public TestView {
+ public:
+  int layout_count() const { return layout_count_; }
+
+  void AttemptSuperclassLayout() {
+    ++layout_count_;
+    LayoutSuperclass<TestView>(this);
+  }
+
+  void Layout(PassKey) override { AttemptSuperclassLayout(); }
+
+ private:
+  int layout_count_ = 0;
+};
+
+}  // namespace
+
+// Verifies that LayoutSuperclass<>() can only be invoked while layout is
+// occurring.
+TEST_F(ViewTest, CannotLayoutSuperclassOutsideLayout) {
+  // Construction should not automatically attempt layout.
+  SuperclassLayoutTestView view;
+  EXPECT_EQ(0, view.layout_count());
+
+  // Triggering layout through the standard method should attempt superclass
+  // layout, which should succeed.
+  view.InvalidateLayout();
+  test::RunScheduledLayout(&view);
+  EXPECT_EQ(1, view.layout_count());
+
+  // Attempting superclass layout outside that flow should checkfail.
+  EXPECT_CHECK_DEATH(view.AttemptSuperclassLayout());
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -943,11 +1035,6 @@ TEST_F(ViewTest, OnBoundsChangedFiresA11yEvent) {
   EXPECT_EQ(v.last_a11y_event_, ax::mojom::Event::kLocationChanged);
 }
 
-void TestView::OnBoundsChanged(const gfx::Rect& previous_bounds) {
-  did_change_bounds_ = true;
-  new_bounds_ = bounds();
-}
-
 TEST_F(ViewTest, OnBoundsChanged) {
   TestView v;
 
@@ -998,33 +1085,6 @@ TEST_F(ViewTest, OnStateChangedFiresA11yEvent) {
 ////////////////////////////////////////////////////////////////////////////////
 // MouseEvent
 ////////////////////////////////////////////////////////////////////////////////
-
-bool TestView::OnMousePressed(const ui::MouseEvent& event) {
-  last_mouse_event_type_ = event.type();
-  location_.SetPoint(event.x(), event.y());
-  if (delete_on_pressed_)
-    delete this;
-  return true;
-}
-
-bool TestView::OnMouseDragged(const ui::MouseEvent& event) {
-  last_mouse_event_type_ = event.type();
-  location_.SetPoint(event.x(), event.y());
-  return true;
-}
-
-void TestView::OnMouseReleased(const ui::MouseEvent& event) {
-  last_mouse_event_type_ = event.type();
-  location_.SetPoint(event.x(), event.y());
-}
-
-void TestView::OnMouseEntered(const ui::MouseEvent& event) {
-  received_mouse_enter_ = true;
-}
-
-void TestView::OnMouseExited(const ui::MouseEvent& event) {
-  received_mouse_exit_ = true;
-}
 
 TEST_F(ViewTest, MouseEvent) {
   auto view1 = std::make_unique<TestView>();
@@ -1151,10 +1211,6 @@ TEST_F(ViewTest, DetectReturnFormDrag) {
 ////////////////////////////////////////////////////////////////////////////////
 // Painting
 ////////////////////////////////////////////////////////////////////////////////
-
-void TestView::OnPaint(gfx::Canvas* canvas) {
-  did_paint_ = true;
-}
 
 namespace {
 
@@ -1958,11 +2014,6 @@ TEST_F(ViewTest, PaintLocalBounds) {
   // Check that the canvas produced by |v1| for paint contains all of |v1|'s
   // visible bounds.
   EXPECT_TRUE(v1->canvas_bounds().Contains(v1->GetVisibleBounds()));
-}
-
-void TestView::OnDidSchedulePaint(const gfx::Rect& rect) {
-  scheduled_paint_rects_.push_back(rect);
-  View::OnDidSchedulePaint(rect);
 }
 
 namespace {
@@ -2789,10 +2840,6 @@ TEST_F(ViewPaintOptimizationTest, PaintDirtyViewsOnly) {
 ////////////////////////////////////////////////////////////////////////////////
 // Accelerators
 ////////////////////////////////////////////////////////////////////////////////
-bool TestView::AcceleratorPressed(const ui::Accelerator& accelerator) {
-  accelerator_count_map_[accelerator]++;
-  return true;
-}
 
 namespace {
 
@@ -5822,11 +5869,6 @@ TEST_F(ViewTest, FocusableAssertions) {
 ////////////////////////////////////////////////////////////////////////////////
 // NativeTheme
 ////////////////////////////////////////////////////////////////////////////////
-
-void TestView::OnThemeChanged() {
-  View::OnThemeChanged();
-  native_theme_ = GetNativeTheme();
-}
 
 TEST_F(ViewTest, OnThemeChanged) {
   auto test_view = std::make_unique<TestView>();
