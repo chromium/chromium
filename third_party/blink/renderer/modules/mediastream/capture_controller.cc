@@ -10,6 +10,7 @@
 #include "third_party/blink/public/common/page/page_zoom.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_captured_wheel_action.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
+#include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_video_track.h"
 #include "third_party/blink/renderer/modules/mediastream/user_media_client.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
@@ -113,6 +114,22 @@ void OnCapturedSurfaceControlResult(ScriptPromiseResolver* resolver,
   }
 }
 
+std::optional<int> GetInitialZoomLevel(MediaStreamTrack* video_track) {
+  const MediaStreamVideoSource* native_source =
+      MediaStreamVideoSource::GetVideoSource(
+          video_track->Component()->Source());
+  if (!native_source) {
+    return std::nullopt;
+  }
+
+  const media::mojom::DisplayMediaInformationPtr& display_media_info =
+      native_source->device().display_media_info;
+  if (!display_media_info) {
+    return std::nullopt;
+  }
+
+  return display_media_info->initial_zoom_level;
+}
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 }  // namespace
@@ -311,7 +328,14 @@ void CaptureController::SetVideoTrack(MediaStreamTrack* video_track,
   DCHECK(descriptor_id_.empty());
 
   video_track_ = video_track;
+  // The CaptureController-Source mapping cannot change after having been set
+  // up, and the observer remains until either object is garbage collected. No
+  // explicit deregistration of the observer is necessary.
+  video_track_->Component()->AddSourceObserver(this);
   descriptor_id_ = std::move(descriptor_id);
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  zoom_level_ = GetInitialZoomLevel(video_track_);
+#endif
 }
 
 const AtomicString& CaptureController::InterfaceName() const {
@@ -351,6 +375,24 @@ void CaptureController::FinalizeFocusDecision() {
       ShouldFocusCapturedSurface(focus_behavior_.value()));
 #endif
 }
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+void CaptureController::SourceChangedZoomLevel(int zoom_level) {
+  DCHECK(IsMainThread());
+
+  if (zoom_level_ == zoom_level) {
+    return;
+  }
+
+  zoom_level_ = zoom_level;
+
+  if (!video_track_ || video_track_->Ended()) {
+    return;
+  }
+
+  DispatchEvent(*Event::Create(event_type_names::kCapturedzoomlevelchange));
+}
+#endif
 
 void CaptureController::Trace(Visitor* visitor) const {
   visitor->Trace(video_track_);

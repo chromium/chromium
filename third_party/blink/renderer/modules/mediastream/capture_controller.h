@@ -19,8 +19,10 @@ namespace blink {
 
 class ExceptionState;
 
-class MODULES_EXPORT CaptureController final : public EventTarget,
-                                               public ExecutionContextClient {
+class MODULES_EXPORT CaptureController final
+    : public EventTarget,
+      public ExecutionContextClient,
+      public MediaStreamSource::Observer {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
@@ -64,6 +66,13 @@ class MODULES_EXPORT CaptureController final : public EventTarget,
   // https://w3c.github.io/mediacapture-screen-share/#dfn-finalize-focus-decision-algorithm
   void FinalizeFocusDecision();
 
+  // MediaStreamSource::Observer
+  void SourceChangedState() override {}
+  void SourceChangedCaptureConfiguration() override {}
+  void SourceChangedCaptureHandle() override {}
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  void SourceChangedZoomLevel(int) override;
+#endif
   void Trace(Visitor* visitor) const override;
 
  private:
@@ -95,6 +104,14 @@ class MODULES_EXPORT CaptureController final : public EventTarget,
   // Track whether the window of opportunity to call setFocusBehavior() is still
   // open. Once set to true, this never changes.
   bool focus_decision_finalized_ = false;
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  // The last known zoom level of the captured surface.
+  // Set to a concrete value when capture starts.
+  // Never changes back to nullopt.
+  // Always stays at 100 (the default value) for window- and screen-capture.
+  absl::optional<int> zoom_level_;
+#endif
 };
 
 }  // namespace blink

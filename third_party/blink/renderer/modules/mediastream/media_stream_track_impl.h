@@ -179,7 +179,9 @@ class MODULES_EXPORT MediaStreamTrackImpl : public MediaStreamTrack,
   void SourceChangedState() override;
   void SourceChangedCaptureConfiguration() override;
   void SourceChangedCaptureHandle() override;
-
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  void SourceChangedZoomLevel(int) override {}
+#endif
   void PropagateTrackEnded();
 
   void SendLogMessage(const WTF::String& message);

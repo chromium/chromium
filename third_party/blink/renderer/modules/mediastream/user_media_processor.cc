@@ -1395,6 +1395,21 @@ void UserMediaProcessor::OnDeviceCaptureHandleChange(
   source->OnDeviceCaptureHandleChange(device);
 }
 
+void UserMediaProcessor::OnZoomLevelChange(const MediaStreamDevice& device,
+                                           int zoom_level) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  SendLogMessage(base::StringPrintf(
+      "OnZoomLevelChange({session_id=%s}, {device_id=%s})",
+      device.session_id().ToString().c_str(), device.id.c_str()));
+
+  MediaStreamSource* const source = FindLocalSource(device);
+  if (!source) {
+    return;
+  }
+
+  source->OnZoomLevelChange(device, zoom_level);
+}
+
 void UserMediaProcessor::Trace(Visitor* visitor) const {
   visitor->Trace(dispatcher_host_);
   visitor->Trace(frame_);
@@ -1620,17 +1635,24 @@ void UserMediaProcessor::StartTracks(const String& label) {
     // separate callbacks.
     media_stream_device_observer->AddStreams(
         WebString(label), current_request_info_->devices_set(),
-        WTF::BindRepeating(&UserMediaProcessor::OnDeviceStopped,
-                           WrapWeakPersistent(this)),
-        WTF::BindRepeating(&UserMediaProcessor::OnDeviceChanged,
-                           WrapWeakPersistent(this)),
-        WTF::BindRepeating(&UserMediaProcessor::OnDeviceRequestStateChange,
-                           WrapWeakPersistent(this)),
-        WTF::BindRepeating(
-            &UserMediaProcessor::OnDeviceCaptureConfigurationChange,
-            WrapWeakPersistent(this)),
-        WTF::BindRepeating(&UserMediaProcessor::OnDeviceCaptureHandleChange,
-                           WrapWeakPersistent(this)));
+        {.on_device_stopped_cb = WTF::BindRepeating(
+             &UserMediaProcessor::OnDeviceStopped, WrapWeakPersistent(this)),
+         .on_device_changed_cb = WTF::BindRepeating(
+             &UserMediaProcessor::OnDeviceChanged, WrapWeakPersistent(this)),
+         .on_device_request_state_change_cb =
+             WTF::BindRepeating(&UserMediaProcessor::OnDeviceRequestStateChange,
+                                WrapWeakPersistent(this)),
+         .on_device_capture_configuration_change_cb = WTF::BindRepeating(
+             &UserMediaProcessor::OnDeviceCaptureConfigurationChange,
+             WrapWeakPersistent(this)),
+         .on_device_capture_handle_change_cb = WTF::BindRepeating(
+             &UserMediaProcessor::OnDeviceCaptureHandleChange,
+             WrapWeakPersistent(this)),
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+         .on_zoom_level_change_cb = WTF::BindRepeating(
+             &UserMediaProcessor::OnZoomLevelChange, WrapWeakPersistent(this))
+#endif
+        });
   }
 
   MediaStreamsComponentsVector stream_components_set;

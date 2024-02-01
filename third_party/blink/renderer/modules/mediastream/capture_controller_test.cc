@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_dom_exception.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_captured_wheel_action.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
+#include "third_party/blink/renderer/core/dom/events/native_event_listener.h"
 #include "third_party/blink/renderer/modules/mediastream/browser_capture_media_stream_track.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_video_track.h"
 #include "third_party/blink/renderer/modules/mediastream/mock_media_stream_video_source.h"
@@ -32,6 +33,8 @@ using ::base::test::RunOnceCallback;
 using ::base::test::RunOnceCallbackRepeatedly;
 using ::testing::_;
 using ::testing::Combine;
+using ::testing::Mock;
+using ::testing::StrictMock;
 using ::testing::Values;
 using ::testing::WithParamInterface;
 
@@ -39,6 +42,11 @@ enum class ScrollDirection {
   kNone,
   kForwards,
   kBackwards,
+};
+
+class MockEventListener : public NativeEventListener {
+ public:
+  MOCK_METHOD(void, Invoke, (ExecutionContext*, Event*));
 };
 
 // TODO(crbug.com/1505223): Avoid this helper's duplication throughout Blink.
@@ -102,7 +110,7 @@ MediaStreamTrack* MakeTrack(V8TestingScope& v8_scope,
       display_surface,
       /*logical_surface=*/true, media::mojom::CursorCaptureType::NEVER,
       /*capture_handle=*/nullptr,
-      /*initial_zoom_level=*/100);
+      /*initial_zoom_level=*/CaptureController::getSupportedZoomLevels()[0]);
   media_stream_video_source->SetDevice(device);
 
   auto media_stream_video_track = std::make_unique<MediaStreamVideoTrack>(
@@ -338,6 +346,110 @@ TEST_F(CaptureControllerGetZoomLevelTest, SimulatedFailureFromDispatcherHost) {
   // Avoid false-positives through different error paths terminating in
   // exception with the same code.
   EXPECT_EQ(GetDOMExceptionMessage(v8_scope, promise_tester.Value()), error);
+}
+
+// Test suite for CaptureController functionality from the Captured Surface
+// Control spec, focusing on OnCapturedZoomLevelChange events.
+class CaptureControllerOnCapturedZoomLevelChangeTest
+    : public CaptureControllerBaseTest {
+ public:
+  ~CaptureControllerOnCapturedZoomLevelChangeTest() override = default;
+};
+
+TEST_F(CaptureControllerOnCapturedZoomLevelChangeTest, NoEventOnInit) {
+  V8TestingScope v8_scope;
+  CaptureController* controller =
+      MakeGarbageCollected<CaptureController>(v8_scope.GetExecutionContext());
+
+  StrictMock<MockEventListener>* event_listener =
+      MakeGarbageCollected<StrictMock<MockEventListener>>();
+  EXPECT_CALL(*event_listener, Invoke(_, _)).Times(0);
+  controller->addEventListener(event_type_names::kCapturedzoomlevelchange,
+                               event_listener);
+
+  controller->SetIsBound(true);
+  MediaStreamTrack* track = MakeTrack(v8_scope, SurfaceType::BROWSER);
+  controller->SetVideoTrack(track, "descriptor");
+}
+
+TEST_F(CaptureControllerOnCapturedZoomLevelChangeTest,
+       EventWhenDifferentFromInitValue) {
+  V8TestingScope v8_scope;
+  CaptureController* controller =
+      MakeGarbageCollected<CaptureController>(v8_scope.GetExecutionContext());
+  StrictMock<MockEventListener>* event_listener =
+      MakeGarbageCollected<StrictMock<MockEventListener>>();
+  controller->addEventListener(event_type_names::kCapturedzoomlevelchange,
+                               event_listener);
+  controller->SetIsBound(true);
+  MediaStreamTrack* track = MakeTrack(v8_scope, SurfaceType::BROWSER);
+  controller->SetVideoTrack(track, "descriptor");
+
+  EXPECT_CALL(*event_listener, Invoke(_, _)).Times(1);
+  track->Component()->Source()->OnZoomLevelChange(
+      MediaStreamDevice(), CaptureController::getSupportedZoomLevels()[1]);
+}
+
+TEST_F(CaptureControllerOnCapturedZoomLevelChangeTest,
+       NoEventWhenSameAsInitValue) {
+  V8TestingScope v8_scope;
+  CaptureController* controller =
+      MakeGarbageCollected<CaptureController>(v8_scope.GetExecutionContext());
+  StrictMock<MockEventListener>* event_listener =
+      MakeGarbageCollected<StrictMock<MockEventListener>>();
+  controller->addEventListener(event_type_names::kCapturedzoomlevelchange,
+                               event_listener);
+  controller->SetIsBound(true);
+  MediaStreamTrack* track = MakeTrack(v8_scope, SurfaceType::BROWSER);
+  controller->SetVideoTrack(track, "descriptor");
+
+  EXPECT_CALL(*event_listener, Invoke(_, _)).Times(0);
+  track->Component()->Source()->OnZoomLevelChange(
+      MediaStreamDevice(), CaptureController::getSupportedZoomLevels()[0]);
+}
+
+TEST_F(CaptureControllerOnCapturedZoomLevelChangeTest,
+       EventWhenDifferentFromPreviousUpdate) {
+  V8TestingScope v8_scope;
+  CaptureController* controller =
+      MakeGarbageCollected<CaptureController>(v8_scope.GetExecutionContext());
+  StrictMock<MockEventListener>* event_listener =
+      MakeGarbageCollected<StrictMock<MockEventListener>>();
+  controller->addEventListener(event_type_names::kCapturedzoomlevelchange,
+                               event_listener);
+  controller->SetIsBound(true);
+  MediaStreamTrack* track = MakeTrack(v8_scope, SurfaceType::BROWSER);
+  controller->SetVideoTrack(track, "descriptor");
+
+  EXPECT_CALL(*event_listener, Invoke(_, _)).Times(1);
+  track->Component()->Source()->OnZoomLevelChange(
+      MediaStreamDevice(), CaptureController::getSupportedZoomLevels()[1]);
+  Mock::VerifyAndClearExpectations(event_listener);
+  EXPECT_CALL(*event_listener, Invoke(_, _)).Times(1);
+  track->Component()->Source()->OnZoomLevelChange(
+      MediaStreamDevice(), CaptureController::getSupportedZoomLevels()[0]);
+}
+
+TEST_F(CaptureControllerOnCapturedZoomLevelChangeTest,
+       EventWhenSameAsPreviousUpdate) {
+  V8TestingScope v8_scope;
+  CaptureController* controller =
+      MakeGarbageCollected<CaptureController>(v8_scope.GetExecutionContext());
+  StrictMock<MockEventListener>* event_listener =
+      MakeGarbageCollected<StrictMock<MockEventListener>>();
+  controller->addEventListener(event_type_names::kCapturedzoomlevelchange,
+                               event_listener);
+  controller->SetIsBound(true);
+  MediaStreamTrack* track = MakeTrack(v8_scope, SurfaceType::BROWSER);
+  controller->SetVideoTrack(track, "descriptor");
+
+  EXPECT_CALL(*event_listener, Invoke(_, _)).Times(1);
+  track->Component()->Source()->OnZoomLevelChange(
+      MediaStreamDevice(), CaptureController::getSupportedZoomLevels()[1]);
+  Mock::VerifyAndClearExpectations(event_listener);
+  EXPECT_CALL(*event_listener, Invoke(_, _)).Times(0);
+  track->Component()->Source()->OnZoomLevelChange(
+      MediaStreamDevice(), CaptureController::getSupportedZoomLevels()[1]);
 }
 
 // Test suite for CaptureController functionality from the

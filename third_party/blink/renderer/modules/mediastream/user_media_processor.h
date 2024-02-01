@@ -105,7 +105,7 @@ class MODULES_EXPORT UserMediaProcessor
       const mojom::blink::MediaStreamStateChange new_state);
   void OnDeviceCaptureConfigurationChange(const MediaStreamDevice& device);
   void OnDeviceCaptureHandleChange(const MediaStreamDevice& device);
-
+  void OnZoomLevelChange(const MediaStreamDevice& device, int zoom_level);
   void set_media_stream_dispatcher_host_for_testing(
       mojo::PendingRemote<blink::mojom::blink::MediaStreamDispatcherHost>
           dispatcher_host) {

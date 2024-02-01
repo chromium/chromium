@@ -70,6 +70,10 @@ class PLATFORM_EXPORT MediaStreamSource final
     virtual void SourceChangedState() = 0;
     virtual void SourceChangedCaptureConfiguration() = 0;
     virtual void SourceChangedCaptureHandle() = 0;
+    // No listener needs zoom-level updates on Android or iOS.
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+    virtual void SourceChangedZoomLevel(int) = 0;
+#endif
   };
 
   enum StreamType { kTypeAudio, kTypeVideo };
@@ -170,6 +174,7 @@ class PLATFORM_EXPORT MediaStreamSource final
 
   void OnDeviceCaptureConfigurationChange(const MediaStreamDevice& device);
   void OnDeviceCaptureHandleChange(const MediaStreamDevice& device);
+  void OnZoomLevelChange(const MediaStreamDevice& device, int zoom_level);
 
   void Trace(Visitor*) const;
 
