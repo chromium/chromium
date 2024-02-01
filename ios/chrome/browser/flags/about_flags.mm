@@ -1660,6 +1660,9 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
          kBottomOmniboxPromoDefaultPosition,
          kBottomOmniboxPromoDefaultPositionVariations,
          "BottomOmniboxPromoDefaultPosition")},
+    {"tab-grid-always-bounce", flag_descriptions::kTabGridAlwaysBounceName,
+     flag_descriptions::kTabGridAlwaysBounceDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kTabGridAlwaysBounce)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {
