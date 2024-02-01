@@ -85,7 +85,8 @@ class MODULES_EXPORT ServiceWorkerContainer final
   void Trace(Visitor*) const override;
 
   ServiceWorker* controller() { return controller_.Get(); }
-  ScriptPromise ready(ScriptState*, ExceptionState&);
+  ScriptPromiseTyped<ServiceWorkerRegistration> ready(ScriptState*,
+                                                      ExceptionState&);
 
   ScriptPromise registerServiceWorker(ScriptState*,
                                       const String& pattern,

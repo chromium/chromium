@@ -1606,9 +1606,12 @@ ScriptPromise ImageCapture::takePhoto(ScriptState* script_state,
   return promise;
 }
 
-ScriptPromise ImageCapture::grabFrame(ScriptState* script_state) {
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-  ScriptPromise promise = resolver->Promise();
+ScriptPromiseTyped<ImageBitmap> ImageCapture::grabFrame(
+    ScriptState* script_state) {
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolverTyped<ImageBitmap>>(
+          script_state);
+  auto promise = resolver->Promise();
 
   if (TrackIsInactive(*stream_track_)) {
     resolver->Reject(MakeGarbageCollected<DOMException>(

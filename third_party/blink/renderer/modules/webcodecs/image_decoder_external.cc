@@ -352,7 +352,8 @@ bool ImageDecoderExternal::complete() const {
   return data_complete_;
 }
 
-ScriptPromise ImageDecoderExternal::completed(ScriptState* script_state) {
+ScriptPromiseTyped<IDLUndefined> ImageDecoderExternal::completed(
+    ScriptState* script_state) {
   return completed_property_->Promise(script_state->World());
 }
 

@@ -113,9 +113,11 @@ DOMArrayBuffer* PushSubscription::getKey(const AtomicString& name) const {
   return nullptr;
 }
 
-ScriptPromise PushSubscription::unsubscribe(ScriptState* script_state) {
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-  ScriptPromise promise = resolver->Promise();
+ScriptPromiseTyped<IDLBoolean> PushSubscription::unsubscribe(
+    ScriptState* script_state) {
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolverTyped<IDLBoolean>>(
+      script_state);
+  auto promise = resolver->Promise();
 
   PushProvider* push_provider =
       PushProvider::From(service_worker_registration_);

@@ -11,6 +11,7 @@
 #include "media/capture/mojom/image_capture.mojom-blink.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/permissions/permission.mojom-blink.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
@@ -21,6 +22,7 @@
 namespace blink {
 
 class ExceptionState;
+class ImageBitmap;
 class ImageCaptureFrameGrabber;
 class MediaStreamTrack;
 class MediaTrackCapabilities;
@@ -29,7 +31,6 @@ class MediaTrackConstraintSet;
 class MediaTrackSettings;
 class PhotoCapabilities;
 class PhotoSettings;
-class ScriptPromise;
 class ScriptPromiseResolver;
 
 class MODULES_EXPORT ImageCapture final
@@ -62,7 +63,7 @@ class MODULES_EXPORT ImageCapture final
   ScriptPromise getPhotoCapabilities(ScriptState*);
   ScriptPromise getPhotoSettings(ScriptState*);
   ScriptPromise takePhoto(ScriptState*, const PhotoSettings*);
-  ScriptPromise grabFrame(ScriptState*);
+  ScriptPromiseTyped<ImageBitmap> grabFrame(ScriptState*);
 
   bool CheckAndApplyMediaTrackConstraintsToSettings(
       media::mojom::blink::PhotoSettings*,

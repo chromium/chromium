@@ -92,7 +92,7 @@ class GPUDevice final : public EventTarget,
   GPUAdapter* adapter() const;
   GPUSupportedFeatures* features() const;
   GPUSupportedLimits* limits() const { return limits_.Get(); }
-  ScriptPromise lost(ScriptState* script_state);
+  ScriptPromiseTyped<GPUDeviceLostInfo> lost(ScriptState* script_state);
 
   GPUQueue* queue();
   bool destroyed() const;

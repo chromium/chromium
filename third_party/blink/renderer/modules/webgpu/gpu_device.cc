@@ -467,7 +467,8 @@ GPUSupportedFeatures* GPUDevice::features() const {
   return features_.Get();
 }
 
-ScriptPromise GPUDevice::lost(ScriptState* script_state) {
+ScriptPromiseTyped<GPUDeviceLostInfo> GPUDevice::lost(
+    ScriptState* script_state) {
   return lost_property_->Promise(script_state->World());
 }
 

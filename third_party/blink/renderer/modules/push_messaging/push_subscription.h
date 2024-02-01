@@ -9,6 +9,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/push_messaging/push_messaging.mojom-blink-forward.h"
+#include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/core/dom/dom_time_stamp.h"
@@ -49,7 +50,7 @@ class MODULES_EXPORT PushSubscription final : public ScriptWrappable {
   PushSubscriptionOptions* options() const { return options_.Get(); }
 
   DOMArrayBuffer* getKey(const AtomicString& name) const;
-  ScriptPromise unsubscribe(ScriptState* script_state);
+  ScriptPromiseTyped<IDLBoolean> unsubscribe(ScriptState* script_state);
 
   ScriptValue toJSONForBinding(ScriptState* script_state);
 

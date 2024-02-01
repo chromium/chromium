@@ -1961,7 +1961,7 @@ void Animation::updatePlaybackRate(double playback_rate,
   }
 }
 
-ScriptPromise Animation::finished(ScriptState* script_state) {
+ScriptPromiseTyped<Animation> Animation::finished(ScriptState* script_state) {
   if (!finished_promise_) {
     finished_promise_ = MakeGarbageCollected<AnimationPromise>(
         ExecutionContext::From(script_state));
@@ -1978,7 +1978,7 @@ ScriptPromise Animation::finished(ScriptState* script_state) {
   return finished_promise_->Promise(script_state->World());
 }
 
-ScriptPromise Animation::ready(ScriptState* script_state) {
+ScriptPromiseTyped<Animation> Animation::ready(ScriptState* script_state) {
   // Check for a pending state change prior to checking the ready promise, since
   // the pending check may force a style flush, which in turn could trigger a
   // reset of the ready promise when resolving a change to the

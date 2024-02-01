@@ -131,7 +131,7 @@ void SubApps::OnConnectionError() {
   service_.reset();
 }
 
-ScriptPromise SubApps::add(
+ScriptPromiseTyped<IDLRecord<IDLString, V8SubAppsResultCode>> SubApps::add(
     ScriptState* script_state,
     const HeapVector<std::pair<String, Member<SubAppsAddParams>>>&
         sub_apps_to_add,
@@ -140,7 +140,7 @@ ScriptPromise SubApps::add(
   DCHECK(ExecutionContext::From(script_state)->IsSecureContext());
 
   if (!CheckPreconditionsMaybeThrow(script_state, exception_state)) {
-    return ScriptPromise();
+    return ScriptPromiseTyped<IDLRecord<IDLString, V8SubAppsResultCode>>();
   }
 
   LocalFrame* frame = GetSupplementable()->DomWindow()->GetFrame();
@@ -151,7 +151,7 @@ ScriptPromise SubApps::add(
         DOMExceptionCode::kNotAllowedError,
         "Unable to add sub-app. This API can only be called shortly after a "
         "user activation.");
-    return ScriptPromise();
+    return ScriptPromiseTyped<IDLRecord<IDLString, V8SubAppsResultCode>>();
   }
 
   // TODO(crbug.com/1326843): Maybe we don't need to limit add() if the
@@ -164,7 +164,7 @@ ScriptPromise SubApps::add(
         "is " +
             String::Number(kMaximumNumberOfSubappsPerAddCall) + ", but " +
             String::Number(sub_apps_to_add.size()) + " were provided.");
-    return ScriptPromise();
+    return ScriptPromiseTyped<IDLRecord<IDLString, V8SubAppsResultCode>>();
   }
 
   // Check that the arguments are root-relative paths.
@@ -174,16 +174,19 @@ ScriptPromise SubApps::add(
       exception_state.ThrowDOMException(
           DOMExceptionCode::kNotSupportedError,
           "Arguments must be root-relative paths.");
-      return ScriptPromise();
+      return ScriptPromiseTyped<IDLRecord<IDLString, V8SubAppsResultCode>>();
     }
   }
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  auto* resolver = MakeGarbageCollected<
+      ScriptPromiseResolverTyped<IDLRecord<IDLString, V8SubAppsResultCode>>>(
+      script_state);
   GetService()->Add(
       AddOptionsToMojo(std::move(sub_apps_to_add)),
-      resolver->WrapCallbackInScriptScope(
-          WTF::BindOnce([](ScriptPromiseResolver* resolver,
-                           Vector<SubAppsServiceAddResultPtr> results_mojo) {
+      resolver->WrapCallbackInScriptScope(WTF::BindOnce(
+          [](ScriptPromiseResolverTyped<
+                 IDLRecord<IDLString, V8SubAppsResultCode>>* resolver,
+             Vector<SubAppsServiceAddResultPtr> results_mojo) {
             for (const auto& add_result : results_mojo) {
               if (add_result->result_code ==
                   SubAppsServiceResultCode::kFailure) {
@@ -192,23 +195,27 @@ ScriptPromise SubApps::add(
                         AddResultsFromMojo(std::move(results_mojo)));
               }
             }
-            resolver->Resolve<IDLRecord<IDLString, V8SubAppsResultCode>>(
-                AddResultsFromMojo(std::move(results_mojo)));
+            resolver->Resolve(AddResultsFromMojo(std::move(results_mojo)));
           })));
   return resolver->Promise();
 }
 
-ScriptPromise SubApps::list(ScriptState* script_state,
-                            ExceptionState& exception_state) {
+ScriptPromiseTyped<IDLRecord<IDLString, SubAppsListResult>> SubApps::list(
+    ScriptState* script_state,
+    ExceptionState& exception_state) {
   if (!CheckPreconditionsMaybeThrow(script_state, exception_state)) {
-    return ScriptPromise();
+    return ScriptPromiseTyped<IDLRecord<IDLString, SubAppsListResult>>();
   }
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  auto* resolver = MakeGarbageCollected<
+      ScriptPromiseResolverTyped<IDLRecord<IDLString, SubAppsListResult>>>(
+      script_state);
   GetService()->List(resolver->WrapCallbackInScriptScope(WTF::BindOnce(
-      [](ScriptPromiseResolver* resolver, SubAppsServiceListResultPtr result) {
+      [](ScriptPromiseResolverTyped<IDLRecord<IDLString, SubAppsListResult>>*
+             resolver,
+         SubAppsServiceListResultPtr result) {
         if (result->result_code == SubAppsServiceResultCode::kSuccess) {
-          resolver->Resolve<IDLRecord<IDLString, SubAppsListResult>>(
+          resolver->Resolve(
               ListResultsFromMojo(std::move(result->sub_apps_list)));
         } else {
           resolver->Reject(V8ThrowDOMException::CreateOrDie(
@@ -222,11 +229,12 @@ ScriptPromise SubApps::list(ScriptState* script_state,
   return resolver->Promise();
 }
 
-ScriptPromise SubApps::remove(ScriptState* script_state,
-                              const Vector<String>& manifest_id_paths,
-                              ExceptionState& exception_state) {
+ScriptPromiseTyped<IDLRecord<IDLString, V8SubAppsResultCode>> SubApps::remove(
+    ScriptState* script_state,
+    const Vector<String>& manifest_id_paths,
+    ExceptionState& exception_state) {
   if (!CheckPreconditionsMaybeThrow(script_state, exception_state)) {
-    return ScriptPromise();
+    return ScriptPromiseTyped<IDLRecord<IDLString, V8SubAppsResultCode>>();
   }
 
   // Check that the arguments are root-relative paths.
@@ -235,16 +243,19 @@ ScriptPromise SubApps::remove(ScriptState* script_state,
       exception_state.ThrowDOMException(
           DOMExceptionCode::kNotSupportedError,
           "Arguments must be root-relative paths.");
-      return ScriptPromise();
+      return ScriptPromiseTyped<IDLRecord<IDLString, V8SubAppsResultCode>>();
     }
   }
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  auto* resolver = MakeGarbageCollected<
+      ScriptPromiseResolverTyped<IDLRecord<IDLString, V8SubAppsResultCode>>>(
+      script_state);
   GetService()->Remove(
       manifest_id_paths,
-      resolver->WrapCallbackInScriptScope(
-          WTF::BindOnce([](ScriptPromiseResolver* resolver,
-                           Vector<SubAppsServiceRemoveResultPtr> results_mojo) {
+      resolver->WrapCallbackInScriptScope(WTF::BindOnce(
+          [](ScriptPromiseResolverTyped<
+                 IDLRecord<IDLString, V8SubAppsResultCode>>* resolver,
+             Vector<SubAppsServiceRemoveResultPtr> results_mojo) {
             for (const auto& remove_result : results_mojo) {
               if (remove_result->result_code ==
                   SubAppsServiceResultCode::kFailure) {
@@ -253,8 +264,7 @@ ScriptPromise SubApps::remove(ScriptState* script_state,
                         RemoveResultsFromMojo(std::move(results_mojo)));
               }
             }
-            resolver->Resolve<IDLRecord<IDLString, V8SubAppsResultCode>>(
-                RemoveResultsFromMojo(std::move(results_mojo)));
+            resolver->Resolve(RemoveResultsFromMojo(std::move(results_mojo)));
           })));
   return resolver->Promise();
 }

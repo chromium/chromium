@@ -63,12 +63,6 @@ class CORE_EXPORT ScriptPromiseResolver
 
   // Anything that can be passed to ToV8Traits can be passed to this function.
   template <typename IDLType, typename BlinkType>
-  void Resolve(BlinkType value) {
-    ResolveOrReject<IDLType, BlinkType>(value, kResolving);
-  }
-
-  // Anything that can be passed to ToV8Traits can be passed to this function.
-  template <typename IDLType, typename BlinkType>
   void Reject(BlinkType value) {
     ResolveOrReject<IDLType, BlinkType>(value, kRejecting);
   }
@@ -169,9 +163,18 @@ class CORE_EXPORT ScriptPromiseResolver
 
   void Trace(Visitor*) const override;
 
- private:
-  class ExceptionStateScope;
+ protected:
   typedef ScriptPromise::InternalResolver Resolver;
+
+  ScriptPromiseResolver(ScriptState*, const ExceptionContext&, Resolver);
+
+  Resolver resolver_;
+#if DCHECK_IS_ON()
+  // True if promise() is called.
+  bool is_promise_called_ = false;
+#endif
+
+  class ExceptionStateScope;
   enum ResolutionState {
     kPending,
     kResolving,
@@ -222,6 +225,7 @@ class CORE_EXPORT ScriptPromiseResolver
     ResolveOrRejectImmediately();
   }
 
+ private:
   template <typename T>
   void ResolveOrReject(T value, ResolutionState new_state) {
     if (state_ != kPending || !GetScriptState()->ContextIsValid() ||
@@ -463,7 +467,6 @@ class CORE_EXPORT ScriptPromiseResolver
   ResolutionState state_;
   const Member<ScriptState> script_state_;
   TaskHandle deferred_resolve_task_;
-  Resolver resolver_;
   TraceWrapperV8Reference<v8::Value> value_;
   const ExceptionContext exception_context_;
   String script_url_;
@@ -473,12 +476,71 @@ class CORE_EXPORT ScriptPromiseResolver
   SelfKeepAlive<ScriptPromiseResolver> keep_alive_;
 
 #if DCHECK_IS_ON()
-  // True if promise() is called.
-  bool is_promise_called_ = false;
   bool suppress_detach_check_ = false;
 
   base::debug::StackTrace create_stack_trace_{8};
 #endif
+};
+
+template <typename IDLResolvedType>
+class ScriptPromiseResolverTyped : public ScriptPromiseResolver {
+ public:
+  explicit ScriptPromiseResolverTyped(ScriptState* script_state)
+      : ScriptPromiseResolverTyped(
+            script_state,
+            ExceptionContext(ExceptionContextType::kUnknown,
+                             nullptr,
+                             nullptr)) {}
+
+  ScriptPromiseResolverTyped(ScriptState* script_state,
+                             const ExceptionContext& context)
+      : ScriptPromiseResolver(script_state,
+                              context,
+                              TypedResolver(script_state)) {}
+
+  // Anything that can be passed to ToV8Traits<IDLResolvedType> can be passed to
+  // this function.
+  template <typename BlinkType>
+  void Resolve(BlinkType value) {
+    ResolveOrReject<IDLResolvedType, BlinkType>(value, kResolving);
+  }
+
+  ScriptPromiseTyped<IDLResolvedType> Promise() {
+#if DCHECK_IS_ON()
+    is_promise_called_ = true;
+#endif
+    return TypedResolver::GetTyped(resolver_).Promise();
+  }
+
+  // Returns a callback that will run |callback| with the Entry realm
+  // and the Current realm set to the resolver's ScriptState. Note |callback|
+  // will only be run if the execution context and V8 context are capable
+  // to run. This situation occurs when the resolver's execution context
+  // or V8 context have started their destruction. See
+  // `IsInParallelAlgorithmRunnable` for details.
+  template <typename... Args>
+  base::OnceCallback<void(Args...)> WrapCallbackInScriptScope(
+      base::OnceCallback<void(ScriptPromiseResolverTyped<IDLResolvedType>*,
+                              Args...)> callback) {
+    return WTF::BindOnce(
+        [](ScriptPromiseResolverTyped<IDLResolvedType>* resolver,
+           base::OnceCallback<void(ScriptPromiseResolverTyped<IDLResolvedType>*,
+                                   Args...)> callback,
+           Args... args) {
+          ScriptState* script_state = resolver->GetScriptState();
+          if (!IsInParallelAlgorithmRunnable(resolver->GetExecutionContext(),
+                                             script_state)) {
+            return;
+          }
+          ScriptState::Scope script_state_scope(script_state);
+          std::move(callback).Run(resolver, std::move(args)...);
+        },
+        WrapPersistent(this), std::move(callback));
+  }
+
+ private:
+  using TypedResolver =
+      ScriptPromiseTyped<IDLResolvedType>::InternalResolverTyped;
 };
 
 }  // namespace blink

@@ -331,15 +331,17 @@ void CacheStorage::DeleteImpl(const String& cache_name,
           base::TimeTicks::Now(), trace_id)));
 }
 
-ScriptPromise CacheStorage::keys(ScriptState* script_state,
-                                 ExceptionState& exception_state) {
+ScriptPromiseTyped<IDLSequence<IDLString>> CacheStorage::keys(
+    ScriptState* script_state,
+    ExceptionState& exception_state) {
   int64_t trace_id = blink::cache_storage::CreateTraceId();
   TRACE_EVENT_WITH_FLOW0("CacheStorage", "CacheStorage::Keys",
                          TRACE_ID_GLOBAL(trace_id), TRACE_EVENT_FLAG_FLOW_OUT);
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
-      script_state, exception_state.GetContext());
-  ScriptPromise promise = resolver->Promise();
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLSequence<IDLString>>>(
+          script_state, exception_state.GetContext());
+  ScriptPromiseTyped<IDLSequence<IDLString>> promise = resolver->Promise();
 
   ExecutionContext* context = ExecutionContext::From(script_state);
   DCHECK(context->IsContextThread());
@@ -352,7 +354,9 @@ ScriptPromise CacheStorage::keys(ScriptState* script_state,
   return promise;
 }
 
-void CacheStorage::KeysImpl(int64_t trace_id, ScriptPromiseResolver* resolver) {
+void CacheStorage::KeysImpl(
+    int64_t trace_id,
+    ScriptPromiseResolverTyped<IDLSequence<IDLString>>* resolver) {
   MaybeInit();
 
   // The context may be destroyed and the mojo connection unbound. However the
@@ -370,7 +374,8 @@ void CacheStorage::KeysImpl(int64_t trace_id, ScriptPromiseResolver* resolver) {
       trace_id,
       resolver->WrapCallbackInScriptScope(WTF::BindOnce(
           [](base::TimeTicks start_time, int64_t trace_id,
-             ScriptPromiseResolver* resolver, const Vector<String>& keys) {
+             ScriptPromiseResolverTyped<IDLSequence<IDLString>>* resolver,
+             const Vector<String>& keys) {
             base::UmaHistogramTimes(
                 "ServiceWorkerCache.CacheStorage.Renderer.Keys",
                 base::TimeTicks::Now() - start_time);
@@ -378,7 +383,7 @@ void CacheStorage::KeysImpl(int64_t trace_id, ScriptPromiseResolver* resolver) {
                 "CacheStorage", "CacheStorage::Keys::Callback",
                 TRACE_ID_GLOBAL(trace_id), TRACE_EVENT_FLAG_FLOW_IN, "key_list",
                 CacheStorageTracedValue(keys));
-            resolver->Resolve<IDLSequence<IDLString>>(keys);
+            resolver->Resolve(keys);
           },
           base::TimeTicks::Now(), trace_id)));
 }

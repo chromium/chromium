@@ -31,7 +31,6 @@ class FetchRespondWithObserver;
 class PerformanceMark;
 class PerformanceMeasure;
 class Request;
-class Response;
 class ScriptState;
 struct WebServiceWorkerError;
 class WebURLResponse;
@@ -47,7 +46,7 @@ class MODULES_EXPORT FetchEvent final
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  using PreloadResponseProperty = ScriptPromiseProperty<Response, DOMException>;
+  using PreloadResponseProperty = ScriptPromiseProperty<IDLAny, DOMException>;
   static FetchEvent* Create(ScriptState*,
                             const AtomicString& type,
                             const FetchEventInit*);
@@ -66,8 +65,8 @@ class MODULES_EXPORT FetchEvent final
   bool isReload() const;
 
   void respondWith(ScriptState*, ScriptPromise, ExceptionState&);
-  ScriptPromise preloadResponse(ScriptState*);
-  ScriptPromise handled(ScriptState*);
+  ScriptPromiseTyped<IDLAny> preloadResponse(ScriptState*);
+  ScriptPromiseTyped<IDLUndefined> handled(ScriptState*);
 
   void ResolveHandledPromise();
   void RejectHandledPromise(const String& error_message);

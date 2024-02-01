@@ -38,7 +38,7 @@ class MODULES_EXPORT PresentationReceiver final
   ~PresentationReceiver() override = default;
 
   // PresentationReceiver.idl implementation
-  ScriptPromise connectionList(ScriptState*);
+  ScriptPromiseTyped<PresentationConnectionList> connectionList(ScriptState*);
 
   // mojom::blink::PresentationReceiver
   void OnReceiverConnectionAvailable(

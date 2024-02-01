@@ -136,7 +136,7 @@ using IDLUnrestrictedDouble = IDLFloatingPointNumberTypeBase<
 
 // DOMHighResTimeStamp
 // https://w3c.github.io/hr-time/#sec-domhighrestimestamp
-struct IDLDOMHighResTimeStamp final : public IDLBaseHelper<base::Time> {};
+using IDLDOMHighResTimeStamp = IDLDouble;
 
 // Strings
 

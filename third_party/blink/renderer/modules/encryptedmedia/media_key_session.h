@@ -90,7 +90,7 @@ class MediaKeySession final
 
   String sessionId() const;
   double expiration() const { return expiration_; }
-  ScriptPromise closed(ScriptState*);
+  ScriptPromiseTyped<V8MediaKeySessionClosedReason> closed(ScriptState*);
   MediaKeyStatusMap* keyStatuses();
   DEFINE_ATTRIBUTE_EVENT_LISTENER(keystatuseschange, kKeystatuseschange)
   DEFINE_ATTRIBUTE_EVENT_LISTENER(message, kMessage)

@@ -8,7 +8,9 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/cache_storage/cache_storage.mojom-blink-forward.h"
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
+#include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/core/fetch/global_fetch.h"
 #include "third_party/blink/renderer/modules/cache_storage/cache.h"
@@ -47,7 +49,8 @@ class CacheStorage final : public ScriptWrappable,
   ScriptPromise Delete(ScriptState*,
                        const String& cache_name,
                        ExceptionState& exception_state);
-  ScriptPromise keys(ScriptState*, ExceptionState& exception_state);
+  ScriptPromiseTyped<IDLSequence<IDLString>> keys(ScriptState*,
+                                                  ExceptionState&);
   ScriptPromise match(ScriptState* script_state,
                       const V8RequestInfo* request,
                       const MultiCacheQueryOptions* options,
@@ -80,7 +83,8 @@ class CacheStorage final : public ScriptWrappable,
   void DeleteImpl(const String& cache_name,
                   int64_t trace_id,
                   ScriptPromiseResolver* resolver);
-  void KeysImpl(int64_t trace_id, ScriptPromiseResolver* resolver);
+  void KeysImpl(int64_t trace_id,
+                ScriptPromiseResolverTyped<IDLSequence<IDLString>>* resolver);
   ScriptPromise MatchImpl(ScriptState*,
                           const Request*,
                           const MultiCacheQueryOptions*,

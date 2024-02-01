@@ -97,7 +97,8 @@ BarcodeDetector::BarcodeDetector(ExecutionContext* context,
 }
 
 // static
-ScriptPromise BarcodeDetector::getSupportedFormats(ScriptState* script_state) {
+ScriptPromiseTyped<IDLSequence<V8BarcodeFormat>>
+BarcodeDetector::getSupportedFormats(ScriptState* script_state) {
   ExecutionContext* context = ExecutionContext::From(script_state);
   return BarcodeDetectorStatics::From(context)->EnumerateSupportedFormats(
       script_state);

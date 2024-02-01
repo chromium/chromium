@@ -46,10 +46,11 @@ void BarcodeDetectorStatics::CreateBarcodeDetection(
   service_->CreateBarcodeDetection(std::move(receiver), std::move(options));
 }
 
-ScriptPromise BarcodeDetectorStatics::EnumerateSupportedFormats(
-    ScriptState* script_state) {
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-  ScriptPromise promise = resolver->Promise();
+ScriptPromiseTyped<IDLSequence<V8BarcodeFormat>>
+BarcodeDetectorStatics::EnumerateSupportedFormats(ScriptState* script_state) {
+  auto* resolver = MakeGarbageCollected<
+      ScriptPromiseResolverTyped<IDLSequence<V8BarcodeFormat>>>(script_state);
+  auto promise = resolver->Promise();
   get_supported_format_requests_.insert(resolver);
   EnsureServiceConnection();
   service_->EnumerateSupportedFormats(
@@ -79,7 +80,7 @@ void BarcodeDetectorStatics::EnsureServiceConnection() {
 }
 
 void BarcodeDetectorStatics::OnEnumerateSupportedFormats(
-    ScriptPromiseResolver* resolver,
+    ScriptPromiseResolverTyped<IDLSequence<V8BarcodeFormat>>* resolver,
     const Vector<shape_detection::mojom::blink::BarcodeFormat>& formats) {
   DCHECK(get_supported_format_requests_.Contains(resolver));
   get_supported_format_requests_.erase(resolver);
@@ -100,19 +101,20 @@ void BarcodeDetectorStatics::OnEnumerateSupportedFormats(
                        builder.GetToken())
         .Record(context->UkmRecorder());
   }
-  resolver->Resolve<IDLSequence<IDLString>>(results);
+  resolver->Resolve(results);
 }
 
 void BarcodeDetectorStatics::OnConnectionError() {
   service_.reset();
 
-  HeapHashSet<Member<ScriptPromiseResolver>> resolvers;
+  HeapHashSet<Member<ScriptPromiseResolverTyped<IDLSequence<V8BarcodeFormat>>>>
+      resolvers;
   resolvers.swap(get_supported_format_requests_);
   for (const auto& resolver : resolvers) {
     // Return an empty list to indicate that no barcode formats are supported
     // since this connection failure indicates barcode detection is, in general,
     // not supported by the platform.
-    resolver->Resolve<IDLSequence<IDLString>>(Vector<String>());
+    resolver->Resolve(Vector<String>());
   }
 }
 

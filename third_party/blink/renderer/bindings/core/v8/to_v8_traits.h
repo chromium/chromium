@@ -192,12 +192,9 @@ struct ToV8Traits<IDLFloatingPointNumberTypeBase<T, mode>> {
                                                  T value) {
     return v8::Number::New(script_state->GetIsolate(), value);
   }
-};
 
-// DOMHighResTimeStamp
-// https://w3c.github.io/hr-time/#sec-domhighrestimestamp
-template <>
-struct ToV8Traits<IDLDOMHighResTimeStamp> {
+  // DOMHighResTimeStamp
+  // https://w3c.github.io/hr-time/#sec-domhighrestimestamp
   [[nodiscard]] static v8::Local<v8::Value> ToV8(ScriptState* script_state,
                                                  base::Time value) {
     return v8::Number::New(script_state->GetIsolate(),
@@ -681,11 +678,8 @@ struct ToV8Traits<IDLNullable<IDLFloatingPointNumberTypeBase<T, mode>>> {
     return ToV8Traits<IDLFloatingPointNumberTypeBase<T, mode>>::ToV8(
         script_state, *value);
   }
-};
 
-// Nullable DOMHighResTimeStamp
-template <>
-struct ToV8Traits<IDLNullable<IDLDOMHighResTimeStamp>> {
+  // Nullable DOMHighResTimeStamp
   [[nodiscard]] static v8::Local<v8::Value> ToV8(
       ScriptState* script_state,
       const absl::optional<base::Time>& value) {

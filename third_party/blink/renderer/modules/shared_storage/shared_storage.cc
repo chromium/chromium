@@ -638,28 +638,29 @@ ScriptPromise SharedStorage::length(ScriptState* script_state,
   return promise;
 }
 
-ScriptPromise SharedStorage::remainingBudget(ScriptState* script_state,
-                                             ExceptionState& exception_state) {
+ScriptPromiseTyped<IDLDouble> SharedStorage::remainingBudget(
+    ScriptState* script_state,
+    ExceptionState& exception_state) {
   base::TimeTicks start_time = base::TimeTicks::Now();
   ExecutionContext* execution_context = ExecutionContext::From(script_state);
   CHECK(execution_context->IsSharedStorageWorkletGlobalScope());
 
   if (!CheckBrowsingContextIsValid(*script_state, exception_state)) {
-    return ScriptPromise();
+    return ScriptPromiseTyped<IDLDouble>();
   }
 
-  ScriptPromiseResolver* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolverTyped<IDLDouble>>(
       script_state, exception_state.GetContext());
-  ScriptPromise promise = resolver->Promise();
+  ScriptPromiseTyped<IDLDouble> promise = resolver->Promise();
 
   CHECK(CheckSharedStoragePermissionsPolicy(*script_state, *execution_context,
                                             *resolver));
 
   GetSharedStorageWorkletServiceClient(execution_context)
       ->SharedStorageRemainingBudget(WTF::BindOnce(
-          [](ScriptPromiseResolver* resolver, SharedStorage* shared_storage,
-             base::TimeTicks start_time, bool success,
-             const String& error_message, double bits) {
+          [](ScriptPromiseResolverTyped<IDLDouble>* resolver,
+             SharedStorage* shared_storage, base::TimeTicks start_time,
+             bool success, const String& error_message, double bits) {
             DCHECK(resolver);
             ScriptState* script_state = resolver->GetScriptState();
 
@@ -678,7 +679,7 @@ ScriptPromise SharedStorage::remainingBudget(ScriptState* script_state,
                 "Storage.SharedStorage.Worklet.Timing.RemainingBudget",
                 base::TimeTicks::Now() - start_time);
 
-            resolver->Resolve<IDLDouble>(bits);
+            resolver->Resolve(bits);
           },
           WrapPersistent(resolver), WrapPersistent(this), start_time));
 

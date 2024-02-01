@@ -57,7 +57,7 @@ class MODULES_EXPORT ImageDecoderExternal final
   void close();
   String type() const;
   bool complete() const;
-  ScriptPromise completed(ScriptState* script_state);
+  ScriptPromiseTyped<IDLUndefined> completed(ScriptState* script_state);
   ImageTrackList& tracks() const;
 
   // BytesConsumer::Client implementation.

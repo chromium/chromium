@@ -38,9 +38,12 @@ ScriptPromise LockScreenData::GetLockScreenData(ScriptState* script_state) {
   return promise;
 }
 
-ScriptPromise LockScreenData::getKeys(ScriptState* script_state) {
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-  ScriptPromise promise = resolver->Promise();
+ScriptPromiseTyped<IDLSequence<IDLString>> LockScreenData::getKeys(
+    ScriptState* script_state) {
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLSequence<IDLString>>>(
+          script_state);
+  auto promise = resolver->Promise();
 
   // TODO(crbug.com/1006642): This should call out to a mojo service instead.
   Vector<String> keys;
@@ -48,7 +51,7 @@ ScriptPromise LockScreenData::getKeys(ScriptState* script_state) {
   for (const auto& it : fake_data_store_) {
     keys.push_back(it.key);
   }
-  resolver->Resolve<IDLSequence<IDLString>>(std::move(keys));
+  resolver->Resolve(std::move(keys));
   return promise;
 }
 

@@ -307,9 +307,10 @@ ScriptPromise OffscreenCanvas::CreateImageBitmap(
       options, exception_state);
 }
 
-ScriptPromise OffscreenCanvas::convertToBlob(ScriptState* script_state,
-                                             const ImageEncodeOptions* options,
-                                             ExceptionState& exception_state) {
+ScriptPromiseTyped<Blob> OffscreenCanvas::convertToBlob(
+    ScriptState* script_state,
+    const ImageEncodeOptions* options,
+    ExceptionState& exception_state) {
   DCHECK(IsOffscreenCanvas());
   WTF::String object_name = "OffscreenCanvas";
   std::stringstream error_msg;
@@ -317,20 +318,20 @@ ScriptPromise OffscreenCanvas::convertToBlob(ScriptState* script_state,
   if (is_neutered_) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "OffscreenCanvas object is detached.");
-    return ScriptPromise();
+    return ScriptPromiseTyped<Blob>();
   }
 
   if (ContextHasOpenLayers(context_)) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
         "`convertToBlob()` cannot be called while layers are opened.");
-    return ScriptPromise();
+    return ScriptPromiseTyped<Blob>();
   }
 
   if (!OriginClean()) {
     error_msg << "Tainted " << object_name << " may not be exported.";
     exception_state.ThrowSecurityError(error_msg.str().c_str());
-    return ScriptPromise();
+    return ScriptPromiseTyped<Blob>();
   }
 
   // It's possible that there are recorded commands that have not been resolved
@@ -344,21 +345,21 @@ ScriptPromise OffscreenCanvas::convertToBlob(ScriptState* script_state,
     error_msg << "The size of " << object_name << " is zero.";
     exception_state.ThrowDOMException(DOMExceptionCode::kIndexSizeError,
                                       error_msg.str().c_str());
-    return ScriptPromise();
+    return ScriptPromiseTyped<Blob>();
   }
 
   if (!context_) {
     error_msg << object_name << " has no rendering context.";
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       error_msg.str().c_str());
-    return ScriptPromise();
+    return ScriptPromiseTyped<Blob>();
   }
 
   base::TimeTicks start_time = base::TimeTicks::Now();
   scoped_refptr<StaticBitmapImage> image_bitmap =
       context_->GetImage(FlushReason::kToBlob);
   if (image_bitmap) {
-    auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
+    auto* resolver = MakeGarbageCollected<ScriptPromiseResolverTyped<Blob>>(
         script_state, exception_state.GetContext());
     CanvasAsyncBlobCreator::ToBlobFunctionType function_type =
         CanvasAsyncBlobCreator::kOffscreenCanvasConvertToBlobPromise;
@@ -375,7 +376,7 @@ ScriptPromise OffscreenCanvas::convertToBlob(ScriptState* script_state,
   }
   exception_state.ThrowDOMException(DOMExceptionCode::kNotReadableError,
                                     "Readback of the source image has failed.");
-  return ScriptPromise();
+  return ScriptPromiseTyped<Blob>();
 }
 
 bool OffscreenCanvas::IsOpaque() const {

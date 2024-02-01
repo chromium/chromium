@@ -55,7 +55,7 @@ class MODULES_EXPORT SharedStorage final
   ScriptPromise clear(ScriptState*, ExceptionState&);
   ScriptPromise get(ScriptState*, const String& key, ExceptionState&);
   ScriptPromise length(ScriptState*, ExceptionState&);
-  ScriptPromise remainingBudget(ScriptState*, ExceptionState&);
+  ScriptPromiseTyped<IDLDouble> remainingBudget(ScriptState*, ExceptionState&);
   ScriptValue context(ScriptState*, ExceptionState&) const;
   ScriptPromise selectURL(ScriptState*,
                           const String& name,

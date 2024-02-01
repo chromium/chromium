@@ -45,9 +45,9 @@ class CORE_EXPORT DOMViewTransition : public ScriptWrappable,
 
   // IDL implementation. Refer to view_transition.idl for additional comments.
   void skipTransition();
-  ScriptPromise finished(ScriptState*) const;
-  ScriptPromise ready(ScriptState*) const;
-  ScriptPromise updateCallbackDone(ScriptState*) const;
+  ScriptPromiseTyped<IDLUndefined> finished(ScriptState*) const;
+  ScriptPromiseTyped<IDLUndefined> ready(ScriptState*) const;
+  ScriptPromiseTyped<IDLUndefined> updateCallbackDone(ScriptState*) const;
 
   // Called from ViewTransition when the transition is skipped/aborted for any
   // reason.

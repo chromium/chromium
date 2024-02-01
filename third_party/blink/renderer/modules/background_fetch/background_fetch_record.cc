@@ -56,7 +56,8 @@ void BackgroundFetchRecord::ResolveResponseReadyProperty(Response* response) {
   }
 }
 
-ScriptPromise BackgroundFetchRecord::responseReady(ScriptState* script_state) {
+ScriptPromiseTyped<Response> BackgroundFetchRecord::responseReady(
+    ScriptState* script_state) {
   return response_ready_property_->Promise(script_state->World());
 }
 

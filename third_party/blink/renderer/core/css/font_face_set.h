@@ -48,7 +48,7 @@ class CORE_EXPORT FontFaceSet : public EventTarget,
 
   bool check(const String& font, const String& text, ExceptionState&);
   ScriptPromise load(ScriptState*, const String& font, const String& text);
-  virtual ScriptPromise ready(ScriptState*) = 0;
+  virtual ScriptPromiseTyped<FontFaceSet> ready(ScriptState*) = 0;
 
   ExecutionContext* GetExecutionContext() const override {
     return ExecutionContextClient::GetExecutionContext();

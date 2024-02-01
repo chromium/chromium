@@ -8,6 +8,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_directory_handle.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/async_iterable.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_async_iterator_file_system_directory_handle.h"
 #include "third_party/blink/renderer/modules/file_system_access/file_system_handle.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -45,9 +46,8 @@ class FileSystemDirectoryHandle final
                             const FileSystemRemoveOptions*,
                             ExceptionState&);
 
-  ScriptPromise resolve(ScriptState*,
-                        FileSystemHandle* possible_child,
-                        ExceptionState&);
+  ScriptPromiseTyped<IDLNullable<IDLSequence<IDLUSVString>>>
+  resolve(ScriptState*, FileSystemHandle* possible_child, ExceptionState&);
 
   mojo::PendingRemote<mojom::blink::FileSystemAccessTransferToken> Transfer()
       override;
