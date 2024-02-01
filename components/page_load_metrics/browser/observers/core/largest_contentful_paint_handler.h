@@ -43,10 +43,7 @@ class ContentfulPaintTimingInfo {
       double image_bpp,
       const std::optional<net::RequestPriority>& image_request_priority,
       bool in_main_frame,
-      const blink::LargestContentfulPaintType type,
-      const absl::optional<base::TimeDelta>& image_discovery_time,
-      const absl::optional<base::TimeDelta>& image_load_start,
-      const absl::optional<base::TimeDelta>& image_load_end);
+      blink::LargestContentfulPaintType type);
   ContentfulPaintTimingInfo(const ContentfulPaintTimingInfo& other);
   void Reset(const std::optional<base::TimeDelta>& time,
              const uint64_t& size,
@@ -66,7 +63,6 @@ class ContentfulPaintTimingInfo {
   std::optional<base::TimeDelta> ImageLoadEnd() const {
     return image_load_end_;
   }
-
   bool InMainFrame() const { return in_main_frame_; }
   blink::LargestContentfulPaintType Type() const { return type_; }
   uint64_t Size() const { return size_; }
@@ -203,14 +199,18 @@ class LargestContentfulPaintHandler {
   }
 
  private:
-  void UpdateSubFrameTiming(
+  void RecordSubFrameTimingInternal(
       const page_load_metrics::mojom::LargestContentfulPaintTiming&
           largest_contentful_paint,
-      ContentfulPaint& subframe_contentful_paint,
-      const absl::optional<base::TimeDelta>&
+      const std::optional<base::TimeDelta>&
           first_input_or_scroll_notified_timestamp,
-      const base::TimeDelta& navigation_start_offset,
-      const bool is_cross_site);
+      const base::TimeDelta& navigation_start_offset);
+  // RecordCrossSiteSubframeTiming updates
+  // `cross_site_subframe_contentful_paint_` with a new lcp candidate.
+  void RecordCrossSiteSubframeTiming(
+      const page_load_metrics::mojom::LargestContentfulPaintTiming&
+          largest_contentful_paint,
+      const base::TimeDelta& navigation_start_offset);
   void UpdateFirstInputOrScrollNotified(
       const std::optional<base::TimeDelta>& candidate_new_time,
       const base::TimeDelta& navigation_start_offset);

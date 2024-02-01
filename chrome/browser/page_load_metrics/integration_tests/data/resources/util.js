@@ -6,15 +6,15 @@
 // frames has occurred.
 async function waitUntilAfterNextLayout() {
   let frameCount = 2;
-  return new Promise(resolve => {
-    const handleFrame = () => {
-      if (--frameCount <= 0)
-        resolve();
-      else
+    return new Promise(resolve => {
+        const handleFrame = () => {
+        if (--frameCount <= 0)
+            resolve();
+        else
+            requestAnimationFrame(handleFrame);
+        };
         requestAnimationFrame(handleFrame);
-    };
-    requestAnimationFrame(handleFrame);
-  });
+    });
 };
 
 async function observeUntilNumEntries(n, opts) {
@@ -59,20 +59,21 @@ const getLcp = async (resource) => {
   })
 }
 
+const getRequestStart = async (name) => {
+  let resource_timings =
+    performance.getEntriesByType('resource').filter(e => e.name.includes(name));
+  return resource_timings[0].requestStart;
+}
 
-const getRequestStart = (name) =>
-  getResourceTimingEntry(name).requestStart;
-
-const getResponseEnd = (name) =>
-  getResourceTimingEntry(name).responseEnd;
-
-const getStartTime = (name) =>
-  getResourceTimingEntry(name).startTime;
-
-
-const getResourceTimingEntry = (name) => {
-  return performance.getEntriesByType('resource').filter(
-    e => e.name.includes(name))[0];
+const getResponseEnd = async (name) => {
+  let resource_timings =
+    performance.getEntriesByType('resource').filter(e => e.name.includes(name));
+  return resource_timings[0].responseEnd;
+}
+const getStartTime = async (name) => {
+  let resource_timings =
+    performance.getEntriesByType('resource').filter(e => e.name.includes(name));
+  return resource_timings[0].startTime;
 }
 
 const addImageWithUrl = async (url) => {
