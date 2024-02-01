@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/metrics/chrome_responsiveness_calculator_delegate.h"
+#include "chrome/browser/metrics/usage_scenario/chrome_responsiveness_calculator_delegate.h"
 
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/metrics/usage_scenario/usage_scenario_data_store.h"
