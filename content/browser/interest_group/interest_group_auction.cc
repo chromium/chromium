@@ -509,13 +509,21 @@ bool SampleDebugReport(
           .Get();
   CHECK_GE(sampling_random_max, 0);
   CHECK_GE(restricted_cooldown_random_max, 0);
-  base::Time now = base::Time::Now();
+  base::Time now_nearest_next_hour = base::Time::FromDeltaSinceWindowsEpoch(
+      base::Time::Now().ToDeltaSinceWindowsEpoch().CeilToMultiple(
+          base::Hours(1)));
   // Only allow sending debug reports 1/(sampling_max_rand+1) chance. Treat
   // INT_MAX `sampling_random_max` as 0 chance.
   int sampling_rand = base::RandInt(0, sampling_random_max);
   if (sampling_random_max != INT_MAX && sampling_rand == 0) {
     can_send_debug_report = true;
-    new_debug_report_lockout_and_cooldowns.last_report_sent_time = now;
+    // Only set lockout when lockout length kFledgeDebugReportLockout is not
+    // zero.
+    if (blink::features::kFledgeDebugReportLockout.Get() !=
+        base::Milliseconds(0)) {
+      new_debug_report_lockout_and_cooldowns.last_report_sent_time =
+          now_nearest_next_hour;
+    }
   }
   base::UmaHistogramBoolean(
       "Ads.InterestGroup.Auction.ForDebuggingOnlyReportAllowedAfterSampling",
@@ -528,10 +536,19 @@ bool SampleDebugReport(
       restricted_cooldown_random_max == INT_MAX || cooldown_rand != 0
           ? DebugReportCooldownType::kShortCooldown
           : DebugReportCooldownType::kRestrictedCooldown;
-  new_debug_report_lockout_and_cooldowns.debug_report_cooldown_map[origin] =
-      DebugReportCooldown(now, cooldown_type);
   base::UmaHistogramEnumeration(
       "Ads.InterestGroup.Auction.ForDebuggingOnlyCooldownType", cooldown_type);
+
+  // Only set cooldown when `cooldown_type`'s cooldown length is not zero.
+  if ((cooldown_type == DebugReportCooldownType::kShortCooldown &&
+       blink::features::kFledgeDebugReportShortCooldown.Get() !=
+           base::Milliseconds(0)) ||
+      (cooldown_type == DebugReportCooldownType::kRestrictedCooldown &&
+       blink::features::kFledgeDebugReportRestrictedCooldown.Get() !=
+           base::Milliseconds(0))) {
+    new_debug_report_lockout_and_cooldowns.debug_report_cooldown_map[origin] =
+        DebugReportCooldown(now_nearest_next_hour, cooldown_type);
+  }
 
   return can_send_debug_report;
 }

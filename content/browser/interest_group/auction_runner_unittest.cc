@@ -19466,6 +19466,63 @@ TEST_F(AuctionRunnerSampleDebugReportsEnabledTest,
                     result_.debug_loss_report_urls.size());
 }
 
+// Similar to `CooldownOrLockoutShouldBeUpdatedDuringAuction()`, except cooldown
+// and lockout lengths are set to zero. Should not set cooldowns or lockout in
+// this case.
+TEST_F(AuctionRunnerSampleDebugReportsEnabledTest,
+       NoCooldownOrLockoutWhenLengthIsZero) {
+  base::test::ScopedFeatureList feature_list;
+  // Give it 100% chance to allow a debug report if not under cooldown or
+  // lockout. Set all cooldown and lockout lengths to zero.
+  feature_list.InitWithFeaturesAndParameters(
+      {{blink::features::kBiddingAndScoringDebugReportingAPI, {}},
+       {blink::features::kFledgeSampleDebugReports,
+        {{"fledge_debug_report_sampling_random_max", "0"},
+         {"fledge_debug_report_sampling_restricted_cooldown_random_max", "1"},
+         {"fledge_debug_report_lockout", "0ms"},
+         {"fledge_debug_report_restricted_cooldown", "0ms"},
+         {"fledge_debug_report_short_cooldown", "0ms"}}},
+       {blink::features::kFledgeDebugReportFilterAfterSampling, {}}},
+      {});
+  auction_worklet::AddJavascriptResponse(
+      &url_loader_factory_, kBidder1Url,
+      MakeBidScript(kSeller, "1", "https://ad1.com/", /*num_ad_components=*/0,
+                    kBidder1, kBidder1Name,
+                    /*has_signals=*/false, "k1", "a",
+                    /*report_post_auction_signals=*/false,
+                    kBidder1DebugLossReportUrl, kBidder1DebugWinReportUrl));
+  auction_worklet::AddJavascriptResponse(
+      &url_loader_factory_, kBidder2Url,
+      MakeBidScript(kSeller, "2", "https://ad2.com/", /*num_ad_components=*/0,
+                    kBidder2, kBidder2Name,
+                    /*has_signals=*/false, "l2", "b",
+                    /*report_post_auction_signals=*/false,
+                    kBidder2DebugLossReportUrl, kBidder2DebugWinReportUrl));
+  auction_worklet::AddJavascriptResponse(
+      &url_loader_factory_, kSellerUrl,
+      MakeAuctionScript(/*report_post_auction_signals=*/false, kSellerUrl,
+                        kSellerDebugLossReportBaseUrl,
+                        kSellerDebugWinReportBaseUrl));
+
+  std::vector<StorageInterestGroup> bidders;
+  bidders.emplace_back(MakeInterestGroup(kBidder1, kBidder1Name, kBidder1Url,
+                                         std::nullopt, {"k1", "k2"},
+                                         GURL("https://ad1.com")));
+  bidders.emplace_back(MakeInterestGroup(kBidder2, kBidder2Name, kBidder2Url,
+                                         std::nullopt, {"l1", "l2"},
+                                         GURL("https://ad2.com")));
+
+  RunAuctionAndWait(kSellerUrl, std::move(bidders));
+  EXPECT_THAT(result_.errors, testing::ElementsAre());
+
+  // Bidder 2 won the auction.
+  EXPECT_EQ(GURL("https://ad2.com/"), result_.ad_descriptor->url);
+  // All debug reports should be allowed to be sent, since cooldown and lockout
+  // lengths are all zero thus no colldown/lockout are set after sampling.
+  EXPECT_EQ(4u, result_.debug_win_report_urls.size() +
+                    result_.debug_loss_report_urls.size());
+}
+
 // Similar to `DropDebugReportsIfInCooldownOrLockout()`, but with flag
 // kFledgeDebugReportFilterAfterSampling disabled.
 TEST_F(AuctionRunnerSampleDebugReportsEnabledTest,
