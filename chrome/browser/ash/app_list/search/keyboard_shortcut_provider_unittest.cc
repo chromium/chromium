@@ -314,9 +314,7 @@ INSTANTIATE_TEST_SUITE_P(ManateeForProviders,
                          KeyboardShortcutProviderManateeTest,
                          testing::Bool());
 
-// TODO (b/314868265): Re-enable after finding more robust way to reference
-// |description_message_id| and |shortcut_message_id|.
-TEST_P(KeyboardShortcutProviderManateeTest, DISABLED_EmbeddingsSet) {
+TEST_P(KeyboardShortcutProviderManateeTest, EmbeddingsSet) {
   Wait();
   StartSearch(u"example query");
   Wait();
@@ -340,9 +338,7 @@ TEST_P(KeyboardShortcutProviderManateeTest, DISABLED_EmbeddingsSet) {
   }
 }
 
-// TODO (b/314868265): Re-enable after finding more robust way to reference
-// |description_message_id| and |shortcut_message_id|.
-TEST_P(KeyboardShortcutProviderManateeTest, DISABLED_ManateeSearch) {
+TEST_P(KeyboardShortcutProviderManateeTest, ManateeSearch) {
   // Initial query to set the embeddings will use fuzzy match.
   Wait();
   StartSearch(u"example query");
@@ -365,11 +361,9 @@ TEST_P(KeyboardShortcutProviderManateeTest, DISABLED_ManateeSearch) {
   }
 }
 
-// TODO (b/314868265): Re-enable after finding more robust way to reference
-// |description_message_id| and |shortcut_message_id|.
 // System will default back to fuzzy-match when response from the model is
 // an invalid length.
-TEST_P(KeyboardShortcutProviderManateeTest, DISABLED_InvalidResponseLength) {
+TEST_P(KeyboardShortcutProviderManateeTest, InvalidResponseLength) {
   // Initial query to set the embeddings will use fuzzy match.
   Wait();
   StartSearch(u"example query");
@@ -392,9 +386,7 @@ TEST_P(KeyboardShortcutProviderManateeTest, DISABLED_InvalidResponseLength) {
   }
 }
 
-// TODO (b/314868265): Re-enable after finding more robust way to reference
-// |description_message_id| and |shortcut_message_id|.
-TEST_P(KeyboardShortcutProviderManateeTest, DISABLED_MultipleQueries) {
+TEST_P(KeyboardShortcutProviderManateeTest, MultipleQueries) {
   // Initial query to set the embeddings will use fuzzy match.
   Wait();
   StartSearch(u"example query");
