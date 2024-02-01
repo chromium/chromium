@@ -83,6 +83,7 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager, Acco
      */
     private long mNativeSigninManagerAndroid;
 
+    private final Profile mProfile;
     private final AccountTrackerService mAccountTrackerService;
     private final AccountManagerFacade mAccountManagerFacade;
     private final IdentityManager mIdentityManager;
@@ -110,23 +111,27 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager, Acco
 
     /**
      * Called by native to create an instance of SigninManager.
+     *
      * @param nativeSigninManagerAndroid A pointer to native's SigninManagerAndroid.
      */
     @CalledByNative
     @VisibleForTesting
     static SigninManager create(
             long nativeSigninManagerAndroid,
+            Profile profile,
             AccountTrackerService accountTrackerService,
             IdentityManager identityManager,
             IdentityMutator identityMutator,
             SyncService syncService) {
         assert nativeSigninManagerAndroid != 0;
+        assert profile != null;
         assert accountTrackerService != null;
         assert identityManager != null;
         assert identityMutator != null;
         final SigninManagerImpl signinManager =
                 new SigninManagerImpl(
                         nativeSigninManagerAndroid,
+                        profile,
                         accountTrackerService,
                         identityManager,
                         identityMutator,
@@ -146,12 +151,14 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager, Acco
 
     private SigninManagerImpl(
             long nativeSigninManagerAndroid,
+            Profile profile,
             AccountTrackerService accountTrackerService,
             IdentityManager identityManager,
             IdentityMutator identityMutator,
             SyncService syncService) {
         ThreadUtils.assertOnUiThread();
         mNativeSigninManagerAndroid = nativeSigninManagerAndroid;
+        mProfile = profile;
         mAccountTrackerService = accountTrackerService;
         mIdentityManager = identityManager;
         mIdentityMutator = identityMutator;
@@ -738,8 +745,7 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager, Acco
     // TODO(crbug.com/1272911): add test coverage for this function (including its effect on
     // notifyCallbacksWaitingForOperation()), after resolving the TODO above.
     private void wipeSyncUserDataOnly(Runnable wipeDataCallback) {
-        final BookmarkModel model =
-                BookmarkModel.getForProfile(Profile.getLastUsedRegularProfile());
+        final BookmarkModel model = BookmarkModel.getForProfile(mProfile);
         model.finishLoadingBookmarkModel(
                 new Runnable() {
                     @Override

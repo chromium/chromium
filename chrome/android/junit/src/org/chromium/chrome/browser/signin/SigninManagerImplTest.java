@@ -128,7 +128,7 @@ public class SigninManagerImplTest {
         mocker.mock(SigninManagerImplJni.TEST_HOOKS, mNativeMock);
         mocker.mock(IdentityManagerJni.TEST_HOOKS, mIdentityManagerNativeMock);
         ExternalAuthUtils.setInstanceForTesting(mExternalAuthUtils);
-        Profile.setLastUsedProfileForTesting(mProfile);
+
         when(mNativeMock.isSigninAllowedByPolicy(NATIVE_SIGNIN_MANAGER)).thenReturn(true);
         // Pretend Google Play services are available as it is required for the sign-in
         when(mExternalAuthUtils.isGooglePlayServicesMissing(any())).thenReturn(false);
@@ -157,6 +157,7 @@ public class SigninManagerImplTest {
                 (SigninManagerImpl)
                         SigninManagerImpl.create(
                                 NATIVE_SIGNIN_MANAGER,
+                                mProfile,
                                 mAccountTrackerService,
                                 mIdentityManager,
                                 mIdentityMutator,
@@ -185,6 +186,7 @@ public class SigninManagerImplTest {
                 (SigninManagerImpl)
                         SigninManagerImpl.create(
                                 NATIVE_SIGNIN_MANAGER,
+                                mProfile,
                                 mAccountTrackerService,
                                 mIdentityManager,
                                 mIdentityMutator,
