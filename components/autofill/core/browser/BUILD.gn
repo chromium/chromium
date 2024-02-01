@@ -317,6 +317,8 @@ static_library("browser") {
     "metrics/granular_filling_metrics_utils.h",
     "metrics/log_event.cc",
     "metrics/log_event.h",
+    "metrics/manual_fallback_metrics.cc",
+    "metrics/manual_fallback_metrics.h",
     "metrics/payments/better_auth_metrics.cc",
     "metrics/payments/better_auth_metrics.h",
     "metrics/payments/card_metadata_metrics.cc",

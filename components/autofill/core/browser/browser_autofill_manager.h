@@ -39,6 +39,7 @@
 #include "components/autofill/core/browser/metrics/form_events/address_form_event_logger.h"
 #include "components/autofill/core/browser/metrics/form_events/credit_card_form_event_logger.h"
 #include "components/autofill/core/browser/metrics/log_event.h"
+#include "components/autofill/core/browser/metrics/manual_fallback_metrics.h"
 #include "components/autofill/core/browser/payments/autofill_offer_manager.h"
 #include "components/autofill/core/browser/payments/card_unmask_delegate.h"
 #include "components/autofill/core/browser/payments/credit_card_access_manager.h"
@@ -344,6 +345,10 @@ class BrowserAutofillManager : public AutofillManager {
   autofill_metrics::AutocompleteUnrecognizedFallbackEventLogger&
   GetAutocompleteUnrecognizedFallbackEventLogger() {
     return *autocomplete_unrecognized_fallback_logger_;
+  }
+
+  autofill_metrics::ManualFallbackEventLogger& GetManualFallbackEventLogger() {
+    return *manual_fallback_logger_;
   }
 
  protected:
@@ -758,6 +763,12 @@ class BrowserAutofillManager : public AutofillManager {
   // autocomplete=unrecognized fields is used.
   std::unique_ptr<autofill_metrics::AutocompleteUnrecognizedFallbackEventLogger>
       autocomplete_unrecognized_fallback_logger_;
+  // The manual fallback logger is used to collect metrics
+  // around Autofill being triggered on unclassified fields or fields that are
+  // classified differently from the target `FillingProduct` (address or
+  // payments).
+  std::unique_ptr<autofill_metrics::ManualFallbackEventLogger>
+      manual_fallback_logger_;
 
   // Have we logged whether Autofill is enabled for this page load?
   bool has_logged_autofill_enabled_ = false;

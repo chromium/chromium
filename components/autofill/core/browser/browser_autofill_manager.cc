@@ -83,6 +83,7 @@
 #include "components/autofill/core/browser/metrics/fallback_autocomplete_unrecognized_metrics.h"
 #include "components/autofill/core/browser/metrics/form_events/form_events.h"
 #include "components/autofill/core/browser/metrics/log_event.h"
+#include "components/autofill/core/browser/metrics/manual_fallback_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/card_metadata_metrics.h"
 #include "components/autofill/core/browser/metrics/quality_metrics.h"
 #include "components/autofill/core/browser/payments/autofill_offer_manager.h"
@@ -510,6 +511,8 @@ BrowserAutofillManager::BrowserAutofillManager(AutofillDriver* driver,
           client->GetPersonalDataManager(), client);
   autocomplete_unrecognized_fallback_logger_ = std::make_unique<
       autofill_metrics::AutocompleteUnrecognizedFallbackEventLogger>();
+  manual_fallback_logger_ =
+      std::make_unique<autofill_metrics::ManualFallbackEventLogger>();
 
   credit_card_access_manager_ = std::make_unique<CreditCardAccessManager>(
       driver, client, client->GetPersonalDataManager(),
@@ -1959,6 +1962,8 @@ void BrowserAutofillManager::Reset() {
       credit_card_form_event_logger_.get());
   autocomplete_unrecognized_fallback_logger_ = std::make_unique<
       autofill_metrics::AutocompleteUnrecognizedFallbackEventLogger>();
+  manual_fallback_logger_ =
+      std::make_unique<autofill_metrics::ManualFallbackEventLogger>();
 
   has_logged_autofill_enabled_ = false;
   did_show_suggestions_ = false;

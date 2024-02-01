@@ -17,6 +17,7 @@
 namespace autofill {
 
 class AutofillField;
+class BrowserAutofillManager;
 class PersonalDataManager;
 
 // `AutofillContextMenuManager` is responsible for adding/executing Autofill
@@ -78,9 +79,20 @@ class AutofillContextMenuManager : public RenderViewContextMenuObserver {
   bool ShouldAddAddressManualFallbackForAutocompleteUnrecognized(
       ContentAutofillDriver& driver);
 
-  // Emits metrics about showing the manual fallback context menu entry to the
+  // Emits metrics about showing the manual fallback context menu entries to the
   // user.
-  void LogManualFallbackContextMenuEntryShown(ContentAutofillDriver& driver);
+  // `address_option_shown` specifies whether address manual fallback was
+  // available, same for `payments_option_shown`.
+  void LogManualFallbackContextMenuEntryShown(ContentAutofillDriver& driver,
+                                              bool address_option_shown,
+                                              bool payments_option_shown);
+
+  // Emits metrics about accepting the manual fallback context menu entries
+  // shown to the user. `filling_product` defines which manual fallback option
+  // was accepted.
+  void LogManualFallbackContextMenuEntryAccepted(
+      BrowserAutofillManager& manager,
+      const FillingProduct filling_product);
 
   // Triggers Autofill address suggestions on the field that the context menu
   // was opened on.

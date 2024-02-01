@@ -2841,6 +2841,35 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram
+    name="Autofill.ManualFallback.NotClassifiedAsTargetFilling.ExplicitlyTriggered.Total"
+    enum="BooleanSelectManualFallback" expires_after="2025-01-20">
+  <owner>brunobraga@google.com</owner>
+  <owner>chrome-autofill-team@google.com</owner>
+  <summary>
+    Records the total acceptance of manual fallback suggestions on fields that
+    are either unclassified or classified differently as the filling product.
+    This tracks the number of times a user accepted/didn't accept the manual
+    fallback option in the context menu. Emitted on navigation (when the
+    AutofillManager is destroyed), at most once per page.
+  </summary>
+</histogram>
+
+<histogram
+    name="Autofill.ManualFallback.NotClassifiedAsTargetFilling.ExplicitlyTriggered{AutofillFormType}"
+    enum="BooleanSelectManualFallback" expires_after="2025-01-20">
+  <owner>brunobraga@google.com</owner>
+  <owner>chrome-autofill-team@google.com</owner>
+  <summary>
+    Records per form type the acceptance of manual fallback suggestions on
+    fields that are either unclassified or classified differently as the filling
+    product. This tracks the number of times a user accepted/didn't accept the
+    manual fallback option in the context menu. Emitted on navigation (when the
+    AutofillManager is destroyed), at most once per page.
+  </summary>
+  <token key="AutofillFormType" variants="AutofillFormType"/>
+</histogram>
+
 <histogram name="Autofill.NameTokenVerificationStatusAtProfileUsage.{NameType}"
     enum="AufofillStructuredTokenVerificationStatus" expires_after="2024-06-30">
   <owner>koerber@google.com</owner>
