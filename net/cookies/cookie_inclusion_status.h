@@ -284,11 +284,12 @@ class NET_EXPORT CookieInclusionStatus {
     kEnterprisePolicy = 5,
     kStorageAccess = 7,
     kTopLevelStorageAccess = 8,
-    // For browser heuristics such as CorsException.
-    kBrowserHeuristics = 9,
+    // For CorsException in the ABA contexts, which the inner iframe is
+    // same-site with the top-level site but has cross-site ancestor(s).
+    kCorsOptIn = 9,
 
     // Keep last.
-    kMaxValue = kBrowserHeuristics
+    kMaxValue = kCorsOptIn
   };
 
   using ExclusionReasonBitset =

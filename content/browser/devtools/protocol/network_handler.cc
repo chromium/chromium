@@ -8,7 +8,6 @@
 #include <stdint.h>
 
 #include <memory>
-#include <tuple>
 #include <utility>
 
 #include "base/barrier_closure.h"
@@ -981,8 +980,8 @@ Network::CookieExemptionReason GetProtocolCookieExemptionReason(
       return Network::CookieExemptionReasonEnum::StorageAccess;
     case net::CookieInclusionStatus::ExemptionReason::kTopLevelStorageAccess:
       return Network::CookieExemptionReasonEnum::TopLevelStorageAccess;
-    case net::CookieInclusionStatus::ExemptionReason::kBrowserHeuristics:
-      return Network::CookieExemptionReasonEnum::BrowserHeuristics;
+    case net::CookieInclusionStatus::ExemptionReason::kCorsOptIn:
+      return Network::CookieExemptionReasonEnum::CorsOptIn;
   }
 }
 

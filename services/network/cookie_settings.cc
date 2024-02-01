@@ -80,7 +80,7 @@ net::CookieInclusionStatus::ExemptionReason GetExemptionReason(
       return net::CookieInclusionStatus::ExemptionReason::
           kTopLevelStorageAccess;
     case CookieSettings::ThirdPartyCookieAllowMechanism::kAllowByCORSException:
-      return net::CookieInclusionStatus::ExemptionReason::kBrowserHeuristics;
+      return net::CookieInclusionStatus::ExemptionReason::kCorsOptIn;
     case CookieSettings::ThirdPartyCookieAllowMechanism::kNone:
       return net::CookieInclusionStatus::ExemptionReason::kNone;
   }

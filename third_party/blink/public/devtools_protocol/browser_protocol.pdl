@@ -6010,8 +6010,8 @@ domain Network
       StorageAccess
       # The cookie should have been blocked by 3PCD but is exempted by Top-level Storage Access API.
       TopLevelStorageAccess
-      # The cookie should have been blocked by 3PCD but is exempted by browser heuristics.
-      BrowserHeuristics
+      # The cookie should have been blocked by 3PCD but is exempted by CORS opt-in.
+      CorsOptIn
 
   # A cookie which was not stored from a response with the corresponding reason.
   experimental type BlockedSetCookieWithReason extends object
