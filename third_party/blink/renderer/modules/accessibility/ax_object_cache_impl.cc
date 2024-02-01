@@ -5553,7 +5553,13 @@ void AXObjectCacheImpl::HandleScrollPositionChanged(
 
 const AtomicString& AXObjectCacheImpl::ComputedRoleForNode(Node* node) {
   // Accessibility tree must be updated before getting an object.
-  SCOPED_DISALLOW_LIFECYCLE_TRANSITION();
+  // Disallow a scope transition on the main document (which needs to already be
+  // updated to its correct lifecycle state at this point, or else there would
+  // be an illegal re-entrance to its lifecycle), but not for any popup document
+  // that is open. That's because popup documents update their lifecycle async
+  // from the main document, and hence any forced update to the popup document's
+  // lifecycle here is not re-entrance but rather a "forced" lifecycle update.
+  DocumentLifecycle::DisallowTransitionScope scoped(document_->Lifecycle());
   ProcessDeferredAccessibilityEvents(GetDocument(), /*force*/ true);
   ScopedFreezeAXCache scoped_freeze_cache(*this);
   AXObject* obj = Get(node);
@@ -5562,8 +5568,9 @@ const AtomicString& AXObjectCacheImpl::ComputedRoleForNode(Node* node) {
 }
 
 String AXObjectCacheImpl::ComputedNameForNode(Node* node) {
-  // Accessibility tree must be updated before getting an object.
-  SCOPED_DISALLOW_LIFECYCLE_TRANSITION();
+  // Accessibility tree must be updated before getting an object. See comment in
+  // ComputedRoleForNode() for explanation of disallow transition scope usage.
+  DocumentLifecycle::DisallowTransitionScope scoped(document_->Lifecycle());
   ProcessDeferredAccessibilityEvents(GetDocument(), /*force*/ true);
   ScopedFreezeAXCache scoped_freeze_cache(*this);
   AXObject* obj = Get(node);
