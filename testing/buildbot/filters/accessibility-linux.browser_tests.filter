@@ -231,4 +231,5 @@
 -WebAppIntegration.WAI_73_166_167
 -WebAppIntegration.WAI_73_37NotPromotable_17
 -WebAppIntegration.WAI_73_37Standalone_17
+-WebRtcDesktopCaptureBrowserTest.RunP2PScreenshareWhileSharingTab
 -WebViewPdfTest.ContextMenuNavigationInMimeHandlerView
