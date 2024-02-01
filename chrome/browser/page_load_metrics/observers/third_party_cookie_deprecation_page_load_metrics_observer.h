@@ -8,12 +8,18 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
+#include "components/content_settings/core/common/cookie_settings_base.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
 #include "components/privacy_sandbox/tracking_protection_onboarding.h"
 
 namespace tpcd::experiment {
 class ExperimentManager;
 }  // namespace tpcd::experiment
+
+namespace {
+using ThirdPartyCookieAllowMechanism =
+    content_settings::CookieSettingsBase::ThirdPartyCookieAllowMechanism;
+}  // namespace
 
 // ThirdPartyCookieDeprecationMetricsObserver is responsible for recording
 // number of page load sends at least one third party cookie while the
@@ -44,7 +50,8 @@ class ThirdPartyCookieDeprecationMetricsObserver
       const GURL& first_party_url,
       bool blocked_by_policy,
       bool is_ad_tagged,
-      const net::CookieSettingOverrides& cookie_setting_overrides) override;
+      const net::CookieSettingOverrides& cookie_setting_overrides,
+      bool is_partitioned_access) override;
 
   void OnCookieChange(
       const GURL& url,
@@ -52,20 +59,24 @@ class ThirdPartyCookieDeprecationMetricsObserver
       const net::CanonicalCookie& cookie,
       bool blocked_by_policy,
       bool is_ad_tagged,
-      const net::CookieSettingOverrides& cookie_setting_overrides) override;
+      const net::CookieSettingOverrides& cookie_setting_overrides,
+      bool is_partitioned_access) override;
 
  private:
   // Records feature cookie access metric.
-  void RecordCookieUseCounters(
+  void RecordCookieUseCounters(const GURL& url,
+                               const GURL& first_party_url,
+                               bool blocked_by_policy,
+                               ThirdPartyCookieAllowMechanism allow_mechanism);
+
+  void RecordCookieReadUseCounters(
       const GURL& url,
       const GURL& first_party_url,
       bool blocked_by_policy,
-      const net::CookieSettingOverrides& cookie_setting_overrides);
-
-  void RecordCookieReadUseCounters(const GURL& url,
-                                   const GURL& first_party_url,
-                                   bool blocked_by_policy,
-                                   bool is_ad_tagged);
+      bool is_ad_tagged,
+      ThirdPartyCookieAllowMechanism allow_mechanism,
+      const net::CookieSettingOverrides& cookie_setting_overrides,
+      bool is_partitioned_access);
 
   // Returns whether the two inputs |url| and |first_party_url| are third party
   // one another.

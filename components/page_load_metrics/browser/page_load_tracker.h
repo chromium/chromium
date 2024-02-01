@@ -355,7 +355,8 @@ class PageLoadTracker : public PageLoadMetricsUpdateDispatcher::Client,
       const GURL& first_party_url,
       bool blocked_by_policy,
       bool is_ad_tagged,
-      const net::CookieSettingOverrides& cookie_setting_overrides);
+      const net::CookieSettingOverrides& cookie_setting_overrides,
+      bool is_partitioned_access);
 
   void OnCookieChange(
       const GURL& url,
@@ -363,7 +364,8 @@ class PageLoadTracker : public PageLoadMetricsUpdateDispatcher::Client,
       const net::CanonicalCookie& cookie,
       bool blocked_by_policy,
       bool is_ad_tagged,
-      const net::CookieSettingOverrides& cookie_setting_overrides);
+      const net::CookieSettingOverrides& cookie_setting_overrides,
+      bool is_partitioned_access);
 
   void OnStorageAccessed(const GURL& url,
                          const GURL& first_party_url,
