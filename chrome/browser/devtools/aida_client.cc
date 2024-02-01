@@ -136,6 +136,9 @@ void AidaClient::SendAidaRequest(
       std::move(aida_request), traffic_annotation);
   simple_url_loader->SetAllowHttpErrorResults(true);
   simple_url_loader->AttachStringForUpload(request);
+  simple_url_loader->SetRetryOptions(
+      /*max_retries=*/3, network::SimpleURLLoader::RETRY_ON_5XX |
+                             network::SimpleURLLoader::RETRY_ON_NETWORK_CHANGE);
 
   network::SimpleURLLoader* simple_url_loader_ptr = simple_url_loader.get();
   simple_url_loader_ptr->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
