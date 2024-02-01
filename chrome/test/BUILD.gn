@@ -4305,6 +4305,7 @@ if (!is_android) {
         "../browser/ash/accessibility/accessibility_manager_browsertest.cc",
         "../browser/ash/accessibility/accessibility_test_utils.cc",
         "../browser/ash/accessibility/accessibility_test_utils.h",
+        "../browser/ash/accessibility/api_test_config.h",
         "../browser/ash/accessibility/autoclick_browsertest.cc",
         "../browser/ash/accessibility/dictation_browsertest.cc",
         "../browser/ash/accessibility/dictation_bubble_test_helper.cc",
