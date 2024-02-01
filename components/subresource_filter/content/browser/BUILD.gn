@@ -133,6 +133,7 @@ static_library("test_support") {
     "//components/infobars/core",
     "//components/prefs:test_support",
     "//components/safe_browsing/core/browser/db:database_manager",
+    "//components/safe_browsing/core/common",
     "//components/subresource_filter/content/common",
     "//components/subresource_filter/core/browser",
     "//components/subresource_filter/core/browser:test_support",
