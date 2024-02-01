@@ -74,12 +74,18 @@ export class ComposeTextareaElement extends PolymerElement {
   private invalidInput_: boolean;
   private tooLong_: boolean;
   private tooShort_: boolean;
+  private placeholderText_: string;
   value: string;
 
   constructor() {
     super();
     this.animator_ = new ComposeTextareaAnimator(
         this, loadTimeData.getBoolean('enableAnimations'));
+  }
+
+  override ready() {
+    super.ready();
+    this.placeholderText_ = this.$.input.placeholder;
   }
 
   focusInput() {
@@ -101,6 +107,14 @@ export class ComposeTextareaElement extends PolymerElement {
 
   private shouldShowEditIcon_(): boolean {
     return this.allowExitingReadonlyMode && this.readonly;
+  }
+
+  private onChangeTextArea_() {
+    if (this.$.input.value === '') {
+      this.$.input.placeholder = this.placeholderText_;
+    } else {
+      this.$.input.placeholder = '';
+    }
   }
 
   transitionToEditable() {

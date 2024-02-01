@@ -199,7 +199,8 @@
       required
       autofocus
       aria-invalid="[[invalidInput_]]"
-      aria-errormessage="error">
+      aria-errormessage="error"
+      on-change="onChangeTextArea_">
   </textarea>
   <div id="error" class="error" role="region" aria-live="assertive"
       hidden$="[[!invalidInput_]]">
