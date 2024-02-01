@@ -37,6 +37,7 @@
 #include "components/optimization_guide/proto/model_quality_service.pb.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "components/unified_consent/pref_names.h"
+#include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "content/public/test/test_renderer_host.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -1392,12 +1393,13 @@ TEST_F(ChromeComposeClientTest, BugReportOpensCorrectURL) {
   // Check that the new foreground tab is opened.
   EXPECT_EQ(2, browser()->tab_strip_model()->count());
   EXPECT_EQ(1, browser()->tab_strip_model()->active_index());
-  // This test uses GetVisibleURL as it only  verifies that a navigation has
-  // started, regardless of whether it commits or not.
-  // TODO(b/317240589): Refactor to check GetLastCommittedURL.
+  // This test uses web_contents->GetController()->GetPendingEntry() as it only
+  // verifies that a navigation has started, regardless of whether it commits or
+  // not.
   content::WebContents* new_tab_webcontents =
       browser()->tab_strip_model()->GetWebContentsAt(1);
-  EXPECT_EQ(bug_url, new_tab_webcontents->GetVisibleURL());
+  EXPECT_EQ(bug_url,
+            new_tab_webcontents->GetController().GetPendingEntry()->GetURL());
 }
 
 TEST_F(ChromeComposeClientTest, LearnMoreLinkOpensCorrectURL) {
@@ -1413,12 +1415,13 @@ TEST_F(ChromeComposeClientTest, LearnMoreLinkOpensCorrectURL) {
   // Check that the new foreground tab is opened.
   EXPECT_EQ(2, browser()->tab_strip_model()->count());
   EXPECT_EQ(1, browser()->tab_strip_model()->active_index());
-  // This test uses GetVisibleURL as it only verifies that a navigation has
-  // started, regardless of whether it commits or not.
-  // TODO(b/317240589): Refactor to check GetLastCommittedURL.
+  // This test uses web_contents->GetController()->GetPendingEntry() as it only
+  // verifies that a navigation has started, regardless of whether it commits or
+  // not.
   content::WebContents* new_tab_webcontents =
       browser()->tab_strip_model()->GetWebContentsAt(1);
-  EXPECT_EQ(learn_more_url, new_tab_webcontents->GetVisibleURL());
+  EXPECT_EQ(learn_more_url,
+            new_tab_webcontents->GetController().GetPendingEntry()->GetURL());
 }
 
 TEST_F(ChromeComposeClientTest, SurveyLinkOpensCorrectURL) {
@@ -1434,12 +1437,13 @@ TEST_F(ChromeComposeClientTest, SurveyLinkOpensCorrectURL) {
   // Check that the new foreground tab is opened.
   EXPECT_EQ(2, browser()->tab_strip_model()->count());
   EXPECT_EQ(1, browser()->tab_strip_model()->active_index());
-  // This test uses GetVisibleURL as it only verifies that a navigation has
-  // started, regardless of whether it commits or not.
-  // TODO(b/317240589): Refactor to check GetLastCommittedURL.
+  // This test uses web_contents->GetController()->GetPendingEntry() as it only
+  // verifies that a navigation has started, regardless of whether it commits or
+  // not.
   content::WebContents* new_tab_webcontents =
       browser()->tab_strip_model()->GetWebContentsAt(1);
-  EXPECT_EQ(survey_url, new_tab_webcontents->GetVisibleURL());
+  EXPECT_EQ(survey_url,
+            new_tab_webcontents->GetController().GetPendingEntry()->GetURL());
 }
 
 TEST_F(ChromeComposeClientTest, ResetClientOnNavigation) {
