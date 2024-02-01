@@ -49,6 +49,10 @@ class ManagePasswordsState {
   void OnPendingPassword(
       std::unique_ptr<password_manager::PasswordFormManagerForUI> form_manager);
 
+  // Move to PASSWORD_STORE_CHANGED_BUBBLE_STATE.
+  void OnDefaultStoreChanged(
+      std::unique_ptr<password_manager::PasswordFormManagerForUI> form_manager);
+
   // Move to PENDING_PASSWORD_UPDATE_STATE.
   void OnUpdatePassword(
       std::unique_ptr<password_manager::PasswordFormManagerForUI> form_manager);

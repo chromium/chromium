@@ -50,6 +50,7 @@ class PasswordFeatureManagerImpl : public PasswordFeatureManager {
   void OptOutOfAccountStorageAndClearSettings() override;
   bool ShouldOfferOptInAndMoveToAccountStoreAfterSavingLocally() const override;
   void SetDefaultPasswordStore(const PasswordForm::Store& store) override;
+  bool ShouldChangeDefaultPasswordStore() const override;
 #endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
 
  private:

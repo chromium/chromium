@@ -132,6 +132,10 @@ class PasswordsModelDelegate {
   // used credential to their account store.
   virtual void BlockMovingPasswordToAccountStore() = 0;
 
+  // Called from the dialog controller when the user acknowledges that their
+  // default password store setting changed.
+  virtual void PromptSaveBubbleAfterDefaultStoreChanged() = 0;
+
   // Called from the dialog controller when the user chooses a credential.
   // Controller can be destroyed inside the method.
   virtual void ChooseCredential(

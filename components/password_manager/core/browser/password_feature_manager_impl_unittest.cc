@@ -144,6 +144,46 @@ TEST_F(PasswordFeatureManagerImplTest, GenerationDisabledIfSyncPaused) {
   EXPECT_FALSE(password_feature_manager_.IsGenerationEnabled());
 }
 
+#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
+TEST_F(PasswordFeatureManagerImplTest, ShouldChangeDefaultPasswordStore) {
+  base::test::ScopedFeatureList features;
+  features.InitWithFeatures(
+      {password_manager::features::kEnablePasswordsAccountStorage,
+       password_manager::features::kButterOnDesktopFollowup},
+      {});
+
+  sync_service_.SetLocalSyncEnabled(false);
+  sync_service_.SetHasSyncConsent(false);
+
+  sync_service_.SetTransportState(syncer::SyncService::TransportState::ACTIVE);
+  sync_service_.GetUserSettings()->SetSelectedType(
+      syncer::UserSelectableType::kPasswords, true);
+
+  password_feature_manager_.SetDefaultPasswordStore(
+      password_manager::PasswordForm::Store::kProfileStore);
+  EXPECT_TRUE(password_feature_manager_.ShouldChangeDefaultPasswordStore());
+}
+
+TEST_F(PasswordFeatureManagerImplTest, ShouldNotChangeDefaultPasswordStore) {
+  base::test::ScopedFeatureList features;
+  features.InitWithFeatures(
+      {password_manager::features::kEnablePasswordsAccountStorage,
+       password_manager::features::kButterOnDesktopFollowup},
+      {});
+
+  sync_service_.SetLocalSyncEnabled(false);
+  sync_service_.SetHasSyncConsent(false);
+
+  sync_service_.SetTransportState(syncer::SyncService::TransportState::ACTIVE);
+  sync_service_.GetUserSettings()->SetSelectedType(
+      syncer::UserSelectableType::kPasswords, true);
+
+  password_feature_manager_.SetDefaultPasswordStore(
+      password_manager::PasswordForm::Store::kAccountStore);
+  EXPECT_FALSE(password_feature_manager_.ShouldChangeDefaultPasswordStore());
+}
+#endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
+
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 
 struct TestCase {

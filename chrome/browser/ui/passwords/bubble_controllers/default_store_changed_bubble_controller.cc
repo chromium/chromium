@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/passwords/passwords_model_delegate.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/password_manager/core/browser/manage_passwords_referrer.h"
+#include "components/password_manager/core/browser/password_feature_manager.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -19,6 +20,15 @@ DefaultStoreChangedBubbleController::DefaultStoreChangedBubbleController(
     : PasswordBubbleControllerBase(std::move(delegate),
                                    password_manager::metrics_util::
                                        AUTOMATIC_DEFAULT_STORE_CHANGED_BUBBLE) {
+  // Since this bubble is only shown when the default password store pref
+  // is different than the account storage pref, and the account storage is
+  // available, we should align those values.
+  if (delegate_) {
+    CHECK_EQ(delegate_->GetPasswordFeatureManager()->GetDefaultPasswordStore(),
+             password_manager::PasswordForm::Store::kProfileStore);
+    delegate_->GetPasswordFeatureManager()->SetDefaultPasswordStore(
+        password_manager::PasswordForm::Store::kAccountStore);
+  }
 }
 
 DefaultStoreChangedBubbleController::~DefaultStoreChangedBubbleController() {
@@ -65,9 +75,11 @@ std::u16string DefaultStoreChangedBubbleController::GetGoToSettingsButtonText()
       IDS_PASSWORD_MANAGER_DEFAULT_STORE_CHANGED_BUBBLE_SETTINGS_BUTTON);
 }
 
-// TODO(1503146):: Add implementation of this method.
 void DefaultStoreChangedBubbleController::OnContinueButtonClicked() {
   dismissal_reason_ = metrics_util::CLICKED_ACCEPT;
+  if (delegate_) {
+    delegate_->PromptSaveBubbleAfterDefaultStoreChanged();
+  }
 }
 
 void DefaultStoreChangedBubbleController::OnNavigateToSettingsButtonClicked() {

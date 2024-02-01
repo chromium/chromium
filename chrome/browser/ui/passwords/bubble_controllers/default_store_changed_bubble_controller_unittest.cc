@@ -8,6 +8,7 @@
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/ui/passwords/passwords_model_delegate_mock.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/password_manager/core/browser/mock_password_feature_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_renderer_host.h"
@@ -36,6 +37,11 @@ class DefaultStoreChangedBubbleControllerTest : public ::testing::Test {
 
     mock_delegate_ =
         std::make_unique<testing::NiceMock<PasswordsModelDelegateMock>>();
+    ON_CALL(*mock_delegate_, GetPasswordFeatureManager)
+        .WillByDefault(Return(&password_feature_manager_));
+    ON_CALL(password_feature_manager_, GetDefaultPasswordStore)
+        .WillByDefault(
+            Return(password_manager::PasswordForm::Store::kProfileStore));
   }
   ~DefaultStoreChangedBubbleControllerTest() override = default;
 
@@ -45,8 +51,16 @@ class DefaultStoreChangedBubbleControllerTest : public ::testing::Test {
     return controller_.get();
   }
 
+  password_manager::MockPasswordFeatureManager* password_feature_manager() {
+    return &password_feature_manager_;
+  }
+
   void CreateController() {
     EXPECT_CALL(*delegate(), OnBubbleShown());
+    EXPECT_CALL(*password_feature_manager(),
+                SetDefaultPasswordStore(
+                    password_manager::PasswordForm::Store::kAccountStore));
+
     controller_ = std::make_unique<DefaultStoreChangedBubbleController>(
         mock_delegate_->AsWeakPtr());
     EXPECT_TRUE(testing::Mock::VerifyAndClearExpectations(delegate()));
@@ -57,6 +71,8 @@ class DefaultStoreChangedBubbleControllerTest : public ::testing::Test {
   content::RenderViewHostTestEnabler rvh_enabler_;
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<content::WebContents> web_contents_;
+  testing::NiceMock<password_manager::MockPasswordFeatureManager>
+      password_feature_manager_;
   std::unique_ptr<PasswordsModelDelegateMock> mock_delegate_;
   std::unique_ptr<DefaultStoreChangedBubbleController> controller_;
 };
@@ -94,4 +110,14 @@ TEST_F(DefaultStoreChangedBubbleControllerTest, SettingsLinkClick) {
   controller()->OnNavigateToSettingsButtonClicked();
   controller()->OnBubbleClosing();
   histograms.ExpectUniqueSample(kContinueHistogram, false, 1);
+}
+
+TEST_F(DefaultStoreChangedBubbleControllerTest, ContinueButtonClick) {
+  base::HistogramTester histograms;
+  CreateController();
+  EXPECT_CALL(*delegate(), PromptSaveBubbleAfterDefaultStoreChanged);
+  EXPECT_CALL(*delegate(), OnBubbleHidden());
+  controller()->OnContinueButtonClicked();
+  controller()->OnBubbleClosing();
+  histograms.ExpectUniqueSample(kContinueHistogram, true, 1);
 }

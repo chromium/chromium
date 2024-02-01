@@ -159,7 +159,15 @@ void ManagePasswordsUIController::OnPasswordSubmitted(
     std::unique_ptr<PasswordFormManagerForUI> form_manager) {
   DestroyPopups();
   save_fallback_timer_.Stop();
-  passwords_data_.OnPendingPassword(std::move(form_manager));
+
+  // TODO(crbug/1503146): This is used to align the default password store pref
+  // with account storage pref. Once all users have those aligned this should be
+  // removed.
+  if (GetPasswordFeatureManager()->ShouldChangeDefaultPasswordStore()) {
+    passwords_data_.OnDefaultStoreChanged(std::move(form_manager));
+  } else {
+    passwords_data_.OnPendingPassword(std::move(form_manager));
+  }
   if (!IsSavingPromptBlockedExplicitlyOrImplicitly()) {
     bubble_status_ = BubbleStatus::SHOULD_POP_UP;
   }
@@ -623,7 +631,9 @@ ManagePasswordsUIController::GetCurrentForms() const {
 
 const password_manager::InteractionsStats*
 ManagePasswordsUIController::GetCurrentInteractionStats() const {
-  DCHECK_EQ(password_manager::ui::PENDING_PASSWORD_STATE, GetState());
+  CHECK(GetState() == password_manager::ui::PENDING_PASSWORD_STATE ||
+        GetState() ==
+            password_manager::ui::PASSWORD_STORE_CHANGED_BUBBLE_STATE);
   password_manager::PasswordFormManagerForUI* form_manager =
       passwords_data_.form_manager();
   return FindStatsByUsername(
@@ -835,6 +845,16 @@ void ManagePasswordsUIController::BlockMovingPasswordToAccountStore() {
   UpdateBubbleAndIconVisibility();
 }
 
+void ManagePasswordsUIController::PromptSaveBubbleAfterDefaultStoreChanged() {
+  CHECK_EQ(GetState(),
+           password_manager::ui::PASSWORD_STORE_CHANGED_BUBBLE_STATE)
+      << GetState();
+  passwords_data_.TransitionToState(
+      password_manager::ui::PENDING_PASSWORD_STATE);
+  bubble_status_ = BubbleStatus::SHOULD_POP_UP;
+  UpdateBubbleAndIconVisibility();
+}
+
 void ManagePasswordsUIController::ChooseCredential(
     const password_manager::PasswordForm& form,
     password_manager::CredentialType credential_type) {
@@ -864,6 +884,7 @@ void ManagePasswordsUIController::
       chrome::FindBrowserWithTab(web_contents()));
   UMA_HISTOGRAM_ENUMERATION("PasswordManager.ManagePasswordsReferrer",
                             referrer);
+  PromptSaveBubbleAfterDefaultStoreChanged();
 }
 
 void ManagePasswordsUIController::NavigateToPasswordCheckup(
