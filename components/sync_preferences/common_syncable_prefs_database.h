@@ -16,6 +16,10 @@ namespace sync_preferences {
 inline constexpr char kSyncablePrefForTesting[] = "syncable-test-preference";
 inline constexpr char kSyncableMergeableDictPrefForTesting[] =
     "syncable-mergeable-dict-test-preference";
+inline constexpr char kSyncableMergeableListPrefForTesting[] =
+    "syncable-mergeable-list-test-preference";
+inline constexpr char kSyncableHistorySensitiveListPrefForTesting[] =
+    "syncable-history-sensitive-list-test-preference";
 
 // This class provides an implementation for SyncablePrefsDatabase for common
 // syncable preferences, i.e. preferences which are shared between all

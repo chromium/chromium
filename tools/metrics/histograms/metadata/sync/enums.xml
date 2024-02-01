@@ -235,6 +235,8 @@ chromium-metrics-reviews@google.com.
   <int value="64" label="AutofillPaymentCvcStorage"/>
   <int value="65" label="DeleteTimePeriodV2"/>
   <int value="66" label="DeleteTimePeriodV2Basic"/>
+  <int value="67" label="SyncableMergeableListPrefForTesting"/>
+  <int value="68" label="SyncableHistorySensitiveListPrefForTesting"/>
   <int value="100000" label="AppLanguagePromptShown"/>
   <int value="100001" label="(Obsolete) PrefExplicitLanguageAskShown"/>
   <int value="100002" label="ContextualSearchEnabled_Android"/>
