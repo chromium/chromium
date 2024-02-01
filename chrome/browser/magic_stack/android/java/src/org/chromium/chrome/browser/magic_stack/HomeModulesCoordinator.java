@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.magic_stack;
 
 import android.app.Activity;
 import android.graphics.Point;
+import android.os.SystemClock;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
@@ -17,7 +18,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.SnapHelper;
 
 import org.chromium.base.Callback;
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.browser.magic_stack.ModuleRegistry.OnViewCreatedCallback;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.displaystyle.DisplayStyleObserver;
 import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
@@ -39,34 +42,41 @@ public class HomeModulesCoordinator implements ModuleDelegate, OnViewCreatedCall
     private final RecyclerView mRecyclerView;
     private final ModelList mModel;
     private final HomeModulesContextMenuManager mHomeModulesContextMenuManager;
+    private final ObservableSupplier<Profile> mProfileSupplier;
 
     private CirclePagerIndicatorDecoration mPageIndicatorDecoration;
     private SnapHelper mSnapHelper;
     private boolean mIsSnapHelperAttached;
     private int mCurrentOrientation;
     private int mItemPerScreen;
-    @Nullable private UiConfig mUiConfig;
-    @Nullable private DisplayStyleObserver mDisplayStyleObserver;
-
     private Set<Integer> mEnabledModuleList;
     private HomeModulesConfigManager mHomeModulesConfigManager;
     private HomeModulesConfigManager.HomeModulesStateListener mHomeModulesStateListener;
+
+    @Nullable private UiConfig mUiConfig;
+    @Nullable private DisplayStyleObserver mDisplayStyleObserver;
+    @Nullable private Callback<Profile> mOnProfileAvailableObserver;
 
     /**
      * @param activity The instance of {@link Activity}.
      * @param moduleDelegateHost The home surface which owns the magic stack.
      * @param parentView The parent view which holds the magic stack's RecyclerView.
+     * @param homeModulesConfigManager The manager class which handles the enabling states of
+     *     modules.
+     * @param profileSupplier The supplier of the profile in use.
      */
     public HomeModulesCoordinator(
             @NonNull Activity activity,
             @NonNull ModuleDelegateHost moduleDelegateHost,
             @NonNull ViewGroup parentView,
-            @NonNull HomeModulesConfigManager homeModulesConfigManager) {
+            @NonNull HomeModulesConfigManager homeModulesConfigManager,
+            @NonNull ObservableSupplier<Profile> profileSupplier) {
         mModuleDelegateHost = moduleDelegateHost;
         ModuleRegistry moduleRegistry = ModuleRegistry.getInstance();
         mHomeModulesContextMenuManager =
                 new HomeModulesContextMenuManager(
                         this, moduleDelegateHost.getContextMenuStartPoint(), moduleRegistry);
+        mProfileSupplier = profileSupplier;
 
         mModel = new ModelList();
         mAdapter = new SimpleRecyclerViewAdapter(mModel);
@@ -172,6 +182,28 @@ public class HomeModulesCoordinator implements ModuleDelegate, OnViewCreatedCall
      * @param onHomeModulesShownCallback The callback called when the magic stack is shown.
      */
     public void show(Callback<Boolean> onHomeModulesShownCallback) {
+        if (mOnProfileAvailableObserver != null) {
+            // If the magic stack is waiting for the profile and show() is called again, early
+            // return here since showing is working in progress.
+            return;
+        }
+
+        if (mProfileSupplier.hasValue()) {
+            showImpl(onHomeModulesShownCallback);
+        } else {
+            long waitForProfileStartTimeMs = SystemClock.elapsedRealtime();
+            mOnProfileAvailableObserver =
+                    (profile) -> {
+                        onProfileAvailable(
+                                profile, onHomeModulesShownCallback, waitForProfileStartTimeMs);
+                    };
+
+            mProfileSupplier.addObserver(mOnProfileAvailableObserver);
+        }
+    }
+
+    /** Shows the magic stack with profile ready. */
+    private void showImpl(Callback<Boolean> onHomeModulesShownCallback) {
         List<Integer> moduleList = getModuleList();
         if (moduleList == null) {
             onHomeModulesShownCallback.onResult(false);
@@ -184,6 +216,18 @@ public class HomeModulesCoordinator implements ModuleDelegate, OnViewCreatedCall
                 (isVisible) -> {
                     onHomeModulesShownCallback.onResult(isVisible);
                 });
+    }
+
+    private void onProfileAvailable(
+            Profile profile,
+            Callback<Boolean> onHomeModulesShownCallback,
+            long waitForProfileStartTimeMs) {
+        long delay = SystemClock.elapsedRealtime() - waitForProfileStartTimeMs;
+        showImpl(onHomeModulesShownCallback);
+
+        mProfileSupplier.removeObserver(mOnProfileAvailableObserver);
+        mOnProfileAvailableObserver = null;
+        HomeModulesMetricsUtils.recordProfileReadyDelay(getHostSurfaceType(), delay);
     }
 
     /** Reacts when the home modules' specific module type is disabled or enabled. */

@@ -34,15 +34,19 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 import org.robolectric.annotation.Implementation;
 import org.robolectric.annotation.Implements;
 
+import org.chromium.base.Callback;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.displaystyle.DisplayStyleObserver;
 import org.chromium.components.browser_ui.widget.displaystyle.HorizontalDisplayStyle;
@@ -80,8 +84,12 @@ public class HomeModulesCoordinatorUnitTest {
     @Mock private ApplicationInfo mApplicationInfo;
     @Mock private DisplayMetrics mDisplayMetrics;
     @Mock private HomeModulesConfigManager mHomeModulesConfigManager;
+    @Mock private ObservableSupplierImpl<Profile> mProfileSupplier;
+    @Mock private Profile mProfile;
 
     @Captor private ArgumentCaptor<DisplayStyleObserver> mDisplayStyleObserver;
+    @Captor private ArgumentCaptor<Callback<Profile>> mProfileObserver;
+
     private HomeModulesCoordinator mCoordinator;
 
     @Captor
@@ -110,9 +118,7 @@ public class HomeModulesCoordinatorUnitTest {
     @SmallTest
     public void testCreate_phones() {
         assertFalse(DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity));
-        mCoordinator =
-                new HomeModulesCoordinator(
-                        mActivity, mModuleDelegateHost, mView, mHomeModulesConfigManager);
+        mCoordinator = createCoordinator(/* skipInitProfile= */ false);
 
         // Verifies that there isn't an observer of UiConfig registered.
         assertTrue(mCoordinator.getIsSnapHelperAttachedForTesting());
@@ -129,9 +135,7 @@ public class HomeModulesCoordinatorUnitTest {
                 new DisplayStyle(HorizontalDisplayStyle.WIDE, VerticalDisplayStyle.REGULAR);
         when(mUiConfig.getCurrentDisplayStyle()).thenReturn(displayStyle);
 
-        mCoordinator =
-                new HomeModulesCoordinator(
-                        mActivity, mModuleDelegateHost, mView, mHomeModulesConfigManager);
+        mCoordinator = createCoordinator(/* skipInitProfile= */ false);
         // Verifies that an observer is registered to the mUiConfig on tablets.
         verify(mUiConfig).addObserver(mDisplayStyleObserver.capture());
 
@@ -160,9 +164,7 @@ public class HomeModulesCoordinatorUnitTest {
                 new DisplayStyle(HorizontalDisplayStyle.REGULAR, VerticalDisplayStyle.REGULAR);
         when(mUiConfig.getCurrentDisplayStyle()).thenReturn(displayStyle);
 
-        mCoordinator =
-                new HomeModulesCoordinator(
-                        mActivity, mModuleDelegateHost, mView, mHomeModulesConfigManager);
+        mCoordinator = createCoordinator(/* skipInitProfile= */ false);
         // Verifies that an observer is registered to the mUiConfig on tablets.
         verify(mUiConfig).addObserver(mDisplayStyleObserver.capture());
 
@@ -176,9 +178,7 @@ public class HomeModulesCoordinatorUnitTest {
         when(mHomeModulesConfigManager.getEnabledModuleList())
                 .thenReturn(new HashSet<>(List.of(ModuleType.SINGLE_TAB)));
         assertFalse(DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity));
-        mCoordinator =
-                new HomeModulesCoordinator(
-                        mActivity, mModuleDelegateHost, mView, mHomeModulesConfigManager);
+        mCoordinator = createCoordinator(/* skipInitProfile= */ false);
         List<Integer> expectedModuleList = List.of(ModuleType.SINGLE_TAB);
         assertEquals(mCoordinator.getModuleList(), expectedModuleList);
     }
@@ -187,9 +187,7 @@ public class HomeModulesCoordinatorUnitTest {
     @SmallTest
     public void testOnModuleConfigChanged() {
         assertFalse(DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity));
-        mCoordinator =
-                new HomeModulesCoordinator(
-                        mActivity, mModuleDelegateHost, mView, mHomeModulesConfigManager);
+        mCoordinator = createCoordinator(/* skipInitProfile= */ false);
 
         verify(mHomeModulesConfigManager).addListener(mHomeModulesStateListener.capture());
         List<Integer> expectedModuleListBeforeHidingModule =
@@ -207,9 +205,31 @@ public class HomeModulesCoordinatorUnitTest {
         verify(mHomeModulesConfigManager).removeListener(mHomeModulesStateListener.capture());
     }
 
+    @Test
+    @SmallTest
+    public void testProfileNotReady() {
+        mCoordinator = createCoordinator(/* skipInitProfile= */ true);
+        Callback<Boolean> callback = Mockito.mock(Callback.class);
+        mCoordinator.show(callback);
+
+        verify(mProfileSupplier).addObserver(mProfileObserver.capture());
+        mProfileObserver.getValue().onResult(mProfile);
+
+        verify(mProfileSupplier).removeObserver(mProfileObserver.capture());
+    }
+
     private void setupAndVerifyTablets() {
         when(mResources.getInteger(org.chromium.ui.R.integer.min_screen_width_bucket))
                 .thenReturn(DeviceFormFactor.SCREEN_BUCKET_TABLET);
         assertTrue(DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity));
+    }
+
+    private HomeModulesCoordinator createCoordinator(boolean skipInitProfile) {
+        if (!skipInitProfile) {
+            when(mProfileSupplier.hasValue()).thenReturn(true);
+            when(mProfileSupplier.get()).thenReturn(mProfile);
+        }
+        return new HomeModulesCoordinator(
+                mActivity, mModuleDelegateHost, mView, mHomeModulesConfigManager, mProfileSupplier);
     }
 }

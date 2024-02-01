@@ -53,6 +53,9 @@ public class HomeModulesMetricsUtils {
     static final String HISTOGRAM_MODULE_SEGMENTATION_FETCH_RANKING_DURATION_MS =
             ".Segmentation.FetchRankingResultsDurationMs";
 
+    @VisibleForTesting
+    static final String HISTOGRAM_MODULE_PROFILE_READY_DELAY_MS = ".Module.ProfileReadyDelayMs";
+
     /** Returns a string name of a module. */
     public static String getModuleName(@ModuleType int moduleType) {
         switch (moduleType) {
@@ -199,6 +202,17 @@ public class HomeModulesMetricsUtils {
     public static void recordSegmentationFetchRankingDuration(
             @HostSurface int hostSurface, long durationMs) {
         recordUma(hostSurface, HISTOGRAM_MODULE_SEGMENTATION_FETCH_RANKING_DURATION_MS, durationMs);
+    }
+
+    /**
+     * Records the time spent between triggering to show modules and beginning to fetch the module
+     * list when the profile is ready.
+     *
+     * @param hostSurface The type of the host surface of the magic stack.
+     * @param durationMs The time duration.
+     */
+    public static void recordProfileReadyDelay(@HostSurface int hostSurface, long durationMs) {
+        recordUma(hostSurface, HISTOGRAM_MODULE_PROFILE_READY_DELAY_MS, durationMs);
     }
 
     private static void recordUma(

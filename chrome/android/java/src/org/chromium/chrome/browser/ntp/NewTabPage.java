@@ -1283,12 +1283,15 @@ public class NewTabPage
                                                 R.id.home_modules_recycler_view_stub))
                                 .inflate();
         updateSingleTabCardContainerMargins(mHomeModulesContainer);
+        ObservableSupplier<Profile> profileSupplier =
+                new ObservableSupplierImpl<>(mTab.getProfile());
         mHomeModulesCoordinator =
                 new HomeModulesCoordinator(
                         mActivity,
                         this,
                         mNewTabPageLayout,
-                        ChromeHomeModulesConfigManager.getInstance());
+                        ChromeHomeModulesConfigManager.getInstance(),
+                        profileSupplier);
     }
 
     private void onMagicStackShown(boolean isVisible) {
