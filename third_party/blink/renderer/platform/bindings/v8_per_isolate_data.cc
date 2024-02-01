@@ -247,6 +247,22 @@ void V8PerIsolateData::AddV8Template(const DOMWrapperWorld& world,
   DCHECK(result.is_new_entry);
 }
 
+v8::MaybeLocal<v8::DictionaryTemplate>
+V8PerIsolateData::FindV8DictionaryTemplate(const void* key) {
+  auto it = v8_dict_template_map_.find(key);
+  return it != v8_dict_template_map_.end()
+             ? it->value.Get(GetIsolate())
+             : v8::MaybeLocal<v8::DictionaryTemplate>();
+}
+
+void V8PerIsolateData::AddV8DictionaryTemplate(
+    const void* key,
+    v8::Local<v8::DictionaryTemplate> value) {
+  auto result = v8_dict_template_map_.insert(
+      key, v8::Eternal<v8::DictionaryTemplate>(GetIsolate(), value));
+  DCHECK(result.is_new_entry);
+}
+
 bool V8PerIsolateData::HasInstance(const WrapperTypeInfo* wrapper_type_info,
                                    v8::Local<v8::Value> untrusted_value) {
   RUNTIME_CALL_TIMER_SCOPE(GetIsolate(),
@@ -310,7 +326,7 @@ void V8PerIsolateData::ClearPersistentsForV8ContextSnapshot() {
 const base::span<const v8::Eternal<v8::Name>>
 V8PerIsolateData::FindOrCreateEternalNameCache(
     const void* lookup_key,
-    const base::span<const char* const>& names) {
+    base::span<const std::string_view> names) {
   auto it = eternal_name_cache_.find(lookup_key);
   const Vector<v8::Eternal<v8::Name>>* vector = nullptr;
   if (UNLIKELY(it == eternal_name_cache_.end())) {
@@ -318,8 +334,12 @@ V8PerIsolateData::FindOrCreateEternalNameCache(
     Vector<v8::Eternal<v8::Name>> new_vector(
         base::checked_cast<wtf_size_t>(names.size()));
     base::ranges::transform(
-        names, new_vector.begin(), [isolate](const char* name) {
-          return v8::Eternal<v8::Name>(isolate, V8AtomicString(isolate, name));
+        names, new_vector.begin(), [isolate](std::string_view name) {
+          return v8::Eternal<v8::Name>(
+              isolate,
+              V8AtomicString(
+                  isolate,
+                  StringView(name.data(), static_cast<unsigned>(name.size()))));
         });
     vector = &eternal_name_cache_.Set(lookup_key, std::move(new_vector))
                   .stored_value->value;

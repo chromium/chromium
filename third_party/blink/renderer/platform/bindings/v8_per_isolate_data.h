@@ -154,6 +154,11 @@ class PLATFORM_EXPORT V8PerIsolateData final {
                      const void* key,
                      v8::Local<v8::Template> value);
 
+  v8::MaybeLocal<v8::DictionaryTemplate> FindV8DictionaryTemplate(
+      const void* key);
+  void AddV8DictionaryTemplate(const void* key,
+                               v8::Local<v8::DictionaryTemplate> value);
+
   bool HasInstance(const WrapperTypeInfo* wrapper_type_info,
                    v8::Local<v8::Value> untrusted_value);
   bool HasInstanceOfUntrustedType(
@@ -177,7 +182,7 @@ class PLATFORM_EXPORT V8PerIsolateData final {
   // compile-time list of related names, such as IDL dictionary keys.
   const base::span<const v8::Eternal<v8::Name>> FindOrCreateEternalNameCache(
       const void* lookup_key,
-      const base::span<const char* const>& names);
+      base::span<const std::string_view> names);
 
   v8::Local<v8::Context> EnsureScriptRegexpContext();
   void ClearScriptRegexpContext();
@@ -245,6 +250,13 @@ class PLATFORM_EXPORT V8PerIsolateData final {
   // v8::Template cache of interface objects, namespace objects, etc.
   V8TemplateMap v8_template_map_for_main_world_;
   V8TemplateMap v8_template_map_for_non_main_worlds_;
+
+  using V8DictTemplateMap = HashMap<const void*,
+                                    v8::Eternal<v8::DictionaryTemplate>,
+                                    SimplePtrHashTraits>;
+
+  HashMap<const void*, v8::Eternal<v8::DictionaryTemplate>, SimplePtrHashTraits>
+      v8_dict_template_map_;
 
   // Contains lists of eternal names, such as dictionary keys.
   HashMap<const void*, Vector<v8::Eternal<v8::Name>>> eternal_name_cache_;
