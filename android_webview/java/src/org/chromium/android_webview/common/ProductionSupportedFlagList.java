@@ -325,6 +325,10 @@ public final class ProductionSupportedFlagList {
                         + " match different types. Applied only for parsing of address forms in"
                         + " Turkish."),
         Flag.baseFeature(
+                AutofillFeatures.AUTOFILL_UPLOAD_VOTES_FOR_FIELDS_WITH_EMAIL,
+                "When enabled, autofill will issues votes for EMAIL_ADDRESS field types on fields"
+                        + " where the content matches a valid email format."),
+        Flag.baseFeature(
                 FeatureConstants.KEYBOARD_ACCESSORY_PAYMENT_VIRTUAL_CARD_FEATURE,
                 "When enabled, merchant bound virtual cards will be offered in the keyboard "
                         + "accessory."),
