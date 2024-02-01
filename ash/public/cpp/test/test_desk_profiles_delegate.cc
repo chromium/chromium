@@ -57,6 +57,10 @@ TestDeskProfilesDelegate::GetProfilesSnapshot() const {
 const LacrosProfileSummary*
 TestDeskProfilesDelegate::GetProfilesSnapshotByProfileId(
     uint64_t profile_id) const {
+  if (profile_id == 0) {
+    profile_id = primary_user_profile_id_;
+  }
+
   const auto iter = base::ranges::find(profiles_, profile_id,
                                        &LacrosProfileSummary::profile_id);
   return iter == profiles_.end() ? nullptr : &(*iter);

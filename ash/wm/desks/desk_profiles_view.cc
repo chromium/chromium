@@ -104,13 +104,6 @@ void DeskProfilesButton::LoadIconForProfile() {
   auto* delegate = Shell::Get()->GetDeskProfilesDelegate();
   CHECK(delegate);
 
-  // Initialize Desk's Lacros profile id with primary profile id.
-  // TODO(dandersson): This shouldn't happen here.
-  const uint64_t primary_profile_id = delegate->GetPrimaryProfileId();
-  if (desk_->lacros_profile_id() == 0 && primary_profile_id != 0) {
-    desk_->SetLacrosProfileId(primary_profile_id);
-  }
-
   if (auto* summary = delegate->GetProfilesSnapshotByProfileId(
           desk_->lacros_profile_id())) {
     SetImageModel(
