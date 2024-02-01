@@ -7,8 +7,10 @@ package org.chromium.ui.dragdrop;
 import android.os.SystemClock;
 import android.view.DragEvent;
 import android.view.View.DragShadowBuilder;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
 import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
 
@@ -123,6 +125,11 @@ public class DragDropGlobalState {
     /** Return whether the drag state started by |instanceId|. */
     public boolean isDragSourceInstance(int instanceId) {
         return mDragSourceInstanceId == instanceId;
+    }
+
+    /** Return the Chrome instance id of the drag source held by the global state. */
+    public int getDragSourceInstance() {
+        return mDragSourceInstanceId;
     }
 
     /** Return the {@link DropDataAndroid} held by the global state. */

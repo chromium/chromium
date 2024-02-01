@@ -9,6 +9,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -1130,13 +1131,15 @@ public class MultiInstanceManagerApi31UnitTest {
 
         Mockito.doNothing()
                 .when(mMultiInstanceManager)
-                .moveTabAction(any(), eq(mTab1), eq(tabAtIndex));
+                .moveTabAction(any(), eq(mTab1), eq(tabAtIndex), anyInt(), eq(true));
 
         // Action
-        mMultiInstanceManager.moveTabToWindow(mTabbedActivityTask63, mTab1, tabAtIndex);
+        mMultiInstanceManager.moveTabToWindow(
+                mTabbedActivityTask63, mTab1, tabAtIndex, INSTANCE_ID_1);
 
         // Verify moveTabAction and getCurrentInstanceInfo are each called once.
-        verify(mMultiInstanceManager, times(1)).moveTabAction(any(), eq(mTab1), eq(tabAtIndex));
+        verify(mMultiInstanceManager, times(1))
+                .moveTabAction(any(), eq(mTab1), eq(tabAtIndex), anyInt(), eq(true));
         verify(mMultiInstanceManager, times(1)).getInstanceInfoFor(any());
     }
 
@@ -1151,13 +1154,15 @@ public class MultiInstanceManagerApi31UnitTest {
                                 INSTANCE_ID_1, TASK_ID_62, List.of(mTab1, mTab2, mTab3)));
         Mockito.doNothing()
                 .when(multiInstanceManager)
-                .moveTabAction(any(), eq(mTab2), eq(tabAtIndex));
+                .moveTabAction(any(), eq(mTab2), eq(tabAtIndex), anyInt(), eq(false));
 
         // Action
-        multiInstanceManager.moveTabToWindow(mTabbedActivityTask62, mTab2, tabAtIndex);
+        multiInstanceManager.moveTabToWindow(
+                mTabbedActivityTask62, mTab2, tabAtIndex, INSTANCE_ID_1);
 
         // Verify moveTabAction is not called.
-        verify(multiInstanceManager, times(0)).moveTabAction(any(), eq(mTab2), eq(tabAtIndex));
+        verify(multiInstanceManager, times(0))
+                .moveTabAction(any(), eq(mTab2), eq(tabAtIndex), anyInt(), eq(false));
     }
 
     @Test
@@ -1172,7 +1177,7 @@ public class MultiInstanceManagerApi31UnitTest {
 
         // Action
         InstanceInfo info = mMultiInstanceManager.getInstanceInfoFor(mTabbedActivityTask63);
-        mMultiInstanceManager.moveTabAction(info, mTab1, /* atIndex= */ 0);
+        mMultiInstanceManager.moveTabAction(info, mTab1, /* atIndex= */ 0, INSTANCE_ID_1, true);
 
         // Verify reparentTabToRunningActivity is called once.
         verify(mMultiInstanceManager, times(1))
@@ -1218,7 +1223,7 @@ public class MultiInstanceManagerApi31UnitTest {
                         0,
                         false);
 
-        mMultiInstanceManager.moveTabAction(info, mTab1, /* atIndex= */ 0);
+        mMultiInstanceManager.moveTabAction(info, mTab1, /* atIndex= */ 0, INSTANCE_ID_1, true);
 
         // Verify moveAndReparentTabToNewWindow is called made with desired parameters once. The
         // method is validated in integration test here

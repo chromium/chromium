@@ -370,15 +370,19 @@ public class TabDragSource implements View.OnDragListener {
                     DragDropTabResult.IGNORED_DIFF_MODEL_NOT_SUPPORTED);
             return false;
         }
+        int sourceInstanceId =
+                DragDropGlobalState.getState(sDragTrackerToken).getDragSourceInstance();
         if (!tabDraggedBelongToCurrentModel) {
             mMultiInstanceManager.moveTabToWindow(
                     getActivity(),
                     tabBeingDragged,
-                    mTabModelSelector.getModel(tabBeingDragged.isIncognito()).getCount());
+                    mTabModelSelector.getModel(tabBeingDragged.isIncognito()).getCount(),
+                    sourceInstanceId);
             showDroppedDifferentModelToast(mWindowAndroid.getContext().get());
         } else {
             int tabIndex = helper.getTabIndexForTabDrop(dropEvent.getX() * mPxToDp);
-            mMultiInstanceManager.moveTabToWindow(getActivity(), tabBeingDragged, tabIndex);
+            mMultiInstanceManager.moveTabToWindow(
+                    getActivity(), tabBeingDragged, tabIndex, sourceInstanceId);
             helper.mergeToGroupForTabDropIfNeeded(groupRootId, tabBeingDragged.getId(), tabIndex);
         }
         DragDropMetricUtils.recordTabDragDropType(DragDropType.TAB_STRIP_TO_TAB_STRIP);

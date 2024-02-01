@@ -497,7 +497,7 @@ public class MultiInstanceManager
         // Not implemented
     }
 
-    public void moveTabToWindow(Activity activity, Tab tab, int atIndex) {
+    public void moveTabToWindow(Activity activity, Tab tab, int atIndex, int fromWindowInstanceId) {
         // Not implemented
     }
 
