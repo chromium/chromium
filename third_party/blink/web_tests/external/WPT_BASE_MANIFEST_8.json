@@ -335019,7 +335019,7 @@
        []
       ],
       "text-wrap-computed-expected.txt": [
-       "da5494d682139a1e4063e050645a9655605bce96",
+       "f06a6a9ead80b164d56b27a54a02fc669eb9dc3c",
        []
       ],
       "text-wrap-mode-computed-expected.txt": [
@@ -335030,16 +335030,20 @@
        "e4482658da5dc34254e4eb6e1d36b22777a08a33",
        []
       ],
+      "text-wrap-pretty-expected.txt": [
+       "c167bf6492db94669a495bcd99ea79b8be880872",
+       []
+      ],
       "text-wrap-style-computed-expected.txt": [
-       "14b3577f9ace4dece70e107683dc58f6facfef32",
+       "ca9bdc83c298a2ae0e4ecbc66a08ea32542e0716",
        []
       ],
       "text-wrap-style-valid-expected.txt": [
-       "41733090416bb8b7b30d978076cf047f0ec52a02",
+       "eeeec851dab61a07cb6e41b65f6ebdd423482d68",
        []
       ],
       "text-wrap-valid-expected.txt": [
-       "cad3e0ab4a02777b8aaad13a76b5db9832bdf55e",
+       "0d2e318d627aa2215569a70d7d643b658e2eff43",
        []
       ],
       "white-space-invalid-expected.txt": [
@@ -393344,6 +393348,18 @@
     ],
     "OWNERS": [
      "956a3a5fe69d11262639193b6221b26a8fc006cb",
+     []
+    ],
+    "block-string-assignment-to-Document-parseHTMLUnsafe-expected.txt": [
+     "5e5f50e0f7565d00d10edd73b347e13ab64becd5",
+     []
+    ],
+    "block-string-assignment-to-Element-setHTMLUnsafe-expected.txt": [
+     "84c7dbbdadd1749a227b85ab9d47a37304b920a9",
+     []
+    ],
+    "block-string-assignment-to-ShadowRoot-setHTMLUnsafe-expected.txt": [
+     "4b0276a3392c590363bd298a120e0101d0001d07",
      []
     ],
     "default-policy-report-only.html.headers": [
@@ -465609,7 +465625,7 @@
        ]
       ],
       "text-wrap-computed.html": [
-       "772f0abf4d975c04c582a1e36ac9b587a24e954b",
+       "aa9c3c57053db6132704e05adcf1e76f417095aa",
        [
         null,
         {}
@@ -465643,8 +465659,15 @@
         {}
        ]
       ],
+      "text-wrap-pretty.html": [
+       "425d1b9c971239cb24e6916bcb6afcfa3b50ff70",
+       [
+        null,
+        {}
+       ]
+      ],
       "text-wrap-style-computed.html": [
-       "0a4a22d9c5f7c1b4e7e3b7caa3774b32a69f31b6",
+       "14c9f03cf9142656649a471a9ec129007a2af50c",
        [
         null,
         {}
@@ -465658,14 +465681,14 @@
        ]
       ],
       "text-wrap-style-valid.html": [
-       "b3ca09ef2c638bd178af31cc57dcd84003b8976e",
+       "f826bdd2f04d9e56bd47f466a5e0e81043fb9d43",
        [
         null,
         {}
        ]
       ],
       "text-wrap-valid.html": [
-       "a2eed8c429fa1d593ad3883f1d82ff0395d8aa49",
+       "95a855338e01dacd13b8164bc27420e339bac259",
        [
         null,
         {}
@@ -645357,6 +645380,13 @@
       {}
      ]
     ],
+    "block-string-assignment-to-Document-parseHTMLUnsafe.html": [
+     "83dfcda5d9215fa275e7946e9c771584c7300634",
+     [
+      null,
+      {}
+     ]
+    ],
     "block-string-assignment-to-Document-write.html": [
      "974203c1133a43afd87069b41b29ab1e5460a36d",
      [
@@ -645392,6 +645422,13 @@
       {}
      ]
     ],
+    "block-string-assignment-to-Element-setHTMLUnsafe.html": [
+     "34975f9d6883eccb8763dc781b03bc9e70614a42",
+     [
+      null,
+      {}
+     ]
+    ],
     "block-string-assignment-to-HTMLElement-generic.html": [
      "9e780c1ed23dccb92ea10eaa83613422a9e59a77",
      [
@@ -645401,6 +645438,13 @@
     ],
     "block-string-assignment-to-Range-createContextualFragment.html": [
      "79111204934e689d2ce56fbb010cc3b261537c6b",
+     [
+      null,
+      {}
+     ]
+    ],
+    "block-string-assignment-to-ShadowRoot-setHTMLUnsafe.html": [
+     "a76543b3f68c7e7ba9e516f7b13540a9017b8a65",
      [
       null,
       {}
