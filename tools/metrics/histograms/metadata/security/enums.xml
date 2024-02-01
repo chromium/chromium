@@ -57,7 +57,7 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="Device exists"/>
   <int value="1" label="New valid device"/>
   <int value="2" label="Device ID missing"/>
-  <int value="3" label="Device ID invalid"/>
+  <int value="3" label="[Deprecated] Device ID invalid"/>
   <int value="4" label="Device name missing"/>
   <int value="5" label="Device name invalid"/>
 </enum>

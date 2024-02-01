@@ -19,36 +19,6 @@
 #include "services/network/public/mojom/url_loader_network_service_observer.mojom.h"
 #include "third_party/re2/src/re2/re2.h"
 
-namespace {
-
-bool IsMacAddress(const std::string& value) {
-  // The length of the string should be 6 bytes * 2 digit + 5 semicolon = 17.
-  constexpr int kStringLength = 17;
-
-  if (value.size() != kStringLength) {
-    return false;
-  }
-
-  // The character at index (3n + 2) should be ':'.
-  for (int i = 0; i < kStringLength; i++) {
-    char v = value[i];
-    if (i % 3 == 2) {
-      if (v != ':') {
-        return false;
-      }
-      continue;
-    }
-    if (!((v >= '0' && v <= '9') || (v >= 'a' && v <= 'f') ||
-          (v >= 'A' && v <= 'F'))) {
-      return false;
-    }
-  }
-
-  return true;
-}
-
-}  // namespace
-
 ChromePrivateNetworkDeviceDelegate::ChromePrivateNetworkDeviceDelegate() =
     default;
 ChromePrivateNetworkDeviceDelegate::~ChromePrivateNetworkDeviceDelegate() =
@@ -71,15 +41,13 @@ void ChromePrivateNetworkDeviceDelegate::RequestPermission(
 bool ChromePrivateNetworkDeviceDelegate::CheckDevice(
     const blink::mojom::PrivateNetworkDevice& device,
     content::RenderFrameHost& frame) {
-  // Check if `Private-Network-Access-ID` is valid.
-  if (!device.id.has_value() || !IsMacAddress(device.id.value())) {
+  // Check if `Private-Network-Access-ID` is missing.
+  if (!device.id.has_value()) {
     base::UmaHistogramEnumeration(
         kPrivateNetworkDeviceValidityHistogramName,
-        device.id.has_value() ? PrivateNetworkDeviceValidity::kDeviceIDInvalid
-                              : PrivateNetworkDeviceValidity::kDeviceIDMissing);
+        PrivateNetworkDeviceValidity::kDeviceIDMissing);
     frame.AddMessageToConsole(blink::mojom::ConsoleMessageLevel::kWarning,
-                              "`Private-Network-Access-ID` is invalid. Please "
-                              "use device's Mac Address.");
+                              "`Private-Network-Access-ID` is missing.");
     return false;
   }
 
