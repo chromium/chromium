@@ -576,7 +576,6 @@ public class WebsitePermissionsFetcherTest {
 
     @Test
     @SmallTest
-    @EnableFeatures(PermissionsAndroidFeatureList.BLOCK_MIDI_BY_DEFAULT)
     public void testFetchAllPreferencesForSingleOrigin() {
         WebsitePermissionsFetcher fetcher =
                 new WebsitePermissionsFetcher(UNUSED_BROWSER_CONTEXT_HANDLE);
@@ -600,13 +599,6 @@ public class WebsitePermissionsFetcherTest {
         websitePreferenceBridge.addPermissionInfo(
                 new PermissionInfo(
                         ContentSettingsType.GEOLOCATION,
-                        ORIGIN,
-                        SITE_WILDCARD,
-                        /* isEmbargoed= */ false,
-                        SessionModel.DURABLE));
-        websitePreferenceBridge.addPermissionInfo(
-                new PermissionInfo(
-                        ContentSettingsType.MIDI,
                         ORIGIN,
                         SITE_WILDCARD,
                         /* isEmbargoed= */ false,
@@ -815,7 +807,6 @@ public class WebsitePermissionsFetcherTest {
                     Assert.assertNotNull(site.getPermissionInfo(ContentSettingsType.GEOLOCATION));
                     Assert.assertNotNull(
                             site.getPermissionInfo(ContentSettingsType.IDLE_DETECTION));
-                    Assert.assertNotNull(site.getPermissionInfo(ContentSettingsType.MIDI));
                     Assert.assertNotNull(site.getPermissionInfo(ContentSettingsType.MIDI_SYSEX));
                     Assert.assertNotNull(
                             site.getPermissionInfo(ContentSettingsType.PROTECTED_MEDIA_IDENTIFIER));

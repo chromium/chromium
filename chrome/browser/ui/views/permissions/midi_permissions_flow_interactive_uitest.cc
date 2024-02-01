@@ -103,7 +103,7 @@ IN_PROC_BROWSER_TEST_F(MidiPermissionsFlowInteractiveUITest, PermissionPrompt) {
           &PermissionPromptBubbleBaseView::GetPermissionFragmentForTesting,
           l10n_util::GetStringFUTF16(
               IDS_PERMISSIONS_BUBBLE_PROMPT_ACCESSIBLE_TITLE_ONE_PERM, u"",
-              l10n_util::GetStringUTF16(IDS_MIDI_PERMISSION_FRAGMENT))));
+              l10n_util::GetStringUTF16(IDS_MIDI_SYSEX_PERMISSION_FRAGMENT))));
 }
 
 // Display MIDI permission state in page info when denied.
