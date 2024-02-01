@@ -610,9 +610,11 @@ void MaybeRegisterChromeFeaturePromos(
                     .SetBubbleArrow(HelpBubbleArrow::kTopLeft)));
 
   // kIPHTabSearchFeature:
-  registry.RegisterFeature(FeaturePromoSpecification::CreateForLegacyPromo(
-      &feature_engagement::kIPHTabSearchFeature, kTabSearchButtonElementId,
-      IDS_TAB_SEARCH_PROMO));
+  registry.RegisterFeature(std::move(
+      FeaturePromoSpecification::CreateForLegacyPromo(
+          &feature_engagement::kIPHTabSearchFeature, kTabSearchButtonElementId,
+          IDS_TAB_SEARCH_PROMO)
+          .SetBubbleArrow(user_education::HelpBubbleArrow::kTopLeft)));
 
   // Tracking Protection Offboarding IPH
   registry.RegisterFeature(std::move(
