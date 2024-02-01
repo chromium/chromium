@@ -252,7 +252,6 @@ static_library("test_support") {
     deps += [
       "base/chromeos/crosier/helper:common",
       "//chromeos/dbus/power:power_manager_proto",
-      "//chromeos/dbus/power:test_support",
     ]
   }
 
