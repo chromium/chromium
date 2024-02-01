@@ -17,8 +17,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
-#include "components/signin/public/identity_manager/access_token_info.h"
-#include "components/signin/public/identity_manager/primary_account_access_token_fetcher.h"
+#include "components/trusted_vault/trusted_vault_connection.h"
 #include "content/public/browser/authenticator_request_client_delegate.h"
 #include "content/public/browser/global_routing_id.h"
 #include "device/fido/cable/cable_discovery_data.h"
@@ -36,18 +35,27 @@ class RenderFrameHost;
 }  // namespace content
 
 namespace device {
+class FidoAuthenticator;
+class FidoDiscoveryFactory;
 class PublicKeyCredentialDescriptor;
 class PublicKeyCredentialUserEntity;
+enum class FidoRequestType : uint8_t;
+namespace enclave {
+struct CredentialRequest;
+}
 }  // namespace device
+
+namespace signin {
+class PrimaryAccountAccessTokenFetcher;
+}  // namespace signin
+
+namespace sync_pb {
+class WebauthnCredentialSpecifics;
+}
 
 namespace user_prefs {
 class PrefRegistrySyncable;
 }
-
-namespace device {
-class FidoAuthenticator;
-class FidoDiscoveryFactory;
-}  // namespace device
 
 // ChromeWebAuthenticationDelegate is the //chrome layer implementation of
 // content::WebAuthenticationDelegate.
@@ -215,6 +223,7 @@ class ChromeAuthenticatorRequestDelegate
   // AuthenticatorRequestDialogModel::Observer:
   void OnStartOver() override;
   void OnModelDestroyed(AuthenticatorRequestDialogModel* model) override;
+  void OnStepTransition() override;
   void OnCancelRequest() override;
   void OnManageDevicesClicked() override;
 
@@ -252,6 +261,27 @@ class ChromeAuthenticatorRequestDelegate
   // Called each time `enclave_manager_` has finished processing all pending
   // actions.
   void OnEnclaveManagerIdle();
+
+  // Called when the user selects an account from modal or conditional UI.
+  // Stores the credential ID in `preselected_cred_id_` then forwards to the
+  // `AccountPreselectedCallback` that was passed to
+  // `RegisterActionCallbacks`.
+  void OnAccountPreselected(device::PublicKeyCredentialDescriptor);
+
+  // Called to start fetching the state of the primary account from the
+  // trusted vault service.
+  void DownloadAccountState();
+
+  // Called when the state of the trusted vault has been determined by
+  // `DownloadAccountState`.
+  void OnAccountStateDownloaded(
+      std::unique_ptr<trusted_vault::TrustedVaultConnection> unused,
+      trusted_vault::DownloadAuthenticationFactorsRegistrationStateResult
+          result);
+
+  // Called when the UI has reached a state where it needs to do an enclave
+  // operation and an OAuth token for the enclave has been fetched.
+  void StartEnclaveTransaction(std::optional<std::string> token);
 
   // ShouldPermitCableExtension returns true if the given |origin| may set a
   // caBLE extension. This extension contains website-chosen BLE pairing
@@ -357,9 +387,29 @@ class ChromeAuthenticatorRequestDelegate
   std::unique_ptr<device::FidoRequestHandlerBase::TransportAvailabilityInfo>
       pending_transport_availability_info_;
 
-  // Fetcher for OAuth access tokens needed to use the enclave authenticator.
+  absl::optional<device::FidoRequestType> request_type_;
+
+  // The set of pertinent synced passkeys for this request. Persisted here
+  // so that a consistent set of passkeys is used throughout the transaction.
+  absl::optional<std::vector<sync_pb::WebauthnCredentialSpecifics>>
+      gpm_credentials_;
+
+  // The pending request to fetch the state of the trusted vault.
+  std::unique_ptr<trusted_vault::TrustedVaultConnection::Request>
+      download_account_state_request_;
+
+  // The pending request to fetch an OAuth token for the enclave request.
   std::unique_ptr<signin::PrimaryAccountAccessTokenFetcher>
       access_token_fetcher_;
+
+  // The callback used to trigger a request to the enclave.
+  base::RepeatingCallback<void(
+      std::unique_ptr<device::enclave::CredentialRequest>)>
+      enclave_request_callback_;
+
+  // The credential ID of the last credential to be selected by the user in
+  // modal or conditional UI.
+  std::optional<std::vector<uint8_t>> preselected_cred_id_;
 
   base::WeakPtrFactory<ChromeAuthenticatorRequestDelegate> weak_ptr_factory_{
       this};
