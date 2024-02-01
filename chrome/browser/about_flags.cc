@@ -4610,11 +4610,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kPullToRefreshDescription, kOsAura,
      MULTI_VALUE_TYPE(kPullToRefreshChoices)},
 #endif  // USE_AURA
-    {"overscroll-history-navigation-setting",
-     flag_descriptions::kOverscrollHistoryNavigationSettingName,
-     flag_descriptions::kOverscrollHistoryNavigationSettingDescription,
-     kOsDesktop,
-     FEATURE_VALUE_TYPE(features::kOverscrollHistoryNavigationSetting)},
     {"enable-touch-drag-drop", flag_descriptions::kTouchDragDropName,
      flag_descriptions::kTouchDragDropDescription, kOsWin | kOsCrOS,
      ENABLE_DISABLE_VALUE_TYPE(switches::kEnableTouchDragDrop,

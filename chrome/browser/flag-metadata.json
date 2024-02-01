@@ -6276,11 +6276,6 @@
     "expiry_milestone": 118
   },
   {
-    "name": "overscroll-history-navigation-setting",
-    "owners": [ "charlesmeng@chromium.org" ],
-    "expiry_milestone": 122
-  },
-  {
     // Suggests the Ozone platform to use (desktop Linux only).  Can be set on
     // chrome://flags.  See https://crbug.com/1246928.
     "name": "ozone-platform-hint",

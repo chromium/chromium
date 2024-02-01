@@ -2707,11 +2707,6 @@ const char kOverlayStrategiesOccludedAndUnoccluded[] =
 const char kOverscrollHistoryNavigationName[] = "Overscroll history navigation";
 const char kOverscrollHistoryNavigationDescription[] =
     "History navigation in response to horizontal overscroll.";
-const char kOverscrollHistoryNavigationSettingName[] =
-    "Overscroll history navigation setting";
-const char kOverscrollHistoryNavigationSettingDescription[] =
-    "Whether to show a setting in chrome://settings/accessibility that "
-    "controls whether horizontal overscroll triggers history navigation.";
 
 const char kOverviewButtonName[] = "Overview button at the status area";
 const char kOverviewButtonDescription[] =
