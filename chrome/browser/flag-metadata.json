@@ -7791,6 +7791,11 @@
     "expiry_milestone": 130
   },
   {
+    "name": "tab-grid-always-bounce",
+    "owners": [ "lpromero@google.com", "bling-flags@google.com" ],
+    "expiry_milestone": 130
+  },
+  {
     "name": "tab-grid-compositional-layout",
     "owners": [ "lpromero@chromium.org", "bling-flags@google.com" ],
     "expiry_milestone": 130

@@ -1630,6 +1630,9 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableiPadFeedGhostCardsName,
      flag_descriptions::kEnableiPadFeedGhostCardsDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kEnableiPadFeedGhostCards)},
+    {"tab-grid-always-bounce", flag_descriptions::kTabGridAlwaysBounceName,
+     flag_descriptions::kTabGridAlwaysBounceDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kTabGridAlwaysBounce)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {
