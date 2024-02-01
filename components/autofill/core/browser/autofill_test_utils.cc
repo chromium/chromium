@@ -590,6 +590,8 @@ std::vector<CardUnmaskChallengeOption> GetCardUnmaskChallengeOptions(
             /*challenge_info=*/u"a******b@google.com",
             /*challenge_input_length=*/6U);
         break;
+      case CardUnmaskChallengeOptionType::kThreeDomainSecure:
+        // TODO(crbug.com/1521960): Add kThreeDomainSecure logic.
       default:
         NOTREACHED();
         break;

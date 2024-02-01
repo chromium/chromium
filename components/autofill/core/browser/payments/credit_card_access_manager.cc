@@ -1461,6 +1461,8 @@ void CreditCardAccessManager::OnUserAcceptedAuthenticationSelectionDialog(
               ? UnmaskAuthFlowType::kOtpFallbackFromFido
               : UnmaskAuthFlowType::kOtp;
       break;
+    case CardUnmaskChallengeOptionType::kThreeDomainSecure:
+      // TODO(crbug.com/1521960): Set the UnmaskAuthFlowType.
     case CardUnmaskChallengeOptionType::kUnknownType:
       NOTREACHED();
       break;

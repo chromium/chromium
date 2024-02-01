@@ -185,12 +185,13 @@ TEST_F(UnmaskCardRequestTest, ContextTokenAndPanNotReturned) {
 
 // Params of the VirtualCardUnmaskCardRequestTest:
 // -- autofill::CardUnmaskChallengeOptionType challenge_option_type
+// -- bool autofill_enable_3ds_for_vcn_yellow_path
 // TODO(crbug.com/1430297): Extend this texting fixture to test the OTP cases as
 // well.
 class VirtualCardUnmaskCardRequestTest
     : public UnmaskCardRequestTest,
       public testing::WithParamInterface<
-          autofill::CardUnmaskChallengeOptionType> {
+          std::tuple<autofill::CardUnmaskChallengeOptionType, bool>> {
  public:
   VirtualCardUnmaskCardRequestTest() {
     if (IsCvcChallengeOption()) {
@@ -204,7 +205,12 @@ class VirtualCardUnmaskCardRequestTest
   ~VirtualCardUnmaskCardRequestTest() override = default;
 
   bool IsCvcChallengeOption() {
-    return GetParam() == autofill::CardUnmaskChallengeOptionType::kCvc;
+    return std::get<0>(GetParam()) ==
+           autofill::CardUnmaskChallengeOptionType::kCvc;
+  }
+
+  bool IsAutofillEnable3dsForVcnYellowPathTurnedOn() {
+    return std::get<1>(GetParam());
   }
 
  private:
@@ -273,6 +279,10 @@ TEST_P(VirtualCardUnmaskCardRequestTest,
 
 TEST_P(VirtualCardUnmaskCardRequestTest,
        ChallengeOptionsReturned_ParseResponse) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatureState(
+      features::kAutofillEnableVcn3dsAuthentication,
+      /*enabled=*/IsAutofillEnable3dsForVcnYellowPathTurnedOn());
   std::optional<base::Value> response = base::JSONReader::Read(
       "{\"fido_request_options\": {\"challenge\": \"fake_fido_challenge\"}, "
       "\"context_token\": \"fake_context_token\", \"idv_challenge_options\": "
@@ -288,7 +298,10 @@ TEST_P(VirtualCardUnmaskCardRequestTest,
       "{\"challenge_id\": \"fake_challenge_id_5\", \"masked_email_address\": "
       "\"a******b@google.com\"}}, {\"email_otp_challenge_option\": "
       "{\"challenge_id\": \"fake_challenge_id_6\", \"masked_email_address\": "
-      "\"c******d@google.com\", \"otp_length\": 4}}]}");
+      "\"c******d@google.com\", \"otp_length\": 4}}, "
+      "{\"redirect_challenge_option\": "
+      "{\"challenge_id\": \"fake_challenge_id_7\", \"redirect_url\": "
+      "\"https://example.com/\"}}]}");
   ASSERT_TRUE(response.has_value());
   GetRequest()->ParseResponse(response->GetDict());
 
@@ -298,10 +311,15 @@ TEST_P(VirtualCardUnmaskCardRequestTest,
   // Verify the FIDO request challenge is correctly parsed.
   EXPECT_EQ("fake_fido_challenge",
             *response_details.fido_request_options->FindString("challenge"));
-  // Verify the six challenge options are two SMS OTP challenge options, two
-  // email OTP challenge options and two CVC challenge option, and fields can be
+
+  // Verify the six (or seven, if 3DS is enabled) challenge options are two SMS
+  // OTP challenge options, two CVC challenge options, two email OTP challenge
+  // options, one 3ds challenge option if 3DS is enabled and fields can be
   // correctly parsed.
-  ASSERT_EQ(6u, response_details.card_unmask_challenge_options.size());
+  const size_t expected_number_challenges =
+      IsAutofillEnable3dsForVcnYellowPathTurnedOn() ? 7u : 6u;
+  ASSERT_EQ(expected_number_challenges,
+            response_details.card_unmask_challenge_options.size());
 
   const CardUnmaskChallengeOption& challenge_option_1 =
       response_details.card_unmask_challenge_options[0];
@@ -348,6 +366,15 @@ TEST_P(VirtualCardUnmaskCardRequestTest,
   EXPECT_EQ("fake_challenge_id_6", challenge_option_6.id.value());
   EXPECT_EQ(u"c******d@google.com", challenge_option_6.challenge_info);
   EXPECT_EQ(4u, challenge_option_6.challenge_input_length);
+
+  if (IsAutofillEnable3dsForVcnYellowPathTurnedOn()) {
+    const CardUnmaskChallengeOption& challenge_option_7 =
+        response_details.card_unmask_challenge_options[6];
+    EXPECT_EQ(CardUnmaskChallengeOptionType::kThreeDomainSecure,
+              challenge_option_7.type);
+    EXPECT_EQ("fake_challenge_id_7", challenge_option_7.id.value());
+    EXPECT_EQ(GURL("https://example.com/"), challenge_option_7.url_to_open);
+  }
 }
 
 TEST_P(VirtualCardUnmaskCardRequestTest, IsRetryableFailure) {
@@ -396,6 +423,8 @@ TEST_P(VirtualCardUnmaskCardRequestTest, IsRetryableFailure) {
 INSTANTIATE_TEST_SUITE_P(
     ,
     VirtualCardUnmaskCardRequestTest,
-    testing::Values(autofill::CardUnmaskChallengeOptionType::kCvc));
+    testing::Combine(
+        testing::Values(autofill::CardUnmaskChallengeOptionType::kCvc),
+        testing::Bool()));
 
 }  // namespace autofill::payments

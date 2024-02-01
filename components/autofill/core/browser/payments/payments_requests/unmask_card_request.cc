@@ -17,6 +17,7 @@
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "url/gurl.h"
 
 namespace autofill {
 namespace payments {
@@ -38,6 +39,28 @@ const char kUnmaskCardRequestFormatWithOtp[] =
 
 constexpr size_t kDefaultOtpLength = 6U;
 constexpr size_t kDefaultCvcLength = 3U;
+
+// Parses the `defined_challenge_option` as a 3ds challenge option, and sets the
+// appropriate fields in `parsed_challenge_option`.
+void ParseAs3dsChallengeOption(
+    const base::Value::Dict* defined_challenge_option,
+    CardUnmaskChallengeOption* parsed_challenge_option) {
+  parsed_challenge_option->type =
+      CardUnmaskChallengeOptionType::kThreeDomainSecure;
+
+  const auto* challenge_id =
+      defined_challenge_option->FindString("challenge_id");
+  if (challenge_id) {
+    parsed_challenge_option->id =
+        CardUnmaskChallengeOption::ChallengeOptionId(*challenge_id);
+  }
+
+  const auto* url_to_open =
+      defined_challenge_option->FindString("redirect_url");
+  if (url_to_open) {
+    parsed_challenge_option->url_to_open = GURL(*url_to_open);
+  }
+}
 
 // Parses the `defined_challenge_option` as an  OTP challenge option, and sets
 // the appropriate fields in `parsed_challenge_option`.
@@ -165,6 +188,16 @@ CardUnmaskChallengeOption ParseCardUnmaskChallengeOption(
   else if ((defined_challenge_option =
                 challenge_option.FindDict("cvc_challenge_option"))) {
     ParseAsCvcChallengeOption(defined_challenge_option,
+                              &parsed_challenge_option);
+  }
+  // Check if it's a 3ds challenge option, and if it is, set
+  // `defined_challenge_option` to the defined challenge option found, parse the
+  // challenge option, and return it.
+  else if ((defined_challenge_option =
+                challenge_option.FindDict("redirect_challenge_option")) &&
+           base::FeatureList::IsEnabled(
+               features::kAutofillEnableVcn3dsAuthentication)) {
+    ParseAs3dsChallengeOption(defined_challenge_option,
                               &parsed_challenge_option);
   }
 

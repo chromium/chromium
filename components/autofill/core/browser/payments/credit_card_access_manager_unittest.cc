@@ -503,6 +503,8 @@ class CreditCardAccessManagerTest : public testing::Test {
             otp_authenticator_->selected_challenge_option().challenge_info,
             u"a******b@google.com");
         break;
+      case CardUnmaskChallengeOptionType::kThreeDomainSecure:
+        // TODO(crbug.com/1521960): Add kThreeDomainSecure logic.
       case CardUnmaskChallengeOptionType::kUnknownType:
         NOTREACHED();
         break;
@@ -3737,6 +3739,8 @@ TEST_F(CreditCardAccessManagerTest,
                 .with_cvc(u"123"));
         break;
       }
+      case CardUnmaskChallengeOptionType::kThreeDomainSecure:
+      // TODO(crbug.com/1521960): Add kThreeDomainSecure logic.
       case CardUnmaskChallengeOptionType::kEmailOtp:
       case CardUnmaskChallengeOptionType::kUnknownType:
         NOTREACHED();
