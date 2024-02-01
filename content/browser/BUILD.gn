@@ -741,6 +741,7 @@ source_set("browser") {
     "compute_pressure/pressure_service_base.h",
     "compute_pressure/pressure_service_for_frame.cc",
     "compute_pressure/pressure_service_for_frame.h",
+    "compute_pressure/pressure_service_for_worker.cc",
     "compute_pressure/pressure_service_for_worker.h",
     "contacts/contacts_manager_impl.cc",
     "contacts/contacts_manager_impl.h",
