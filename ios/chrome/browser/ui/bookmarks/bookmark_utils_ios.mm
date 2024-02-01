@@ -17,6 +17,7 @@
 #import "base/containers/contains.h"
 #import "base/containers/flat_map.h"
 #import "base/hash/hash.h"
+#import "base/i18n/message_formatter.h"
 #import "base/i18n/string_compare.h"
 #import "base/memory/raw_ptr.h"
 #import "base/metrics/user_metrics.h"
@@ -42,6 +43,7 @@
 #import "ios/chrome/browser/bookmarks/model/bookmarks_utils.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
+#import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/ui/bookmarks/undo_manager_wrapper.h"
 #import "ios/chrome/browser/ui/ntp/metrics/home_metrics.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -271,15 +273,101 @@ bool UpdateBookmark(const BookmarkNode* node,
   return true;
 }
 
+bool bookmarkSavedIntoAccountWithStorageType(
+    bookmarks::StorageType storageType,
+    base::WeakPtr<AuthenticationService> authenticationService,
+    raw_ptr<syncer::SyncService> syncService) {
+  // TODO(crbug.com/1462552): Simplify once kSync becomes unreachable or is
+  // deleted from the codebase. See ConsentLevel::kSync documentation for
+  // details.
+  BOOL hasSyncConsent =
+      authenticationService->HasPrimaryIdentity(signin::ConsentLevel::kSync);
+  BOOL savedIntoAccount =
+      (storageType == bookmarks::StorageType::kAccount) ||
+      (hasSyncConsent && syncService->GetUserSettings()->GetSelectedTypes().Has(
+                             syncer::UserSelectableType::kBookmarks));
+  return savedIntoAccount;
+}
+
+NSString* messageForAddingBookmarksInFolder(
+    NSString* folderTitle,
+    bool chosenByUser,
+    bookmarks::StorageType storageType,
+    int count,
+    base::WeakPtr<AuthenticationService> authenticationService,
+    raw_ptr<syncer::SyncService> syncService) {
+  CHECK(folderTitle);
+  id<SystemIdentity> identity =
+      authenticationService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
+  BOOL savedIntoAccount = bookmarkSavedIntoAccountWithStorageType(
+      storageType, authenticationService, syncService);
+  if (savedIntoAccount) {
+    // Tell the user the bookmark is synced in their account.
+    CHECK(identity);
+    std::u16string email = base::SysNSStringToUTF16(identity.userEmail);
+    if (chosenByUser) {
+      // Also mentions the folder in which the bookmark is saved.
+      std::u16string title = base::SysNSStringToUTF16(folderTitle);
+      std::u16string pattern = l10n_util::GetStringUTF16(
+          IDS_IOS_BOOKMARK_PAGE_SAVED_INTO_ACCOUNT_FOLDER);
+      return base::SysUTF16ToNSString(
+          base::i18n::MessageFormatter::FormatWithNamedArgs(
+              pattern, "count", count, "title", title, "email", email));
+    } else {
+      std::u16string pattern =
+          l10n_util::GetStringUTF16(IDS_IOS_BOOKMARK_PAGE_SAVED_INTO_ACCOUNT);
+      return base::SysUTF16ToNSString(
+          base::i18n::MessageFormatter::FormatWithNamedArgs(
+              pattern, "count", count, "email", email));
+    }
+  }
+
+  if (identity) {
+    BOOL syncingBookmark =
+        syncService->GetUserSettings()->GetSelectedTypes().Has(
+            syncer::UserSelectableType::kBookmarks);
+    if (syncingBookmark) {
+      // The user is signed-in, and syncing bookmark, but default bookmark
+      // account is on a local folder.
+      CHECK(chosenByUser);
+      std::u16string title = base::SysNSStringToUTF16(folderTitle);
+      std::u16string pattern = l10n_util::GetStringUTF16(
+          IDS_IOS_BOOKMARK_PAGE_SAVED_FOLDER_TO_DEVICE);
+      std::u16string message =
+          base::i18n::MessageFormatter::FormatWithNamedArgs(
+              pattern, "count", count, "title", title);
+      return base::SysUTF16ToNSString(message);
+    }
+    // Bookmark syncing is disabled. This case is similar to the signed-out case
+    // below.
+  }
+  // The user is signed-out.
+  if (chosenByUser) {
+    std::u16string title = base::SysNSStringToUTF16(folderTitle);
+    std::u16string pattern =
+        l10n_util::GetStringUTF16(IDS_IOS_BOOKMARK_PAGE_SAVED_FOLDER);
+    return base::SysUTF16ToNSString(
+        base::i18n::MessageFormatter::FormatWithNamedArgs(
+            pattern, "count", count, "title", title));
+  } else {
+    return base::SysUTF16ToNSString(
+        l10n_util::GetPluralStringFUTF16(IDS_IOS_BOOKMARKS_BULK_SAVED, count));
+  }
+}
+
 MDCSnackbarMessage* UpdateBookmarkWithUndoToast(
     const BookmarkNode* node,
     NSString* title,
     const GURL& url,
+    const BookmarkNode* original_folder,
     const BookmarkNode* folder,
     bookmarks::BookmarkModel* local_or_syncable_model,
     bookmarks::BookmarkModel* account_model,
-    ChromeBrowserState* browser_state) {
+    ChromeBrowserState* browser_state,
+    base::WeakPtr<AuthenticationService> authenticationService,
+    raw_ptr<syncer::SyncService> syncService) {
   CHECK(node);
+
   // Secondly, create an Undo group for all undoable actions.
   UndoManagerWrapper* wrapper =
       [[UndoManagerWrapper alloc] initWithBrowserState:browser_state];
@@ -296,9 +384,17 @@ MDCSnackbarMessage* UpdateBookmarkWithUndoToast(
   if (!did_change_anything) {
     return nil;
   }
+  NSString* text = nil;
+  if (original_folder == folder) {
+    text = l10n_util::GetNSString(IDS_IOS_BOOKMARK_NEW_BOOKMARK_UPDATED);
+  } else {
+    text = messageForAddingBookmarksInFolder(
+        title, /*chosenByUser =*/true,
+        GetBookmarkModelType(folder, local_or_syncable_model, account_model),
+        /*count=*/1, authenticationService, syncService);
+  }
   return CreateUndoToastWithWrapper(
-      wrapper, l10n_util::GetNSString(IDS_IOS_BOOKMARK_NEW_BOOKMARK_UPDATED),
-      "MobileBookmarkManagerUpdatedBookmarkUndone");
+      wrapper, text, "MobileBookmarkManagerUpdatedBookmarkUndone");
 }
 
 MDCSnackbarMessage* CreateBookmarkAtPositionWithUndoToast(

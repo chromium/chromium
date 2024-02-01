@@ -28,17 +28,11 @@
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity_manager.h"
+#import "ios/chrome/browser/sync/model/sync_service_factory.h"
+#import "ios/chrome/browser/ui/bookmarks/bookmark_utils_ios.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "testing/gtest_mac.h"
 #import "ui/base/l10n/l10n_util.h"
-
-@interface BookmarkMediator ()
-- (NSString*)messageForAddingBookmarksInFolder:(NSString*)folderTitle
-                                 choosenByUser:(BOOL)choosenByUser
-                             folderStorageType:
-                                 (bookmarks::StorageType)storageType
-                                         count:(int)count;
-@end
 
 namespace {
 
@@ -239,10 +233,13 @@ TEST_P(BookmarkMediatorUnitTest, TestSnackBarMessage) {
       break;
   }
   NSString* const snackbar_message =
-      [mediator_ messageForAddingBookmarksInFolder:kFolderName
-                                     choosenByUser:folder_was_selected_by_user
-                                 folderStorageType:bookmark_storage_type
-                                             count:bookmark_count];
+      bookmark_utils_ios::messageForAddingBookmarksInFolder(
+          kFolderName, folder_was_selected_by_user, bookmark_storage_type,
+          bookmark_count,
+          AuthenticationServiceFactory::GetForBrowserState(
+              chrome_browser_state_.get())
+              ->GetWeakPtr(),
+          &sync_service_);
   ASSERT_NSEQ(snackbar_message, expected_snackbar_message);
 }
 

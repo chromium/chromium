@@ -9,6 +9,7 @@
 
 #import <Foundation/Foundation.h>
 
+class AuthenticationService;
 @protocol BookmarksEditorConsumer;
 @protocol BookmarksEditorMediatorDelegate;
 class ChromeBrowserState;
@@ -52,6 +53,8 @@ class SyncService;
                             bookmarkNode:
                                 (const bookmarks::BookmarkNode*)bookmarkNode
                                    prefs:(PrefService*)prefs
+                   authenticationService:
+                       (AuthenticationService*)authenticationService
                              syncService:(syncer::SyncService*)syncService
                             browserState:(ChromeBrowserState*)browserState
     NS_DESIGNATED_INITIALIZER;
