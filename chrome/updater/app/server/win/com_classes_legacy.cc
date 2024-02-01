@@ -952,13 +952,16 @@ STDMETHODIMP LegacyProcessLauncherImpl::LaunchCmdElevated(
   return S_OK;
 }
 
+// Launches a process at medium integrity.
+// TODO(crbug.com/1523813): the `server_proc_id`, `proc_handle`, and
+// `stdout_handle` provided by the caller are not populated on return, so the
+// caller will not be able to monitor the progress.
 STDMETHODIMP LegacyProcessLauncherImpl::LaunchCmdLineEx(
     const WCHAR* cmd_line,
-    DWORD* server_proc_id,
-    ULONG_PTR* proc_handle,
-    ULONG_PTR* stdout_handle) {
-  LOG(ERROR) << "Reached unimplemented COM method: " << __func__;
-  return E_NOTIMPL;
+    DWORD* /*server_proc_id*/,
+    ULONG_PTR* /*proc_handle*/,
+    ULONG_PTR* /*stdout_handle*/) {
+  return RunDeElevatedCmdLine(cmd_line);
 }
 
 LegacyAppCommandWebImpl::LegacyAppCommandWebImpl()

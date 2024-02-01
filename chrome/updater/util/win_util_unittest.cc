@@ -182,6 +182,29 @@ TEST(WinUtil, RunDeElevated_Exe) {
       [&] { return test::FindProcesses(kTestProcessExecutableName).empty(); }));
 }
 
+TEST(WinUtil, RunDeElevatedCmdLine_Exe) {
+  // Create a shared event to be waited for in this process and signaled in the
+  // test process to confirm that the test process is running at medium
+  // integrity.
+  test::EventHolder event_holder(IsElevatedWithUACOn()
+                                     ? CreateEveryoneWaitableEventForTest()
+                                     : test::CreateWaitableEventForTest());
+  ASSERT_NE(event_holder.event.handle(), nullptr);
+
+  base::CommandLine test_process_cmd_line =
+      GetTestProcessCommandLine(GetTestScope(), test::GetTestName());
+  test_process_cmd_line.AppendSwitchNative(
+      IsElevatedWithUACOn() ? kTestEventToSignalIfMediumIntegrity
+                            : kTestEventToSignal,
+      event_holder.name);
+  EXPECT_HRESULT_SUCCEEDED(
+      RunDeElevatedCmdLine(test_process_cmd_line.GetCommandLineString()));
+  EXPECT_TRUE(event_holder.event.TimedWait(TestTimeouts::action_max_timeout()));
+
+  EXPECT_TRUE(test::WaitFor(
+      [&] { return test::FindProcesses(kTestProcessExecutableName).empty(); }));
+}
+
 TEST(WinUtil, GetOSVersion) {
   std::optional<OSVERSIONINFOEX> rtl_os_version = GetOSVersion();
   ASSERT_NE(rtl_os_version, std::nullopt);
