@@ -463,14 +463,6 @@ TEST_F(VideoResourceUpdaterTest, SoftwareFrameNV12) {
   ExpectedMultiplanarResourceType(resources.type);
 }
 
-TEST_F(VideoResourceUpdaterTest, SoftwareFrameP016_NoR16Support) {
-  std::unique_ptr<VideoResourceUpdater> updater = CreateUpdaterForHardware();
-
-  VideoFrameExternalResources resources =
-      updater->CreateExternalResourcesFromVideoFrame(CreateP016TestFrame());
-  EXPECT_EQ(VideoFrameResourceType::RGBA, resources.type);
-}
-
 // Ensure we end up with the right SharedImageFormat for each resource.
 TEST_F(VideoResourceUpdaterTest, SoftwareFrameRGB) {
   std::unique_ptr<VideoResourceUpdater> updater = CreateUpdaterForHardware();
@@ -618,14 +610,6 @@ class VideoResourceUpdaterTestWithR16 : public VideoResourceUpdaterTest {
     gl_->set_support_texture_norm16(true);
   }
 };
-
-TEST_F(VideoResourceUpdaterTestWithR16, SoftwareFrameP016) {
-  std::unique_ptr<VideoResourceUpdater> updater = CreateUpdaterForHardware();
-
-  VideoFrameExternalResources resources =
-      updater->CreateExternalResourcesFromVideoFrame(CreateP016TestFrame());
-  ExpectedMultiplanarResourceType(resources.type);
-}
 
 TEST_F(VideoResourceUpdaterTestWithR16, HighBitFrame) {
   std::unique_ptr<VideoResourceUpdater> updater = CreateUpdaterForHardware();

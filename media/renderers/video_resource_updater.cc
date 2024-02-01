@@ -444,9 +444,6 @@ viz::SharedImageFormat VideoPixelFormatToMultiPlanarSharedImageFormat(
     case PIXEL_FORMAT_YUV420P12:
       return viz::SharedImageFormat::MultiPlane(
           PlaneConfig::kY_U_V, Subsampling::k420, ChannelFormat::k16);
-    case PIXEL_FORMAT_P016LE:
-      return viz::SharedImageFormat::MultiPlane(
-          PlaneConfig::kY_UV, Subsampling::k420, ChannelFormat::k16);
     case PIXEL_FORMAT_YUV422P12:
       return viz::SharedImageFormat::MultiPlane(
           PlaneConfig::kY_U_V, Subsampling::k422, ChannelFormat::k16);
@@ -458,6 +455,7 @@ viz::SharedImageFormat VideoPixelFormatToMultiPlanarSharedImageFormat(
     case PIXEL_FORMAT_I420A:
       return viz::SharedImageFormat::MultiPlane(
           PlaneConfig::kY_U_V_A, Subsampling::k420, ChannelFormat::k8);
+    case PIXEL_FORMAT_P016LE:
     case PIXEL_FORMAT_ARGB:
     case PIXEL_FORMAT_XRGB:
     case PIXEL_FORMAT_ABGR:
@@ -1326,10 +1324,6 @@ viz::SharedImageFormat VideoResourceUpdater::GetSoftwareOutputFormat(
       if (output_si_format != viz::SinglePlaneFormat::kR_8) {
         texture_needs_rgb_conversion_out = true;
       }
-    } else if (input_frame_format == PIXEL_FORMAT_P016LE) {
-      if (output_si_format != viz::SinglePlaneFormat::kR_16) {
-        texture_needs_rgb_conversion_out = true;
-      }
     } else {
       DCHECK_EQ(VideoFrame::BytesPerElement(input_frame_format, 0),
                 VideoFrame::BytesPerElement(input_frame_format, 1));
@@ -1377,9 +1371,6 @@ VideoResourceUpdater::GetSoftwareSubplaneFormat(
     if (input_frame_format == PIXEL_FORMAT_NV12 &&
         output_si_format == viz::SinglePlaneFormat::kR_8) {
       return viz::SinglePlaneFormat::kRG_88;
-    } else if (input_frame_format == PIXEL_FORMAT_P016LE &&
-               output_si_format == viz::SinglePlaneFormat::kR_16) {
-      return viz::SinglePlaneFormat::kRG_1616;
     }
   }
   return std::nullopt;
