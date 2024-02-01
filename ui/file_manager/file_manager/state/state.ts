@@ -3,23 +3,11 @@
 // found in the LICENSE file.
 
 import type {FilesAppEntry} from '../common/js/files_app_entry_types.js';
+import {DialogType} from '../common/js/shared_types.js';
 import {RootType, VolumeType} from '../common/js/volume_manager_types.js';
 import type {MetadataItem} from '../foreground/js/metadata/metadata_item.js';
 
-/**
- * List of dialog types.
- *
- * Keep this in sync with FileManagerDialog::GetDialogTypeAsString, except
- * FULL_PAGE which is specific to this code.
- */
-export enum DialogType {
-  SELECT_FOLDER = 'folder',
-  SELECT_UPLOAD_FOLDER = 'upload-folder',
-  SELECT_SAVEAS_FILE = 'saveas-file',
-  SELECT_OPEN_FILE = 'open-file',
-  SELECT_OPEN_MULTI_FILE = 'open-multi-file',
-  FULL_PAGE = 'full-page',
-}
+export {DialogType} from '../common/js/shared_types.js';
 
 export enum EntryType {
   // Entries from the FileSystem API.

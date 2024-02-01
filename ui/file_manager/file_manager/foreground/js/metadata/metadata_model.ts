@@ -5,6 +5,7 @@
 import type {VolumeManager} from '../../../background/js/volume_manager.js';
 import {entriesToURLs} from '../../../common/js/entry_utils.js';
 import {FilesAppEntry} from '../../../common/js/files_app_entry_types.js';
+import {MetadataStats} from '../../../common/js/shared_types.js';
 import {getStore} from '../../../state/store.js';
 
 import {ContentMetadataProvider} from './content_metadata_provider.js';
@@ -16,25 +17,7 @@ import {MetadataItem, type MetadataKey} from './metadata_item.js';
 import {MetadataProvider} from './metadata_provider.js';
 import {MultiMetadataProvider} from './multi_metadata_provider.js';
 
-/**
- * Stats collected about Metadata handling for tests.
- */
-export class MetadataStats {
-  /** Total of entries fulfilled from cache. */
-  fromCache: number = 0;
-
-  /** Total of entries that requested to backends. */
-  fullFetch: number = 0;
-
-  /** Total of entries that called to invalidate. */
-  invalidateCount: number = 0;
-
-  /** Total of entries that called to clear. */
-  clearCacheCount: number = 0;
-
-  /** Total of calls to function clearAllCache. */
-  clearAllCount: number = 0;
-}
+export {MetadataStats} from '../../../common/js/shared_types.js';
 
 export class MetadataModel {
   private cache_ = new MetadataCacheSet();

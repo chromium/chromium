@@ -4,12 +4,10 @@
 
 import {assertNotReached} from 'chrome://resources/js/assert.js';
 
-/** Paths that can be handled by the dialog opener in native code. */
-export enum AllowedPaths {
-  NATIVE_PATH = 'nativePath',
-  ANY_PATH = 'anyPath',
-  ANY_PATH_OR_URL = 'anyPathOrUrl',
-}
+import {VolumeType} from './shared_types.js';
+
+export {AllowedPaths, VolumeType} from './shared_types.js';
+
 
 /** Type of a file system. */
 export enum FileSystemType {
@@ -181,26 +179,6 @@ export enum VolumeError {
   NEED_PASSWORD = 'need_password',
   CANCELLED = 'cancelled',
   BUSY = 'busy',
-}
-
-/** The type of each volume. */
-export enum VolumeType {
-  TESTING = 'testing',
-  DRIVE = 'drive',
-  DOWNLOADS = 'downloads',
-  REMOVABLE = 'removable',
-  ARCHIVE = 'archive',
-  MTP = 'mtp',
-  PROVIDED = 'provided',
-  MEDIA_VIEW = 'media_view',
-  DOCUMENTS_PROVIDER = 'documents_provider',
-  CROSTINI = 'crostini',
-  GUEST_OS = 'guest_os',
-  ANDROID_FILES = 'android_files',
-  MY_FILES = 'my_files',
-  SMB = 'smb',
-  SYSTEM_INTERNAL = 'system_internal',
-  TRASH = 'trash',
 }
 
 /** Source of each volume's data. */

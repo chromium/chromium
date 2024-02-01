@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {FilesAppState} from '../files_app_state.js';
 import {addEntries, ENTRIES, EntryType, getCaller, getDateWithDayDiff, pending, repeatUntil, RootPath, sendTestMessage, SharedOption, TestEntryInfo} from '../test_util.js';
 import {testcase} from '../testcase.js';
 
@@ -316,10 +315,6 @@ testcase.searchButtonToggles = async () => {
 testcase.searchQueryLaunchParam = async () => {
   // Open Files app with LaunchParam.searchQuery='gdoc'.
   const query = 'gdoc';
-  /** @type {!FilesAppState} */
-  // @ts-ignore: error TS2740: Type '{ searchQuery: string; }' is missing the
-  // following properties from type 'FilesAppState': currentDirectoryURL,
-  // selectionURL, targetName, type, and 5 more.
   const appState = {searchQuery: query};
   const appId = await setupAndWaitUntilReady(
       null, BASIC_LOCAL_ENTRY_SET, BASIC_DRIVE_ENTRY_SET, appState);

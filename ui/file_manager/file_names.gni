@@ -58,6 +58,7 @@ ts_files = [
   "file_manager/common/js/progress_center_common.ts",
   "file_manager/common/js/recent_date_bucket.ts",
   "file_manager/common/js/script_loader.ts",
+  "file_manager/common/js/shared_types.ts",
   "file_manager/common/js/storage.ts",
   "file_manager/common/js/translations.ts",
   "file_manager/common/js/trash.ts",

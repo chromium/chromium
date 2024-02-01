@@ -4,8 +4,8 @@
 
 import {ElementObject} from './element_object.js';
 import {KeyModifiers} from './key_modifiers.js';
+import {VolumeType} from './prod/file_manager/shared_types.js';
 import {getCaller, pending, repeatUntil, sendTestMessage} from './test_util.js';
-import {VolumeManagerCommonVolumeType} from './volume_manager_common_volume_type.js';
 
 /**
  * When step by step tests are enabled, turns on automatic step() calls. Note
@@ -385,7 +385,7 @@ export class RemoteCall {
   /**
    * Gets file entries just under the volume.
    *
-   * @param {VolumeManagerCommonVolumeType} volumeType Volume type.
+   * @param {VolumeType} volumeType Volume type.
    * @param {Array<string>} names File name list.
    * @return {Promise<void>} Promise to be fulfilled with file entries or
    *     rejected depending on the result.
@@ -397,7 +397,7 @@ export class RemoteCall {
 
   /**
    * Waits for a single file.
-   * @param {VolumeManagerCommonVolumeType} volumeType Volume type.
+   * @param {VolumeType} volumeType Volume type.
    * @param {string} name File name.
    * @return {!Promise<void>} Promise to be fulfilled when the file had found.
    */
