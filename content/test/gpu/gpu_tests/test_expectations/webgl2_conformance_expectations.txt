@@ -458,6 +458,8 @@ crbug.com/1073613 [ angle-d3d11 win nvidia-0x2184 ] conformance2/textures/misc/t
 crbug.com/1073613 [ angle-d3d11 win nvidia-0x2184 ] conformance2/textures/misc/tex-mipmap-levels.html [ Failure ]
 crbug.com/1073613 [ angle-d3d11 win nvidia-0x2184 ] deqp/functional/gles3/shadertexturefunction/texturesize.html [ Failure ]
 
+crbug.com/1523814 [ win nvidia-0x2184 nvidia_ge_31.0.15.4601 ] deqp/functional/gles3/texturefiltering/2d_formats_04.html [ RetryOnFailure ]
+
 ## Win / AMD ##
 
 # Recently many tests have become flaky on this configuration, returning
