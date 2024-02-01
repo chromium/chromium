@@ -42,14 +42,12 @@ constexpr std::array<MetadataWriter::UMAFeature, 1> kSearchUserUMAFeatures = {
         kOnlySearch.size()),
 };
 
-constexpr char kUkmInputEnabled[] = "ukm-input-enabled";
-
 #if BUILDFLAG(IS_IOS)
 constexpr UkmEventHash kPageLoadHash = UkmEventHash::FromUnsafeValue(
     ukm::builders::MainFrameNavigation::kEntryNameHash);
 constexpr UkmMetricHash kNavMetricHash = UkmMetricHash::FromUnsafeValue(
     ukm::builders::MainFrameNavigation::kDidCommitNameHash);
-#else
+#elif !BUILDFLAG(IS_CHROMEOS)
 constexpr UkmEventHash kPageLoadHash =
     UkmEventHash::FromUnsafeValue(ukm::builders::PageLoad::kEntryNameHash);
 constexpr UkmMetricHash kNavMetricHash = UkmMetricHash::FromUnsafeValue(
@@ -97,23 +95,24 @@ SearchUserModel::GetModelConfig() {
   writer.AddUmaFeatures(kSearchUserUMAFeatures.data(),
                         kSearchUserUMAFeatures.size());
 
-  if (base::GetFieldTrialParamByFeatureAsBool(
-          features::kSegmentationPlatformSearchUser, kUkmInputEnabled, false)) {
-    std::string query =
-        "SELECT COUNT(id) FROM metrics WHERE metric_hash = '64BD7CCE5A95BF00'";
-    const std::array<UkmMetricHash, 1> kNavigationMetric = {kNavMetricHash};
-    const std::array<MetadataWriter::SqlFeature::EventAndMetrics, 1>
-        kPageLoadEvent{MetadataWriter::SqlFeature::EventAndMetrics{
-            .event_hash = kPageLoadHash,
-            .metrics = kNavigationMetric.data(),
-            .metrics_size = kNavigationMetric.size()}};
+// Segmentation Ukm Engine is disabled on CrOS.
+#if !BUILDFLAG(IS_CHROMEOS)
 
-    MetadataWriter::SqlFeature sql_feature{
-        .sql = query.c_str(),
-        .events = kPageLoadEvent.data(),
-        .events_size = kPageLoadEvent.size()};
-    writer.AddSqlFeature(sql_feature);
-  }
+  std::string query =
+      "SELECT COUNT(id) FROM metrics WHERE metric_hash = '64BD7CCE5A95BF00'";
+  const std::array<UkmMetricHash, 1> kNavigationMetric = {kNavMetricHash};
+  const std::array<MetadataWriter::SqlFeature::EventAndMetrics, 1>
+      kPageLoadEvent{MetadataWriter::SqlFeature::EventAndMetrics{
+          .event_hash = kPageLoadHash,
+          .metrics = kNavigationMetric.data(),
+          .metrics_size = kNavigationMetric.size()}};
+
+  MetadataWriter::SqlFeature sql_feature{.sql = query.c_str(),
+                                         .events = kPageLoadEvent.data(),
+                                         .events_size = kPageLoadEvent.size()};
+  writer.AddSqlFeature(sql_feature);
+
+#endif  //! BUILDFLAG(IS_CHROMEOS)
 
   // Set OutputConfig.
   writer.AddOutputConfigForBinnedClassifier(

@@ -17169,28 +17169,6 @@
             ]
         }
     ],
-    "SegmentationPlatformUkmEngine": [
-        {
-            "platforms": [
-                "android",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "ukm-input-enabled": "true"
-                    },
-                    "enable_features": [
-                        "SegmentationPlatformSearchUser",
-                        "SegmentationPlatformUkmEngine"
-                    ]
-                }
-            ]
-        }
-    ],
     "SegmentationStructuredMetrics": [
         {
             "platforms": [

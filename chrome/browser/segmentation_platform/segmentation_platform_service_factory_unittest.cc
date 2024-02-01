@@ -348,6 +348,8 @@ TEST_F(SegmentationPlatformServiceFactoryTest, TestPasswordManagerUserSegment) {
       std::vector<std::string>(1, "Not_PasswordManagerUser"));
 }
 
+// Segmentation Ukm Engine is disabled on CrOS.
+#if !BUILDFLAG(IS_CHROMEOS)
 TEST_F(SegmentationPlatformServiceFactoryTest, TestSearchUserModel) {
   InitServiceAndCacheResults(kSearchUserKey);
 
@@ -359,6 +361,7 @@ TEST_F(SegmentationPlatformServiceFactoryTest, TestSearchUserModel) {
       /*expected_labels=*/
       std::vector<std::string>(1, kSearchUserModelLabelNone));
 }
+#endif  //! BUILDFLAG(IS_CHROMEOS)
 
 TEST_F(SegmentationPlatformServiceFactoryTest, TestShoppingUserModel) {
   InitServiceAndCacheResults(kShoppingUserSegmentationKey);
@@ -423,6 +426,8 @@ TEST_F(SegmentationPlatformServiceFactoryTest, TestDeviceSwitcherModel) {
       /*expected_labels=*/std::vector<std::string>(1, "NotSynced"));
 }
 
+// Segmentation Ukm Engine is disabled on CrOS.
+#if !BUILDFLAG(IS_CHROMEOS)
 TEST_F(SegmentationPlatformServiceFactoryTest, TabResupmtionRanker) {
   InitService();
 
@@ -439,6 +444,7 @@ TEST_F(SegmentationPlatformServiceFactoryTest, TabResupmtionRanker) {
                                   prediction_options, input_context,
                                   PredictionStatus::kSucceeded);
 }
+#endif  //! BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_ANDROID)
 // Tests for models in android platform.

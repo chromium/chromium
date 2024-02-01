@@ -14,7 +14,12 @@ BASE_FEATURE(kSegmentationPlatformFeature,
 
 BASE_FEATURE(kSegmentationPlatformUkmEngine,
              "SegmentationPlatformUkmEngine",
+
+#if BUILDFLAG(IS_CHROMEOS)
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#else
              base::FEATURE_ENABLED_BY_DEFAULT);
+#endif
 
 BASE_FEATURE(kSegmentationPlatformUserVisibleTaskRunner,
              "SegmentationPlatformUserVisibleTaskRunner",
