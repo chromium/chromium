@@ -120,23 +120,18 @@ IntersectionObserver& DisplayLockDocumentState::EnsureIntersectionObserver() {
     // Paint containment requires using the overflow clip edge. To do otherwise
     // results in overflow-clip-margin not being painted in certain scenarios.
     intersection_observer_ = IntersectionObserver::Create(
-        /* (root) margin */ {Length::Percent(kViewportMarginPercentage)},
-        /* scroll_margin */ Vector<Length>(),
-        /* thresholds */ {std::numeric_limits<float>::min()},
-        /* document */ document_,
-        /* callback */
+        *document_,
         WTF::BindRepeating(
             &DisplayLockDocumentState::ProcessDisplayLockActivationObservation,
             WrapWeakPersistent(this)),
-        /* ukm_metric_id */
         LocalFrameUkmAggregator::kDisplayLockIntersectionObserver,
-        /* behavior */ IntersectionObserver::kDeliverDuringPostLayoutSteps,
-        /* semantics */ IntersectionObserver::kFractionOfTarget,
-        /* delay */ 0,
-        /* track_visibility */ false,
-        /* always report_root_bounds */ false,
-        /* margin_target */ IntersectionObserver::kApplyMarginToTarget,
-        /* use_overflow_clip_edge */ true);
+        IntersectionObserver::Params{
+            .margin = {Length::Percent(kViewportMarginPercentage)},
+            .margin_target = IntersectionObserver::kApplyMarginToTarget,
+            .thresholds = {std::numeric_limits<float>::min()},
+            .behavior = IntersectionObserver::kDeliverDuringPostLayoutSteps,
+            .use_overflow_clip_edge = true,
+        });
   }
   return *intersection_observer_;
 }

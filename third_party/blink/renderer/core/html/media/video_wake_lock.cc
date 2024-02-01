@@ -243,17 +243,14 @@ void VideoWakeLock::StartIntersectionObserver() {
   const auto kDelayMs = 0;
 
   visibility_observer_ = IntersectionObserver::Create(
-      /* (root) margin */ Vector<Length>(),
-      /* scroll_margin */ Vector<Length>(),
-      /* thresholds */ {visibility_threshold_},
-      /* document */ &VideoElement().GetDocument(),
-      /* callback */
+      VideoElement().GetDocument(),
       WTF::BindRepeating(&VideoWakeLock::OnVisibilityChanged,
                          WrapWeakPersistent(this)),
-      /* ukm_metric_id */ LocalFrameUkmAggregator::kMediaIntersectionObserver,
-      /* behavior */ IntersectionObserver::kDeliverDuringPostLifecycleSteps,
-      /* semantics */ IntersectionObserver::kFractionOfTarget,
-      /* delay */ kDelayMs);
+      LocalFrameUkmAggregator::kMediaIntersectionObserver,
+      IntersectionObserver::Params{
+          .thresholds = {visibility_threshold_},
+          .delay = kDelayMs,
+      });
   visibility_observer_->observe(&VideoElement());
 
   if (base::FeatureList::IsEnabled(kStrictVideoWakeLock)) {
@@ -264,17 +261,15 @@ void VideoWakeLock::StartIntersectionObserver() {
     // iframes. The observer doesn't know the outermost viewport size when
     // running from within an iframe.
     size_observer_ = IntersectionObserver::Create(
-        /* (root) margin */ Vector<Length>(),
-        /* scroll_margin */ Vector<Length>(),
-        /* thresholds */ {kSizeThreshold},
-        /* document */ &VideoElement().GetDocument().TopDocument(),
-        /* callback */
+        VideoElement().GetDocument().TopDocument(),
         WTF::BindRepeating(&VideoWakeLock::OnSizeChanged,
                            WrapWeakPersistent(this)),
-        /* ukm_metric_id */ LocalFrameUkmAggregator::kMediaIntersectionObserver,
-        /* behavior */ IntersectionObserver::kDeliverDuringPostLifecycleSteps,
-        /* semantics */ IntersectionObserver::kFractionOfRoot,
-        /* delay */ kDelayMs);
+        LocalFrameUkmAggregator::kMediaIntersectionObserver,
+        IntersectionObserver::Params{
+            .thresholds = {kSizeThreshold},
+            .semantics = IntersectionObserver::kFractionOfRoot,
+            .delay = kDelayMs,
+        });
     size_observer_->observe(&VideoElement());
   }
 }

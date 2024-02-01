@@ -91,37 +91,25 @@ void MediaCustomControlsFullscreenDetector::Attach() {
   VideoElement().GetDocument().addEventListener(
       event_type_names::kFullscreenchange, this, true);
 
-  // Ideally we'd like to monitor all minute intersection changes here,
-  // because any change can potentially affect the fullscreen heuristics,
-  // but it's not practical from perf point of view. Given that the heuristics
-  // are more of a guess that exact science, it wouldn't be well spent CPU
-  // cycles anyway. That's why the observer only triggers on 10% steps in
-  // viewport area occupation.
-  const WTF::Vector<float> thresholds{
-      kMinPossibleFullscreenIntersectionThreshold,
-      0.2,
-      0.3,
-      0.4,
-      0.5,
-      0.6,
-      0.7,
-      0.8,
-      kMostlyFillViewportIntersectionThreshold};
   viewport_intersection_observer_ = IntersectionObserver::Create(
-      /* (root) margin */ Vector<Length>(),
-      /* scroll_margin */ Vector<Length>(),
-      /* thresholds */ thresholds,
-      /* document */ &(video_element_->GetDocument()),
-      /* callback */
+      video_element_->GetDocument(),
       WTF::BindRepeating(
           &MediaCustomControlsFullscreenDetector::OnIntersectionChanged,
           WrapWeakPersistent(this)),
-      /* ukm_metric_id */ LocalFrameUkmAggregator::kMediaIntersectionObserver,
-      /* behavior */ IntersectionObserver::kDeliverDuringPostLifecycleSteps,
-      /* semantics */ IntersectionObserver::kFractionOfRoot,
-      /* delay */ 0,
-      /* track_visibility */ false,
-      /* always report_root_bounds */ true);
+      LocalFrameUkmAggregator::kMediaIntersectionObserver,
+      IntersectionObserver::Params{
+          // Ideally we'd like to monitor all minute intersection changes
+          // here, because any change can potentially affect the fullscreen
+          // heuristics, but it's not practical from perf point of view.
+          // Given that the heuristics are more of a guess that exact science,
+          // it wouldn't be well spent CPU cycles anyway. That's why the
+          // observer only triggers on 10% steps in viewport area occupation.
+          .thresholds = {kMinPossibleFullscreenIntersectionThreshold, 0.2, 0.3,
+                         0.4, 0.5, 0.6, 0.7, 0.8,
+                         kMostlyFillViewportIntersectionThreshold},
+          .semantics = IntersectionObserver::kFractionOfRoot,
+          .always_report_root_bounds = true,
+      });
   viewport_intersection_observer_->observe(&VideoElement());
 }
 

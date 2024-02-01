@@ -129,31 +129,21 @@ void LazyLoadImageObserver::StartMonitoringNearViewport(Document* root_document,
                                                         Element* element) {
   if (!lazy_load_intersection_observer_) {
     int margin = GetLazyLoadingImageMarginPx(*root_document);
+    IntersectionObserver::Params params = {
+        .thresholds = {std::numeric_limits<float>::min()},
+    };
     if (RuntimeEnabledFeatures::LazyLoadScrollMarginEnabled()) {
-      lazy_load_intersection_observer_ = IntersectionObserver::Create(
-          /* (root) margin */ {Length::Fixed(0)},
-          /* scroll_margin */
-          {/* top & bottom */ Length::Fixed(margin),
-           /* right & left */ Length::Fixed(margin / 2)},
-          /* thresholds */ {std::numeric_limits<float>::min()},
-          /* document */ root_document,
-          /* callback */
-          WTF::BindRepeating(&LazyLoadImageObserver::LoadIfNearViewport,
-                             WrapWeakPersistent(this)),
-          /* ukm_metric_id */
-          LocalFrameUkmAggregator::kLazyLoadIntersectionObserver);
+      params.scroll_margin = {{/* top & bottom */ Length::Fixed(margin),
+                               /* right & left */ Length::Fixed(margin / 2)}};
     } else {
-      lazy_load_intersection_observer_ = IntersectionObserver::Create(
-          /* (root) margin */ {Length::Fixed(margin)},
-          /* scroll_margin */ {Length::Fixed(0)},
-          /* thresholds */ {std::numeric_limits<float>::min()},
-          /* document */ root_document,
-          /* callback */
-          WTF::BindRepeating(&LazyLoadImageObserver::LoadIfNearViewport,
-                             WrapWeakPersistent(this)),
-          /* ukm_metric_id */
-          LocalFrameUkmAggregator::kLazyLoadIntersectionObserver);
+      params.margin = {Length::Fixed(margin)};
     }
+    lazy_load_intersection_observer_ = IntersectionObserver::Create(
+        *root_document,
+        WTF::BindRepeating(&LazyLoadImageObserver::LoadIfNearViewport,
+                           WrapWeakPersistent(this)),
+        LocalFrameUkmAggregator::kLazyLoadIntersectionObserver,
+        std::move(params));
   }
 
   lazy_load_intersection_observer_->observe(element);
@@ -244,23 +234,14 @@ void LazyLoadImageObserver::StartMonitoringVisibility(
   }
   if (!visibility_metrics_observer_) {
     visibility_metrics_observer_ = IntersectionObserver::Create(
-        /* (root) margin */ Vector<Length>(),
-        /* scroll_margin */ Vector<Length>(),
-        /* thresholds */ {std::numeric_limits<float>::min()},
-        /* document */ root_document,
-        /* callback */
+        *root_document,
         WTF::BindRepeating(&LazyLoadImageObserver::OnVisibilityChanged,
                            WrapWeakPersistent(this)),
-        /* ukm_metric_id */
         LocalFrameUkmAggregator::kLazyLoadIntersectionObserver,
-        /* behavior */ IntersectionObserver::kDeliverDuringPostLifecycleSteps,
-        /* semantics */ IntersectionObserver::kFractionOfTarget,
-        /* delay */ 0,
-        /* track_visibility */ false,
-        /* always_report_root_bounds */ false,
-        /* margin_target */ IntersectionObserver::kApplyMarginToRoot,
-        /* use_overflow_clip_edge */ false,
-        /* needs_initial_observation_with_detached_target */ false);
+        IntersectionObserver::Params{
+            .thresholds = {std::numeric_limits<float>::min()},
+            .needs_initial_observation_with_detached_target = false,
+        });
   }
   visibility_metrics_observer_->observe(image_element);
 }
