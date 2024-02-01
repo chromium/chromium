@@ -365,41 +365,59 @@ UIButton* CreateDismissButton(UIAction* primaryAction) {
   double startShrinkingTime =
       kStartShrinkingGestureIndicator / keyframeAnimationDurationPerCycle;
 
-  ProceduralBlock keyframes = ^{
+  ProceduralBlock gestureIndicatorKeyframes = ^{
     [UIView
         addKeyframeWithRelativeStartTime:0
                         relativeDuration:gestureIndicatorSizeChangeDuration
                               animations:^{
                                 [weakSelf
-                                    keyframeThatShowsAndShrinksGestureIndicator];
+                                    animateGestureIndicatorForVisibility:YES];
                               }];
     [UIView addKeyframeWithRelativeStartTime:startSlidingTime
                             relativeDuration:slidingDuration
                                   animations:^{
-                                    [weakSelf keyframeThatSwipes];
+                                    [weakSelf animateGestureIndicatorSwipe];
                                   }];
     [UIView
         addKeyframeWithRelativeStartTime:startShrinkingTime
                         relativeDuration:gestureIndicatorSizeChangeDuration
                               animations:^{
                                 [weakSelf
-                                    keyframeThatExpandsAndHidesGestureIndicator];
+                                    animateGestureIndicatorForVisibility:NO];
                               }];
   };
-  ProceduralBlock animationWithKeyframesWithCompletionHandler = ^{
+  ProceduralBlock bubbleKeyframes = ^{
+    [UIView addKeyframeWithRelativeStartTime:startSlidingTime
+                            relativeDuration:slidingDuration
+                                  animations:^{
+                                    [weakSelf
+                                        animateBubbleSwipeInReverseDrection:NO];
+                                  }];
+    [UIView
+        addKeyframeWithRelativeStartTime:startShrinkingTime
+                        relativeDuration:gestureIndicatorSizeChangeDuration
+                              animations:^{
+                                [weakSelf
+                                    animateBubbleSwipeInReverseDrection:YES];
+                              }];
+  };
+  ProceduralBlock animation = ^{
     [UIView
         animateKeyframesWithDuration:keyframeAnimationDurationPerCycle
                                          .InSecondsF()
                                delay:0
-                             options:UIViewKeyframeAnimationOptionLayoutSubviews
-                          animations:keyframes
-                          completion:^(BOOL completed) {
-                            // This block gets invoked earlier than the
-                            // completion block of `_animator`.
-                            if (completed) {
-                              [weakSelf onAnimationCycleComplete];
-                            }
-                          }];
+                             options:
+                                 UIViewKeyframeAnimationOptionCalculationModeLinear
+                          animations:gestureIndicatorKeyframes
+                          completion:nil];
+    [UIView
+        animateKeyframesWithDuration:keyframeAnimationDurationPerCycle
+                                         .InSecondsF()
+                               delay:0
+                             options:
+                                 UIViewKeyframeAnimationOptionCalculationModeCubic
+                          animations:bubbleKeyframes
+                          completion:nil];
   };
 
   // Position gesture indicator at the start of each animation cycle, as it
@@ -409,10 +427,13 @@ UIButton* CreateDismissButton(UIAction* primaryAction) {
   _animator = [UIViewPropertyAnimator
       runningPropertyAnimatorWithDuration:kAnimationDuration.InSecondsF()
                                     delay:delay.InSecondsF()
-                                  options:UIViewAnimationOptionCurveEaseInOut
-                               animations:
-                                   animationWithKeyframesWithCompletionHandler
-                               completion:nil];
+                                  options:UIViewAnimationOptionTransitionNone
+                               animations:animation
+                               completion:^(UIViewAnimatingPosition position) {
+                                 if (position == UIViewAnimatingPositionEnd) {
+                                   [weakSelf onAnimationCycleComplete];
+                                 }
+                               }];
 }
 
 - (void)dismissWithReason:(IPHDismissalReasonType)reason {
@@ -428,6 +449,9 @@ UIButton* CreateDismissButton(UIAction* primaryAction) {
 
 // Handles the completion of each round of animation.
 - (void)onAnimationCycleComplete {
+  if (!self.superview) {
+    return;
+  }
   _currentAnimationRepeatCount++;
   if (_currentAnimationRepeatCount == self.animationRepeatCount) {
     [self dismissWithReason:IPHDismissalReasonType::kTimedOut];
@@ -614,44 +638,32 @@ UIButton* CreateDismissButton(UIAction* primaryAction) {
   return @[ centerConstraint, marginConstraint ];
 }
 
-#pragma mark - Animation keyframes
+#pragma mark - Animation Helpers
 
-// Fades in the gesture indicator, starting with a large size and ends with the
-// correct size.
-- (void)keyframeThatShowsAndShrinksGestureIndicator {
+// Animation block that resizes the gesture indicator and update transparency.
+// If `visible`, the gesture indicator will shrink from a large size and ends
+// with the correct size and correct visiblity; otherwise, it will enlarge and
+// fade into background.
+- (void)animateGestureIndicatorForVisibility:(BOOL)visible {
+  const CGFloat radius =
+      visible ? kGestureIndicatorRadius : kFadingGestureIndicatorRadius;
   for (NSLayoutConstraint* constraint in _gestureIndicatorSizeConstraints) {
-    constraint.constant = kGestureIndicatorRadius * 2;
+    constraint.constant = radius * 2;
   }
-  _gestureIndicator.layer.cornerRadius = kGestureIndicatorRadius;
-  _gestureIndicator.alpha =
-      UIAccessibilityIsReduceTransparencyEnabled() ? 1.0f : 0.5f;
+  _gestureIndicator.layer.cornerRadius = radius;
+  if (visible) {
+    _gestureIndicator.alpha =
+        UIAccessibilityIsReduceTransparencyEnabled() ? 1.0f : 0.5f;
+  } else {
+    _gestureIndicator.alpha = 0;
+  }
   [self layoutIfNeeded];
 }
 
-// Moves the bubble and the gesture indicator away from the edge of the view
-// that the bubble arrow points to.
-- (void)keyframeThatSwipes {
-  CGRect newFrame = _bubbleView.frame;
+// Animate the "swipe" movement of the gesture indicator in accordance to the
+// direction.
+- (void)animateGestureIndicatorSwipe {
   BubbleArrowDirection direction = _bubbleView.direction;
-  switch (direction) {
-    case BubbleArrowDirectionUp:
-      newFrame.origin.y += kBubbleDistanceAnimated;
-      break;
-    case BubbleArrowDirectionDown:
-      newFrame.origin.y -= kBubbleDistanceAnimated;
-      break;
-    case BubbleArrowDirectionLeading:
-    case BubbleArrowDirectionTrailing:
-      if (IsArrowPointingLeft(direction)) {
-        newFrame.origin.x += kBubbleDistanceAnimated;
-      } else {
-        newFrame.origin.x -= kBubbleDistanceAnimated;
-      }
-      break;
-  }
-  _bubbleView.frame = newFrame;
-  [_bubbleView setArrowHidden:NO animated:YES];
-
   CGFloat gestureIndicatorAnimatedDistance =
       [self gestureIndicatorAnimatedDistance];
   CGFloat animateDistance = (direction == BubbleArrowDirectionUp ||
@@ -662,33 +674,33 @@ UIButton* CreateDismissButton(UIAction* primaryAction) {
   [self layoutIfNeeded];
 }
 
-// Fades out the gesture indicator by expanding its size and decreasing opacity.
-- (void)keyframeThatExpandsAndHidesGestureIndicator {
-  for (NSLayoutConstraint* constraint in _gestureIndicatorSizeConstraints) {
-    constraint.constant = kFadingGestureIndicatorRadius * 2;
-  }
-  _gestureIndicator.layer.cornerRadius = kFadingGestureIndicatorRadius;
-  _gestureIndicator.alpha = 0;
-  CGRect newFrame = _bubbleView.frame;
+// If `reverse` is `NO`, animate the "swipe" movement of the bubble view in
+// accordance to the direction; otherwise, swipe it in the reverse direction.
+// Note that swiping in reverse direction hides the bubble arrow.
+- (void)animateBubbleSwipeInReverseDrection:(BOOL)reverse {
   BubbleArrowDirection direction = _bubbleView.direction;
+  if (reverse) {
+    direction = GetOppositeDirection(direction);
+  }
+  CGRect newFrame = _bubbleView.frame;
   switch (direction) {
     case BubbleArrowDirectionUp:
-      newFrame.origin.y -= kBubbleDistanceAnimated;
+      newFrame.origin.y += kBubbleDistanceAnimated;
       break;
     case BubbleArrowDirectionDown:
-      newFrame.origin.y += kBubbleDistanceAnimated;
+      newFrame.origin.y -= kBubbleDistanceAnimated;
       break;
     case BubbleArrowDirectionLeading:
     case BubbleArrowDirectionTrailing:
       if (IsArrowPointingLeft(direction)) {
-        newFrame.origin.x -= kBubbleDistanceAnimated;
-      } else {
         newFrame.origin.x += kBubbleDistanceAnimated;
+      } else {
+        newFrame.origin.x -= kBubbleDistanceAnimated;
       }
       break;
   }
   _bubbleView.frame = newFrame;
-  [_bubbleView setArrowHidden:YES animated:YES];
+  [_bubbleView setArrowHidden:reverse animated:YES];
   [self layoutIfNeeded];
 }
 
