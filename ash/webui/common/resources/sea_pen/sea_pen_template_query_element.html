@@ -140,9 +140,9 @@
           id="searchButton"
           class="action-button"
           on-click="onClickSearchButton_">
-        <iron-icon icon="[[getSearchButtonIcon_(path)]]" slot="prefix-icon">
+        <iron-icon icon$="[[getSearchButtonIcon_(path, thumbnails_)]]" slot="prefix-icon">
         </iron-icon>
-        <p>[[getSearchButtonText_(path)]]</p>
+        <p>[[getSearchButtonText_(path, thumbnails_)]]</p>
       </cr-button>
     </template>
   </div>
