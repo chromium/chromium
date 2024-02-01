@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.omnibox.suggestions;
 
 import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -47,6 +48,10 @@ public class RecyclerViewSelectionControllerUnitTest {
         when(mLayoutManager.findViewByPosition(0)).thenReturn(mChildView1);
         when(mLayoutManager.findViewByPosition(1)).thenReturn(mChildView2);
         when(mLayoutManager.findViewByPosition(2)).thenReturn(mChildView3);
+
+        doReturn(true).when(mChildView1).isFocusable();
+        doReturn(true).when(mChildView2).isFocusable();
+        doReturn(true).when(mChildView3).isFocusable();
 
         mSelectionController = new RecyclerViewSelectionController(mLayoutManager);
     }
@@ -119,6 +124,140 @@ public class RecyclerViewSelectionControllerUnitTest {
         // Permit cycling through.
         mSelectionController.setCycleThroughNoSelection(true);
         mSelectionController.selectPreviousItem();
+        Assert.assertEquals(
+                RecyclerView.NO_POSITION, mSelectionController.getSelectedItemForTest());
+        Assert.assertEquals(null, mSelectionController.getSelectedView());
+    }
+
+    @Test
+    public void selectPreviousItem_skipNonFocusableItems_noCycling() {
+        mSelectionController.setSelectedItem(2, false);
+        Assert.assertEquals(2, mSelectionController.getSelectedItemForTest());
+        Assert.assertEquals(mChildView3, mSelectionController.getSelectedView());
+
+        // View at position 1 is not focusable:
+        doReturn(false).when(mChildView2).isFocusable();
+
+        // Focus skips position 1.
+        mSelectionController.selectPreviousItem();
+        Assert.assertEquals(0, mSelectionController.getSelectedItemForTest());
+        Assert.assertEquals(mChildView1, mSelectionController.getSelectedView());
+    }
+
+    @Test
+    public void selectPreviousItem_ignoreHeadNonFocusableViews() {
+        mSelectionController.setSelectedItem(2, false);
+        Assert.assertEquals(2, mSelectionController.getSelectedItemForTest());
+        Assert.assertEquals(mChildView3, mSelectionController.getSelectedView());
+
+        // Views at position 0 and 1 are not focusable:
+        doReturn(false).when(mChildView1).isFocusable();
+        doReturn(false).when(mChildView2).isFocusable();
+
+        // Focus must not move.
+        mSelectionController.selectPreviousItem();
+        Assert.assertEquals(2, mSelectionController.getSelectedItemForTest());
+        Assert.assertEquals(mChildView3, mSelectionController.getSelectedView());
+    }
+
+    @Test
+    public void selectPreviousItem_skipNonFocusableItems_withCycling() {
+        mSelectionController.setCycleThroughNoSelection(true);
+        mSelectionController.setSelectedItem(1, false);
+        Assert.assertEquals(1, mSelectionController.getSelectedItemForTest());
+        Assert.assertEquals(mChildView2, mSelectionController.getSelectedView());
+
+        // View at position 0 is not focusable:
+        doReturn(false).when(mChildView1).isFocusable();
+
+        // We wrap around ignoring view at position 2.
+        mSelectionController.selectPreviousItem();
+        Assert.assertEquals(
+                RecyclerView.NO_POSITION, mSelectionController.getSelectedItemForTest());
+        Assert.assertEquals(null, mSelectionController.getSelectedView());
+    }
+
+    @Test
+    public void selectPreviousItem_noFocusableViews() {
+        doReturn(false).when(mChildView1).isFocusable();
+        doReturn(false).when(mChildView2).isFocusable();
+        doReturn(false).when(mChildView3).isFocusable();
+
+        mSelectionController.selectPreviousItem();
+        Assert.assertEquals(
+                RecyclerView.NO_POSITION, mSelectionController.getSelectedItemForTest());
+        Assert.assertEquals(null, mSelectionController.getSelectedView());
+
+        // Permit cycling through.
+        mSelectionController.setCycleThroughNoSelection(true);
+        mSelectionController.selectPreviousItem();
+        Assert.assertEquals(
+                RecyclerView.NO_POSITION, mSelectionController.getSelectedItemForTest());
+        Assert.assertEquals(null, mSelectionController.getSelectedView());
+    }
+
+    @Test
+    public void selectNextItem_skipNonFocusableItems_noCycling() {
+        mSelectionController.setSelectedItem(0, false);
+        Assert.assertEquals(0, mSelectionController.getSelectedItemForTest());
+        Assert.assertEquals(mChildView1, mSelectionController.getSelectedView());
+
+        // View at position 1 is not focusable:
+        doReturn(false).when(mChildView2).isFocusable();
+
+        // Focus skips position 1.
+        mSelectionController.selectNextItem();
+        Assert.assertEquals(2, mSelectionController.getSelectedItemForTest());
+        Assert.assertEquals(mChildView3, mSelectionController.getSelectedView());
+    }
+
+    @Test
+    public void selectNextItem_ignoreTailNonFocusableViews() {
+        mSelectionController.setSelectedItem(0, false);
+        Assert.assertEquals(0, mSelectionController.getSelectedItemForTest());
+        Assert.assertEquals(mChildView1, mSelectionController.getSelectedView());
+
+        // View at position 1 is not focusable:
+        doReturn(false).when(mChildView2).isFocusable();
+        doReturn(false).when(mChildView3).isFocusable();
+
+        // Focus must not move.
+        mSelectionController.selectNextItem();
+        Assert.assertEquals(0, mSelectionController.getSelectedItemForTest());
+        Assert.assertEquals(mChildView1, mSelectionController.getSelectedView());
+    }
+
+    @Test
+    public void selectNextItem_skipNonFocusableItems_withCycling() {
+        mSelectionController.setCycleThroughNoSelection(true);
+        mSelectionController.setSelectedItem(1, false);
+        Assert.assertEquals(1, mSelectionController.getSelectedItemForTest());
+        Assert.assertEquals(mChildView2, mSelectionController.getSelectedView());
+
+        // View at position 2 is not focusable:
+        doReturn(false).when(mChildView3).isFocusable();
+
+        // We wrap around ignoring view at position 2.
+        mSelectionController.selectNextItem();
+        Assert.assertEquals(
+                RecyclerView.NO_POSITION, mSelectionController.getSelectedItemForTest());
+        Assert.assertEquals(null, mSelectionController.getSelectedView());
+    }
+
+    @Test
+    public void selectNextItem_noFocusableViews() {
+        doReturn(false).when(mChildView1).isFocusable();
+        doReturn(false).when(mChildView2).isFocusable();
+        doReturn(false).when(mChildView3).isFocusable();
+
+        mSelectionController.selectNextItem();
+        Assert.assertEquals(
+                RecyclerView.NO_POSITION, mSelectionController.getSelectedItemForTest());
+        Assert.assertEquals(null, mSelectionController.getSelectedView());
+
+        // Permit cycling through.
+        mSelectionController.setCycleThroughNoSelection(true);
+        mSelectionController.selectNextItem();
         Assert.assertEquals(
                 RecyclerView.NO_POSITION, mSelectionController.getSelectedItemForTest());
         Assert.assertEquals(null, mSelectionController.getSelectedView());

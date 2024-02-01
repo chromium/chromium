@@ -275,11 +275,9 @@ public class MostVisitedTilesTest {
 
         // Move to the search suggestion skipping the header.
         mOmnibox.sendKey(KeyEvent.KEYCODE_DPAD_DOWN);
-        mOmnibox.sendKey(KeyEvent.KEYCODE_DPAD_DOWN);
         mOmnibox.checkText(equalTo(SEARCH_QUERY), null);
 
         // Move back to the MV Tiles. Observe that the first element is again highlighted.
-        mOmnibox.sendKey(KeyEvent.KEYCODE_DPAD_UP);
         mOmnibox.sendKey(KeyEvent.KEYCODE_DPAD_UP);
         mOmnibox.checkText(equalTo(mTile1.url.getSpec()), null);
     }

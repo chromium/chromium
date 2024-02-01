@@ -14,7 +14,7 @@ import androidx.recyclerview.widget.RecyclerView.LayoutManager;
 /** Selection manager for RecyclerViews. */
 public class RecyclerViewSelectionController
         implements RecyclerView.OnChildAttachStateChangeListener {
-    private int mSelectedItem = RecyclerView.NO_POSITION;
+    private int mSelectedItemIndex = RecyclerView.NO_POSITION;
     private LayoutManager mLayoutManager;
 
     /** When true, cycling to next/previous item will go through null selection. */
@@ -47,17 +47,17 @@ public class RecyclerViewSelectionController
     @Override
     public void onChildViewAttachedToWindow(View view) {
         // Force update selection of the view that might come from a recycle pool.
-        setSelectedItem(mSelectedItem, true);
+        setSelectedItem(mSelectedItemIndex, true);
     }
 
     @Override
     public void onChildViewDetachedFromWindow(View view) {
-        // Force move selection to the item that now occupies slot at mSelectedItem.
+        // Force move selection to the item that now occupies slot at mSelectedItemIndex.
         // The explicit state set here is necessary, because the setSelectedItem call
         // does not iterate over all available views, so when this view is re-used,
         // we do not want it to show up as selected right away.
         view.setSelected(false);
-        setSelectedItem(mSelectedItem, true);
+        setSelectedItem(mSelectedItemIndex, true);
     }
 
     /** Reset the active selection. */
@@ -67,44 +67,68 @@ public class RecyclerViewSelectionController
 
     /** Move selection to the next element on the list. */
     public void selectNextItem() {
-        if (mLayoutManager == null) return;
+        if (mLayoutManager == null || mLayoutManager.getItemCount() == 0) return;
 
-        int newSelectedItem;
-        if (mSelectedItem == RecyclerView.NO_POSITION) {
-            newSelectedItem = 0;
-        } else if (mSelectedItem < mLayoutManager.getItemCount() - 1) {
-            newSelectedItem = mSelectedItem + 1;
-        } else if (mCycleThroughNoSelection) {
-            newSelectedItem = RecyclerView.NO_POSITION;
-        } else {
-            newSelectedItem = mLayoutManager.getItemCount() - 1;
+        // Note: this is also the index selected if there are no more selectable views after the
+        // current one.
+        int nextSelectableItemIndex =
+                mCycleThroughNoSelection ? RecyclerView.NO_POSITION : mSelectedItemIndex;
+        int currentIndex =
+                mSelectedItemIndex == RecyclerView.NO_POSITION ? 0 : mSelectedItemIndex + 1;
+
+        while (currentIndex != mSelectedItemIndex) {
+            if (currentIndex >= mLayoutManager.getItemCount()) {
+                break;
+            }
+
+            var view = mLayoutManager.findViewByPosition(currentIndex);
+
+            if (view != null && view.isFocusable()) {
+                nextSelectableItemIndex = currentIndex;
+                break;
+            }
+
+            currentIndex++;
         }
 
-        setSelectedItem(newSelectedItem, false);
+        setSelectedItem(nextSelectableItemIndex, false);
     }
 
     /** Move selection to the previous element on the list. */
     public void selectPreviousItem() {
-        if (mLayoutManager == null) return;
+        if (mLayoutManager == null || mLayoutManager.getItemCount() == 0) return;
 
-        int newSelectedItem;
-        if (mSelectedItem == RecyclerView.NO_POSITION) {
-            newSelectedItem = mLayoutManager.getItemCount() - 1;
-        } else if (mSelectedItem > 0) {
-            newSelectedItem = mSelectedItem - 1;
-        } else if (mCycleThroughNoSelection) {
-            newSelectedItem = RecyclerView.NO_POSITION;
-        } else {
-            newSelectedItem = 0;
+        // Note: this is also the index selected if there are no more selectable views after the
+        // current one.
+        int nextSelectableItemIndex =
+                mCycleThroughNoSelection ? RecyclerView.NO_POSITION : mSelectedItemIndex;
+        int currentIndex =
+                mSelectedItemIndex == RecyclerView.NO_POSITION
+                        ? mLayoutManager.getItemCount() - 1
+                        : mSelectedItemIndex - 1;
+
+        while (currentIndex != mSelectedItemIndex) {
+            if (currentIndex == RecyclerView.NO_POSITION) {
+                break;
+            }
+
+            var view = mLayoutManager.findViewByPosition(currentIndex);
+
+            if (view != null && view.isFocusable()) {
+                nextSelectableItemIndex = currentIndex;
+                break;
+            }
+
+            currentIndex--;
         }
 
-        setSelectedItem(newSelectedItem, false);
+        setSelectedItem(nextSelectableItemIndex, false);
     }
 
     /** Retrieve currently selected element. */
     @Nullable
     public View getSelectedView() {
-        return mLayoutManager.findViewByPosition(mSelectedItem);
+        return mLayoutManager.findViewByPosition(mSelectedItemIndex);
     }
 
     /**
@@ -121,14 +145,14 @@ public class RecyclerViewSelectionController
                 && (index < 0 || index >= mLayoutManager.getItemCount())) {
             return;
         }
-        if (!force && (index == mSelectedItem)) return;
+        if (!force && (index == mSelectedItemIndex)) return;
 
-        View previousSelectedView = mLayoutManager.findViewByPosition(mSelectedItem);
+        View previousSelectedView = mLayoutManager.findViewByPosition(mSelectedItemIndex);
         if (previousSelectedView != null) {
             previousSelectedView.setSelected(false);
         }
 
-        mSelectedItem = index;
+        mSelectedItemIndex = index;
         mLayoutManager.scrollToPosition(index);
 
         View currentSelectedView = mLayoutManager.findViewByPosition(index);
@@ -140,6 +164,6 @@ public class RecyclerViewSelectionController
     /** Returns the selected item index. */
     @VisibleForTesting
     int getSelectedItemForTest() {
-        return mSelectedItem;
+        return mSelectedItemIndex;
     }
 }
