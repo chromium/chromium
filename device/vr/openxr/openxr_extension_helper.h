@@ -25,54 +25,58 @@
 #endif
 
 namespace device {
+// Helper macro to facilitate declaring the method names of functions that will
+// be loaded from the OpenXR Runtime.
+// Expands to e.g.
+// PFN_xrCreateHandTrackerEXT xrCreateHandTrackerEXT{nullptr};
+#define OPENXR_DECLARE_FN(name) PFN_##name name = nullptr
+
 struct OpenXrExtensionMethods {
   OpenXrExtensionMethods();
   ~OpenXrExtensionMethods();
   // Hand Tracking
-  PFN_xrCreateHandTrackerEXT xrCreateHandTrackerEXT{nullptr};
-  PFN_xrDestroyHandTrackerEXT xrDestroyHandTrackerEXT{nullptr};
-  PFN_xrLocateHandJointsEXT xrLocateHandJointsEXT{nullptr};
+  OPENXR_DECLARE_FN(xrCreateHandTrackerEXT);
+  OPENXR_DECLARE_FN(xrDestroyHandTrackerEXT);
+  OPENXR_DECLARE_FN(xrLocateHandJointsEXT);
 
   // Anchors
-  PFN_xrCreateSpatialAnchorMSFT xrCreateSpatialAnchorMSFT{nullptr};
-  PFN_xrDestroySpatialAnchorMSFT xrDestroySpatialAnchorMSFT{nullptr};
-  PFN_xrCreateSpatialAnchorSpaceMSFT xrCreateSpatialAnchorSpaceMSFT{nullptr};
+  OPENXR_DECLARE_FN(xrCreateSpatialAnchorMSFT);
+  OPENXR_DECLARE_FN(xrDestroySpatialAnchorMSFT);
+  OPENXR_DECLARE_FN(xrCreateSpatialAnchorSpaceMSFT);
 
   // Scene Understanding
-  PFN_xrEnumerateSceneComputeFeaturesMSFT xrEnumerateSceneComputeFeaturesMSFT{
-      nullptr};
-  PFN_xrCreateSceneObserverMSFT xrCreateSceneObserverMSFT{nullptr};
-  PFN_xrDestroySceneObserverMSFT xrDestroySceneObserverMSFT{nullptr};
-  PFN_xrCreateSceneMSFT xrCreateSceneMSFT{nullptr};
-  PFN_xrDestroySceneMSFT xrDestroySceneMSFT{nullptr};
-  PFN_xrComputeNewSceneMSFT xrComputeNewSceneMSFT{nullptr};
-  PFN_xrGetSceneComputeStateMSFT xrGetSceneComputeStateMSFT{nullptr};
-  PFN_xrGetSceneComponentsMSFT xrGetSceneComponentsMSFT{nullptr};
-  PFN_xrLocateSceneComponentsMSFT xrLocateSceneComponentsMSFT{nullptr};
-  PFN_xrGetSceneMeshBuffersMSFT xrGetSceneMeshBuffersMSFT{nullptr};
+  OPENXR_DECLARE_FN(xrEnumerateSceneComputeFeaturesMSFT);
+  OPENXR_DECLARE_FN(xrCreateSceneObserverMSFT);
+  OPENXR_DECLARE_FN(xrDestroySceneObserverMSFT);
+  OPENXR_DECLARE_FN(xrCreateSceneMSFT);
+  OPENXR_DECLARE_FN(xrDestroySceneMSFT);
+  OPENXR_DECLARE_FN(xrComputeNewSceneMSFT);
+  OPENXR_DECLARE_FN(xrGetSceneComputeStateMSFT);
+  OPENXR_DECLARE_FN(xrGetSceneComponentsMSFT);
+  OPENXR_DECLARE_FN(xrLocateSceneComponentsMSFT);
+  OPENXR_DECLARE_FN(xrGetSceneMeshBuffersMSFT);
 
 #if BUILDFLAG(IS_WIN)
   // Time
-  PFN_xrConvertWin32PerformanceCounterToTimeKHR
-      xrConvertWin32PerformanceCounterToTimeKHR{nullptr};
+  OPENXR_DECLARE_FN(xrConvertWin32PerformanceCounterToTimeKHR);
 #endif
 
   // While these extensions don't need to be gated to a particular platform,
   // since the API is still under development we'll try to limit the scope for
   // the time being.
 #if BUILDFLAG(IS_ANDROID)
-  PFN_xrGetReferenceSpaceBoundsPolygonANDROID
-      xrGetReferenceSpaceBoundsPolygonANDROID{nullptr};
+  OPENXR_DECLARE_FN(xrGetReferenceSpaceBoundsPolygonANDROID);
 
   // Trackables and Raycasting.
-  PFN_xrCreateTrackableTrackerANDROID xrCreateTrackableTrackerANDROID{nullptr};
-  PFN_xrDestroyTrackableTrackerANDROID xrDestroyTrackableTrackerANDROID{
-      nullptr};
-  PFN_xrRaycastANDROID xrRaycastANDROID{nullptr};
+  OPENXR_DECLARE_FN(xrCreateTrackableTrackerANDROID);
+  OPENXR_DECLARE_FN(xrDestroyTrackableTrackerANDROID);
+  OPENXR_DECLARE_FN(xrRaycastANDROID);
 
-  PFN_xrCreateAnchorSpaceANDROID xrCreateAnchorSpaceANDROID{nullptr};
+  OPENXR_DECLARE_FN(xrCreateAnchorSpaceANDROID);
 #endif
 };
+// Ensure that we don't export our helper macro.
+#undef OPENXR_DECLARE_FN
 
 class OpenXrExtensionEnumeration {
  public:
