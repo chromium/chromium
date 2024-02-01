@@ -16,6 +16,7 @@
 #include "third_party/jni_zero/jni_export.h"
 #include "third_party/jni_zero/jni_zero_helper.h"
 
+
 // Step 1: Forward declarations.
 
 JNI_ZERO_COMPONENT_BUILD_EXPORT extern const char

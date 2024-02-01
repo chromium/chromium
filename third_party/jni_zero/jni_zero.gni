@@ -248,7 +248,11 @@ template("generate_jni_impl") {
     _invoke_jni_zero(_jni_zero_action_target_name) {
       _subdir = rebase_path(target_gen_dir, root_gen_dir)
       _jni_output_dir = "$jni_headers_dir/$_subdir/$_final_target_name"
-      not_needed(invoker, [ "jni_generator_include" ])
+      if (defined(invoker.jni_generator_include)) {
+        _jni_generator_include = invoker.jni_generator_include
+      } else {
+        _jni_generator_include = "//third_party/jni_zero/jni_zero_helper.h"
+      }
 
       # The sources aren't compiled so don't check their dependencies.
       check_includes = false
@@ -261,7 +265,6 @@ template("generate_jni_impl") {
       if (!defined(public_deps)) {
         public_deps = []
       }
-
       public_configs += [ "//third_party/jni_zero:jni_include_dir" ]
 
       inputs = []
@@ -275,6 +278,8 @@ template("generate_jni_impl") {
       args += [
         "--output-dir",
         rebase_path(_jni_output_dir, root_build_dir),
+        "--extra-include",
+        rebase_path(_jni_generator_include, _jni_output_dir),
       ]
 
       if (defined(invoker.classes)) {
