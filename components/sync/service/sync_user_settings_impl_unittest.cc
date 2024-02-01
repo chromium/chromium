@@ -9,7 +9,6 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/chromeos_buildflags.h"
-#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/signin/public/base/signin_pref_names.h"
@@ -167,8 +166,7 @@ TEST_F(SyncUserSettingsImplTest, DefaultSelectedTypesWhileSignedIn) {
 #if !BUILDFLAG(IS_IOS)
                             kReadingListEnableSyncTransportModeUponSignIn,
 #endif  // !BUILDFLAG(IS_IOS)
-                            password_manager::features::
-                                kEnablePasswordsAccountStorage,
+                            kEnablePasswordsAccountStorageForNonSyncingUsers,
                             kSyncEnableContactInfoDataTypeInTransportMode,
                             kEnablePreferencesAccountStorage},
       /*disabled_features=*/{});

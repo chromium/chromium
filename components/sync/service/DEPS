@@ -2,7 +2,6 @@ include_rules = [
   "+components/keyed_service/core",
   "+components/metrics",
   "+components/os_crypt/sync",
-  "+components/password_manager/core/browser/features/password_features.h",
   "+components/policy",
   "+components/pref_registry",
   "+components/prefs",

@@ -88,6 +88,11 @@ inline constexpr base::FeatureParam<bool>
         &kSyncEnableContactInfoDataTypeForDasherUsers,
         "enable_for_google_accounts", false};
 
+// Necessary condition for signed-in non-syncing users to be able to exchange
+// passwords with the sync server.
+// TODO(crbug.com/1509058): Expand docs when the other changes have landed.
+BASE_DECLARE_FEATURE(kEnablePasswordsAccountStorageForNonSyncingUsers);
+
 // Enables a separate account-scoped storage for preferences, for syncing users.
 // (Note that opposed to other "account storage" features, this one does not
 // have any effect for signed-in non-syncing users!)

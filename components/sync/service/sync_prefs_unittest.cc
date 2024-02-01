@@ -10,7 +10,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "build/chromeos_buildflags.h"
-#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_value_map.h"
 #include "components/prefs/testing_pref_service.h"
@@ -364,8 +363,7 @@ TEST_F(SyncPrefsTest,
 #if !BUILDFLAG(IS_IOS)
                             kReadingListEnableSyncTransportModeUponSignIn,
 #endif  // !BUILDFLAG(IS_IOS)
-                            password_manager::features::
-                                kEnablePasswordsAccountStorage,
+                            kEnablePasswordsAccountStorageForNonSyncingUsers,
                             kSyncEnableContactInfoDataTypeInTransportMode,
                             kEnablePreferencesAccountStorage},
       /*disabled_features=*/{kReplaceSyncPromosWithSignInPromos});
@@ -408,8 +406,7 @@ TEST_F(SyncPrefsTest,
 #if !BUILDFLAG(IS_IOS)
                             kReadingListEnableSyncTransportModeUponSignIn,
 #endif  // !BUILDFLAG(IS_IOS)
-                            password_manager::features::
-                                kEnablePasswordsAccountStorage,
+                            kEnablePasswordsAccountStorageForNonSyncingUsers,
                             kSyncEnableContactInfoDataTypeInTransportMode,
                             kEnablePreferencesAccountStorage},
       /*disabled_features=*/{});
@@ -481,7 +478,7 @@ TEST_F(SyncPrefsTest, SetSelectedTypesForAccountInTransportMode) {
 TEST_F(SyncPrefsTest,
        SetSelectedTypesForAccountInTransportModeWithPolicyRestrictedType) {
   base::test::ScopedFeatureList features(
-      password_manager::features::kEnablePasswordsAccountStorage);
+      kEnablePasswordsAccountStorageForNonSyncingUsers);
 
   StrictMock<MockSyncPrefObserver> mock_sync_pref_observer;
   sync_prefs_->AddObserver(&mock_sync_pref_observer);
@@ -763,8 +760,7 @@ class SyncPrefsMigrationTest : public testing::Test {
 #if !BUILDFLAG(IS_IOS)
                               kReadingListEnableSyncTransportModeUponSignIn,
 #endif  // !BUILDFLAG(IS_IOS)
-                              password_manager::features::
-                                  kEnablePasswordsAccountStorage,
+                              kEnablePasswordsAccountStorageForNonSyncingUsers,
                               kSyncEnableContactInfoDataTypeInTransportMode,
                               kEnablePreferencesAccountStorage},
         /*disabled_features=*/{});

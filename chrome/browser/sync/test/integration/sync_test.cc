@@ -63,7 +63,6 @@
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/os_crypt/sync/os_crypt_mocker.h"
-#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/sync/base/command_line_switches.h"
@@ -1145,7 +1144,7 @@ syncer::ModelTypeSet AllowedTypesInStandaloneTransportMode() {
     allowed_types.Put(syncer::AUTOFILL_WALLET_OFFER);
   }
   if (base::FeatureList::IsEnabled(
-          password_manager::features::kEnablePasswordsAccountStorage)) {
+          syncer::kEnablePasswordsAccountStorageForNonSyncingUsers)) {
     allowed_types.Put(syncer::PASSWORDS);
   }
   if (base::FeatureList::IsEnabled(syncer::kEnablePreferencesAccountStorage) &&

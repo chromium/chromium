@@ -16,7 +16,6 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/pref_value_map.h"
@@ -688,7 +687,7 @@ bool SyncPrefs::IsTypeSupportedInTransportMode(UserSelectableType type) {
              base::FeatureList::IsEnabled(kEnablePreferencesAccountStorage);
     case UserSelectableType::kPasswords:
       return base::FeatureList::IsEnabled(
-          password_manager::features::kEnablePasswordsAccountStorage);
+          kEnablePasswordsAccountStorageForNonSyncingUsers);
     case UserSelectableType::kAutofill:
       // Note that this logic may lead to kPayments being treated as supported
       // (or even selected) while kAutofill isn't. This goes against the general
