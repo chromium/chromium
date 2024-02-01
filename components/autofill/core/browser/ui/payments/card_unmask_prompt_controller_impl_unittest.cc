@@ -106,7 +106,7 @@ class TestCardUnmaskPromptController : public CardUnmaskPromptControllerImpl {
   base::WeakPtrFactory<TestCardUnmaskPromptController> weak_factory_{this};
 };
 
-class CardUnmaskPromptControllerImplGenericTest {
+class CardUnmaskPromptControllerImplGenericTest : public testing::Test {
  public:
   CardUnmaskPromptControllerImplGenericTest() = default;
 
@@ -115,8 +115,12 @@ class CardUnmaskPromptControllerImplGenericTest {
   CardUnmaskPromptControllerImplGenericTest& operator=(
       const CardUnmaskPromptControllerImplGenericTest&) = delete;
 
-  void SetUp() {
+  void SetUp() override {
     pref_service_ = std::make_unique<TestingPrefServiceSimple>();
+#if BUILDFLAG(IS_ANDROID)
+    pref_service_->registry()->RegisterBooleanPref(
+        prefs::kAutofillCreditCardFidoAuthOfferCheckboxState, true);
+#endif
     controller_ =
         std::make_unique<TestCardUnmaskPromptController>(pref_service_.get());
     delegate_ = std::make_unique<TestCardUnmaskDelegate>();
@@ -175,30 +179,8 @@ class CardUnmaskPromptControllerImplGenericTest {
   }
 };
 
-class CardUnmaskPromptControllerImplTest
-    : public CardUnmaskPromptControllerImplGenericTest,
-      public testing::Test {
- public:
-  CardUnmaskPromptControllerImplTest() = default;
-
-  CardUnmaskPromptControllerImplTest(
-      const CardUnmaskPromptControllerImplTest&) = delete;
-  CardUnmaskPromptControllerImplTest& operator=(
-      const CardUnmaskPromptControllerImplTest&) = delete;
-
-  ~CardUnmaskPromptControllerImplTest() override = default;
-
-  void SetUp() override {
-    CardUnmaskPromptControllerImplGenericTest::SetUp();
 #if BUILDFLAG(IS_ANDROID)
-    pref_service_->registry()->RegisterBooleanPref(
-        prefs::kAutofillCreditCardFidoAuthOfferCheckboxState, true);
-#endif
-  }
-};
-
-#if BUILDFLAG(IS_ANDROID)
-TEST_F(CardUnmaskPromptControllerImplTest,
+TEST_F(CardUnmaskPromptControllerImplGenericTest,
        FidoAuthOfferCheckboxStatePersistent) {
   ShowPromptAndSimulateResponse(/*enable_fido_auth=*/true);
   EXPECT_TRUE(pref_service_->GetBoolean(
@@ -209,7 +191,7 @@ TEST_F(CardUnmaskPromptControllerImplTest,
       prefs::kAutofillCreditCardFidoAuthOfferCheckboxState));
 }
 
-TEST_F(CardUnmaskPromptControllerImplTest,
+TEST_F(CardUnmaskPromptControllerImplGenericTest,
        FidoAuthOfferCheckboxStateUnchangedWhenInvisible) {
   pref_service_->SetBoolean(
       prefs::kAutofillCreditCardFidoAuthOfferCheckboxState, true);
@@ -228,7 +210,7 @@ TEST_F(CardUnmaskPromptControllerImplTest,
       prefs::kAutofillCreditCardFidoAuthOfferCheckboxState));
 }
 
-TEST_F(CardUnmaskPromptControllerImplTest,
+TEST_F(CardUnmaskPromptControllerImplGenericTest,
        PopulateCheckboxToUserProvidedUnmaskDetails) {
   ShowPromptAndSimulateResponse(/*enable_fido_auth=*/true);
 
@@ -236,7 +218,7 @@ TEST_F(CardUnmaskPromptControllerImplTest,
 }
 #endif
 
-TEST_F(CardUnmaskPromptControllerImplTest, LogRealPanResultSuccess) {
+TEST_F(CardUnmaskPromptControllerImplGenericTest, LogRealPanResultSuccess) {
   ShowPromptAndSimulateResponse(/*enable_fido_auth=*/false);
   base::HistogramTester histogram_tester;
   controller_->OnVerificationResult(
@@ -247,7 +229,7 @@ TEST_F(CardUnmaskPromptControllerImplTest, LogRealPanResultSuccess) {
       AutofillMetrics::PAYMENTS_RESULT_SUCCESS, 1);
 }
 
-TEST_F(CardUnmaskPromptControllerImplTest, LogRealPanTryAgainFailure) {
+TEST_F(CardUnmaskPromptControllerImplGenericTest, LogRealPanTryAgainFailure) {
   ShowPromptAndSimulateResponse(/*enable_fido_auth=*/false);
   base::HistogramTester histogram_tester;
 
@@ -259,7 +241,8 @@ TEST_F(CardUnmaskPromptControllerImplTest, LogRealPanTryAgainFailure) {
       AutofillMetrics::PAYMENTS_RESULT_TRY_AGAIN_FAILURE, 1);
 }
 
-TEST_F(CardUnmaskPromptControllerImplTest, LogUnmaskingDurationResultSuccess) {
+TEST_F(CardUnmaskPromptControllerImplGenericTest,
+       LogUnmaskingDurationResultSuccess) {
   ShowPromptAndSimulateResponse(/*enable_fido_auth=*/false);
   base::HistogramTester histogram_tester;
 
@@ -272,7 +255,7 @@ TEST_F(CardUnmaskPromptControllerImplTest, LogUnmaskingDurationResultSuccess) {
       "Autofill.UnmaskPrompt.UnmaskingDuration.ServerCard.Success", 1);
 }
 
-TEST_F(CardUnmaskPromptControllerImplTest,
+TEST_F(CardUnmaskPromptControllerImplGenericTest,
        LogUnmaskingDurationTryAgainFailure) {
   ShowPromptAndSimulateResponse(/*enable_fido_auth=*/false);
   base::HistogramTester histogram_tester;
@@ -286,7 +269,7 @@ TEST_F(CardUnmaskPromptControllerImplTest,
       "Autofill.UnmaskPrompt.UnmaskingDuration.ServerCard.Failure", 1);
 }
 
-TEST_F(CardUnmaskPromptControllerImplTest,
+TEST_F(CardUnmaskPromptControllerImplGenericTest,
        LogUnmaskingDurationVcnRetrievalPermanentFailure) {
   ShowPromptAndSimulateResponse(/*enable_fido_auth=*/false,
                                 /*should_unmask_virtual_card=*/true);
@@ -304,13 +287,14 @@ TEST_F(CardUnmaskPromptControllerImplTest,
 
 // Tests to ensure the UI text elements are shown correctly in the card unmask
 // prompt.
-// The parameter indicates whether the virtual card feature is enabled on IOS.
-// It decides the text content we show in the prompt.
-class CardUnmaskPromptTextTest : public CardUnmaskPromptControllerImplTest,
-                                 public testing::WithParamInterface<bool> {
+// The parameter indicates whether the virtual card feature is enabled on Bling.
+// It decides the text content we show in the promp.
+class CardUnmaskPromptTextTest
+    : public CardUnmaskPromptControllerImplGenericTest,
+      public testing::WithParamInterface<bool> {
  public:
   void SetUp() override {
-    CardUnmaskPromptControllerImplTest::SetUp();
+    CardUnmaskPromptControllerImplGenericTest::SetUp();
 #if BUILDFLAG(IS_IOS)
     scoped_feature_list_.InitWithFeatureState(
         features::kAutofillEnableVirtualCards, GetParam());
@@ -321,7 +305,7 @@ class CardUnmaskPromptTextTest : public CardUnmaskPromptControllerImplTest,
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-INSTANTIATE_TEST_SUITE_P(CardUnmaskPromptControllerImplTest,
+INSTANTIATE_TEST_SUITE_P(CardUnmaskPromptControllerImplGenericTest,
                          CardUnmaskPromptTextTest,
                          ::testing::Bool());
 
@@ -521,7 +505,7 @@ TEST_P(
 
 class LoggingValidationTestForNickname
     : public CardUnmaskPromptControllerImplGenericTest,
-      public testing::TestWithParam<bool> {
+      public testing::WithParamInterface<bool> {
  public:
   LoggingValidationTestForNickname() : card_has_nickname_(GetParam()) {}
 
@@ -534,10 +518,6 @@ class LoggingValidationTestForNickname
 
   void SetUp() override {
     CardUnmaskPromptControllerImplGenericTest::SetUp();
-#if BUILDFLAG(IS_ANDROID)
-    pref_service_->registry()->RegisterBooleanPref(
-        prefs::kAutofillCreditCardFidoAuthOfferCheckboxState, true);
-#endif
     SetCreditCardForTesting(card_has_nickname_
                                 ? test::GetMaskedServerCardWithNickname()
                                 : test::GetMaskedServerCard());
@@ -827,7 +807,7 @@ TEST_P(LoggingValidationTestForNickname, LogTimeBeforeAbandonUnmasking) {
       card_has_nickname() ? 1 : 0);
 }
 
-INSTANTIATE_TEST_SUITE_P(CardUnmaskPromptControllerImplTest,
+INSTANTIATE_TEST_SUITE_P(CardUnmaskPromptControllerImplGenericTest,
                          LoggingValidationTestForNickname,
                          ::testing::Bool());
 
@@ -839,7 +819,7 @@ struct CvcCase {
 };
 
 class CvcInputValidationTest : public CardUnmaskPromptControllerImplGenericTest,
-                               public testing::TestWithParam<CvcCase> {
+                               public testing::WithParamInterface<CvcCase> {
  public:
   CvcInputValidationTest() = default;
 
@@ -847,14 +827,6 @@ class CvcInputValidationTest : public CardUnmaskPromptControllerImplGenericTest,
   CvcInputValidationTest& operator=(const CvcInputValidationTest&) = delete;
 
   ~CvcInputValidationTest() override = default;
-
-  void SetUp() override {
-    CardUnmaskPromptControllerImplGenericTest::SetUp();
-#if BUILDFLAG(IS_ANDROID)
-    pref_service_->registry()->RegisterBooleanPref(
-        prefs::kAutofillCreditCardFidoAuthOfferCheckboxState, true);
-#endif
-  }
 };
 
 TEST_P(CvcInputValidationTest, CvcInputValidation) {
@@ -872,7 +844,7 @@ TEST_P(CvcInputValidationTest, CvcInputValidation) {
             delegate_->details().cvc);
 }
 
-INSTANTIATE_TEST_SUITE_P(CardUnmaskPromptControllerImplTest,
+INSTANTIATE_TEST_SUITE_P(CardUnmaskPromptControllerImplGenericTest,
                          CvcInputValidationTest,
                          testing::Values(CvcCase{"123", true, "123"},
                                          CvcCase{"123 ", true, "123"},
@@ -881,7 +853,7 @@ INSTANTIATE_TEST_SUITE_P(CardUnmaskPromptControllerImplTest,
 
 class CvcInputAmexValidationTest
     : public CardUnmaskPromptControllerImplGenericTest,
-      public testing::TestWithParam<CvcCase> {
+      public testing::WithParamInterface<CvcCase> {
  public:
   CvcInputAmexValidationTest() = default;
 
@@ -890,14 +862,6 @@ class CvcInputAmexValidationTest
       delete;
 
   ~CvcInputAmexValidationTest() override = default;
-
-  void SetUp() override {
-    CardUnmaskPromptControllerImplGenericTest::SetUp();
-#if BUILDFLAG(IS_ANDROID)
-    pref_service_->registry()->RegisterBooleanPref(
-        prefs::kAutofillCreditCardFidoAuthOfferCheckboxState, true);
-#endif
-  }
 };
 
 TEST_P(CvcInputAmexValidationTest, CvcInputValidation) {
@@ -916,7 +880,7 @@ TEST_P(CvcInputAmexValidationTest, CvcInputValidation) {
             delegate_->details().cvc);
 }
 
-INSTANTIATE_TEST_SUITE_P(CardUnmaskPromptControllerImplTest,
+INSTANTIATE_TEST_SUITE_P(CardUnmaskPromptControllerImplGenericTest,
                          CvcInputAmexValidationTest,
                          testing::Values(CvcCase{"123", false},
                                          CvcCase{"123 ", false},
@@ -933,7 +897,7 @@ struct ExpirationDateTestCase {
 
 class ExpirationDateValidationTest
     : public CardUnmaskPromptControllerImplGenericTest,
-      public testing::TestWithParam<ExpirationDateTestCase> {
+      public testing::WithParamInterface<ExpirationDateTestCase> {
  public:
   ExpirationDateValidationTest() = default;
 
@@ -942,14 +906,6 @@ class ExpirationDateValidationTest
       delete;
 
   ~ExpirationDateValidationTest() override = default;
-
-  void SetUp() override {
-    CardUnmaskPromptControllerImplGenericTest::SetUp();
-#if BUILDFLAG(IS_ANDROID)
-    pref_service_->registry()->RegisterBooleanPref(
-        prefs::kAutofillCreditCardFidoAuthOfferCheckboxState, true);
-#endif
-  }
 };
 
 TEST_P(ExpirationDateValidationTest, ExpirationDateValidation) {
@@ -961,7 +917,7 @@ TEST_P(ExpirationDateValidationTest, ExpirationDateValidation) {
 }
 
 INSTANTIATE_TEST_SUITE_P(
-    CardUnmaskPromptControllerImplTest,
+    CardUnmaskPromptControllerImplGenericTest,
     ExpirationDateValidationTest,
     testing::Values(ExpirationDateTestCase{"01", "2040", true},
                     ExpirationDateTestCase{"1", "2040", true},
@@ -972,15 +928,14 @@ INSTANTIATE_TEST_SUITE_P(
 
 class VirtualCardErrorTest
     : public CardUnmaskPromptControllerImplGenericTest,
-      public testing::TestWithParam<AutofillClient::PaymentsRpcResult> {
+      public testing::WithParamInterface<AutofillClient::PaymentsRpcResult> {
  public:
-  void SetUp() override {
-    CardUnmaskPromptControllerImplGenericTest::SetUp();
-#if BUILDFLAG(IS_ANDROID)
-    pref_service_->registry()->RegisterBooleanPref(
-        prefs::kAutofillCreditCardFidoAuthOfferCheckboxState, true);
-#endif
-  }
+  VirtualCardErrorTest() = default;
+
+  VirtualCardErrorTest(const VirtualCardErrorTest&) = delete;
+  VirtualCardErrorTest& operator=(const VirtualCardErrorTest&) = delete;
+
+  ~VirtualCardErrorTest() override = default;
 };
 
 #if BUILDFLAG(IS_ANDROID)
@@ -1006,7 +961,7 @@ TEST_P(VirtualCardErrorTest, VirtualCardFailureDismissesUnmaskPrompt) {
 }
 
 INSTANTIATE_TEST_SUITE_P(
-    CardUnmaskPromptControllerImplTest,
+    CardUnmaskPromptControllerImplGenericTest,
     VirtualCardErrorTest,
     testing::Values(
         AutofillClient::PaymentsRpcResult::kVcnRetrievalPermanentFailure,
