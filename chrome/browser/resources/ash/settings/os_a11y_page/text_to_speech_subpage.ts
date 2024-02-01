@@ -52,9 +52,8 @@ export enum PdfOcrUserSelection {
 export enum ScreenAiInstallStatus {
   NOT_DOWNLOADED = 0,
   DOWNLOADING = 1,
-  FAILED = 2,
+  DOWNLOAD_FAILED = 2,
   DOWNLOADED = 3,
-  READY = 4,
 }
 
 const SettingsTextToSpeechSubpageElementBase =
@@ -172,12 +171,10 @@ export class SettingsTextToSpeechSubpageElement extends
         return this.pdfOcrProgress_ > 0 && this.pdfOcrProgress_ < 100 ?
             this.i18n('pdfOcrDownloadProgressLabel', this.pdfOcrProgress_) :
             this.i18n('pdfOcrDownloadingLabel');
-      case ScreenAiInstallStatus.FAILED:
+      case ScreenAiInstallStatus.DOWNLOAD_FAILED:
         return this.i18n('pdfOcrDownloadErrorLabel');
       case ScreenAiInstallStatus.DOWNLOADED:
         return this.i18n('pdfOcrDownloadCompleteLabel');
-      case ScreenAiInstallStatus.READY:
-        // No subtitle update in this case
       case ScreenAiInstallStatus.NOT_DOWNLOADED:
         // No subtitle update in this case
       default:

@@ -220,20 +220,17 @@ void ScreenAIInstallState::SetComponentFolder(
   // session will continue using that and the new one will be used after next
   // Chrome restart. Otherwise the new component will be used when a service
   // request arrives as its path is stored in |component_binary_path_|.
-  if (state_ != State::kReady && state_ != State::kDownloaded) {
+  if (state_ != State::kDownloaded) {
     SetState(State::kDownloaded);
   }
 }
 
 void ScreenAIInstallState::SetState(State state) {
   if (state == state_) {
-    // Failed and ready state can be repeated as they come from different
-    // profiles. Downloading can be repeated in ChromeOS tests that call
+    // `kDownloadFailed` state can be repeated as download can be retriggered.
+    // `kDownloading` can be repeated in ChromeOS tests that call
     // LoginManagerTest::AddUser() and reset UserSessionInitializer.
-    // TODO(crbug.com/1443341): While the case is highly unexpected, add more
-    // control logic if state is changed from failed to ready or vice versa.
-    DCHECK(state == State::kReady || state == State::kDownloadFailed ||
-           state == State::kDownloading);
+    DCHECK(state == State::kDownloadFailed || state == State::kDownloading);
     return;
   }
 
@@ -254,10 +251,6 @@ bool ScreenAIInstallState::IsComponentAvailable() {
   return !get_component_binary_path().empty();
 }
 
-void ScreenAIInstallState::SetComponentReadyForTesting() {
-  state_ = State::kReady;
-}
-
 bool ScreenAIInstallState::MayTryDownload() {
   switch (state_) {
     case State::kNotDownloaded:
@@ -266,7 +259,6 @@ bool ScreenAIInstallState::MayTryDownload() {
 
     case State::kDownloading:
     case State::kDownloaded:
-    case State::kReady:
       return false;
   }
 }

@@ -12,9 +12,8 @@ import {sendWithPromise} from 'chrome://resources/js/cr.js';
 export enum ScreenAiInstallStatus {
   NOT_DOWNLOADED = 0,
   DOWNLOADING = 1,
-  FAILED = 2,
+  DOWNLOAD_FAILED = 2,
   DOWNLOADED = 3,
-  READY = 4,
 }
 // </if>
 

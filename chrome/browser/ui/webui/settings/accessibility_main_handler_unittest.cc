@@ -187,18 +187,7 @@ TEST_F(AccessibilityMainHandlerPdfOcrTest,
   size_t call_data_count_before_call = test_web_ui()->call_data().size();
 
   screen_ai::ScreenAIInstallState::State state =
-      screen_ai::ScreenAIInstallState::State::kFailed;
-  SimulateSetState(state);
-  ExpectCallToWebUI(kWebUIListenerCall, kPdfOcrStateChangedEventName,
-                    /*expected_arg=*/static_cast<int>(state),
-                    /*call_count=*/call_data_count_before_call + 1u);
-}
-
-TEST_F(AccessibilityMainHandlerPdfOcrTest, MessageForScreenAIReadyState) {
-  size_t call_data_count_before_call = test_web_ui()->call_data().size();
-
-  screen_ai::ScreenAIInstallState::State state =
-      screen_ai::ScreenAIInstallState::State::kReady;
+      screen_ai::ScreenAIInstallState::State::kDownloadFailed;
   SimulateSetState(state);
   ExpectCallToWebUI(kWebUIListenerCall, kPdfOcrStateChangedEventName,
                     /*expected_arg=*/static_cast<int>(state),
@@ -209,9 +198,9 @@ TEST_F(AccessibilityMainHandlerPdfOcrTest,
        MessageForScreenAINotDownloadedState) {
   size_t call_data_count_before_call = test_web_ui()->call_data().size();
 
-  // Either `kReady` or `kFailed` needs to be set for testing `kNotDownloaded`.
+  // `kDownloadFailed` needs to be set for testing `kNotDownloaded`.
   screen_ai::ScreenAIInstallState::State state =
-      screen_ai::ScreenAIInstallState::State::kReady;
+      screen_ai::ScreenAIInstallState::State::kDownloadFailed;
   SimulateSetState(state);
   ExpectCallToWebUI(kWebUIListenerCall, kPdfOcrStateChangedEventName,
                     /*expected_arg=*/static_cast<int>(state),

@@ -63,7 +63,7 @@ void OnInstallCompleted(
   if (install_result.error != dlcservice::kErrorNone) {
     VLOG(0) << "ScreenAI installation failed: " << install_result.error;
     screen_ai::ScreenAIInstallState::GetInstance()->SetState(
-        screen_ai::ScreenAIInstallState::State::kFailed);
+        screen_ai::ScreenAIInstallState::State::kDownloadFailed);
     return;
   }
 

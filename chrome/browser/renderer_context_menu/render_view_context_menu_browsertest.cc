@@ -157,7 +157,8 @@
 #endif
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-#include "chrome/browser/screen_ai/screen_ai_install_state.h"
+#include "chrome/browser/accessibility/pdf_ocr_controller.h"
+#include "chrome/browser/accessibility/pdf_ocr_controller_factory.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -2911,8 +2912,8 @@ class PdfOcrContextMenuBrowserTest
     accessibility_state_utils::OverrideIsScreenReaderEnabledForTesting(
         IsScreenReaderEnabled());
     if (IsComponentReady()) {
-      screen_ai::ScreenAIInstallState::GetInstance()
-          ->SetComponentReadyForTesting();
+      screen_ai::PdfOcrControllerFactory::GetForProfile(browser()->profile())
+          ->set_ocr_ready_for_testing();
     }
   }
 

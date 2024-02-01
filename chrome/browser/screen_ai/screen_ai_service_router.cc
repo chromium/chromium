@@ -191,10 +191,7 @@ void ScreenAIServiceRouter::StateChanged(ScreenAIInstallState::State state) {
       break;
     }
 
-    case ScreenAIInstallState::State::kDownloaded:
-      ABSL_FALLTHROUGH_INTENDED;
-
-    case ScreenAIInstallState::State::kReady: {
+    case ScreenAIInstallState::State::kDownloaded: {
       std::set<Service> all_services = GetAllPendingStatusServices();
       for (Service service : all_services) {
         InitializeServiceIfNeeded(service);
@@ -261,8 +258,7 @@ void ScreenAIServiceRouter::LaunchIfNotRunning() {
   }
 
   // TODO(crbug.com/1520814): Remove after crash root cause is fixed.
-  if (install_state != screen_ai::ScreenAIInstallState::State::kDownloaded &&
-      install_state != screen_ai::ScreenAIInstallState::State::kReady) {
+  if (install_state != screen_ai::ScreenAIInstallState::State::kDownloaded) {
     base::debug::Alias(&install_state);
     base::debug::DumpWithoutCrashing();
     return;
@@ -401,12 +397,6 @@ void ScreenAIServiceRouter::SetLibraryLoadState(int request_id,
       elapsed_time);
 
   CallPendingStatusRequests(service, successful);
-
-  // TODO(crbug.com/1520424): Remove after all clients are updated to use
-  // callback functions to get ready state.
-  screen_ai::ScreenAIInstallState::GetInstance()->SetState(
-      successful ? screen_ai::ScreenAIInstallState::State::kReady
-                 : screen_ai::ScreenAIInstallState::State::kFailed);
 }
 
 bool ScreenAIServiceRouter::IsConnectionBoundForTesting(Service service) {

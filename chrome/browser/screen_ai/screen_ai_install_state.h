@@ -28,12 +28,9 @@ class ScreenAIInstallState {
     // Component download is in progress.
     kDownloading,
     // Component download failed.
-    kFailed,
-    kDownloadFailed = kFailed,
+    kDownloadFailed,
     // Component is downloaded but not loaded yet.
-    kDownloaded,
-    // Component is initialized successfully by at least one profile.
-    kReady
+    kDownloaded
   };
 
   class Observer : public base::CheckedObserver {
@@ -82,8 +79,6 @@ class ScreenAIInstallState {
 
   // Returns true if the component is downloaded and not failed to initialize.
   bool IsComponentAvailable();
-
-  void SetComponentReadyForTesting();
 
   // Sets the component state and informs the observers.
   void SetState(State state);

@@ -303,10 +303,6 @@ void PdfOcrController::StateChanged(ScreenAIInstallState::State state) {
     case ScreenAIInstallState::State::kDownloaded:
       AnnounceToScreenReader(IDS_SETTINGS_PDF_OCR_DOWNLOAD_COMPLETE);
       break;
-
-    // TODO(crbug.com/1520424): Deprecated, remove.
-    case ScreenAIInstallState::State::kReady:
-      break;
   }
 }
 

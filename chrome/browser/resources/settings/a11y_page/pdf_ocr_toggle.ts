@@ -95,11 +95,10 @@ export class SettingsPdfOcrToggleElement extends
         return this.pdfOcrProgress_ > 0 && this.pdfOcrProgress_ < 100 ?
             this.i18n('pdfOcrDownloadProgressLabel', this.pdfOcrProgress_) :
             this.i18n('pdfOcrDownloadingLabel');
-      case ScreenAiInstallStatus.FAILED:
+      case ScreenAiInstallStatus.DOWNLOAD_FAILED:
         return this.i18n('pdfOcrDownloadErrorLabel');
       case ScreenAiInstallStatus.DOWNLOADED:
         return this.i18n('pdfOcrDownloadCompleteLabel');
-      case ScreenAiInstallStatus.READY:  // fallthrough
       case ScreenAiInstallStatus.NOT_DOWNLOADED:
         // No subtitle update, so show a generic subtitle describing PDF OCR.
         return this.i18n('pdfOcrSubtitle');

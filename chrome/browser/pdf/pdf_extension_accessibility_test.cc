@@ -1366,8 +1366,7 @@ IN_PROC_BROWSER_TEST_P(PDFOCRIntegrationTest, EnsureScreenAIInitializes) {
   // The library should be downloaded anyway since the kill switch only applies
   // to OCR and not other functionalities.
   auto state = screen_ai::ScreenAIInstallState::GetInstance()->get_state();
-  EXPECT_TRUE(state == screen_ai::ScreenAIInstallState::State::kDownloaded ||
-              state == screen_ai::ScreenAIInstallState::State::kReady);
+  EXPECT_TRUE(state == screen_ai::ScreenAIInstallState::State::kDownloaded);
 }
 
 IN_PROC_BROWSER_TEST_P(PDFOCRIntegrationTest, HelloWorld) {
