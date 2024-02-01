@@ -29,6 +29,8 @@ jobs:
         uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
         with:
           path: 'bidi'
+      - name: Set up FFmpeg
+        uses: FedericoCarboni/setup-ffmpeg@36c6454b5a2348e7794ba2d82a21506605921e3d # v3.0.0
       - name: Set up Node.js
         uses: actions/setup-node@b39b52d1213e96004bfcb1c61a8a6fa8ab84f3e8 # v4.0.1
         with:
@@ -75,4 +77,4 @@ jobs:
         working-directory: puppeteer
         env:
           PUPPETEER_EXECUTABLE_PATH: ${{ steps.browser.outputs.executablePath }}
-        run: npm run test:chrome:bidi
+        run: xvfb-run --auto-servernum npm run test:chrome:bidi
