@@ -565,7 +565,9 @@ class CORE_EXPORT Document : public ContainerNode,
   HTMLCollection* DocumentAllNamedItems(const AtomicString& name);
 
   // The unassociated listed elements are listed elements that are not
-  // associated to a <form> element.
+  // associated to a <form> element. Note that if
+  // `features::kAutofillIncludeShadowDomInUnassociatedListedElements` is
+  // enabled, this includes elements inside Shadow DOM.
   const ListedElement::List& UnassociatedListedElements() const;
   void MarkUnassociatedListedElementsDirty();
 

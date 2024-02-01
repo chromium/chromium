@@ -153,6 +153,12 @@ BASE_FEATURE(kAudioWorkletThreadRealtimePriority,
              "AudioWorkletThreadRealtimePriority",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// When enabled, extraction of unassociated listed elements includes elements
+// inside Shadow DOM.
+BASE_FEATURE(kAutofillIncludeShadowDomInUnassociatedListedElements,
+             "AutofillIncludeShadowDomInUnassociatedListedElements",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If disabled (default for many years), autofilling triggers KeyDown and
 // KeyUp events that do not send any key codes. If enabled, these events
 // contain the "Unidentified" key.

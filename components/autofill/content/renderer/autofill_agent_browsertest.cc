@@ -45,9 +45,12 @@ namespace {
 using ::testing::_;
 using ::testing::AllOf;
 using ::testing::ElementsAre;
+using ::testing::ElementsAreArray;
 using ::testing::Eq;
 using ::testing::Field;
+using ::testing::IsEmpty;
 using ::testing::IsNull;
+using ::testing::Matcher;
 using ::testing::NiceMock;
 using ::testing::Optional;
 using ::testing::SizeIs;
@@ -69,9 +72,25 @@ auto IsFormId(absl::variant<FormRendererId, size_t> expectation) {
   return Eq(id);
 }
 
-// Matches a FormData with a specific FormData::renderer_id.
+// Matches a `FormData` whose `FormData::fields`' `FormFieldData::id_attribute`
+// match `id_attributes`.
+auto HasFieldsWithIdAttributes(std::vector<std::u16string> id_attributes) {
+  std::vector<Matcher<FormFieldData>> field_matchers;
+  for (std::u16string& id_attribute : id_attributes) {
+    field_matchers.push_back(
+        Field(&FormFieldData::id_attribute, std::move(id_attribute)));
+  }
+  return Field(&FormData::fields, ElementsAreArray(field_matchers));
+}
+
+// Matches a `FormData` with a specific `FormData::renderer_id`.
 auto HasFormId(absl::variant<FormRendererId, size_t> expectation) {
   return Field(&FormData::renderer_id, IsFormId(expectation));
+}
+
+// Matches a `FormData` with a specific `FormData::id_attribute`.
+auto HasFormIdAttribute(std::u16string id_attribute) {
+  return Field(&FormData::id_attribute, std::move(id_attribute));
 }
 
 // Matches a FormData with |num| FormData::fields.
@@ -206,6 +225,83 @@ TEST_F(AutofillAgentTestWithFeatures, TriggerFormExtractionWithResponse) {
   task_environment_.FastForwardBy(AutofillAgent::kFormsSeenThrottle / 2);
   EXPECT_CALL(mock_callback, Run(true));
   task_environment_.FastForwardBy(AutofillAgent::kFormsSeenThrottle / 2);
+}
+
+class AutofillAgentShadowDomTest : public AutofillAgentTestWithFeatures {
+ private:
+  base::test::ScopedFeatureList scoped_features_{
+      blink::features::kAutofillIncludeShadowDomInUnassociatedListedElements};
+};
+
+// Tests that unassociated form control elements in a Shadow DOM tree that do
+// not have a form ancestor are extracted correctly.
+TEST_F(AutofillAgentShadowDomTest, UnownedUnassociatedElements) {
+  EXPECT_CALL(autofill_driver(),
+              FormsSeen(HasSingleElementWhich(
+                            HasFieldsWithIdAttributes({u"t1", u"t2"})),
+                        IsEmpty()));
+  LoadHTML(R"(<body>
+    <div>
+      <template shadowrootmode="open">
+        <input type="text" id="t1">
+      </template>
+    </div>
+    <input type="text" id="t2">
+    </body>)");
+  WaitForFormsSeen();
+}
+
+// Tests that unassociated form control elements whose closest shadow-tree
+// including form ancestor is not in a shadow tree are extracted correctly.
+TEST_F(AutofillAgentShadowDomTest, UnassociatedElementsOwnedByNonShadowForm) {
+  EXPECT_CALL(
+      autofill_driver(),
+      FormsSeen(HasSingleElementWhich(
+                    HasFormIdAttribute(u"f1"),
+                    HasFieldsWithIdAttributes({u"t1", u"t2", u"t3", u"t4"})),
+                IsEmpty()));
+  LoadHTML(
+      R"(<body><form id="f1">
+          <div>
+            <template shadowrootmode="open">
+              <input type="text" id="t1">
+              <input type="text" id="t2">
+            </template>
+          </div>
+          <div>
+            <template shadowrootmode="open">
+              <input type="text" id="t3">
+            </template>
+          </div>
+          <input type="text" id="t4">
+       </form></body>)");
+  WaitForFormsSeen();
+}
+
+// Tests that form control elements that are placed into a slot that is a child
+// of a form inside a shadow DOM are not considered to be owned by the form
+// inside the shadow DOM, but are considered to be unowned. This is consistent
+// with how the DOM handles these form control elements - the "elements" of the
+// form "ft" are considered to be empty.
+TEST_F(AutofillAgentShadowDomTest, FormControlInsideSlotWithinFormInShadowDom) {
+  EXPECT_CALL(autofill_driver(),
+              FormsSeen(HasSingleElementWhich(
+                            HasFormIdAttribute(u""),
+                            HasFieldsWithIdAttributes({u"t1", u"t2"})),
+                        IsEmpty()));
+  LoadHTML(
+      R"(<body>
+        <div>
+          <template shadowrootmode=open>
+            <form id=ft>
+              <slot></slot>
+            </form>
+          </template>
+          <input id=t1>
+          <input id=t2>
+        </div>
+      </body>)");
+  WaitForFormsSeen();
 }
 
 class AutofillAgentTestExtractForms : public AutofillAgentTestWithFeatures {

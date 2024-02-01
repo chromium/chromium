@@ -1530,6 +1530,38 @@ bool ScriptModifiedUsernameOrCreditCardNumberAcceptable(
   return field_data_manager.FindMatchedValue(value);
 }
 
+// Returns whether `node` has a shadow-tree-including ancestor that is a
+// `<form>`.
+bool HasFormAncestor(WebNode node) {
+  node = node.ParentOrShadowHostNode();
+  while (!node.IsNull()) {
+    if (HasTagName<kForm>(node)) {
+      return true;
+    }
+    node = node.ParentOrShadowHostNode();
+  }
+  return false;
+}
+
+// Returns the unowned form control elements of `document`. Note that if
+// `blink::features::kAutofillIncludeShadowDomInUnassociatedListedElements` is
+// enabled, unassociated elements need not be unowned: A form control element
+// may be unassociated inside its Shadow DOM, but owned (in the Autofill sense)
+// by a <form> containing the shadow host.
+std::vector<WebFormControlElement> GetUnownedFormControlElements(
+    const WebDocument& document) {
+  std::vector<WebFormControlElement> form_control_elements =
+      document.UnassociatedFormControls().ReleaseVector();
+  if (base::FeatureList::IsEnabled(
+          blink::features::
+              kAutofillIncludeShadowDomInUnassociatedListedElements)) {
+    std::erase_if(form_control_elements, [](const WebFormControlElement& e) {
+      return !e.OwnerShadowHost().IsNull() && HasFormAncestor(e);
+    });
+  }
+  return form_control_elements;
+}
+
 }  // namespace
 
 std::vector<WebElement> GetWebElementsFromIdList(const WebDocument& document,
@@ -1871,7 +1903,7 @@ std::vector<WebFormControlElement> GetFormControlElements(
     const WebFormElement& form_element) {
   return !form_element.IsNull()
              ? form_element.GetFormControlElements().ReleaseVector()
-             : document.UnassociatedFormControls().ReleaseVector();
+             : GetUnownedFormControlElements(document);
 }
 
 std::vector<blink::WebFormControlElement> GetAutofillableFormControlElements(
@@ -1931,6 +1963,10 @@ void WebFormControlElementToFormField(
 
   // Traverse up through shadow hosts to see if we can gather missing
   // attributes.
+  // TODO(crbug.com/1268085): Make sure this works for all shadow DOM cases,
+  // including cases in which the owning form is multiple (shadow DOM) levels
+  // apart from the form control element. Also check whether we cannot simplify
+  // some of the shadow DOM traversals here.
   size_t levels_up = kMaxShadowLevelsUp;
   for (WebElement host = element.OwnerShadowHost();
        !host.IsNull() && levels_up > 0 && !form_element.IsNull() &&
@@ -2058,6 +2094,9 @@ void WebFormControlElementToFormField(
   }
 }
 
+// TODO(crbug.com/1268085): Make sure this works for all shadow DOM cases,
+// including cases in which the owning form is multiple (shadow DOM) levels
+// apart from the form control element.
 WebFormElement GetOwningForm(const WebFormControlElement& form_control) {
   WebFormElement associated_form = form_control.Form();
   if (!associated_form.IsNull()) {
@@ -2616,7 +2655,7 @@ void TraverseDomForFourDigitCombinations(
                        std::back_inserter(form_control_elements));
   }
 
-  base::ranges::move(document.UnassociatedFormControls().ReleaseVector(),
+  base::ranges::move(GetUnownedFormControlElements(document),
                      std::back_inserter(form_control_elements));
 
   auto extract_four_digit_combinations = [&](WebNode node) {

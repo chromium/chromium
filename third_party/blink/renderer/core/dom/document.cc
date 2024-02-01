@@ -163,6 +163,7 @@
 #include "third_party/blink/renderer/core/dom/processing_instruction.h"
 #include "third_party/blink/renderer/core/dom/scripted_animation_controller.h"
 #include "third_party/blink/renderer/core/dom/scripted_idle_task_controller.h"
+#include "third_party/blink/renderer/core/dom/shadow_including_tree_order_traversal.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/dom/slot_assignment.h"
 #include "third_party/blink/renderer/core/dom/slot_assignment_engine.h"
@@ -664,11 +665,23 @@ const ListedElement::List& Document::UnassociatedListedElementsList::Get(
     const Node& root = owner.GetTreeScope().RootNode();
     DCHECK(list_.empty());
 
-    // TODO(crbug.com/1243730): We do not consider shadow trees for now.
-    for (HTMLElement& element : Traversal<HTMLElement>::StartsAfter(root)) {
-      ListedElement* listed_element = ListedElement::From(element);
-      if (listed_element && !listed_element->Form()) {
-        list_.push_back(listed_element);
+    if (base::FeatureList::IsEnabled(
+            features::kAutofillIncludeShadowDomInUnassociatedListedElements)) {
+      for (Node& current :
+           ShadowIncludingTreeOrderTraversal::DescendantsOf(root)) {
+        if (HTMLElement* element = DynamicTo<HTMLElement>(current)) {
+          if (ListedElement* listed_element = ListedElement::From(*element);
+              listed_element && !listed_element->Form()) {
+            list_.push_back(listed_element);
+          }
+        }
+      }
+    } else {
+      for (HTMLElement& element : Traversal<HTMLElement>::StartsAfter(root)) {
+        ListedElement* listed_element = ListedElement::From(element);
+        if (listed_element && !listed_element->Form()) {
+          list_.push_back(listed_element);
+        }
       }
     }
     dirty_ = false;
