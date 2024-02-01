@@ -210,9 +210,9 @@ class TargetPage {
             event.params.name === 'load' && event.params.frameId === frameId);
   }
 
-  async close() {
-    const dp = this._session.protocol();
-    dp.Target.closeTarget({targetId: this._targetId});
+  close() {
+    const dp = this._browserSession.protocol();
+    return dp.Target.closeTarget({targetId: this._targetId});
   }
 }
 

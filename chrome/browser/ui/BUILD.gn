@@ -2015,7 +2015,6 @@ static_library("ui") {
       "//chrome/browser/companion/core/mojom:mojo_bindings",
       "//chrome/browser/companion/text_finder",
       "//chrome/browser/companion/visual_query",
-      "//chrome/browser/headless:command_processor",
       "//chrome/browser/image_editor",
       "//chrome/browser/image_editor:image_editor_component_util",
       "//chrome/browser/media/prefs:prefs",
@@ -2170,6 +2169,10 @@ static_library("ui") {
         "webui/new_tab_page/foo/foo_handler.h",
       ]
       deps += [ "//chrome/browser/ui/webui/new_tab_page/foo:mojo_bindings" ]
+    }
+
+    if (!is_android) {
+      deps += [ "//chrome/browser/headless:command_processor" ]
     }
   }
 

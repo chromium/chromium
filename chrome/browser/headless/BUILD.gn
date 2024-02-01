@@ -46,24 +46,25 @@ source_set("metrics") {
   ]
 }
 
-source_set("command_processor") {
-  sources = [
-    "headless_command_processor.cc",
-    "headless_command_processor.h",
-  ]
-
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
-
-  deps = [
-    ":headless",
-    "//base",
-    "//chrome/common:non_code_constants",
-    "//components/headless/command_handler",
-    "//content/public/browser",
-  ]
-}
-
 if (!is_android) {
+  source_set("command_processor") {
+    sources = [
+      "headless_command_processor.cc",
+      "headless_command_processor.h",
+    ]
+
+    configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
+    deps = [
+      ":headless",
+      "//base",
+      "//chrome/common:non_code_constants",
+      "//components/headless/command_handler",
+      "//components/keep_alive_registry",
+      "//content/public/browser",
+    ]
+  }
+
   source_set("browser_tests") {
     testonly = true
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
