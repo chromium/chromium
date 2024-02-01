@@ -1460,9 +1460,6 @@ TEST_F(PasswordAutofillManagerTest,
 // generation button does not.
 TEST_F(PasswordAutofillManagerTest,
        MaybeShowPasswordSuggestionsWithAccountPasswordsEnabled) {
-  base::test::ScopedFeatureList features;
-  features.InitAndEnableFeature(features::kEnablePasswordsAccountStorage);
-
   TestPasswordManagerClient client;
   client.SetAccountStorageOptIn(false);
 
@@ -1495,9 +1492,6 @@ TEST_F(PasswordAutofillManagerTest,
 }
 
 TEST_F(PasswordAutofillManagerTest, DisplayAccountSuggestionsIndicatorIcon) {
-  base::test::ScopedFeatureList features;
-  features.InitAndEnableFeature(features::kEnablePasswordsAccountStorage);
-
   TestPasswordManagerClient client;
   NiceMock<MockAutofillClient> autofill_client;
   InitializePasswordAutofillManager(&client, &autofill_client);
