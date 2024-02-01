@@ -85,6 +85,7 @@ if (current_cpu == "x86" || (current_cpu == "x64" && !is_msan)) {
     sources += aom_ports_asm_x86
     sources += aom_av1_encoder_asm_sse2
     sources += aom_dsp_encoder_asm_sse2
+    sources += aom_dsp_encoder_asm_ssse3
     if (current_cpu == "x64") {
       sources += aom_av1_encoder_asm_ssse3_x86_64
       sources += aom_dsp_encoder_asm_sse2_x86_64
