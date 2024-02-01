@@ -4304,7 +4304,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Android.ThumbnailCache.InMemoryCacheEntries"
     units="thumbnails" expires_after="2024-06-30">
   <owner>ckitagawa@chromium.org</owner>
-  <owner>dtrainor@chromium.com</owner>
+  <owner>dtrainor@chromium.org</owner>
   <summary>
     Records the number of entries for the in-memory ETC1 and bitmap thumbnail
     cache. Recorded on a Poisson distributed frequency with a mean of 5 minutes
@@ -4315,7 +4315,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Android.ThumbnailCache.InMemoryCacheSize" units="KiB"
     expires_after="2024-06-30">
   <owner>ckitagawa@chromium.org</owner>
-  <owner>dtrainor@chromium.com</owner>
+  <owner>dtrainor@chromium.org</owner>
   <summary>
     Records the in-memory ETC1 and bitmap thumbnail cache size in KiB. Recorded
     on a Poisson distributed frequency with a mean of 5 minutes starting 1

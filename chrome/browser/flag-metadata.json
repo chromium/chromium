@@ -451,7 +451,7 @@
   },
   {
     "name": "assistant-iph",
-    "owners": ["wutao@chromium.com", "assistive-eng@google.com"],
+    "owners": ["wutao@chromium.org", "assistive-eng@google.com"],
     "expiry_milestone": 126
   },
   {

@@ -19,7 +19,7 @@ items:
   value: 3
 owners:
 - mpolzer@google.com
-- crisguerrero@chromium.com
+- crisguerrero@chromium.org
 - chromeos-commercial-remote-management@google.com
 schema:
   enum:

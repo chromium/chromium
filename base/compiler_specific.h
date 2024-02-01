@@ -405,7 +405,7 @@ inline constexpr bool AnalyzerAssumeTrue(bool arg) {
 
 // Marks a member function as reinitializing a moved-from variable.
 // See also
-// https://clang.llvm.org/extra/clang-tidy/checks/bugprone-use-after-move.html#reinitialization
+// https://clang.llvm.org/extra/clang-tidy/checks/bugprone/use-after-move.html#reinitialization
 #if defined(__clang__) && HAS_ATTRIBUTE(reinitializes)
 #define REINITIALIZES_AFTER_MOVE [[clang::reinitializes]]
 #else
