@@ -6676,6 +6676,9 @@ crbug.com/1520409 [ Linux ] virtual/shared-storage-fenced-frame-mparch/external/
 # May fail due to test framework issue. Disabling while this is being resolved.
 crbug.com/1367312 [ Win ] fast/dom/timer-throttling-hidden-page.html [ Failure Pass ]
 
+# Temporarily disable test to land frontend changes
+crbug.com/1523521 http/tests/devtools/profiler/heap-snapshot-summary-show-ranges.js [ Failure Pass ]
+
 # Gardener: 2024-01-23
 crbug.com/1519178 [ Mac12 ] virtual/fenced-frame-mparch/http/tests/inspector-protocol/fenced-frame/automatic-beacon.https.js [ Failure Pass ]
 crbug.com/1521090 [ Mac12 ] virtual/static-routing-api/http/tests/inspector-protocol/service-worker/tentative/static-router/receive-router-rules-on-update.js [ Failure Pass ]
