@@ -684,7 +684,7 @@ export class NetworkRequest {
   }
 
   static #getCookies(
-    associatedCookies: Protocol.Network.BlockedCookieWithReason[]
+    associatedCookies: Protocol.Network.AssociatedCookie[]
   ): Network.Cookie[] {
     return associatedCookies
       .filter(({blockedReasons}) => {
