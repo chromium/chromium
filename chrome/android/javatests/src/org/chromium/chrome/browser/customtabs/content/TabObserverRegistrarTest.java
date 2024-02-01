@@ -21,6 +21,7 @@ import org.chromium.chrome.browser.customtabs.CustomTabsIntentTestUtils;
 import org.chromium.chrome.browser.customtabs.content.TabObserverRegistrar.CustomTabTabObserver;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.Tab.LoadUrlResult;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -45,7 +46,7 @@ public class TabObserverRegistrarTest {
         }
 
         @Override
-        public void onLoadUrl(Tab tab, LoadUrlParams params, int loadType) {
+        public void onLoadUrl(Tab tab, LoadUrlParams params, LoadUrlResult loadUrlResult) {
             mUrlLoadRequests.add(params.getUrl());
         }
     }

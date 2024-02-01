@@ -8,6 +8,7 @@ import android.graphics.Bitmap;
 
 import androidx.annotation.Nullable;
 
+import org.chromium.chrome.browser.tab.Tab.LoadUrlResult;
 import org.chromium.components.find_in_page.FindMatchRectsDetails;
 import org.chromium.components.find_in_page.FindNotificationDetails;
 import org.chromium.content_public.browser.LoadUrlParams;
@@ -63,13 +64,14 @@ public interface TabObserver {
 
     /**
      * Called when loadUrl is triggered on a a {@link Tab}.
-     * @param tab      The notifying {@link Tab}.
-     * @param params   The params describe the page being loaded.
-     * @param loadType The type of load that was performed.
      *
-     * @see Tab$TabLoadStatus#PAGE_LOAD_FAILED
-     * @see Tab$TabLoadStatus#DEFAULT_PAGE_LOAD
+     * @param tab The notifying {@link Tab}.
+     * @param params The params describe the page being loaded.
+     * @param loadUrlResult The result of the loadUrl.
      */
+    void onLoadUrl(Tab tab, LoadUrlParams params, LoadUrlResult loadUrlResult);
+
+    // DEPRECATED:
     void onLoadUrl(Tab tab, LoadUrlParams params, int loadType);
 
     /**

@@ -152,6 +152,7 @@ import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.Tab.LoadUrlResult;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabTestUtils;
@@ -356,7 +357,10 @@ public class CustomTabActivityTest {
                     tab.addObserver(
                             new EmptyTabObserver() {
                                 @Override
-                                public void onLoadUrl(Tab tab, LoadUrlParams params, int loadType) {
+                                public void onLoadUrl(
+                                        Tab tab,
+                                        LoadUrlParams params,
+                                        LoadUrlResult loadUrlResult) {
                                     assertTrue(
                                             params.getVerbatimHeaders()
                                                     .contains("bearer-token: Some token"));
@@ -959,7 +963,10 @@ public class CustomTabActivityTest {
                     tab.addObserver(
                             new EmptyTabObserver() {
                                 @Override
-                                public void onLoadUrl(Tab tab, LoadUrlParams params, int loadType) {
+                                public void onLoadUrl(
+                                        Tab tab,
+                                        LoadUrlParams params,
+                                        LoadUrlResult loadUrlResult) {
                                     assertEquals(referrer, params.getReferrer().getUrl());
                                 }
 
@@ -1005,7 +1012,10 @@ public class CustomTabActivityTest {
                     tab.addObserver(
                             new EmptyTabObserver() {
                                 @Override
-                                public void onLoadUrl(Tab tab, LoadUrlParams params, int loadType) {
+                                public void onLoadUrl(
+                                        Tab tab,
+                                        LoadUrlParams params,
+                                        LoadUrlResult loadUrlResult) {
                                     assertEquals(referrer, params.getReferrer().getUrl());
                                 }
 

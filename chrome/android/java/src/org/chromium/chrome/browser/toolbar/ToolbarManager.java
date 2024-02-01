@@ -103,6 +103,7 @@ import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tab.SadTab;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.Tab.LoadUrlResult;
 import org.chromium.chrome.browser.tab.TabBrowserControlsConstraintsHelper;
 import org.chromium.chrome.browser.tab.TabObscuringHandler;
 import org.chromium.chrome.browser.tab.TabSelectionType;
@@ -1002,12 +1003,14 @@ public class ToolbarManager
                     }
 
                     @Override
-                    public void onLoadUrl(Tab tab, LoadUrlParams params, int loadType) {
+                    public void onLoadUrl(
+                            Tab tab, LoadUrlParams params, LoadUrlResult loadUrlResult) {
                         onBackPressStateChanged();
                         NewTabPage ntp = getNewTabPageForCurrentTab();
                         if (ntp == null) return;
                         if (!UrlUtilities.isNtpUrl(params.getUrl())
-                                && loadType != Tab.TabLoadStatus.PAGE_LOAD_FAILED) {
+                                && loadUrlResult.tabLoadStatus
+                                        != Tab.TabLoadStatus.PAGE_LOAD_FAILED) {
                             ntp.setUrlFocusAnimationsDisabled(true);
                             onTabOrModelChanged();
                         }

@@ -472,10 +472,6 @@ public class NewTabPage
                             mJankTracker.finishTrackingScenario(JankScenario.NEW_TAB_PAGE);
                         }
                     }
-
-                    @Override
-                    public void onLoadUrl(Tab tab, LoadUrlParams params, int loadType) {
-                    }
                 };
         mTab.addObserver(mTabObserver);
 

@@ -50,6 +50,7 @@ import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.Tab.LoadUrlResult;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
@@ -973,7 +974,8 @@ public class StripLayoutHelperManager
         mTabModelSelectorTabObserver =
                 new TabModelSelectorTabObserver(modelSelector) {
                     @Override
-                    public void onLoadUrl(Tab tab, LoadUrlParams params, int loadType) {
+                    public void onLoadUrl(
+                            Tab tab, LoadUrlParams params, LoadUrlResult loadUrlResult) {
                         if (params.getTransitionType() == PageTransition.HOME_PAGE
                                 || (params.getTransitionType() & PageTransition.FROM_ADDRESS_BAR)
                                         == PageTransition.FROM_ADDRESS_BAR) {

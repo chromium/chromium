@@ -11,6 +11,7 @@ import androidx.annotation.Nullable;
 import org.chromium.base.Callback;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.Tab.LoadUrlResult;
 import org.chromium.chrome.browser.tab.TabHidingType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.content_public.browser.LoadCommittedDetails;
@@ -90,7 +91,7 @@ public class NavigationRecorder extends EmptyTabObserver {
     }
 
     @Override
-    public void onLoadUrl(Tab tab, LoadUrlParams params, int loadType) {
+    public void onLoadUrl(Tab tab, LoadUrlParams params, LoadUrlResult loadUrlResult) {
         // End recording if a new URL gets loaded e.g. after entering a new query in
         // the omnibox. This doesn't cover the navigate-back case so we also need to observe
         // changes to WebContent's navigation entries.
