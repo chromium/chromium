@@ -55,7 +55,7 @@ TaskAttributionTrackerImpl::TaskAttributionTrackerImpl() : next_task_id_(0) {}
 TaskAttributionInfo* TaskAttributionTrackerImpl::RunningTask(
     ScriptState* script_state) const {
   ScriptWrappableTaskState* task_state =
-      GetCurrentTaskContinuationData(script_state);
+      ScriptWrappableTaskState::GetCurrent(script_state->GetIsolate());
 
   // V8 embedder state may have no value in the case of a JSPromise that wasn't
   // yet resolved.
@@ -105,7 +105,7 @@ TaskAttributionTrackerImpl::CreateTaskScope(ScriptState* script_state,
                                             DOMTaskSignal* priority_source) {
   TaskAttributionInfo* running_task_to_be_restored = running_task_;
   ScriptWrappableTaskState* continuation_task_state_to_be_restored =
-      GetCurrentTaskContinuationData(script_state);
+      ScriptWrappableTaskState::GetCurrent(script_state->GetIsolate());
 
   // This compresses the task graph when encountering long task chains.
   // TODO(crbug.com/1501999): Consider compressing the task graph further.
@@ -124,7 +124,7 @@ TaskAttributionTrackerImpl::CreateTaskScope(ScriptState* script_state,
     }
   }
 
-  SetCurrentTaskContinuationData(
+  ScriptWrappableTaskState::SetCurrent(
       script_state, MakeGarbageCollected<ScriptWrappableTaskState>(
                         running_task_.Get(), abort_source, priority_source));
 
@@ -141,7 +141,7 @@ void TaskAttributionTrackerImpl::TaskScopeCompleted(
   DCHECK(running_task_);
   DCHECK(running_task_->Id() == task_scope.GetTaskId());
   running_task_ = task_scope.RunningTaskToBeRestored();
-  SetCurrentTaskContinuationData(
+  ScriptWrappableTaskState::SetCurrent(
       task_scope.GetScriptState(),
       task_scope.ContinuationTaskStateToBeRestored());
 }
@@ -172,18 +172,6 @@ TaskAttributionInfo* TaskAttributionTrackerImpl::CommitSameDocumentNavigation(
     }
   }
   return nullptr;
-}
-
-void TaskAttributionTrackerImpl::SetCurrentTaskContinuationData(
-    ScriptState* script_state,
-    ScriptWrappableTaskState* task_state) {
-  ScriptWrappableTaskState::SetCurrent(script_state, task_state);
-}
-
-ScriptWrappableTaskState*
-TaskAttributionTrackerImpl::GetCurrentTaskContinuationData(
-    ScriptState* script_state) const {
-  return ScriptWrappableTaskState::GetCurrent(script_state);
 }
 
 // TaskScope's implementation

@@ -251,7 +251,7 @@ DOMScheduler::SchedulingState DOMScheduler::GetSchedulingStateFromOptions(
     CHECK(RuntimeEnabledFeatures::SchedulerYieldEnabled(
         ExecutionContext::From(script_state)));
     if (auto* inherited_state =
-            ScriptWrappableTaskState::GetCurrent(script_state)) {
+            ScriptWrappableTaskState::GetCurrent(script_state->GetIsolate())) {
       inherited_abort_source = inherited_state->GetAbortSource();
       inherited_priority_source = inherited_state->GetPrioritySource();
     }

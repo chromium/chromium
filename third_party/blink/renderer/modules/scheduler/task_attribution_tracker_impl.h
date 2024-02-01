@@ -79,17 +79,6 @@ class MODULES_EXPORT TaskAttributionTrackerImpl
   void ResetSameDocumentNavigationTasks() override;
   TaskAttributionInfo* CommitSameDocumentNavigation(TaskAttributionId) override;
 
- protected:
-  // Saves the given `ScriptWrappableTaskState` as the current continuation
-  // preserved embedder data. Virtual for testing.
-  virtual void SetCurrentTaskContinuationData(ScriptState*,
-                                              ScriptWrappableTaskState*);
-
-  // Gets the current `ScriptWrappableTaskState` from the current continuation
-  // preserved embedder data. Virtual for testing.
-  virtual ScriptWrappableTaskState* GetCurrentTaskContinuationData(
-      ScriptState*) const;
-
  private:
   struct TaskAttributionIdPair {
     TaskAttributionIdPair() = default;

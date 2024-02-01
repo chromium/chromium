@@ -32,10 +32,8 @@ void ScriptWrappableTaskState::Trace(Visitor* visitor) const {
 
 // static
 ScriptWrappableTaskState* ScriptWrappableTaskState::GetCurrent(
-    ScriptState* script_state) {
-  DCHECK(script_state);
-  v8::Isolate* isolate = script_state->GetIsolate();
-  DCHECK(isolate);
+    v8::Isolate* isolate) {
+  CHECK(isolate);
   if (isolate->IsExecutionTerminating()) {
     return nullptr;
   }
