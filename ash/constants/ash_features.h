@@ -132,8 +132,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kCellularUseSecondEuicc);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kCheckPasswordsAgainstCryptohomeHelper);
 COMPONENT_EXPORT(ASH_CONSTANTS)
-BASE_DECLARE_FEATURE(kClipboardHistoryFooter);
-COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kClipboardHistoryLongpress);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kClipboardHistoryUrlTitles);
@@ -946,7 +944,6 @@ bool IsCaptureModeEducationBypassLimitsEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsCellularCarrierLockEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsCheckPasswordsAgainstCryptohomeHelperEnabled();
-COMPONENT_EXPORT(ASH_CONSTANTS) bool IsClipboardHistoryFooterEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsClipboardHistoryLongpressEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsClipboardHistoryUrlTitlesEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
