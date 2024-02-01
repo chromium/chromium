@@ -118,7 +118,8 @@ _TEST_ONLY_WARNING = (
     'to tell the PRESUBMIT script that the code is inside a *ForTesting()\n'
     'method and can be ignored. Do not do this inside production code.\n'
     'The android-binary-size trybot will block if the method exists in the\n'
-    'release apk.')
+    'release apk.\n'
+    'Note: this warning might be a false positive (crbug.com/1196548).')
 
 
 @dataclass
