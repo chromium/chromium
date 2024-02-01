@@ -21,6 +21,7 @@ class Label;
 namespace ash {
 
 class PickerItemView;
+class PickerImageItemView;
 
 // View for a Picker section with a title and related items.
 class ASH_EXPORT PickerSectionView : public views::View {
@@ -38,14 +39,17 @@ class ASH_EXPORT PickerSectionView : public views::View {
   // Adds an item to the section.
   void AddItem(std::unique_ptr<PickerItemView> item_view);
 
+  // Adds an image item to the section. These are displayed in a grid with two
+  // columns.
+  void AddImageItem(std::unique_ptr<PickerImageItemView> image_item);
+
   const views::Label* title_for_testing() const { return title_; }
 
   const views::View* small_grid_items_container_for_testing() const {
     return small_grid_items_container_;
   }
-  const views::View* large_grid_items_container_for_testing() const {
-    return large_grid_items_container_;
-  }
+
+  const views::View* image_grid_for_testing() const { return image_grid_; }
 
   base::span<const raw_ptr<views::View>> item_views_for_testing() const {
     return item_views_;
@@ -56,9 +60,6 @@ class ASH_EXPORT PickerSectionView : public views::View {
   // than one row, `maximum_width_` should be set before adding small grid items
   // to ensure the rows are laid out correctly.
   void AddSmallGridItem(std::unique_ptr<PickerItemView> small_grid_item);
-
-  // Adds a large grid item. These are displayed in columns.
-  void AddLargeGridItem(std::unique_ptr<PickerItemView> large_grid_item);
 
   // Adds a list item. These are displayed in a vertical list, each item
   // spanning the width of the section.
@@ -72,8 +73,9 @@ class ASH_EXPORT PickerSectionView : public views::View {
   raw_ptr<views::Label> title_ = nullptr;
 
   raw_ptr<views::View> small_grid_items_container_ = nullptr;
-  raw_ptr<views::View> large_grid_items_container_ = nullptr;
   raw_ptr<views::View> list_items_container_ = nullptr;
+
+  raw_ptr<views::View> image_grid_ = nullptr;
 
   // The views for each result item.
   std::vector<raw_ptr<views::View>> item_views_;

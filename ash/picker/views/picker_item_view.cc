@@ -42,7 +42,6 @@ constexpr auto kLeadingIconRightPadding = gfx::Insets::TLBR(0, 0, 0, 16);
 gfx::Insets GetBorderInsetsForItemType(PickerItemView::ItemType item_type) {
   switch (item_type) {
     case PickerItemView::ItemType::kSmallGridItem:
-    case PickerItemView::ItemType::kLargeGridItem:
       return gfx::Insets();
     case PickerItemView::ItemType::kListItem:
       return kPickerListItemBorderInsets;
@@ -53,7 +52,6 @@ gfx::RoundedCornersF GetRoundedCornersForItemType(
     PickerItemView::ItemType item_type) {
   switch (item_type) {
     case PickerItemView::ItemType::kSmallGridItem:
-    case PickerItemView::ItemType::kLargeGridItem:
       return kPickerGridItemCornerRadius;
     case PickerItemView::ItemType::kListItem:
       return gfx::RoundedCornersF();

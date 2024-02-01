@@ -12,6 +12,7 @@
 #include "ash/picker/model/picker_search_results.h"
 #include "ash/picker/picker_asset_fetcher.h"
 #include "ash/picker/views/picker_gif_view.h"
+#include "ash/picker/views/picker_image_item_view.h"
 #include "ash/picker/views/picker_item_view.h"
 #include "ash/picker/views/picker_section_view.h"
 #include "base/functional/bind.h"
@@ -47,7 +48,7 @@ void PickerSearchResultsView::SetSearchResults(
     auto* section_view =
         AddChildView(std::make_unique<PickerSectionView>(section.heading()));
     for (const auto& result : section.results()) {
-      section_view->AddItem(CreateItemView(result));
+      AddResultToSection(result, section_view);
     }
     section_views_.push_back(section_view);
   }
@@ -60,9 +61,10 @@ void PickerSearchResultsView::SelectSearchResult(
   }
 }
 
-std::unique_ptr<PickerItemView> PickerSearchResultsView::CreateItemView(
-    const PickerSearchResult& result) {
-  return std::visit(
+void PickerSearchResultsView::AddResultToSection(
+    const PickerSearchResult& result,
+    PickerSectionView* section_view) {
+  std::visit(
       base::Overloaded{
           [&, this](const PickerSearchResult::TextData& data) {
             auto item_view = std::make_unique<PickerItemView>(
@@ -70,20 +72,20 @@ std::unique_ptr<PickerItemView> PickerSearchResultsView::CreateItemView(
                                base::Unretained(this), result),
                 PickerItemView::ItemType::kListItem);
             item_view->SetPrimaryText(data.text);
-            return item_view;
+            section_view->AddItem(std::move(item_view));
           },
           [&, this](const PickerSearchResult::GifData& data) {
-            auto item_view = std::make_unique<PickerItemView>(
-                base::BindOnce(&PickerSearchResultsView::SelectSearchResult,
-                               base::Unretained(this), result),
-                PickerItemView::ItemType::kLargeGridItem);
             // `base::Unretained` is safe here because `this` owns the item
             // views and `asset_fetcher_` outlives `this`.
-            item_view->SetPrimaryImage(std::make_unique<PickerGifView>(
+            auto gif_view = std::make_unique<PickerGifView>(
                 base::BindRepeating(&PickerAssetFetcher::FetchGifFromUrl,
                                     base::Unretained(asset_fetcher_), data.url),
-                data.dimensions));
-            return item_view;
+                data.dimensions);
+            auto gif_item_view = std::make_unique<PickerImageItemView>(
+                base::BindOnce(&PickerSearchResultsView::SelectSearchResult,
+                               base::Unretained(this), result),
+                std::move(gif_view));
+            section_view->AddImageItem(std::move(gif_item_view));
           },
           [&, this](const PickerSearchResult::BrowsingHistoryData& data) {
             auto item_view = std::make_unique<PickerItemView>(
@@ -92,7 +94,7 @@ std::unique_ptr<PickerItemView> PickerSearchResultsView::CreateItemView(
                 PickerItemView::ItemType::kListItem);
             item_view->SetPrimaryText(base::UTF8ToUTF16(data.url.spec()));
             item_view->SetLeadingIcon(data.icon);
-            return item_view;
+            section_view->AddItem(std::move(item_view));
           },
       },
       result.data());

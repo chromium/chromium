@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "ash/bubble/bubble_utils.h"
+#include "ash/picker/views/picker_image_item_view.h"
 #include "ash/picker/views/picker_item_view.h"
 #include "ash/style/typography.h"
 #include "base/ranges/algorithm.h"
@@ -37,8 +38,11 @@ constexpr auto kSmallGridItemMargins = gfx::Insets::VH(0, 12);
 // Padding around each row of small items.
 constexpr auto kSmallGridItemRowMargins = gfx::Insets::TLBR(0, 8, 8, 8);
 
-// Padding between and around large grid items.
-constexpr int kLargeGridItemsPadding = 8;
+// Padding between and around image grid items.
+constexpr int kImageGridPadding = 8;
+
+// TODO: b/323279115 - Compute this in terms of available width.
+constexpr int kImageGridColumnWidth = 148;
 
 std::unique_ptr<views::View> CreateSmallGridItemsRow() {
   auto row = views::Builder<views::FlexLayoutView>()
@@ -58,17 +62,17 @@ std::unique_ptr<views::View> CreateSmallGridItemsContainer() {
       .Build();
 }
 
-std::unique_ptr<views::View> CreateLargeGridItemsColumn() {
+std::unique_ptr<views::View> CreateImageGridColumn() {
   auto column = views::Builder<views::FlexLayoutView>()
                     .SetOrientation(views::LayoutOrientation::kVertical)
                     .SetCrossAxisAlignment(views::LayoutAlignment::kStart)
                     .Build();
   column->SetDefault(views::kMarginsKey,
-                     gfx::Insets::TLBR(0, 0, kLargeGridItemsPadding, 0));
+                     gfx::Insets::TLBR(0, 0, kImageGridPadding, 0));
   return column;
 }
 
-std::unique_ptr<views::View> CreateLargeGridItemsContainer() {
+std::unique_ptr<views::View> CreateImageGrid() {
   auto container =
       views::Builder<views::TableLayoutView>()
           .AddColumn(/*h_align=*/views::LayoutAlignment::kCenter,
@@ -78,7 +82,7 @@ std::unique_ptr<views::View> CreateLargeGridItemsContainer() {
                      /*fixed_width=*/0, /*min_width=*/0)
           .AddPaddingColumn(
               /*horizontal_resize=*/views::TableLayout::kFixedSize,
-              /*width=*/kLargeGridItemsPadding)
+              /*width=*/kImageGridPadding)
           .AddColumn(/*h_align=*/views::LayoutAlignment::kCenter,
                      /*v_align=*/views::LayoutAlignment::kStart,
                      /*horizontal_resize=*/1.0f,
@@ -87,10 +91,10 @@ std::unique_ptr<views::View> CreateLargeGridItemsContainer() {
           .AddRows(1, /*vertical_resize=*/views::TableLayout::kFixedSize,
                    /*height=*/0)
           .SetProperty(views::kMarginsKey,
-                       gfx::Insets::VH(0, kLargeGridItemsPadding))
+                       gfx::Insets::VH(0, kImageGridPadding))
           .Build();
-  container->AddChildView(CreateLargeGridItemsColumn());
-  container->AddChildView(CreateLargeGridItemsColumn());
+  container->AddChildView(CreateImageGridColumn());
+  container->AddChildView(CreateImageGridColumn());
   return container;
 }
 
@@ -125,13 +129,26 @@ void PickerSectionView::AddItem(std::unique_ptr<PickerItemView> item_view) {
     case PickerItemView::ItemType::kSmallGridItem:
       AddSmallGridItem(std::move(item_view));
       break;
-    case PickerItemView::ItemType::kLargeGridItem:
-      AddLargeGridItem(std::move(item_view));
-      break;
     case PickerItemView::ItemType::kListItem:
       AddListItem(std::move(item_view));
       break;
   }
+}
+
+void PickerSectionView::AddImageItem(
+    std::unique_ptr<PickerImageItemView> image_item) {
+  if (image_grid_ == nullptr) {
+    image_grid_ = AddChildView(CreateImageGrid());
+  }
+
+  image_item->SetImageSizeFromWidth(kImageGridColumnWidth);
+  views::View* shortest_column =
+      base::ranges::min(image_grid_->children(),
+                        /*comp=*/base::ranges::less(),
+                        /*proj=*/[](const views::View* v) {
+                          return v->GetPreferredSize().height();
+                        });
+  item_views_.push_back(shortest_column->AddChildView(std::move(image_item)));
 }
 
 void PickerSectionView::AddSmallGridItem(
@@ -151,21 +168,6 @@ void PickerSectionView::AddSmallGridItem(
     row = small_grid_items_container_->AddChildView(CreateSmallGridItemsRow());
   }
   item_views_.push_back(row->AddChildView(std::move(item_view)));
-}
-
-void PickerSectionView::AddLargeGridItem(
-    std::unique_ptr<PickerItemView> item_view) {
-  if (large_grid_items_container_ == nullptr) {
-    large_grid_items_container_ = AddChildView(CreateLargeGridItemsContainer());
-  }
-
-  views::View* shortest_column =
-      base::ranges::min(large_grid_items_container_->children(),
-                        /*comp=*/base::ranges::less(),
-                        /*proj=*/[](const views::View* v) {
-                          return v->GetPreferredSize().height();
-                        });
-  item_views_.push_back(shortest_column->AddChildView(std::move(item_view)));
 }
 
 void PickerSectionView::AddListItem(std::unique_ptr<PickerItemView> item_view) {

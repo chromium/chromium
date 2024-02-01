@@ -32,8 +32,6 @@ class ASH_EXPORT PickerItemView : public views::Button {
   enum class ItemType {
     // Used for items with small primary contents, e.g. an emoji or symbol.
     kSmallGridItem,
-    // Used for items with large primary contents, e.g. a gif.
-    kLargeGridItem,
     // Used for items with primary contents along with other optional details,
     // e.g. a url with an icon.
     kListItem,

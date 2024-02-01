@@ -30,19 +30,23 @@ class ASH_EXPORT PickerGifView : public views::ImageView {
       base::OnceCallback<void(std::vector<image_util::AnimationFrame>)>;
   using FramesFetcher = base::OnceCallback<void(FramesFetchedCallback)>;
 
-  PickerGifView(FramesFetcher frames_fetcher, const gfx::Size& image_size);
+  PickerGifView(FramesFetcher frames_fetcher,
+                const gfx::Size& original_dimensions);
   PickerGifView(const PickerGifView&) = delete;
   PickerGifView& operator=(const PickerGifView&) = delete;
   ~PickerGifView() override;
 
   // views::ImageViewBase:
+  int GetHeightForWidth(int width) const override;
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
 
  private:
   void UpdateFrame();
   void OnFramesFetched(std::vector<image_util::AnimationFrame> frames);
 
-  gfx::Size image_size_;
+  // Original dimensions of the gif, used to preserve aspect ratio when
+  // resizing.
+  gfx::Size original_dimensions_;
 
   // The decoded gif frames.
   std::vector<image_util::AnimationFrame> frames_;
