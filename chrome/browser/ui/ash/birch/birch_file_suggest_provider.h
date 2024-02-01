@@ -16,8 +16,6 @@ class Profile;
 
 namespace ash {
 
-struct BirchFileItem;
-
 // Manages observing file suggestion changes for the birch feature. Fetched
 // file suggest items are send to the `BirchModel` to be stored.
 class ASH_EXPORT BirchFileSuggestProvider
@@ -27,6 +25,8 @@ class ASH_EXPORT BirchFileSuggestProvider
   BirchFileSuggestProvider(const BirchFileSuggestProvider&) = delete;
   BirchFileSuggestProvider& operator=(const BirchFileSuggestProvider&) = delete;
   ~BirchFileSuggestProvider() override;
+
+  void RequestDataFetch();
 
   // FileSuggestKeyedService::Observer:
   void OnFileSuggestionUpdated(FileSuggestionType type) override;
@@ -40,8 +40,6 @@ class ASH_EXPORT BirchFileSuggestProvider
   }
 
  private:
-  void OnFileInfoRetrieved(std::vector<BirchFileItem> file_items);
-
   raw_ptr<FileSuggestKeyedService> file_suggest_service_;
 
   base::ScopedObservation<FileSuggestKeyedService,
