@@ -1914,13 +1914,16 @@ TEST_F(IntegrationTestLegacyUpdate3WebNewInstall, Install) {
   ASSERT_NO_FATAL_FAILURE(ExpectUpdateCheckSequence(
       test_server_.get(), kAppId, UpdateService::Priority::kForeground,
       base::Version(kNullVersion), v1));
+
+  // "expected_install_data_index" is set in `integration_tests_win.cc`,
+  // `DoUpdate`.
   ASSERT_NO_FATAL_FAILURE(ExpectUpdateSequence(
-      test_server_.get(), kAppId, "", UpdateService::Priority::kForeground,
-      base::Version(kNullVersion), v1));
+      test_server_.get(), kAppId, "expected_install_data_index",
+      UpdateService::Priority::kForeground, base::Version(kNullVersion), v1));
+
   ASSERT_NO_FATAL_FAILURE(
       ExpectLegacyUpdate3WebSucceeds(kAppId, AppBundleWebCreateMode::kCreateApp,
                                      STATE_INSTALL_COMPLETE, S_OK));
-
   base::Value::Dict expected_app_state;
   expected_app_state.Set("app_id", kAppId);
   expected_app_state.Set("version", v1.GetString());

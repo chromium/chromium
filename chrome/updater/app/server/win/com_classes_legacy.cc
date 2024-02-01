@@ -475,10 +475,11 @@ class AppWebImpl : public IDispatchImpl<IAppWeb> {
                 .Run(UpdateService::Result::kServiceStopped);
             return;
           }
-          update_service->Update(
-              obj->app_id_, "", UpdateService::Priority::kForeground,
-              obj->policy_same_version_update_,
-              std::move(state_change_callback), std::move(complete_callback));
+          update_service->Update(obj->app_id_, obj->install_data_index_,
+                                 UpdateService::Priority::kForeground,
+                                 obj->policy_same_version_update_,
+                                 std::move(state_change_callback),
+                                 std::move(complete_callback));
         },
         std::move(state_change_callback), std::move(complete_callback), obj));
     return S_OK;
@@ -659,13 +660,16 @@ class AppWebImpl : public IDispatchImpl<IAppWeb> {
   }
 
   IFACEMETHODIMP get_serverInstallDataIndex(BSTR* install_data_index) override {
-    LOG(ERROR) << "Reached unimplemented COM method: " << __func__;
-    return E_NOTIMPL;
+    CHECK(install_data_index);
+
+    *install_data_index =
+        base::win::ScopedBstr(base::ASCIIToWide(install_data_index_)).Release();
+    return S_OK;
   }
 
   IFACEMETHODIMP put_serverInstallDataIndex(BSTR install_data_index) override {
-    LOG(ERROR) << "Reached unimplemented COM method: " << __func__;
-    return E_NOTIMPL;
+    install_data_index_ = base::WideToASCII(install_data_index);
+    return S_OK;
   }
 
  private:
@@ -731,6 +735,7 @@ class AppWebImpl : public IDispatchImpl<IAppWeb> {
 
   bool new_install_ = false;
   std::string app_id_;
+  std::string install_data_index_;
   UpdateService::PolicySameVersionUpdate policy_same_version_update_ =
       UpdateService::PolicySameVersionUpdate::kNotAllowed;
   bool set_ready_to_install_ = false;

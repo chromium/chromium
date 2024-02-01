@@ -1208,16 +1208,25 @@ HRESULT DoUpdate(UpdaterScope scope,
   LONG state_value = 0;
   LONG error_code = 0;
   std::wstring extra_data;
+  Microsoft::WRL::ComPtr<IDispatch> app_dispatch;
+  EXPECT_HRESULT_SUCCEEDED(bundle->get_appWeb(0, &app_dispatch));
+  Microsoft::WRL::ComPtr<IAppWeb> app;
+  EXPECT_HRESULT_SUCCEEDED(app_dispatch.As(&app));
+  app.Reset();
+  EXPECT_HRESULT_SUCCEEDED(app_dispatch.CopyTo(
+      IsSystemInstall(scope) ? __uuidof(IAppWebSystem) : __uuidof(IAppWebUser),
+      IID_PPV_ARGS_Helper(&app)));
+
+  if (app_bundle_web_create_mode == AppBundleWebCreateMode::kCreateApp) {
+    EXPECT_HRESULT_SUCCEEDED(app->put_serverInstallDataIndex(
+        base::win::ScopedBstr(L"expected_install_data_index").Get()));
+    base::win::ScopedBstr install_data_index;
+    EXPECT_HRESULT_SUCCEEDED(
+        app->get_serverInstallDataIndex(install_data_index.Receive()));
+    EXPECT_STREQ(install_data_index.Get(), L"expected_install_data_index");
+  }
+
   while (!done && (timer.Elapsed() < kExpirationTimeout)) {
-    Microsoft::WRL::ComPtr<IDispatch> app_dispatch;
-    EXPECT_HRESULT_SUCCEEDED(bundle->get_appWeb(0, &app_dispatch));
-    Microsoft::WRL::ComPtr<IAppWeb> app;
-    EXPECT_HRESULT_SUCCEEDED(app_dispatch.As(&app));
-    app.Reset();
-    EXPECT_HRESULT_SUCCEEDED(app_dispatch.CopyTo(IsSystemInstall(scope)
-                                                     ? __uuidof(IAppWebSystem)
-                                                     : __uuidof(IAppWebUser),
-                                                 IID_PPV_ARGS_Helper(&app)));
     Microsoft::WRL::ComPtr<IDispatch> state_dispatch;
     EXPECT_HRESULT_SUCCEEDED(app->get_currentState(&state_dispatch));
     Microsoft::WRL::ComPtr<ICurrentState> state;
