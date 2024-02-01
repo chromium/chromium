@@ -701,6 +701,7 @@ chrome_app("chrome") {
   entitlements_target = ":entitlements"
   info_plist_target = ":info_plist"
   bundle_identifier = "$chromium_bundle_id"
+  orderfile_path = "//ios/chrome/app/Chromium.order"
 
   bundle_deps = [
     "//ios/chrome/app/resources",
