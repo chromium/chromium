@@ -316,12 +316,6 @@ ts_files = [
   # 3-line header to avoid conflict.
   # Don't remove this.
   # These lines will be removed at the end of the TS migration.
-  # Definitions.
-  "file_manager/definitions/file_manager_private.ts",
-
-  # 3-line header to avoid conflict.
-  # Don't remove this.
-  # These lines will be removed at the end of the TS migration.
   # Metadata:
   "file_manager/foreground/js/metadata/byte_reader.ts",
   "file_manager/foreground/js/metadata/content_metadata_provider.ts",
@@ -597,6 +591,7 @@ other_dts_files = [
   "//tools/typescript/definitions/tabs.d.ts",
   "//tools/typescript/definitions/wallpaper.d.ts",
   "//tools/typescript/definitions/webview_tag.d.ts",
+  "//ui/file_manager/file_manager/definitions/file_manager_private.d.ts",
 ]
 
 generated_js_files = [

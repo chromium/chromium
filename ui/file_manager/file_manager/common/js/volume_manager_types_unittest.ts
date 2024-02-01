@@ -12,7 +12,8 @@ import {getRootTypeFromVolumeType, getVolumeTypeFromRootType, isRecentArcEntry, 
 export function testRootTypeFromVolumeTypeBijection() {
   for (const volumeType of Object.values(VolumeType)) {
     // System Internal volumes do not have a corresponding root.
-    if (volumeType === VolumeType.SYSTEM_INTERNAL) {
+    if (volumeType === VolumeType.SYSTEM_INTERNAL ||
+        volumeType === VolumeType.TESTING) {
       return;
     }
 

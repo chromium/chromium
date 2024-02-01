@@ -285,3 +285,12 @@ export async function getContentMetadata(
       chrome.fileManagerPrivate.getContentMetadata, fileEntry, mimeType,
       includeImages);
 }
+
+export async function getEntryProperties(
+    entries: Array<Entry|FilesAppEntry>,
+    properties: chrome.fileManagerPrivate.EntryPropertyName[]):
+    Promise<chrome.fileManagerPrivate.EntryProperties[]> {
+  return promisify(
+      chrome.fileManagerPrivate.getEntryProperties, entries.map(unwrapEntry),
+      properties);
+}

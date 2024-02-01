@@ -151,7 +151,6 @@ ts_library("build_ts") {
   extra_deps = [
     ":copy_definitions_to_gen",
     ":copy_definitions_to_preprocess",
-    ":copy_fmp",
     ":generate_definitions",
     ":preprocess_generated",
     "//ash/webui/common/resources:generate_definitions",
@@ -184,10 +183,7 @@ ts_library("build_ts") {
 
   in_files =
       static_js_files + generated_js_files + ts_files + ts_polymer +
-      ts_generated_templates + image_loader_static_js_files + image_loader_ts +
-      [ "file_manager/externs/file_manager_private.js" ]
-
-  manifest_excludes = [ "file_manager/externs/file_manager_private.js" ]
+      ts_generated_templates + image_loader_static_js_files + image_loader_ts
 
   definitions = other_dts_files
   foreach(_file, generate_definitions_js_files) {
@@ -225,10 +221,7 @@ ts_library("test_build_ts") {
   tsconfig_base = "tsconfig_base.json"
   enable_source_maps = false
 
-  in_files = unittest_files + ts_test_files +
-             [ "file_manager/externs/test/file_manager_private.js" ]
-
-  manifest_excludes = [ "file_manager/externs/test/file_manager_private.js" ]
+  in_files = unittest_files + ts_test_files
 
   path_mappings =
       common_path_mappings + [
@@ -262,7 +255,6 @@ ts_library("test_build_ts") {
   extra_deps = [
     ":copy_definitions_to_gen",
     ":copy_definitions_to_preprocess",
-    ":copy_fmp_test",
   ]
   if (enable_webui_inline_sourcemaps) {
     extra_deps += [
@@ -327,21 +319,6 @@ if (enable_webui_inline_sourcemaps) {
     }
     deps = [ ":copy_ts" ]
   }
-}
-
-copy("copy_fmp") {
-  sources = [ "//third_party/closure_compiler/externs/file_manager_private.js" ]
-  outputs = [ "$preprocess_folder/file_manager/externs/{{source_file_part}}" ]
-}
-
-# Copy file_manager_private.js to a different location than copy_fmp, to
-# work-around the fact that both :build_ts__ts_library and :test_build_ts
-# generate files in the same folder and both have file_manager_private.js as an
-# input file.
-copy("copy_fmp_test") {
-  sources = [ "//third_party/closure_compiler/externs/file_manager_private.js" ]
-  outputs =
-      [ "$preprocess_folder/file_manager/externs/test/{{source_file_part}}" ]
 }
 
 copy("for_image_loader") {

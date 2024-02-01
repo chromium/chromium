@@ -524,10 +524,12 @@ export async function testFakeEntry() {
   assertFalse(fakeEntry.isFile);
 
   // Check sourceRestriction constructor args.
-  const kSourceRestriction =
-      /** @type{chrome.fileManagerPrivate.SourceRestriction} */ ('fake');
-  fakeEntry = new FakeEntryImpl('label', RootType.CROSTINI, kSourceRestriction);
-  assertEquals(kSourceRestriction, fakeEntry.sourceRestriction);
+  fakeEntry = new FakeEntryImpl(
+      'label', RootType.CROSTINI,
+      chrome.fileManagerPrivate.SourceRestriction.ANY_SOURCE);
+  assertEquals(
+      chrome.fileManagerPrivate.SourceRestriction.ANY_SOURCE,
+      fakeEntry.sourceRestriction);
 
   let callCounter = 0;
 

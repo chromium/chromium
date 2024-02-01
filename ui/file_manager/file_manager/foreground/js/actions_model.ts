@@ -7,6 +7,7 @@ import {NativeEventTarget as EventTarget} from 'chrome://resources/ash/common/ev
 import {assert} from 'chrome://resources/js/assert.js';
 
 import type {VolumeManager} from '../../background/js/volume_manager.js';
+import {getEntryProperties} from '../../common/js/api.js';
 import {isDirectoryEntry, isSameVolume, unwrapEntry} from '../../common/js/entry_utils.js';
 import type {FilesAppEntry} from '../../common/js/files_app_entry_types.js';
 import {recordBoolean} from '../../common/js/metrics.js';
@@ -63,25 +64,20 @@ class DriveShareAction implements Action {
 
   execute() {
     // Open the Sharing dialog in a new window.
-    chrome.fileManagerPrivate.getEntryProperties(
-        [unwrapEntry(this.entry_) as Entry], ['shareUrl'],
-        (results: chrome.fileManagerPrivate.EntryProperties[]) => {
-          if (chrome.runtime.lastError) {
-            console.error(chrome.runtime.lastError.message);
-            return;
-          }
-          if (results.length !== 1) {
-            console.warn(
-                'getEntryProperties for shareUrl should return 1 entry ' +
-                '(returned ' + results.length + ')');
-            return;
-          }
-          if (results[0]!.shareUrl === undefined) {
-            console.warn('getEntryProperties shareUrl is undefined');
-            return;
-          }
-          visitURL(results[0]!.shareUrl);
-        });
+    const props = [chrome.fileManagerPrivate.EntryPropertyName.SHARE_URL];
+    getEntryProperties([this.entry_], props).then((results) => {
+      if (results.length !== 1) {
+        console.warn(
+            `getEntryProperties for shareUrl should return 1 entry ` +
+            `(returned ${results.length})`);
+        return;
+      }
+      if (results[0]!.shareUrl === undefined) {
+        console.warn('getEntryProperties shareUrl is undefined');
+        return;
+      }
+      visitURL(results[0]!.shareUrl);
+    });
   }
 
   canExecute() {
@@ -312,25 +308,20 @@ class DriveManageAction implements Action {
   }
 
   execute() {
-    chrome.fileManagerPrivate.getEntryProperties(
-        [unwrapEntry(this.entry_) as Entry], ['alternateUrl'],
-        (results: chrome.fileManagerPrivate.EntryProperties[]) => {
-          if (chrome.runtime.lastError) {
-            console.error(chrome.runtime.lastError.message);
-            return;
-          }
-          if (results.length !== 1) {
-            console.warn(
-                'getEntryProperties for alternateUrl should return 1 entry ' +
-                '(returned ' + results.length + ')');
-            return;
-          }
-          if (results[0]!.alternateUrl === undefined) {
-            console.warn('getEntryProperties alternateUrl is undefined');
-            return;
-          }
-          visitURL(results[0]!.alternateUrl);
-        });
+    const props = [chrome.fileManagerPrivate.EntryPropertyName.ALTERNATE_URL];
+    getEntryProperties([this.entry_], props).then((results) => {
+      if (results.length !== 1) {
+        console.warn(
+            `getEntryProperties for alternateUrl should return 1 entry ` +
+            `(returned ${results.length})`);
+        return;
+      }
+      if (results[0]!.alternateUrl === undefined) {
+        console.warn('getEntryProperties alternateUrl is undefined');
+        return;
+      }
+      visitURL(results[0]!.alternateUrl);
+    });
   }
 
   canExecute() {

@@ -26,7 +26,6 @@ export enum FileSystemType {
   FUSEBOX = 'fusebox',
 }
 
-
 /** Volume name length limits by file system type. */
 export const FileSystemTypeVolumeNameLengthLimit: Record<string, number> = {
   [FileSystemType.VFAT]: 11,
@@ -186,6 +185,7 @@ export enum VolumeError {
 
 /** The type of each volume. */
 export enum VolumeType {
+  TESTING = 'testing',
   DRIVE = 'drive',
   DOWNLOADS = 'downloads',
   REMOVABLE = 'removable',

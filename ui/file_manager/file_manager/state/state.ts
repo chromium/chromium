@@ -388,7 +388,7 @@ export interface AndroidApp {
   name: string;
   packageName: string;
   activityName: string;
-  iconSet: chrome.fileManagerPrivate.IconSet|undefined;
+  iconSet?: chrome.fileManagerPrivate.IconSet|undefined;
   icon: string|chrome.fileManagerPrivate.IconSet;
 }
 

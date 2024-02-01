@@ -93,7 +93,7 @@ export class FilesFormatDialog extends PolymerElement {
   format() {
     try {
       validateExternalDriveName(
-          this.label_, this.formatType_ as FileSystemType);
+          this.label_, this.formatType_ as unknown as FileSystemType);
     } catch (error: any) {
       this.$.label.setAttribute('error-message', error.message);
       this.$.label.invalid = true;

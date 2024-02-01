@@ -5,7 +5,6 @@
 import 'chrome://resources/cros_components/switch/switch.js';
 import '../../background/js/file_manager_base.js';
 import '../../background/js/test_util.js';
-import '../../definitions/file_manager_private.js';
 import '../../widgets/xf_jellybean.js';
 
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
