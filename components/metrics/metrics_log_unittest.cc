@@ -449,7 +449,7 @@ TEST_F(MetricsLogTest,
   network_time::NetworkTimeTracker network_time_tracker(
       std::make_unique<base::DefaultClock>(),
       std::make_unique<base::DefaultTickClock>(), &pref_service,
-      shared_url_loader_factory);
+      shared_url_loader_factory, /*fetch_behavior=*/std::nullopt);
 
   // Set up the backup client clock.
   TestMetricsServiceClient client;
@@ -506,7 +506,7 @@ TEST_F(
   network_time::NetworkTimeTracker network_time_tracker(
       std::unique_ptr<base::Clock>(clock),
       std::unique_ptr<const base::TickClock>(tick_clock), &pref_service,
-      shared_url_loader_factory);
+      shared_url_loader_factory, /*fetch_behavior=*/std::nullopt);
 
   // Should have times from regular (ongoing) logs.  The creation time should
   // come from the backup client clock; the closure time should come from the
@@ -563,7 +563,7 @@ TEST_F(MetricsLogTest,
   network_time::NetworkTimeTracker network_time_tracker(
       std::unique_ptr<base::Clock>(clock),
       std::unique_ptr<const base::TickClock>(tick_clock), &pref_service,
-      shared_url_loader_factory);
+      shared_url_loader_factory, /*fetch_behavior=*/std::nullopt);
 
   // Should have times from regular (ongoing) logs.  These times should come
   // from the network clock.

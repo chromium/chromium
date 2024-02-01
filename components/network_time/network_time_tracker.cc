@@ -172,7 +172,8 @@ NetworkTimeTracker::NetworkTimeTracker(
     std::unique_ptr<base::Clock> clock,
     std::unique_ptr<const base::TickClock> tick_clock,
     PrefService* pref_service,
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    std::optional<FetchBehavior> fetch_behavior)
     : server_url_(kTimeServiceURL),
       max_response_size_(1024),
       backoff_(kBackoffInterval.Get()),
@@ -180,7 +181,8 @@ NetworkTimeTracker::NetworkTimeTracker(
       clock_(std::move(clock)),
       tick_clock_(std::move(tick_clock)),
       pref_service_(pref_service),
-      time_query_completed_(false) {
+      time_query_completed_(false),
+      fetch_behavior_(fetch_behavior) {
   const base::Value::Dict& time_mapping =
       pref_service_->GetDict(prefs::kNetworkTimeMapping);
   std::optional<double> time_js = time_mapping.FindDouble(kPrefTime);
@@ -276,7 +278,7 @@ bool NetworkTimeTracker::AreTimeFetchesEnabled() const {
 }
 
 NetworkTimeTracker::FetchBehavior NetworkTimeTracker::GetFetchBehavior() const {
-  return kFetchBehavior.Get();
+  return fetch_behavior_.value_or(kFetchBehavior.Get());
 }
 
 void NetworkTimeTracker::SetTimeServerURLForTesting(const GURL& url) {
@@ -370,7 +372,7 @@ NetworkTimeTracker::NetworkTimeResult NetworkTimeTracker::GetNetworkTime(
 
 bool NetworkTimeTracker::StartTimeFetch(base::OnceClosure closure) {
   DCHECK(thread_checker_.CalledOnValidThread());
-  FetchBehavior behavior = kFetchBehavior.Get();
+  FetchBehavior behavior = GetFetchBehavior();
   if (behavior != FETCHES_ON_DEMAND_ONLY &&
       behavior != FETCHES_IN_BACKGROUND_AND_ON_DEMAND) {
     return false;
@@ -556,7 +558,7 @@ void NetworkTimeTracker::OnURLLoaderComplete(
 void NetworkTimeTracker::QueueCheckTime(base::TimeDelta delay) {
   DCHECK_GE(delay, base::TimeDelta()) << "delay must be non-negative";
   // Check if the user is opted in to background time fetches.
-  FetchBehavior behavior = kFetchBehavior.Get();
+  FetchBehavior behavior = GetFetchBehavior();
   if (behavior == FETCHES_IN_BACKGROUND_ONLY ||
       behavior == FETCHES_IN_BACKGROUND_AND_ON_DEMAND) {
     timer_.Start(FROM_HERE, delay,

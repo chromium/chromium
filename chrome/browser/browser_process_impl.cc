@@ -9,6 +9,7 @@
 
 #include <algorithm>
 #include <map>
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -1453,7 +1454,8 @@ void BrowserProcessImpl::CreateNetworkTimeTracker() {
   network_time_tracker_ = std::make_unique<network_time::NetworkTimeTracker>(
       base::WrapUnique(new base::DefaultClock()),
       base::WrapUnique(new base::DefaultTickClock()), local_state(),
-      system_network_context_manager()->GetSharedURLLoaderFactory());
+      system_network_context_manager()->GetSharedURLLoaderFactory(),
+      std::nullopt);
 }
 
 void BrowserProcessImpl::ApplyDefaultBrowserPolicy() {

@@ -219,7 +219,8 @@ TEST_F(SSLErrorClassificationTest, GetClockState) {
       std::make_unique<base::DefaultClock>(),
       std::make_unique<base::DefaultTickClock>(), &pref_service,
       base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-          &test_url_loader_factory_));
+          &test_url_loader_factory_),
+      std::nullopt);
 
   ssl_errors::SetBuildTimeForTesting(base::Time::Now());
   EXPECT_EQ(
