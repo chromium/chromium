@@ -572,11 +572,17 @@ bool GetOnDeviceModelMustUseSafetyModel();
 
 // Whether we should initiate download of the text safety classifier model.
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-bool ShouldDownloadTextSafetyClassifierModel();
+bool ShouldUseTextSafetyClassifierModel();
 
 // Number of tokens between each text safety update.
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 uint32_t GetOnDeviceModelTextSafetyTokenInterval();
+
+// This is the minimum required reliability threshold for language detection to
+// be considered reliable enough for the text safety classifier. Clamped to the
+// range [0, 1].
+COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
+double GetOnDeviceModelLanguageDetectionMinimumReliability();
 
 // These params configure the repetition checker. See HasRepeatingSuffix() in
 // repetition_checker.h for explanation. A value of 2 for num repeats and 16 for

@@ -4,22 +4,41 @@
 
 module on_device_model.mojom;
 
+// Conveys the result of a language detection attempt on output text.
+struct LanguageDetectionResult {
+  // Language code of the detected language. If detection was indeterminate,
+  // this is "und" per ISO 639-2.
+  string code;
+
+  // Reliability of this result, in the range [0, 1].
+  float reliability;
+};
+
+// Aggregated text safety evaluation results.
+struct SafetyInfo {
+  // Independent safety class probabilities in the range [0, 1].
+  array<float> class_scores;
+
+  // Language detection information. Present if and only if the safety config is
+  // restricted by language.
+  LanguageDetectionResult? language;
+};
+
 // Partial response received via StreamingResponder.OnResponse().
 struct ResponseChunk {
   // Text for this chunk of the response.
   string text;
 
-  // Optional TS scores computed against the full response so far, up to and
-  // including `text`. These are probabilities in the range [0, 1].
-  array<float>? ts_scores;
+  // Optional safety information computed against the full response so far, up
+  // to and including `text`.
+  SafetyInfo? safety_info;
 };
 
 // Information pertaining to a complete response that was streamed by a
 // StreamingResponder.
 struct ResponseSummary {
-  // Optional TS scores computed against the full response. These are
-  // probabilities in the range [0, 1].
-  array<float>? ts_scores;
+  // Optional safety information computed against the full response.
+  SafetyInfo? safety_info;
 };
 
 // Streams a response from a call to execute a model. Close this pipe to cancel
@@ -65,13 +84,13 @@ struct InputOptions {
   // sequence length.
   uint32? max_output_tokens;
 
-  // The interval (in number of tokens) between periodic TS scoring updates
-  // provided by StreamingResponder.UpdateTSScores(). If this is null or
-  // negative, no TS scores are evaluated or sent to the client; if 0, they are
-  // only evaluated and sent only during response completion; otherwise for a
-  // value of N, an update will be provided after every Nth token, as well as
-  // during response completion.
-  uint32? ts_interval;
+  // The interval (in number of tokens) between periodic safety evaluations to
+  // be performed by the service. If this is null, no safety evaluations are
+  // performed and no SafetyInfo results are sent to the client; if 0, safety is
+  // only evaluated during response completion; otherwise for a value of N, a
+  // safety update will be provided after every Nth token, as well as during
+  // response completion.
+  uint32? safety_interval;
 };
 
 // A session for a model that allows adding context and then executing an input

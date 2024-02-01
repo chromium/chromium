@@ -20,6 +20,9 @@ struct ModelAssets {
 
   mojo_base.mojom.ReadOnlyFile? ts_data;
   mojo_base.mojom.ReadOnlyFile? ts_sp_model;
+
+  // The language detection model file, if output language detection is desired.
+  mojo_base.mojom.ReadOnlyFile? language_detection_model;
 };
 
 // Params to describe the model to load.

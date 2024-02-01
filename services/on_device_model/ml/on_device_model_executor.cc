@@ -15,6 +15,7 @@
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/logging.h"
 #include "base/memory/raw_ref.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
@@ -22,6 +23,7 @@
 #include "base/timer/elapsed_timer.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "services/on_device_model/ml/chrome_ml.h"
+#include "services/on_device_model/ml/language_detector.h"
 #include "services/on_device_model/public/mojom/on_device_model.mojom.h"
 #include "services/on_device_model/public/mojom/on_device_model_service.mojom.h"
 
@@ -67,8 +69,10 @@ int CalculateTokensPerSecond(int num_tokens, base::TimeDelta duration) {
 class Responder : public base::SupportsWeakPtr<Responder> {
  public:
   explicit Responder(
-      mojo::PendingRemote<on_device_model::mojom::StreamingResponder> responder)
-      : responder_(std::move(responder)) {
+      mojo::PendingRemote<on_device_model::mojom::StreamingResponder> responder,
+      scoped_refptr<LanguageDetector> language_detector)
+      : responder_(std::move(responder)),
+        language_detector_(std::move(language_detector)) {
     responder_.set_disconnect_handler(
         base::BindOnce(&Responder::Cancel, base::Unretained(this)));
   }
@@ -81,7 +85,7 @@ class Responder : public base::SupportsWeakPtr<Responder> {
             task_runner = base::SequencedTaskRunner::GetCurrentDefault()](
                const ChromeMLExecutionOutput* output) {
       std::optional<std::string> text;
-      std::optional<std::vector<float>> ts_scores;
+      std::optional<std::vector<float>> class_scores;
       switch (output->status) {
         case ChromeMLExecutionStatus::kInProgress:
           CHECK(output->text);
@@ -93,26 +97,30 @@ class Responder : public base::SupportsWeakPtr<Responder> {
       }
 
       if (output->ts_scores) {
-        ts_scores.emplace(output->ts_scores,
-                          output->ts_scores + output->num_ts_scores);
+        class_scores.emplace(output->ts_scores,
+                             output->ts_scores + output->num_ts_scores);
       }
 
       task_runner->PostTask(
           FROM_HERE, base::BindOnce(&Responder::OnOutput, weak_ptr,
-                                    std::move(text), std::move(ts_scores)));
+                                    std::move(text), std::move(class_scores)));
     };
   }
 
  private:
   void OnOutput(std::optional<std::string> text,
-                std::optional<std::vector<float>> ts_scores) {
+                std::optional<std::vector<float>> class_scores) {
     if (text) {
       num_tokens_++;
+      output_so_far_ += *text;
       if (first_token_time_ == base::TimeTicks()) {
         first_token_time_ = base::TimeTicks::Now();
       }
-      responder_->OnResponse(
-          on_device_model::mojom::ResponseChunk::New(*text, ts_scores));
+
+      auto chunk = on_device_model::mojom::ResponseChunk::New();
+      chunk->text = *text;
+      chunk->safety_info = CreateSafetyInfo(output_so_far_, class_scores);
+      responder_->OnResponse(std::move(chunk));
     } else {
       base::UmaHistogramCounts10000("OnDeviceModel.TokenCount.Output",
                                     num_tokens_);
@@ -124,9 +132,26 @@ class Responder : public base::SupportsWeakPtr<Responder> {
             CalculateTokensPerSecond(
                 num_tokens_ - 1, base::TimeTicks::Now() - first_token_time_));
       }
-      responder_->OnComplete(
-          on_device_model::mojom::ResponseSummary::New(ts_scores));
+
+      auto summary = on_device_model::mojom::ResponseSummary::New();
+      summary->safety_info = CreateSafetyInfo(output_so_far_, class_scores);
+      responder_->OnComplete(std::move(summary));
     }
+  }
+
+  on_device_model::mojom::SafetyInfoPtr CreateSafetyInfo(
+      std::string_view text,
+      std::optional<std::vector<float>>& class_scores) {
+    if (!class_scores) {
+      return nullptr;
+    }
+
+    auto safety_info = on_device_model::mojom::SafetyInfo::New();
+    safety_info->class_scores = std::move(*class_scores);
+    if (language_detector_) {
+      safety_info->language = language_detector_->DetectLanguage(text);
+    }
+    return safety_info;
   }
 
   void Cancel() {
@@ -137,7 +162,9 @@ class Responder : public base::SupportsWeakPtr<Responder> {
 
   base::TimeTicks first_token_time_;
   int num_tokens_ = 0;
+  std::string output_so_far_;
   mojo::Remote<on_device_model::mojom::StreamingResponder> responder_;
+  const scoped_refptr<LanguageDetector> language_detector_;
   ChromeMLCancelFn cancel_;
 };
 
@@ -196,8 +223,12 @@ class ContextHolder : public base::SupportsWeakPtr<ContextHolder> {
 
 class SessionImpl : public on_device_model::OnDeviceModel::Session {
  public:
-  SessionImpl(const ChromeML& chrome_ml, ChromeMLModel model)
-      : chrome_ml_(chrome_ml), model_(model) {}
+  SessionImpl(const ChromeML& chrome_ml,
+              ChromeMLModel model,
+              scoped_refptr<LanguageDetector> language_detector)
+      : chrome_ml_(chrome_ml),
+        model_(model),
+        language_detector_(std::move(language_detector)) {}
   ~SessionImpl() override = default;
 
   SessionImpl(const SessionImpl&) = delete;
@@ -229,11 +260,13 @@ class SessionImpl : public on_device_model::OnDeviceModel::Session {
   void Execute(on_device_model::mojom::InputOptionsPtr input,
                mojo::PendingRemote<on_device_model::mojom::StreamingResponder>
                    response) override {
-    responder_ = std::make_unique<Responder>(std::move(response));
+    responder_ =
+        std::make_unique<Responder>(std::move(response), language_detector_);
     ChromeMLExecutionOutputFn output_fn = responder_->CreateOutputFn();
     int32_t ts_interval = -1;
-    if (input->ts_interval.has_value()) {
-      ts_interval = base::saturated_cast<int32_t>(input->ts_interval.value());
+    if (input->safety_interval.has_value()) {
+      ts_interval =
+          base::saturated_cast<int32_t>(input->safety_interval.value());
     }
     ChromeMLExecuteOptions options{
         .prompt = input->text.c_str(),
@@ -266,6 +299,7 @@ class SessionImpl : public on_device_model::OnDeviceModel::Session {
   bool clear_context_ = true;
   const raw_ref<const ChromeML> chrome_ml_;
   ChromeMLModel model_;
+  const scoped_refptr<LanguageDetector> language_detector_;
   std::unique_ptr<Responder> responder_;
   std::set<std::unique_ptr<ContextHolder>> context_holders_;
 };
@@ -302,7 +336,7 @@ OnDeviceModelExecutor::CreateWithResult(
 
 std::unique_ptr<on_device_model::OnDeviceModel::Session>
 OnDeviceModelExecutor::CreateSession() {
-  return std::make_unique<SessionImpl>(*chrome_ml_, model_);
+  return std::make_unique<SessionImpl>(*chrome_ml_, model_, language_detector_);
 }
 
 DISABLE_CFI_DLSYM
@@ -339,6 +373,15 @@ LoadModelResult OnDeviceModelExecutor::Init(
         !assets.ts_sp_model.IsValid() ||
         !ts_sp_model_.Initialize(std::move(assets.ts_sp_model))) {
       LOG(ERROR) << "Invalid TS model data supplied";
+      return LoadModelResult::kFailedToLoadLibrary;
+    }
+  }
+
+  if (assets.language_detection_model.IsValid()) {
+    language_detector_ =
+        LanguageDetector::Create(std::move(assets.language_detection_model));
+    if (!language_detector_) {
+      LOG(ERROR) << "Failed to initialize language detection";
       return LoadModelResult::kFailedToLoadLibrary;
     }
   }

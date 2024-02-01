@@ -42,14 +42,16 @@ using on_device_model::mojom::LoadModelResult;
 using ExecuteModelResult = SessionImpl::ExecuteModelResult;
 
 namespace {
+
 // If non-zero this amount of delay is added before the response is sent.
 base::TimeDelta g_execute_delay = base::TimeDelta();
 
 // If non-empty, used as the output from Execute().
 std::vector<std::string> g_model_execute_result;
 
-// Used as the ts_scores output.
-std::optional<std::vector<float>> g_ts_scores;
+// Used as the SafetyInfo output.
+on_device_model::mojom::SafetyInfoPtr g_safety_info;
+
 }  // namespace
 
 std::vector<std::string> ConcatResponses(
@@ -109,23 +111,27 @@ class FakeOnDeviceSession final : public on_device_model::mojom::Session {
     if (g_model_execute_result.empty()) {
       auto chunk = on_device_model::mojom::ResponseChunk::New();
       chunk->text = "Input: " + input->text + "\n";
-      chunk->ts_scores = g_ts_scores;
+      if (g_safety_info) {
+        chunk->safety_info = g_safety_info->Clone();
+      }
       remote->OnResponse(std::move(chunk));
     } else {
-      int ts_interval = input->ts_interval.value_or(1);
+      int safety_interval = input->safety_interval.value_or(1);
       int n = 0;
       for (const auto& text : g_model_execute_result) {
         n++;
         auto chunk = on_device_model::mojom::ResponseChunk::New();
         chunk->text = text;
-        if ((n % ts_interval) == 0) {
-          chunk->ts_scores = g_ts_scores;
+        if (g_safety_info && (n % safety_interval) == 0) {
+          chunk->safety_info = g_safety_info->Clone();
         }
         remote->OnResponse(std::move(chunk));
       }
     }
     auto summary = on_device_model::mojom::ResponseSummary::New();
-    summary->ts_scores = g_ts_scores;
+    if (g_safety_info) {
+      summary->safety_info = g_safety_info->Clone();
+    }
     remote->OnComplete(std::move(summary));
   }
 
@@ -267,7 +273,7 @@ class OnDeviceModelServiceControllerTest : public testing::Test {
   void SetUp() override {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     g_model_execute_result.clear();
-    g_ts_scores = std::nullopt;
+    g_safety_info.reset();
     g_execute_delay = base::TimeDelta();
     feature_list_.InitWithFeaturesAndParameters(
         {{features::kOptimizationGuideModelExecution, {}},
@@ -977,7 +983,7 @@ TEST_F(OnDeviceModelServiceControllerTest, SafetyModelRetract) {
   // Scores never provided even on complete.
   {
     base::HistogramTester histogram_tester;
-    g_ts_scores = std::nullopt;
+    g_safety_info.reset();
     ExecuteModel(*session, "foo");
     task_environment_.RunUntilIdle();
     EXPECT_FALSE(response_received_);
@@ -991,7 +997,8 @@ TEST_F(OnDeviceModelServiceControllerTest, SafetyModelRetract) {
 
   // Score exceeds threshold.
   {
-    g_ts_scores = {0.7, 0.3};
+    g_safety_info = on_device_model::mojom::SafetyInfo::New();
+    g_safety_info->class_scores = {0.7, 0.3};
     ExecuteModel(*session, "foo");
     task_environment_.RunUntilIdle();
     EXPECT_FALSE(response_received_);
@@ -1018,7 +1025,8 @@ TEST_F(OnDeviceModelServiceControllerTest, SafetyModelRetract) {
 
   // Invalid model output according to config.
   {
-    g_ts_scores = {0.3};
+    g_safety_info = on_device_model::mojom::SafetyInfo::New();
+    g_safety_info->class_scores = {0.3};
     ExecuteModel(*session, "foo");
     task_environment_.RunUntilIdle();
     EXPECT_FALSE(response_received_);
@@ -1045,7 +1053,8 @@ TEST_F(OnDeviceModelServiceControllerTest, SafetyModelRetract) {
 
   // Score below threshold. Text safety check passes.
   {
-    g_ts_scores = {0.3, 0.3};
+    g_safety_info = on_device_model::mojom::SafetyInfo::New();
+    g_safety_info->class_scores = {0.3, 0.3};
     ExecuteModel(*session, "foo");
     task_environment_.RunUntilIdle();
     EXPECT_TRUE(response_received_);
@@ -1100,7 +1109,8 @@ TEST_F(OnDeviceModelServiceControllerTest, SafetyModelUsedButNoRetract) {
   EXPECT_TRUE(session);
 
   // Score exceeds threshold. Would not pass but not retracting.
-  g_ts_scores = {0.7, 0.3};
+  g_safety_info = on_device_model::mojom::SafetyInfo::New();
+  g_safety_info->class_scores = {0.7, 0.3};
   ExecuteModel(*session, "foo");
   task_environment_.RunUntilIdle();
   EXPECT_TRUE(response_received_);
@@ -1991,7 +2001,8 @@ TEST_P(OnDeviceModelServiceControllerTsIntervalTest,
       test_controller_->CreateSession(kFeature, base::DoNothing(), &logger_);
   EXPECT_TRUE(session);
 
-  g_ts_scores = {0.3, 0.3};
+  g_safety_info = on_device_model::mojom::SafetyInfo::New();
+  g_safety_info->class_scores = {0.3, 0.3};
   g_model_execute_result = {
       "some text",
       " some more repeating text",

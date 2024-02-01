@@ -1043,7 +1043,7 @@ bool GetOnDeviceModelMustUseSafetyModel() {
   return kOnDeviceModelMustUseSafetyModel.Get();
 }
 
-bool ShouldDownloadTextSafetyClassifierModel() {
+bool ShouldUseTextSafetyClassifierModel() {
   return base::FeatureList::IsEnabled(kTextSafetyClassifier);
 }
 
@@ -1052,6 +1052,14 @@ uint32_t GetOnDeviceModelTextSafetyTokenInterval() {
       kOnDeviceModelTextSafetyTokenInterval{
           &kTextSafetyClassifier, "on_device_text_safety_token_interval", 10};
   return static_cast<uint32_t>(kOnDeviceModelTextSafetyTokenInterval.Get());
+}
+
+double GetOnDeviceModelLanguageDetectionMinimumReliability() {
+  static const base::FeatureParam<double>
+      kOnDeviceModelLanguageDetectionMinimumReliability{
+          &kTextSafetyClassifier,
+          "on_device_language_detection_minimum_reliability", 0.8};
+  return kOnDeviceModelLanguageDetectionMinimumReliability.Get();
 }
 
 int GetOnDeviceModelNumRepeats() {

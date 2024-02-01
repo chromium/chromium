@@ -16,7 +16,8 @@ bool StructTraits<on_device_model::mojom::ModelAssetsDataView,
   return data.ReadSpModel(&assets->sp_model) &&
          data.ReadModel(&assets->model) && data.ReadWeights(&assets->weights) &&
          data.ReadTsData(&assets->ts_data) &&
-         data.ReadTsSpModel(&assets->ts_sp_model);
+         data.ReadTsSpModel(&assets->ts_sp_model) &&
+         data.ReadLanguageDetectionModel(&assets->language_detection_model);
 }
 
 }  // namespace mojo

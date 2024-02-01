@@ -16,12 +16,15 @@ source_set("ml") {
 
   sources = [
     "chrome_ml.cc",
+    "language_detector.cc",
+    "language_detector.h",
     "on_device_model_executor.cc",
     "utils.cc",
   ]
 
   deps = [
     "//components/optimization_guide/core:features",
+    "//components/translate/core/language_detection",
     "//gpu/config",
     "//third_party/angle:includes",
     "//third_party/dawn/src/dawn/native",
