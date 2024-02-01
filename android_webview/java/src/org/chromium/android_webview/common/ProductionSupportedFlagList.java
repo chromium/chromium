@@ -153,9 +153,6 @@ public final class ProductionSupportedFlagList {
                 GpuFeatures.WEBVIEW_THREAD_SAFE_MEDIA,
                 "Use thread-safe media path, requires Android P."),
         Flag.baseFeature(
-                GpuFeatures.AGGRESSIVE_SKIA_GPU_RESOURCE_PURGE,
-                "More aggressively purge skia GPU resources"),
-        Flag.baseFeature(
                 GpuFeatures.PRUNE_OLD_TRANSFER_CACHE_ENTRIES,
                 "Prune old transfer cache entries and disable pruning from client"),
         Flag.baseFeature(

@@ -9,6 +9,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/task/single_thread_task_runner.h"
+#include "build/build_config.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/command_buffer/service/skia_utils.h"
 #include "gpu/config/gpu_finch_features.h"
@@ -61,10 +62,6 @@ void GrCacheController::ScheduleGrContextCleanup() {
 }
 
 void GrCacheController::PerformDeferredCleanupThrottled() {
-  if (!base::FeatureList::IsEnabled(
-          features::kAggressiveSkiaGpuResourcePurge)) {
-    return;
-  }
   constexpr base::TimeDelta kTimeout = base::Seconds(1);
   base::TimeTicks now = base::TimeTicks::Now();
   if (now - last_cleanup_timestamp_ < kTimeout) {
@@ -75,17 +72,18 @@ void GrCacheController::PerformDeferredCleanupThrottled() {
 }
 
 void GrCacheController::PerformDeferredCleanup() {
-  int old_resource_delay_seconds = 5;
-  if (base::FeatureList::IsEnabled(features::kAggressiveSkiaGpuResourcePurge)) {
-    old_resource_delay_seconds = 1;
-  }
+#if BUILDFLAG(IS_MAC)
+  constexpr int kOldResourceDelaySeconds = 5;
+#else
+  constexpr int kOldResourceDelaySeconds = 1;
+#endif
   // Here we ask GrContext to free any resources that haven't been used in
   // a long while even if it is under budget. Below we set a call back to
   // purge all possible GrContext resources if the context itself is not being
   // used.
   context_state_->set_need_context_state_reset(true);
   context_state_->gr_context()->performDeferredCleanup(
-      std::chrono::seconds(old_resource_delay_seconds));
+      std::chrono::seconds(kOldResourceDelaySeconds));
 }
 
 void GrCacheController::PurgeGrCache(uint64_t idle_id) {

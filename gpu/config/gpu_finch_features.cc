@@ -130,12 +130,6 @@ const base::FeatureParam<std::string>
         "DisableIncreaseBufferCountForHighFrameRate", ""};
 #endif
 
-// Use shorter timeout when performDeferredCleanup, and enable
-// performDeferredCleanup for Android WebView.
-BASE_FEATURE(kAggressiveSkiaGpuResourcePurge,
-             "AggressiveSkiaGpuResourcePurge",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enable GPU Rasterization by default. This can still be overridden by
 // --enable-gpu-rasterization or --disable-gpu-rasterization.
 // DefaultEnableGpuRasterization has launched on Mac, Windows, ChromeOS,
