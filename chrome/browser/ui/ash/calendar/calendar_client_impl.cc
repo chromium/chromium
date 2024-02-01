@@ -19,6 +19,28 @@ CalendarClientImpl::CalendarClientImpl(Profile* profile) : profile_(profile) {}
 
 CalendarClientImpl::~CalendarClientImpl() = default;
 
+base::OnceClosure CalendarClientImpl::GetCalendarList(
+    google_apis::calendar::CalendarListCallback callback) {
+  PrefService* pref = profile_->GetPrefs();
+
+  if (!pref->GetBoolean(ash::prefs::kCalendarIntegrationEnabled)) {
+    std::move(callback).Run(google_apis::OTHER_ERROR, /*calendars=*/nullptr);
+    return base::DoNothing();
+  }
+
+  CalendarKeyedService* service =
+      CalendarKeyedServiceFactory::GetInstance()->GetService(profile_);
+
+  // For non-gaia users this `service` is not set.
+  if (service) {
+    return service->GetCalendarList(std::move(callback));
+  }
+
+  std::move(callback).Run(google_apis::OTHER_ERROR, /*calendars=*/nullptr);
+
+  return base::DoNothing();
+}
+
 base::OnceClosure CalendarClientImpl::GetEventList(
     google_apis::calendar::CalendarEventListCallback callback,
     const base::Time& start_time,

@@ -22,6 +22,8 @@ class CalendarClientImpl : public CalendarClient {
   ~CalendarClientImpl() override;
 
   // CalendarClient:
+  base::OnceClosure GetCalendarList(
+      google_apis::calendar::CalendarListCallback callback) override;
   base::OnceClosure GetEventList(
       google_apis::calendar::CalendarEventListCallback callback,
       const base::Time& start_time,

@@ -20,8 +20,9 @@ inline constexpr char kAssistPredictiveWritingEnabled[] =
     "assistive_input.predictive_writing_enabled";
 
 // A boolean pref of whether Google Calendar Integration is enabled.
-// Disabling this pref would stop the user from getting their
-// Google Calendar events from the system tray - Calendar widget.
+// Disabling this pref disables calendar list and event list fetches from
+// the user's Google Calendar, preventing them from viewing their Google
+// Calendar events in the system tray - Calendar widget.
 inline constexpr char kCalendarIntegrationEnabled[] =
     "ash.calendar_integration_enabled";
 
