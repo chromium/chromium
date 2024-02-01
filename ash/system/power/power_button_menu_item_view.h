@@ -50,7 +50,7 @@ class ASH_EXPORT PowerButtonMenuItemView : public views::ImageButton {
 
  private:
   // views::View:
-  void Layout() override;
+  void Layout(PassKey) override;
   gfx::Size CalculatePreferredSize() const override;
   void OnFocus() override;
   void OnBlur() override;

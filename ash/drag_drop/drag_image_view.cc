@@ -181,7 +181,7 @@ gfx::Size DragImageView::GetMinimumSize() const {
   return minimum_size;
 }
 
-void DragImageView::Layout() {
+void DragImageView::Layout(PassKey) {
   LayoutSuperclass<View>(this);
 
   // Only consider resizing the widget for the drag hint image if we are in a

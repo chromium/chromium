@@ -249,7 +249,7 @@ class VIEWS_EXPORT TableView : public View, public ui::TableModelObserver {
   bool header_row_is_active() const { return header_row_is_active_; }
 
   // View overrides:
-  void Layout() override;
+  void Layout(PassKey) override;
   gfx::Size CalculatePreferredSize() const override;
   bool GetNeedsNotificationWhenVisibleBoundsChange() const override;
   void OnVisibleBoundsChanged() override;

@@ -144,7 +144,7 @@ SavedDeskRegularIconView::SavedDeskRegularIconView(
 
 SavedDeskRegularIconView::~SavedDeskRegularIconView() = default;
 
-void SavedDeskRegularIconView::Layout() {
+void SavedDeskRegularIconView::Layout(PassKey) {
   DCHECK(icon_view_);
   gfx::Size icon_preferred_size = icon_view_->CalculatePreferredSize();
   icon_view_->SetBoundsRect(gfx::Rect(
@@ -293,7 +293,7 @@ SavedDeskOverflowIconView::SavedDeskOverflowIconView(int count, bool show_plus)
 
 SavedDeskOverflowIconView::~SavedDeskOverflowIconView() = default;
 
-void SavedDeskOverflowIconView::Layout() {
+void SavedDeskOverflowIconView::Layout(PassKey) {
   DCHECK(count_label_);
   count_label_->SetBoundsRect(gfx::Rect(0, 0, width(), kIconViewSize));
 }

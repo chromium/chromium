@@ -84,7 +84,7 @@ gfx::Size WindowPreviewView::CalculatePreferredSize() const {
       gfx::ScaleSize(union_rect.size(), scale.x(), scale.y()));
 }
 
-void WindowPreviewView::Layout() {
+void WindowPreviewView::Layout(PassKey) {
   const gfx::RectF union_rect = GetUnionRect();
   if (union_rect.IsEmpty())
     return;  // Avoids divide by zero below.

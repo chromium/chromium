@@ -275,7 +275,7 @@ int StyledLabel::GetHeightForWidth(int w) const {
   return GetLayoutSizeInfoForWidth(w).total_size.height();
 }
 
-void StyledLabel::Layout() {
+void StyledLabel::Layout(PassKey) {
   CalculateLayout(width());
 
   // If the layout has been recalculated, add and position all views.

@@ -165,7 +165,7 @@ class VIEWS_EXPORT EditableCombobox
   const ui::ComboboxModel* GetComboboxModel() const;
 
   // Overridden from View:
-  void Layout() override;
+  void Layout(PassKey) override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   void RequestFocus() override;
   bool GetNeedsNotificationWhenVisibleBoundsChange() const override;

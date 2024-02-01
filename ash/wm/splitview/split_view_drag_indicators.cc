@@ -329,7 +329,7 @@ class SplitViewDragIndicators::SplitViewDragIndicatorsView
   }
 
   // views::View:
-  void Layout() override { Layout(/*animate=*/false); }
+  void Layout(PassKey) override { Layout(/*animate=*/false); }
 
   // aura::WindowObserver:
   void OnWindowDestroyed(aura::Window* window) override {

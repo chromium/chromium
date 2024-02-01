@@ -504,7 +504,7 @@ gfx::Size BubbleFrameView::GetMaximumSize() const {
 #endif
 }
 
-void BubbleFrameView::Layout() {
+void BubbleFrameView::Layout(PassKey) {
   // The title margins may not be set, but make sure that's only the case when
   // there's no title.
   DCHECK(!title_margins_.IsEmpty() ||

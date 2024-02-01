@@ -140,7 +140,7 @@ class ASH_EXPORT LoginShelfView : public views::View,
   void OnFocus() override;
   void AboutToRequestFocusFromTabTraversal(bool reverse) override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
-  void Layout() override;
+  void Layout(PassKey) override;
 
   // ShelfConfig::Observer:
   void OnShelfConfigUpdated() override;

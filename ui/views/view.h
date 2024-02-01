@@ -23,6 +23,7 @@
 #include "base/memory/safety_checks.h"
 #include "base/observer_list.h"
 #include "base/strings/string_piece.h"
+#include "base/types/pass_key.h"
 #include "build/build_config.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkPath.h"
@@ -291,6 +292,7 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   ADVANCED_MEMORY_SAFETY_CHECKS();
 
  public:
+  using PassKey = base::NonCopyablePassKey<View>;
   using Views = std::vector<raw_ptr<View, VectorExperimental>>;
 
   // TODO(crbug.com/1289902): The |event| parameter is being removed. Do not add
@@ -811,7 +813,7 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   // https://crbug.com/1521108. Neither of these methods should be called from
   // Layout(); see https://crbug.com/1121681.
   void DeprecatedLayoutImmediately();
-  virtual void Layout();
+  virtual void Layout(PassKey);
 
   bool needs_layout() const { return needs_layout_; }
 
@@ -1847,7 +1849,7 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
     requires std::derived_from<Super, View> && std::derived_from<This, Super> &&
              (!std::same_as<Super, This>)
   void LayoutSuperclass(This* ptr) {
-    static_cast<Super*>(ptr)->Super::Layout();
+    static_cast<Super*>(ptr)->Super::Layout(PassKey());
   }
 
   // Input ---------------------------------------------------------------------

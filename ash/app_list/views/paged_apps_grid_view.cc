@@ -287,7 +287,7 @@ void PagedAppsGridView::OnGestureEvent(ui::GestureEvent* event) {
 ////////////////////////////////////////////////////////////////////////////////
 // views::View:
 
-void PagedAppsGridView::Layout() {
+void PagedAppsGridView::Layout(PassKey) {
   if (ignore_layout())
     return;
 

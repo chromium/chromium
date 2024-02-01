@@ -237,7 +237,7 @@ bool FeatureTilesContainerView::OnMouseWheel(const ui::MouseWheelEvent& event) {
                                                         event.type());
 }
 
-void FeatureTilesContainerView::Layout() {
+void FeatureTilesContainerView::Layout(PassKey) {
   LayoutSuperclass<views::View>(this);
 
   // `SelectedPageChanged` is called to recalculate the pages bounds after a

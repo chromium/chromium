@@ -267,7 +267,7 @@ class VIEWS_EXPORT ManualLayoutUtil {
   //
   // Example:
   // ```
-  //  MyView::Layout() {
+  //  MyView::Layout(PassKey) {
   //    // Only include `foo_button_` in the layout if the feature is enabled;
   //    // otherwise hide it.
   //    ManualLayoutUtil layout_util(flex_layout_.get());

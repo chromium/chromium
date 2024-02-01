@@ -100,7 +100,7 @@ class ASH_EXPORT AppListBubbleView : public views::View,
 
   // views::View:
   bool AcceleratorPressed(const ui::Accelerator& accelerator) override;
-  void Layout() override;
+  void Layout(PassKey) override;
   bool GetDropFormats(int* formats,
                       std::set<ui::ClipboardFormatType>* format_types) override;
   bool CanDrop(const OSExchangeData& data) override;

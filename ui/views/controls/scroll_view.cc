@@ -639,7 +639,7 @@ int ScrollView::GetHeightForWidth(int width) const {
   return std::clamp(height, min_height_, max_height_);
 }
 
-void ScrollView::Layout() {
+void ScrollView::Layout(PassKey) {
   // When either scrollbar is disabled, it should not matter
   // if its OverlapsContent matches other bar's.
   if (horizontal_scroll_bar_mode_ == ScrollBarMode::kEnabled &&

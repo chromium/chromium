@@ -149,7 +149,7 @@ class CheckboxControl : public Checkbox {
     AddChildView(std::move(label));
   }
 
-  void Layout() override {
+  void Layout(PassKey) override {
     // Skip LabelButton to use LayoutManager.
     LayoutSuperclass<View>(this);
   }

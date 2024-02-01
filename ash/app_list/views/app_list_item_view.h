@@ -412,7 +412,7 @@ class ASH_EXPORT AppListItemView : public views::Button,
   bool ShouldEnterPushedState(const ui::Event& event) override;
 
   // views::View overrides:
-  void Layout() override;
+  void Layout(PassKey) override;
   gfx::Size CalculatePreferredSize() const override;
   bool OnKeyPressed(const ui::KeyEvent& event) override;
   bool OnMousePressed(const ui::MouseEvent& event) override;

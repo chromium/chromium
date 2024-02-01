@@ -45,7 +45,7 @@ class APP_MENU_EXPORT NotificationOverflowView : public views::View {
   void RemoveIcon(const std::string& notification_id);
 
   // views::View overrides:
-  void Layout() override;
+  void Layout(PassKey) override;
   gfx::Size CalculatePreferredSize() const override;
 
   // Whether this has notifications to show.

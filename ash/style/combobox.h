@@ -66,7 +66,7 @@ class ASH_EXPORT Combobox : public views::Button,
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   void AddedToWidget() override;
   void RemovedFromWidget() override;
-  void Layout() override;
+  void Layout(PassKey) override;
 
   // WidgetObserver:
   void OnWidgetBoundsChanged(views::Widget* widget,

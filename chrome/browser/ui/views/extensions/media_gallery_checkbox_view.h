@@ -38,7 +38,7 @@ class MediaGalleryCheckboxView : public views::BoxLayoutView {
   views::Label* secondary_text() { return secondary_text_; }
 
   // views::View:
-  void Layout() override;
+  void Layout(PassKey) override;
 
  private:
   // Owned by the parent class (views::View).

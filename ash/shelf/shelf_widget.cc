@@ -342,7 +342,7 @@ class ShelfWidget::DelegateView : public views::WidgetDelegate,
 
   // views::AccessiblePaneView:
   views::View* GetDefaultFocusableChild() override;
-  void Layout() override;
+  void Layout(PassKey) override;
 
   // ShelfBackgroundAnimatorObserver:
   void UpdateShelfBackground(SkColor color) override;
@@ -624,7 +624,7 @@ views::View* ShelfWidget::DelegateView::GetDefaultFocusableChild() {
   return nullptr;
 }
 
-void ShelfWidget::DelegateView::Layout() {
+void ShelfWidget::DelegateView::Layout(PassKey) {
   if (!features::IsUseLoginShelfWidgetEnabled())
     login_shelf_view_->SetBoundsRect(GetLocalBounds());
 

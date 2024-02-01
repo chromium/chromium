@@ -76,7 +76,7 @@ class ASH_EXPORT TabSlider : public views::TableLayoutView {
   void OnButtonSelected(TabSliderButton* button);
 
   // views::View:
-  void Layout() override;
+  void Layout(PassKey) override;
 
  private:
   // The view of the selector.

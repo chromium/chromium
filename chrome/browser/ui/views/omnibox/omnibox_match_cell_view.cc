@@ -463,7 +463,7 @@ gfx::Insets OmniboxMatchCellView::GetInsets() const {
                            vertical_margin, right_margin);
 }
 
-void OmniboxMatchCellView::Layout() {
+void OmniboxMatchCellView::Layout(PassKey) {
   LayoutSuperclass<views::View>(this);
 
   const bool two_line = layout_style_ == LayoutStyle::TWO_LINE_SUGGESTION;

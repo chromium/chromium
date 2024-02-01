@@ -171,7 +171,7 @@ void HeaderView::SetHeaderCornerRadius(int radius) {
   frame_header_->SetHeaderCornerRadius(radius);
 }
 
-void HeaderView::Layout() {
+void HeaderView::Layout(PassKey) {
   did_layout_ = true;
   header_content_view_->SetBoundsRect(GetLocalBounds());
   frame_header_->LayoutHeader();

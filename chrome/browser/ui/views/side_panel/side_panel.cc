@@ -192,7 +192,7 @@ class BorderView : public views::View {
     SchedulePaint();
   }
 
-  void Layout() override {
+  void Layout(PassKey) override {
     // Let BorderView grow slightly taller so that it overlaps the divider into
     // the toolbar or bookmarks bar above it.
     gfx::Rect bounds = parent()->GetLocalBounds();

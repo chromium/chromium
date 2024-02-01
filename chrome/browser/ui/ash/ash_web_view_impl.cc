@@ -59,7 +59,7 @@ void AshWebViewImpl::ChildPreferredSizeChanged(views::View* child) {
   SetPreferredSize(web_view_->GetPreferredSize());
 }
 
-void AshWebViewImpl::Layout() {
+void AshWebViewImpl::Layout(PassKey) {
   web_view_->SetBoundsRect(GetContentsBounds());
 }
 

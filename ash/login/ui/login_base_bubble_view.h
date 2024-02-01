@@ -70,7 +70,7 @@ class ASH_EXPORT LoginBaseBubbleView : public views::View,
 
   // views::View:
   gfx::Size CalculatePreferredSize() const override;
-  void Layout() override;
+  void Layout(PassKey) override;
   void OnBlur() override;
 
   void set_positioning_strategy(PositioningStrategy positioning_strategy) {

@@ -14,7 +14,7 @@ SidePanelHeader::SidePanelHeader() {
   layer()->SetFillsBoundsOpaquely(false);
 }
 
-void SidePanelHeader::Layout() {
+void SidePanelHeader::Layout(PassKey) {
   LayoutSuperclass<views::View>(this);
 
   if (features::IsChromeRefresh2023()) {

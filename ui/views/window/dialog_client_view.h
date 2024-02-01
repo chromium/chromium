@@ -83,7 +83,7 @@ class VIEWS_EXPORT DialogClientView : public ClientView, public DialogObserver {
   // this view is visible).
   void TriggerInputProtection(bool force_early = false);
 
-  void Layout() override;
+  void Layout(PassKey) override;
   bool AcceleratorPressed(const ui::Accelerator& accelerator) override;
   void ViewHierarchyChanged(
       const ViewHierarchyChangedDetails& details) override;

@@ -50,7 +50,7 @@ class UI_CHROMEOS_EXPORT CandidateView : public views::Button {
 
   // Overridden from View:
   bool OnMouseDragged(const ui::MouseEvent& event) override;
-  void Layout() override;
+  void Layout(PassKey) override;
   gfx::Size CalculatePreferredSize() const override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
 

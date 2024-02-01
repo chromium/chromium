@@ -18,7 +18,7 @@ struct SyncLayout : public View {
 // `LayoutSuperclass<SuperT>(this)` should be the only way to trigger superclass
 // layout.
 struct SuperclassLayout : public View {
-  void Layout() override {
+  void Layout(PassKey) override {
     LayoutSuperclass<SuperclassLayout>(this);  // expected-error {{no matching member function}}
     LayoutSuperclass<SyncLayout>(this);        // expected-error {{no matching member function}}
   }

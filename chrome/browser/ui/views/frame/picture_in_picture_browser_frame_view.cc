@@ -750,7 +750,7 @@ void PictureInPictureBrowserFrameView::OnThemeChanged() {
   BrowserNonClientFrameView::OnThemeChanged();
 }
 
-void PictureInPictureBrowserFrameView::Layout() {
+void PictureInPictureBrowserFrameView::Layout(PassKey) {
   gfx::Rect content_area = GetLocalBounds();
   content_area.Inset(FrameBorderInsets());
   gfx::Rect top_bar = content_area;

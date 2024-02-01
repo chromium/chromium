@@ -102,7 +102,7 @@ FeaturePodLabelButton::FeaturePodLabelButton(PressedCallback callback)
 
 FeaturePodLabelButton::~FeaturePodLabelButton() = default;
 
-void FeaturePodLabelButton::Layout() {
+void FeaturePodLabelButton::Layout(PassKey) {
   DCHECK(views::FocusRing::Get(this));
   views::FocusRing::Get(this)->DeprecatedLayoutImmediately();
   LayoutInCenter(label_, GetContentsBounds().y());

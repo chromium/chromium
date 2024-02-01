@@ -31,7 +31,7 @@ class KeyboardShortcutItemView : public views::View {
 
   // views::View:
   int GetHeightForWidth(int w) const override;
-  void Layout() override;
+  void Layout(PassKey) override;
 
   views::StyledLabel* description_label_view() {
     return description_label_view_;

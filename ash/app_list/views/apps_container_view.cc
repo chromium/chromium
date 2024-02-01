@@ -833,7 +833,7 @@ void AppsContainerView::UpdateControlVisibility(
       app_list_state == AppListViewState::kFullscreenSearch);
 }
 
-void AppsContainerView::Layout() {
+void AppsContainerView::Layout(PassKey) {
   gfx::Rect rect(GetContentsBounds());
   if (rect.IsEmpty())
     return;

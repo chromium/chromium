@@ -120,7 +120,7 @@ void NotificationOverflowView::RemoveIcon(const std::string& notification_id) {
   }
 }
 
-void NotificationOverflowView::Layout() {
+void NotificationOverflowView::Layout(PassKey) {
   separator_->SetBoundsRect(
       gfx::Rect(width(), separator_->GetPreferredSize().height()));
 

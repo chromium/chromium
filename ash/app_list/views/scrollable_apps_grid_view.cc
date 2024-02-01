@@ -66,7 +66,7 @@ void ScrollableAppsGridView::SetMaxColumns(int max_cols) {
   SetMaxColumnsInternal(max_cols);
 }
 
-void ScrollableAppsGridView::Layout() {
+void ScrollableAppsGridView::Layout(PassKey) {
   if (ignore_layout())
     return;
 

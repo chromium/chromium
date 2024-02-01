@@ -592,7 +592,7 @@ bool AppListBubbleAppsPage::MaybeScrollToShowToast() {
   return true;
 }
 
-void AppListBubbleAppsPage::Layout() {
+void AppListBubbleAppsPage::Layout(PassKey) {
   LayoutSuperclass<views::View>(this);
   if (gradient_helper_)
     gradient_helper_->UpdateGradientMask();

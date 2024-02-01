@@ -369,7 +369,7 @@ int LabelButton::GetHeightForWidth(int width) const {
   return height;
 }
 
-void LabelButton::Layout() {
+void LabelButton::Layout(PassKey) {
   gfx::Rect image_area = GetLocalBounds();
 
   ink_drop_container_->SetBoundsRect(image_area);

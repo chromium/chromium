@@ -461,7 +461,7 @@ void HoldingSpaceTray::PerformDrop(
   output_drag_op = DragOperation::kCopy;
 }
 
-void HoldingSpaceTray::Layout() {
+void HoldingSpaceTray::Layout(PassKey) {
   LayoutSuperclass<TrayBackgroundView>(this);
 
   // The `drop_target_overlay_` should always fill this view's bounds as they

@@ -162,7 +162,7 @@ gfx::Size CompactTitleMessageView::CalculatePreferredSize() const {
                    std::max(title_size.height(), message_size.height()));
 }
 
-void CompactTitleMessageView::Layout() {
+void CompactTitleMessageView::Layout(PassKey) {
   // Elides title and message.
   // * If the message is too long, the message occupies at most
   //   kProgressNotificationMessageRatio of the width.
@@ -235,7 +235,7 @@ NotificationViewBase::~NotificationViewBase() {
   RemovePreTargetHandler(click_activator_.get());
 }
 
-void NotificationViewBase::Layout() {
+void NotificationViewBase::Layout(PassKey) {
   LayoutSuperclass<MessageView>(this);
 
   // We need to call IsExpandable() after doing superclass layout, since whether

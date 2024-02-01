@@ -50,7 +50,7 @@ gfx::Size NotificationMenuView::CalculatePreferredSize() const {
           (overflow_view_ ? overflow_view_->GetPreferredSize().height() : 0));
 }
 
-void NotificationMenuView::Layout() {
+void NotificationMenuView::Layout(PassKey) {
   int y = 0;
   double_separator_->SetBoundsRect(gfx::Rect(
       gfx::Point(0, y),

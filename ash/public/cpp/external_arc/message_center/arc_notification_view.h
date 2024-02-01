@@ -70,7 +70,7 @@ class ArcNotificationView : public message_center::MessageView,
 
   // Overridden from views::View:
   gfx::Size CalculatePreferredSize() const override;
-  void Layout() override;
+  void Layout(PassKey) override;
   bool HasFocus() const override;
   void RequestFocus() override;
   bool OnKeyPressed(const ui::KeyEvent& event) override;

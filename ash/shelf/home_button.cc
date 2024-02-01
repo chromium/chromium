@@ -359,7 +359,7 @@ gfx::Size HomeButton::CalculatePreferredSize() const {
   return control_button_size;
 }
 
-void HomeButton::Layout() {
+void HomeButton::Layout(PassKey) {
   LayoutSuperclass<ShelfControlButton>(this);
 
   button_image_view_->SetBoundsRect(

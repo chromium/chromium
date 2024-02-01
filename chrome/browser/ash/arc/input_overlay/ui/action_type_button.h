@@ -36,7 +36,7 @@ class ActionTypeButton : public ash::OptionButtonBase {
   bool IsIconOnTheLeftSide() override;
 
   // views::LabelButton:
-  void Layout() override;
+  void Layout(PassKey) override;
   gfx::ImageSkia GetImage(ButtonState for_state) const override;
 
   // views::View:

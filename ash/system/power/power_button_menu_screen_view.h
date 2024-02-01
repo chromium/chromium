@@ -67,7 +67,7 @@ class ASH_EXPORT PowerButtonMenuScreenView : public views::View,
   class PowerButtonMenuBackgroundView;
 
   // views::View:
-  void Layout() override;
+  void Layout(PassKey) override;
   bool OnMousePressed(const ui::MouseEvent& event) override;
   void OnMouseReleased(const ui::MouseEvent& event) override;
   bool AcceleratorPressed(const ui::Accelerator& accelerator) override;

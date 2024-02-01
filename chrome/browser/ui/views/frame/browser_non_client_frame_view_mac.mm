@@ -483,7 +483,7 @@ void BrowserNonClientFrameViewMac::OnPaint(gfx::Canvas* canvas) {
     PaintThemedFrame(canvas);
 }
 
-void BrowserNonClientFrameViewMac::Layout() {
+void BrowserNonClientFrameViewMac::Layout(PassKey) {
   if (browser_view()->IsWindowControlsOverlayEnabled())
     LayoutWindowControlsOverlay();
   LayoutSuperclass<NonClientFrameView>(this);

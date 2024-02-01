@@ -55,7 +55,7 @@ class ASH_EXPORT FocusModeTray : public TrayBackgroundView,
       const FocusModeSession::Snapshot& session_snapshot) override;
 
   // views::View:
-  void Layout() override;
+  void Layout(PassKey) override;
 
   FocusModeCountdownView* countdown_view_for_testing() {
     return countdown_view_;

@@ -272,7 +272,7 @@ void WebUILoginView::SetKeyboardEventsAndSystemTrayEnabled(bool enabled) {
 
 // WebUILoginView protected: ---------------------------------------------------
 
-void WebUILoginView::Layout() {
+void WebUILoginView::Layout(PassKey) {
   DCHECK(web_view_);
   web_view_->SetBoundsRect(bounds());
 

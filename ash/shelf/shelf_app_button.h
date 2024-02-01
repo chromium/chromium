@@ -132,7 +132,7 @@ class ASH_EXPORT ShelfAppButton : public ShelfButton,
   void OnMouseReleased(const ui::MouseEvent& event) override;
   void OnMouseCaptureLost() override;
   bool OnMouseDragged(const ui::MouseEvent& event) override;
-  void Layout() override;
+  void Layout(PassKey) override;
   void ChildPreferredSizeChanged(views::View* child) override;
   void OnThemeChanged() override;
 

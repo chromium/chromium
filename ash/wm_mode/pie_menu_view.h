@@ -123,7 +123,7 @@ class ASH_EXPORT PieMenuView : public views::View {
   gfx::Point GetButtonContentsCenterInScreen(int button_id) const;
 
   // views::View:
-  void Layout() override;
+  void Layout(PassKey) override;
   void AddedToWidget() override;
   void OnThemeChanged() override;
 

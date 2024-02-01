@@ -73,7 +73,7 @@ class AutoclickScrollView : public views::View {
 
  private:
   // views::View:
-  void Layout() override;
+  void Layout(PassKey) override;
 
   // Unowned. Owned by views hierarchy.
   raw_ptr<AutoclickScrollButton> scroll_up_button_;

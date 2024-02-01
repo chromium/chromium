@@ -570,7 +570,7 @@ gfx::Size WindowCycleView::CalculatePreferredSize() const {
   return size;
 }
 
-void WindowCycleView::Layout() {
+void WindowCycleView::Layout(PassKey) {
   if (is_destroying_)
     return;
 

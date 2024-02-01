@@ -98,7 +98,7 @@ class PictureInPictureBrowserFrameView
   gfx::Size GetMinimumSize() const override;
   gfx::Size GetMaximumSize() const override;
   void OnThemeChanged() override;
-  void Layout() override;
+  void Layout(PassKey) override;
   void AddedToWidget() override;
   void RemovedFromWidget() override;
 #if BUILDFLAG(IS_LINUX)

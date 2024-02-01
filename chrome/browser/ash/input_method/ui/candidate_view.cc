@@ -241,7 +241,7 @@ bool CandidateView::OnMouseDragged(const ui::MouseEvent& event) {
   return views::Button::OnMouseDragged(event);
 }
 
-void CandidateView::Layout() {
+void CandidateView::Layout(PassKey) {
   const int padding_width =
       orientation_ == ui::CandidateWindow::VERTICAL ? 4 : 6;
   int x = 0;

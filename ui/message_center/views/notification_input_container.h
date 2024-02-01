@@ -65,7 +65,7 @@ class MESSAGE_CENTER_EXPORT NotificationInputContainer
   void AddLayerToRegion(ui::Layer* layer, views::LayerRegion region) override;
   void RemoveLayerFromRegions(ui::Layer* layer) override;
   void OnThemeChanged() override;
-  void Layout() override;
+  void Layout(PassKey) override;
 
   // views::TextfieldController:
   bool HandleKeyEvent(views::Textfield* sender,

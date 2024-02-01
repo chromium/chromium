@@ -207,7 +207,7 @@ int RelaunchRequiredDialogView::GetHeightForWidth(
       width - insets.width()) + insets.height();
 }
 
-void RelaunchRequiredDialogView::Layout() {
+void RelaunchRequiredDialogView::Layout(PassKey) {
   body_label_->SetBoundsRect(GetContentsBounds());
 }
 ```
@@ -830,7 +830,7 @@ FindBarView::FindBarView(FindBarHost* host)
       AddChildView(std::move(close_button));
 }
 
-void FindBarView::Layout() {
+void FindBarView::Layout(PassKey) {
   LayoutSuperclass<views::View>(this);
   // The focus forwarder view is a hidden view that
   // should cover the area between the find text box

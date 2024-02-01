@@ -52,7 +52,7 @@ class WindowPreview : public views::View {
 
   // views::View:
   gfx::Size CalculatePreferredSize() const override;
-  void Layout() override;
+  void Layout(PassKey) override;
   bool OnMousePressed(const ui::MouseEvent& event) override;
   const char* GetClassName() const override;
   void OnThemeChanged() override;

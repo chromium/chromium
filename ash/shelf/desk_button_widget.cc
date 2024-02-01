@@ -52,7 +52,7 @@ bool DeskButtonWidget::DelegateView::CanActivate() const {
   return Shell::Get()->focus_cycler()->widget_activating() == GetWidget();
 }
 
-void DeskButtonWidget::DelegateView::Layout() {
+void DeskButtonWidget::DelegateView::Layout(PassKey) {
   if (!desk_button_widget_ || !desk_button_container_) {
     return;
   }

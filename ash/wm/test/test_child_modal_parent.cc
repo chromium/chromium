@@ -117,7 +117,7 @@ aura::Window* TestChildModalParent::ShowModalChild() {
   return modal_child_->GetNativeView();
 }
 
-void TestChildModalParent::Layout() {
+void TestChildModalParent::Layout(PassKey) {
   int running_y = y();
   button_->SetBounds(x(), running_y, width(), kButtonHeight);
   running_y += kButtonHeight;

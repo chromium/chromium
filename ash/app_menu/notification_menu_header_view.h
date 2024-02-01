@@ -33,7 +33,7 @@ class NotificationMenuHeaderView : public views::View {
 
   // Overidden from views::View:
   gfx::Size CalculatePreferredSize() const override;
-  void Layout() override;
+  void Layout(PassKey) override;
 
  private:
   friend class NotificationMenuViewTestAPI;

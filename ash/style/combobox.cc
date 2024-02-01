@@ -492,7 +492,7 @@ void Combobox::RemovedFromWidget() {
   widget_observer_.Reset();
 }
 
-void Combobox::Layout() {
+void Combobox::Layout(PassKey) {
   LayoutSuperclass<views::Button>(this);
   views::FocusRing::Get(this)->DeprecatedLayoutImmediately();
 }

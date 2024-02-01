@@ -155,7 +155,7 @@ SavedDeskIconContainer::SavedDeskIconContainer() {
 
 SavedDeskIconContainer::~SavedDeskIconContainer() = default;
 
-void SavedDeskIconContainer::Layout() {
+void SavedDeskIconContainer::Layout(PassKey) {
   LayoutSuperclass<views::BoxLayoutView>(this);
 
   // At this point we can not guarantee whether the child icon view has done

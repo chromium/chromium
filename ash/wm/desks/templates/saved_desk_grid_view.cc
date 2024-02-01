@@ -226,7 +226,7 @@ gfx::Size SavedDeskGridView::CalculatePreferredSize() const {
                    rows * item_height + (rows - 1) * kSaveDeskPaddingDp);
 }
 
-void SavedDeskGridView::Layout() {
+void SavedDeskGridView::Layout(PassKey) {
   if (grid_items_.empty())
     return;
 

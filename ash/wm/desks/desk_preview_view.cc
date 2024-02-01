@@ -523,7 +523,7 @@ void DeskPreviewView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
                                 extra_tip);
 }
 
-void DeskPreviewView::Layout() {
+void DeskPreviewView::Layout(PassKey) {
   const gfx::Rect bounds = GetContentsBounds();
   wallpaper_preview_->SetBoundsRect(bounds);
   desk_mirrored_contents_view_->SetBoundsRect(bounds);

@@ -229,7 +229,7 @@ class BackGestureContextualNudge::ContextualNudgeView
 
    private:
     // views::View:
-    void Layout() override {
+    void Layout(PassKey) override {
       const gfx::Rect bounds = GetLocalBounds();
       gfx::Rect label_rect(bounds);
       label_rect.ClampToCenteredSize(label_->GetPreferredSize());
@@ -335,7 +335,9 @@ class BackGestureContextualNudge::ContextualNudgeView
   }
 
   // views::View:
-  void Layout() override { suggestion_view_->SetBoundsRect(GetLocalBounds()); }
+  void Layout(PassKey) override {
+    suggestion_view_->SetBoundsRect(GetLocalBounds());
+  }
 
   // ui::ImplicitAnimationObserver:
   void OnImplicitAnimationsCompleted() override {

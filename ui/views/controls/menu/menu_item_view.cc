@@ -721,7 +721,7 @@ void MenuItemView::ChildrenChanged() {
   removed_items_.clear();
 }
 
-void MenuItemView::Layout() {
+void MenuItemView::Layout(PassKey) {
   if (children().empty())
     return;
 

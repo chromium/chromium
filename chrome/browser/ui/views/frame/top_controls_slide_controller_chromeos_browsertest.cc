@@ -118,7 +118,7 @@ class LayoutTestView : public views::View {
   }
 
   // views::View:
-  void Layout() override { ++layout_count_; }
+  void Layout(PassKey) override { ++layout_count_; }
 
  private:
   int layout_count_ = 0;

@@ -684,7 +684,7 @@ gfx::Size BookmarkBarView::GetMinimumSize() const {
   return gfx::Size(width, height);
 }
 
-void BookmarkBarView::Layout() {
+void BookmarkBarView::Layout(PassKey) {
   // Skip layout during destruction, when no model exists.
   if (!bookmark_model_) {
     return;

@@ -63,7 +63,7 @@ class SavedDeskIconContainer : public views::BoxLayoutView {
   static constexpr int kMaxIcons = 4;
 
   // views::BoxLayoutView:
-  void Layout() override;
+  void Layout(PassKey) override;
 
   // Given a saved desk, determine which icons to show in this and create
   // the according SavedDeskIconView's.

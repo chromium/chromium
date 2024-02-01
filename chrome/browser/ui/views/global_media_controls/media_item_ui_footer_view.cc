@@ -154,7 +154,7 @@ void MediaItemUIFooterView::OnMediaItemUIDeviceSelectorUpdated(
   UpdateButtonsColor();
 }
 
-void MediaItemUIFooterView::Layout() {
+void MediaItemUIFooterView::Layout(PassKey) {
   if (!overflow_button_) {
     LayoutSuperclass<views::View>(this);
     return;

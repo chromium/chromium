@@ -281,7 +281,7 @@ void OmniboxSuggestionButtonRowView::BuildViews() {
 
 OmniboxSuggestionButtonRowView::~OmniboxSuggestionButtonRowView() = default;
 
-void OmniboxSuggestionButtonRowView::Layout() {
+void OmniboxSuggestionButtonRowView::Layout(PassKey) {
   LayoutSuperclass<View>(this);
 
   if (!OmniboxFieldTrial::IsChromeRefreshSuggestHoverFillShapeEnabled())

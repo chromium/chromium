@@ -442,7 +442,7 @@ void EditableCombobox::UpdateMenu() {
   menu_model_->UpdateItemsShown();
 }
 
-void EditableCombobox::Layout() {
+void EditableCombobox::Layout(PassKey) {
   LayoutSuperclass<View>(this);
   int preferred_width = control_elements_container_->GetPreferredSize().width();
   control_elements_container_->SetBounds(width() - preferred_width, 0,

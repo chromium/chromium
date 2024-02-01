@@ -116,7 +116,7 @@ class DownloadToolbarButtonView : public ToolbarButton,
 
   // ToolbarButton:
   void UpdateIcon() override;
-  void Layout() override;
+  void Layout(PassKey) override;
   bool ShouldShowInkdropAfterIphInteraction() override;
 
   // DownloadBubbleNavigationHandler:

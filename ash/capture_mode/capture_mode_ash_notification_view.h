@@ -55,7 +55,7 @@ class ASH_EXPORT CaptureModeAshNotificationView : public AshNotificationView {
   // AshNotificationView:
   void UpdateWithNotification(
       const message_center::Notification& notification) override;
-  void Layout() override;
+  void Layout(PassKey) override;
 
  private:
   void CreateExtraView();

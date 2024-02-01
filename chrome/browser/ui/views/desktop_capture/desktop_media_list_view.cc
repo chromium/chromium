@@ -98,7 +98,7 @@ gfx::Size DesktopMediaListView::CalculatePreferredSize() const {
                        2 * vertical_margins_);
 }
 
-void DesktopMediaListView::Layout() {
+void DesktopMediaListView::Layout(PassKey) {
   // Children lay out in a grid, all with the same size and without padding.
   const int width = active_style_->item_size.width();
   const int height = active_style_->item_size.height();

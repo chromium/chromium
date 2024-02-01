@@ -685,7 +685,7 @@ std::unique_ptr<views::Widget> DeskBarViewBase::CreateDeskWidget(
   return widget;
 }
 
-void DeskBarViewBase::Layout() {
+void DeskBarViewBase::Layout(PassKey) {
   TRACE_EVENT0("ui", "DeskBarViewBase::Layout");
 
   if (pause_layout_) {

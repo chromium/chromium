@@ -627,7 +627,7 @@ void NotificationView::RemoveLayerFromRegions(ui::Layer* layer) {
     child->DestroyLayer();
 }
 
-void NotificationView::Layout() {
+void NotificationView::Layout(PassKey) {
   LayoutSuperclass<NotificationViewBase>(this);
 
   // The animation is needed to run inside of the border.

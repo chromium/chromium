@@ -372,7 +372,7 @@ class VIEWS_EXPORT MenuItemView : public View {
   void ChildrenChanged();
 
   // Sizes any child views.
-  void Layout() override;
+  void Layout(PassKey) override;
 
   // Returns true if the menu has mnemonics. This only useful on the root menu
   // item.

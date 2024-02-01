@@ -197,7 +197,7 @@ void DialogClientView::UpdateWindowRoundedCorners(int corner_radius) {
 
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-void DialogClientView::Layout() {
+void DialogClientView::Layout(PassKey) {
   button_row_container_->SetSize(
       gfx::Size(width(), button_row_container_->GetHeightForWidth(width())));
   button_row_container_->SetY(height() - button_row_container_->height());

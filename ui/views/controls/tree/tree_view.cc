@@ -404,7 +404,7 @@ void TreeView::SetDrawingProvider(
   drawing_provider_ = std::move(provider);
 }
 
-void TreeView::Layout() {
+void TreeView::Layout(PassKey) {
   int width = preferred_size_.width();
   int height = preferred_size_.height();
   if (parent()) {

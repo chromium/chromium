@@ -164,7 +164,7 @@ class ASH_EXPORT ContentsView : public views::View,
   bool Back();
 
   // Overridden from views::View:
-  void Layout() override;
+  void Layout(PassKey) override;
 
   // Overridden from PaginationModelObserver:
   void TotalPagesChanged(int previous_page_count, int new_page_count) override;

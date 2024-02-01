@@ -32,7 +32,7 @@ class ASH_EXPORT GlanceablesClassroomItemView : public views::Button {
 
   // views::Button:
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
-  void Layout() override;
+  void Layout(PassKey) override;
 };
 
 }  // namespace ash

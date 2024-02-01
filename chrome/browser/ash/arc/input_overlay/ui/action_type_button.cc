@@ -89,7 +89,7 @@ void ActionTypeButton::RefreshColors() {
                       cros_tokens::kCrosSysHoverOnSubtle));
 }
 
-void ActionTypeButton::Layout() {
+void ActionTypeButton::Layout(PassKey) {
   SizeToPreferredSize();
   gfx::Rect local_bounds = GetLocalBounds();
   gfx::Rect local_content_bounds(local_bounds);

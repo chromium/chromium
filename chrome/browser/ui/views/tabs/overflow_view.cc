@@ -76,7 +76,7 @@ void OverflowView::SetCrossAxisAlignment(
   InvalidateLayout();
 }
 
-void OverflowView::Layout() {
+void OverflowView::Layout(PassKey) {
   const gfx::Size available_size = size();
   const gfx::Size primary_size =
       GetSizeFromFlexRuleOrDefault(primary_view_, available_size);

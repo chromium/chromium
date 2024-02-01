@@ -227,7 +227,7 @@ class AnimationSpeedControl : public views::SliderListener, public views::View {
                           views::SliderChangeReason reason) override;
 
   // views::View:
-  void Layout() override;
+  void Layout(PassKey) override;
 
  private:
   // Map slider values to animation scale.
@@ -336,7 +336,7 @@ void AnimationSpeedControl::SliderValueChanged(
   }
 }
 
-void AnimationSpeedControl::Layout() {
+void AnimationSpeedControl::Layout(PassKey) {
   gfx::Size max_size;
   // Make all labels equal size.
   for (const views::View* label : hints_container_->children()) {

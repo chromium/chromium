@@ -302,7 +302,7 @@ bool Tab::GetHitTestMask(SkPath* mask) const {
   return true;
 }
 
-void Tab::Layout() {
+void Tab::Layout(PassKey) {
   const gfx::Rect contents_rect = GetContentsBounds();
 
   const bool was_showing_icon = showing_icon_;

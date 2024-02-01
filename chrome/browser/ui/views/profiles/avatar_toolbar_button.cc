@@ -124,7 +124,7 @@ void AvatarToolbarButton::UpdateIcon() {
   SetInsets();
 }
 
-void AvatarToolbarButton::Layout() {
+void AvatarToolbarButton::Layout(PassKey) {
   LayoutSuperclass<ToolbarButton>(this);
 
   // TODO(crbug.com/1108671): this is a hack to avoid mismatch between avatar

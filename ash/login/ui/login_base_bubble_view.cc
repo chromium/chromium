@@ -301,7 +301,7 @@ gfx::Size LoginBaseBubbleView::CalculatePreferredSize() const {
   return size;
 }
 
-void LoginBaseBubbleView::Layout() {
+void LoginBaseBubbleView::Layout(PassKey) {
   LayoutSuperclass<views::View>(this);
 
   // If layout occurs while the bubble is visible (i.e. due to Show()), its

@@ -136,7 +136,7 @@ gfx::Size CameraRollView::CameraRollItemsView::CalculatePreferredSize() const {
   return gfx::Size(width, height);
 }
 
-void CameraRollView::CameraRollItemsView::Layout() {
+void CameraRollView::CameraRollItemsView::Layout(PassKey) {
   LayoutSuperclass<views::View>(this);
   CalculateIdealBounds();
   for (size_t i = 0; i < camera_roll_items_.view_size(); ++i) {

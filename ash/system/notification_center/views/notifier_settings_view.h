@@ -102,7 +102,7 @@ class ASH_EXPORT NotifierSettingsView : public views::View,
   };
 
   // Overridden from views::View:
-  void Layout() override;
+  void Layout(PassKey) override;
   gfx::Size GetMinimumSize() const override;
   gfx::Size CalculatePreferredSize() const override;
   bool OnKeyPressed(const ui::KeyEvent& event) override;

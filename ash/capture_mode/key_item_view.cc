@@ -87,7 +87,7 @@ void KeyItemView::OnThemeChanged() {
   SchedulePaint();
 }
 
-void KeyItemView::Layout() {
+void KeyItemView::Layout(PassKey) {
   const auto bounds = GetContentsBounds();
   if (icon_) {
     icon_->SetBoundsRect(bounds);

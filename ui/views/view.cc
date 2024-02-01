@@ -866,7 +866,7 @@ void View::DeprecatedLayoutImmediately() {
   LayoutImmediately(false);
 }
 
-void View::Layout() {
+void View::Layout(PassKey) {
   needs_layout_ = false;
 
   // If we have a layout manager, let it handle the layout for us.
@@ -3419,7 +3419,7 @@ void View::LayoutImmediately(bool collect_trace) {
   if (collect_trace) {
     TRACE_EVENT1("ui", "View::LayoutImmediately", "view class", GetClassName());
   }
-  Layout();
+  Layout(PassKey());
 }
 
 // Input -----------------------------------------------------------------------

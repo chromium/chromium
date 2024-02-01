@@ -656,7 +656,7 @@ void NotificationListView::PreferredSizeChanged() {
   }
 }
 
-void NotificationListView::Layout() {
+void NotificationListView::Layout(PassKey) {
   for (views::View* child : children()) {
     auto* view = AsMVC(child);
     if (state_ == State::IDLE) {

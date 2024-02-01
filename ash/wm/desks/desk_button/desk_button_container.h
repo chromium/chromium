@@ -68,7 +68,7 @@ class ASH_EXPORT DeskButtonContainer : public DeskProfilesDelegate::Observer,
 
   // views::View:
   gfx::Size CalculatePreferredSize() const override;
-  void Layout() override;
+  void Layout(PassKey) override;
 
   // Invoked after the shelf alignment change. It's used to update the container
   // UI properly.

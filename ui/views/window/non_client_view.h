@@ -101,7 +101,7 @@ class VIEWS_EXPORT NonClientFrameView : public View,
   // View:
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   void OnThemeChanged() override;
-  void Layout() override;
+  void Layout(PassKey) override;
   Views GetChildrenInZOrder() override;
 
   // Inserts the passed client view into this NonClientFrameView. Subclasses can
@@ -214,7 +214,7 @@ class VIEWS_EXPORT NonClientView : public View, public ViewTargeterDelegate {
   gfx::Size CalculatePreferredSize() const override;
   gfx::Size GetMinimumSize() const override;
   gfx::Size GetMaximumSize() const override;
-  void Layout() override;
+  void Layout(PassKey) override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   views::View* GetTooltipHandlerForPoint(const gfx::Point& point) override;
 

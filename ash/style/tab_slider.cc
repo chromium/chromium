@@ -149,7 +149,7 @@ void TabSlider::OnButtonSelected(TabSliderButton* button) {
   selector_view_->MoveToSelectedButton(button);
 }
 
-void TabSlider::Layout() {
+void TabSlider::Layout(PassKey) {
   LayoutSuperclass<views::View>(this);
 
   // Synchronize the selector bounds with selected button's bounds.

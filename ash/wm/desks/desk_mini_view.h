@@ -142,7 +142,7 @@ class ASH_EXPORT DeskMiniView : public views::View,
   void OnPreviewAboutToBeFocusedByReverseTab();
 
   // views::View:
-  void Layout() override;
+  void Layout(PassKey) override;
   gfx::Size CalculatePreferredSize() const override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   void OnThemeChanged() override;

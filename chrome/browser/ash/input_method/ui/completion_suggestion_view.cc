@@ -192,7 +192,7 @@ void CompletionSuggestionView::OnThemeChanged() {
   views::View::OnThemeChanged();
 }
 
-void CompletionSuggestionView::Layout() {
+void CompletionSuggestionView::Layout(PassKey) {
   int left = kPadding;
 
   suggestion_label_->SetBounds(left, 0, suggestion_width_, height());

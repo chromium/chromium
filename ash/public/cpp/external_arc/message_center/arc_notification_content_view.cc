@@ -654,7 +654,7 @@ void ArcNotificationContentView::ViewHierarchyChanged(
   AttachSurface();
 }
 
-void ArcNotificationContentView::Layout() {
+void ArcNotificationContentView::Layout(PassKey) {
   base::AutoReset<bool> auto_reset_in_layout(&in_layout_, true);
 
   if (!surface_ || !GetWidget())

@@ -252,7 +252,7 @@ class TestView : public View {
 
   void DoBlur() { views::View::Blur(); }
 
-  void Layout() override {
+  void Layout(PassKey) override {
     did_layout_ = true;
     LayoutSuperclass<View>(this);
   }

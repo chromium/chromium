@@ -358,7 +358,7 @@ gfx::Size PaginationView::CalculatePreferredSize() const {
              : gfx::Size(kIndicatorButtonSize, container_size);
 }
 
-void PaginationView::Layout() {
+void PaginationView::Layout(PassKey) {
   const bool horizontal = (orientation_ == Orientation::kHorizontal);
   int offset = 0;
 

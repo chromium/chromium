@@ -327,7 +327,7 @@ std::vector<views::View*> SearchResultListView::GetViewsToAnimate() {
   return results;
 }
 
-void SearchResultListView::Layout() {
+void SearchResultListView::Layout(PassKey) {
   results_container_->SetBoundsRect(GetLocalBounds());
 }
 

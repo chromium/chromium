@@ -450,7 +450,7 @@ bool BrowserNonClientFrameViewChromeOS::AppIsPwaWithBorderlessDisplayMode()
          browser_view()->AppUsesBorderlessMode();
 }
 
-void BrowserNonClientFrameViewChromeOS::Layout() {
+void BrowserNonClientFrameViewChromeOS::Layout(PassKey) {
   // The header must be laid out before computing |painted_height| because the
   // computation of |painted_height| for app and popup windows depends on the
   // position of the window controls.

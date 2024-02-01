@@ -228,7 +228,7 @@ class VIEWS_EXPORT ScrollView : public View, public ScrollBarController {
   // View overrides:
   gfx::Size CalculatePreferredSize() const override;
   int GetHeightForWidth(int width) const override;
-  void Layout() override;
+  void Layout(PassKey) override;
   bool OnKeyPressed(const ui::KeyEvent& event) override;
   bool OnMouseWheel(const ui::MouseWheelEvent& e) override;
   void OnScrollEvent(ui::ScrollEvent* event) override;

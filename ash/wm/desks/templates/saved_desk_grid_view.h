@@ -73,7 +73,7 @@ class SavedDeskGridView : public views::View {
 
   // views::View:
   gfx::Size CalculatePreferredSize() const override;
-  void Layout() override;
+  void Layout(PassKey) override;
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
 
   bool IsAnimating() const;

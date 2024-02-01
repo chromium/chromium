@@ -44,7 +44,7 @@ class TestChildModalParent : public views::WidgetDelegateView,
 
  private:
   // Overridden from views::View:
-  void Layout() override;
+  void Layout(PassKey) override;
   void AddedToWidget() override;
 
   // Overridden from WidgetObserver:

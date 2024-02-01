@@ -46,10 +46,10 @@ class ScrollableView : public views::View {
   ScrollableView& operator=(const ScrollableView&) = delete;
   ~ScrollableView() override = default;
 
-  void Layout() override;
+  void Layout(PassKey) override;
 };
 
-void ScrollableView::Layout() {
+void ScrollableView::Layout(PassKey) {
   gfx::Size pref = GetPreferredSize();
   int width = pref.width();
   int height = pref.height();

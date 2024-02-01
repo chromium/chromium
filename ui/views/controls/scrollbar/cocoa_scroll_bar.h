@@ -75,7 +75,7 @@ class VIEWS_EXPORT CocoaScrollBar : public ScrollBar,
   bool OverlapsContent() const override;
 
   // View:
-  void Layout() override;
+  void Layout(PassKey) override;
   gfx::Size CalculatePreferredSize() const override;
   void OnPaint(gfx::Canvas* canvas) override;
 

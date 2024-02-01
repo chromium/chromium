@@ -111,7 +111,7 @@ void NativeViewHost::SetBackgroundColorWhenClipped(
 ////////////////////////////////////////////////////////////////////////////////
 // NativeViewHost, View overrides:
 
-void NativeViewHost::Layout() {
+void NativeViewHost::Layout(PassKey) {
   if (!native_view_ || !native_wrapper_.get())
     return;
 

@@ -27,7 +27,7 @@ class ConfirmInfoBar : public InfoBarView {
   ~ConfirmInfoBar() override;
 
   // InfoBarView:
-  void Layout() override;
+  void Layout(PassKey) override;
 
   ConfirmInfoBarDelegate* GetDelegate();
 

@@ -79,7 +79,7 @@ gfx::Size DeskButtonContainer::CalculatePreferredSize() const {
   return {kDeskButtonContainerWidthVertical, GetPreferredLength()};
 }
 
-void DeskButtonContainer::Layout() {
+void DeskButtonContainer::Layout(PassKey) {
   if (!desk_button_widget_) {
     return;
   }

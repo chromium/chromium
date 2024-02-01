@@ -61,7 +61,7 @@ class ASH_EXPORT PaginationView : public views::View,
 
   // views::View:
   gfx::Size CalculatePreferredSize() const override;
-  void Layout() override;
+  void Layout(PassKey) override;
 
  private:
   // A filled circle with pagination motion effects.

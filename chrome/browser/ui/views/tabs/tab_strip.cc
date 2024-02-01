@@ -1903,7 +1903,7 @@ gfx::Size TabStrip::CalculatePreferredSize() const {
   return preferred_size;
 }
 
-void TabStrip::Layout() {
+void TabStrip::Layout(PassKey) {
   if (base::FeatureList::IsEnabled(features::kScrollableTabStrip)) {
     // With tab scrolling, the TabStrip is the contents view of a ScrollView and
     // as such is expected to set its own bounds during layout.

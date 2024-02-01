@@ -52,7 +52,7 @@ void CaptureModeAshNotificationView::UpdateWithNotification(
     CreateExtraView();
 }
 
-void CaptureModeAshNotificationView::Layout() {
+void CaptureModeAshNotificationView::Layout(PassKey) {
   LayoutSuperclass<AshNotificationView>(this);
   if (!extra_view_)
     return;

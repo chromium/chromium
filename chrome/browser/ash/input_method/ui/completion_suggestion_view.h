@@ -70,7 +70,7 @@ class UI_CHROMEOS_EXPORT CompletionSuggestionView : public views::Button {
   friend class SuggestionWindowViewTest;
   FRIEND_TEST_ALL_PREFIXES(SuggestionWindowViewTest, ShortcutSettingTest);
 
-  void Layout() override;
+  void Layout(PassKey) override;
   gfx::Size CalculatePreferredSize() const override;
   void OnThemeChanged() override;
 

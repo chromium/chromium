@@ -876,7 +876,7 @@ void AppListFolderView::AddedToWidget() {
   shadow_->ObserveColorProviderSource(GetWidget());
 }
 
-void AppListFolderView::Layout() {
+void AppListFolderView::Layout(PassKey) {
   LayoutSuperclass<views::View>(this);
 
   if (gradient_helper_)

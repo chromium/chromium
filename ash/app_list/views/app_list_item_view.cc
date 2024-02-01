@@ -1380,7 +1380,7 @@ bool AppListItemView::OnMousePressed(const ui::MouseEvent& event) {
   return true;
 }
 
-void AppListItemView::Layout() {
+void AppListItemView::Layout(PassKey) {
   gfx::Rect rect(GetContentsBounds());
   if (rect.IsEmpty()) {
     return;

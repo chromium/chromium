@@ -78,7 +78,7 @@ class TestWidgetDelegate : public views::WidgetDelegateView {
 
  private:
   // Overridden from views::View:
-  void Layout() override {
+  void Layout(PassKey) override {
     // Right align the caption button container.
     gfx::Size preferred_size = caption_button_container_->GetPreferredSize();
     caption_button_container_->SetBounds(width() - preferred_size.width(), 0,

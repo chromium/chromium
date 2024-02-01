@@ -513,7 +513,7 @@ void FrameCaptionButtonContainerView::ClearOnSizeButtonPressedCallback() {
   on_size_button_pressed_callback_.Reset();
 }
 
-void FrameCaptionButtonContainerView::Layout() {
+void FrameCaptionButtonContainerView::Layout(PassKey) {
   LayoutSuperclass<views::View>(this);
 
   // This ensures that the first frame of the animation to show the size button

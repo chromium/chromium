@@ -52,7 +52,7 @@ ChromeLabsButton::ChromeLabsButton(BrowserView* browser_view,
 
 ChromeLabsButton::~ChromeLabsButton() = default;
 
-void ChromeLabsButton::Layout() {
+void ChromeLabsButton::Layout(PassKey) {
   LayoutSuperclass<ToolbarButton>(this);
   gfx::Rect dot_rect(8, 8);
   if (ui::TouchUiController::Get()->touch_ui()) {

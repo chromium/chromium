@@ -78,7 +78,7 @@ class HighlightBorder : public views::View {
     SchedulePaint();
   }
 
-  void Layout() override {
+  void Layout(PassKey) override {
     auto bounds = parent()->GetLocalBounds();
     bounds.Inset(gfx::Insets(views::FocusRing::kDefaultHaloInset));
     SetBoundsRect(bounds);

@@ -19,7 +19,7 @@ SidePanelRoundedCorner::SidePanelRoundedCorner(BrowserView* browser_view)
   SetPaintToLayer();
 }
 
-void SidePanelRoundedCorner::Layout() {
+void SidePanelRoundedCorner::Layout(PassKey) {
   LayoutSuperclass<views::View>(this);
   SkPath path;
   if (features::IsChromeRefresh2023() && browser_view_->unified_side_panel()) {

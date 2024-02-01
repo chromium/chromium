@@ -28,7 +28,7 @@ class InfoBarContainerView : public views::AccessiblePaneView,
   bool IsEmpty() const;
 
   // views::AccessiblePaneView:
-  void Layout() override;
+  void Layout(PassKey) override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   gfx::Size CalculatePreferredSize() const override;
 

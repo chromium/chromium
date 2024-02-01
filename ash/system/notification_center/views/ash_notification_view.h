@@ -97,7 +97,7 @@ class ASH_EXPORT AshNotificationView
 
   // message_center::NotificationViewBase:
   void AddedToWidget() override;
-  void Layout() override;
+  void Layout(PassKey) override;
   void UpdateViewForExpandedState(bool expanded) override;
   void UpdateWithNotification(
       const message_center::Notification& notification) override;

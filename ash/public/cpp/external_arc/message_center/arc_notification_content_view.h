@@ -100,7 +100,7 @@ class ArcNotificationContentView
   // views::NativeViewHost
   void ViewHierarchyChanged(
       const views::ViewHierarchyChangedDetails& details) override;
-  void Layout() override;
+  void Layout(PassKey) override;
   void OnPaint(gfx::Canvas* canvas) override;
   void OnMouseEntered(const ui::MouseEvent& event) override;
   void OnMouseExited(const ui::MouseEvent& event) override;

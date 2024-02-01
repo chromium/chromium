@@ -77,7 +77,7 @@ class ASH_EXPORT ScrollableUsersListView : public views::ScrollView,
   void UpdateUserViewHostLayoutInsets();
 
   // views::View:
-  void Layout() override;
+  void Layout(PassKey) override;
   void OnPaintBackground(gfx::Canvas* canvas) override;
   void OnThemeChanged() override;
 

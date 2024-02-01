@@ -504,7 +504,7 @@ ax::mojom::SortDirection TableView::GetFirstSortDescriptorDirection() const {
   return ax::mojom::SortDirection::kDescending;
 }
 
-void TableView::Layout() {
+void TableView::Layout(PassKey) {
   // When the scrollview's width changes we force recalculating column sizes.
   ScrollView* scroll_view = ScrollView::GetScrollViewForContents(this);
   if (scroll_view) {

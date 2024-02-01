@@ -326,7 +326,7 @@ void CaptureLabelView::OnBoundsChanged(const gfx::Rect& previous_bounds) {
   shadow_->SetContentBounds(layer()->bounds());
 }
 
-void CaptureLabelView::Layout() {
+void CaptureLabelView::Layout(PassKey) {
   gfx::Rect label_bounds = GetLocalBounds();
   capture_button_container_->SetBoundsRect(label_bounds);
 

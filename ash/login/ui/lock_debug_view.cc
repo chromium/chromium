@@ -962,7 +962,7 @@ LockDebugView::~LockDebugView() {
   delete lock_;
 }
 
-void LockDebugView::Layout() {
+void LockDebugView::Layout(PassKey) {
   global_action_view_container_->SizeToPreferredSize();
   per_user_action_view_container_->SizeToPreferredSize();
 

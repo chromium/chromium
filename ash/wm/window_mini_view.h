@@ -143,7 +143,7 @@ class ASH_EXPORT WindowMiniView : public WindowMiniViewBase,
   gfx::RoundedCornersF GetRoundedCorners() const override;
   void SetSelectedWindowForFocus(aura::Window* window) override;
   void ClearFocusSelection() override;
-  void Layout() override;
+  void Layout(PassKey) override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
 
   // aura::WindowObserver:

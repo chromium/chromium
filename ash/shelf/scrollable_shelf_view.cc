@@ -203,7 +203,7 @@ class ScrollableShelfContainerView : public ShelfContainerView,
 
  private:
   // views::View:
-  void Layout() override;
+  void Layout(PassKey) override;
 
   // views::ViewTargeterDelegate:
   bool DoesIntersectRect(const views::View* target,
@@ -218,7 +218,7 @@ void ScrollableShelfContainerView::TranslateShelfView(
       scrollable_shelf_view_->ShouldAdaptToRTL() ? -offset : offset);
 }
 
-void ScrollableShelfContainerView::Layout() {
+void ScrollableShelfContainerView::Layout(PassKey) {
   // Should not use ShelfView::GetPreferredSize in replace of
   // CalculateIdealSize. Because ShelfView::CalculatePreferredSize relies on the
   // bounds of app icon. Meanwhile, the icon's bounds may be updated by
@@ -716,7 +716,7 @@ gfx::Size ScrollableShelfView::CalculatePreferredSize() const {
   return shelf_container_view_->GetPreferredSize();
 }
 
-void ScrollableShelfView::Layout() {
+void ScrollableShelfView::Layout(PassKey) {
   gfx::Rect shelf_container_bounds = gfx::Rect(size());
 
   // Transpose and layout as if it is horizontal.

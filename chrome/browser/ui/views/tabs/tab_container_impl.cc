@@ -786,7 +786,7 @@ gfx::Rect TabContainerImpl::GetIdealBounds(tab_groups::TabGroupId group) const {
   return layout_helper_->group_header_ideal_bounds().at(group);
 }
 
-void TabContainerImpl::Layout() {
+void TabContainerImpl::Layout(PassKey) {
   if (controller_->IsAnimatingInTabStrip()) {
     // Hide tabs that have animated at least partially out of the clip region.
     SetTabSlotVisibility();

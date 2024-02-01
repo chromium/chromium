@@ -123,7 +123,7 @@ class FixedView : public View {
 
   ~FixedView() override = default;
 
-  void Layout() override {
+  void Layout(PassKey) override {
     gfx::Size pref = GetPreferredSize();
     SetBounds(x(), y(), pref.width(), pref.height());
   }
@@ -147,7 +147,7 @@ class CustomView : public View {
 
   const gfx::Point last_location() const { return last_location_; }
 
-  void Layout() override {
+  void Layout(PassKey) override {
     gfx::Size pref = GetPreferredSize();
     int width = pref.width();
     int height = pref.height();
@@ -202,7 +202,7 @@ class VerticalResizingView : public View {
   VerticalResizingView& operator=(const VerticalResizingView&) = delete;
 
   ~VerticalResizingView() override = default;
-  void Layout() override {
+  void Layout(PassKey) override {
     int width = 10000;
     int height = parent()->height();
     SetBounds(x(), y(), width, height);
@@ -223,7 +223,7 @@ class HorizontalResizingView : public View {
   HorizontalResizingView& operator=(const HorizontalResizingView&) = delete;
 
   ~HorizontalResizingView() override = default;
-  void Layout() override {
+  void Layout(PassKey) override {
     int height = 10000;
     int width = parent()->width();
     SetBounds(x(), y(), width, height);

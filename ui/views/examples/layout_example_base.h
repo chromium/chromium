@@ -48,7 +48,7 @@ class VIEWS_EXAMPLES_EXPORT LayoutExampleBase : public ExampleBase,
     ~ChildPanel() override;
 
     // View:
-    void Layout() override;
+    void Layout(PassKey) override;
     bool OnMousePressed(const ui::MouseEvent& event) override;
 
     void SetSelected(bool value);

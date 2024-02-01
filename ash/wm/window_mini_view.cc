@@ -275,7 +275,7 @@ gfx::Rect WindowMiniView::GetContentAreaBounds() const {
   return bounds;
 }
 
-void WindowMiniView::Layout() {
+void WindowMiniView::Layout(PassKey) {
   const gfx::Rect content_area_bounds = GetContentAreaBounds();
   if (backdrop_view_) {
     backdrop_view_->SetBoundsRect(content_area_bounds);

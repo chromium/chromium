@@ -168,7 +168,7 @@ void DictationButtonTray::OnThemeChanged() {
     progress_indicator_->InvalidateLayer();
 }
 
-void DictationButtonTray::Layout() {
+void DictationButtonTray::Layout(PassKey) {
   LayoutSuperclass<TrayBackgroundView>(this);
   UpdateProgressIndicatorBounds();
 }

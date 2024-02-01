@@ -550,7 +550,7 @@ void LockContentsView::SetHasKioskApp(bool has_kiosk_apps) {
   UpdateKioskDefaultMessageVisibility();
 }
 
-void LockContentsView::Layout() {
+void LockContentsView::Layout(PassKey) {
   LayoutSuperclass<View>(this);
   LayoutTopHeader();
   LayoutBottomStatusIndicator();

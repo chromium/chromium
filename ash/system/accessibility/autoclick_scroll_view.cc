@@ -380,7 +380,7 @@ AutoclickScrollView::AutoclickScrollView() {
       ButtonId::kScrollRight));
 }
 
-void AutoclickScrollView::Layout() {
+void AutoclickScrollView::Layout(PassKey) {
   scroll_up_button_->SetBounds(0, 0, kScrollPadButtonHypotenuseDips,
                                kScrollPadButtonHypotenuseDips / 2);
   scroll_down_button_->SetBounds(0, kScrollPadButtonHypotenuseDips / 2,

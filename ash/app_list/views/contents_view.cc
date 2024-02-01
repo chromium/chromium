@@ -478,7 +478,7 @@ bool ContentsView::Back() {
   return true;
 }
 
-void ContentsView::Layout() {
+void ContentsView::Layout(PassKey) {
   const gfx::Rect rect = GetContentsBounds();
   if (rect.IsEmpty())
     return;

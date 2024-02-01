@@ -122,7 +122,7 @@ gfx::Size TaskContinuationView::TaskChipsView::CalculatePreferredSize() const {
   return gfx::Size(width, height);
 }
 
-void TaskContinuationView::TaskChipsView::Layout() {
+void TaskContinuationView::TaskChipsView::Layout(PassKey) {
   LayoutSuperclass<views::View>(this);
   CalculateIdealBounds();
   for (size_t i = 0; i < task_chips_.view_size(); ++i) {

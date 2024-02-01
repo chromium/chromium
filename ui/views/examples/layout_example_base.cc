@@ -99,7 +99,7 @@ LayoutExampleBase::ChildPanel::ChildPanel(LayoutExampleBase* example)
 
 LayoutExampleBase::ChildPanel::~ChildPanel() = default;
 
-void LayoutExampleBase::ChildPanel::Layout() {
+void LayoutExampleBase::ChildPanel::Layout(PassKey) {
   constexpr int kSpacing = 2;
   if (selected_) {
     const gfx::Rect client = GetContentsBounds();

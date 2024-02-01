@@ -186,7 +186,7 @@ void CalendarEventListView::OnThemeChanged() {
       GetColorProvider()->GetColor(cros_tokens::kCrosSysSystemOnBaseOpaque)));
 }
 
-void CalendarEventListView::Layout() {
+void CalendarEventListView::Layout(PassKey) {
   LayoutSuperclass<views::View>(this);
 
   if (gradient_helper_) {

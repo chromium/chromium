@@ -34,7 +34,7 @@ class BrowserFrameViewLinuxNative : public BrowserFrameViewLinux {
   int GetTranslucentTopAreaHeight() const override;
 
   // OpaqueBrowserFrameView:
-  void Layout() override;
+  void Layout(PassKey) override;
   FrameButtonStyle GetFrameButtonStyle() const override;
 
   // views::View:

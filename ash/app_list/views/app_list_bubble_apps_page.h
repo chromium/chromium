@@ -113,7 +113,7 @@ class ASH_EXPORT AppListBubbleAppsPage
   bool MaybeScrollToShowToast();
 
   // views::View:
-  void Layout() override;
+  void Layout(PassKey) override;
   void VisibilityChanged(views::View* starting_from, bool is_visible) override;
   void OnBoundsChanged(const gfx::Rect& old_bounds) override;
 

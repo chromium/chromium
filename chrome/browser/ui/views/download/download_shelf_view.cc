@@ -143,7 +143,7 @@ gfx::Size DownloadShelfView::CalculatePreferredSize() const {
                                       gfx::Size(prefsize.width(), 0), prefsize);
 }
 
-void DownloadShelfView::Layout() {
+void DownloadShelfView::Layout(PassKey) {
   int x = kStartPadding;
   const int download_items_end =
       std::max(0, width() - kEndPadding - close_button_->width() -

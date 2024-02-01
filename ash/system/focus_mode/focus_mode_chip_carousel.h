@@ -44,7 +44,7 @@ class ASH_EXPORT FocusModeChipCarousel : public views::BoxLayoutView {
   bool HasTasks() const;
 
   // views::View:
-  void Layout() override;
+  void Layout(PassKey) override;
   void OnMouseEntered(const ui::MouseEvent& event) override;
   void OnMouseExited(const ui::MouseEvent& event) override;
 

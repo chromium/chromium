@@ -415,7 +415,7 @@ void LoginShelfView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   node_data->SetName(l10n_util::GetStringUTF8(IDS_ASH_SHELF_ACCESSIBLE_NAME));
 }
 
-void LoginShelfView::Layout() {
+void LoginShelfView::Layout(PassKey) {
   LayoutSuperclass<views::View>(this);
   UpdateButtonUnionBounds();
 }

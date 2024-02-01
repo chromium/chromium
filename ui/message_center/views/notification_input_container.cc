@@ -149,7 +149,7 @@ void NotificationInputContainer::OnThemeChanged() {
   UpdateButtonImage();
 }
 
-void NotificationInputContainer::Layout() {
+void NotificationInputContainer::Layout(PassKey) {
   LayoutSuperclass<View>(this);
 
   if (!ink_drop_container_)

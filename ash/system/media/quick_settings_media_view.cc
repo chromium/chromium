@@ -64,7 +64,7 @@ class MediaScrollView : public views::ScrollView,
     return gfx::Size(kMediaViewWidth, media_view_->GetMediaViewHeight());
   }
 
-  void Layout() override {
+  void Layout(PassKey) override {
     contents()->SizeToPreferredSize();
     LayoutSuperclass<views::ScrollView>(this);
   }
@@ -138,7 +138,7 @@ gfx::Size QuickSettingsMediaView::CalculatePreferredSize() const {
   return gfx::Size(kMediaViewWidth, GetMediaViewHeight());
 }
 
-void QuickSettingsMediaView::Layout() {
+void QuickSettingsMediaView::Layout(PassKey) {
   media_scroll_view_->SetBounds(0, 0, kMediaViewWidth, GetMediaViewHeight());
 
   // Place the pagination dots view on top of the media view.

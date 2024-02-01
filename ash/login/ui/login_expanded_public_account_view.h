@@ -91,7 +91,7 @@ class ASH_EXPORT LoginExpandedPublicAccountView : public NonAccessibleView {
 
   // views::View:
   int GetHeightForWidth(int width) const override;
-  void Layout() override;
+  void Layout(PassKey) override;
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
 
   // ui::EventHandler:

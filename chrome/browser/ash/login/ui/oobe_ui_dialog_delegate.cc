@@ -173,7 +173,7 @@ class LayoutWidgetDelegateView : public views::WidgetDelegateView {
   // views::WidgetDelegateView:
   ui::ModalType GetModalType() const override { return ui::MODAL_TYPE_WINDOW; }
 
-  void Layout() override {
+  void Layout(PassKey) override {
     if (fullscreen_) {
       oobe_view_->SetBoundsRect(GetContentsBounds());
       return;

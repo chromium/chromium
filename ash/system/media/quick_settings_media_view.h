@@ -39,7 +39,7 @@ class ASH_EXPORT QuickSettingsMediaView : public views::View {
 
   // views::View:
   gfx::Size CalculatePreferredSize() const override;
-  void Layout() override;
+  void Layout(PassKey) override;
   void OnGestureEvent(ui::GestureEvent* event) override;
 
   // Shows the given media item in the media view.

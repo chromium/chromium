@@ -784,7 +784,7 @@ gfx::Size ToolbarView::GetMinimumSize() const {
   return size;
 }
 
-void ToolbarView::Layout() {
+void ToolbarView::Layout(PassKey) {
   // If we have not been initialized yet just do nothing.
   if (!initialized_)
     return;

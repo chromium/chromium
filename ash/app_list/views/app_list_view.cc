@@ -358,7 +358,7 @@ bool AppListView::AcceleratorPressed(const ui::Accelerator& accelerator) {
   return true;
 }
 
-void AppListView::Layout() {
+void AppListView::Layout(PassKey) {
   // Avoid layout while building the view.
   if (is_building_)
     return;

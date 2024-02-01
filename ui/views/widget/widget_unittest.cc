@@ -4905,7 +4905,7 @@ class FullscreenAwareFrame : public views::NonClientFrameView {
   void SizeConstraintsChanged() override {}
 
   // views::View overrides:
-  void Layout() override {
+  void Layout(PassKey) override {
     if (widget_->IsFullscreen())
       fullscreen_layout_called_ = true;
   }

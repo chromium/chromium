@@ -469,7 +469,7 @@ void SavedTabGroupBar::OnWidgetDestroying(views::Widget* widget) {
   bubble_delegate_ = nullptr;
 }
 
-void SavedTabGroupBar::Layout() {
+void SavedTabGroupBar::Layout(PassKey) {
   LayoutSuperclass<views::View>(this);
   const bool should_show_overflow = ShouldShowOverflowButtonForWidth(width());
   const int last_visible_button_index =

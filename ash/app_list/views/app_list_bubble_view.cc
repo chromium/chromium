@@ -676,7 +676,7 @@ bool AppListBubbleView::AcceleratorPressed(const ui::Accelerator& accelerator) {
   return true;
 }
 
-void AppListBubbleView::Layout() {
+void AppListBubbleView::Layout(PassKey) {
   LayoutSuperclass<views::View>(this);
 
   // The folder view has custom layout code that centers the folder over the

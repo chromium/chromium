@@ -116,7 +116,7 @@ class VIEWS_EXPORT BubbleFrameView : public NonClientFrameView {
   gfx::Size CalculatePreferredSize() const override;
   gfx::Size GetMinimumSize() const override;
   gfx::Size GetMaximumSize() const override;
-  void Layout() override;
+  void Layout(PassKey) override;
   void OnPaint(gfx::Canvas* canvas) override;
   void PaintChildren(const PaintInfo& paint_info) override;
   void OnThemeChanged() override;

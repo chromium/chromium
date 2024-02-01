@@ -44,7 +44,7 @@ class ASH_EXPORT DeskButtonWidget : public ShelfComponent,
 
     // views::WidgetDelegateView:
     bool CanActivate() const override;
-    void Layout() override;
+    void Layout(PassKey) override;
 
     // views::View:
     bool AcceleratorPressed(const ui::Accelerator& accelerator) override;

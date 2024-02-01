@@ -159,7 +159,7 @@ gfx::Size PageSwitcher::CalculatePreferredSize() const {
                    buttons_->GetPreferredSize().height());
 }
 
-void PageSwitcher::Layout() {
+void PageSwitcher::Layout(PassKey) {
   gfx::Rect rect(GetContentsBounds());
   if (rect.IsEmpty())
     return;

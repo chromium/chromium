@@ -53,7 +53,7 @@ class CompactTitleMessageView : public views::View {
   const char* GetClassName() const override;
 
   gfx::Size CalculatePreferredSize() const override;
-  void Layout() override;
+  void Layout(PassKey) override;
 
   void set_title(const std::u16string& title);
   void set_message(const std::u16string& message);
@@ -99,7 +99,7 @@ class MESSAGE_CENTER_EXPORT NotificationViewBase
   void Activate();
 
   // MessageView:
-  void Layout() override;
+  void Layout(PassKey) override;
   void OnFocus() override;
   bool OnMousePressed(const ui::MouseEvent& event) override;
   bool OnMouseDragged(const ui::MouseEvent& event) override;

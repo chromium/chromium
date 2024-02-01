@@ -528,7 +528,7 @@ void DownloadToolbarButtonView::UpdateIcon() {
   SetTooltipText(tooltip_texts_.at(progress_download_count));
 }
 
-void DownloadToolbarButtonView::Layout() {
+void DownloadToolbarButtonView::Layout(PassKey) {
   LayoutSuperclass<ToolbarButton>(this);
   gfx::Size size = GetPreferredSize();
   // Badge width and height are the same.

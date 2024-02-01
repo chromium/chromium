@@ -52,7 +52,7 @@ class KeyboardShortcutView : public views::WidgetDelegateView {
   // views::View:
   std::u16string GetAccessibleWindowTitle() const override;
   bool AcceleratorPressed(const ui::Accelerator& accelerator) override;
-  void Layout() override;
+  void Layout(PassKey) override;
   gfx::Size CalculatePreferredSize() const override;
   void OnPaint(gfx::Canvas* canvas) override;
   void OnThemeChanged() override;

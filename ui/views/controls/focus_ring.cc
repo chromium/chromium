@@ -183,7 +183,7 @@ bool FocusRing::ShouldPaintForTesting() {
   return ShouldPaint();
 }
 
-void FocusRing::Layout() {
+void FocusRing::Layout(PassKey) {
   // The focus ring handles its own sizing, which is simply to fill the parent
   // and extend a little beyond its borders.
   gfx::Rect focus_bounds = parent()->GetLocalBounds();

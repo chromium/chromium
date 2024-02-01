@@ -26,7 +26,7 @@ class ChromeLabsButton : public ToolbarButton {
   ~ChromeLabsButton() override;
 
   // ToolbarButton:
-  void Layout() override;
+  void Layout(PassKey) override;
 
   void HideDotIndicator();
 

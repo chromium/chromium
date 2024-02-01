@@ -460,7 +460,7 @@ gfx::Size LockScreenMediaControlsView::CalculatePreferredSize() const {
   return contents_view_->GetPreferredSize();
 }
 
-void LockScreenMediaControlsView::Layout() {
+void LockScreenMediaControlsView::Layout(PassKey) {
   contents_view_->SetBoundsRect(GetContentsBounds());
 }
 

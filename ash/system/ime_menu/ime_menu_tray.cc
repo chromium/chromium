@@ -364,7 +364,7 @@ class ImeMenuListView : public ImeListView {
   }
 
   // ImeListView:
-  void Layout() override {
+  void Layout(PassKey) override {
     gfx::Range height_range = GetImeListViewRange();
     scroller()->ClipHeightTo(height_range.start(), height_range.end());
     LayoutSuperclass<ImeListView>(this);

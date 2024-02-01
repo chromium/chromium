@@ -599,7 +599,7 @@ class AppMenu::CutCopyPasteView : public AppMenuView {
         0};
   }
 
-  void Layout() override {
+  void Layout(PassKey) override {
     // All buttons are given the same width.
     int width = GetMaxChildViewPreferredWidth();
     int x = 0;
@@ -738,7 +738,7 @@ class AppMenu::ZoomView : public AppMenuView {
         0);
   }
 
-  void Layout() override {
+  void Layout(PassKey) override {
     int x = 0;
     int button_width = std::max(increment_button_->GetPreferredSize().width(),
                                 decrement_button_->GetPreferredSize().width());

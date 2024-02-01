@@ -34,7 +34,7 @@ class AlternateNavInfoBarView : public InfoBarView {
   static void ElideLabels(Labels* labels, int available_width);
 
   // InfoBarView:
-  void Layout() override;
+  void Layout(PassKey) override;
   int GetContentMinimumWidth() const override;
 
   AlternateNavInfoBarDelegate* GetDelegate();

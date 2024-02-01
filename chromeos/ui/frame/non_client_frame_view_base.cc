@@ -29,7 +29,7 @@ NonClientFrameViewBase::OverlayView::OverlayView(HeaderView* header_view)
 
 NonClientFrameViewBase::OverlayView::~OverlayView() = default;
 
-void NonClientFrameViewBase::OverlayView::Layout() {
+void NonClientFrameViewBase::OverlayView::Layout(PassKey) {
   // Layout |header_view_| because layout affects the result of
   // GetPreferredOnScreenHeight().
   header_view_->DeprecatedLayoutImmediately();
@@ -148,7 +148,7 @@ gfx::Size NonClientFrameViewBase::CalculatePreferredSize() const {
       .size();
 }
 
-void NonClientFrameViewBase::Layout() {
+void NonClientFrameViewBase::Layout(PassKey) {
   LayoutSuperclass<views::NonClientFrameView>(this);
   if (!GetFrameEnabled())
     return;

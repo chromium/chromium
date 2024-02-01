@@ -311,7 +311,7 @@ class MonitoringWarningView : public NonAccessibleView {
            label_->GetHeightForWidth(w);
   }
 
-  void Layout() override {
+  void Layout(PassKey) override {
     int y = 0;
 
     image_->SizeToPreferredSize();
@@ -932,7 +932,7 @@ int LoginExpandedPublicAccountView::GetHeightForWidth(int width) const {
   return GetPreferredSizePortrait().height();
 }
 
-void LoginExpandedPublicAccountView::Layout() {
+void LoginExpandedPublicAccountView::Layout(PassKey) {
   LayoutSuperclass<View>(this);
 
   submit_button_->SizeToPreferredSize();

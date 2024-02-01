@@ -58,7 +58,7 @@ class ASH_EXPORT FeaturePodLabelButton : public views::Button {
   void ShowDetailedViewArrow();
 
   // views::Button:
-  void Layout() override;
+  void Layout(PassKey) override;
   gfx::Size CalculatePreferredSize() const override;
   void OnThemeChanged() override;
 

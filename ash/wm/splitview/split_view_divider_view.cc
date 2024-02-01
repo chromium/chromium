@@ -80,7 +80,7 @@ void SplitViewDividerView::SetDividerBarVisible(bool visible) {
   divider_handler_view_->SetVisible(visible);
 }
 
-void SplitViewDividerView::Layout() {
+void SplitViewDividerView::Layout(PassKey) {
   // There is no divider in clamshell split view unless the feature flag
   // `kSnapGroup` is enabled. If we are in clamshell mode without the feature
   // flag and params, then we must be transitioning from tablet mode, and the

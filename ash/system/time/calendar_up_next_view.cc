@@ -267,7 +267,7 @@ void CalendarUpNextView::RefreshEvents() {
   UpdateEvents(calendar_view_controller_->UpcomingEvents());
 }
 
-void CalendarUpNextView::Layout() {
+void CalendarUpNextView::Layout(PassKey) {
   // For some reason the `content_view_` is constrained to the
   // `scroll_view_` width and so it isn't scrollable. This seems to be a
   // problem with horizontal `ScrollView`s as this doesn't happen if you

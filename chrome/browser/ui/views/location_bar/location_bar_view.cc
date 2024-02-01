@@ -599,7 +599,7 @@ void LocationBarView::OnKeywordFaviconFetched(const gfx::Image& icon) {
   selected_keyword_view_->SetCustomImage(icon);
 }
 
-void LocationBarView::Layout() {
+void LocationBarView::Layout(PassKey) {
   if (!IsInitialized())
     return;
 

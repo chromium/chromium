@@ -46,7 +46,7 @@ class ASH_EXPORT ScrollableAppsGridView : public AppsGridView {
   void SetMaxColumns(int max_cols);
 
   // views::View:
-  void Layout() override;
+  void Layout(PassKey) override;
 
   // AppsGridView:
   gfx::Size GetTileViewSize() const override;

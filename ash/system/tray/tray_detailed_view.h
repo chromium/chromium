@@ -43,7 +43,7 @@ class ASH_EXPORT TrayDetailedView : public views::View,
   ~TrayDetailedView() override;
 
   // views::View:
-  void Layout() override;
+  void Layout(PassKey) override;
   int GetHeightForWidth(int width) const override;
 
   // ViewClickListener:

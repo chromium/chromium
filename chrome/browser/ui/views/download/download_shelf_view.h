@@ -55,7 +55,7 @@ class DownloadShelfView : public DownloadShelf,
   // views::AccessiblePaneView:
   // TODO(crbug.com/1005568): Replace these with a LayoutManager
   gfx::Size CalculatePreferredSize() const override;
-  void Layout() override;
+  void Layout(PassKey) override;
 
   // views::AnimationDelegateViews:
   void AnimationProgressed(const gfx::Animation* animation) override;

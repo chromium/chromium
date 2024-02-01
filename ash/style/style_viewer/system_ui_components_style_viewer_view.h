@@ -66,7 +66,7 @@ class SystemUIComponentsStyleViewerView : public views::WidgetDelegateView,
   void ShowComponentInstances(const std::u16string& name);
 
   // views::WidgetDelegateView:
-  void Layout() override;
+  void Layout(PassKey) override;
   std::u16string GetWindowTitle() const override;
   views::ClientView* CreateClientView(views::Widget* widget) override;
 

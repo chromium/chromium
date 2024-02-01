@@ -65,7 +65,7 @@ gfx::Size WindowPreview::CalculatePreferredSize() const {
                    container_size.height() + title_height_with_padding);
 }
 
-void WindowPreview::Layout() {
+void WindowPreview::Layout(PassKey) {
   gfx::Rect content_rect = GetContentsBounds();
 
   gfx::Size title_size = title_->CalculatePreferredSize();

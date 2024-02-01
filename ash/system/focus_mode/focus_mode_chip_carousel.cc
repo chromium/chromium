@@ -126,7 +126,7 @@ FocusModeChipCarousel::FocusModeChipCarousel(
 
 FocusModeChipCarousel::~FocusModeChipCarousel() = default;
 
-void FocusModeChipCarousel::Layout() {
+void FocusModeChipCarousel::Layout(PassKey) {
   if (!GetVisible()) {
     return;
   }

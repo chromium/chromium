@@ -82,7 +82,7 @@ class ASH_EXPORT FolderHeaderView : public views::View,
   bool ShouldNameViewClearFocus(const ui::KeyEvent& key_event);
 
   // views::View:
-  void Layout() override;
+  void Layout(PassKey) override;
 
   // views::TextfieldController overrides:
   void ContentsChanged(views::Textfield* sender,

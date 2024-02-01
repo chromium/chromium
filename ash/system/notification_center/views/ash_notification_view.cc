@@ -305,7 +305,7 @@ void AshNotificationView::AddedToWidget() {
   }
 }
 
-void AshNotificationView::Layout() {
+void AshNotificationView::Layout(PassKey) {
   if (is_animating_) {
     return;
   }

@@ -90,7 +90,7 @@ class BrowserNonClientFrameViewMac : public BrowserNonClientFrameView,
  protected:
   // views::View:
   void OnPaint(gfx::Canvas* canvas) override;
-  void Layout() override;
+  void Layout(PassKey) override;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(BrowserNonClientFrameViewMacTest,

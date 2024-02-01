@@ -81,7 +81,7 @@ class DownloadItemView : public views::View,
 
   // views::View:
   void AddedToWidget() override;
-  void Layout() override;
+  void Layout(PassKey) override;
   bool OnMouseDragged(const ui::MouseEvent& event) override;
   void OnMouseCaptureLost() override;
   std::u16string GetTooltipText(const gfx::Point& p) const override;

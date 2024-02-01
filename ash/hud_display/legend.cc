@@ -177,7 +177,7 @@ Legend::Legend(const std::vector<Legend::Entry>& contents) {
 
 Legend::~Legend() = default;
 
-void Legend::Layout() {
+void Legend::Layout(PassKey) {
   LayoutSuperclass<views::View>(this);
 
   gfx::Size max_size;

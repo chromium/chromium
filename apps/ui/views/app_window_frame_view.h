@@ -71,7 +71,7 @@ class AppWindowFrameView : public views::NonClientFrameView {
 
   // views::View implementation.
   gfx::Size CalculatePreferredSize() const override;
-  void Layout() override;
+  void Layout(PassKey) override;
   void OnPaint(gfx::Canvas* canvas) override;
   gfx::Size GetMinimumSize() const override;
   gfx::Size GetMaximumSize() const override;

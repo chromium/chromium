@@ -265,7 +265,7 @@ void SystemUIComponentsStyleViewerView::ShowComponentInstances(
       components_grid_view_factories_[name].Run());
 }
 
-void SystemUIComponentsStyleViewerView::Layout() {
+void SystemUIComponentsStyleViewerView::Layout(PassKey) {
   menu_contents_view_->SetSize(
       gfx::Size(kMenuWidth, menu_contents_view_->GetPreferredSize().height()));
   components_grid_view_->SizeToPreferredSize();

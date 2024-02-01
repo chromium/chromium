@@ -202,7 +202,7 @@ const char* PowerButtonMenuScreenView::GetClassName() const {
   return "PowerButtonMenuScreenView";
 }
 
-void PowerButtonMenuScreenView::Layout() {
+void PowerButtonMenuScreenView::Layout(PassKey) {
   power_button_screen_background_shield_->SetBoundsRect(GetContentsBounds());
   if (IsCurtainModeEnabled()) {
     LayoutMenuCurtainView();

@@ -314,7 +314,7 @@ void TrayDetailedView::CloseBubble() {
   delegate_->CloseBubble();
 }
 
-void TrayDetailedView::Layout() {
+void TrayDetailedView::Layout(PassKey) {
   LayoutSuperclass<views::View>(this);
   if (scroller_ && !scroller_->is_bounded()) {
     scroller_->ClipHeightTo(0, scroller_->height());

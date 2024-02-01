@@ -389,7 +389,7 @@ gfx::Size IconLabelBubbleView::CalculatePreferredSize() const {
   return GetSizeForLabelWidth(label()->GetPreferredSize().width());
 }
 
-void IconLabelBubbleView::Layout() {
+void IconLabelBubbleView::Layout(PassKey) {
   ink_drop_container()->SetBoundsRect(GetLocalBounds());
 
   // We may not have horizontal room for both the image and the trailing

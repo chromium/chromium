@@ -126,7 +126,7 @@ class NotifierButtonWrapperView : public views::View {
   ~NotifierButtonWrapperView() override;
 
   // views::View:
-  void Layout() override;
+  void Layout(PassKey) override;
   gfx::Size CalculatePreferredSize() const override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   void OnFocus() override;
@@ -155,7 +155,7 @@ NotifierButtonWrapperView::NotifierButtonWrapperView(views::View* contents)
 
 NotifierButtonWrapperView::~NotifierButtonWrapperView() = default;
 
-void NotifierButtonWrapperView::Layout() {
+void NotifierButtonWrapperView::Layout(PassKey) {
   int contents_width = width();
   int contents_height = contents_->GetHeightForWidth(contents_width);
   int y = std::max((height() - contents_height) / 2, 0);
@@ -754,7 +754,7 @@ void NotifierSettingsView::OnNotifierIconUpdated(const NotifierId& notifier_id,
   }
 }
 
-void NotifierSettingsView::Layout() {
+void NotifierSettingsView::Layout(PassKey) {
   int header_height = header_view_->GetHeightForWidth(width());
   header_view_->SetBounds(0, 0, width(), header_height);
   // |scroller_| and |no_notifiers_view_| do not exist when notifications

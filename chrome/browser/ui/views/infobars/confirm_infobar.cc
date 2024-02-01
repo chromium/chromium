@@ -94,7 +94,7 @@ ConfirmInfoBar::ConfirmInfoBar(std::unique_ptr<ConfirmInfoBarDelegate> delegate)
 
 ConfirmInfoBar::~ConfirmInfoBar() = default;
 
-void ConfirmInfoBar::Layout() {
+void ConfirmInfoBar::Layout(PassKey) {
   LayoutSuperclass<InfoBarView>(this);
 
   if (ok_button_) {

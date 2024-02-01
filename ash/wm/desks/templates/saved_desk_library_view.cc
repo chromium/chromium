@@ -527,7 +527,7 @@ void SavedDeskLibraryView::AddedToWidget() {
       std::make_unique<SavedDeskLibraryWindowTargeter>(this));
 }
 
-void SavedDeskLibraryView::Layout() {
+void SavedDeskLibraryView::Layout(PassKey) {
   if (bounds().IsEmpty())
     return;
 

@@ -86,7 +86,7 @@ class ASH_EXPORT AppListToastView : public views::View {
 
   // views::View:
   gfx::Size CalculatePreferredSize() const override;
-  void Layout() override;
+  void Layout(PassKey) override;
 
   void SetButton(std::u16string button_text,
                  views::Button::PressedCallback button_callback);

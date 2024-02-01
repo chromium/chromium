@@ -254,7 +254,7 @@ const char* PowerButtonMenuView::GetClassName() const {
   return "PowerButtonMenuView";
 }
 
-void PowerButtonMenuView::Layout() {
+void PowerButtonMenuView::Layout(PassKey) {
   gfx::Rect rect(GetContentsBounds().origin(),
                  power_off_item_->GetPreferredSize());
   const int y_offset =

@@ -1048,7 +1048,7 @@ gfx::Rect ShelfAppButton::GetNotificationIndicatorBounds(float icon_scale) {
                  scaled_icon_view_bounds.y() + padding, diameter, diameter));
 }
 
-void ShelfAppButton::Layout() {
+void ShelfAppButton::Layout(PassKey) {
   Shelf* shelf = shelf_view_->shelf();
   gfx::Rect icon_view_bounds =
       GetIconViewBounds(GetContentsBounds(), icon_scale_,

@@ -54,7 +54,7 @@ class ASH_EXPORT DropDownCheckbox : public views::Button,
   void OnBlur() override;
   void AddedToWidget() override;
   void RemovedFromWidget() override;
-  void Layout() override;
+  void Layout(PassKey) override;
 
   // WidgetObserver:
   void OnWidgetBoundsChanged(views::Widget* widget,

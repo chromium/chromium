@@ -211,7 +211,7 @@ void CustomFrameView::OnPaint(gfx::Canvas* canvas) {
     PaintRestoredClientEdge(canvas);
 }
 
-void CustomFrameView::Layout() {
+void CustomFrameView::Layout(PassKey) {
   if (ShouldShowTitleBarAndBorder()) {
     LayoutWindowControls();
     LayoutTitleBar();

@@ -540,7 +540,7 @@ std::u16string FolderHeaderView::GetElidedFolderName() const {
   return elided_name;
 }
 
-void FolderHeaderView::Layout() {
+void FolderHeaderView::Layout(PassKey) {
   gfx::Rect rect(GetContentsBounds());
   if (rect.IsEmpty()) {
     return;

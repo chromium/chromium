@@ -32,7 +32,7 @@ class KeyItemView : public views::View {
   void AddedToWidget() override;
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
   void OnThemeChanged() override;
-  void Layout() override;
+  void Layout(PassKey) override;
   gfx::Size CalculatePreferredSize() const override;
 
   void SetIcon(const gfx::VectorIcon& icon);

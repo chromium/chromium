@@ -86,7 +86,7 @@ class ASH_EXPORT HoldingSpaceTray : public TrayBackgroundView,
   int OnDragUpdated(const ui::DropTargetEvent& event) override;
   views::View::DropCallback GetDropCallback(
       const ui::DropTargetEvent& event) override;
-  void Layout() override;
+  void Layout(PassKey) override;
   void VisibilityChanged(views::View* starting_from, bool is_visible) override;
   void OnThemeChanged() override;
   void OnShouldShowAnimationChanged(bool should_animate) override;

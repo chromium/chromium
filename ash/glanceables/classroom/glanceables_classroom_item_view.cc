@@ -294,7 +294,7 @@ void GlanceablesClassroomItemView::GetAccessibleNodeData(
   node_data->SetDefaultActionVerb(ax::mojom::DefaultActionVerb::kClick);
 }
 
-void GlanceablesClassroomItemView::Layout() {
+void GlanceablesClassroomItemView::Layout(PassKey) {
   LayoutSuperclass<views::Button>(this);
   views::FocusRing::Get(this)->DeprecatedLayoutImmediately();
 }

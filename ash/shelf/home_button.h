@@ -97,7 +97,7 @@ class ASH_EXPORT HomeButton : public ShelfControlButton,
 
   // views::View:
   gfx::Size CalculatePreferredSize() const override;
-  void Layout() override;
+  void Layout(PassKey) override;
 
   // views::Button:
   void OnGestureEvent(ui::GestureEvent* event) override;

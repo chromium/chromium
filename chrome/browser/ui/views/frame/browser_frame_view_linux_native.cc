@@ -59,7 +59,7 @@ int BrowserFrameViewLinuxNative::GetTranslucentTopAreaHeight() const {
              : 0;
 }
 
-void BrowserFrameViewLinuxNative::Layout() {
+void BrowserFrameViewLinuxNative::Layout(PassKey) {
   // Calling MaybeUpdateCachedFrameButtonImages() here is sufficient to catch
   // all cases that could update the appearance, since
   // DesktopWindowTreeHostPlatform::On{Window,Activation}StateChanged() does a
