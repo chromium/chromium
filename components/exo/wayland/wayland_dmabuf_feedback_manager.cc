@@ -395,7 +395,7 @@ WaylandDmabufFeedbackManager::WaylandDmabufFeedbackManager(Display* display)
   size_t size = sizeof(WaylandDmabufFeedbackFormat) * format_table_index;
   base::MappedReadOnlyRegion mapped_region =
       base::ReadOnlySharedMemoryRegion::Create(size);
-  DCHECK(mapped_region.IsValid());
+  CHECK(mapped_region.IsValid());
 
   shared_memory_region_ = std::make_unique<base::ReadOnlySharedMemoryRegion>(
       std::move(mapped_region.region));

@@ -1561,7 +1561,7 @@ void RTCVideoEncoder::Impl::EncodeOneFrame(FrameChunk frame_chunk) {
                                               input_frame_coded_size_);
         input_buffers_[index] = std::make_unique<base::MappedReadOnlyRegion>(
             base::ReadOnlySharedMemoryRegion::Create(input_frame_buffer_size));
-        if (!input_buffers_[index]) {
+        if (!input_buffers_[index]->IsValid()) {
           NotifyErrorStatus({media::EncoderStatus::Codes::kSystemAPICallError,
                              "Failed to create input buffer"});
           return;

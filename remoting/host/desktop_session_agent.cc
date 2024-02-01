@@ -78,6 +78,9 @@ class SharedMemoryImpl : public webrtc::SharedMemory {
     // platforms, so please don't emulate this behavior!
     base::WritableSharedMemoryRegion region =
         base::WritableSharedMemoryRegion::Create(size);
+    if (!region.IsValid()) {
+      return nullptr;
+    }
     base::WritableSharedMemoryMapping mapping = region.Map();
     // Converting |region| to read-only will close its associated handle, so we
     // must duplicate it into the handle used for |webrtc::ScreenCapturer|.

@@ -23,6 +23,7 @@ FontTableMatcher::MemoryMappingFromFontUniqueNameTable(
   CHECK(serialization_size);
   base::MappedReadOnlyRegion mapped_region =
       base::ReadOnlySharedMemoryRegion::Create(serialization_size);
+  CHECK(mapped_region.IsValid());
   font_unique_name_table.SerializeToArray(mapped_region.mapping.memory(),
                                           mapped_region.mapping.mapped_size());
   return mapped_region.region.Map();
