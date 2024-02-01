@@ -115,6 +115,7 @@ BASE_DECLARE_FEATURE(kQuickDeleteForAndroid);
 BASE_DECLARE_FEATURE(kQuickDeleteAndroidAnimation);
 BASE_DECLARE_FEATURE(kReadAloud);
 BASE_DECLARE_FEATURE(kReadAloudInOverflowMenuInCCT);
+BASE_DECLARE_FEATURE(kReadAloudInMultiWindow);
 BASE_DECLARE_FEATURE(kReadAloudPlayback);
 BASE_DECLARE_FEATURE(kRedirectExplicitCTAIntentsToExistingActivity);
 BASE_DECLARE_FEATURE(kReengagementNotification);

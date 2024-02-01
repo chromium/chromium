@@ -386,6 +386,7 @@ public abstract class ChromeFeatureList {
     public static final String QUIET_NOTIFICATION_PROMPTS = "QuietNotificationPrompts";
     public static final String READALOUD = "ReadAloud";
     public static final String READALOUD_IN_OVERFLOW_MENU_IN_CCT = "ReadAloudInOverflowMenuInCCT";
+    public static final String READALOUD_IN_MULTI_WINDOW = "ReadAloudInMultiWindow";
     public static final String READALOUD_PLAYBACK = "ReadAloudPlayback";
     public static final String READER_MODE_IN_CCT = "ReaderModeInCCT";
     public static final String RECORD_SUPPRESSION_METRICS = "RecordSuppressionMetrics";
