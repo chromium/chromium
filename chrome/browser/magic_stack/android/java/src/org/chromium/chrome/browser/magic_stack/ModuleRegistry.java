@@ -113,12 +113,24 @@ public class ModuleRegistry {
     /** Returns whether it has any module to customize. */
     public boolean hasCustomizableModule() {
         for (@ModuleType int key : mModuleBuildersMap.keySet()) {
-            // The Single Tab module can't be customized, skips it here.
-            if (key == ModuleType.SINGLE_TAB) continue;
-            if (mModuleBuildersMap.get(key).isEligible()) {
+            if (!isModuleConfigurable(key)) continue;
+            if (isModuleEligibleToBuild(key)) {
                 return true;
             }
         }
         return false;
+    }
+
+    /** Returns whether the provided module can be built due to special restrictions. */
+    public boolean isModuleEligibleToBuild(@ModuleType int key) {
+        return mModuleBuildersMap.get(key).isEligible();
+    }
+
+    /**
+     * Returns whether the provided module is configurable and might need to be shown in the config
+     * settings page.
+     */
+    public boolean isModuleConfigurable(@ModuleType int key) {
+        return key != ModuleType.SINGLE_TAB;
     }
 }

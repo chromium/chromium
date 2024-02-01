@@ -102,7 +102,9 @@ public class ChromeHomeModulesConfigManager implements HomeModulesConfigManager 
         @ModuleType Set<Integer> moduleTypeRegistered = moduleRegistry.getRegisteredModuleTypes();
         @ModuleType Set<Integer> enabledModuleList = new HashSet<>();
         for (@ModuleType int moduleType : moduleTypeRegistered) {
-            if (moduleType == ModuleType.SINGLE_TAB || getPrefModuleTypeEnabled(moduleType)) {
+            if (!moduleRegistry.isModuleConfigurable(moduleType)
+                    || (moduleRegistry.isModuleEligibleToBuild(moduleType)
+                            && getPrefModuleTypeEnabled(moduleType))) {
                 enabledModuleList.add(moduleType);
             }
         }

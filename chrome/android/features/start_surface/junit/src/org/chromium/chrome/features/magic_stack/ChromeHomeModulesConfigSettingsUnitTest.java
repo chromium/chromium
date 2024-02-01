@@ -28,6 +28,7 @@ import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
 import org.chromium.chrome.browser.magic_stack.ModuleRegistry;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
@@ -84,6 +85,10 @@ public class ChromeHomeModulesConfigSettingsUnitTest {
         Set<Integer> moduleTypeRegisteredForTest = new HashSet<>(Arrays.asList(0, 1));
         when(mMockModuleRegistry.getRegisteredModuleTypes())
                 .thenReturn(moduleTypeRegisteredForTest);
+        when(mMockModuleRegistry.isModuleConfigurable(ModuleType.SINGLE_TAB)).thenReturn(false);
+        when(mMockModuleRegistry.isModuleEligibleToBuild(ModuleType.SINGLE_TAB)).thenReturn(true);
+        when(mMockModuleRegistry.isModuleEligibleToBuild(ModuleType.PRICE_CHANGE)).thenReturn(true);
+        when(mMockModuleRegistry.isModuleConfigurable(ModuleType.PRICE_CHANGE)).thenReturn(true);
 
         String singleTabNotExistedPreferenceKey =
                 ChromePreferenceKeys.HOME_MODULES_MODULE_TYPE.createKey(String.valueOf(0));
