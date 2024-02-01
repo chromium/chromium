@@ -36,7 +36,6 @@
 #include "chrome/browser/ash/policy/external_data/handlers/device_print_servers_external_data_handler.h"
 #include "chrome/browser/ash/policy/external_data/handlers/device_printers_external_data_handler.h"
 #include "chrome/browser/ash/policy/external_data/handlers/device_wallpaper_image_external_data_handler.h"
-#include "chrome/browser/ash/policy/external_data/handlers/device_wilco_dtc_configuration_external_data_handler.h"
 #include "chrome/browser/ash/policy/handlers/adb_sideloading_allowance_mode_policy_handler.h"
 #include "chrome/browser/ash/policy/handlers/bluetooth_policy_handler.h"
 #include "chrome/browser/ash/policy/handlers/device_dlc_predownload_list_policy_handler.h"
@@ -265,11 +264,6 @@ void BrowserPolicyConnectorAsh::Init(
   device_cloud_external_data_policy_handlers_.push_back(
       std::make_unique<DeviceWallpaperImageExternalDataHandler>(
           local_state, GetPolicyService()));
-  if (base::FeatureList::IsEnabled(::features::kWilcoDtc)) {
-    device_cloud_external_data_policy_handlers_.push_back(
-        std::make_unique<DeviceWilcoDtcConfigurationExternalDataHandler>(
-            GetPolicyService()));
-  }
   system_proxy_handler_ =
       std::make_unique<SystemProxyHandler>(ash::CrosSettings::Get());
 

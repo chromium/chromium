@@ -1,3 +1,0 @@
-include_rules = [
-  "+chrome/services/wilco_dtc_supportd/public",
-]

@@ -13,7 +13,6 @@
 #include "base/task/cancelable_task_tracker.h"
 #include "chrome/browser/ash/external_metrics.h"
 #include "chrome/browser/ash/pcie_peripheral/ash_usb_detector.h"
-#include "chrome/browser/ash/wilco_dtc_supportd/wilco_dtc_supportd_manager.h"
 #include "chrome/browser/chrome_browser_main_linux.h"
 #include "chrome/browser/memory/memory_kills_monitor.h"
 
@@ -271,7 +270,6 @@ class ChromeBrowserMainPartsAsh : public ChromeBrowserMainPartsLinux {
   std::unique_ptr<SigninProfileHandler> signin_profile_handler_;
 
   std::unique_ptr<policy::LockToSingleUserManager> lock_to_single_user_manager_;
-  std::unique_ptr<WilcoDtcSupportdManager> wilco_dtc_supportd_manager_;
   std::unique_ptr<LoginScreenExtensionsStorageCleaner>
       login_screen_extensions_storage_cleaner_;
 
