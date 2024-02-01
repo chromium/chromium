@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<style>
+textarea {
+  border: none;
+  padding: 0px;
+  field-sizing: content;
+}
+</style>
+<textarea></textarea>
+<textarea style="writing-mode:vertical-rl"></textarea>
+<script>
+test(() => {
+  assert_equals(document.querySelector('textarea').offsetWidth, 1);
+}, 'The width of an empty textarea should be same as the caret width');
+
+test(() => {
+  assert_equals(document.querySelectorAll('textarea')[1].offsetHeight, 1);
+}, 'The height of an empty textarea should be same as the caret height in a vertical wirting-mode');
+</script>

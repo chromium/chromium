@@ -153,6 +153,15 @@ const ComputedStyle* TextControlInnerEditorElement::CustomStyleForLayoutObject(
           : EUserModify::kReadWritePlaintextOnly);
   style_builder.SetDisplay(EDisplay::kBlock);
   style_builder.SetHasLineIfEmpty(true);
+  if (!start_style.ApplyControlFixedSize(host)) {
+    Length caret_width(GetDocument().View()->CaretWidthInCssPixel(),
+                       Length::kFixed);
+    if (IsHorizontalWritingMode(style_builder.GetWritingMode())) {
+      style_builder.SetMinWidth(caret_width);
+    } else {
+      style_builder.SetMinHeight(caret_width);
+    }
+  }
   style_builder.SetShouldIgnoreOverflowPropertyForInlineBlockBaseline();
 
   if (!IsA<HTMLTextAreaElement>(host)) {
