@@ -58,9 +58,11 @@ enum DisallowActivationReasonId : uint64_t {
   kCreateFencedFrame = 34,
   kIndexedDBEvent = 35,
   kIndexedDBTransactionIsAcquiringLocks = 36,
-  kIndexedDBTransactionIsBlockingOthers = 37,
+  // kIndexedDBTransactionIsBlockingOthers = 37 is deprecated.
   kSafeBrowsingUnsafeSubresource = 38,
   kFileSystemAccessLockingContention = 39,
+  kIndexedDBTransactionIsStartingWhileBlockingOthers = 40,
+  kIndexedDBTransactionIsOngoingAndBlockingOthers = 41,
   // New entries go above here. New entries should be added to
   // tools/metrics/histograms/enums.xml .
   kMinEmbedderDisallowActivationReason = 2 << 16,

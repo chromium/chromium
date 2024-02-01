@@ -1142,6 +1142,8 @@ source_set("browser") {
     "indexed_db/indexed_db_leveldb_coding.h",
     "indexed_db/indexed_db_leveldb_operations.cc",
     "indexed_db/indexed_db_leveldb_operations.h",
+    "indexed_db/indexed_db_lock_request_data.cc",
+    "indexed_db/indexed_db_lock_request_data.h",
     "indexed_db/indexed_db_pending_connection.cc",
     "indexed_db/indexed_db_pending_connection.h",
     "indexed_db/indexed_db_pre_close_task_queue.cc",

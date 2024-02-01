@@ -5,9 +5,20 @@
 module storage.mojom;
 
 enum DisallowInactiveClientReason {
-  kClientEventIsTriggered = 0,
+  // Used when a new connection is being opened with a higher version
+  // number which triggers a version change event being sent to existing
+  // connections.
+  kVersionChangeEvent = 0,
+  // Used when a transaction first attempts to acquire locks (disallowing
+  // whatever client may hold that lock from becoming inactive).
   kTransactionIsAcquiringLocks = 1,
-  kTransactionIsBlockingOthers = 2,
+  // Used when a transaction starts while its client is already inactive.
+  // This potentially kicks the client out of BFCache since the transaction
+  // won't be able to proceed.
+  kTransactionIsStartingWhileBlockingOthers = 2,
+  // Similar to above, but used when a transaction is ongoing and its client
+  // becomes inactive.
+  kTransactionIsOngoingAndBlockingOthers = 3,
 };
 
 // IndexedDB clients live in the renderer and talk directly to the storage

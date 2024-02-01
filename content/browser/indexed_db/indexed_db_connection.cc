@@ -36,14 +36,16 @@ IndexedDBConnection::IndexedDBConnection(
     base::OnceCallback<void(IndexedDBConnection*)> on_close,
     std::unique_ptr<IndexedDBDatabaseCallbacks> callbacks,
     mojo::Remote<storage::mojom::IndexedDBClientStateChecker>
-        client_state_checker)
+        client_state_checker,
+    base::UnguessableToken client_token)
     : id_(g_next_indexed_db_connection_id++),
       bucket_context_handle_(bucket_context),
       database_(std::move(database)),
       on_version_change_ignored_(std::move(on_version_change_ignored)),
       on_close_(std::move(on_close)),
       callbacks_(std::move(callbacks)),
-      client_state_checker_(std::move(client_state_checker)) {
+      client_state_checker_(std::move(client_state_checker)),
+      client_token_(client_token) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   bucket_context_handle_->quota_manager()->NotifyBucketAccessed(
       bucket_context_handle_->bucket_locator(), base::Time::Now());
@@ -213,7 +215,7 @@ void IndexedDBConnection::DisallowInactiveClient(
   }
 
   if (reason ==
-      storage::mojom::DisallowInactiveClientReason::kClientEventIsTriggered) {
+      storage::mojom::DisallowInactiveClientReason::kVersionChangeEvent) {
     // It's only necessary to keep the client active under this scenario.
     mojo::Remote<storage::mojom::IndexedDBClientKeepActive>
         client_keep_active_remote;

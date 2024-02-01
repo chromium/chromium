@@ -14,6 +14,7 @@
 #include "base/numerics/safe_math.h"
 #include "base/sequence_checker.h"
 #include "base/strings/utf_string_conversions.h"
+#include "components/services/storage/privileged/mojom/indexed_db_client_state_checker.mojom.h"
 #include "content/browser/indexed_db/indexed_db_callback_helpers.h"
 #include "content/browser/indexed_db/indexed_db_connection.h"
 #include "content/browser/indexed_db/indexed_db_database_callbacks.h"
@@ -660,35 +661,12 @@ void DatabaseImpl::DidBecomeInactive() {
   }
 
   for (const auto& [_, transaction] : connection_->transactions()) {
-    switch (transaction->state()) {
-      case IndexedDBTransaction::State::CREATED: {
-        // The transaction is created but not started yet, which means it may be
-        // blocked by others and waiting for the lock to be acquired. We should
-        // disallow the activation for the client.
-        connection_->DisallowInactiveClient(
-            storage::mojom::DisallowInactiveClientReason::
-                kTransactionIsAcquiringLocks,
-            base::DoNothing());
-        return;
-      }
-      case IndexedDBTransaction::State::STARTED: {
-        if (connection_->database()->IsTransactionBlockingOthers(
-                transaction.get())) {
-          // The transaction is holding the locks while others are waiting for
-          // the acquisition. We should disallow the activation for this client
-          // so the lock is immediately available.
-          connection_->DisallowInactiveClient(
-              storage::mojom::DisallowInactiveClientReason::
-                  kTransactionIsBlockingOthers,
-              base::DoNothing());
-          return;
-        }
-        break;
-      }
-      case IndexedDBTransaction::State::COMMITTING:
-      case IndexedDBTransaction::State::FINISHED:
-        break;
-    }
+    // If the transaction is holding the locks while others are waiting for
+    // the acquisition, we should disallow the activation for this client
+    // so the lock is immediately available.
+    transaction->DontAllowInactiveClientToBlockOthers(
+        storage::mojom::DisallowInactiveClientReason::
+            kTransactionIsOngoingAndBlockingOthers);
   }
 }
 

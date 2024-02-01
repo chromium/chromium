@@ -273,21 +273,21 @@ void PartitionedLockManager::LockReleased(base::Location request_location,
   }
 }
 
-int64_t PartitionedLockManager::GetQueuedLockRequestCount(
+std::set<PartitionedLockHolder*> PartitionedLockManager::GetQueuedRequests(
     const PartitionedLockId& lock_id) const {
-  int64_t count = 0;
+  std::set<PartitionedLockHolder*> blocked_requests;
 
   auto it = locks_.find(lock_id);
   if (it == locks_.end()) {
-    return count;
+    return blocked_requests;
   }
 
-  for (const LockRequest& requester : it->second.queue) {
-    if (requester.locks_holder) {
-      count++;
+  for (const LockRequest& request : it->second.queue) {
+    if (request.locks_holder) {
+      blocked_requests.insert(request.locks_holder.get());
     }
   }
-  return count;
+  return blocked_requests;
 }
 
 bool operator<(const PartitionedLockManager::PartitionedLockRequest& x,

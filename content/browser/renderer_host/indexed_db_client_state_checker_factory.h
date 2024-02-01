@@ -8,6 +8,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include "base/unguessable_token.h"
 #include "components/services/storage/privileged/mojom/indexed_db_client_state_checker.mojom.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/global_routing_id.h"
@@ -20,10 +21,14 @@ class CONTENT_EXPORT IndexedDBClientStateCheckerFactory {
   IndexedDBClientStateCheckerFactory() = delete;
   ~IndexedDBClientStateCheckerFactory() = delete;
 
-  // Factory method that returns the `PendingRemote` bound to either a
-  // `NoDocumentIndexedDBClientStateChecker` or a
-  // `DocumentIndexedDBClientStateChecker` depending on the `rfh_id`.
-  static mojo::PendingRemote<storage::mojom::IndexedDBClientStateChecker>
+  // Factory method that creates and returns a client state checker, and
+  // a token that serves as a unique identifier, for the given render frame
+  // (which is null for worker contexts). This method is called on the browser
+  // UI thread and the objects it returns are suitable for use from other
+  // (privileged) threads or processes.
+  static std::tuple<
+      mojo::PendingRemote<storage::mojom::IndexedDBClientStateChecker>,
+      base::UnguessableToken>
   InitializePendingRemote(const GlobalRenderFrameHostId& rfh_id);
 
   // Factory method that returns the pointer to the implementation of

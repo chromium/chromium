@@ -23,6 +23,7 @@
 #include "content/browser/indexed_db/indexed_db_cursor.h"
 #include "content/browser/indexed_db/indexed_db_database.h"
 #include "content/browser/indexed_db/indexed_db_database_callbacks.h"
+#include "content/browser/indexed_db/indexed_db_lock_request_data.h"
 #include "storage/browser/blob/blob_storage_context.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom.h"
 #include "third_party/leveldatabase/env_chromium.h"
@@ -138,6 +139,10 @@ IndexedDBTransaction::IndexedDBTransaction(
       receiver_(this) {
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("IndexedDB",
                                     "IndexedDBTransaction::lifetime", this);
+
+  locks_receiver_.SetUserData(
+      IndexedDBLockRequestData::kKey,
+      std::make_unique<IndexedDBLockRequestData>(connection->client_token()));
 
   database_ = connection_->database();
   if (database_) {
@@ -283,6 +288,37 @@ void IndexedDBTransaction::UnregisterOpenCursor(IndexedDBCursor* cursor) {
   open_cursors_.erase(cursor);
 }
 
+void IndexedDBTransaction::DontAllowInactiveClientToBlockOthers(
+    storage::mojom::DisallowInactiveClientReason reason) {
+  if (state_ == STARTED && IsTransactionBlockingOtherClients()) {
+    connection_->DisallowInactiveClient(reason, base::DoNothing());
+  }
+}
+
+bool IndexedDBTransaction::IsTransactionBlockingOtherClients() const {
+  CHECK_EQ(state_, STARTED);
+  for (const PartitionedLockId& lock_id : lock_ids_) {
+    std::set<PartitionedLockHolder*> blocked_requests =
+        bucket_context_->lock_manager()->GetQueuedRequests(lock_id);
+    if (std::any_of(blocked_requests.begin(), blocked_requests.end(),
+                    [&](PartitionedLockHolder* blocked_lock_holder) {
+                      auto* lock_request_data =
+                          static_cast<IndexedDBLockRequestData*>(
+                              blocked_lock_holder->GetUserData(
+                                  IndexedDBLockRequestData::kKey));
+                      if (!lock_request_data) {
+                        return true;
+                      }
+                      return lock_request_data->client_token !=
+                             connection_->client_token();
+                    })) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
 void IndexedDBTransaction::Start() {
   // The transaction has the potential to be aborted after the Start() task was
   // posted.
@@ -294,6 +330,12 @@ void IndexedDBTransaction::Start() {
   state_ = STARTED;
   DCHECK(!locks_receiver_.locks.empty());
   diagnostics_.start_time = base::Time::Now();
+
+  // If the client is in BFCache, the transaction will get stuck, so evict it if
+  // necessary.
+  DontAllowInactiveClientToBlockOthers(
+      storage::mojom::DisallowInactiveClientReason::
+          kTransactionIsStartingWhileBlockingOthers);
 
   const base::TimeDelta time_queued =
       diagnostics_.start_time - diagnostics_.creation_time;

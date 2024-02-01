@@ -13519,11 +13519,27 @@ Called by update_permissions_policy_enum.py.-->
   <int value="32" label="Bug1234857"/>
   <int value="33" label="FileSystemAccessPermissionRequest"/>
   <int value="34" label="CreateFencedFrame"/>
-  <int value="35" label="kIndexedDBEvent"/>
-  <int value="36" label="kIndexedDBTransactionIsAcquiringLocks"/>
-  <int value="37" label="kIndexedDBTransactionIsBlockingOthers"/>
+  <int value="35" label="kIndexedDBEvent">
+    A new IDB connection is being opened with a higher version number which
+    triggers a version change event being sent to existing connections.
+  </int>
+  <int value="36" label="kIndexedDBTransactionIsAcquiringLocks">
+    A transaction is trying to acquire locks and evicts any lock-holding clients
+    from the cache.
+  </int>
+  <int value="37" label="kIndexedDBTransactionIsBlockingOthers">
+    Deprecated.
+  </int>
   <int value="38" label="kSafeBrowsingUnsafeSubresource"/>
   <int value="39" label="kFileSystemAccessLockingContention"/>
+  <int value="40" label="kIndexedDBTransactionIsStartingWhileBlockingOthers">
+    A transaction that has the potential to block other transactions is starting
+    and its own client is inactive.
+  </int>
+  <int value="41" label="kIndexedDBTransactionIsOngoingAndBlockingOthers">
+    A client tries to enter BFCache while it has an ongoing transaction blocking
+    other transactions.
+  </int>
 </enum>
 
 <enum name="IncidentType">

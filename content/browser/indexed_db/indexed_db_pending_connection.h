@@ -45,6 +45,7 @@ struct CONTENT_EXPORT IndexedDBPendingConnection {
   bool was_cold_open = false;
   mojo::Remote<storage::mojom::IndexedDBClientStateChecker>
       client_state_checker;
+  base::UnguessableToken client_token;
 };
 
 }  // namespace content

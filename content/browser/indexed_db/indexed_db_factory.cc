@@ -178,11 +178,12 @@ void IndexedDBFactory::AddReceiver(
     std::optional<storage::BucketInfo> bucket,
     mojo::PendingRemote<storage::mojom::IndexedDBClientStateChecker>
         client_state_checker_remote,
+    base::UnguessableToken client_token,
     mojo::PendingReceiver<blink::mojom::IDBFactory> pending_receiver) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  receivers_.Add(
-      this, std::move(pending_receiver),
-      ReceiverContext(bucket, std::move(client_state_checker_remote)));
+  receivers_.Add(this, std::move(pending_receiver),
+                 ReceiverContext(bucket, std::move(client_state_checker_remote),
+                                 client_token));
 }
 
 void IndexedDBFactory::GetDatabaseInfo(GetDatabaseInfoCallback callback) {
@@ -302,7 +303,7 @@ void IndexedDBFactory::Open(
       name, version, std::move(pending_factory_client),
       std::move(database_callbacks_remote), transaction_id,
       std::move(transaction_receiver), was_cold_open, data_loss_info,
-      std::move(state_checker));
+      std::move(state_checker), receivers_.current_context().client_token);
 }
 
 void IndexedDBFactory::DeleteDatabase(
@@ -928,9 +929,11 @@ void IndexedDBFactory::OnDatabaseDeleted(
 IndexedDBFactory::ReceiverContext::ReceiverContext(
     std::optional<storage::BucketInfo> bucket,
     mojo::PendingRemote<storage::mojom::IndexedDBClientStateChecker>
-        client_state_checker)
+        client_state_checker,
+    base::UnguessableToken client_token)
     : bucket(bucket),
-      client_state_checker_remote(std::move(client_state_checker)) {}
+      client_state_checker_remote(std::move(client_state_checker)),
+      client_token(client_token) {}
 
 IndexedDBFactory::ReceiverContext::ReceiverContext(
     IndexedDBFactory::ReceiverContext&&) noexcept = default;
