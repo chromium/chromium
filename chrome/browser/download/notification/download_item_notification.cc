@@ -418,10 +418,7 @@ void DownloadItemNotification::Click(
     case download::DownloadItem::INTERRUPTED:
       base::RecordAction(
           UserMetricsAction("DownloadNotification.Click_Stopped"));
-      GetBrowser()->OpenURL(content::OpenURLParams(
-          GURL(chrome::kChromeUIDownloadsURL), content::Referrer(),
-          WindowOpenDisposition::NEW_FOREGROUND_TAB, ui::PAGE_TRANSITION_LINK,
-          false /* is_renderer_initiated */));
+      chrome::ShowDownloads(GetBrowser());
       CloseNotification();
       break;
     case download::DownloadItem::COMPLETE:
