@@ -21,6 +21,7 @@
 <translation id="1119447706177454957">Erreur interne</translation>
 <translation id="1124772482545689468">Utilisateur</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
+<translation id="1134416403025830762">multiplier</translation>
 <translation id="1145018782460575098">La fenêtre de mise à jour du micrologiciel pour les appareils externes est ouverte. <ph name="NUM_UPDATES" /> mises à jour disponibles.</translation>
 <translation id="1145516343487477149">Trouvez des articles d'aide et des réponses aux questions courantes relatives au Chromebook</translation>
 <translation id="1154390310959620237">Vous ne pouvez personnaliser que cinq raccourcis. Supprimez un raccourci pour en ajouter un nouveau.</translation>
@@ -56,6 +57,7 @@
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Ajuster à la zone de numérisation</translation>
 <translation id="1367951781824006909">Choisir un fichier</translation>
+<translation id="1371650399987522809">Commentaires sur les fonds d'écran propulsés par l'IA de Google</translation>
 <translation id="1387854245479784695">Il s'agit d'une agrégation de tous les cœurs</translation>
 <translation id="1394661041439318933">Le niveau de la pile du boîtier est à <ph name="BATTERY_PERCENTAGE" /> %.</translation>
 <translation id="1397738625398125236">Ping de la passerelle</translation>
@@ -87,12 +89,14 @@
 <translation id="155865706765934889">Pavé tactile</translation>
 <translation id="1561927818299383735">couleur rétroéclairée</translation>
 <translation id="1565038567006703504">Impossible de mettre à jour <ph name="DEVICE_NAME" /></translation>
+<translation id="1566493343215789965">diviser</translation>
 <translation id="1567064801249837505">Albums</translation>
 <translation id="1572585716423026576">Définir comme fond d'écran</translation>
 <translation id="1578784163189013834">Choisir l'arrière-plan de l'écran de veille</translation>
 <translation id="160633243685262989">Aperçu de l'image</translation>
 <translation id="1611649489706141841">suivant</translation>
 <translation id="1615335640928990664">Utilisation de données depuis le <ph name="FRIENDLY_DATE" /></translation>
+<translation id="1615576200479539465">Génération d'images en cours…</translation>
 <translation id="1621067168122174824">Exécuter le test de recharge</translation>
 <translation id="1626590945318984973">Raccourci non accessible. Appuyez sur un nouveau raccourci sans utiliser les touches de fonction et de <ph name="META_KEY" />.</translation>
 <translation id="1639239467298939599">Chargement en cours</translation>
@@ -265,6 +269,7 @@
 <translation id="2878387241690264070">Déchargée de <ph name="RATE" /> en <ph name="NUM_SECONDS" /> secondes.</translation>
 <translation id="2880569433548999039">Écran de veille Cloud Flow</translation>
 <translation id="2926057806159140518">Entrez votre nom d'utilisateur et votre mot de passe ou numérisez votre code QR</translation>
+<translation id="2938573842839598578">Pour obtenir un résultat approximatif, <ph name="OPERATOR_TEXT" /> la valeur <ph name="CATEGORY_TEXT" /> par <ph name="CONVERSION_RATE" /></translation>
 <translation id="2940811910881150316">Impossible de tester l'appareil. Rouvrir le couvercle pour tester.</translation>
 <translation id="2941112035454246133">Faible</translation>
 <translation id="3008341117444806826">ACTUALISER</translation>
@@ -337,6 +342,7 @@
 <translation id="3517001332549868749">Mise à jour Chrome OS</translation>
 <translation id="3527036260304016759">Échec : erreur inconnue</translation>
 <translation id="3532980081107202182">Il reste environ <ph name="MIN_REMAINING" /> minutes</translation>
+<translation id="3547264467365135390">Formule</translation>
 <translation id="3557205324756024651">Identité locale (facultative)</translation>
 <translation id="3565064564551103223">Adresses IP autorisées</translation>
 <translation id="3569407787324516067">Écran de veille</translation>
@@ -846,6 +852,7 @@
 <translation id="7180611975245234373">Actualiser</translation>
 <translation id="7180865173735832675">Personnaliser</translation>
 <translation id="7184043045742675738">Cliquez sur n'importe quelle touche pour personnaliser votre bouton. Repositionnez la touche avec la souris ou les touches fléchées.</translation>
+<translation id="7206979415662233817">Conditions d'utilisation</translation>
 <translation id="7212547870105584639">Gérez les paramètres de nom de point d'accès du réseau. Les noms de point d'accès établissent une connexion entre un réseau cellulaire et Internet. <ph name="BEGIN_LINK_LEARN_MORE" />En savoir plus<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">Mises à jour du micrologiciel pour les appareils externes</translation>
 <translation id="7216409898977639127">Fournisseur cellulaire</translation>
@@ -864,6 +871,10 @@
 <translation id="7311368985037279727">couleur du clavier</translation>
 <translation id="7317831949569936035">Inscription scolaire</translation>
 <translation id="7319430975418800333">A3</translation>
+<translation id="7331297744262591636">Vous devez être âgé d'au moins 18 ans et accepter que votre utilisation des fonds d'écran IA soit soumise aux <ph name="GOOGLE_TERMS_OF_SERVICE_LINK" />conditions d'utilisation de Google<ph name="END_LINK_GOOGLE_TERMS_OF_SERVICE" /> et aux <ph name="BEGIN_LINK_GEN_AI_TERMS_OF_SERVICE" />conditions d'utilisation supplémentaires relatives à l'IA générative<ph name="END_LINK_GEN_AI_TERMS_OF_SERVICE" />.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Vous ne pouvez créer des fonds d'écran avec l'IA que pour un usage personnel et non commercial. Lorsque vous obtenez de l'aide sur les fonds d'écran, du texte est envoyé aux serveurs de l'IA de Google pour générer des suggestions de fonds d'écran, conformément à la <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />politique de confidentialité de Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />. <ph name="BEGIN_LINK_LEARN_MORE" />En savoir plus<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Appuyez simultanément sur le bouton de recherche et la barre d'espacement pour afficher les résultats dans la recherche Google.</translation>
 <translation id="7343649194310845056">Appareils réseau</translation>
 <translation id="7353413232959255829">Résultat de recherche <ph name="LIST_POSITION" /> sur <ph name="LIST_SIZE" /> : <ph name="SEARCH_RESULT_TEXT" />. Appuyez sur Entrée pour accéder au raccourci.</translation>

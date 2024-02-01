@@ -98,7 +98,7 @@
 <translation id="1615335640928990664">Uso de datos desde el <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1615576200479539465">Generando imágenes…</translation>
 <translation id="1621067168122174824">Ejecutar prueba de carga</translation>
-<translation id="1626590945318984973">La combinación de teclas no está disponible. Presiona una nueva combinación de teclas sin usar las teclas de función ni de <ph name="META_KEY" />.</translation>
+<translation id="1626590945318984973">La combinación de teclas no está disponible. Usa una nueva combinación de teclas sin presionar las teclas de función ni de <ph name="META_KEY" />.</translation>
 <translation id="1639239467298939599">Cargando</translation>
 <translation id="1641857168437328880">Alimentador de documentos (una cara)</translation>
 <translation id="1643449475550628585">Cambiar la imagen del fondo de pantalla diariamente</translation>
@@ -475,7 +475,7 @@
 <translation id="4469288414739283461">Protector de pantalla Flujo de la Tierra</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">no se pudo hacer ping en la puerta de enlace de la red no predeterminada</translation>
-<translation id="4500722292849917410">La combinación de teclas no está disponible. Presiona una nueva combinación de teclas con una tecla modificadora (Ctrl, Alt, Mayúsculas o <ph name="META_KEY" />).</translation>
+<translation id="4500722292849917410">La combinación de teclas no está disponible. Usa una nueva combinación de teclas que incluya una tecla modificadora (Ctrl, Alt, Mayúsculas o <ph name="META_KEY" />).</translation>
 <translation id="4500966230243561393">Color de la interfaz</translation>
 <translation id="4503223151711056411">Flecha hacia la izquierda</translation>
 <translation id="4507392511610824664">aumentar brillo</translation>
@@ -523,7 +523,7 @@
 <translation id="4832079907277790330">Seleccionar carpeta en la app de Archivos…</translation>
 <translation id="4835901797422965222">No hay redes activas</translation>
 <translation id="4839698083503556542">Crea tu propia película</translation>
-<translation id="48409034532829769">Tu administrador configuró "<ph name="APP_NAME" />" para que se inicie automáticamente. Es posible que no se cierre esta app.</translation>
+<translation id="48409034532829769">Tu administrador configuró "<ph name="APP_NAME" />" para que se inicie automáticamente. Esto evita que puedas cerrar esta app.</translation>
 <translation id="484462545196658690">Automático</translation>
 <translation id="4847902821209177679">Se seleccionó <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" />; presiona Intro para seleccionar álbumes de <ph name="TOPIC_SOURCE" /></translation>
 <translation id="484790837831576105">(Android) resolución de DNS</translation>
@@ -550,7 +550,7 @@
 <translation id="4969079779290789265">Pantalla dividida</translation>
 <translation id="4972592110715526173">cambio de modo</translation>
 <translation id="498186245079027698">Revisa el escáner y vuelve a intentarlo. Asegúrate de que haya espacio suficiente en el almacenamiento local para guardar los archivos escaneados.</translation>
-<translation id="4982627662315910959">La combinación de teclas no está disponible. Presiona una nueva combinación de teclas con Mayúsculas y 1 tecla modificadora adicional (Ctrl, Alt o <ph name="META_KEY" />).</translation>
+<translation id="4982627662315910959">La combinación de teclas no está disponible. Usa una nueva combinación de teclas que incluya Mayúsculas y 1 tecla modificadora adicional (Ctrl, Alt o <ph name="META_KEY" />).</translation>
 <translation id="4985509611418653372">Ejecutar</translation>
 <translation id="4987769320337599931">Firewall</translation>
 <translation id="4988526792673242964">Páginas</translation>

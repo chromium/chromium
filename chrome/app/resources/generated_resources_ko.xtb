@@ -4913,7 +4913,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4744268813103118742">사이트로 이동</translation>
 <translation id="4744571849207727284">Excel</translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{사이트 음소거 취소}other{사이트 음소거 취소}}</translation>
-<translation id="4745500401920035244">관리자가 시스템 전체에 변경사항을 적용하여 일부 기존 프로필이 비활성화되었습니다. 더 이상 이 프로필에 액세스할 수 없지만 삭제할 수는 있습니다.</translation>
 <translation id="474609389162964566">"Hey Google"로 어시스턴트에 액세스</translation>
 <translation id="4748783296226936791">사이트에서는 흔히 사용되지 않는 키보드, 게임 컨트롤러, 기타 기기가 필요한 기능을 지원하기 위해 주로 HID 기기에 연결합니다.</translation>
 <translation id="4749960740855309258">새 탭 열기</translation>
@@ -6323,7 +6322,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="586567932979200359">디스크 이미지에서 <ph name="PRODUCT_NAME" />을(를) 실행 중입니다. 컴퓨터에 설치하면 디스크 이미지가 없어도 실행이 가능하며 최신 상태로 유지됩니다.</translation>
 <translation id="5865733239029070421">사용 통계 및 비정상 종료 보고서를 Google로 자동 전송</translation>
 <translation id="5868434909835797817">기기의 마이크가 꺼져 있습니다.</translation>
-<translation id="5868479397518301468">로그인 타임아웃</translation>
 <translation id="5868822853313956582">기기 색상 따르기</translation>
 <translation id="5869029295770560994">확인</translation>
 <translation id="5869522115854928033">저장된 비밀번호</translation>
@@ -6675,7 +6673,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
     표시 이름: <ph name="QUICK_START_DEVICE_DISPLAY_NAME" />...</translation>
 <translation id="6146409560350811147">동기화가 작동하지 않습니다. 다시 로그인해 주세요.</translation>
 <translation id="6147020289383635445">인쇄 미리보기에 실패했습니다.</translation>
-<translation id="6147253937684562370">프로필을 잠금해제하려면 기본 계정 이메일(<ph name="EMAIL" />)로 로그인하세요.</translation>
 <translation id="6148576794665275391">지금 열기</translation>
 <translation id="614890671148262506">이 사이트의 알림 항상 허용</translation>
 <translation id="6149015141270619212">인터넷에 연결할 수 없음</translation>
@@ -10063,7 +10060,6 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8756969031206844760">비밀번호를 업데이트하시겠습니까?</translation>
 <translation id="8757368836647541092"><ph name="USER_NAME_OR_EMAIL" /> 삭제됨</translation>
 <translation id="8759753423332885148">자세히 알아보기</translation>
-<translation id="876161309768861172">로그인할 수 없습니다. 다시 시도해 주세요.</translation>
 <translation id="8761945298804995673">이미 존재하는 사용자입니다.</translation>
 <translation id="8762886931014513155"><ph name="DEVICE_TYPE" /> 업데이트 필요</translation>
 <translation id="8763927697961133303">USB 기기</translation>
@@ -10574,7 +10570,6 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="9138978632494473300">다음 위치에 바로가기 추가:</translation>
 <translation id="9139988741193276691">Linux 설정 중</translation>
 <translation id="9140067245205650184">지원되지 않는 기능 플래그(<ph name="BAD_FLAG" />)를 사용 중이므로 안정성과 보안에 문제가 발생합니다.</translation>
-<translation id="914031120300235526">프로필을 잠금 해제할 수 없음</translation>
 <translation id="9142637293078737510">이미지 별칭</translation>
 <translation id="9143298529634201539">추천을 삭제하시겠습니까?</translation>
 <translation id="9143922477019434797">비밀번호 보호</translation>
