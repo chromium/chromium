@@ -381,12 +381,12 @@ bool OmniboxViewIOS::OnWillChange(NSRange range, NSString* new_text) {
   if ([field_ isPreEditing]) {
     [field_ setClearingPreEditText:YES];
 
-    if (!base::FeatureList::IsEnabled(kIOSNewOmniboxImplementation)) {
-      // Exit the pre-editing state in OnWillChange() instead of OnDidChange(),
-      // as that allows IME to continue working.  The following code selects the
-      // text as if the pre-edit fake selection was real.
-      [field_ exitPreEditState];
+    // Exit the pre-editing state in OnWillChange() instead of OnDidChange(), as
+    // that allows IME to continue working.  The following code selects the text
+    // as if the pre-edit fake selection was real.
+    [field_ exitPreEditState];
 
+    if (!base::FeatureList::IsEnabled(kIOSNewOmniboxImplementation)) {
       field_.text = @"";
     }
 
@@ -462,11 +462,6 @@ bool OmniboxViewIOS::OnWillChange(NSRange range, NSString* new_text) {
 }
 
 void OmniboxViewIOS::OnDidChange(bool processing_user_event) {
-  if (base::FeatureList::IsEnabled(kIOSNewOmniboxImplementation)) {
-    if (field_.isPreEditing)
-      [field_ exitPreEditState];
-  }
-
   // Sanitize pasted text.
   if (model() && model()->is_pasting()) {
     std::u16string pastedText = base::SysNSStringToUTF16(field_.text);
