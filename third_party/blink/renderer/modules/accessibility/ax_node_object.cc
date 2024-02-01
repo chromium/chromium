@@ -4959,8 +4959,13 @@ Element* AXNodeObject::AnchorElement() const {
   const AXObject* current = this;
   while (current) {
     if (current->IsLink()) {
-      DCHECK(current->GetElement())
-          << "An AXObject* that is a link should always have an element.";
+      if (!current->GetElement()) {
+        // TODO(crbug.com/1524124): Investigate and fix why this gets hit.
+        DUMP_WILL_BE_NOTREACHED_NORETURN()
+            << "An AXObject* that is a link should always have an element.\n"
+            << ToString(true, true) << "\n"
+            << current->ToString(true, true);
+      }
       return current->GetElement();
     }
     current = current->ParentObject();
