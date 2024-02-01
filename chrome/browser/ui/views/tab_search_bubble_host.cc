@@ -7,6 +7,7 @@
 #include "base/functional/bind.h"
 #include "base/i18n/rtl.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/trace_event/trace_event.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/ui/browser.h"
@@ -149,6 +150,7 @@ void TabSearchBubbleHost::OnUserInvokedFeature(const Browser* browser) {
 bool TabSearchBubbleHost::ShowTabSearchBubble(
     bool triggered_by_keyboard_shortcut,
     int tab_index) {
+  TRACE_EVENT0("ui", "TabSearchBubbleHost::ShowTabSearchBubble");
   if (tab_index >= 0) {
     profile_->GetPrefs()->SetInteger(tab_search_prefs::kTabSearchTabIndex,
                                      tab_index);
