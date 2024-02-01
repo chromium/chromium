@@ -8,6 +8,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "net/base/features.h"
 #include "net/base/proxy_chain.h"
@@ -47,7 +48,7 @@ void IpProtectionProxyDelegate::OnResolveProxy(
   auto dvlog = [&](std::string message) {
     std::optional<net::SchemefulSite> top_frame_site =
         network_anonymization_key.GetTopFrameSite();
-    DVLOG(3) << "NSPD::OnResolveProxy(" << url << ", "
+    DVLOG(3) << "IPPD::OnResolveProxy(" << url << ", "
              << (top_frame_site.has_value() ? top_frame_site.value()
                                             : net::SchemefulSite())
              << ") - " << message;
@@ -60,38 +61,24 @@ void IpProtectionProxyDelegate::OnResolveProxy(
   // - No proxy list is available.
   // - `kEnableIpProtection` is `false`.
   // - `kIpPrivacyDirectOnly` is `true`.
-  if (!network_service_proxy_allow_list_) {
-    dvlog("no proxy allow list");
-    return;
-  }
-  if (!network_service_proxy_allow_list_->IsEnabled()) {
-    dvlog("proxy allow list not enabled");
-    return;
-  }
-  if (!network_service_proxy_allow_list_->Matches(url,
-                                                  network_anonymization_key)) {
-    dvlog("proxy allow list did not match");
+  const ProtectionEligibility eligibility =
+      CheckEligibility(url, network_anonymization_key);
+  base::UmaHistogramEnumeration(
+      "NetworkService.IpProtection.RequestIsEligibleForProtection",
+      eligibility);
+  if (eligibility != ProtectionEligibility::kEligible) {
     return;
   }
   result->set_is_mdl_match(true);
+
   if (!base::FeatureList::IsEnabled(net::features::kEnableIpProtectionProxy)) {
     dvlog("ip protection proxy not enabled");
     return;
   }
-  if (!ipp_config_cache_) {
-    dvlog("no cache");
-    return;
-  }
-  if (!ipp_config_cache_->AreAuthTokensAvailable()) {
-    dvlog("no auth token available from cache");
-    return;
-  }
-  if (!ipp_config_cache_->IsProxyListAvailable()) {
-    // NOTE: When this `vlog()` is removed, there's no need to distinguish
-    // the case where a proxy list has not been downloaded, and the case
-    // where a proxy list is empty. The `IsProxyListAvailable()` method can
-    // be removed at that time.
-    dvlog("no proxy list available from cache");
+  const bool available = CheckAvailability(url, network_anonymization_key);
+  base::UmaHistogramBoolean(
+      "NetworkService.IpProtection.ProtectionIsAvailableForRequest", available);
+  if (!available) {
     return;
   }
 
@@ -131,6 +118,81 @@ void IpProtectionProxyDelegate::OnResolveProxy(
   result->OverrideProxyList(MergeProxyRules(result->proxy_list(), proxy_list));
   result->DeprioritizeBadProxyChains(proxy_retry_info);
   return;
+}
+
+IpProtectionProxyDelegate::ProtectionEligibility
+IpProtectionProxyDelegate::CheckEligibility(
+    const GURL& url,
+    const net::NetworkAnonymizationKey& network_anonymization_key) const {
+  auto dvlog = [&](std::string message) {
+    absl::optional<net::SchemefulSite> top_frame_site =
+        network_anonymization_key.GetTopFrameSite();
+    DVLOG(3) << "IPPD::CheckEligibility(" << url << ", "
+             << (top_frame_site.has_value() ? top_frame_site.value()
+                                            : net::SchemefulSite())
+             << ") - " << message;
+  };
+  if (!network_service_proxy_allow_list_) {
+    // TODO(crbug.com/1523336): Replace with a CHECK
+    dvlog("no proxy allow list");
+    return ProtectionEligibility::kUnknown;
+  }
+  if (!network_service_proxy_allow_list_->IsEnabled()) {
+    // TODO(crbug.com/1523336): Remove or replace with a CHECK
+    dvlog("proxy allow list not enabled");
+    return ProtectionEligibility::kUnknown;
+  }
+  if (!network_service_proxy_allow_list_->IsPopulated()) {
+    dvlog("proxy allow list not populated");
+    return ProtectionEligibility::kUnknown;
+  }
+  if (!network_service_proxy_allow_list_->Matches(url,
+                                                  network_anonymization_key)) {
+    dvlog("proxy allow list did not match");
+    return ProtectionEligibility::kIneligible;
+  }
+  dvlog("proxy allow list matched");
+  return ProtectionEligibility::kEligible;
+}
+
+bool IpProtectionProxyDelegate::CheckAvailability(
+    const GURL& url,
+    const net::NetworkAnonymizationKey& network_anonymization_key) const {
+  auto dvlog = [&](std::string message) {
+    absl::optional<net::SchemefulSite> top_frame_site =
+        network_anonymization_key.GetTopFrameSite();
+    DVLOG(3) << "IPPD::CheckAvailability(" << url << ", "
+             << (top_frame_site.has_value() ? top_frame_site.value()
+                                            : net::SchemefulSite())
+             << ") - " << message;
+  };
+  if (!ipp_config_cache_) {
+    // TODO(crbug.com/1523336): Maybe replace with a CHECK
+    dvlog("no cache");
+    return false;
+  }
+  const bool auth_tokens_are_available =
+      ipp_config_cache_->AreAuthTokensAvailable();
+  base::UmaHistogramBoolean(
+      "NetworkService.IpProtection.AreAuthTokensAvailable",
+      auth_tokens_are_available);
+  const bool proxy_list_is_available =
+      ipp_config_cache_->IsProxyListAvailable();
+  base::UmaHistogramBoolean("NetworkService.IpProtection.IsProxyListAvailable",
+                            proxy_list_is_available);
+  if (!auth_tokens_are_available) {
+    dvlog("no auth token available from cache");
+    return false;
+  }
+  if (!proxy_list_is_available) {
+    // NOTE: When this `vlog()` and histogram are removed, there's no need to
+    // distinguish the case where a proxy list has not been downloaded, and the
+    // case where a proxy list is empty. The `IsProxyListAvailable()` method can
+    // be removed at that time.
+    dvlog("no proxy list available from cache");
+    return false;
+  }
+  return true;
 }
 
 void IpProtectionProxyDelegate::OnFallback(const net::ProxyChain& bad_chain,

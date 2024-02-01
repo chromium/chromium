@@ -22,8 +22,6 @@ namespace network {
 
 namespace {
 
-constexpr char kAreAuthTokensAvailableHistogram[] =
-    "NetworkService.IpProtection.AreAuthTokensAvailable";
 constexpr char kEmptyTokenCacheHistogram[] =
     "NetworkService.IpProtection.EmptyTokenCache";
 
@@ -110,9 +108,6 @@ TEST_F(IpProtectionConfigCacheImplTest, GetAuthTokenFromManagerForProxyA) {
   ASSERT_FALSE(
       ipp_config_cache_->GetAuthToken(1).has_value());  // ProxyB has no tokens.
   ASSERT_TRUE(ipp_config_cache_->GetAuthToken(0));
-  histogram_tester_.ExpectTotalCount(kAreAuthTokensAvailableHistogram, 1);
-  histogram_tester_.ExpectBucketCount(kAreAuthTokensAvailableHistogram, true,
-                                      1);
 }
 
 // Token cache manager returns available token for proxyB.
@@ -130,9 +125,6 @@ TEST_F(IpProtectionConfigCacheImplTest, GetAuthTokenFromManagerForProxyB) {
   ASSERT_FALSE(
       ipp_config_cache_->GetAuthToken(0).has_value());  // ProxyA has no tokens.
   ASSERT_TRUE(ipp_config_cache_->GetAuthToken(1));
-  histogram_tester_.ExpectTotalCount(kAreAuthTokensAvailableHistogram, 1);
-  histogram_tester_.ExpectBucketCount(kAreAuthTokensAvailableHistogram, true,
-                                      1);
 }
 
 TEST_F(IpProtectionConfigCacheImplTest,
@@ -150,9 +142,6 @@ TEST_F(IpProtectionConfigCacheImplTest,
       std::make_unique<MockIpProtectionTokenCacheManager>());
 
   ASSERT_FALSE(ipp_config_cache_->AreAuthTokensAvailable());
-  histogram_tester_.ExpectTotalCount(kAreAuthTokensAvailableHistogram, 1);
-  histogram_tester_.ExpectBucketCount(kAreAuthTokensAvailableHistogram, false,
-                                      1);
   histogram_tester_.ExpectTotalCount(kEmptyTokenCacheHistogram, 1);
   histogram_tester_.ExpectBucketCount(
       kEmptyTokenCacheHistogram, mojom::IpProtectionProxyLayer::kProxyB, 1);
@@ -161,9 +150,6 @@ TEST_F(IpProtectionConfigCacheImplTest,
 TEST_F(IpProtectionConfigCacheImplTest,
        AreAuthTokensAvailable_NoProxiesConfigured) {
   ASSERT_FALSE(ipp_config_cache_->AreAuthTokensAvailable());
-  histogram_tester_.ExpectTotalCount(kAreAuthTokensAvailableHistogram, 1);
-  histogram_tester_.ExpectBucketCount(kAreAuthTokensAvailableHistogram, false,
-                                      1);
 }
 
 // Proxy list manager returns currently cached proxy hostnames.

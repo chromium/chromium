@@ -56,9 +56,6 @@ bool IpProtectionConfigCacheImpl::AreAuthTokensAvailable() {
     }
   }
 
-  base::UmaHistogramBoolean(
-      "NetworkService.IpProtection.AreAuthTokensAvailable",
-      all_caches_have_tokens);
   return all_caches_have_tokens;
 }
 

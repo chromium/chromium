@@ -29,6 +29,13 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) IpProtectionProxyDelegate
     : public net::ProxyDelegate,
       public mojom::IpProtectionProxyDelegate {
  public:
+  enum class ProtectionEligibility {
+    kUnknown = 0,
+    kIneligible = 1,
+    kEligible = 2,
+    kMaxValue = kEligible,
+  };
+
   IpProtectionProxyDelegate(
       NetworkServiceProxyAllowList* network_service_proxy_allow_list,
       std::unique_ptr<IpProtectionConfigCache> ipp_config_cache);
@@ -72,6 +79,13 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) IpProtectionProxyDelegate
  private:
   friend class IpProtectionProxyDelegateTest;
   FRIEND_TEST_ALL_PREFIXES(IpProtectionProxyDelegateTest, MergeProxyRules);
+
+  ProtectionEligibility CheckEligibility(
+      const GURL& url,
+      const net::NetworkAnonymizationKey& network_anonymization_key) const;
+  bool CheckAvailability(
+      const GURL& url,
+      const net::NetworkAnonymizationKey& network_anonymization_key) const;
 
   // Returns the equivalent of replacing all DIRECT proxies in
   // `existing_proxy_list` with the proxies in `custom_proxy_list`.
