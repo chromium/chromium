@@ -253,7 +253,7 @@ void DeskButtonContainer::UpdateUiAndLayoutIfNeeded(const Desk* active_desk) {
   UpdateUi(active_desk);
 
   if (GetPreferredSize() != old_preferred_size) {
-    desk_button_widget_->delegate_view()->Layout();
+    desk_button_widget_->delegate_view()->DeprecatedLayoutImmediately();
   }
 }
 void DeskButtonContainer::HandleLocaleChange() {

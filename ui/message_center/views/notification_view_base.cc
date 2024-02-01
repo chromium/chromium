@@ -242,7 +242,7 @@ void NotificationViewBase::Layout() {
   // we should show expand button or not depends on the current view layout.
   // (e.g. Show expand button when |message_label_| exceeds one line.)
   SetExpandButtonVisibility(IsExpandable());
-  header_row_->Layout();
+  header_row_->DeprecatedLayoutImmediately();
 
   // The notification background is rounded in MessageView layout, but we also
   // have to round the actions row background here.
