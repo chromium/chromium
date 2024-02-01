@@ -751,8 +751,6 @@ class PageInfoBubbleViewCookiesSubpageBrowserTest
 
     PageInfoUI::CookiesNewInfo cookie_info;
     cookie_info.allowed_sites_count = 9;
-    cookie_info.allowed_third_party_sites_count = 5;
-    cookie_info.blocked_third_party_sites_count = 8;
     cookie_info.enforcement = enforcement_;
     cookie_info.protections_on = protections_on_;
     cookie_info.controls_visible = controls_visible_;

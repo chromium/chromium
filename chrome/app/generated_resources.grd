@@ -4007,16 +4007,6 @@ are declared in tools/grit/grit_rule.gni.
       <message name="IDS_COOKIE_CONTROLS_BUBBLE_SEND_FEEDBACK_FORM_PLACEHOLDER" desc="In the feedback text box accessible from the cookie controls bubble, this is the default text the user replaces with their feedback.">
         Tell us why you allowed third-party cookies on this site
       </message>
-      <message name="IDS_COOKIE_CONTROLS_BUBBLE_BLOCKED_SITES_COUNT" desc="The count of sites that have been blocked from accessing third party cookies">
-        {COUNT, plural,
-              =1 {1 site blocked}
-              other {# sites blocked}}
-      </message>
-      <message name="IDS_COOKIE_CONTROLS_BUBBLE_ALLOWED_SITES_COUNT" desc="The count of sites that have been allowed to access third party cookies">
-        {COUNT, plural,
-              =1 {1 site allowed}
-              other {# sites allowed}}
-      </message>
       <message name="IDS_TRACKING_PROTECTION_BUBBLE_COOKIES_ALLOWED_LABEL" desc="A label for the third-party cookies toggle in the tracking protection bubble that tells the user third-party cookies are allowed.">
         Allowed
       </message>

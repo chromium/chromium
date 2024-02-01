@@ -239,12 +239,6 @@ int CookieControlsIconView::GetLabelForStatus() const {
   }
 }
 
-void CookieControlsIconView::OnSitesCountChanged(
-    int allowed_third_party_sites_count,
-    int blocked_third_party_sites_count) {
-  // The icon doesn't update if sites count changes.
-}
-
 // TODO(b/317883749): Remove usage of this function and
 // `CookiesControlsBreakageConfidenceLevel`.
 void CookieControlsIconView::OnBreakageConfidenceLevelChanged(

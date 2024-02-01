@@ -45,8 +45,6 @@ const char* GetVectorIconName(views::ImageView* image_view) {
 PageInfoCookiesContentView::CookiesNewInfo DefaultCookieInfoForTests(
     int days_to_expiration = 0) {
   PageInfoCookiesContentView::CookiesNewInfo cookie_info;
-  cookie_info.blocked_third_party_sites_count = 8;
-  cookie_info.allowed_third_party_sites_count = 3;
   cookie_info.allowed_sites_count = 10;
   // base::Time() represents a null when used as an expiration.
   cookie_info.expiration =

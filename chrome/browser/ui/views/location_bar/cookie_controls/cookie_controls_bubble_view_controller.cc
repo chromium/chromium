@@ -151,6 +151,8 @@ void CookieControlsBubbleViewController::ApplyThirdPartyCookiesAllowedState(
       label_title, l10n_util::GetStringUTF16(label_description));
   bubble_view_->GetContentView()->SetToggleIsOn(true);
   bubble_view_->GetContentView()->SetToggleIcon(GetToggleIcon(true));
+  bubble_view_->GetContentView()->SetToggleLabel(l10n_util::GetStringUTF16(
+      IDS_TRACKING_PROTECTION_BUBBLE_COOKIES_ALLOWED_LABEL));
 }
 
 void CookieControlsBubbleViewController::ApplyThirdPartyCookiesBlockedState() {
@@ -165,6 +167,10 @@ void CookieControlsBubbleViewController::ApplyThirdPartyCookiesBlockedState() {
           IDS_TRACKING_PROTECTION_BUBBLE_SITE_NOT_WORKING_DESCRIPTION));
   bubble_view_->GetContentView()->SetToggleIsOn(false);
   bubble_view_->GetContentView()->SetToggleIcon(GetToggleIcon(false));
+  bubble_view_->GetContentView()->SetToggleLabel(l10n_util::GetStringUTF16(
+      blocking_status_ == CookieBlocking3pcdStatus::kLimited
+          ? IDS_TRACKING_PROTECTION_BUBBLE_COOKIES_LIMITED_LABEL
+          : IDS_TRACKING_PROTECTION_BUBBLE_COOKIES_BLOCKED_LABEL));
 }
 
 CookieControlsBubbleViewController::~CookieControlsBubbleViewController() =
@@ -207,8 +213,7 @@ void CookieControlsBubbleViewController::OnStatusChanged(
     case CookieControlsEnforcement::kEnforcedByCookieSetting:
       // In 3PCD, tell the user if they allowed the current site in settings.
       bubble_view_->GetContentView()->SetContentLabelsVisible(
-          enforcement == CookieControlsEnforcement::kEnforcedByCookieSetting &&
-          blocking_status != CookieBlocking3pcdStatus::kNotIn3pcd);
+          enforcement == CookieControlsEnforcement::kEnforcedByCookieSetting);
       bubble_view_->GetContentView()->SetFeedbackSectionVisibility(false);
       bubble_view_->GetContentView()->SetToggleVisible(false);
       bubble_view_->GetContentView()->SetEnforcedIcon(
@@ -219,41 +224,6 @@ void CookieControlsBubbleViewController::OnStatusChanged(
           bubble_view_->GetContentView()->SetEnforcedIconVisible(true);
       break;
   }
-  // If we're in 3PCD, update toggle label based on `protections_on_`.
-  if (blocking_status_ != CookieBlocking3pcdStatus::kNotIn3pcd) {
-    int label;
-    if (protections_on_) {
-      label = blocking_status_ == CookieBlocking3pcdStatus::kAll
-                  ? IDS_TRACKING_PROTECTION_BUBBLE_COOKIES_BLOCKED_LABEL
-                  : IDS_TRACKING_PROTECTION_BUBBLE_COOKIES_LIMITED_LABEL;
-    } else {
-      label = IDS_TRACKING_PROTECTION_BUBBLE_COOKIES_ALLOWED_LABEL;
-    }
-    bubble_view_->GetContentView()->SetToggleLabel(
-        l10n_util::GetStringUTF16(label));
-  }
-}
-
-void CookieControlsBubbleViewController::OnSitesCountChanged(
-    int allowed_third_party_sites_count,
-    int blocked_third_party_sites_count) {
-  // We don't surface site counts in the UB bubble for 3PCD instead we will set
-  // the label in `OnStatusChange`.
-  if (blocking_status_ != CookieBlocking3pcdStatus::kNotIn3pcd) {
-    return;
-  }
-  std::u16string label;
-
-  if (protections_on_) {
-    label = l10n_util::GetPluralStringFUTF16(
-        IDS_COOKIE_CONTROLS_BUBBLE_BLOCKED_SITES_COUNT,
-        blocked_third_party_sites_count);
-  } else {
-    label = l10n_util::GetPluralStringFUTF16(
-        IDS_COOKIE_CONTROLS_BUBBLE_ALLOWED_SITES_COUNT,
-        allowed_third_party_sites_count);
-  }
-  bubble_view_->GetContentView()->SetToggleLabel(label);
 }
 
 void CookieControlsBubbleViewController::OnBreakageConfidenceLevelChanged(

@@ -344,16 +344,6 @@ void PageInfo::OnStatusChanged(CookieControlsStatus status,
   }
 }
 
-void PageInfo::OnSitesCountChanged(int allowed_third_party_sites_count,
-                                   int blocked_third_party_sites_count) {
-  if (allowed_third_party_sites_count_ != allowed_third_party_sites_count ||
-      blocked_third_party_sites_count_ != blocked_third_party_sites_count) {
-    allowed_third_party_sites_count_ = allowed_third_party_sites_count;
-    blocked_third_party_sites_count_ = blocked_third_party_sites_count;
-    PresentSiteData(base::DoNothing());
-  }
-}
-
 void PageInfo::OnBreakageConfidenceLevelChanged(
     CookieControlsBreakageConfidenceLevel level) {
   if (cookie_controls_confidence_ != level) {
@@ -1478,14 +1468,6 @@ void PageInfo::PresentSiteDataInternal(base::OnceClosure done) {
 
   PageInfoUI::CookiesNewInfo cookies_info;
   cookies_info.allowed_sites_count = GetSitesWithAllowedCookiesAccessCount();
-  // TODO(crbug.com/1446230): Clean up and remove the fallback after the feature
-  // was launched. If blocked_third_party_sites_count_ isn't set, use fallback
-  // and count the sites.
-  cookies_info.blocked_third_party_sites_count =
-      blocked_third_party_sites_count_.value_or(
-          GetThirdPartySitesWithBlockedCookiesAccessCount(site_url_));
-  cookies_info.allowed_third_party_sites_count =
-      allowed_third_party_sites_count_.value_or(0);
 
 #if !BUILDFLAG(IS_ANDROID)
   if (base::FeatureList::IsEnabled(

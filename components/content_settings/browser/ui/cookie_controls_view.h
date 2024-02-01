@@ -44,7 +44,7 @@ class CookieControlsObserver : public base::CheckedObserver {
   // other than 3PCB to why a site is blocked or allowed (ex. site data
   // exceptions).
   virtual void OnSitesCountChanged(int allowed_third_party_sites_count,
-                                   int blocked_third_party_sites_count) = 0;
+                                   int blocked_third_party_sites_count) {}
 
   // Called wherever the site breakage confidence level changes. It takes into
   // account blocked third-party cookie access, exceptions lifecycle, site
