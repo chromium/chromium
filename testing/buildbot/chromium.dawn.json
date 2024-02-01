@@ -6765,6 +6765,44 @@
           "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
           "--enforce-browser-version",
+          "--use-fxc",
+          "--use-webgpu-power-preference=default-high-performance",
+          "--jobs=1"
+        ],
+        "merge": {
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
+        "name": "webgpu_cts_fxc_tests",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "dimensions": {
+            "display_attached": "1",
+            "gpu": "8086:9bc5-31.0.101.2111",
+            "os": "Windows-10",
+            "pool": "chromium.tests.gpu"
+          },
+          "hard_timeout": 1800,
+          "idempotent": false,
+          "io_timeout": 1800,
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 8
+        },
+        "test": "telemetry_gpu_integration_test",
+        "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
+      },
+      {
+        "args": [
+          "webgpu_cts",
+          "--show-stdout",
+          "--browser=release_x64",
+          "--passthrough",
+          "-v",
+          "--stable-jobs",
+          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
+          "--enforce-browser-version",
           "--use-webgpu-power-preference=default-high-performance",
           "--jobs=1"
         ],
@@ -7157,6 +7195,44 @@
         },
         "test": "webgpu_blink_web_tests",
         "test_id_prefix": "ninja://:webgpu_blink_web_tests/"
+      },
+      {
+        "args": [
+          "webgpu_cts",
+          "--show-stdout",
+          "--browser=release_x64",
+          "--passthrough",
+          "-v",
+          "--stable-jobs",
+          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
+          "--enforce-browser-version",
+          "--use-fxc",
+          "--use-webgpu-power-preference=default-high-performance",
+          "--jobs=4"
+        ],
+        "merge": {
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
+        "name": "webgpu_cts_fxc_tests",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "dimensions": {
+            "display_attached": "1",
+            "gpu": "10de:2184-27.21.14.5638",
+            "os": "Windows-10-18363",
+            "pool": "chromium.tests.gpu"
+          },
+          "hard_timeout": 1800,
+          "idempotent": false,
+          "io_timeout": 1800,
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 8
+        },
+        "test": "telemetry_gpu_integration_test",
+        "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
       },
       {
         "args": [
@@ -7590,7 +7666,7 @@
           "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
           "--enforce-browser-version",
-          "--use-dxc",
+          "--use-fxc",
           "--use-webgpu-power-preference=default-high-performance",
           "--jobs=1"
         ],
@@ -7598,7 +7674,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "webgpu_cts_dxc_tests",
+        "name": "webgpu_cts_fxc_tests",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -7630,7 +7706,7 @@
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
           "--enforce-browser-version",
           "--enable-dawn-backend-validation",
-          "--use-dxc",
+          "--use-fxc",
           "--use-webgpu-power-preference=default-high-performance",
           "--jobs=1"
         ],
@@ -7638,7 +7714,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "webgpu_cts_dxc_with_validation_tests",
+        "name": "webgpu_cts_fxc_with_validation_tests",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -8159,7 +8235,7 @@
           "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
           "--enforce-browser-version",
-          "--use-dxc",
+          "--use-fxc",
           "--use-webgpu-power-preference=default-high-performance",
           "--jobs=4"
         ],
@@ -8167,7 +8243,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "webgpu_cts_dxc_tests",
+        "name": "webgpu_cts_fxc_tests",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -8199,7 +8275,7 @@
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
           "--enforce-browser-version",
           "--enable-dawn-backend-validation",
-          "--use-dxc",
+          "--use-fxc",
           "--use-webgpu-power-preference=default-high-performance",
           "--jobs=4"
         ],
@@ -8207,7 +8283,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "webgpu_cts_dxc_with_validation_tests",
+        "name": "webgpu_cts_fxc_with_validation_tests",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -8810,7 +8886,7 @@
           "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
           "--enforce-browser-version",
-          "--use-dxc",
+          "--use-fxc",
           "--use-webgpu-power-preference=default-high-performance",
           "--jobs=1"
         ],
@@ -8818,7 +8894,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "webgpu_cts_dxc_tests",
+        "name": "webgpu_cts_fxc_tests",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -8850,7 +8926,7 @@
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
           "--enforce-browser-version",
           "--enable-dawn-backend-validation",
-          "--use-dxc",
+          "--use-fxc",
           "--use-webgpu-power-preference=default-high-performance",
           "--jobs=1"
         ],
@@ -8858,7 +8934,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "webgpu_cts_dxc_with_validation_tests",
+        "name": "webgpu_cts_fxc_with_validation_tests",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -9379,7 +9455,7 @@
           "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
           "--enforce-browser-version",
-          "--use-dxc",
+          "--use-fxc",
           "--use-webgpu-power-preference=default-high-performance",
           "--jobs=4"
         ],
@@ -9387,7 +9463,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "webgpu_cts_dxc_tests",
+        "name": "webgpu_cts_fxc_tests",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -9419,7 +9495,7 @@
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
           "--enforce-browser-version",
           "--enable-dawn-backend-validation",
-          "--use-dxc",
+          "--use-fxc",
           "--use-webgpu-power-preference=default-high-performance",
           "--jobs=4"
         ],
@@ -9427,7 +9503,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "webgpu_cts_dxc_with_validation_tests",
+        "name": "webgpu_cts_fxc_with_validation_tests",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -9973,13 +10049,15 @@
           "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
           "--enforce-browser-version",
+          "--use-fxc",
           "--use-webgpu-power-preference=default-high-performance",
           "--jobs=1"
         ],
+        "ci_only": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "webgpu_cts_tests",
+        "name": "webgpu_cts_fxc_tests",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -10406,13 +10484,15 @@
           "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
           "--enforce-browser-version",
+          "--use-fxc",
           "--use-webgpu-power-preference=default-high-performance",
           "--jobs=4"
         ],
+        "ci_only": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "webgpu_cts_tests",
+        "name": "webgpu_cts_fxc_tests",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -10914,13 +10994,15 @@
           "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
           "--enforce-browser-version",
+          "--use-fxc",
           "--use-webgpu-power-preference=default-high-performance",
           "--jobs=1"
         ],
+        "ci_only": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "webgpu_cts_tests",
+        "name": "webgpu_cts_fxc_tests",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -11347,13 +11429,15 @@
           "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
           "--enforce-browser-version",
+          "--use-fxc",
           "--use-webgpu-power-preference=default-high-performance",
           "--jobs=4"
         ],
+        "ci_only": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "webgpu_cts_tests",
+        "name": "webgpu_cts_fxc_tests",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true

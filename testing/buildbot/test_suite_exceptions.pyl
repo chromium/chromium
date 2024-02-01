@@ -4982,6 +4982,17 @@
       },
     },
   },
+  'webgpu_cts_fxc_with_validation_tests': {
+    'remove_from': [
+      # Disable testing with validation on x86 where they frequently OOM.
+      # See crbug.com/1444815.
+      'Dawn Win10 x86 DEPS Release (Intel)',
+      'Dawn Win10 x86 Release (Intel)',
+      'Dawn Win10 x86 Experimental Release (Intel)',
+      'Dawn Win10 x86 DEPS Release (NVIDIA)',
+      'Dawn Win10 x86 Release (NVIDIA)',
+    ],
+  },
   'webgpu_cts_tests': {
     'modifications': {
       'Dawn Android arm DEPS Release (Pixel 4)': {
@@ -5047,12 +5058,6 @@
       # Remove from bots where capacity is constrained.
       'Dawn Win10 x64 DEPS Release (Intel)',
       'Dawn Win10 x64 Release (Intel)',
-      # Disable testing with validation on x86 where they frequently OOM.
-      # See crbug.com/1444815.
-      'Dawn Win10 x86 DEPS Release (Intel)',
-      'Dawn Win10 x86 Release (Intel)',
-      'Dawn Win10 x86 DEPS Release (NVIDIA)',
-      'Dawn Win10 x86 Release (NVIDIA)',
       # Don't need validation layers on code coverage bots
       'linux-code-coverage',
       'mac-code-coverage',

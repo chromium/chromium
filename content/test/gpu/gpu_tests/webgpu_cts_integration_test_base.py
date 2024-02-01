@@ -89,7 +89,7 @@ class WebGpuCtsIntegrationTestBase(gpu_integration_test.GpuIntegrationTest):
   _use_webgpu_adapter: Optional[str] = None  # use the default
   _original_environ: Optional[collections.abc.Mapping] = None
   _use_webgpu_power_preference: Optional[str] = None
-  _use_dxc = False
+  _use_fxc = False
   _os_name: Optional[str] = None
 
   _build_dir: Optional[str] = None
@@ -160,11 +160,11 @@ class WebGpuCtsIntegrationTestBase(gpu_integration_test.GpuIntegrationTest):
         default=None,
         help=('Runs the browser with a particular WebGPU power preference'))
     parser.add_option(
-        '--use-dxc',
+        '--use-fxc',
         action='store_true',
         default=False,
         help=(
-            'On Windows, pass --enable-dawn-features=use_dxc to the browser.'))
+            'On Windows, pass --disable-dawn-features=use_dxc to the browser.'))
 
   @classmethod
   def StartBrowser(cls) -> None:
@@ -187,10 +187,10 @@ class WebGpuCtsIntegrationTestBase(gpu_integration_test.GpuIntegrationTest):
     disable_dawn_features = []
 
     if sys.platform == 'win32':
-      if cls._use_dxc:
-        enable_dawn_features.append('use_dxc')
-      else:
+      if cls._use_fxc:
         disable_dawn_features.append('use_dxc')
+      else:
+        enable_dawn_features.append('use_dxc')
 
     if enable_dawn_features:
       browser_args.append('--enable-dawn-features=%s' %
@@ -243,7 +243,7 @@ class WebGpuCtsIntegrationTestBase(gpu_integration_test.GpuIntegrationTest):
     cls._enable_dawn_backend_validation = options.enable_dawn_backend_validation
     cls._use_webgpu_adapter = options.use_webgpu_adapter
     cls._use_webgpu_power_preference = options.use_webgpu_power_preference
-    cls._use_dxc = options.use_dxc
+    cls._use_fxc = options.use_fxc
 
   @classmethod
   def _ModifyBrowserEnvironment(cls) -> None:
@@ -588,10 +588,10 @@ class WebGpuCtsIntegrationTestBase(gpu_integration_test.GpuIntegrationTest):
       tags.append('webgpu-not-compat')
 
     if sys.platform == 'win32':
-      if cls._use_dxc:
-        tags.append('webgpu-dxc-enabled')
-      else:
+      if cls._use_fxc:
         tags.append('webgpu-dxc-disabled')
+      else:
+        tags.append('webgpu-dxc-enabled')
 
     # No need to tag _use_webgpu_power_preference here,
     # since Telemetry already reports the GPU vendorID

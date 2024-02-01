@@ -2589,7 +2589,7 @@ targets.tests.gpu_telemetry_test(
 )
 
 targets.tests.gpu_telemetry_test(
-    name = "webgpu_cts_dxc_tests",
+    name = "webgpu_cts_fxc_tests",
     telemetry_test_name = "webgpu_cts",
     mixins = [
         "has_native_resultdb_integration",
@@ -2597,7 +2597,7 @@ targets.tests.gpu_telemetry_test(
 )
 
 targets.tests.gpu_telemetry_test(
-    name = "webgpu_cts_dxc_with_validation_tests",
+    name = "webgpu_cts_fxc_with_validation_tests",
     telemetry_test_name = "webgpu_cts",
     mixins = [
         "has_native_resultdb_integration",

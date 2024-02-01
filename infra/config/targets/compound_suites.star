@@ -856,10 +856,18 @@ targets.legacy_compound_suite(
 )
 
 targets.legacy_compound_suite(
+    name = "gpu_dawn_telemetry_tests_fxc",
+    basic_suites = [
+        "gpu_dawn_webgpu_cts_fxc",
+        "gpu_dawn_web_platform_webgpu_cts_force_swiftshader",
+    ],
+)
+
+targets.legacy_compound_suite(
     name = "gpu_dawn_telemetry_win_x64_tests",
     basic_suites = [
         "gpu_dawn_webgpu_cts",
-        "gpu_dawn_webgpu_cts_dxc",
+        "gpu_dawn_webgpu_cts_fxc",
         "gpu_dawn_web_platform_webgpu_cts_force_swiftshader",
     ],
 )

@@ -2524,33 +2524,45 @@ targets.legacy_basic_suite(
                 shards = 8,
             ),
         ),
-    },
-)
-
-targets.legacy_basic_suite(
-    name = "gpu_dawn_webgpu_cts_dxc",
-    tests = {
-        "webgpu_cts_dxc_tests": targets.legacy_test_config(
+        "webgpu_cts_fxc_tests": targets.legacy_test_config(
             mixins = [
                 "webgpu_telemetry_cts",
                 "linux_vulkan",
             ],
             args = [
-                "--use-dxc",
+                "--use-fxc",
+            ],
+            swarming = targets.swarming(
+                shards = 8,
+            ),
+        ),
+    },
+)
+
+targets.legacy_basic_suite(
+    name = "gpu_dawn_webgpu_cts_fxc",
+    tests = {
+        "webgpu_cts_fxc_tests": targets.legacy_test_config(
+            mixins = [
+                "webgpu_telemetry_cts",
+                "linux_vulkan",
+            ],
+            args = [
+                "--use-fxc",
             ],
             ci_only = True,
             swarming = targets.swarming(
                 shards = 14,
             ),
         ),
-        "webgpu_cts_dxc_with_validation_tests": targets.legacy_test_config(
+        "webgpu_cts_fxc_with_validation_tests": targets.legacy_test_config(
             mixins = [
                 "webgpu_telemetry_cts",
                 "linux_vulkan",
             ],
             args = [
                 "--enable-dawn-backend-validation",
-                "--use-dxc",
+                "--use-fxc",
             ],
             ci_only = True,
             swarming = targets.swarming(
