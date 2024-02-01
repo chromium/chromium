@@ -591,7 +591,9 @@ enum AutofillSuggestionTriggerSource {
   // trigger sources. They are all treated as `kiOS`. See crbug.com/1448447.
   kiOS,
   // Suggestions triggered by selecting the Autofill address manual fallback
-  // entry from the Chrome context menu.
+  // entry from the Chrome context menu. This trigger source is also used to
+  // reopen the Autofill popup after the user closed a dialog opened from the
+  // popup.
   kManualFallbackAddress,
   // Suggestions triggered by selecting the Autofill payment methods manual
   // fallback entry from the Chrome context menu.

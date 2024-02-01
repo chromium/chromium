@@ -878,10 +878,8 @@ void AutofillExternalDelegate::OnAddressEditorClosed(
   }
   autofill_metrics::LogEditAddressProfileDialogClosed(
       /*user_saved_changes=*/false);
-  manager_->driver().RendererShouldTriggerSuggestions(
-      query_field_.global_id(),
-      AutofillSuggestionTriggerSource::
-          kShowPromptAfterDialogClosedNonManualFallback);
+  manager_->driver().RendererShouldTriggerSuggestions(query_field_.global_id(),
+                                                      GetReopenTriggerSource());
 }
 
 void AutofillExternalDelegate::OnDeleteDialogClosed(const std::string& guid,
@@ -896,18 +894,14 @@ void AutofillExternalDelegate::OnDeleteDialogClosed(const std::string& guid,
     pdm->RemoveByGUID(guid);
     return;
   }
-  manager_->driver().RendererShouldTriggerSuggestions(
-      query_field_.global_id(),
-      AutofillSuggestionTriggerSource::
-          kShowPromptAfterDialogClosedNonManualFallback);
+  manager_->driver().RendererShouldTriggerSuggestions(query_field_.global_id(),
+                                                      GetReopenTriggerSource());
 }
 
 void AutofillExternalDelegate::OnPersonalDataFinishedProfileTasks() {
   pdm_observation_.Reset();
-  manager_->driver().RendererShouldTriggerSuggestions(
-      query_field_.global_id(),
-      AutofillSuggestionTriggerSource::
-          kShowPromptAfterDialogClosedNonManualFallback);
+  manager_->driver().RendererShouldTriggerSuggestions(query_field_.global_id(),
+                                                      GetReopenTriggerSource());
 }
 
 void AutofillExternalDelegate::OnCreditCardScanned(
@@ -1183,6 +1177,18 @@ bool AutofillExternalDelegate::IsPaymentsManualFallbackOnNonPaymentsField()
     return !field || field->Type().group() != FieldTypeGroup::kCreditCard;
   }
   return false;
+}
+
+AutofillSuggestionTriggerSource
+AutofillExternalDelegate::GetReopenTriggerSource() const {
+  // Manual fallbacks show suggestions of a specific type. If the Autofill
+  // wasn't triggered manually, return
+  // `kShowPromptAfterDialogClosedNonManualFallback` to avoid showing other
+  // suggestion types.
+  return IsAutofillManuallyTriggered(trigger_source_)
+             ? trigger_source_
+             : AutofillSuggestionTriggerSource::
+                   kShowPromptAfterDialogClosedNonManualFallback;
 }
 
 }  // namespace autofill

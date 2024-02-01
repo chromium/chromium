@@ -548,6 +548,37 @@ TEST_F(AutofillExternalDelegateUnitTest, UserCancelsEditing) {
   histogram.ExpectUniqueSample("Autofill.ExtendedMenu.EditAddress", 0, 1);
 }
 
+// Test that the manual fallback is re-triggered after user closes the edit
+// address profile dialog.
+TEST_F(AutofillExternalDelegateUnitTest, UserCancelsEditing_ManualFallback) {
+  IssueOnQuery(AutofillSuggestionTriggerSource::kManualFallbackAddress);
+
+  base::HistogramTester histogram;
+  const AutofillProfile profile = test::GetFullProfile();
+  pdm().AddProfile(profile);
+  EXPECT_CALL(client(), ShowEditAddressProfileDialog(profile, _))
+      .WillOnce([](auto profile, auto save_prompt_callback) {
+        std::move(save_prompt_callback)
+            .Run(AutofillClient::SaveAddressProfileOfferUserDecision::
+                     kEditDeclined,
+                 profile);
+      });
+  // No changes should be saved when user cancels editing.
+  EXPECT_CALL(pdm(), AddObserver).Times(0);
+  EXPECT_CALL(pdm(), UpdateProfile).Times(0);
+  // The Autofill popup must be reopened when editor dialog is closed.
+  EXPECT_CALL(driver(),
+              RendererShouldTriggerSuggestions(
+                  queried_form_triggering_field_id_,
+                  AutofillSuggestionTriggerSource::kManualFallbackAddress));
+
+  auto suggestion = Suggestion(PopupItemId::kEditAddressProfile);
+  suggestion.payload = Suggestion::Guid(profile.guid());
+  external_delegate().DidAcceptSuggestion(suggestion,
+                                          SuggestionPosition{.row = 0});
+  histogram.ExpectUniqueSample("Autofill.ExtendedMenu.EditAddress", 0, 1);
+}
+
 // Test that the editor changes are persisted if the user has canceled editing.
 TEST_F(AutofillExternalDelegateUnitTest, UserSavesEdits) {
   IssueOnQuery();
@@ -689,6 +720,35 @@ TEST_F(AutofillExternalDelegateUnitTest, UserCancelsDeletion) {
                             queried_form_triggering_field_id_,
                             AutofillSuggestionTriggerSource::
                                 kShowPromptAfterDialogClosedNonManualFallback));
+  auto suggestion = Suggestion(PopupItemId::kDeleteAddressProfile);
+  suggestion.payload = Suggestion::Guid(profile.guid());
+
+  external_delegate().DidAcceptSuggestion(suggestion,
+                                          SuggestionPosition{.row = 0});
+  histogram.ExpectUniqueSample("Autofill.ProfileDeleted.ExtendedMenu", 0, 1);
+  histogram.ExpectUniqueSample("Autofill.ProfileDeleted.Any", 0, 1);
+}
+
+// Test that the manual fallback is re-triggered after user closes the edit
+// address profile dialog.
+TEST_F(AutofillExternalDelegateUnitTest, UserCancelsDeletion_ManualFallback) {
+  IssueOnQuery(AutofillSuggestionTriggerSource::kManualFallbackAddress);
+
+  base::HistogramTester histogram;
+  const AutofillProfile profile = test::GetFullProfile();
+  pdm().AddProfile(profile);
+  EXPECT_CALL(client(), ShowDeleteAddressProfileDialog(profile, _))
+      .WillOnce([](auto profile, auto delete_dialog_callback) {
+        std::move(delete_dialog_callback).Run(/*user_accepted_delete=*/false);
+      });
+  // Address profile must remain intact if user cancels deletion process.
+  EXPECT_CALL(pdm(), AddObserver).Times(0);
+  EXPECT_CALL(pdm(), RemoveByGUID).Times(0);
+  // The Autofill popup must be reopened when the delete dialog is closed.
+  EXPECT_CALL(driver(),
+              RendererShouldTriggerSuggestions(
+                  queried_form_triggering_field_id_,
+                  AutofillSuggestionTriggerSource::kManualFallbackAddress));
   auto suggestion = Suggestion(PopupItemId::kDeleteAddressProfile);
   suggestion.payload = Suggestion::Guid(profile.guid());
 
