@@ -65,10 +65,16 @@ if (enable_nocompile_tests) {
 
       script = "//tools/nocompile/wrapper.py"
       sources = invoker.sources
-      deps = invoker.deps
+      if (defined(invoker.deps)) {
+        deps = invoker.deps
+      }
 
-      # An action is not a compiler, so configs is empty until it is explicitly set.
+      # An action is not a compiler, so configs is empty until it is explicitly
+      # set.
       configs = default_compiler_configs
+      if (defined(invoker.configs)) {
+        configs += invoker.configs
+      }
 
       # Disable the checks that the Chrome style plugin normally enforces to
       # reduce the amount of boilerplate needed in nocompile tests.

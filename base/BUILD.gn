@@ -3543,6 +3543,9 @@ test("base_unittests") {
     "//third_party/icu",
     "//third_party/modp_b64",
   ]
+  if (is_clang) {
+    deps += [ ":base_unsafe_buffers_unittest_sources" ]
+  }
 
   data_deps = [
     "//base/test:immediate_crash_test_helper",
@@ -4138,7 +4141,21 @@ test("base_unittests") {
 
   if (enable_nocompile_tests) {
     deps += [ ":base_nocompile_tests" ]
+    if (is_clang) {
+      deps += [ ":base_unsafe_buffers_nocompile_tests" ]
+    }
   }
+}
+
+source_set("base_unsafe_buffers_unittest_sources") {
+  testonly = true
+  visibility = [ ":*" ]
+  configs += [ "//build/config/compiler:unsafe_buffer_warning" ]
+  sources = [ "unsafe_buffers_unittest.cc" ]
+  deps = [
+    "//base",
+    "//testing/gtest",
+  ]
 }
 
 # Test that CFG is enabled in Rust code.
@@ -4202,6 +4219,12 @@ if (enable_nocompile_tests) {
       "types/variant_util_nocompile.nc",
       "values_nocompile.nc",
     ]
+    deps = [ ":base" ]
+  }
+
+  nocompile_source_set("base_unsafe_buffers_nocompile_tests") {
+    configs = [ "//build/config/compiler:unsafe_buffer_warning" ]
+    sources = [ "unsafe_buffers_nocompile.nc" ]
     deps = [ ":base" ]
   }
 }
