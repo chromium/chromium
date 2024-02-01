@@ -3513,87 +3513,6 @@ TEST_P(SuggestionMatchingTest, GetFieldSuggestionsWithDuplicateValues) {
 }
 #endif
 
-TEST_F(BrowserAutofillManagerTest,
-       GetProfileSuggestions_ForPhonePrefixOrSuffix) {
-  // Set up our form data.
-  FormData form;
-  form.name = u"MyForm";
-  form.url = GURL("https://myform.com/form.html");
-  form.action = GURL("https://myform.com/submit.html");
-
-  struct {
-    const char* const label;
-    const char* const name;
-    size_t max_length;
-    const char* const autocomplete_attribute;
-  } test_fields[] = {{"country code", "country_code", 1, "tel-country-code"},
-                     {"area code", "area_code", 3, "tel-area-code"},
-                     {"phone", "phone_prefix", 3, "tel-local-prefix"},
-                     {"-", "phone_suffix", 4, "tel-local-suffix"},
-                     {"Phone Extension", "ext", 5, "tel-extension"}};
-
-  for (const auto& test_field : test_fields) {
-    form.fields.push_back(CreateTestFormField(test_field.label, test_field.name,
-                                              "", FormControlType::kInputText,
-                                              "", test_field.max_length));
-  }
-
-  FormsSeen({form});
-
-  personal_data().ClearProfiles();
-  AutofillProfile profile(i18n_model_definition::kLegacyHierarchyCountryCode);
-  profile.set_guid(MakeGuid(104));
-  profile.SetRawInfo(PHONE_HOME_WHOLE_NUMBER, u"1800FLOWERS");
-  personal_data().AddProfile(profile);
-
-  const FormFieldData& phone_prefix = form.fields[2];
-  GetAutofillSuggestions(form, phone_prefix);
-
-  // Test that we sent the right prefix values to the external delegate.
-  external_delegate()->CheckSuggestions(
-      form.fields[2].global_id(),
-      {Suggestion("356", "1800FLOWERS", kAddressEntryIcon,
-                  PopupItemId::kAddressEntry),
-       AutofillSuggestionGenerator::CreateSeparator(),
-       AutofillSuggestionGenerator::CreateManageAddressesEntry()});
-
-  const FormFieldData& phone_suffix = form.fields[3];
-  GetAutofillSuggestions(form, phone_suffix);
-
-  // Test that we sent the right suffix values to the external delegate.
-  external_delegate()->CheckSuggestions(
-      form.fields[3].global_id(),
-      {Suggestion("9377", "1800FLOWERS", kAddressEntryIcon,
-                  PopupItemId::kAddressEntry),
-       AutofillSuggestionGenerator::CreateSeparator(),
-       AutofillSuggestionGenerator::CreateManageAddressesEntry()});
-}
-
-// Tests that the suggestion consists of phone number without the country code
-// when a length limit is imposed in the field due to which filling with
-// country code is not possible.
-TEST_F(BrowserAutofillManagerTest, GetProfileSuggestions_ForPhoneField) {
-  FormData form = CreateTestAddressFormData();
-  form.fields[9].max_length = 10;
-  FormsSeen({form});
-
-  AutofillProfile profile(i18n_model_definition::kLegacyHierarchyCountryCode);
-  profile.set_guid(MakeGuid(103));
-  profile.SetInfo(NAME_FULL, u"Natty Bumppo", "en-US");
-  profile.SetRawInfo(PHONE_HOME_WHOLE_NUMBER, u"+886123456789");
-  personal_data().ClearProfiles();
-  personal_data().AddProfile(profile);
-
-  GetAutofillSuggestions(form, form.fields[9]);
-
-  external_delegate()->CheckSuggestions(
-      form.fields[9].global_id(),
-      {Suggestion("123456789", "Natty Bumppo", kAddressEntryIcon,
-                  PopupItemId::kAddressEntry),
-       AutofillSuggestionGenerator::CreateSeparator(),
-       AutofillSuggestionGenerator::CreateManageAddressesEntry()});
-}
-
 // Tests that we return email profile suggestions values
 // when the email field with username autocomplete attribute exist.
 TEST_F(BrowserAutofillManagerTest,
@@ -5048,6 +4967,72 @@ TEST_F(BrowserAutofillManagerTest, FillPhoneNumber) {
   EXPECT_EQ(u"95", response_data4.fields[2].value);
   EXPECT_EQ(u"4321", response_data4.fields[3].value);
   EXPECT_EQ(std::u16string(), response_data4.fields[4].value);
+}
+
+TEST_F(BrowserAutofillManagerTest, FillPhoneNumber_ForPhonePrefixOrSuffix) {
+  FormData form =
+      test::GetFormData({.fields = {
+                             {.label = u"country code",
+                              .name = u"country_code",
+                              .max_length = 1,
+                              .autocomplete_attribute = "tel-country-code"},
+                             {.label = u"area code",
+                              .name = u"area_code",
+                              .max_length = 3,
+                              .autocomplete_attribute = "tel-area-code"},
+                             {.label = u"prefix",
+                              .name = u"phone_prefix",
+                              .max_length = 3,
+                              .autocomplete_attribute = "tel-local-prefix"},
+                             {.label = u"-",
+                              .name = u"phone_suffix",
+                              .max_length = 4,
+                              .autocomplete_attribute = "tel-local-suffix"},
+                             {.label = u"Phone Extension",
+                              .name = u"ext",
+                              .max_length = 5,
+                              .autocomplete_attribute = "tel-extension"},
+                         }});
+
+  FormsSeen({form});
+
+  personal_data().ClearProfiles();
+  AutofillProfile profile(i18n_model_definition::kLegacyHierarchyCountryCode);
+  profile.set_guid(MakeGuid(104));
+  profile.SetRawInfo(PHONE_HOME_WHOLE_NUMBER, u"1800FLOWERS");
+  personal_data().AddProfile(profile);
+
+  FormData response_data1 = FillAutofillFormDataAndGetResults(
+      form, *form.fields.begin(), profile.guid());
+
+  ASSERT_EQ(5U, response_data1.fields.size());
+  EXPECT_EQ(u"356", response_data1.fields[2].value);
+  EXPECT_EQ(u"9377", response_data1.fields[3].value);
+}
+
+// Tests that the suggestion consists of phone number without the country code
+// when a length limit is imposed in the field due to which filling with
+// country code is not possible.
+TEST_F(BrowserAutofillManagerTest, FillPhoneNumber_WithMaxLengthLimit) {
+  FormData form = CreateTestAddressFormData();
+  form.fields[9].max_length = 10;
+  FormsSeen({form});
+
+  AutofillProfile profile(i18n_model_definition::kLegacyHierarchyCountryCode);
+  profile.set_guid(MakeGuid(103));
+  profile.SetInfo(NAME_FULL, u"Natty Bumppo", "en-US");
+  profile.SetRawInfo(PHONE_HOME_WHOLE_NUMBER, u"+886123456789");
+  personal_data().ClearProfiles();
+  personal_data().AddProfile(profile);
+
+  GetAutofillSuggestions(form, form.fields[9]);
+
+  std::string guid = profile.guid();
+  FormData response_data =
+      FillAutofillFormDataAndGetResults(form, *form.fields.begin(), guid);
+
+  ASSERT_EQ(11U, response_data.fields.size());
+  EXPECT_EQ(u"123456789", response_data.fields[9].value);
 }
 
 TEST_F(BrowserAutofillManagerTest, FillFirstPhoneNumber_ComponentizedNumbers) {

@@ -93,13 +93,15 @@ std::map<std::string, AutofillOfferData*> GetCardLinkedOffers(
   return {};
 }
 
-// Returns the formatted phone number to be used in the granular filling
-// suggestions list. `should_use_national_format` is used to define how the
-// phone number should be formatted.
-std::u16string GetFormattedPhoneNumberForGranularFillingSuggestion(
-    const AutofillProfile& profile,
-    const std::string& app_locale,
-    bool should_use_national_format) {
+bool ShouldUseNationalFormatPhoneNumber(FieldType trigger_field_type) {
+  return GroupTypeOfFieldType(trigger_field_type) == FieldTypeGroup::kPhone &&
+         trigger_field_type != PHONE_HOME_WHOLE_NUMBER &&
+         trigger_field_type != PHONE_HOME_COUNTRY_CODE;
+}
+
+std::u16string GetFormattedPhoneNumber(const AutofillProfile& profile,
+                                       const std::string& app_locale,
+                                       bool should_use_national_format) {
   const std::string phone_home_whole_number =
       base::UTF16ToUTF8(profile.GetInfo(PHONE_HOME_WHOLE_NUMBER, app_locale));
   const std::string address_home_country =
@@ -295,9 +297,8 @@ bool AddAddressFieldByFieldSuggestions(
     CHECK(field_type != ADDRESS_HOME_STREET_ADDRESS);
     std::u16string main_text;
     if (field_type == PHONE_HOME_WHOLE_NUMBER) {
-      main_text = GetFormattedPhoneNumberForGranularFillingSuggestion(
-          profile, app_locale,
-          /*should_use_national_format=*/false);
+      main_text = GetFormattedPhoneNumber(profile, app_locale,
+                                          /*should_use_national_format=*/false);
     } else {
       main_text = GetProfileSuggestionMainText(profile, app_locale, field_type);
     }
@@ -454,13 +455,10 @@ void AddContactChildSuggestions(FieldType trigger_field_type,
     const bool is_phone_field =
         trigger_field_type_group == FieldTypeGroup::kPhone;
     if (is_phone_field) {
-      const bool use_national_format_phone_number =
-          trigger_field_type_group == FieldTypeGroup::kPhone &&
-          trigger_field_type != PHONE_HOME_WHOLE_NUMBER &&
-          trigger_field_type != PHONE_HOME_COUNTRY_CODE;
       Suggestion phone_number_suggestion(
-          GetFormattedPhoneNumberForGranularFillingSuggestion(
-              profile, app_locale, use_national_format_phone_number),
+          GetFormattedPhoneNumber(
+              profile, app_locale,
+              ShouldUseNationalFormatPhoneNumber(trigger_field_type)),
           PopupItemId::kFillFullPhoneNumber);
       // `PopupItemId::kAddressFieldByFieldFilling` suggestions do not use
       // profile, therefore only set the backend id in the group filling case.
@@ -1265,9 +1263,9 @@ AutofillSuggestionGenerator::CreateSuggestionsFromProfiles(
     std::u16string main_text = GetProfileSuggestionMainText(
         *profile, app_locale, main_text_field_type);
     if (trigger_field_type_group == FieldTypeGroup::kPhone) {
-      main_text = GetPhoneNumberValueForInput(
-          trigger_field_max_length, main_text,
-          profile->GetInfo(PHONE_HOME_CITY_AND_NUMBER, app_locale));
+      main_text = GetFormattedPhoneNumber(
+          *profile, app_locale,
+          ShouldUseNationalFormatPhoneNumber(trigger_field_type));
     }
 
     suggestions.emplace_back(main_text);

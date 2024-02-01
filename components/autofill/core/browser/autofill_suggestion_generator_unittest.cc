@@ -838,7 +838,7 @@ TEST_F(AutofillSuggestionGeneratorTest,
           /*last_targeted_fields=*/std::nullopt, PHONE_HOME_WHOLE_NUMBER,
           /*trigger_field_max_length=*/0);
   ASSERT_FALSE(suggestions.empty());
-  EXPECT_EQ(u"12345678910", suggestions[0].main_text.value);
+  EXPECT_EQ(u"+1 234-567-8910", suggestions[0].main_text.value);
 }
 
 TEST_F(AutofillSuggestionGeneratorTest,

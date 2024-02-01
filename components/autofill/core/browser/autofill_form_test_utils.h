@@ -50,6 +50,7 @@ struct FieldDescription {
   std::optional<std::u16string> name;
   std::optional<std::u16string> value;
   std::optional<std::u16string> placeholder;
+  std::optional<uint64_t> max_length;
   const std::string autocomplete_attribute;
   std::optional<AutocompleteParsingResult> parsed_autocomplete;
   const FormControlType form_control_type = FormControlType::kInputText;

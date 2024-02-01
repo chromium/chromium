@@ -73,7 +73,7 @@ class AutofillPolicyTest : public PolicyTest {
     expected_suggestions_["street-address"] = u"666 Erebus St., Apt 8";
     expected_suggestions_["postal-code"] = u"91111";
     expected_suggestions_["city"] = u"Elysium";
-    expected_suggestions_["phone"] = u"16502111111";
+    expected_suggestions_["phone"] = u"+1 650-211-1111";
     expected_suggestions_["email"] = u"johndoe@hades.com";
     return personal_data_manager()->GetProfiles().size() == 1u
                ? testing::AssertionSuccess()

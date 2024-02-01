@@ -120,6 +120,9 @@ FormData GetFormData(const FormDescription& d) {
       ff.value = *dd.value;
     if (dd.placeholder)
       ff.placeholder = *dd.placeholder;
+    if (dd.max_length) {
+      ff.max_length = *dd.max_length;
+    }
     ff.is_autofilled = dd.is_autofilled.value_or(false);
     ff.origin = dd.origin.value_or(f.main_frame_origin);
     ff.should_autocomplete = dd.should_autocomplete;
