@@ -19,9 +19,6 @@ class TimeDelta;
 // Feature flag to enable the Keyboard Accessory Upgrade.
 BASE_DECLARE_FEATURE(kIOSKeyboardAccessoryUpgrade);
 
-// Feature flag to enable the Payments Bottom Sheet.
-BASE_DECLARE_FEATURE(kIOSPaymentsBottomSheet);
-
 // Test-only: Feature flag used to verify that EG2 can trigger flags. Must be
 // always disabled by default, because it is used to verify that enabling
 // features in tests works.

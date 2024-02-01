@@ -4960,11 +4960,6 @@
     "expiry_milestone": 140
   },
   {
-    "name": "ios-payments-bottom-sheet",
-    "owners": ["veronguyen@chromium.org", "sugoi@chromium.org", "tmartino@chromium.org", "bling-integrations-team@google.com"],
-    "expiry_milestone": 120
-  },
-  {
     "name": "ios-shared-highlighting-color-change",
     "owners": [ "cheickcisse@google.com" ],
     "expiry_milestone": 95

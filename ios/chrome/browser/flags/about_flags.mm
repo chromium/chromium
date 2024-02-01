@@ -1080,10 +1080,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(
          password_manager::features::kIOSPasswordBottomSheetAutofocus)},
-    {"ios-payments-bottom-sheet",
-     flag_descriptions::kIOSPaymentsBottomSheetName,
-     flag_descriptions::kIOSPaymentsBottomSheetDescription, flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(kIOSPaymentsBottomSheet)},
     {"omnibox-zero-suggest-prefetching",
      flag_descriptions::kOmniboxZeroSuggestPrefetchingName,
      flag_descriptions::kOmniboxZeroSuggestPrefetchingDescription,

@@ -468,10 +468,6 @@ extern const char kIOSPasswordBottomSheetAutofocusDescription[];
 extern const char kIOSPasswordSignInUffName[];
 extern const char kIOSPasswordSignInUffDescription[];
 
-// Title and description for the flag to enable payments bottom sheet on IOS.
-extern const char kIOSPaymentsBottomSheetName[];
-extern const char kIOSPaymentsBottomSheetDescription[];
-
 // Title and description for the flag to enable the Save to Drive feature.
 extern const char kIOSSaveToDriveName[];
 extern const char kIOSSaveToDriveDescription[];
