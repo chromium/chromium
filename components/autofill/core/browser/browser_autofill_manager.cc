@@ -2180,7 +2180,8 @@ BrowserAutofillManager::GetFieldFillingSkipReasons(
       skip_reasons[field_id] = FieldFillingSkipReason::kFieldTypeUnrelated;
       continue;
     }
-    CHECK_EQ(skip_reasons[field_id], FieldFillingSkipReason::kNotSkipped);
+    CHECK_EQ(skip_reasons[field_id], FieldFillingSkipReason::kNotSkipped,
+             base::NotFatalUntil::M123);
   }
   return skip_reasons;
 }
@@ -2412,7 +2413,8 @@ void BrowserAutofillManager::FillOrPreviewDataModelForm(
       FieldFillingSkipReason::kNotInFilledSection,
       FieldFillingSkipReason::kFormChanged,
       FieldFillingSkipReason::kNotFocused};
-  CHECK_EQ(skip_reasons.size(), result_form.fields.size());
+  CHECK_EQ(skip_reasons.size(), result_form.fields.size(),
+           base::NotFatalUntil::M123);
   for (size_t i = 0; i < result_form.fields.size(); ++i) {
     AutofillField* autofill_field = form_structure->field(i);
 
