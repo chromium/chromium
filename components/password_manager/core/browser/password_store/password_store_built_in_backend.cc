@@ -29,9 +29,9 @@ using SuccessStatus = PasswordStoreBackendMetricsRecorder::SuccessStatus;
 // PasswordChangesOrError as a result.
 template <typename Result>
 base::OnceCallback<Result(Result)> ReportMetricsForResultCallback(
-    MetricInfix infix) {
+    MethodName method_name) {
   PasswordStoreBackendMetricsRecorder metrics_reporter(
-      BackendInfix("BuiltInBackend"), infix);
+      BackendInfix("BuiltInBackend"), method_name);
   return base::BindOnce(
       [](PasswordStoreBackendMetricsRecorder reporter,
          Result result) -> Result {
@@ -105,7 +105,7 @@ void PasswordStoreBuiltInBackend::GetAllLoginsAsync(
           &LoginDatabaseAsyncHelper::GetAllLogins,
           base::Unretained(helper_.get())),  // Safe until `Shutdown()`.
       ReportMetricsForResultCallback<LoginsResultOrError>(
-          MetricInfix("GetAllLoginsAsync"))
+          MethodName("GetAllLoginsAsync"))
           .Then(std::move(callback)));
 }
 
@@ -129,7 +129,7 @@ void PasswordStoreBuiltInBackend::GetAutofillableLoginsAsync(
           &LoginDatabaseAsyncHelper::GetAutofillableLogins,
           base::Unretained(helper_.get())),  // Safe until `Shutdown()`.
       ReportMetricsForResultCallback<LoginsResultOrError>(
-          MetricInfix("GetAutofillableLoginsAsync"))
+          MethodName("GetAutofillableLoginsAsync"))
           .Then(std::move(callback)));
 }
 
@@ -157,7 +157,7 @@ void PasswordStoreBuiltInBackend::FillMatchingLoginsAsync(
           base::Unretained(helper_.get()),  // Safe until `Shutdown()`.
           forms, include_psl),
       ReportMetricsForResultCallback<LoginsResultOrError>(
-          MetricInfix("FillMatchingLoginsAsync"))
+          MethodName("FillMatchingLoginsAsync"))
           .Then(std::move(callback)));
 }
 
@@ -181,7 +181,7 @@ void PasswordStoreBuiltInBackend::AddLoginAsync(
       base::BindOnce(&LoginDatabaseAsyncHelper::AddLogin,
                      base::Unretained(helper_.get()), form),
       ReportMetricsForResultCallback<PasswordChangesOrError>(
-          MetricInfix("AddLoginAsync"))
+          MethodName("AddLoginAsync"))
           .Then(std::move(callback)));
 }
 
@@ -195,7 +195,7 @@ void PasswordStoreBuiltInBackend::UpdateLoginAsync(
       base::BindOnce(&LoginDatabaseAsyncHelper::UpdateLogin,
                      base::Unretained(helper_.get()), form),
       ReportMetricsForResultCallback<PasswordChangesOrError>(
-          MetricInfix("UpdateLoginAsync"))
+          MethodName("UpdateLoginAsync"))
           .Then(std::move(callback)));
 }
 
@@ -211,7 +211,7 @@ void PasswordStoreBuiltInBackend::RemoveLoginAsync(
           base::Unretained(helper_.get()),  // Safe until `Shutdown()`.
           form),
       ReportMetricsForResultCallback<PasswordChangesOrError>(
-          MetricInfix("RemoveLoginAsync"))
+          MethodName("RemoveLoginAsync"))
           .Then(std::move(callback)));
 }
 
@@ -228,7 +228,7 @@ void PasswordStoreBuiltInBackend::RemoveLoginsCreatedBetweenAsync(
           base::Unretained(helper_.get()),  // Safe until `Shutdown()`.
           delete_begin, delete_end),
       ReportMetricsForResultCallback<PasswordChangesOrError>(
-          MetricInfix("RemoveLoginsCreatedBetweenAsync"))
+          MethodName("RemoveLoginsCreatedBetweenAsync"))
           .Then(std::move(callback)));
 }
 
@@ -247,7 +247,7 @@ void PasswordStoreBuiltInBackend::RemoveLoginsByURLAndTimeAsync(
           base::Unretained(helper_.get()),  // Safe until `Shutdown()`.
           url_filter, delete_begin, delete_end, std::move(sync_completion)),
       ReportMetricsForResultCallback<PasswordChangesOrError>(
-          MetricInfix("RemoveLoginsByURLAndTimeAsync"))
+          MethodName("RemoveLoginsByURLAndTimeAsync"))
           .Then(std::move(callback)));
 }
 

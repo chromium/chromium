@@ -395,7 +395,7 @@ void PasswordStoreAndroidBackend::GetAutofillableLoginsInternal(
     base::TimeDelta delay) {
   JobId job_id = bridge_helper_->GetAutofillableLogins(std::move(account));
   QueueNewJob(job_id, std::move(callback),
-              MetricInfix("GetAutofillableLoginsAsync"), operation, delay);
+              MethodName("GetAutofillableLoginsAsync"), operation, delay);
 }
 
 void PasswordStoreAndroidBackend::
@@ -405,7 +405,7 @@ void PasswordStoreAndroidBackend::
   JobId job_id =
       bridge_helper_->GetAllLoginsWithBrandingInfo(std::move(account));
   QueueNewJob(job_id, std::move(callback),
-              MetricInfix("GetAllLoginsWithBrandingInfoAsync"),
+              MethodName("GetAllLoginsWithBrandingInfoAsync"),
               PasswordStoreOperation::kGetAllLoginsWithBrandingInfoAsync,
               /*delay=*/base::Seconds(0));
 }
@@ -416,7 +416,7 @@ void PasswordStoreAndroidBackend::GetAllLoginsInternal(
     PasswordStoreOperation operation,
     base::TimeDelta delay) {
   JobId job_id = bridge_helper_->GetAllLogins(std::move(account));
-  QueueNewJob(job_id, std::move(callback), MetricInfix("GetAllLoginsAsync"),
+  QueueNewJob(job_id, std::move(callback), MethodName("GetAllLoginsAsync"),
               operation, delay);
 }
 
@@ -432,7 +432,7 @@ void PasswordStoreAndroidBackend::GetLoginsInternal(
   QueueNewJob(job_id,
               base::BindOnce(&ValidateSignonRealm, std::move(form), include_psl,
                              std::move(callback)),
-              MetricInfix("GetLoginsAsync"),
+              MethodName("GetLoginsAsync"),
               PasswordStoreOperation::kFillMatchingLoginsAsync,
               /*delay=*/base::Seconds(0));
 }
@@ -447,7 +447,7 @@ void PasswordStoreAndroidBackend::AddLoginInternal(
     sanitized_form.password_value.clear();
   }
   JobId job_id = bridge_helper_->AddLogin(sanitized_form, std::move(account));
-  QueueNewJob(job_id, std::move(callback), MetricInfix("AddLoginAsync"),
+  QueueNewJob(job_id, std::move(callback), MethodName("AddLoginAsync"),
               PasswordStoreOperation::kAddLoginAsync,
               /*delay=*/base::Seconds(0));
 }
@@ -463,7 +463,7 @@ void PasswordStoreAndroidBackend::UpdateLoginInternal(
   }
   JobId job_id =
       bridge_helper_->UpdateLogin(sanitized_form, std::move(account));
-  QueueNewJob(job_id, std::move(callback), MetricInfix("UpdateLoginAsync"),
+  QueueNewJob(job_id, std::move(callback), MethodName("UpdateLoginAsync"),
               PasswordStoreOperation::kUpdateLoginAsync,
               /*delay=*/base::Seconds(0));
 }
@@ -473,7 +473,7 @@ void PasswordStoreAndroidBackend::RemoveLoginInternal(
     const PasswordForm& form,
     PasswordChangesOrErrorReply callback) {
   JobId job_id = bridge_helper_->RemoveLogin(form, std::move(account));
-  QueueNewJob(job_id, std::move(callback), MetricInfix("RemoveLoginAsync"),
+  QueueNewJob(job_id, std::move(callback), MethodName("RemoveLoginAsync"),
               PasswordStoreOperation::kRemoveLoginAsync,
               /*delay=*/base::Seconds(0));
 }
@@ -491,7 +491,7 @@ void PasswordStoreAndroidBackend::FillMatchingLoginsInternal(
   // Record FillMatchingLoginsAsync metrics prior to invoking |callback|.
   LoginsOrErrorReply record_metrics_and_reply =
       ReportMetricsAndInvokeCallbackForLoginsRetrieval(
-          MetricInfix("FillMatchingLoginsAsync"), std::move(callback));
+          MethodName("FillMatchingLoginsAsync"), std::move(callback));
 
   // Create a barrier callback that aggregates results of a multiple
   // calls to GetLoginsInternal.
@@ -520,7 +520,7 @@ void PasswordStoreAndroidBackend::GetGroupedMatchingLoginsInternal(
   QueueNewJob(job_id,
               base::BindOnce(&ProcessGroupedLoginsAndReply, form_digest,
                              std::move(callback)),
-              MetricInfix("GetGroupedMatchingLoginsAsync"),
+              MethodName("GetGroupedMatchingLoginsAsync"),
               PasswordStoreOperation::kGetGroupedMatchingLoginsAsync,
               /*delay=*/base::Seconds(0));
 }
@@ -534,7 +534,7 @@ void PasswordStoreAndroidBackend::RemoveLoginsByURLAndTimeInternal(
   // Record metrics prior to invoking |callback|.
   PasswordChangesOrErrorReply record_metrics_and_reply =
       ReportMetricsAndInvokeCallbackForStoreModifications(
-          MetricInfix("RemoveLoginsByURLAndTimeAsync"), std::move(callback));
+          MethodName("RemoveLoginsByURLAndTimeAsync"), std::move(callback));
 
   GetAllLoginsInternal(
       account,
@@ -553,7 +553,7 @@ void PasswordStoreAndroidBackend::RemoveLoginsCreatedBetweenInternal(
   // Record metrics prior to invoking |callback|.
   PasswordChangesOrErrorReply record_metrics_and_reply =
       ReportMetricsAndInvokeCallbackForStoreModifications(
-          MetricInfix("RemoveLoginsCreatedBetweenAsync"), std::move(callback));
+          MethodName("RemoveLoginsCreatedBetweenAsync"), std::move(callback));
 
   GetAllLoginsInternal(
       account,
@@ -585,7 +585,7 @@ void PasswordStoreAndroidBackend::DisableAutoSignInForOriginsInternal(
           },
           PasswordStoreBackendMetricsRecorder(
               BackendInfix("AndroidBackend"),
-              MetricInfix("DisableAutoSignInForOriginsAsync")),
+              MethodName("DisableAutoSignInForOriginsAsync")),
           std::move(completion));
 
   GetAllLoginsInternal(
@@ -789,7 +789,7 @@ void PasswordStoreAndroidBackend::OnError(JobId job_id,
 template <typename Callback>
 void PasswordStoreAndroidBackend::QueueNewJob(JobId job_id,
                                               Callback callback,
-                                              MetricInfix metric_infix,
+                                              MethodName method_name,
                                               PasswordStoreOperation operation,
                                               base::TimeDelta delay) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
@@ -797,7 +797,7 @@ void PasswordStoreAndroidBackend::QueueNewJob(JobId job_id,
       job_id, JobReturnHandler(
                   std::move(callback),
                   PasswordStoreBackendMetricsRecorder(
-                      BackendInfix("AndroidBackend"), std::move(metric_infix)),
+                      BackendInfix("AndroidBackend"), std::move(method_name)),
                   delay, operation));
 }
 
@@ -890,7 +890,7 @@ void PasswordStoreAndroidBackend::FilterAndDisableAutoSignIn(
 // static
 LoginsOrErrorReply
 PasswordStoreAndroidBackend::ReportMetricsAndInvokeCallbackForLoginsRetrieval(
-    const MetricInfix& metric_infix,
+    const MethodName& method_name,
     LoginsOrErrorReply callback) {
   // TODO(https://crbug.com/1229655) Switch to using base::PassThrough to handle
   // this callback more gracefully when it's implemented.
@@ -905,14 +905,14 @@ PasswordStoreAndroidBackend::ReportMetricsAndInvokeCallbackForLoginsRetrieval(
         std::move(callback).Run(std::move(results));
       },
       PasswordStoreBackendMetricsRecorder(BackendInfix("AndroidBackend"),
-                                          metric_infix),
+                                          method_name),
       std::move(callback));
 }
 
 // static
 PasswordChangesOrErrorReply PasswordStoreAndroidBackend::
     ReportMetricsAndInvokeCallbackForStoreModifications(
-        const MetricInfix& metric_infix,
+        const MethodName& method_name,
         PasswordChangesOrErrorReply callback) {
   // TODO(https://crbug.com/1229655) Switch to using base::PassThrough to handle
   // this callback more gracefully when it's implemented.
@@ -927,7 +927,7 @@ PasswordChangesOrErrorReply PasswordStoreAndroidBackend::
         std::move(callback).Run(std::move(results));
       },
       PasswordStoreBackendMetricsRecorder(BackendInfix("AndroidBackend"),
-                                          metric_infix),
+                                          method_name),
       std::move(callback));
 }
 

@@ -10,6 +10,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_util.h"
 
 namespace password_manager {
 
@@ -38,9 +39,9 @@ PasswordStoreBackendMetricsRecorder::PasswordStoreBackendMetricsRecorder() =
 
 PasswordStoreBackendMetricsRecorder::PasswordStoreBackendMetricsRecorder(
     BackendInfix backend_infix,
-    MetricInfix metric_infix)
+    MethodName method_name)
     : backend_infix_(std::move(backend_infix)),
-      metric_infix_(std::move(metric_infix)) {
+      method_name_(std::move(method_name)) {
   RecordRequestStatus(StoreBackendRequestStatus::kRequestIssued);
 }
 
@@ -83,16 +84,31 @@ PasswordStoreBackendMetricsRecorder::GetElapsedTimeSinceCreation() const {
 
 void PasswordStoreBackendMetricsRecorder::RecordRequestStatus(
     StoreBackendRequestStatus request_status) const {
-  base::UmaHistogramEnumeration(GetBackendMetricName(), request_status);
-  base::UmaHistogramEnumeration(GetOverallMetricName(), request_status);
+  // Infixes for the overall and backend specific histogram.
+  const std::array<std::string_view, 2> possible_infixes = {"Backend",
+                                                            *backend_infix_};
+
+  for (const auto& infix : possible_infixes) {
+    base::UmaHistogramEnumeration(
+        base::JoinString({base::StrCat({kMetricPrefix, infix}), *method_name_},
+                         "."),
+        request_status);
+  }
 }
 
 void PasswordStoreBackendMetricsRecorder::RecordSuccess(
     SuccessStatus success_status) const {
-  base::UmaHistogramBoolean(BuildMetricName("Success"),
-                            success_status == SuccessStatus::kSuccess);
-  base::UmaHistogramBoolean(BuildOverallMetricName("Success"),
-                            success_status == SuccessStatus::kSuccess);
+  // Infixes for the overall and backend specific histogram.
+  const std::array<std::string_view, 2> possible_infixes = {"Backend",
+                                                            *backend_infix_};
+
+  for (const auto& infix : possible_infixes) {
+    base::UmaHistogramBoolean(
+        base::JoinString(
+            {base::StrCat({kMetricPrefix, infix}), *method_name_, "Success"},
+            "."),
+        success_status == SuccessStatus::kSuccess);
+  }
 }
 
 void PasswordStoreBackendMetricsRecorder::RecordErrorCode(
@@ -100,12 +116,16 @@ void PasswordStoreBackendMetricsRecorder::RecordErrorCode(
   base::UmaHistogramEnumeration(
       base::StrCat({kMetricPrefix, "AndroidBackend.ErrorCode"}),
       backend_error.type);
-  base::UmaHistogramEnumeration(BuildMetricName("ErrorCode"),
-                                backend_error.type);
+  base::UmaHistogramEnumeration(
+      base::JoinString({base::StrCat({kMetricPrefix, *backend_infix_}),
+                        *method_name_, "ErrorCode"},
+                       "."),
+      backend_error.type);
+
   if (backend_error.type == AndroidBackendErrorType::kExternalError) {
     DCHECK(backend_error.api_error_code.has_value());
     RecordApiErrorCode(backend_error.api_error_code.value());
-    LOG(ERROR) << "Password Manager API call for " << metric_infix_
+    LOG(ERROR) << "Password Manager API call for " << method_name_
                << " failed with error code: "
                << backend_error.api_error_code.value();
   }
@@ -116,15 +136,29 @@ void PasswordStoreBackendMetricsRecorder::RecordErrorCode(
 
 void PasswordStoreBackendMetricsRecorder::RecordLatency() const {
   base::TimeDelta duration = GetElapsedTimeSinceCreation();
-  base::UmaHistogramMediumTimes(BuildMetricName("Latency"), duration);
-  base::UmaHistogramMediumTimes(BuildOverallMetricName("Latency"), duration);
+
+  // Infixes for the overall and backend specific histogram.
+  const std::array<std::string_view, 2> possible_infixes = {"Backend",
+                                                            *backend_infix_};
+
+  for (const auto& infix : possible_infixes) {
+    base::UmaHistogramMediumTimes(
+        base::JoinString(
+            {base::StrCat({kMetricPrefix, infix}), *method_name_, "Latency"},
+            "."),
+        duration);
+  }
 }
 
 void PasswordStoreBackendMetricsRecorder::RecordApiErrorCode(
     int api_error_code) const {
   base::UmaHistogramSparse(
       base::StrCat({kMetricPrefix, "AndroidBackend.APIError"}), api_error_code);
-  base::UmaHistogramSparse(BuildMetricName("APIError"), api_error_code);
+  base::UmaHistogramSparse(
+      base::JoinString({base::StrCat({kMetricPrefix, *backend_infix_}),
+                        *method_name_, "APIError"},
+                       "."),
+      api_error_code);
 }
 
 void PasswordStoreBackendMetricsRecorder::RecordConnectionResultCode(
@@ -132,25 +166,10 @@ void PasswordStoreBackendMetricsRecorder::RecordConnectionResultCode(
   base::UmaHistogramSparse(
       base::StrCat({kMetricPrefix, "AndroidBackend.ConnectionResultCode"}),
       connection_result_code);
-  base::UmaHistogramSparse(BuildMetricName("ConnectionResultCode"),
-                           connection_result_code);
-}
-
-std::string PasswordStoreBackendMetricsRecorder::GetBackendMetricName() const {
-  return base::StrCat({kMetricPrefix, *backend_infix_, ".", *metric_infix_});
-}
-
-std::string PasswordStoreBackendMetricsRecorder::BuildMetricName(
-    base::StringPiece suffix) const {
-  return base::StrCat({GetBackendMetricName(), ".", suffix});
-}
-
-std::string PasswordStoreBackendMetricsRecorder::GetOverallMetricName() const {
-  return base::StrCat({kMetricPrefix, "Backend.", *metric_infix_});
-}
-
-std::string PasswordStoreBackendMetricsRecorder::BuildOverallMetricName(
-    base::StringPiece suffix) const {
-  return base::StrCat({GetOverallMetricName(), ".", suffix});
+  base::UmaHistogramSparse(
+      base::JoinString({base::StrCat({kMetricPrefix, *backend_infix_}),
+                        *method_name_, "ConnectionResultCode"},
+                       "."),
+      connection_result_code);
 }
 }  // namespace password_manager

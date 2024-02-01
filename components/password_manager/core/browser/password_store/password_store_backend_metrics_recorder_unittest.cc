@@ -69,7 +69,7 @@ TEST_F(PasswordStoreBackendMetricsRecorderTest, RecordMetrics_Success) {
 
   PasswordStoreBackendMetricsRecorder metrics_recorder =
       PasswordStoreBackendMetricsRecorder(BackendInfix(kSomeBackend),
-                                          MetricInfix(kSomeMethod));
+                                          MethodName(kSomeMethod));
 
   // Checking started requests in the overall and backend-specific histogram.
   EXPECT_THAT(histogram_tester.GetAllSamples(kSpecificMetric),
@@ -110,7 +110,7 @@ TEST_F(PasswordStoreBackendMetricsRecorderTest, RecordMetrics_ExternalError) {
 
   PasswordStoreBackendMetricsRecorder metrics_recorder =
       PasswordStoreBackendMetricsRecorder(BackendInfix(kSomeBackend),
-                                          MetricInfix(kSomeMethod));
+                                          MethodName(kSomeMethod));
 
   AdvanceClock(kLatencyDelta);
 
@@ -161,7 +161,7 @@ TEST_F(PasswordStoreBackendMetricsRecorderTest,
 
   PasswordStoreBackendMetricsRecorder metrics_recorder =
       PasswordStoreBackendMetricsRecorder(BackendInfix(kSomeBackend),
-                                          MetricInfix(kSomeMethod));
+                                          MethodName(kSomeMethod));
 
   AdvanceClock(kLatencyDelta);
 
@@ -211,7 +211,7 @@ TEST_F(PasswordStoreBackendMetricsRecorderTest,
 
   PasswordStoreBackendMetricsRecorder metrics_recorder =
       PasswordStoreBackendMetricsRecorder(BackendInfix(kSomeBackend),
-                                          MetricInfix(kSomeMethod));
+                                          MethodName(kSomeMethod));
 
   AdvanceClock(kLatencyDelta);
 
@@ -244,7 +244,7 @@ TEST_F(PasswordStoreBackendMetricsRecorderTest,
 
   PasswordStoreBackendMetricsRecorder metrics_recorder =
       PasswordStoreBackendMetricsRecorder(BackendInfix(kSomeBackend),
-                                          MetricInfix(kSomeMethod));
+                                          MethodName(kSomeMethod));
 
   AdvanceClock(kLatencyDelta);
 

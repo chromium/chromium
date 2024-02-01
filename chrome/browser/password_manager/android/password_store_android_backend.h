@@ -266,7 +266,7 @@ class PasswordStoreAndroidBackend
   // doesn't introduce any delay.
   void QueueNewJob(JobId job_id,
                    Callback callback,
-                   MetricInfix metric_infix,
+                   MethodName method_name,
                    PasswordStoreOperation operation,
                    base::TimeDelta delay);
   std::optional<JobReturnHandler> GetAndEraseJob(JobId job_id);
@@ -292,18 +292,18 @@ class PasswordStoreAndroidBackend
       LoginsResultOrError result);
 
   // Creates a metrics recorder that records latency and success metrics for
-  // logins retrieval operation with |metric_infix| name prior to calling
+  // logins retrieval operation with |method_name| name prior to calling
   // |callback|.
   static LoginsOrErrorReply ReportMetricsAndInvokeCallbackForLoginsRetrieval(
-      const MetricInfix& metric_infix,
+      const MethodName& method_name,
       LoginsOrErrorReply callback);
 
   // Creates a metrics recorder that records latency and success metrics for
-  // store modification operation with |metric_infix| name prior to
+  // store modification operation with |method_name| name prior to
   // calling |callback|.
   static PasswordChangesOrErrorReply
   ReportMetricsAndInvokeCallbackForStoreModifications(
-      const MetricInfix& metric_infix,
+      const MethodName& method_name,
       PasswordChangesOrErrorReply callback);
 
   // Invoked synchronously by `lifecycle_helper_` when Chrome is foregrounded.
