@@ -20,6 +20,7 @@ crbug.com/1401767 external/wpt/html/semantics/forms/the-selectlist-element/selec
 
 # Intentional skips for media tests using proprietary codecs.
 # The linux-blink-web-tests-force-accessibility-rel bot compiles without proprietary codecs.
+external/wpt/html/semantics/embedded-content/media-elements/track/track-element/track-cues-cuechange.html [ Skip ]
 external/wpt/webcodecs/audioDecoder-codec-specific.https.any.worker.html?adts_aac [ Skip ]
 external/wpt/webcodecs/audioDecoder-codec-specific.https.any.worker.html?mp4_aac [ Skip ]
 external/wpt/webcodecs/videoDecoder-codec-specific.https.any.worker.html?h264_annexb [ Skip ]
