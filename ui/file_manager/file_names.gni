@@ -10,9 +10,9 @@ image_loader_static_js_files = [
 
 image_loader_ts = [
   "image_loader/scheduler.ts",
-  "image_loader/image_orientation.ts",
   "image_loader/background.ts",
   "image_loader/cache.ts",
+  "image_loader/image_orientation.ts",
 ]
 
 static_js_files = [
