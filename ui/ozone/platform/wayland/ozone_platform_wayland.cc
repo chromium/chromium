@@ -410,10 +410,8 @@ class OzonePlatformWayland : public OzonePlatform,
       properties.supports_clip_rect = buffer_manager_->supports_clip_rect();
       properties.supports_affine_transform =
           buffer_manager_->supports_affine_transform();
-      // TODO(crbug.com/1515452): Hardcoded to false due to Exo-side DnD events
-      // target lookup issues. This should be re-enabled once they're fixed, via
-      // |buffer_manager_->supports_out_of_window_clip_rect()|.
-      properties.supports_out_of_window_clip_rect = false;
+      properties.supports_out_of_window_clip_rect =
+          buffer_manager_->supports_out_of_window_clip_rect();
       properties.has_transformation_fix =
           buffer_manager_->has_transformation_fix();
     }
