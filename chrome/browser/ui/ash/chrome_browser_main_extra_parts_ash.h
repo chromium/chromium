@@ -47,6 +47,7 @@ class ArcOpenUrlDelegateImpl;
 class AshShellInit;
 class AshWebViewFactoryImpl;
 class CampaignsManagerClientImpl;
+class CampaignsManagerSession;
 class CastConfigControllerMediaRouter;
 class DesksClient;
 class ImeControllerClientImpl;
@@ -152,6 +153,7 @@ class ChromeBrowserMainExtraPartsAsh : public ChromeBrowserMainExtraParts {
   std::unique_ptr<DesksClient> desks_client_;
   std::unique_ptr<ash::RefreshRateController> refresh_rate_controller_;
   std::unique_ptr<CampaignsManagerClientImpl> campaigns_manager_client_;
+  std::unique_ptr<CampaignsManagerSession> campaigns_manager_session_;
 
 #if BUILDFLAG(ENABLE_WAYLAND_SERVER)
   std::unique_ptr<ExoParts> exo_parts_;

@@ -103,7 +103,6 @@ class CampaignsManagerClientTest : public testing::Test {
 TEST_F(CampaignsManagerClientTest, LoadCampaignsComponent) {
   campaigns_manager_client_->LoadCampaignsComponent(base::BindLambdaForTesting(
       [](const std::optional<const base::FilePath>& file_path) {
-        // ASSERT_TRUE(file_path.has_value());
         ASSERT_TRUE(file_path.has_value());
         ASSERT_EQ(file_path.value().value(),
                   kTestCampaignsComponentMountedPath);

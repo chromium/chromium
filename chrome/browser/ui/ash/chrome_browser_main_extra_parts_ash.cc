@@ -29,6 +29,7 @@
 #include "chrome/browser/ash/game_mode/game_mode_controller.h"
 #include "chrome/browser/ash/geolocation/system_geolocation_source.h"
 #include "chrome/browser/ash/growth/campaigns_manager_client_impl.h"
+#include "chrome/browser/ash/growth/campaigns_manager_session.h"
 #include "chrome/browser/ash/login/signin/signin_error_notifier_factory.h"
 #include "chrome/browser/ash/login/ui/oobe_dialog_util_impl.h"
 #include "chrome/browser/ash/mahi/mahi_manager_impl.h"
@@ -297,8 +298,14 @@ void ChromeBrowserMainExtraPartsAsh::PreProfileInit() {
   attestation_cleanup_manager_ =
       std::make_unique<enterprise_connectors::AshAttestationCleanupManager>();
 
-  if (ash::features::IsGrowthCampaignsInDemoModeEnabled()) {
+  if (ash::features::IsGrowthCampaignsInDemoModeEnabled() ||
+      ash::features::IsGrowthCampaignsInConsumerSessionEnabled()) {
     campaigns_manager_client_ = std::make_unique<CampaignsManagerClientImpl>();
+  }
+
+  // Requires UserManager.
+  if (ash::features::IsGrowthCampaignsInConsumerSessionEnabled()) {
+    campaigns_manager_session_ = std::make_unique<CampaignsManagerSession>();
   }
 
   ash::bluetooth_config::FastPairDelegate* delegate =
@@ -404,6 +411,7 @@ void ChromeBrowserMainExtraPartsAsh::PostMainMessageLoopRun() {
   chrome_shelf_controller_initializer_.reset();
   attestation_cleanup_manager_.reset();
 
+  campaigns_manager_session_.reset();
   campaigns_manager_client_.reset();
 
   desks_client_.reset();
