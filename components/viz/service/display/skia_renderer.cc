@@ -105,6 +105,12 @@ namespace viz {
 
 namespace {
 
+#if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_OZONE)
+BASE_FEATURE(kAddSharedImageRasterReadUsage,
+             "AddSharedImageRasterReadUsage",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
+
 enum VertexOpacityUsage {
   kNone = 0,
   kConstant = 1,
@@ -3594,10 +3600,17 @@ SkiaRenderer::GetOrCreateRenderPassOverlayBacking(
   if (it == available_render_pass_overlay_backings_.end()) {
     // Allocate the image for render pass overlay if there is no existing
     // available one.
-    constexpr auto kOverlayUsage = gpu::SHARED_IMAGE_USAGE_SCANOUT |
-                                   gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
-                                   gpu::SHARED_IMAGE_USAGE_DISPLAY_WRITE |
-                                   gpu::SHARED_IMAGE_USAGE_RASTER_READ;
+    auto kOverlayUsage = gpu::SHARED_IMAGE_USAGE_SCANOUT |
+                         gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
+                         gpu::SHARED_IMAGE_USAGE_DISPLAY_WRITE;
+    // The SharedImages created here are not used by the raster interface, but
+    // RASTER usage was historically listed. We are in the process of removing
+    // this usage with a reverse killswitch.
+    // TODO(crbug.com/1523914): Remove this code post-safe rollout.
+    if (base::FeatureList::IsEnabled(kAddSharedImageRasterReadUsage)) {
+      kOverlayUsage = kOverlayUsage | gpu::SHARED_IMAGE_USAGE_RASTER_READ;
+    }
+
     auto mailbox = skia_output_surface_->CreateSharedImage(
         buffer_format, buffer_size, color_space, RenderPassAlphaType::kPremul,
         kOverlayUsage, "RenderPassOverlay", gpu::kNullSurfaceHandle);
