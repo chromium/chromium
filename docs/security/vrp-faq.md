@@ -4,7 +4,26 @@
 
 ## News and Updates
 
+**Chromium is moving to a new issue tracker. Migration is scheduled to begin on
+Friday, 2 February (17:00 PST) until some time by end of day PST Sunday, 4
+February 2024.**
+
+**As of 17:00 PST on Friday, 2 February, the legacy Chromium issue tracker,
+bugs.chromium.org, will be shifted to a read-only state. There will be no
+access to the [new issue tracker](https://issues.chromium.org) until the
+migration is complete on Sunday, 4 February.** If you have new security issues
+to report after the migration outage has begun, please report using the new
+issue tracker [bug reporting form](https://issues.chromium.org/new) once it is
+available when migration has been completed. Please reach out to
+security-vrp@chromium.org with any questions.
+
 Please check here for any news and updates about the Chrome VRP.
+
+* 1 February 2024: Chromium issue tracker migration will begin on Friday, 2
+  February 2024. During the migration new issues will not be able to be
+  reported. As of 4 February 2024, all security bugs should be reported using
+  [this form](https://issues.chromium.org/new), and select 'Security' from the
+  "Which of the following best describes the issue being reported?" dropdown.
 
 * 26 January 2024: Chromium is moving to a new issue tracker. This is currently
   scheduled for 5 February 2024. More information will be provided next week
@@ -43,13 +62,11 @@ To help make the process of security bug triage as efficient and smooth as
 possible, please consider the following best practices for Chromium security bug
 reports:
 
-* Use the [security bug reporting
-  form](https://bugs.chromium.org/p/chromium/issues/entry?template=Security+Bug)
-  for the Chromium bug tracker; this will allow the bug report to be included in
-  the security bug triage queue immediately.
-  (Please note this link will be changing the evening on or before 5 February
-  2024.)
-
+* Use the [bug reporting form](https://issues.chromium.org/new)
+  for the Chromium bug tracker; select 'Security' from the "Which of the
+  following best describes the issue you are reporting?" dropdown.
+  * This will allow the bug report to be included in the security bug triage
+    queue immediately.
 * Include the version number and OS used to reproduce the bug. For an [extra
   bonus reward](https://g.co/chrome/vrp/#bisect-bonus), please consider
   including a bisection.
