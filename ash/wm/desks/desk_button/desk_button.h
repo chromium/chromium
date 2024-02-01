@@ -116,7 +116,7 @@ class ASH_EXPORT DeskButton : public views::Button {
   // button has been pressed).
   bool is_activated_ = false;
 
-  // Used to suspend the shelf from audo-hiding when the button is activated or
+  // Used to suspend the shelf from auto-hiding when the button is activated or
   // hovered.
   std::optional<Shelf::ScopedDisableAutoHide>
       disable_shelf_auto_hide_activation_;
