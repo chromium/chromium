@@ -65,6 +65,16 @@ bool IsSearchEngineChoiceScreenAllowedByPolicy(
   }
   return false;
 }
+
+bool IsDefaultSearchProviderSetOrBlockedByPolicy(
+    const TemplateURLService& template_url_service) {
+  const TemplateURL* default_search_engine =
+      template_url_service.GetDefaultSearchProvider();
+
+  return !default_search_engine ||
+         default_search_engine->created_by_policy() ==
+             TemplateURLData::CreatedByPolicy::kDefaultSearchProvider;
+}
 #endif
 
 SearchEngineType GetDefaultSearchEngineType(
@@ -212,7 +222,8 @@ SearchEngineChoiceService::GetStaticChoiceScreenConditions(
     return SearchEngineChoiceScreenConditions::kSearchProviderOverride;
   }
 
-  if (!IsSearchEngineChoiceScreenAllowedByPolicy(policy_service)) {
+  if (!IsSearchEngineChoiceScreenAllowedByPolicy(policy_service) ||
+      IsDefaultSearchProviderSetOrBlockedByPolicy(template_url_service)) {
     return SearchEngineChoiceScreenConditions::kControlledByPolicy;
   }
 
@@ -231,6 +242,10 @@ SearchEngineChoiceService::GetDynamicChoiceScreenConditions(
   // Don't show the dialog if the default search engine is set by an extension.
   if (template_url_service.IsExtensionControlledDefaultSearch()) {
     return SearchEngineChoiceScreenConditions::kExtensionControlled;
+  }
+
+  if (IsDefaultSearchProviderSetOrBlockedByPolicy(template_url_service)) {
+    return SearchEngineChoiceScreenConditions::kControlledByPolicy;
   }
 
   // Don't show the dialog if the user has a custom search engine set as
