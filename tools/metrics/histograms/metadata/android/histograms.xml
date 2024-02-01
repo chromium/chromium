@@ -4947,6 +4947,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.WebView.FileChooserResultOutsideAppDataDir"
+    enum="Boolean" expires_after="2024-12-15">
+  <owner>alibu@chromium.org</owner>
+  <owner>bewise@chromium.org</owner>
+  <owner>peconn@chromium.org</owner>
+  <owner>thomasbull@chromium.org</owner>
+  <summary>
+    Records how often the onShowFileChooser returns files outside of the app's
+    own data directory (excluding WebView resources and assets, and URIs that
+    don't use the 'file:' schema). Recorded once per file selected when the
+    dialog closes.
+  </summary>
+</histogram>
+
 <histogram name="Android.WebView.ForceDarkBehavior"
     enum="WebViewForceDarkBehavior" expires_after="2023-06-01">
   <owner>peter@chromium.org</owner>

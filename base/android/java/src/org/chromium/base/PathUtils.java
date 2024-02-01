@@ -92,6 +92,21 @@ public abstract class PathUtils {
         }
     }
 
+    // TODO(crbug.com/1512123): Merge the Chrome and WebView implementations
+    // of isPathUnderAppDir into one.
+    @RequiresApi(Build.VERSION_CODES.N)
+    public static boolean isPathUnderAppDir(String path, Context context) {
+        File file = new File(path);
+        File dataDir = context.getDataDir();
+        File externalDir = ContextUtils.getApplicationContext().getExternalFilesDir(null);
+        try {
+            return (file.toPath().toRealPath().startsWith(dataDir.toPath().toRealPath())
+                    || file.toPath().toRealPath().startsWith(externalDir.toPath().toRealPath()));
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
     /**
      * Fetch the path of the directory where private data is to be stored by the application. This
      * is meant to be called in an FutureTask in setPrivateDataDirectorySuffix(), but if we need the
