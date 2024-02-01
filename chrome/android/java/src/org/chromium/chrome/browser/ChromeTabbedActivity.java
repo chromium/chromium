@@ -227,7 +227,7 @@ import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
 import org.chromium.chrome.features.start_surface.StartSurfaceDelegate;
 import org.chromium.chrome.features.start_surface.StartSurfaceState;
 import org.chromium.chrome.features.start_surface.StartSurfaceUserData;
-import org.chromium.chrome.features.tasks.SingleTabSwitcherBuilder;
+import org.chromium.chrome.features.tasks.SingleTabModuleBuilder;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.browser_ui.util.BrowserControlsVisibilityDelegate;
 import org.chromium.components.browser_ui.util.ComposedBrowserControlsVisibilityDelegate;
@@ -2287,10 +2287,10 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         if (!StartSurfaceConfiguration.useMagicStack()) return;
 
         ModuleRegistry moduleRegistry = ModuleRegistry.getInstance();
-        SingleTabSwitcherBuilder singleTabSwitcherBuilder =
-                new SingleTabSwitcherBuilder(
+        SingleTabModuleBuilder singleTabModuleBuilder =
+                new SingleTabModuleBuilder(
                         this, getTabModelSelectorSupplier(), getTabContentManagerSupplier());
-        moduleRegistry.registerModule(ModuleType.SINGLE_TAB, singleTabSwitcherBuilder);
+        moduleRegistry.registerModule(ModuleType.SINGLE_TAB, singleTabModuleBuilder);
 
         if (ChromeFeatureList.sPriceChangeModule.isEnabled()) {
             PriceChangeModuleBuilder priceChangeModuleBuilder =

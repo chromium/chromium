@@ -19,7 +19,6 @@ import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegateHost;
 import org.chromium.chrome.browser.magic_stack.ModuleProvider;
 import org.chromium.chrome.browser.magic_stack.ModuleProviderBuilder;
-import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.util.BrowserUiUtils.HostSurface;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -27,7 +26,7 @@ import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** The {@link ModuleProviderBuilder} to build the single tab module on the magic stack. */
-public class SingleTabSwitcherBuilder implements ModuleProviderBuilder {
+public class SingleTabModuleBuilder implements ModuleProviderBuilder {
     private final Activity mActivity;
     private final ObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
     private final ObservableSupplier<TabContentManager> mTabContentManagerSupplier;
@@ -37,7 +36,7 @@ public class SingleTabSwitcherBuilder implements ModuleProviderBuilder {
      * @param tabModelSelectorSupplier The supplier of the {@lin TabModelSelector}.
      * @param tabContentManagerSupplier The supplier of the {@link TabContentManager}.
      */
-    public SingleTabSwitcherBuilder(
+    public SingleTabModuleBuilder(
             @NonNull Activity activity,
             @NonNull ObservableSupplier<TabModelSelector> tabModelSelectorSupplier,
             @NonNull ObservableSupplier<TabContentManager> tabContentManagerSupplier) {
@@ -56,9 +55,9 @@ public class SingleTabSwitcherBuilder implements ModuleProviderBuilder {
         boolean isShownOnNtp = moduleDelegate.getHostSurfaceType() == HostSurface.NEW_TAB_PAGE;
 
         assert mTabContentManagerSupplier.hasValue();
-        Runnable singleTabCardClickedCallback =
-                () -> {
-                    moduleDelegate.onTabClicked(Tab.INVALID_TAB_ID, ModuleType.SINGLE_TAB);
+        Callback<Integer> singleTabCardClickedCallback =
+                (tabId) -> {
+                    moduleDelegate.onTabClicked(tabId, ModuleType.SINGLE_TAB);
                 };
         Runnable snapshotParentViewRunnable =
                 () -> {
@@ -83,13 +82,6 @@ public class SingleTabSwitcherBuilder implements ModuleProviderBuilder {
                         mTabContentManagerSupplier.get(),
                         moduleDelegateHost.getUiConfig(),
                         moduleDelegate);
-        if (moduleDelegate.getHostSurfaceType() == HostSurface.START_SURFACE) {
-            singleTabSwitcherCoordinator.setOnModuleSelectedListener(
-                    tabId -> {
-                        moduleDelegate.onTabClicked(
-                                tabId, singleTabSwitcherCoordinator.getModuleType());
-                    });
-        }
         onModuleBuiltCallback.onResult(singleTabSwitcherCoordinator);
         return true;
     }

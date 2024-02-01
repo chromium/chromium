@@ -62,6 +62,7 @@ import org.chromium.chrome.browser.lifecycle.LifecycleObserver;
 import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
 import org.chromium.chrome.browser.logo.LogoUtils;
 import org.chromium.chrome.browser.magic_stack.HomeModulesCoordinator;
+import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegateHost;
 import org.chromium.chrome.browser.native_page.ContextMenuManager;
 import org.chromium.chrome.browser.omnibox.OmniboxFocusReason;
@@ -89,6 +90,7 @@ import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
+import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tasks.HomeSurfaceTracker;
 import org.chromium.chrome.browser.tasks.ReturnToChromeUtil;
 import org.chromium.chrome.browser.toolbar.top.Toolbar;
@@ -1298,9 +1300,23 @@ public class NewTabPage
         mHomeModulesContainer.setVisibility(isVisible ? View.VISIBLE : View.GONE);
     }
 
-    private void onSingleTabCardClicked() {
+    private void onSingleTabCardClicked(int tabId) {
+        onTabClicked(tabId, /* isSingleTabCard= */ true);
+    }
+
+    /**
+     * Opens the selected Tab and closes the current NTP. If the single Tab card which tracks the
+     * last active Tab is selected, updates the mHomeSurfaceTracker too.
+     *
+     * @param isSingleTabCard Whether the newly selected Tab is the single Tab card that this NTP is
+     *     tracking.
+     */
+    private void onTabClicked(int tabId, boolean isSingleTabCard) {
+        TabModelUtils.selectTabById(
+                mTabModelSelector, tabId, TabSelectionType.FROM_USER, /* skipLoadingTab= */ false);
+
         mTabModelSelector.getModel(false).closeTab(mTab);
-        if (mHomeSurfaceTracker != null) {
+        if (isSingleTabCard && mHomeSurfaceTracker != null) {
             mHomeSurfaceTracker.updateHomeSurfaceAndTrackingTabs(null, null);
         }
     }
@@ -1383,8 +1399,8 @@ public class NewTabPage
     }
 
     @Override
-    public void onTabSelected(int tabid) {
-        onSingleTabCardClicked();
+    public void onTabSelected(int tabId, @ModuleType int moduleType) {
+        onTabClicked(tabId, moduleType == ModuleType.SINGLE_TAB);
     }
 
     @Override

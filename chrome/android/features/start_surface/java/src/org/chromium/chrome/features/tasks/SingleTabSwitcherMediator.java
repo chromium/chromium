@@ -21,6 +21,7 @@ import android.util.Size;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.Callback;
 import org.chromium.base.ObserverList;
 import org.chromium.base.StrictModeContext;
 import org.chromium.base.metrics.RecordUserAction;
@@ -45,10 +46,12 @@ import org.chromium.chrome.browser.tasks.pseudotab.PseudoTab;
 import org.chromium.chrome.browser.tasks.tab_management.TabListFaviconProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabManagementDelegate.TabSwitcherType;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcher;
+import org.chromium.chrome.browser.tasks.tab_management.TabSwitcher.OnTabSelectingListener;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcher.TabSwitcherViewObserver;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.browser.tasks.tab_management.ThumbnailProvider;
 import org.chromium.chrome.browser.util.BrowserUiUtils;
+import org.chromium.chrome.browser.util.BrowserUiUtils.HostSurface;
 import org.chromium.chrome.browser.util.BrowserUiUtils.ModuleTypeOnStartAndNtp;
 import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
 import org.chromium.chrome.features.start_surface.StartSurfaceUserData;
@@ -88,6 +91,7 @@ public class SingleTabSwitcherMediator implements TabSwitcher.Controller {
             TabModelSelector tabModelSelector,
             TabListFaviconProvider tabListFaviconProvider,
             TabContentManager tabContentManager,
+            @Nullable Callback<Integer> singleTabCardClickedCallback,
             boolean isSurfacePolishEnabled,
             @Nullable ModuleDelegate moduleDelegate) {
         mTabModelSelector = tabModelSelector;
@@ -100,6 +104,14 @@ public class SingleTabSwitcherMediator implements TabSwitcher.Controller {
             mThumbnailSize = getThumbnailSize(mContext);
         }
         mModuleDelegate = moduleDelegate;
+        if (singleTabCardClickedCallback != null
+                && mModuleDelegate != null
+                && mModuleDelegate.getHostSurfaceType() == HostSurface.START_SURFACE) {
+            // When the feature magic stack is enabled and shown on Start surface, we wrap the
+            // singleTabCardClickedCallback as the mTabSelectingListener which is notified if the
+            // single tab card is clicked.
+            mTabSelectingListener = singleTabCardClickedCallback::onResult;
+        }
 
         mPropertyModel.set(FAVICON, mTabListFaviconProvider.getDefaultFaviconDrawable(false));
         mPropertyModel.set(
@@ -466,5 +478,9 @@ public class SingleTabSwitcherMediator implements TabSwitcher.Controller {
     @ModuleType
     int getModuleType() {
         return ModuleDelegate.ModuleType.SINGLE_TAB;
+    }
+
+    OnTabSelectingListener getTabSelectingListenerForTesting() {
+        return mTabSelectingListener;
     }
 }
