@@ -257,6 +257,7 @@ void KioskMetricsService::RestartRequested(
     case power_manager::REQUEST_RESTART_FOR_USER:
     case power_manager::REQUEST_RESTART_FOR_UPDATE:
     case power_manager::REQUEST_RESTART_OTHER:
+    case power_manager::REQUEST_RESTART_HEARTD:
       return;
     case power_manager::REQUEST_RESTART_SCHEDULED_REBOOT_POLICY:
       SaveSessionEndReason(KioskSessionEndReason::kRebootPolicy);
@@ -266,9 +267,6 @@ void KioskMetricsService::RestartRequested(
       return;
     case power_manager::REQUEST_RESTART_API:
       SaveSessionEndReason(KioskSessionEndReason::kRestartApi);
-      return;
-    // TODO(b/309049308): Remove this after the new enum is added.
-    default:
       return;
   }
 }
