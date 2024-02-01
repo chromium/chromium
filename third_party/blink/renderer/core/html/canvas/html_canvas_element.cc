@@ -119,25 +119,15 @@
 
 namespace blink {
 
-// Controls whether canvases may start with acceleration disabled. This behavior
-// is controlled by two params. When this feature is enabled, a newly created
-// canvas will start with acceleration disabled if the following two
-// requirements are met (per Document);
-// 1. More than `kCanvasDisableAccelerationThresholdParam` canvases have been
-//    created.
-// 2. The percent of canvases with acceleration disabled is >=
-//    `kCanvasDisableAccelerationPercentParam`.
-BASE_FEATURE(kStartCanvasWithAccelerationDisabled,
-             "StartCanvasWithAccelerationDisabled",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-constexpr base::FeatureParam<int> kCanvasDisableAccelerationThresholdParam{
-    &kStartCanvasWithAccelerationDisabled,
-    "canvas-disable-acceleration-threshold", 100};
-constexpr base::FeatureParam<int> kCanvasDisableAccelerationPercentParam{
-    &kStartCanvasWithAccelerationDisabled,
-    "canvas-disable-acceleration-percent", 95};
-
 namespace {
+
+// These two constants determine if a newly created canvas starts with
+// acceleration disabled. Specifically:
+// 1. More than `kDisableAccelerationThreshold` canvases have been created.
+// 2. The percent of canvases with acceleration disabled is >=
+//    `kDisableAccelerationPercent`.
+constexpr unsigned kDisableAccelerationThreshold = 100;
+constexpr unsigned kDisableAccelerationPercent = 95;
 
 BASE_FEATURE(kOneCopyCanvasCapture,
              "OneCopyCanvasCapture",
@@ -186,9 +176,7 @@ class DisabledAccelerationCounterSupplement final
   }
 
   explicit DisabledAccelerationCounterSupplement(Document& d)
-      : Supplement<Document>(d),
-        disable_threshold_(kCanvasDisableAccelerationThresholdParam.Get()),
-        disable_percent_(kCanvasDisableAccelerationPercentParam.Get()) {}
+      : Supplement<Document>(d) {}
 
   // Called when acceleration has been disabled on a canvas.
   void IncrementDisabledCount() {
@@ -207,21 +195,15 @@ class DisabledAccelerationCounterSupplement final
     if (acceleration_disabled_) {
       return;
     }
-    if (acceleration_disabled_count_ < disable_threshold_) {
+    if (acceleration_disabled_count_ < kDisableAccelerationThreshold) {
       return;
     }
     if (acceleration_disabled_count_ * 100 /
             GetSupplementable()->GetNumberOfCanvases() >=
-        disable_percent_) {
-      UMA_HISTOGRAM_BOOLEAN(
-          "Blink.Canvas.ForcingAllCanvasesToDisableAcceleration", true);
+        kDisableAccelerationPercent) {
       acceleration_disabled_ = true;
     }
   }
-
-  // These are cached to allow for tests to use different values.
-  const unsigned disable_threshold_;
-  const unsigned disable_percent_;
 
   // Number of canvases with acceleration disabled.
   unsigned acceleration_disabled_count_ = 0;
@@ -249,9 +231,7 @@ HTMLCanvasElement::HTMLCanvasElement(Document& document)
   UseCounter::Count(document, WebFeature::kHTMLCanvasElement);
   // Create DisabledAccelerationCounterSupplement now, as it may be needed at a
   // time when garbage collected objects can not be created.
-  if (base::FeatureList::IsEnabled(kStartCanvasWithAccelerationDisabled)) {
-    DisabledAccelerationCounterSupplement::From(GetDocument());
-  }
+  DisabledAccelerationCounterSupplement::From(GetDocument());
   GetDocument().IncrementNumberOfCanvases();
   auto* execution_context = GetExecutionContext();
   if (execution_context) {
@@ -686,10 +666,8 @@ void HTMLCanvasElement::PostFinalizeFrame(FlushReason reason) {
 
 void HTMLCanvasElement::DisableAcceleration(
     std::unique_ptr<CanvasResourceProvider> new_provider_for_testing) {
-  if (base::FeatureList::IsEnabled(kStartCanvasWithAccelerationDisabled)) {
-    DisabledAccelerationCounterSupplement::From(GetDocument())
-        .IncrementDisabledCount();
-  }
+  DisabledAccelerationCounterSupplement::From(GetDocument())
+      .IncrementDisabledCount();
   // Create and configure an unaccelerated Canvas2DLayerBridge.
   SetPreferred2DRasterMode(RasterModeHint::kPreferCPU);
   std::unique_ptr<Canvas2DLayerBridge> bridge = Create2DLayerBridge();
@@ -1407,7 +1385,6 @@ bool HTMLCanvasElement::ShouldAccelerate() const {
   if (context_ &&
       context_->CreationAttributes().will_read_frequently ==
           CanvasContextCreationAttributesCore::WillReadFrequently::kUndefined &&
-      base::FeatureList::IsEnabled(kStartCanvasWithAccelerationDisabled) &&
       DisabledAccelerationCounterSupplement::From(GetDocument())
           .ShouldDisableAcceleration()) {
     return false;
@@ -1417,12 +1394,8 @@ bool HTMLCanvasElement::ShouldAccelerate() const {
 }
 
 bool HTMLCanvasElement::ShouldDisableAccelerationBecauseOfReadback() const {
-  if (base::FeatureList::IsEnabled(kStartCanvasWithAccelerationDisabled) &&
-      DisabledAccelerationCounterSupplement::From(GetDocument())
-          .ShouldDisableAcceleration()) {
-    return true;
-  }
-  return false;
+  return DisabledAccelerationCounterSupplement::From(GetDocument())
+      .ShouldDisableAcceleration();
 }
 
 std::unique_ptr<Canvas2DLayerBridge> HTMLCanvasElement::Create2DLayerBridge() {

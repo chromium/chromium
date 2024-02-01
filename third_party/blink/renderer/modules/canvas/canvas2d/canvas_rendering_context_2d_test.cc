@@ -1890,19 +1890,10 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
 class CanvasRenderingContext2DTestAcceleratedMultipleDisables
     : public CanvasRenderingContext2DTest {
  protected:
-  void SetUp() override {
-    base::FieldTrialParams params;
-    params["canvas-disable-acceleration-threshold"] = "10";
-    params["canvas-disable-acceleration-percent"] = "80";
-    feature_list_.InitAndEnableFeatureWithParameters(
-        kStartCanvasWithAccelerationDisabled, params);
-    CanvasRenderingContext2DTest::SetUp();
-  }
-
   bool AllowsAcceleration() override { return true; }
 
   void CreateAlotOfCanvasesWithAccelerationExplicitlyDisabled() {
-    for (int i = 0; i < 10; ++i) {
+    for (int i = 0; i < 100; ++i) {
       auto* canvas = MakeGarbageCollected<HTMLCanvasElement>(GetDocument());
       CreateContext(
           kNonOpaque, kNormalLatency,
@@ -1915,7 +1906,6 @@ class CanvasRenderingContext2DTestAcceleratedMultipleDisables
   }
 
  private:
-  base::test::ScopedFeatureList feature_list_;
   ScopedTestingPlatformSupport<GpuMemoryBufferTestPlatform> platform_;
 };
 
