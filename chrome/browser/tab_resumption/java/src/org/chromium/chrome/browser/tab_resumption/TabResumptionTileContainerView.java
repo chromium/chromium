@@ -11,6 +11,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.widget.LinearLayout;
 
 import androidx.annotation.Nullable;
@@ -28,7 +29,10 @@ public class TabResumptionTileContainerView extends LinearLayout {
     public void removeAllViews() {
         // Children alternate between tile and divider. Call destroy() on tiles.
         for (int i = 0; i < getChildCount(); ++i) {
-            ((TabResumptionTileView) getChildAt(i)).destroy();
+            View view = getChildAt(i);
+            if (view instanceof TabResumptionTileView) {
+                ((TabResumptionTileView) view).destroy();
+            }
         }
         super.removeAllViews();
     }
@@ -44,13 +48,27 @@ public class TabResumptionTileContainerView extends LinearLayout {
             SuggestionClickCallback suggestionClickCallback) {
         removeAllViews();
 
-        if (bundle.entries.size() > 0) {
-            int layoutId = R.layout.tab_resumption_module_single_tile_layout;
+        boolean isSingle = bundle.entries.size() == 1;
+        for (SuggestionEntry entry : bundle.entries) {
+            // Add divider if some tile already exists.
+            if (getChildCount() > 0) {
+                View divider =
+                        (View)
+                                LayoutInflater.from(getContext())
+                                        .inflate(
+                                                R.layout.tab_resumption_module_divider,
+                                                this,
+                                                false);
+                addView(divider);
+            }
+            int layoutId =
+                    isSingle
+                            ? R.layout.tab_resumption_module_single_tile_layout
+                            : R.layout.tab_resumption_module_multi_tile_layout;
             TabResumptionTileView tileView =
                     (TabResumptionTileView)
                             LayoutInflater.from(getContext()).inflate(layoutId, this, false);
-            SuggestionEntry entry = bundle.entries.get(0);
-            loadTileTexts(entry, bundle.referenceTimeMs, tileView);
+            loadTileTexts(entry, bundle.referenceTimeMs, isSingle, tileView);
             loadTileUrlImage(entry, urlImageProvider, tileView);
             tileView.bindSuggestionClickCallback(suggestionClickCallback, entry.url);
             addView(tileView);
@@ -59,19 +77,31 @@ public class TabResumptionTileContainerView extends LinearLayout {
 
     /** Renders the texts of a {@link TabResumptionTileView}. */
     private void loadTileTexts(
-            SuggestionEntry entry, long referenceTimeMs, TabResumptionTileView tileView) {
+            SuggestionEntry entry,
+            long referenceTimeMs,
+            boolean isSingle,
+            TabResumptionTileView tileView) {
         Resources res = getContext().getResources();
         String recencyString =
                 TabResumptionModuleUtils.getRecencyString(
                         getResources(), referenceTimeMs - entry.timestamp);
-        String preInfoText =
-                res.getString(R.string.tab_resumption_module_single_pre_info, entry.sourceName);
-        String postInfoText =
-                res.getString(
-                        R.string.tab_resumption_module_single_post_info,
-                        recencyString,
-                        entry.url.getHost());
-        tileView.setSuggestionTextsSingle(preInfoText, entry.title, postInfoText);
+        if (isSingle) {
+            String preInfoText =
+                    res.getString(R.string.tab_resumption_module_single_pre_info, entry.sourceName);
+            String postInfoText =
+                    res.getString(
+                            R.string.tab_resumption_module_single_post_info,
+                            recencyString,
+                            entry.url.getHost());
+            tileView.setSuggestionTextsSingle(preInfoText, entry.title, postInfoText);
+        } else {
+            String infoText =
+                    res.getString(
+                            R.string.tab_resumption_module_multi_info,
+                            recencyString,
+                            entry.sourceName);
+            tileView.setSuggestionTextsMulti(entry.title, infoText);
+        }
     }
 
     /** Loads the main URL image of a {@link TabResumptionTileView}. */

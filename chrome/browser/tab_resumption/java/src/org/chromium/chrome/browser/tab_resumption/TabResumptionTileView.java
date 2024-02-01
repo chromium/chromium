@@ -44,6 +44,18 @@ public class TabResumptionTileView extends RelativeLayout {
         setContentDescription(displayText);
     }
 
+    /**
+     * Assigns all texts for the "multi-tile" case.
+     *
+     * @param displayText Main text (page title).
+     * @param postInfoText Info to show below main text.
+     */
+    public void setSuggestionTextsMulti(String displayText, String infoText) {
+        ((TextView) findViewById(R.id.tile_display_text)).setText(displayText);
+        ((TextView) findViewById(R.id.tile_info_text)).setText(infoText);
+        setContentDescription(displayText);
+    }
+
     /** Assigns the main URL image. */
     public void setImageDrawable(Drawable drawable) {
         ((ImageView) findViewById(R.id.tile_icon)).setImageDrawable(drawable);

@@ -47,7 +47,9 @@ android_resources("java_resources") {
   sources = [
     "java/res/drawable/tab_resumption_module_icon_background.xml",
     "java/res/drawable/tab_resumption_module_ripple.xml",
+    "java/res/layout/tab_resumption_module_divider.xml",
     "java/res/layout/tab_resumption_module_layout.xml",
+    "java/res/layout/tab_resumption_module_multi_tile_layout.xml",
     "java/res/layout/tab_resumption_module_single_tile_layout.xml",
     "java/res/values/dimens.xml",
   ]

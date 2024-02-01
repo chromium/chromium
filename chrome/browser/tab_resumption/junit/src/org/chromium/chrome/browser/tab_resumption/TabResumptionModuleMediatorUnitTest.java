@@ -9,9 +9,11 @@ import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import android.app.Activity;
+import android.content.Context;
+import android.view.LayoutInflater;
 import android.view.ViewStub;
 
+import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.SmallTest;
 
 import org.junit.After;
@@ -24,7 +26,6 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
@@ -54,7 +55,6 @@ public class TabResumptionModuleMediatorUnitTest extends TestSupport {
     @Captor private ArgumentCaptor<Callback<List<SuggestionEntry>>> mFetchSuggestionCallbackCaptor;
     @Captor private ArgumentCaptor<GURL> mFetchImagePageUrlCaptor;
 
-    private Activity mActivity;
     private TabResumptionModuleView mModuleView;
     private TabResumptionModuleCoordinator mCoordinator;
     private PropertyModel mModel;
@@ -64,20 +64,15 @@ public class TabResumptionModuleMediatorUnitTest extends TestSupport {
     private GURL mLastClickUrl;
     private int mClickCount;
 
-    public TabResumptionModuleMediatorUnitTest() {
-        mActivity = Robolectric.buildActivity(Activity.class).setup().get();
-        // Need to set theme before inflating layout.
-        mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
-    }
-
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
 
+        Context context = ApplicationProvider.getApplicationContext();
+        context.setTheme(R.style.Theme_BrowserUI_DayNight);
         mModuleView =
                 (TabResumptionModuleView)
-                        mActivity
-                                .getLayoutInflater()
+                        LayoutInflater.from(context)
                                 .inflate(R.layout.tab_resumption_module_layout, null);
         when(mViewStub.inflate()).thenReturn(mModuleView);
 
@@ -115,7 +110,6 @@ public class TabResumptionModuleMediatorUnitTest extends TestSupport {
         mModel = null;
         mCoordinator = null;
         mModuleView = null;
-        mActivity = null;
     }
 
     @Test
@@ -225,11 +219,11 @@ public class TabResumptionModuleMediatorUnitTest extends TestSupport {
         Assert.assertEquals(entryNewest, bundle.entries.get(0));
         Assert.assertEquals(entryNewer, bundle.entries.get(1));
 
-        // Check image URL load request.
-        // TODO(crbug.com/1515325): Test load of second image URL once multi-tile support is added.
+        // Check image URL load requests.
         verify(mUrlImageProvider, atLeastOnce())
                 .fetchImageForUrl(mFetchImagePageUrlCaptor.capture(), any());
-        Assert.assertEquals(1, mFetchImagePageUrlCaptor.getAllValues().size());
+        Assert.assertEquals(2, mFetchImagePageUrlCaptor.getAllValues().size());
         Assert.assertEquals(entryNewest.url, mFetchImagePageUrlCaptor.getAllValues().get(0));
+        Assert.assertEquals(entryNewer.url, mFetchImagePageUrlCaptor.getAllValues().get(1));
     }
 }
