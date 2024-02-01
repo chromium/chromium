@@ -118,8 +118,6 @@ web_component_files_ts = [
   "bluetooth/bluetooth_pairing_request_code_page.ts",
   "bluetooth/bluetooth_pairing_ui.ts",
   "bluetooth/bluetooth_spinner_page.ts",
-
-  "personalization/wallpaper_grid_item_element.ts",
   "quick_unlock/fingerprint_progress.ts",
   "quick_unlock/pin_keyboard.ts",
   "quick_unlock/setup_pin_keyboard.ts",
@@ -189,7 +187,6 @@ icons_html_files = [
   "auth_setup/auth_setup_icons.html",
   "bluetooth/bluetooth_icons.html",
   "network/network_icons.html",
-  "personalization/personalization_shared_icons.html",
   "quick_unlock/fingerprint_progress_icons.html",
   "quick_unlock/pin_keyboard_icons.html",
   "sea_pen/sea_pen_icons.html",
@@ -215,9 +212,6 @@ css_files = [
   "multidevice_setup/multidevice_setup_shared.css",
   "navigation_shared_vars.css",
   "network/network_shared.css",
-  "personalization/cros_button_style.css",
-  "personalization/common.css",
-  "personalization/wallpaper.css",
   "sea_pen/sea_pen.css",
 ]
 
@@ -264,6 +258,7 @@ ts_library("build_ts") {
   in_files = non_web_component_files_ts + web_component_files_ts + mojo_files_ts
   composite = true
   deps = [
+    "//ash/webui/common/resources/personalization:build_ts",
     "//third_party/cros-components:cros_components_ts",
     "//third_party/material_web_components:bundle_lit_ts",
     "//third_party/material_web_components:library",
@@ -376,6 +371,7 @@ generate_grd("build_grd") {
     ":preprocess",
     "cellular_setup:build_grdp",
     "cr_elements:build_grdp",
+    "personalization:build_grdp",
     "//third_party/cros-components:cros_components_grdp",
     "//third_party/material_web_components:build_lit_grdp",
     "//third_party/material_web_components:build_mwc_grdp",
@@ -394,6 +390,7 @@ generate_grd("build_grd") {
     "$target_gen_dir/html_css_wrapper_files_resources.grdp",
     "$target_gen_dir/cellular_setup/resources.grdp",
     "$target_gen_dir/cr_elements/resources.grdp",
+    "$target_gen_dir/personalization/resources.grdp",
     "$root_gen_dir/third_party/cros-components/resources.grdp",
   ]
 }
@@ -458,11 +455,6 @@ generate_definitions_js_files = [
   "network/network_select.html.js",
   "network/network_shared.css.js",
   "network/onc_mojo.js",
-  "personalization/common.css.js",
-  "personalization/cros_button_style.css.js",
-  "personalization/personalization_shared_icons.html.js",
-  "personalization/wallpaper_grid_item_element.html.js",
-  "personalization/wallpaper.css.js",
   "quick_unlock/fingerprint_progress.html.js",
   "quick_unlock/fingerprint_progress_icons.html.js",
   "quick_unlock/pin_keyboard.html.js",

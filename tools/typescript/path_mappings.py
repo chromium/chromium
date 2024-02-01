@@ -75,6 +75,7 @@ def _add_ash_mappings(path_mappings, root_gen_dir, root_src_dir):
   shared_ts_folders = [
       "cellular_setup",
       "cr_elements",
+      "personalization",
 
       # List more folders here as they get migrated to use build_webui().
   ]
