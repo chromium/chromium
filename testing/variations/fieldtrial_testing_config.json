@@ -17474,6 +17474,21 @@
             ]
         }
     ],
+    "SharedStorageWorkletThreadImplementation": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "SharedBackingThread",
+                    "enable_features": [
+                        "SharedStorageWorkletSharedBackingThreadImplementation"
+                    ]
+                }
+            ]
+        }
+    ],
     "SharingHubDesktopScreenshots": [
         {
             "platforms": [
