@@ -838,8 +838,14 @@ class AXPosition {
           return true;
         }
 
+        // If the anchor is ignored, then by default it will not have a
+        // PreviousOnLineID set since we only set this on unignored nodes.
+        // However, it could still have something previous to it on the same
+        // line, like for example if we have some text on the same line, and a
+        // text node in the middle is set to aria-hidden.
         return text_position->GetPreviousOnLineID() == kInvalidAXNodeID &&
-               text_position->AtStartOfAnchor();
+               text_position->AtStartOfAnchor() &&
+               !text_position->GetAnchor()->IsIgnored();
     }
   }
 

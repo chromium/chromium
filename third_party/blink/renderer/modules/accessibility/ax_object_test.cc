@@ -980,6 +980,28 @@ TEST_F(AccessibilityTest, NextAndPreviousOnLineInert) {
   EXPECT_EQ("go ", previous->GetNode()->textContent());
 }
 
+TEST_F(AccessibilityTest, NextOnLineAriaHidden) {
+  // Note the spans must be in the same line or we could get other unwanted
+  // behavior. See https://crbug.com/1511390 for details.
+  SetBodyInnerHTML(R"HTML(
+    <div contenteditable="true" style="outline: 1px solid;">
+        <div>first line</div>
+        <span id="this">this line </span><span aria-hidden="true">is</span><span> broken.</span>
+        <div>last line</div>
+    </div>
+  )HTML");
+  const AXObject* this_object = GetAXObjectByElementId("this");
+  ASSERT_NE(nullptr, this_object);
+
+  const AXObject* next = this_object->NextOnLine();
+  ASSERT_NE(nullptr, next);
+  EXPECT_EQ(" broken.", next->GetNode()->textContent());
+
+  const AXObject* prev = next->PreviousOnLine();
+  ASSERT_NE(nullptr, prev);
+  EXPECT_EQ("this line ", prev->GetNode()->textContent());
+}
+
 TEST_F(AccessibilityTest, TableRowAndCellIsLineBreakingObject) {
   SetBodyInnerHTML(R"HTML(
       <table id="table">
