@@ -21,6 +21,7 @@ source_set("cells") {
   deps = [
     "//base",
     "//build:branding_buildflags",
+    "//components/autofill/core/common:common",
     "//components/resources:components_scaled_resources_grit",
     "//components/strings",
     "//ios/chrome/browser/shared/ui/table_view:styler",
@@ -45,6 +46,8 @@ source_set("unit_tests") {
   deps = [
     ":cells",
     "//base",
+    "//base/test:test_support",
+    "//components/autofill/core/common:common",
     "//ios/chrome/browser/shared/ui/table_view:styler",
     "//ios/chrome/browser/ui/autofill:autofill_ui",
     "//testing/gtest",

@@ -192,9 +192,12 @@ class CardUnmaskPromptViewControllerTest
     CVCHeaderItem* header_item = HeaderITem();
     EXPECT_TRUE(header_item);
 
+    NSString* expected_title = base::SysUTF16ToNSString(
+        card_unmask_prompt_controller_->GetWindowTitle());
     NSString* expected_instructions = base::SysUTF16ToNSString(
         card_unmask_prompt_controller_->GetInstructionsMessage());
 
+    EXPECT_NSEQ(header_item.titleText, expected_title);
     EXPECT_NSEQ(header_item.instructionsText, expected_instructions);
   }
 

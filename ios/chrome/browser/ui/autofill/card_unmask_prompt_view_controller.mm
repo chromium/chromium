@@ -141,7 +141,8 @@ const char kFooterDummyLinkTarget[] = "about:blank";
 
   // Provide context for users with Voice Over enabled.
   NSString* initialMessage =
-      [NSString stringWithFormat:@"%@\n%@", self.title, [self instructions]];
+      [NSString stringWithFormat:@"%@\n%@", self.title,
+                                 [_headerItem accessibilityLabels]];
   UIAccessibilityPostNotification(UIAccessibilityScreenChangedNotification,
                                   initialMessage);
 }
@@ -157,7 +158,6 @@ const char kFooterDummyLinkTarget[] = "about:blank";
   [model addSectionWithIdentifier:SectionIdentifierHeader];
 
   _headerItem = [self createHeaderItem];
-  [self updateInstructions];
   [model setHeader:_headerItem
       forSectionWithIdentifier:SectionIdentifierHeader];
 
@@ -268,7 +268,7 @@ const char kFooterDummyLinkTarget[] = "about:blank";
 
 // Displays the form for updating the card's expiration date.
 // Displayed on this state:
-//   - Header with instructions label and gPay badge.
+//   - Header view.
 //   - CVC input field.
 //   - Update expiration date input field.
 - (void)showUpdateExpirationDateForm {
@@ -280,8 +280,9 @@ const char kFooterDummyLinkTarget[] = "about:blank";
     return;
   }
 
-  // Load instructions for updating the expiration date.
-  [self updateInstructions];
+  _headerItem = [self createHeaderItem];
+  [self.tableViewModel setHeader:_headerItem
+        forSectionWithIdentifier:SectionIdentifierHeader];
 
   [self addExpirationDateInputItem];
 
@@ -295,8 +296,8 @@ const char kFooterDummyLinkTarget[] = "about:blank";
 
   [self updateConfirmButtonState];
 
-  // For Voice Over users, focus on the instructions to provide context about
-  // what to do next.
+  // For Voice Over users, focus on the text contents inside the header view to
+  // provide context about what to do next.
   UIAccessibilityPostNotification(
       UIAccessibilityLayoutChangedNotification,
       [self.tableView headerViewForSection:[self.tableViewModel
@@ -331,7 +332,15 @@ const char kFooterDummyLinkTarget[] = "about:blank";
 
 // Returns a newly created item for the header of the section.
 - (CVCHeaderItem*)createHeaderItem {
-  CVCHeaderItem* header = [[CVCHeaderItem alloc] initWithType:ItemTypeHeader];
+  if (_bridge == nullptr) {
+    return nil;
+  }
+  autofill::CardUnmaskPromptController* controller = _bridge->GetController();
+  CVCHeaderItem* header = [[CVCHeaderItem alloc]
+          initWithType:ItemTypeHeader
+             titleText:base::SysUTF16ToNSString(controller->GetWindowTitle())
+      instructionsText:base::SysUTF16ToNSString(
+                           controller->GetInstructionsMessage())];
   return header;
 }
 
@@ -429,11 +438,6 @@ const char kFooterDummyLinkTarget[] = "about:blank";
        toSectionWithIdentifier:SectionIdentifierInputs];
 }
 
-// Updates the instructions in the header.
-- (void)updateInstructions {
-  _headerItem.instructionsText = [self instructions];
-}
-
 // Reloads all sections of the table view using automatic row animations.
 // This method is used to update the views after the state of `self` changes.
 // `reloadData` could work as well but preferring the animated aproach for
@@ -506,15 +510,6 @@ const char kFooterDummyLinkTarget[] = "about:blank";
   }
 }
 
-// Helper method that fetches the instructions from the Controller.
-- (NSString*)instructions {
-  if (_bridge == nullptr) {
-    return nil;
-  }
-  autofill::CardUnmaskPromptController* controller = _bridge->GetController();
-  return base::SysUTF16ToNSString(controller->GetInstructionsMessage());
-}
-
 #pragma mark - TableViewTextEditItemDelegate
 
 - (void)tableViewItemDidChange:(TableViewTextEditItem*)tableViewItem {
@@ -562,7 +557,7 @@ const char kFooterDummyLinkTarget[] = "about:blank";
     forRowAtIndexPath:(NSIndexPath*)indexPath {
   // Only update focus for cells with input fields and when update focus is
   // needed.
-  // Don't update focus when Voice Over is running. Instead, the instructions
+  // Don't update focus when Voice Over is running. Instead, the text messages
   // will be read, providing more context for users with Voice Over enabled.
   if (UIAccessibilityIsVoiceOverRunning() ||
       _itemToFocus == ItemToFocus::kNone ||
