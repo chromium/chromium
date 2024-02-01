@@ -25,6 +25,8 @@
 
 #include "third_party/blink/renderer/platform/graphics/canvas_2d_layer_bridge.h"
 
+#include <utility>
+
 #include "base/feature_list.h"
 #include "cc/layers/texture_layer.h"
 #include "gpu/GLES2/gl2extchromium.h"
@@ -154,8 +156,14 @@ void Canvas2DLayerBridge::Hibernate() {
     logger_->ReportHibernationEvent(kHibernationAbortedDueSnapshotFailure);
     return;
   }
+  sk_sp<SkImage> sw_image =
+      snapshot->PaintImageForCurrentFrame().GetSwSkImage();
+  if (!sw_image) {
+    logger_->ReportHibernationEvent(kHibernationAbortedDueSnapshotFailure);
+    return;
+  }
   hibernation_handler_.SaveForHibernation(
-      snapshot->PaintImageForCurrentFrame().GetSwSkImage(),
+      std::move(sw_image),
       resource_host_->ResourceProvider()->ReleaseRecorder());
 
   ResetResourceProvider();

@@ -105,6 +105,7 @@ void CanvasHibernationHandler::SaveForHibernation(
     sk_sp<SkImage>&& image,
     std::unique_ptr<MemoryManagedPaintRecorder> recorder) {
   DCheckInvariant();
+  DCHECK(image);
   epoch_++;
   image_ = image;
   recorder_ = std::move(recorder);
@@ -119,7 +120,7 @@ void CanvasHibernationHandler::SaveForHibernation(
   HibernatedCanvasMemoryDumpProvider::GetInstance().Register(this);
 
   // Don't bother compressing very small canvases.
-  if (ImageMemorySize(*image) < 16 * 1024 ||
+  if (ImageMemorySize(*image_) < 16 * 1024 ||
       !base::FeatureList::IsEnabled(features::kCanvasCompressHibernatedImage)) {
     return;
   }
