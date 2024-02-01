@@ -2300,6 +2300,12 @@
   },
   'context_lost_passthrough_tests': {
     'modifications': {
+      'Win11 FYI arm64 Release (Qualcomm Adreno 690)': {
+        'args': [
+          # These devices have issues running these tests in parallel.
+          '--jobs=1',
+        ],
+      },
       'win-arm64-rel': {
         'args': [
           # These devices have issues running these tests in parallel.
@@ -2308,6 +2314,13 @@
       },
     },
     'replacements': {
+      'Win11 FYI arm64 Release (Qualcomm Adreno 690)': {
+        'args': {
+          # Magic substitution happens after regular replacement, so remove it
+          # now since we are manually applying the number of jobs above.
+          '$$MAGIC_SUBSTITUTION_GPUParallelJobs': None,
+        },
+      },
       'win-arm64-rel': {
         'args': {
           # Magic substitution happens after regular replacement, so remove it
@@ -2979,6 +2992,12 @@
           # TODO(crbug.com/1505895): Remove this filter when these tests no
           # longer crash on the newer driver.
           '--gtest_filter=-DelegatedInkPointRendererGpuTest.DrawPointsAsTheyArrive:DelegatedInkPointRendererGpuTest.MaximumPointerIds:DelegatedInkPointRendererGpuTest.MultiplePointerIds:DelegatedInkPointRendererGpuTest.StoreAndRemovePointsAndTokens',
+        ],
+      },
+      'Win11 FYI arm64 Release (Qualcomm Adreno 690)': {
+        'args': [
+          # crbug.com/1523061
+          '--test-launcher-filter-file=../../testing/buildbot/filters/win.win_arm64.gl_unittests.filter',
         ],
       },
       'android-12-x64-rel': {
@@ -4102,6 +4121,16 @@
       },
     }
   },
+  'services_webnn_unittests': {
+    'modifications': {
+      'Win11 FYI arm64 Release (Qualcomm Adreno 690)': {
+        'args': [
+          # crbug.com/1522972
+          '--test-launcher-filter-file=../../testing/buildbot/filters/win.win_arm64.services_webnn_unittests.filter',
+        ],
+      },
+    },
+  },
   'snapshot_unittests': {
     'modifications': {
       'fuchsia-fyi-arm64-dbg': {
@@ -4839,6 +4868,13 @@
       },
     },
   },
+  'webgl_conformance_d3d9_passthrough_tests': {
+    'remove_from': [
+      # Per discussion on crbug.com/1523698, we aren't interested in testing
+      # D3D9 on this newer hardware.
+      'Win11 FYI arm64 Release (Qualcomm Adreno 690)',
+    ],
+  },
   'webgl_conformance_gl_passthrough_ganesh_tests 1002:67ef': {
     'modifications': {
       'mac_optional_gpu_tests_rel': {
@@ -4901,6 +4937,12 @@
         },
       },
     },
+  },
+  'webgl_conformance_vulkan_passthrough_tests': {
+    'remove_from': [
+      # Vulkan is not supported on these devices.
+      'Win11 FYI arm64 Release (Qualcomm Adreno 690)',
+    ],
   },
   'webgpu_blink_web_tests': {
     'remove_from': [
@@ -5305,5 +5347,12 @@
         ],
       },
     },
+  },
+  'xr_browser_tests': {
+    'remove_from': [
+      # No Windows arm64 devices currently support XR features, so don't bother
+      # running related tests.
+      'Win11 FYI arm64 Release (Qualcomm Adreno 690)',
+    ],
   },
 }

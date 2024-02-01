@@ -53,6 +53,7 @@ TAG_SPECIALIZATIONS = {
         'win': [
             'win8',
             'win10',
+            'win11',
         ],
     },
     'BROWSER_TAGS': {

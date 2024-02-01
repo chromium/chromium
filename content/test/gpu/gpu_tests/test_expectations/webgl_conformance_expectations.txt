@@ -6,7 +6,7 @@
 #         fuchsia
 #         linux ubuntu
 #         mac highsierra mojave catalina bigsur monterey ventura
-#         win win8 win10 ]
+#         win win8 win10 win11 ]
 # Devices
 # tags: [ android-nexus-5x android-pixel-2 android-pixel-4
 #             android-pixel-6 android-shield-android-tv android-sm-a135m
@@ -506,6 +506,13 @@ crbug.com/1291276 [ win nvidia angle-vulkan passthrough ] conformance/ogles/GL/m
 
 ## Win / D3D9
 crbug.com/1450353 [ win angle-d3d9 passthrough ] conformance/uniforms/out-of-bounds-uniform-array-access.html [ Failure ]
+
+## Win / Adreno 690 / D3D11
+crbug.com/1523062 [ win11 qualcomm-0x41333430 angle-d3d11 ] conformance/rendering/bind-framebuffer-flush-bug.html [ Failure ]
+crbug.com/1523062 [ win11 qualcomm-0x41333430 angle-d3d11 ] conformance/textures/misc/mipmap-fbo.html [ Failure ]
+crbug.com/1523062 [ win11 qualcomm-0x41333430 angle-d3d11 ] conformance/textures/misc/texture-mips.html [ Failure ]
+crbug.com/1523067 [ win11 qualcomm-0x41333430 angle-d3d11 ] conformance/more/conformance/methods.html [ Failure ]
+crbug.com/1523067 [ win11 qualcomm-0x41333430 angle-d3d11 ] conformance/textures/video/tex-2d-luminance_alpha-luminance_alpha-unsigned_byte.html [ Failure ]
 
 ####################
 # Mac failures     #

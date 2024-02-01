@@ -6,7 +6,7 @@
 #         fuchsia
 #         linux ubuntu
 #         mac highsierra mojave catalina bigsur monterey ventura
-#         win win8 win10 ]
+#         win win8 win10 win11 ]
 # Devices
 # tags: [ android-nexus-5x android-pixel-2 android-pixel-4
 #             android-pixel-6 android-shield-android-tv android-sm-a135m
@@ -298,9 +298,14 @@ crbug.com/1488026 [ android android-nexus-5x ] Pixel_Video_HEVC [ Skip ]
 [ android android-shield-android-tv ] Pixel_SVGHuge [ Slow ]
 [ android android-sm-a135m ] Pixel_SVGHuge [ Slow ]
 [ android android-sm-a235m ] Pixel_SVGHuge [ Slow ]
+# Also applies to Windows arm64.
+[ win qualcomm-0x41333430 ] Pixel_SVGHuge [ Slow ]
 # Doesn't hit heartbeat timeouts, but can time out when trying to execute
 # JavaScript after the SVG is loaded.
 [ mac intel release no-asan graphite-disabled ] Pixel_SVGHuge [ Slow ]
+
+# Context recovery can be slow on these devices.
+[ win11 qualcomm-0x41333430 ] Pixel_Video_Context_Loss_MP4 [ Slow ]
 
 ###################
 # Failures/Flakes #

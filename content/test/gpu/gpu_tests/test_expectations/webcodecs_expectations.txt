@@ -6,7 +6,7 @@
 #         fuchsia
 #         linux ubuntu
 #         mac highsierra mojave catalina bigsur monterey ventura
-#         win win8 win10 ]
+#         win win8 win10 win11 ]
 # Devices
 # tags: [ android-nexus-5x android-pixel-2 android-pixel-4
 #             android-pixel-6 android-shield-android-tv android-sm-a135m
@@ -160,6 +160,9 @@ crbug.com/1466102 [ nvidia-0x2184 nvidia_lt_31.0.15.4601 win ] WebCodecs_FrameSi
 crbug.com/1517101 [ win amd-0x7340 ] WebCodecs_FrameSizeChange_hvc1.1.6.L123.00_* [ Failure ]
 
 crbug.com/1523726 [ win intel ] WebCodecs_Encode_hw_decoder_avc1.42001E_prefer-software [ RetryOnFailure ]
+
+crbug.com/1522976 [ win11 qualcomm-0x41333430 ] WebCodecs_AudioEncoding_AAC_LC [ Failure ]
+crbug.com/1522976 [ win11 qualcomm-0x41333430 ] WebCodecs_AudioEncoding_AAC_LC_ADTS [ Failure ]
 
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
