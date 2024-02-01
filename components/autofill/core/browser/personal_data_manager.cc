@@ -226,12 +226,6 @@ void ReceiveLoadedDbValues(WebDataServiceBase::Handle h,
           ->GetValue());
 }
 
-// A helper function for finding the maximum value in a string->int map.
-static bool CompareVotes(const std::pair<std::string, int>& a,
-                         const std::pair<std::string, int>& b) {
-  return a.second < b.second;
-}
-
 // Orders all `profiles` by the specified `order` rule.
 void OrderProfiles(std::vector<AutofillProfile*>& profiles,
                    PersonalDataManager::ProfileOrder order) {
@@ -2392,7 +2386,7 @@ std::string PersonalDataManager::MostCommonCountryCodeFromProfiles() const {
   const std::vector<AutofillProfile*>& profiles = GetProfiles();
   const std::vector<std::string>& country_codes =
       CountryDataMap::GetInstance()->country_codes();
-  for (auto* profile : profiles) {
+  for (const AutofillProfile* profile : profiles) {
     std::string country_code = base::ToUpperASCII(
         base::UTF16ToASCII(profile->GetRawInfo(ADDRESS_HOME_COUNTRY)));
     if (base::Contains(country_codes, country_code)) {
@@ -2402,8 +2396,9 @@ std::string PersonalDataManager::MostCommonCountryCodeFromProfiles() const {
 
   // Take the most common country code.
   if (!votes.empty()) {
-    auto iter = std::max_element(votes.begin(), votes.end(), CompareVotes);
-    return iter->first;
+    return base::ranges::max_element(
+               votes, [](auto& a, auto& b) { return a.second < b.second; })
+        ->first;
   }
 
   return std::string();
