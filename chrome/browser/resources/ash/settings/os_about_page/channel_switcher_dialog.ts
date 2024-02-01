@@ -28,13 +28,6 @@ import {castExists} from '../assert_extras.js';
 import {AboutPageBrowserProxy, AboutPageBrowserProxyImpl, BrowserChannel, isTargetChannelMoreStable} from './about_page_browser_proxy.js';
 import {getTemplate} from './channel_switcher_dialog.html.js';
 
-interface SettingsChannelSwitcherDialogElement {
-  $: {
-    dialog: CrDialogElement,
-    warningSelector: IronSelectorElement,
-  };
-}
-
 const WarningMessage = {
   NONE: -1,
   ENTERPRISE_MANAGED: 0,
@@ -42,7 +35,16 @@ const WarningMessage = {
   UNSTABLE: 2,
 };
 
-class SettingsChannelSwitcherDialogElement extends PolymerElement {
+export interface SettingsChannelSwitcherDialogElement {
+  $: {
+    changeChannel: HTMLElement,
+    changeChannelAndPowerwash: HTMLElement,
+    dialog: CrDialogElement,
+    warningSelector: IronSelectorElement,
+  };
+}
+
+export class SettingsChannelSwitcherDialogElement extends PolymerElement {
   static get is() {
     return 'settings-channel-switcher-dialog';
   }

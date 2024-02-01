@@ -202,6 +202,8 @@ build_webui_tests("build") {
     "os_a11y_page/text_to_speech_subpage_test.ts",
     "os_a11y_page/tts_voice_subpage_test.ts",
 
+    "os_about_page/channel_switcher_dialog_test.ts",
+
     "os_apps_page/app_management_page/app_detail_view_test.ts",
     "os_apps_page/app_management_page/app_details_item_test.ts",
     "os_apps_page/app_management_page/app_item_test.ts",
