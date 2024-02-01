@@ -209056,7 +209056,7 @@
        ]
       ],
       "standards-decor-noblur-2.html": [
-       "5b420da52b8aec6ab1ebd92b70f014e2fba6258c",
+       "75d95b578dcf08d073576940c7a7a06f6458909e",
        [
         null,
         [
@@ -209072,11 +209072,11 @@
            [
             [
              0,
-             2
+             40
             ],
             [
              0,
-             10
+             14
             ]
            ]
           ]
@@ -323592,7 +323592,7 @@
       []
      ],
      "highlight-pseudo-computed-expected.txt": [
-      "e30e888e6778bfe46c727c3bbe8db68d33b08969",
+      "33d5608731297516b03eafc8a03fe5b852e354f7",
       []
      ],
      "painting": {
@@ -341696,7 +341696,7 @@
       []
      ],
      "minmax-percentage-serialize-expected.txt": [
-      "ad75e4f6c23d5db1cf9ed0c25b6be5d21a56ed58",
+      "ae7598061a545cb00b15fa5d7ce7cae14af6e41c",
       []
      ],
      "negative-calc-to-non-negative-integer-ref.html": [
@@ -347362,7 +347362,7 @@
       []
      ],
      "page-visibility-hidden-001-print-ref.html": [
-      "fd519c85525f1e65ea766e8e728843ade9ec062a",
+      "24d3806eb99421a98c7a189c8a0348b592c5fb0c",
       []
      ],
      "paused-animations-print-ref.html": [
@@ -389727,7 +389727,7 @@
          []
         ],
         "direct.py": [
-         "efb3479e7082db8a55a5d63a5334496e2934d7b1",
+         "c2bcfce67c5aaf894a935f515e64b3b867cb77fd",
          []
         ],
         "direct.txt": [
@@ -389757,7 +389757,7 @@
          ]
         },
         "router-rules.js": [
-         "ceae91f5b849bf26cfbcd24a907beb227a6d0672",
+         "4e6f8bb95594cc6b45608ff3aa99507d6fb4096c",
          []
         ],
         "simple-test-for-condition-main-resource.html": [
@@ -389778,6 +389778,10 @@
         ],
         "static-router-no-fetch-handler-sw.js": [
          "1ba5fd7d463b7913fd13425bcf977e383c4795cd",
+         []
+        ],
+        "static-router-race-network-and-fetch-handler-sw.js": [
+         "468116eea80bcc65d1ec33fb6492e04d720a2d2f",
          []
         ],
         "static-router-sw.js": [
@@ -389856,7 +389860,11 @@
        "8033ce0169f4aa83b54c3567c68c4cc4f5b7a490",
        []
       ]
-     }
+     },
+     "text-selection-with-delegatesFocus-expected.txt": [
+      "8020a28272d31615608a6c2f9619b84047d505e2",
+      []
+     ]
     },
     "focus-navigation": {
      "resources": {
@@ -397665,6 +397673,14 @@
        []
       ],
       "html": {
+       "beforeunload.html": [
+        "d4332c28941c34dd0a05f43fd83c001fb5b20b54",
+        []
+       ],
+       "default.html": [
+        "c15d0a7eb759d94f08cfda2791e9c3e61c3756d3",
+        []
+       ],
        "deleteframe.html": [
         "fd757e6db0dce6b3cd787e81091763cc77983a30",
         []
@@ -471460,7 +471476,7 @@
       ]
      ],
      "minmax-percentage-serialize.html": [
-      "65ab9fad961feb87d82955c30659321423a04e3a",
+      "0452818ae09d7959429205d2ece8702b0027f98e",
       [
        null,
        {}
@@ -629049,6 +629065,13 @@
          {}
         ]
        ],
+       "static-router-race-network-and-fetch-handler.https.html": [
+        "de31f6c53ff09895071e33ead46c6b448c23bc41",
+        [
+         null,
+         {}
+        ]
+       ],
        "static-router-request-destination.https.html": [
         "55ad6da31aad1058d9707bd63867142a80a9743c",
         [
@@ -629869,6 +629892,15 @@
      ],
      "focus-tabindex-order-shadow-zero.html": [
       "d8b12ed8ac6e24553f0cccced7f1616bb588413e",
+      [
+       null,
+       {
+        "testdriver": true
+       }
+      ]
+     ],
+     "text-selection-with-delegatesFocus.html": [
+      "7c92d35394f126d878780a1c04f2bdb49550ba86",
       [
        null,
        {
@@ -645224,7 +645256,7 @@
       {}
      ]
     ],
-    "TrustedTypePolicyFactory-blocking.html": [
+    "TrustedTypePolicyFactory-blocking.tentative.html": [
      "6ae71b69880a0313a549b586a04fa38b4be466e2",
      [
       null,
@@ -710459,14 +710491,14 @@
       },
       "back": {
        "back.py": [
-        "dfd194523138f3ed6378eda9634afdb423977c28",
+        "bfc5e0f4a398ec097896cfc955f0f5efdf317bfc",
         [
          null,
          {}
         ]
        ],
        "user_prompts.py": [
-        "9d04f0f4ab12d98f0313639013fce4f26869a753",
+        "1020a6aaa613889c3e032510e9eb21b76ca13f1c",
         [
          null,
          {
@@ -710484,7 +710516,7 @@
         ]
        ],
        "user_prompts.py": [
-        "c0f9cc7610c21ea97064392eb2e09fce6f853bbc",
+        "37928f97589dee7f966824103b1396f16c8b5f5a",
         [
          null,
          {
@@ -710637,7 +710669,7 @@
         ]
        ],
        "user_prompts.py": [
-        "140aceb3cedfe84ec8f9a3ac0285497b6e670285",
+        "a4c62cbca7784fe8303dad8f5f78d2a72a404aa6",
         [
          null,
          {
@@ -710764,7 +710796,7 @@
         ]
        ],
        "user_prompts.py": [
-        "e39574fd4ac1b734006614c4ab6caf0a9542676b",
+        "5243b372e5a5ca81f17b741ab73639be64e68e3e",
         [
          null,
          {
@@ -710838,7 +710870,7 @@
         ]
        ],
        "user_prompts.py": [
-        "48d735ea754c0f74726d5a89f43eabb245b8bc5a",
+        "74d4c47fc064f7b498def6a838ce36d3d5604ccf",
         [
          null,
          {
@@ -710964,14 +710996,14 @@
       },
       "forward": {
        "forward.py": [
-        "6774e522105d3aac24d9594af9ffb1b724aff00d",
+        "8bc75a07c0e61f95802a27b70d4a56ea6f0300a5",
         [
          null,
          {}
         ]
        ],
        "user_prompts.py": [
-        "3eeaf6e71cdb7311614b271257f4cd6d19a2e619",
+        "dfcba6469d5e6b7101976faa9a836733f13ec710",
         [
          null,
          {
@@ -711027,7 +711059,7 @@
       },
       "get_alert_text": {
        "get.py": [
-        "7ee7ff1808f928e67ab0e3423c13a885e28db08f",
+        "e8d0aa04e61d9d5a483702a5cef56a34be9dc641",
         [
          null,
          {}
@@ -711453,7 +711485,7 @@
         ]
        ],
        "user_prompts.py": [
-        "682bc40f4fe9d4b530b406a74b1451bbf88a5d75",
+        "db8d094ebbdf556167544b98110e7dd4ac0492c2",
         [
          null,
          {
@@ -711711,7 +711743,7 @@
         ]
        ],
        "user_prompts.py": [
-        "872325bb313dc92359bfaf813f84ac14cfd3a943",
+        "7fcd720624b1006cb1b5ff43305c79e00279ce0d",
         [
          null,
          {
@@ -711772,14 +711804,14 @@
       },
       "refresh": {
        "refresh.py": [
-        "19490a0a458c510a3c0f263d9f233b232e198c30",
+        "3f434a3012fe18ff8939fe5bc68579932ae14f4d",
         [
          null,
          {}
         ]
        ],
        "user_prompts.py": [
-        "7e944b53b0964e68b897e6315faa0cfa65802143",
+        "5787533b5727f05370bc3f9257c7723b12a1c0d3",
         [
          null,
          {
