@@ -113,12 +113,13 @@ class TabStripViewController: UIViewController, TabStripCellDelegate,
       /// `leftStaticSeparator` constraints.
       leftStaticSeparator.leftAnchor.constraint(equalTo: collectionView.leftAnchor),
       leftStaticSeparator.bottomAnchor.constraint(
-        equalTo: collectionView.bottomAnchor),
-
+        equalTo: collectionView.bottomAnchor,
+        constant: -TabStripConstants.StaticSeparator.bottomInset),
       /// `rightStaticSeparator` constraints.
       rightStaticSeparator.rightAnchor.constraint(equalTo: collectionView.rightAnchor),
       rightStaticSeparator.bottomAnchor.constraint(
-        equalTo: collectionView.bottomAnchor),
+        equalTo: collectionView.bottomAnchor,
+        constant: -TabStripConstants.StaticSeparator.bottomInset),
     ])
   }
 
