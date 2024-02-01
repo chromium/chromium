@@ -552,7 +552,6 @@ void V4L2StatefulVideoDecoder::Reset(base::OnceClosure closure) {
   // Invalidate pointers from and cancel all hypothetical in-flight requests
   // to the WaitOnceForEvents() routine.
   weak_ptr_factory_for_events_.InvalidateWeakPtrs();
-  weak_ptr_factory_for_CAPTURE_availability_.InvalidateWeakPtrs();
   cancelable_task_tracker_.TryCancelAll();
 
   if (h264_frame_reassembler_) {
