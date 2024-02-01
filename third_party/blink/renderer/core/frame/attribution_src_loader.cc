@@ -563,6 +563,19 @@ AttributionSrcLoader::ReportingOriginForUrlIfValid(
     UseCounter::Count(window, mojom::blink::WebFeature::kPrivacySandboxAdsAPIs);
   }
 
+  // The Attribution-Reporting-Support header is set on the request in the
+  // network service and the context is unavailable. This is an approximate
+  // proxy to when the header is set, and aligned with the counter for regular
+  // Attribution Reporting API that sets the Attribution-Reporting-Eligible
+  // header on the request.
+  if (RuntimeEnabledFeatures::AttributionReportingCrossAppWebEnabled(window) &&
+      base::FeatureList::IsEnabled(
+          network::features::kAttributionReportingCrossAppWeb)) {
+    UseCounter::Count(window,
+                      mojom::blink::WebFeature::
+                          kAttributionReportingCrossAppWebSupportHeader);
+  }
+
   return reporting_origin;
 }
 
