@@ -490,7 +490,7 @@ CanvasRenderingContext* HTMLCanvasElement::GetCanvasRenderingContextInternal(
   if (!context_)
     return nullptr;
 
-  if (IsWebGL() || IsWebGPU()) {
+  if (IsWebGL() || IsWebGPU() || IsImageBitmapRenderingContext()) {
     context_->SetFilterQuality(FilterQuality());
   }
   context_->RecordUKMCanvasRenderingAPI();
@@ -933,8 +933,10 @@ void HTMLCanvasElement::SetFilterQuality(
   if (IsOffscreenCanvasRegistered())
     UpdateOffscreenCanvasFilterQuality(filter_quality);
 
-  if (context_ && (IsWebGL() || IsWebGPU()))
+  if (context_ &&
+      (IsWebGL() || IsWebGPU() || IsImageBitmapRenderingContext())) {
     context_->SetFilterQuality(filter_quality);
+  }
 }
 
 // In some instances we don't actually want to paint to the parent layer
