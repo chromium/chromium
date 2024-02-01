@@ -127,9 +127,10 @@ ActionOnApiError GetRecoveryActionOnApiError(
 
 PasswordStoreAndroidAccountBackend::PasswordStoreAndroidAccountBackend(
     PrefService* prefs,
-    AffiliationsPrefetcher* affiliations_prefetcher)
+    AffiliationsPrefetcher* affiliations_prefetcher,
+    password_manager::IsAccountStore is_account_store)
     : PasswordStoreAndroidBackend(
-          PasswordStoreAndroidBackendBridgeHelper::Create(),
+          PasswordStoreAndroidBackendBridgeHelper::Create(is_account_store),
           std::make_unique<PasswordManagerLifecycleHelperImpl>(),
           prefs),
       affiliations_prefetcher_(affiliations_prefetcher),

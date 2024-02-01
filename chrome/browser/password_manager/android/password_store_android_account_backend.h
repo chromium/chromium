@@ -7,6 +7,7 @@
 
 #include "chrome/browser/password_manager/android/password_store_android_backend.h"
 #include "components/password_manager/core/browser/password_store/password_store_backend.h"
+#include "components/password_manager/core/browser/password_store/password_store_interface.h"
 
 namespace syncer {
 class SyncService;
@@ -23,9 +24,12 @@ class PasswordSyncControllerDelegateAndroid;
 class PasswordStoreAndroidAccountBackend : public PasswordStoreBackend,
                                            public PasswordStoreAndroidBackend {
  public:
+  // `is_account_store` allows to control whether the backend is used by profile
+  // or account password store.
   PasswordStoreAndroidAccountBackend(
       PrefService* prefs,
-      AffiliationsPrefetcher* affiliations_prefetcher);
+      AffiliationsPrefetcher* affiliations_prefetcher,
+      password_manager::IsAccountStore is_account_store);
 
   PasswordStoreAndroidAccountBackend(
       base::PassKey<class PasswordStoreAndroidAccountBackendTest>,

@@ -18,7 +18,10 @@ PasswordStoreAndroidLocalBackend::PasswordStoreAndroidLocalBackend(
     PrefService* prefs,
     AffiliationsPrefetcher* affiliations_prefetcher)
     : PasswordStoreAndroidLocalBackend(
-          PasswordStoreAndroidBackendBridgeHelper::Create(),
+          // The local android backend can only be created for the profile
+          // store.
+          PasswordStoreAndroidBackendBridgeHelper::Create(
+              password_manager::kProfileStore),
           std::make_unique<PasswordManagerLifecycleHelperImpl>(),
           prefs,
           affiliations_prefetcher) {}

@@ -41,8 +41,6 @@ namespace password_manager {
 
 struct PasswordForm;
 
-using IsAccountStore = base::StrongAlias<class IsAccountStoreTag, bool>;
-
 using metrics_util::GaiaPasswordHashChange;
 
 class PasswordStoreConsumer;

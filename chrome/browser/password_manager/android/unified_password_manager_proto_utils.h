@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "components/password_manager/core/browser/password_form.h"
+#include "components/password_manager/core/browser/password_store/password_store_interface.h"
 
 namespace password_manager {
 
@@ -26,12 +27,16 @@ PasswordForm PasswordFromProtoWithLocalData(
     const PasswordWithLocalData& password);
 
 // Converts the `list_result` to PasswordForms and returns them in a vector.
+// `is_account_store` sets proper `in_store` for all PasswordForms.
 std::vector<PasswordForm> PasswordVectorFromListResult(
-    const ListPasswordsResult& list_result);
+    const ListPasswordsResult& list_result,
+    IsAccountStore is_account_store);
 std::vector<PasswordForm> PasswordVectorFromListResult(
-    const ListAffiliatedPasswordsResult& list_result);
+    const ListAffiliatedPasswordsResult& list_result,
+    IsAccountStore is_account_store);
 std::vector<PasswordForm> PasswordVectorFromListResult(
-    const ListPasswordsWithUiInfoResult& list_result);
+    const ListPasswordsWithUiInfoResult& list_result,
+    IsAccountStore is_account_store);
 
 }  // namespace password_manager
 

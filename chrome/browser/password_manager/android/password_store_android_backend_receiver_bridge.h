@@ -12,6 +12,7 @@
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_store/android_backend_error.h"
 #include "components/password_manager/core/browser/password_store/password_store_backend.h"
+#include "components/password_manager/core/browser/password_store/password_store_interface.h"
 
 namespace password_manager {
 
@@ -63,7 +64,8 @@ class PasswordStoreAndroidBackendReceiverBridge {
 
   // Factory function for creating the bridge. Implementation is pulled in by
   // including an implementation or by defining it explicitly in tests.
-  static std::unique_ptr<PasswordStoreAndroidBackendReceiverBridge> Create();
+  static std::unique_ptr<PasswordStoreAndroidBackendReceiverBridge> Create(
+      password_manager::IsAccountStore is_account_store);
 };
 
 }  // namespace password_manager

@@ -17,7 +17,8 @@ namespace password_manager {
 class PasswordStoreAndroidBackendReceiverBridgeImpl
     : public password_manager::PasswordStoreAndroidBackendReceiverBridge {
  public:
-  PasswordStoreAndroidBackendReceiverBridgeImpl();
+  PasswordStoreAndroidBackendReceiverBridgeImpl(
+      password_manager::IsAccountStore is_account_store);
   PasswordStoreAndroidBackendReceiverBridgeImpl(
       PasswordStoreAndroidBackendReceiverBridgeImpl&&) = delete;
   PasswordStoreAndroidBackendReceiverBridgeImpl(
@@ -79,6 +80,11 @@ class PasswordStoreAndroidBackendReceiverBridgeImpl
   // `PasswordStoreAndroidBackendReceiverBridgeImpl`, i.e. the Java counterpart
   // to this class.
   base::android::ScopedJavaGlobalRef<jobject> java_object_;
+
+  // Differentiates between a receiver bridge backing an AccountStore vs a
+  // ProfileStore. Use to mark the received passwords as Profile or Account
+  // passwords.
+  password_manager::IsAccountStore is_account_store_;
 
   // All callbacks should be called on the same background thread.
   SEQUENCE_CHECKER(main_sequence_checker_);

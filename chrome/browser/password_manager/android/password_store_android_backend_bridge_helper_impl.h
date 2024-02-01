@@ -19,7 +19,8 @@ namespace password_manager {
 class PasswordStoreAndroidBackendBridgeHelperImpl
     : public PasswordStoreAndroidBackendBridgeHelper {
  public:
-  PasswordStoreAndroidBackendBridgeHelperImpl();
+  explicit PasswordStoreAndroidBackendBridgeHelperImpl(
+      password_manager::IsAccountStore is_account_store);
   PasswordStoreAndroidBackendBridgeHelperImpl(
       base::PassKey<class PasswordStoreAndroidBackendBridgeHelperImplTest>,
       std::unique_ptr<PasswordStoreAndroidBackendReceiverBridge>
