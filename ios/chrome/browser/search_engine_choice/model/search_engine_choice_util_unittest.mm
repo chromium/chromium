@@ -57,14 +57,8 @@ class SearchEngineChoiceUtilTest : public PlatformTest {
     browser_state_ = builder.Build();
     template_url_service_ = ios::TemplateURLServiceFactory::GetForBrowserState(
         browser_state_.get());
-
-    [[NSUserDefaults standardUserDefaults] setBool:YES
-                                            forKey:kSearchEngineForceEnabled];
-  }
-
-  ~SearchEngineChoiceUtilTest() override {
-    [[NSUserDefaults standardUserDefaults]
-        removeObjectForKey:kSearchEngineForceEnabled];
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(
+        kSearchEngineForceEnabled);
   }
 
   TestChromeBrowserState& browser_state() { return *browser_state_; }

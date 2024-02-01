@@ -1481,8 +1481,8 @@ void DismissDefaultBrowserAndOmniboxPositionSelectionScreens() {
   // case, France).
   config.additional_args.push_back("--search-engine-choice-country=FR");
   config.features_enabled.push_back(switches::kSearchEngineChoiceTrigger);
-  config.additional_args.push_back(
-      std::string("-") + base::SysNSStringToUTF8(kSearchEngineForceEnabled));
+  config.additional_args.push_back("--" +
+                                   std::string(kSearchEngineForceEnabled));
   config.additional_args.push_back("true");
   return config;
 }

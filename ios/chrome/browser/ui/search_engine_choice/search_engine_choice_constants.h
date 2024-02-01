@@ -40,6 +40,6 @@ extern NSString* const kSearchEngineTableViewIdentifier;
 extern NSString* const kSearchEngineMoreButtonIdentifier;
 
 // Flags that allow to enable the search engine choice in tests.
-extern NSString* const kSearchEngineForceEnabled;
+extern const char* const kSearchEngineForceEnabled;
 
 #endif  // IOS_CHROME_BROWSER_UI_SEARCH_ENGINE_CHOICE_SEARCH_ENGINE_CHOICE_CONSTANTS_H_

@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/search_engine_choice/search_engine_choice_ui_util.h"
 
+#import "base/command_line.h"
 #import "base/i18n/rtl.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
@@ -140,6 +141,6 @@ UIImage* SearchEngineFaviconFromTemplateURL(const TemplateURL& template_url) {
 }
 
 bool IsSearchEngineForceEnabled() {
-  return [[NSUserDefaults standardUserDefaults]
-      boolForKey:kSearchEngineForceEnabled];
+  return base::CommandLine::ForCurrentProcess()->HasSwitch(
+      kSearchEngineForceEnabled);
 }
