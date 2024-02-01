@@ -258,8 +258,10 @@ gfx::GpuMemoryBufferHandle GpuArcVideoFramePool::CreateGpuMemoryHandle(
     uint64_t modifier) {
   // Check whether we need to use protected buffers.
   if (!secure_mode_.has_value()) {
+    base::ScopedFD dup_fd(HANDLE_EINTR(dup(fd.get())));
     secure_mode_ = protected_buffer_manager_ &&
-                   IsBufferSecure(protected_buffer_manager_.get(), fd);
+                   protected_buffer_manager_->IsProtectedNativePixmapHandle(
+                       std::move(dup_fd));
   }
 
   gfx::GpuMemoryBufferHandle gmb_handle;
