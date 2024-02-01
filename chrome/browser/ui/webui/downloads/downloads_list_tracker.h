@@ -89,6 +89,8 @@ class DownloadsListTracker
   FRIEND_TEST_ALL_PREFIXES(DownloadsListTrackerTest,
                            CreateDownloadData_UrlFormatting_Idn);
   FRIEND_TEST_ALL_PREFIXES(DownloadsListTrackerTest,
+                           CreateDownloadData_UrlFormatting_Long);
+  FRIEND_TEST_ALL_PREFIXES(DownloadsListTrackerTest,
                            CreateDownloadData_UrlFormatting_VeryLong);
 #if BUILDFLAG(FULL_SAFE_BROWSING)
   FRIEND_TEST_ALL_PREFIXES(DownloadsListTrackerTest,
