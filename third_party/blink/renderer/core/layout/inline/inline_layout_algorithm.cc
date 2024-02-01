@@ -1666,10 +1666,9 @@ const LayoutResult* InlineLayoutAlgorithm::Layout() {
     // Propagate any break tokens for floats that we fragmented before or inside
     // to the block container in 3 steps: 1) in `PositionLeadingFloats`, 2) from
     // `LineInfo` here, 3) then `CreateLine` may propagate more.
-    for (const BreakToken* parallel_token :
+    for (const InlineBreakToken* parallel_token :
          line_info.ParallelFlowBreakTokens()) {
-      DCHECK(parallel_token->IsInlineType());
-      DCHECK(To<InlineBreakToken>(parallel_token)->IsInParallelBlockFlow());
+      DCHECK(parallel_token->IsInParallelBlockFlow());
       context_->PropagateParallelFlowBreakToken(parallel_token);
     }
     if (absl::optional<LayoutUnit> minimum_space_shortage =
