@@ -69,6 +69,8 @@ struct OpenXrExtensionMethods {
   PFN_xrDestroyTrackableTrackerANDROID xrDestroyTrackableTrackerANDROID{
       nullptr};
   PFN_xrRaycastANDROID xrRaycastANDROID{nullptr};
+
+  PFN_xrCreateAnchorSpaceANDROID xrCreateAnchorSpaceANDROID{nullptr};
 #endif
 };
 

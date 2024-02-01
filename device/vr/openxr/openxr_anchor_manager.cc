@@ -8,6 +8,7 @@
 
 #include "base/containers/flat_set.h"
 #include "base/no_destructor.h"
+#include "base/types/expected.h"
 #include "device/vr/openxr/openxr_api_wrapper.h"
 #include "device/vr/openxr/openxr_extension_helper.h"
 #include "device/vr/openxr/openxr_util.h"
@@ -105,18 +106,32 @@ void OpenXrAnchorManager::DetachAnchor(AnchorId anchor_id) {
 }
 
 mojom::XRAnchorsDataPtr OpenXrAnchorManager::GetCurrentAnchorsData(
-    XrTime predicted_display_time) const {
+    XrTime predicted_display_time) {
   std::vector<uint64_t> all_anchors_ids(openxr_anchors_.size());
   std::vector<mojom::XRAnchorDataPtr> updated_anchors(openxr_anchors_.size());
 
   uint32_t index = 0;
+  std::set<AnchorId> deleted_ids;
   for (const auto& [anchor_id, anchor_space] : openxr_anchors_) {
     all_anchors_ids[index] = anchor_id.GetUnsafeValue();
-
-    updated_anchors[index] = mojom::XRAnchorData::New(
-        anchor_id.GetUnsafeValue(),
-        GetAnchorFromMojom(anchor_space, predicted_display_time));
+    auto maybe_pose = GetAnchorFromMojom(anchor_space, predicted_display_time);
+    if (maybe_pose.has_value()) {
+      updated_anchors[index] = mojom::XRAnchorData::New(
+          anchor_id.GetUnsafeValue(), maybe_pose.value());
+    } else {
+      // Regardless of why it failed, if we still have it tracked, send it up
+      // this frame, but remove it for future frames.
+      updated_anchors[index] =
+          mojom::XRAnchorData::New(anchor_id.GetUnsafeValue(), std::nullopt);
+      if (maybe_pose.error() == AnchorTrackingErrorType::kPermanent) {
+        deleted_ids.insert(anchor_id);
+      }
+    }
     index++;
+  }
+
+  for (const auto& id : deleted_ids) {
+    DetachAnchor(id);
   }
 
   DVLOG(3) << __func__ << " all_anchor_ids size: " << all_anchors_ids.size();

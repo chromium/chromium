@@ -244,6 +244,8 @@ if (enable_vr) {
 
       if (is_android) {
         sources += [
+          "openxr/android/openxr_anchor_manager_android.cc",
+          "openxr/android/openxr_anchor_manager_android.h",
           "openxr/android/openxr_graphics_binding_open_gles.cc",
           "openxr/android/openxr_graphics_binding_open_gles.h",
           "openxr/android/openxr_hand_tracker_android.cc",

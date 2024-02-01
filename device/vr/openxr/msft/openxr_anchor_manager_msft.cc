@@ -84,14 +84,16 @@ void OpenXrAnchorManagerMsft::OnDetachAnchor(const XrSpace& anchor_space) {
   space_to_anchor_map_.erase(it);
 }
 
-std::optional<device::Pose> OpenXrAnchorManagerMsft::GetAnchorFromMojom(
+base::expected<device::Pose, OpenXrAnchorManager::AnchorTrackingErrorType>
+OpenXrAnchorManagerMsft::GetAnchorFromMojom(
     XrSpace anchor_space,
     XrTime predicted_display_time) const {
   XrSpaceLocation anchor_from_mojo = {XR_TYPE_SPACE_LOCATION};
   if (XR_FAILED(xrLocateSpace(anchor_space, mojo_space_, predicted_display_time,
                               &anchor_from_mojo)) ||
       !IsPoseValid(anchor_from_mojo.locationFlags)) {
-    return std::nullopt;
+    return base::unexpected(
+        OpenXrAnchorManager::AnchorTrackingErrorType::kTemporary);
   }
 
   return XrPoseToDevicePose(anchor_from_mojo.pose);

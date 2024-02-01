@@ -172,6 +172,12 @@ OpenXrExtensionHelper::OpenXrExtensionHelper(
       instance, "xrRaycastANDROID",
       reinterpret_cast<PFN_xrVoidFunction*>(const_cast<PFN_xrRaycastANDROID*>(
           &extension_methods_.xrRaycastANDROID)));
+
+  std::ignore = xrGetInstanceProcAddr(
+      instance, "xrCreateAnchorSpaceANDROID",
+      reinterpret_cast<PFN_xrVoidFunction*>(
+          const_cast<PFN_xrCreateAnchorSpaceANDROID*>(
+              &extension_methods_.xrCreateAnchorSpaceANDROID)));
 #endif
 }
 

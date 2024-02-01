@@ -8,6 +8,7 @@
 #include <map>
 #include <optional>
 
+#include "base/types/expected.h"
 #include "base/types/id_type.h"
 #include "device/vr/create_anchor_request.h"
 #include "device/vr/public/mojom/vr_service.mojom.h"
@@ -43,6 +44,11 @@ class OpenXrAnchorManager {
   void DetachAnchor(AnchorId anchor_id);
 
  protected:
+  enum class AnchorTrackingErrorType {
+    kTemporary = 0,
+    kPermanent = 1,
+  };
+
   // Called to create an anchor. `pose` in `space` at the
   // `predicted_display_time` should be the origin of the returned anchor's
   // space, and the space should adjust as necessary to keep that origin
@@ -58,9 +64,9 @@ class OpenXrAnchorManager {
   // in the subclass destructor.
   virtual void OnDetachAnchor(const XrSpace& anchor) = 0;
 
-  virtual std::optional<device::Pose> GetAnchorFromMojom(
-      XrSpace anchor_space,
-      XrTime predicted_display_time) const = 0;
+  virtual base::expected<device::Pose, AnchorTrackingErrorType>
+  GetAnchorFromMojom(XrSpace anchor_space,
+                     XrTime predicted_display_time) const = 0;
 
  private:
   void DisposeActiveAnchorCallbacks();
@@ -70,7 +76,7 @@ class OpenXrAnchorManager {
       const mojom::VRStageParametersPtr& current_stage_parameters,
       const std::vector<mojom::XRInputSourceStatePtr>& input_state);
   device::mojom::XRAnchorsDataPtr GetCurrentAnchorsData(
-      XrTime predicted_display_time) const;
+      XrTime predicted_display_time);
 
   // An XrPosef with the space it is relative to
   struct XrLocation {
