@@ -416,6 +416,25 @@ struct BLINK_COMMON_EXPORT AuctionConfig {
 
   // Origin for the Coordinator to be used for Private Aggregation.
   absl::optional<url::Origin> aggregation_coordinator_origin;
+
+  static_assert(__LINE__ == 420, R"(
+If modifying AuctionConfig fields, please make sure to also modify:
+
+* third_party/blink/public/mojom/interest_group/interest_group_types.mojom
+* Mojo serialization in:
+    third_party/blink/public/common/interest_group/auction_config_mojom_traits.h
+    third_party/blink/common/interest_group/auction_config_mojom_traits.cc
+* NumPromises() if it's a Promise.
+* SerializeForDevtools()
+* Add some non-trivial values for the type into CreateFullAuctionConfig() in
+    third_party/blink/common/interest_group/auction_config_test_util.cc
+* Update devtools serialization expectations in
+    third_party/blink/common/interest_group/auction_config_unittest.cc
+* If the value has special validation logic, add a test to
+    third_party/blink/common/interest_group/auction_config_mojom_traits_test.cc
+  (If it's just passing along some values, adding to CreateFullAuctionConfig()
+   will provide some coverage automatically).
+)");
 };
 
 }  // namespace blink
