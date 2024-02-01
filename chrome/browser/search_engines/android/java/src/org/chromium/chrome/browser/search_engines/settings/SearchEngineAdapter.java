@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.search_engines.settings;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.text.TextUtils;
 import android.text.format.DateUtils;
 import android.view.LayoutInflater;
@@ -43,8 +44,10 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 /** A custom adapter for listing search engines. */
 public class SearchEngineAdapter extends BaseAdapter
@@ -122,6 +125,9 @@ public class SearchEngineAdapter extends BaseAdapter
 
     /** The list of recently visited search engines. */
     private List<TemplateUrl> mRecentSearchEngines = new ArrayList<>();
+
+    /** Cache for storing fetched search icon bitmaps. */
+    private final Map<GURL, Bitmap> mIconCache = new HashMap();
 
     /**
      * The position (index into mPrepopulatedSearchEngines) of the currently selected search engine.
@@ -463,45 +469,12 @@ public class SearchEngineAdapter extends BaseAdapter
         }
 
         if (showLogo) {
-            int uiElementSizeInPx =
-                    mContext.getResources()
-                            .getDimensionPixelSize(R.dimen.search_engine_favicon_size);
             ImageView logoView = view.findViewById(R.id.logo);
-            // Use a placeholder image while trying to fetch the logo.
-            logoView.setImageBitmap(
-                    FaviconUtils.createGenericFaviconBitmap(mContext, uiElementSizeInPx, null));
             GURL faviconUrl =
                     new GURL(
                             templateUrlService.getSearchEngineUrlFromTemplateUrl(
                                     templateUrl.getKeyword()));
-            LargeIconCallback onFaviconAvailable =
-                    (icon, fallbackColor, isFallbackColorDefault, iconType) -> {
-                        if (icon != null) {
-                            logoView.setImageBitmap(icon);
-                        }
-                    };
-            GoogleFaviconServerCallback googleServerCallback =
-                    (status) -> {
-                        // Update the time the icon was last requested to avoid automatic eviction
-                        // from cache.
-                        mLargeIconBridge.touchIconFromGoogleServer(faviconUrl);
-                        // The search engine logo will be fetched from google servers, so the actual
-                        // size of the image is controlled by LargeIconService configuration.
-                        // minSizePx=1 is used to accept logo of any size.
-                        mLargeIconBridge.getLargeIconForUrl(
-                                faviconUrl,
-                                /* minSizePx= */ 1,
-                                /* desiredSizePx= */ uiElementSizeInPx,
-                                onFaviconAvailable);
-                    };
-            // If the icon already exists in the cache no network request will be made, but the
-            // callback will be triggered nonetheless.
-            mLargeIconBridge.getLargeIconOrFallbackStyleFromGoogleServerSkippingLocalCache(
-                    faviconUrl,
-                    /* mayPageUrlBePrivate= */ true,
-                    /* shouldTrimPageUrlPath= */ true,
-                    TRAFFIC_ANNOTATION,
-                    googleServerCallback);
+            updateLogo(logoView, faviconUrl);
         }
 
         // To improve the explore-by-touch experience, the radio button is hidden from accessibility
@@ -527,6 +500,48 @@ public class SearchEngineAdapter extends BaseAdapter
                 });
 
         return view;
+    }
+
+    private void updateLogo(ImageView logoView, GURL faviconUrl) {
+        if (mIconCache.containsKey(faviconUrl)) {
+            logoView.setImageBitmap(mIconCache.get(faviconUrl));
+            return;
+        }
+
+        // Use a placeholder image while trying to fetch the logo.
+        int uiElementSizeInPx =
+                mContext.getResources().getDimensionPixelSize(R.dimen.search_engine_favicon_size);
+        logoView.setImageBitmap(
+                FaviconUtils.createGenericFaviconBitmap(mContext, uiElementSizeInPx, null));
+        LargeIconCallback onFaviconAvailable =
+                (icon, fallbackColor, isFallbackColorDefault, iconType) -> {
+                    if (icon != null) {
+                        logoView.setImageBitmap(icon);
+                        mIconCache.put(faviconUrl, icon);
+                    }
+                };
+        GoogleFaviconServerCallback googleServerCallback =
+                (status) -> {
+                    // Update the time the icon was last requested to avoid automatic eviction
+                    // from cache.
+                    mLargeIconBridge.touchIconFromGoogleServer(faviconUrl);
+                    // The search engine logo will be fetched from google servers, so the actual
+                    // size of the image is controlled by LargeIconService configuration.
+                    // minSizePx=1 is used to accept logo of any size.
+                    mLargeIconBridge.getLargeIconForUrl(
+                            faviconUrl,
+                            /* minSizePx= */ 1,
+                            /* desiredSizePx= */ uiElementSizeInPx,
+                            onFaviconAvailable);
+                };
+        // If the icon already exists in the cache no network request will be made, but the
+        // callback will be triggered nonetheless.
+        mLargeIconBridge.getLargeIconOrFallbackStyleFromGoogleServerSkippingLocalCache(
+                faviconUrl,
+                /* mayPageUrlBePrivate= */ true,
+                /* shouldTrimPageUrlPath= */ true,
+                TRAFFIC_ANNOTATION,
+                googleServerCallback);
     }
 
     // TemplateUrlService.LoadListener
