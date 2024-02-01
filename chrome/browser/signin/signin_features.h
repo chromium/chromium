@@ -63,9 +63,11 @@ BASE_DECLARE_FEATURE(kVerifyRequestInitiatorForMirrorHeaders);
 
 BASE_DECLARE_FEATURE(kProfilesReordering);
 
+#if !BUILDFLAG(IS_ANDROID)
 BASE_DECLARE_FEATURE(kForceSigninFlowInProfilePicker);
 // Default value is false, and the URL used would be /AccountChooser.
 extern const base::FeatureParam<bool>
     kForceSigninReauthInProfilePickerUseAddSession;
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 #endif  // CHROME_BROWSER_SIGNIN_SIGNIN_FEATURES_H_

@@ -11040,10 +11040,12 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kPasswordManagerShadowDomSupportDescription, kOsAll,
      FEATURE_VALUE_TYPE(password_manager::features::kShadowDomSupport)},
 
+#if !BUILDFLAG(IS_ANDROID)
     {"force-signin-flows-profile-picker",
      flag_descriptions::kForceSigninFlowInProfilePickerName,
      flag_descriptions::kForceSigninFlowInProfilePickerDescription,
      kOsMac | kOsWin, FEATURE_VALUE_TYPE(kForceSigninFlowInProfilePicker)},
+#endif  // !BUILDFLAG(IS_ANDROID)
 
     {"enable-unrestricted-usb", flag_descriptions::kEnableUnrestrictedUsbName,
      flag_descriptions::kEnableUnrestrictedUsbDescription, kOsAll,

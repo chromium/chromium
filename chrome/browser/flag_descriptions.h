@@ -2727,6 +2727,9 @@ extern const char kEnableAccessibilityLiveCaptionDescription[];
 extern const char kEnableMantaServiceName[];
 extern const char kEnableMantaServiceDescription[];
 
+extern const char kForceSigninFlowInProfilePickerName[];
+extern const char kForceSigninFlowInProfilePickerDescription[];
+
 extern const char kReadAnythingName[];
 extern const char kReadAnythingDescription[];
 
@@ -4604,9 +4607,6 @@ extern const char
 extern const char kTheoraVideoCodecName[];
 extern const char kTheoraVideoCodecDescription[];
 #endif
-
-extern const char kForceSigninFlowInProfilePickerName[];
-extern const char kForceSigninFlowInProfilePickerDescription[];
 
 // ============================================================================
 // Don't just add flags to the end, put them in the right section in

@@ -2305,12 +2305,6 @@ const char kWebMachineLearningNeuralNetworkDescription[] =
     "Enables the Web Machine Learning Neural Network (WebNN) API. Spec at "
     "https://www.w3.org/TR/webnn/";
 
-#if !BUILDFLAG(IS_ANDROID)
-const char kEnableMantaServiceName[] = "Enable Manta Service";
-const char kEnableMantaServiceDescription[] =
-    "Enables the profile keyed Manta service at startup.";
-#endif  // !BUILDFLAG(IS_ANDROID)
-
 const char kSystemProxyForSystemServicesName[] =
     "Enable system-proxy for selected system services";
 const char kSystemProxyForSystemServicesDescription[] =
@@ -4696,6 +4690,17 @@ const char kEnableAccessibilityLiveCaptionDescription[] =
     "Enables the live caption feature which generates captions for "
     "media playing in Chrome. Turn the feature on in "
     "chrome://settings/accessibility.";
+
+const char kEnableMantaServiceName[] = "Enable Manta Service";
+const char kEnableMantaServiceDescription[] =
+    "Enables the profile keyed Manta service at startup.";
+
+const char kForceSigninFlowInProfilePickerName[] =
+    "Force Signin Flows in Profile Picker";
+const char kForceSigninFlowInProfilePickerDescription[] =
+    "Migrates Force Signin flows from the old popup dialog on top of the "
+    "Profile Picker, to the regular sign in flow within the Profile Picker "
+    "with adaptation to the policy settings";
 
 const char kReadAnythingName[] = "Reading Mode";
 const char kReadAnythingDescription[] =
@@ -7945,13 +7950,6 @@ const char kTheoraVideoCodecName[] = "Theora video codec support";
 const char kTheoraVideoCodecDescription[] =
     "Controls support for the Theora video codec.";
 #endif
-
-const char kForceSigninFlowInProfilePickerName[] =
-    "Force Signin Flows in Profile Picker";
-const char kForceSigninFlowInProfilePickerDescription[] =
-    "Migrates Force Signin flows from the old popup dialog on top of the "
-    "Profile Picker, to the regular sign in flow within the Profile Picker "
-    "with adaptation to the policy settings";
 
 // ============================================================================
 // Don't just add flags to the end, put them in the right section in
