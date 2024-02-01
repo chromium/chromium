@@ -10,6 +10,7 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
+#include "base/debug/crash_logging.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/types/cxx23_to_underlying.h"
@@ -763,6 +764,23 @@ AutofillProviderAndroid::PasswordParserOverrides::FromLoginForm(
   }
   // A login form must always have a username field and a password field.
   if (!result.username_field_id || !result.password_field_id) {
+    // TODO(crbug.com/1523259): This should never be reachable. Remove once it
+    // is clear how it can happen.
+    SCOPED_CRASH_KEY_NUMBER("crbug1523259", "pw_form.username_id",
+                            pw_form.username_element_renderer_id.value());
+    SCOPED_CRASH_KEY_NUMBER("crbug1523259", "pw_form.password_id",
+                            pw_form.password_element_renderer_id.value());
+    SCOPED_CRASH_KEY_NUMBER("crbug1523259", "fs.fields.size",
+                            form_structure.fields().size());
+    SCOPED_CRASH_KEY_STRING1024("crbug1523259", "fs.fields.global_ids", [&] {
+      std::ostringstream ss;
+      for (size_t i = 0;
+           i < std::min<size_t>(10u, form_structure.fields().size()); ++i) {
+        ss << form_structure.fields()[i]->global_id() << " ";
+      }
+      return ss.str();
+    }());
+    base::debug::DumpWithoutCrashing();
     return std::nullopt;
   }
   return result;
