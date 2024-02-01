@@ -1452,8 +1452,16 @@ IN_PROC_BROWSER_TEST_P(BrowsingDataModelBrowserTest,
   ASSERT_EQ(browsing_data_model->size(), 0u);
 }
 
+// TODO(crbug.com/1524052): Flaky on at least Mac11 and Mac13.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_SharedDictionaryAccessReportedCorrectly \
+  DISABLED_SharedDictionaryAccessReportedCorrectly
+#else
+#define MAYBE_SharedDictionaryAccessReportedCorrectly \
+  SharedDictionaryAccessReportedCorrectly
+#endif  // BUILDFLAG(IS_MAC)
 IN_PROC_BROWSER_TEST_P(BrowsingDataModelBrowserTest,
-                       SharedDictionaryAccessReportedCorrectly) {
+                       MAYBE_SharedDictionaryAccessReportedCorrectly) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(),
       https_test_server()->GetURL(kTestHost, "/browsing_data/site_data.html")));
