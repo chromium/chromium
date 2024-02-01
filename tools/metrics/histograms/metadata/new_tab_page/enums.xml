@@ -498,6 +498,7 @@ chromium-metrics-reviews@google.com.
   <int value="9" label="Open New Tab Page and Start Customize Chrome Tutorial"/>
   <int value="10" label="Start Password Manager Tutorial"/>
   <int value="11" label="Start Saved Tab Group Tutorial"/>
+  <int value="12" label="Open AI Settings"/>
 </enum>
 
 <enum name="SearchResumptionModule.ModuleNotShownReason">
