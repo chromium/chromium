@@ -58,7 +58,14 @@ class AccessibilityPrivateApiTest
   }
 
   [[nodiscard]] bool RunSubtest(const char* subtest) {
-    return RunExtensionTest("accessibility_private", {.custom_arg = subtest});
+    std::string path;
+    if (GetParam().version() == ManifestVersion::kTwo) {
+      path = "accessibility_private";
+    } else {
+      path = "accessibility_private/mv3";
+    }
+
+    return RunExtensionTest(path.c_str(), {.custom_arg = subtest});
   }
 
   DictationBubbleTestHelper* dictation_bubble_test_helper() {
@@ -509,5 +516,11 @@ INSTANTIATE_TEST_SUITE_P(
     AccessibilityPrivateApiFeatureEnabledTest,
     ::testing::Values(ApiTestConfig(ContextType::kServiceWorker,
                                     ManifestVersion::kTwo)));
+
+INSTANTIATE_TEST_SUITE_P(
+    ManifestV3,
+    AccessibilityPrivateApiTest,
+    ::testing::Values(ApiTestConfig(ContextType::kNone,
+                                    ManifestVersion::kThree)));
 
 }  // namespace ash
