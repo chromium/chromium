@@ -588,6 +588,10 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   }
 
   playSpeech() {
+    const shadowRoot = this.shadowRoot;
+    assert(shadowRoot);
+    const container = shadowRoot.getElementById('container');
+    assert(container);
     if (this.speechStarted && this.paused) {
       this.synth.resume();
       this.paused = false;
@@ -595,12 +599,19 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
       if (chrome.readingMode.linksEnabled) {
         this.updateContent();
       }
+
+      // If the current read highlight has been cleared from a call to
+      // updateContent, such as for links being toggled on or off via a Read
+      // Aloud play / pause or via a preference change, rehighlight the nodes
+      // after a pause.
+      if (!container.querySelector('.current-read-highlight')) {
+        // TODO(crbug.com/1474951): Investigate adding a mock voice in tests
+        // to make this testable.
+        this.highlightNodes(chrome.readingMode.getCurrentText());
+      }
+
       return;
     }
-    const shadowRoot = this.shadowRoot;
-    assert(shadowRoot);
-    const container = shadowRoot.getElementById('container');
-    assert(container);
     if (container.textContent) {
       this.paused = false;
       // Hide links when speech begins playing.
@@ -766,10 +777,11 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     return utteranceText;
   }
 
-  // TODO(crbug.com/1474951): Handle previous highlighting.
   highlightNodes(nextTextIds: number[]) {
-    // implementation based off of #highlightCurrentText below
-    assert(nextTextIds.length > 0);
+    if (nextTextIds.length === 0) {
+      return;
+    }
+
     for (let i = 0; i < nextTextIds.length; i++) {
       const nodeId = nextTextIds[i];
       const element = this.domNodeToAxNodeIdMap_.keyFrom(nodeId);
