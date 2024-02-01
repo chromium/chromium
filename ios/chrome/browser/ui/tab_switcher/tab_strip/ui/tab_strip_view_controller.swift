@@ -35,6 +35,10 @@ class TabStripViewController: UIViewController, TabStripCellDelegate,
   // is long pressed which does not always result in a drag action.
   private var draggedItem: TabSwitcherItem?
 
+  /// `true` if the new tab button has been tapped. Used to scroll to the newly
+  /// added item. It's automatically set to `false` after the scroll.
+  private var newTabOpened: Bool = false
+
   // Handles model updates.
   public weak var mutator: TabStripMutator?
   // Tab strip  delegate.
@@ -132,24 +136,27 @@ class TabStripViewController: UIViewController, TabStripCellDelegate,
       diffableDataSource: diffableDataSource, snapshot: snapshot, animatingDifferences: true)
     selectItem(selectedItem)
 
-    /// Scroll to the end of the collection view if an item has been added.
-    if layout.lastUpdateAction == .insert {
+    /// Scroll to the end of the collection view if a new tab has been opened.
+    if newTabOpened {
+      newTabOpened = false
+
+      // Don't scroll to the end of the collection view in RTL.
       let isRTL: Bool = self.collectionView.effectiveUserInterfaceLayoutDirection == .rightToLeft
-      if !isRTL {
-        let offset = self.collectionView.contentSize.width - self.collectionView.frame.width
-        if offset > 0 {
-          if #available(iOS 17.0, *) {
-            scrollToContentOffset(offset)
-          } else {
-            // On iOS 16, when the scroll animation and the insert animation
-            // occur simultaneously, the resulting animation lacks of
-            // smoothness.
-            weak var weakSelf = self
-            DispatchQueue.main.asyncAfter(
-              deadline: .now() + TabStripConstants.CollectionView.scrollDelayAfterInsert
-            ) {
-              weakSelf?.scrollToContentOffset(offset)
-            }
+      if isRTL { return }
+
+      let offset = self.collectionView.contentSize.width - self.collectionView.frame.width
+      if offset > 0 {
+        if #available(iOS 17.0, *) {
+          scrollToContentOffset(offset)
+        } else {
+          // On iOS 16, when the scroll animation and the insert animation
+          // occur simultaneously, the resulting animation lacks of
+          // smoothness.
+          weak var weakSelf = self
+          DispatchQueue.main.asyncAfter(
+            deadline: .now() + TabStripConstants.CollectionView.scrollDelayAfterInsert
+          ) {
+            weakSelf?.scrollToContentOffset(offset)
           }
         }
       }
@@ -331,6 +338,7 @@ class TabStripViewController: UIViewController, TabStripCellDelegate,
   // MARK: - TabStripNewTabButtonDelegate
 
   @objc func newTabButtonTapped() {
+    newTabOpened = true
     mutator?.addNewItem()
   }
 

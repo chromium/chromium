@@ -19,9 +19,6 @@ class TabStripLayout: UICollectionViewFlowLayout {
   /// Dynamic size of a tab.
   private var tabCellSize: CGSize = .zero
 
-  /// Last update item action.
-  public var lastUpdateAction: UICollectionViewUpdateItem.Action = .none
-
   /// Index paths of animated items.
   private var indexPathsOfDeletingItems: [IndexPath] = []
   private var indexPathsOfInsertingItems: [IndexPath] = []
@@ -66,11 +63,9 @@ class TabStripLayout: UICollectionViewFlowLayout {
       switch item.updateAction {
       case .insert:
         indexPathsOfInsertingItems.append(item.indexPathAfterUpdate!)
-        lastUpdateAction = .insert
         break
       case .delete:
         indexPathsOfDeletingItems.append(item.indexPathBeforeUpdate!)
-        lastUpdateAction = .delete
         break
       default:
         break
