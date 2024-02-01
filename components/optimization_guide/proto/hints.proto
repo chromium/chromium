@@ -99,7 +99,17 @@ message RequestContextMetadata {
 }
 
 message PageInsightsHubRequestContextMetadata {
-  // TODO(b/317287987): Fill this in with approved metadata.
+  // True if the Page Insights feature was triggered by the user (as opposed to
+  // auto-peeking).
+  optional bool is_user_initiated = 1;
+  // True if the Page Insights feature is showing on top of an initial page. See
+  // go/pih-cct-conditions.
+  optional bool is_initial_page = 2;
+  // True if logging of URL by server, and personalisation of response, is
+  // forbidden.
+  optional bool should_not_log_or_personalize = 3;
+  // Timestamp for the navigation that reached the URL, in milliseconds.
+  optional int64 navigation_timestamp_ms = 4;
 }
 
 // Response to the GetHints request.

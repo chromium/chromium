@@ -9,16 +9,20 @@ import static org.chromium.components.optimization_guide.proto.HintsProto.Optimi
 import android.util.LruCache;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
 import com.google.protobuf.InvalidProtocolBufferException;
 
 import org.chromium.base.Callback;
 import org.chromium.base.Log;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.optimization_guide.OptimizationGuideBridgeFactory;
+import org.chromium.chrome.browser.page_insights.proto.Config.PageInsightsConfig;
 import org.chromium.chrome.browser.page_insights.proto.PageInsights;
 import org.chromium.chrome.browser.page_insights.proto.PageInsights.PageInsightsMetadata;
 import org.chromium.components.optimization_guide.OptimizationGuideDecision;
 import org.chromium.components.optimization_guide.proto.CommonTypesProto.RequestContext;
+import org.chromium.components.optimization_guide.proto.HintsProto.PageInsightsHubRequestContextMetadata;
 import org.chromium.components.optimization_guide.proto.HintsProto.RequestContextMetadata;
 import org.chromium.url.GURL;
 
@@ -27,8 +31,22 @@ import java.util.Locale;
 
 /** Class to provide a {@link PageInsights} data and helper methods */
 class PageInsightsDataLoader {
+    @VisibleForTesting
+    static final String PAGE_INSIGHTS_SEND_CONTEXT_METADATA = "page_insights_send_context_metadata";
+
+    @VisibleForTesting
+    static final String PAGE_INSIGHTS_SEND_TIMESTAMP = "page_insights_send_timestamp";
+
     private static final String TAG = "PIDataLoader";
     private static final int LRU_CACHE_SIZE = 10;
+    private final boolean mSendContextMetadata =
+            ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
+                    ChromeFeatureList.CCT_PAGE_INSIGHTS_HUB,
+                    PAGE_INSIGHTS_SEND_CONTEXT_METADATA,
+                    false);
+    private final boolean mSendTimestamp =
+            ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
+                    ChromeFeatureList.CCT_PAGE_INSIGHTS_HUB, PAGE_INSIGHTS_SEND_TIMESTAMP, false);
     private LruCache<GURL, PageInsightsMetadata> mCache =
             new LruCache<GURL, PageInsightsMetadata>(LRU_CACHE_SIZE);
     @Nullable private Callback<PageInsightsMetadata> mCurrentCallback;
@@ -42,7 +60,11 @@ class PageInsightsDataLoader {
      * <p>If called a second time, before first fetch has completed, first callback will not be run.
      */
     void loadInsightsData(
-            GURL url, boolean shouldAttachGaiaToRequest, Callback<PageInsightsMetadata> callback) {
+            GURL url,
+            boolean isUserInitiated,
+            @Nullable Long navigationTimestampMs,
+            PageInsightsConfig config,
+            Callback<PageInsightsMetadata> callback) {
         mCurrentCallback = callback;
         if (url == null) {
             Log.e(TAG, "Error fetching Page Insights data: Url cannot be null.");
@@ -52,14 +74,25 @@ class PageInsightsDataLoader {
             callback.bind(mCache.get(url)).run();
             return;
         }
-        // TODO(edmundw): Populate the requestContextMetadata
-        RequestContextMetadata requestContextMetadata = RequestContextMetadata.newBuilder().build();
+        RequestContextMetadata.Builder requestContextMetadataBuilder =
+                RequestContextMetadata.newBuilder();
+        if (mSendContextMetadata) {
+            PageInsightsHubRequestContextMetadata.Builder builder =
+                    PageInsightsHubRequestContextMetadata.newBuilder();
+            builder.setIsUserInitiated(isUserInitiated)
+                    .setIsInitialPage(config.getIsInitialPage())
+                    .setShouldNotLogOrPersonalize(config.getServerShouldNotLogOrPersonalize());
+            if (mSendTimestamp && navigationTimestampMs != null) {
+                builder.setNavigationTimestampMs(navigationTimestampMs);
+            }
+            requestContextMetadataBuilder.setPageInsightsHubMetadata(builder);
+        }
         OptimizationGuideBridgeFactoryHolder.sOptimizationGuideBridgeFactory
                 .create()
                 .canApplyOptimizationOnDemand(
                         List.of(url),
                         List.of(PAGE_INSIGHTS),
-                        shouldAttachGaiaToRequest
+                        shouldAttachGaiaToRequest(config)
                                 ? RequestContext.CONTEXT_PAGE_INSIGHTS_HUB
                                 : RequestContext.CONTEXT_NON_PERSONALIZED_PAGE_INSIGHTS_HUB,
                         (gurl, optimizationType, decision, metadata) -> {
@@ -89,7 +122,7 @@ class PageInsightsDataLoader {
                                                 e));
                             }
                         },
-                        requestContextMetadata);
+                        requestContextMetadataBuilder.build());
     }
 
     void clearCacheForTesting() {
@@ -98,6 +131,18 @@ class PageInsightsDataLoader {
 
     void cancelCallback() {
         mCurrentCallback = null;
+    }
+
+    private boolean shouldAttachGaiaToRequest(PageInsightsConfig config) {
+        if (mSendContextMetadata) {
+            // If we are sending context metadata we are ok to attach Gaia in all cases,
+            // as server will use metadata to ensure Gaia is only used in permitted
+            // ways.
+            return true;
+        }
+        // If we are not sending context metadata, then we should only attach Gaia
+        // if logging and personalisation are not forbidden.
+        return !config.getServerShouldNotLogOrPersonalize();
     }
 
     // Lazy initialization of OptimizationGuideBridgeFactory
