@@ -763,13 +763,13 @@ suite('TopicsSubpageWithProactiveTopicsBlockingEnabled', function() {
       '#currentTopicsHeading',
       '#currentTopicsDescription',
       '#currentTopicsDescriptionEmpty',
-      '#currentTopicsDescriptionEmptyTopText',
-      '#currentTopicsDescriptionEmptyBottomText',
+      '#currentTopicsDescriptionEmptyTextHeading',
+      '#currentTopicsDescriptionEmptyTextV2',
       '#currentTopicsDescriptionDisabled',
       '#blockedTopicsRow',
       '#blockedTopicsDescriptionV2',
-      '#blockedTopicsDescriptionEmptyTopText',
-      '#blockedTopicsDescriptionEmptyBottomText',
+      '#blockedTopicsDescriptionEmptyTextHeading',
+      '#blockedTopicsDescriptionEmptyTextV2',
       '#blockedTopicsList',
       '#manageTopicsSection',
     ];
@@ -808,16 +808,16 @@ suite('TopicsSubpageWithProactiveTopicsBlockingEnabled', function() {
     // Non V2 blocked topics description should not be visible
     assertFalse(isChildVisible(page, '#blockedTopicsDescription'));
     // The blocked topic list is NOT empty after re-enabling the toggle
-    assertFalse(isChildVisible(page, '#blockedTopicsDescriptionEmptyTopText'));
     assertFalse(
-        isChildVisible(page, '#blockedTopicsDescriptionEmptyBottomText'));
+        isChildVisible(page, '#blockedTopicsDescriptionEmptyTextHeading'));
+    assertFalse(isChildVisible(page, '#blockedTopicsDescriptionEmptyTextV2'));
     // Assert V2 Layout for ids to be shown.
     const idsToBeShown = [
       '#currentTopicsSection',
       '#currentTopicsHeading',
       '#currentTopicsDescription',
-      '#currentTopicsDescriptionEmptyTopText',
-      '#currentTopicsDescriptionEmptyBottomText',
+      '#currentTopicsDescriptionEmptyTextHeading',
+      '#currentTopicsDescriptionEmptyTextV2',
       '#blockedTopicsRow',
       '#blockedTopicsDescriptionV2',
       '#blockedTopicsList',
@@ -835,9 +835,9 @@ suite('TopicsSubpageWithProactiveTopicsBlockingEnabled', function() {
         loadTimeData.getString('topicsPageToggleSubLabelV2'),
         page.$.topicsToggle.subLabel);
     assertFalse(isChildVisible(page, '#currentTopicsDescriptionEmpty'));
-    assertFalse(isChildVisible(page, '#currentTopicsDescriptionEmptyTopText'));
     assertFalse(
-        isChildVisible(page, '#currentTopicsDescriptionEmptyBottomText'));
+        isChildVisible(page, '#currentTopicsDescriptionEmptyTextHeading'));
+    assertFalse(isChildVisible(page, '#currentTopicsDescriptionEmptyTextV2'));
     assertFalse(isChildVisible(page, '#currentTopicsDescriptionDisabled'));
     const blockedTopicsRow =
         page.shadowRoot!.querySelector<HTMLElement>('#blockedTopicsRow');
@@ -849,9 +849,9 @@ suite('TopicsSubpageWithProactiveTopicsBlockingEnabled', function() {
     // Non V2 blocked topics description should not be visible
     assertFalse(isChildVisible(page, '#blockedTopicsDescription'));
     // Blocked topics list is not empty
-    assertFalse(isChildVisible(page, '#blockedTopicsDescriptionEmptyTopText'));
     assertFalse(
-        isChildVisible(page, '#blockedTopicsDescriptionEmptyBottomText'));
+        isChildVisible(page, '#blockedTopicsDescriptionEmptyTextHeading'));
+    assertFalse(isChildVisible(page, '#blockedTopicsDescriptionEmptyTextV2'));
     // Assert V2 Layout for ids to be shown.
     const idsToBeShown = [
       '#currentTopicsSection',
@@ -887,14 +887,14 @@ suite('TopicsSubpageWithProactiveTopicsBlockingEnabled', function() {
       '#currentTopicsHeading',
       '#currentTopicsDescription',
       '#currentTopicsDescriptionEmpty',
-      '#currentTopicsDescriptionEmptyTopText',
-      '#currentTopicsDescriptionEmptyBottomText',
+      '#currentTopicsDescriptionEmptyTextHeading',
+      '#currentTopicsDescriptionEmptyTextV2',
       '#currentTopicsDescriptionDisabled',
       '#blockedTopicsRow',
       '#blockedTopicsDescription',
       '#blockedTopicsDescriptionV2',
-      '#blockedTopicsDescriptionEmptyTopText',
-      '#blockedTopicsDescriptionEmptyBottomText',
+      '#blockedTopicsDescriptionEmptyTextHeading',
+      '#blockedTopicsDescriptionEmptyTextV2',
       '#blockedTopicsList',
       '#manageTopicsSection',
     ];
@@ -933,9 +933,9 @@ suite('TopicsSubpageWithProactiveTopicsBlockingEnabled', function() {
         currentTopicsSection.querySelectorAll('privacy-sandbox-interest-item');
     assertEquals(3, currentTopics.length);
     assertFalse(isVisible(currentTopicsSection.querySelector(
-        '#currentTopicsDescriptionEmptyTopText')));
+        '#currentTopicsDescriptionEmptyTextHeading')));
     assertFalse(isVisible(currentTopicsSection.querySelector(
-        '#currentTopicsDescriptionEmptyBottomText')));
+        '#currentTopicsDescriptionEmptyTextV2')));
     // TODO(b/322845275) - When testing privacy-sandbox-interest-item, add tests
     // to assert that the DOM is actually displaying correctly.
     assertEquals(
@@ -1041,9 +1041,9 @@ suite('TopicsSubpageWithProactiveTopicsBlockingEnabled', function() {
     metricsBrowserProxy.resetResolver('recordAction');
     await testPrivacySandboxBrowserProxy.whenCalled('setTopicAllowed');
     assertTrue(isVisible(currentTopicsSection.querySelector(
-        '#currentTopicsDescriptionEmptyTopText')));
+        '#currentTopicsDescriptionEmptyTextHeading')));
     assertTrue(isVisible(currentTopicsSection.querySelector(
-        '#currentTopicsDescriptionEmptyBottomText')));
+        '#currentTopicsDescriptionEmptyTextV2')));
 
     // Check that the focus is not lost after blocking the last item.
     await waitAfterNextRender(page);
@@ -1115,9 +1115,9 @@ suite('TopicsSubpageWithProactiveTopicsBlockingEnabled', function() {
     await waitAfterNextRender(page);
     assertEquals(blockedTopicsRow, page.shadowRoot!.activeElement);
     // Check that blocked topics empty text appears
-    assertTrue(isChildVisible(page, '#blockedTopicsDescriptionEmptyTopText'));
     assertTrue(
-        isChildVisible(page, '#blockedTopicsDescriptionEmptyBottomText'));
+        isChildVisible(page, '#blockedTopicsDescriptionEmptyTextHeading'));
+    assertTrue(isChildVisible(page, '#blockedTopicsDescriptionEmptyTextV2'));
   });
 
   test('topicsManaged', async function() {

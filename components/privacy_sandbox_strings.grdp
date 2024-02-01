@@ -200,16 +200,16 @@
   <message name="IDS_SETTINGS_TOPICS_PAGE_CURRENT_TOPICS_DESCRIPTION_EMPTY" desc="A description that appear beneath the 'Your topics' title. This setting could be on but no topics appear in the list. This text explains why." formatter_data="android_java">
     No topics to show right now
   </message>
-  <message name="IDS_SETTINGS_TOPICS_PAGE_CURRENT_TOPICS_DESCRIPTION_EMPTY_PTB" desc="A description that appear beneath the 'Active topics' title. The ad topics setting could be on but no topics appears in the list. This is part of the text that explains why. There are two strings stating that there are no current active topics. This is the bottom text." translateable="false" formatter_data="android_java">
+  <message name="IDS_SETTINGS_TOPICS_PAGE_CURRENT_TOPICS_DESCRIPTION_EMPTY_TEXT_V2" desc="A description that appear beneath the 'Active topics' title. The ad topics setting could be on but no topics appears in the list. This is part of the text that explains why." translateable="false" formatter_data="android_java">
     You don't have any active topics yet
   </message>
-  <message name="IDS_SETTINGS_TOPICS_PAGE_CURRENT_TOPICS_DESCRIPTION_EMPTY_TOP_TEXT" desc="A description that appear beneath the 'Active topics' title. The ad topics setting could be on but no topics appears in the list. This is part of the text that explains why. There are two strings stating that there are no current active topics. This is the top text." translateable="false">
+  <message name="IDS_SETTINGS_TOPICS_PAGE_CURRENT_TOPICS_DESCRIPTION_EMPTY_TEXT_HEADING" desc="A description that appear beneath the 'Active topics' title. The ad topics setting could be on but no topics appears in the list. This is part of the text that explains why." translateable="false">
     No active topics
   </message>
-  <message name="IDS_SETTINGS_TOPICS_PAGE_BLOCKED_TOPICS_DESCRIPTION_EMPTY_PTB" desc="A description that appear beneath the 'Blocked topics' title. The ad topics setting could be on but no topics appears in the list. This is part of the text that explains why. There are two strings stating that there are no current blocked topics. This is the bottom text." translateable="false" formatter_data="android_java">
+  <message name="IDS_SETTINGS_TOPICS_PAGE_BLOCKED_TOPICS_DESCRIPTION_EMPTY_TEXT_V2" desc="A description that appear beneath the 'Blocked topics' title. The ad topics setting could be on but no topics appears in the list. This is part of the text that explains why." translateable="false" formatter_data="android_java">
     You haven't blocked any topics
   </message>
-  <message name="IDS_SETTINGS_TOPICS_PAGE_BLOCKED_TOPICS_DESCRIPTION_EMPTY_TOP_TEXT" desc="A description that appear beneath the 'Blocked topics' title. The ad topics setting could be on but no topics appears in the list. This is part of the text that explains why. There are two strings stating that there are no current blocked topics. This is the top text." translateable="false">
+  <message name="IDS_SETTINGS_TOPICS_PAGE_BLOCKED_TOPICS_DESCRIPTION_EMPTY_TEXT_HEADING" desc="A description that appear beneath the 'Blocked topics' title. The ad topics setting could be on but no topics appears in the list. This is part of the text that explains why." translateable="false">
     No blocked topics
   </message>
   <message name="IDS_SETTINGS_TOPICS_PAGE_BLOCK_TOPIC" desc="A button associated with each of the user's topics. If the user clicks 'Block', that topic will get moved to the 'Topics you blocked' page.">

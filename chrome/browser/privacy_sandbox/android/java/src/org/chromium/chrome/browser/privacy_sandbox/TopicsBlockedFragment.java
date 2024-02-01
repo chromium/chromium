@@ -112,7 +112,7 @@ public class TopicsBlockedFragment extends PrivacySandboxSettingsBaseFragment
             mBlockedTopicsCategory.setSummary(null);
             if (mBlockedTopicsCategory.getPreferenceCount() == 0)
                 mBlockedTopicsCategory.setSummary(
-                        R.string.settings_topics_page_blocked_topics_description_empty_ptb);
+                        R.string.settings_topics_page_blocked_topics_description_empty_text_v2);
             return;
         }
         mBlockedTopicsCategory.setSummary(

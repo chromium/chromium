@@ -33,7 +33,7 @@ found in the LICENSE file.
 
     <org.chromium.components.browser_ui.settings.TextMessagePreference
         android:key="topics_empty"
-        android:summary="@string/settings_topics_page_current_topics_description_empty_ptb" />
+        android:summary="@string/settings_topics_page_current_topics_description_empty_text_v2" />
 
     <org.chromium.components.browser_ui.settings.ChromeBasePreference
         android:key="blocked_topics"
