@@ -28,6 +28,7 @@
 #include "base/win/security_descriptor.h"
 #include "base/win/win_util.h"
 #include "base/win/windows_version.h"
+#include "build/build_config.h"
 #include "sandbox/features.h"
 #include "sandbox/win/src/app_container_base.h"
 #include "sandbox/win/tests/common/controller.h"
@@ -458,7 +459,14 @@ TEST(AppContainerLaunchTest, IsNotAppContainer) {
   EXPECT_EQ(SBOX_TEST_FAILED, runner.RunTest(L"CheckIsAppContainer"));
 }
 
-TEST_F(AppContainerTest, ChildProcessMitigationLowBox) {
+// TODO(crbug.com/1523707): Windows 11 ARM64 dbg seems to return 0xC0000005
+// (access violation) instead of SBOX_TEST_SECOND_ERROR.
+#if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_ARM64) && !defined(NDEBUG)
+#define MAYBE_ChildProcessMitigationLowBox DISABLED_ChildProcessMitigationLowBox
+#else
+#define MAYBE_ChildProcessMitigationLowBox ChildProcessMitigationLowBox
+#endif
+TEST_F(AppContainerTest, MAYBE_ChildProcessMitigationLowBox) {
   if (!features::IsAppContainerSandboxSupported()) {
     return;
   }
