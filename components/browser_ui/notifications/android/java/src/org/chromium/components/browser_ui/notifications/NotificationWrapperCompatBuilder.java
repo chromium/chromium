@@ -204,6 +204,12 @@ public class NotificationWrapperCompatBuilder implements NotificationWrapperBuil
     }
 
     @Override
+    public NotificationWrapperBuilder setDeleteIntent(
+            PendingIntentProvider intent, int ignoredActionType) {
+        return setDeleteIntent(intent);
+    }
+
+    @Override
     public NotificationWrapperBuilder setPriorityBeforeO(int pri) {
         mBuilder.setPriority(pri);
         return this;

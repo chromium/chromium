@@ -37,7 +37,11 @@ public class StandardNotificationBuilder extends NotificationBuilderBase {
         builder.setLargeIcon(getNormalizedLargeIcon());
         setStatusBarIcon(builder, mSmallIconId, mSmallIconBitmapForStatusBar);
         builder.setContentIntent(mContentIntent);
-        builder.setDeleteIntent(mDeleteIntent);
+        if (mDeleteIntentActionType != NotificationUmaTracker.ActionType.UNKNOWN) {
+            builder.setDeleteIntent(mDeleteIntent, mDeleteIntentActionType);
+        } else {
+            builder.setDeleteIntent(mDeleteIntent);
+        }
         for (Action action : mActions) {
             addActionToBuilder(builder, action);
         }

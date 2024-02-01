@@ -922,16 +922,13 @@ public class NotificationPlatformBridge {
         notificationBuilder.setSuppressShowingLargeIcon(true);
         notificationBuilder.setTimeoutAfter(PROVISIONAL_UNSUBSCRIBE_DURATION_MS);
 
-        // TODO(crbug.com/1521439): Find a robust solution here. The `NotificationIntentInterceptor`
-        // wraps this into another `PendingIntent` that will be `Intent.filterEquals` to the normal
-        // `ACTION_CLOSE_NOTIFICATION`, thus presently this only works because the interceptor also
-        // copies the `FLAG_UPDATE_CURRENT` flag from the inner `PendingIntent`.
         notificationBuilder.setDeleteIntent(
                 makePendingIntent(
                         identifyingAttributes,
                         NotificationConstants.ACTION_COMMIT_UNSUBSCRIBE,
                         /* actionIndex= */ -1,
-                        /* mutable= */ false));
+                        /* mutable= */ false),
+                NotificationUmaTracker.ActionType.COMMIT_UNSUBSCRIBE_IMPLICIT);
 
         addProvisionallyUnsubscribedNotificationAction(
                 notificationBuilder,

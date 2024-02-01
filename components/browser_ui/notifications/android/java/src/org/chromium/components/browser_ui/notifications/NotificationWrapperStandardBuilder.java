@@ -207,6 +207,12 @@ public class NotificationWrapperStandardBuilder implements NotificationWrapperBu
     }
 
     @Override
+    public NotificationWrapperBuilder setDeleteIntent(
+            PendingIntentProvider intent, int ignoredActionType) {
+        return setDeleteIntent(intent);
+    }
+
+    @Override
     @SuppressWarnings("deprecation")
     public NotificationWrapperBuilder setPriorityBeforeO(int pri) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
