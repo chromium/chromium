@@ -13,6 +13,7 @@ source_set("core") {
     "private_key.h",
     "private_key_factory.h",
     "private_key_types.h",
+    "store_error.h",
   ]
 
   sources = [

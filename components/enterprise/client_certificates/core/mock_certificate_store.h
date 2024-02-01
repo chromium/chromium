@@ -20,22 +20,24 @@ class MockCertificateStore : public CertificateStore {
   MockCertificateStore();
   ~MockCertificateStore() override;
 
-  MOCK_METHOD(void,
-              CreatePrivateKey,
-              (const std::string&,
-               base::OnceCallback<void(scoped_refptr<PrivateKey>)>),
-              (override));
+  MOCK_METHOD(
+      void,
+      CreatePrivateKey,
+      (const std::string&,
+       base::OnceCallback<void(StoreErrorOr<scoped_refptr<PrivateKey>>)>),
+      (override));
   MOCK_METHOD(void,
               CommitCertificate,
               (const std::string&,
                scoped_refptr<net::X509Certificate>,
-               base::OnceCallback<void(bool)>),
+               base::OnceCallback<void(std::optional<StoreError>)>),
               (override));
-  MOCK_METHOD(void,
-              GetIdentity,
-              (const std::string&,
-               base::OnceCallback<void(std::optional<ClientIdentity>)>),
-              (override));
+  MOCK_METHOD(
+      void,
+      GetIdentity,
+      (const std::string&,
+       base::OnceCallback<void(StoreErrorOr<std::optional<ClientIdentity>>)>),
+      (override));
 };
 
 }  // namespace client_certificates

@@ -15,13 +15,16 @@
 #include "base/memory/raw_ptr.h"
 #include "base/pickle.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/gmock_expected_support.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "base/types/expected.h"
 #include "components/enterprise/client_certificates/core/client_identity.h"
 #include "components/enterprise/client_certificates/core/mock_private_key.h"
 #include "components/enterprise/client_certificates/core/mock_private_key_factory.h"
 #include "components/enterprise/client_certificates/core/private_key.h"
 #include "components/enterprise/client_certificates/core/private_key_factory.h"
+#include "components/enterprise/client_certificates/core/store_error.h"
 #include "components/enterprise/client_certificates/proto/client_certificates_database.pb.h"
 #include "components/leveldb_proto/public/proto_database.h"
 #include "components/leveldb_proto/public/proto_database_provider.h"
@@ -73,6 +76,8 @@ MATCHER_P(EqualsProto, expected, "") {
 
 using base::test::RunOnceCallback;
 using InitStatus = leveldb_proto::Enums::InitStatus;
+using base::test::ErrorIs;
+using base::test::ValueIs;
 using testing::_;
 using testing::Return;
 using testing::StrictMock;
@@ -148,16 +153,14 @@ TEST_F(CertificateStoreTest, CreatePrivateKey_Success) {
   EXPECT_CALL(*mock_key_factory_, CreatePrivateKey(_))
       .WillOnce(RunOnceCallback<0>(mocked_private_key));
 
-  base::test::TestFuture<scoped_refptr<PrivateKey>> test_future;
+  base::test::TestFuture<StoreErrorOr<scoped_refptr<PrivateKey>>> test_future;
   store_->CreatePrivateKey(kTestIdentityName, test_future.GetCallback());
 
   fake_db_->InitStatusCallback(InitStatus::kOK);
   fake_db_->GetCallback(/*success=*/true);
   fake_db_->UpdateCallback(/*success=*/true);
 
-  auto returned_key = test_future.Get();
-
-  EXPECT_EQ(returned_key, mocked_private_key);
+  EXPECT_THAT(test_future.Get(), ValueIs(mocked_private_key));
 
   client_certificates_pb::ClientIdentity proto_identity;
   *proto_identity.mutable_private_key() = proto_key;
@@ -166,36 +169,52 @@ TEST_F(CertificateStoreTest, CreatePrivateKey_Success) {
 
 // Tests that no key is returned when given an invalid identity name.
 TEST_F(CertificateStoreTest, CreatePrivateKey_InvalidIdentityNameFail) {
-  base::test::TestFuture<scoped_refptr<PrivateKey>> test_future;
+  base::test::TestFuture<StoreErrorOr<scoped_refptr<PrivateKey>>> test_future;
   store_->CreatePrivateKey("", test_future.GetCallback());
 
   fake_db_->InitStatusCallback(InitStatus::kOK);
 
-  EXPECT_FALSE(test_future.Get());
+  EXPECT_THAT(test_future.Get(), ErrorIs(StoreError::kInvalidIdentityName));
   ExpectNoDatabaseEntry("");
 }
 
 // Tests that no key is returned when failing to initialize the database.
 TEST_F(CertificateStoreTest, CreatePrivateKey_DatabaseInitFail) {
-  base::test::TestFuture<scoped_refptr<PrivateKey>> test_future;
+  base::test::TestFuture<StoreErrorOr<scoped_refptr<PrivateKey>>> test_future;
   store_->CreatePrivateKey(kTestIdentityName, test_future.GetCallback());
 
   fake_db_->InitStatusCallback(InitStatus::kCorrupt);
 
-  EXPECT_FALSE(test_future.Get());
+  EXPECT_THAT(test_future.Get(), ErrorIs(StoreError::kInvalidDatabaseState));
   ExpectNoDatabaseEntry(kTestIdentityName);
 }
 
 // Tests that no key is returned when failing to verify that the database
 // doesn't already have an identity with the same name.
 TEST_F(CertificateStoreTest, CreatePrivateKey_GetIdentityFail) {
-  base::test::TestFuture<scoped_refptr<PrivateKey>> test_future;
+  base::test::TestFuture<StoreErrorOr<scoped_refptr<PrivateKey>>> test_future;
   store_->CreatePrivateKey(kTestIdentityName, test_future.GetCallback());
 
   fake_db_->InitStatusCallback(InitStatus::kOK);
   fake_db_->GetCallback(/*success=*/false);
 
-  EXPECT_FALSE(test_future.Get());
+  EXPECT_THAT(test_future.Get(), ErrorIs(StoreError::kGetDatabaseEntryFailed));
+  ExpectNoDatabaseEntry(kTestIdentityName);
+}
+
+// Tests that no key is returned and the database is not modified when
+// the create key call fails.
+TEST_F(CertificateStoreTest, CreatePrivateKey_CreateKeyFail) {
+  EXPECT_CALL(*mock_key_factory_, CreatePrivateKey(_))
+      .WillOnce(RunOnceCallback<0>(nullptr));
+
+  base::test::TestFuture<StoreErrorOr<scoped_refptr<PrivateKey>>> test_future;
+  store_->CreatePrivateKey(kTestIdentityName, test_future.GetCallback());
+
+  fake_db_->InitStatusCallback(InitStatus::kOK);
+  fake_db_->GetCallback(/*success=*/true);
+
+  EXPECT_THAT(test_future.Get(), ErrorIs(StoreError::kCreateKeyFailed));
   ExpectNoDatabaseEntry(kTestIdentityName);
 }
 
@@ -208,13 +227,13 @@ TEST_F(CertificateStoreTest, CreatePrivateKey_ConflictFail) {
   *proto_identity.mutable_private_key() = proto_key;
   AddDatabaseEntry(kTestIdentityName, proto_identity);
 
-  base::test::TestFuture<scoped_refptr<PrivateKey>> test_future;
+  base::test::TestFuture<StoreErrorOr<scoped_refptr<PrivateKey>>> test_future;
   store_->CreatePrivateKey(kTestIdentityName, test_future.GetCallback());
 
   fake_db_->InitStatusCallback(InitStatus::kOK);
   fake_db_->GetCallback(/*success=*/true);
 
-  EXPECT_FALSE(test_future.Get());
+  EXPECT_THAT(test_future.Get(), ErrorIs(StoreError::kConflictingIdentity));
   ExpectDatabaseEntry(kTestIdentityName, proto_identity);
 }
 
@@ -228,7 +247,7 @@ TEST_F(CertificateStoreTest, CreatePrivateKey_UpdateFail) {
   EXPECT_CALL(*mock_key_factory_, CreatePrivateKey(_))
       .WillOnce(RunOnceCallback<0>(mocked_private_key));
 
-  base::test::TestFuture<scoped_refptr<PrivateKey>> test_future;
+  base::test::TestFuture<StoreErrorOr<scoped_refptr<PrivateKey>>> test_future;
   store_->CreatePrivateKey(kTestIdentityName, test_future.GetCallback());
 
   fake_db_->InitStatusCallback(InitStatus::kOK);
@@ -238,7 +257,7 @@ TEST_F(CertificateStoreTest, CreatePrivateKey_UpdateFail) {
   // Not checking the mocked database's state, as the mock behaves as if the
   // update succeeded, but in this test case it was mocked to fail - so we can
   // assume it failed.
-  EXPECT_FALSE(test_future.Get());
+  EXPECT_THAT(test_future.Get(), ErrorIs(StoreError::kSaveKeyFailed));
 }
 
 // Tests that a certificate can be saved to the database when a private key
@@ -251,7 +270,7 @@ TEST_F(CertificateStoreTest, CommitCertificate_SuccessWithPrivateKey) {
 
   auto test_cert = LoadTestCert();
 
-  base::test::TestFuture<bool> test_future;
+  base::test::TestFuture<std::optional<StoreError>> test_future;
   store_->CommitCertificate(kTestIdentityName, test_cert,
                             test_future.GetCallback());
 
@@ -259,7 +278,7 @@ TEST_F(CertificateStoreTest, CommitCertificate_SuccessWithPrivateKey) {
   fake_db_->GetCallback(/*success=*/true);
   fake_db_->UpdateCallback(/*success=*/true);
 
-  EXPECT_TRUE(test_future.Get());
+  EXPECT_EQ(test_future.Get(), std::nullopt);
 
   PersistCertificate(proto_identity, test_cert);
   ExpectDatabaseEntry(kTestIdentityName, proto_identity);
@@ -270,7 +289,7 @@ TEST_F(CertificateStoreTest, CommitCertificate_SuccessWithPrivateKey) {
 TEST_F(CertificateStoreTest, CommitCertificate_SuccessWithoutPrivateKey) {
   auto test_cert = LoadTestCert();
 
-  base::test::TestFuture<bool> test_future;
+  base::test::TestFuture<std::optional<StoreError>> test_future;
   store_->CommitCertificate(kTestIdentityName, test_cert,
                             test_future.GetCallback());
 
@@ -278,7 +297,7 @@ TEST_F(CertificateStoreTest, CommitCertificate_SuccessWithoutPrivateKey) {
   fake_db_->GetCallback(/*success=*/true);
   fake_db_->UpdateCallback(/*success=*/true);
 
-  EXPECT_TRUE(test_future.Get());
+  EXPECT_EQ(test_future.Get(), std::nullopt);
 
   client_certificates_pb::ClientIdentity proto_identity;
   PersistCertificate(proto_identity, test_cert);
@@ -290,12 +309,12 @@ TEST_F(CertificateStoreTest, CommitCertificate_SuccessWithoutPrivateKey) {
 TEST_F(CertificateStoreTest, CommitCertificate_InvalidIdentityNameFail) {
   auto test_cert = LoadTestCert();
 
-  base::test::TestFuture<bool> test_future;
+  base::test::TestFuture<std::optional<StoreError>> test_future;
   store_->CommitCertificate("", test_cert, test_future.GetCallback());
 
   fake_db_->InitStatusCallback(InitStatus::kOK);
 
-  EXPECT_FALSE(test_future.Get());
+  EXPECT_EQ(test_future.Get(), StoreError::kInvalidIdentityName);
   ExpectNoDatabaseEntry("");
 }
 
@@ -304,13 +323,13 @@ TEST_F(CertificateStoreTest, CommitCertificate_InvalidIdentityNameFail) {
 TEST_F(CertificateStoreTest, CommitCertificate_DatabaseInitFail) {
   auto test_cert = LoadTestCert();
 
-  base::test::TestFuture<bool> test_future;
+  base::test::TestFuture<std::optional<StoreError>> test_future;
   store_->CommitCertificate(kTestIdentityName, test_cert,
                             test_future.GetCallback());
 
   fake_db_->InitStatusCallback(InitStatus::kCorrupt);
 
-  EXPECT_FALSE(test_future.Get());
+  EXPECT_EQ(test_future.Get(), StoreError::kInvalidDatabaseState);
   ExpectNoDatabaseEntry(kTestIdentityName);
 }
 
@@ -319,28 +338,28 @@ TEST_F(CertificateStoreTest, CommitCertificate_DatabaseInitFail) {
 TEST_F(CertificateStoreTest, CommitCertificate_GetIdentityFail) {
   auto test_cert = LoadTestCert();
 
-  base::test::TestFuture<bool> test_future;
+  base::test::TestFuture<std::optional<StoreError>> test_future;
   store_->CommitCertificate(kTestIdentityName, test_cert,
                             test_future.GetCallback());
 
   fake_db_->InitStatusCallback(InitStatus::kOK);
   fake_db_->GetCallback(/*success=*/false);
 
-  EXPECT_FALSE(test_future.Get());
+  EXPECT_EQ(test_future.Get(), StoreError::kGetDatabaseEntryFailed);
   ExpectNoDatabaseEntry(kTestIdentityName);
 }
 
 // Tests that a certificate won't be saved to the database when the given
 // certificate instance is invalid (nullptr).
 TEST_F(CertificateStoreTest, CommitCertificate_InvalidCertificateFail) {
-  base::test::TestFuture<bool> test_future;
+  base::test::TestFuture<std::optional<StoreError>> test_future;
   store_->CommitCertificate(kTestIdentityName, /*certificate=*/nullptr,
                             test_future.GetCallback());
 
   fake_db_->InitStatusCallback(InitStatus::kOK);
   fake_db_->GetCallback(/*success=*/true);
 
-  EXPECT_FALSE(test_future.Get());
+  EXPECT_EQ(test_future.Get(), StoreError::kInvalidCertificateInput);
   ExpectNoDatabaseEntry(kTestIdentityName);
 }
 
@@ -349,7 +368,7 @@ TEST_F(CertificateStoreTest, CommitCertificate_InvalidCertificateFail) {
 TEST_F(CertificateStoreTest, CommitCertificate_UpdateFail) {
   auto test_cert = LoadTestCert();
 
-  base::test::TestFuture<bool> test_future;
+  base::test::TestFuture<std::optional<StoreError>> test_future;
   store_->CommitCertificate(kTestIdentityName, test_cert,
                             test_future.GetCallback());
 
@@ -360,7 +379,7 @@ TEST_F(CertificateStoreTest, CommitCertificate_UpdateFail) {
   // Not checking the mocked database's state, as the mock behaves as if the
   // update succeeded, but in this test case it was mocked to fail - so we can
   // assume it failed.
-  EXPECT_FALSE(test_future.Get());
+  EXPECT_EQ(test_future.Get(), StoreError::kCertificateCommitFailed);
 }
 
 // Tests that an identity stored in the database with a private key and
@@ -379,13 +398,15 @@ TEST_F(CertificateStoreTest, GetIdentity_FullIdentitySuccess) {
   PersistCertificate(proto_identity, test_cert);
   AddDatabaseEntry(kTestIdentityName, proto_identity);
 
-  base::test::TestFuture<std::optional<ClientIdentity>> test_future;
+  base::test::TestFuture<StoreErrorOr<std::optional<ClientIdentity>>>
+      test_future;
   store_->GetIdentity(kTestIdentityName, test_future.GetCallback());
 
   fake_db_->InitStatusCallback(InitStatus::kOK);
   fake_db_->GetCallback(/*success=*/true);
 
-  const auto& identity = test_future.Get();
+  ASSERT_OK_AND_ASSIGN(std::optional<ClientIdentity> identity,
+                       test_future.Get());
   ASSERT_TRUE(identity.has_value());
   EXPECT_EQ(identity->name, kTestIdentityName);
   EXPECT_EQ(identity->private_key, mocked_private_key);
@@ -405,13 +426,15 @@ TEST_F(CertificateStoreTest, GetIdentity_OnlyPrivateKeySuccess) {
   *proto_identity.mutable_private_key() = proto_key;
   AddDatabaseEntry(kTestIdentityName, proto_identity);
 
-  base::test::TestFuture<std::optional<ClientIdentity>> test_future;
+  base::test::TestFuture<StoreErrorOr<std::optional<ClientIdentity>>>
+      test_future;
   store_->GetIdentity(kTestIdentityName, test_future.GetCallback());
 
   fake_db_->InitStatusCallback(InitStatus::kOK);
   fake_db_->GetCallback(/*success=*/true);
 
-  const auto& identity = test_future.Get();
+  ASSERT_OK_AND_ASSIGN(std::optional<ClientIdentity> identity,
+                       test_future.Get());
   ASSERT_TRUE(identity.has_value());
   EXPECT_EQ(identity->name, kTestIdentityName);
   EXPECT_EQ(identity->private_key, mocked_private_key);
@@ -427,13 +450,15 @@ TEST_F(CertificateStoreTest, GetIdentity_OnlyCertificateSuccess) {
   PersistCertificate(proto_identity, test_cert);
   AddDatabaseEntry(kTestIdentityName, proto_identity);
 
-  base::test::TestFuture<std::optional<ClientIdentity>> test_future;
+  base::test::TestFuture<StoreErrorOr<std::optional<ClientIdentity>>>
+      test_future;
   store_->GetIdentity(kTestIdentityName, test_future.GetCallback());
 
   fake_db_->InitStatusCallback(InitStatus::kOK);
   fake_db_->GetCallback(/*success=*/true);
 
-  const auto& identity = test_future.Get();
+  ASSERT_OK_AND_ASSIGN(std::optional<ClientIdentity> identity,
+                       test_future.Get());
   ASSERT_TRUE(identity.has_value());
   EXPECT_EQ(identity->name, kTestIdentityName);
   EXPECT_FALSE(identity->private_key);
@@ -446,13 +471,15 @@ TEST_F(CertificateStoreTest, GetIdentity_EmptySuccess) {
   client_certificates_pb::ClientIdentity proto_identity;
   AddDatabaseEntry(kTestIdentityName, proto_identity);
 
-  base::test::TestFuture<std::optional<ClientIdentity>> test_future;
+  base::test::TestFuture<StoreErrorOr<std::optional<ClientIdentity>>>
+      test_future;
   store_->GetIdentity(kTestIdentityName, test_future.GetCallback());
 
   fake_db_->InitStatusCallback(InitStatus::kOK);
   fake_db_->GetCallback(/*success=*/true);
 
-  const auto& identity = test_future.Get();
+  ASSERT_OK_AND_ASSIGN(std::optional<ClientIdentity> identity,
+                       test_future.Get());
   ASSERT_TRUE(identity.has_value());
   EXPECT_EQ(identity->name, kTestIdentityName);
   EXPECT_FALSE(identity->private_key);
@@ -462,24 +489,28 @@ TEST_F(CertificateStoreTest, GetIdentity_EmptySuccess) {
 // Tests that attempting to retrieve an identity using an unknown identity name
 // does not return an actual identity.
 TEST_F(CertificateStoreTest, GetIdentity_NotFoundSuccess) {
-  base::test::TestFuture<std::optional<ClientIdentity>> test_future;
+  base::test::TestFuture<StoreErrorOr<std::optional<ClientIdentity>>>
+      test_future;
   store_->GetIdentity(kTestIdentityName, test_future.GetCallback());
 
   fake_db_->InitStatusCallback(InitStatus::kOK);
   fake_db_->GetCallback(/*success=*/true);
 
-  EXPECT_FALSE(test_future.Get().has_value());
+  ASSERT_OK_AND_ASSIGN(std::optional<ClientIdentity> identity,
+                       test_future.Get());
+  EXPECT_FALSE(identity.has_value());
 }
 
 // Tests that attempting to retrieve an identity using an invalid identity name
 // does not return an actual identity.
 TEST_F(CertificateStoreTest, GetIdentity_InvalidIdentityNameFail) {
-  base::test::TestFuture<std::optional<ClientIdentity>> test_future;
+  base::test::TestFuture<StoreErrorOr<std::optional<ClientIdentity>>>
+      test_future;
   store_->GetIdentity("", test_future.GetCallback());
 
   fake_db_->InitStatusCallback(InitStatus::kOK);
 
-  EXPECT_FALSE(test_future.Get().has_value());
+  EXPECT_THAT(test_future.Get(), ErrorIs(StoreError::kInvalidIdentityName));
 }
 
 // Tests that attempting to retrieve an identity when the database failed to
@@ -488,12 +519,13 @@ TEST_F(CertificateStoreTest, GetIdentity_DatabaseInitFail) {
   client_certificates_pb::ClientIdentity proto_identity;
   AddDatabaseEntry(kTestIdentityName, proto_identity);
 
-  base::test::TestFuture<std::optional<ClientIdentity>> test_future;
+  base::test::TestFuture<StoreErrorOr<std::optional<ClientIdentity>>>
+      test_future;
   store_->GetIdentity(kTestIdentityName, test_future.GetCallback());
 
   fake_db_->InitStatusCallback(InitStatus::kCorrupt);
 
-  EXPECT_FALSE(test_future.Get().has_value());
+  EXPECT_THAT(test_future.Get(), ErrorIs(StoreError::kInvalidDatabaseState));
 }
 
 // Tests that attempting to retrieve an identity when the database failed the
@@ -502,13 +534,14 @@ TEST_F(CertificateStoreTest, GetIdentity_GetIdentityFail) {
   client_certificates_pb::ClientIdentity proto_identity;
   AddDatabaseEntry(kTestIdentityName, proto_identity);
 
-  base::test::TestFuture<std::optional<ClientIdentity>> test_future;
+  base::test::TestFuture<StoreErrorOr<std::optional<ClientIdentity>>>
+      test_future;
   store_->GetIdentity(kTestIdentityName, test_future.GetCallback());
 
   fake_db_->InitStatusCallback(InitStatus::kOK);
   fake_db_->GetCallback(/*success=*/false);
 
-  EXPECT_FALSE(test_future.Get().has_value());
+  EXPECT_THAT(test_future.Get(), ErrorIs(StoreError::kGetDatabaseEntryFailed));
 }
 
 // Tests that attempting to retrieve an identity when failing to load a private
@@ -523,13 +556,14 @@ TEST_F(CertificateStoreTest, GetIdentity_LoadPrivateKeyFail) {
   *proto_identity.mutable_private_key() = proto_key;
   AddDatabaseEntry(kTestIdentityName, proto_identity);
 
-  base::test::TestFuture<std::optional<ClientIdentity>> test_future;
+  base::test::TestFuture<StoreErrorOr<std::optional<ClientIdentity>>>
+      test_future;
   store_->GetIdentity(kTestIdentityName, test_future.GetCallback());
 
   fake_db_->InitStatusCallback(InitStatus::kOK);
   fake_db_->GetCallback(/*success=*/true);
 
-  EXPECT_FALSE(test_future.Get().has_value());
+  EXPECT_THAT(test_future.Get(), ErrorIs(StoreError::kLoadKeyFailed));
 }
 
 }  // namespace client_certificates

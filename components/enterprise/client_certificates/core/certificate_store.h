@@ -13,6 +13,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 #include "components/enterprise/client_certificates/core/client_identity.h"
+#include "components/enterprise/client_certificates/core/store_error.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/leveldb_proto/public/proto_database.h"
 
@@ -57,23 +58,29 @@ class CertificateStore : public KeyedService {
       std::unique_ptr<PrivateKeyFactory> key_factory);
 
   // Will create a private key with the strongest protection available on the
-  // device and store it in the database under `identity_name`. `callback` will
-  // be invoked with the key once it has been created and stored.
+  // device and store it in the database under `identity_name`. If successful,
+  // `callback` will be invoked with the key once it has been created and
+  // stored. If an error occurred, `callback` will be invoked with the error.
   virtual void CreatePrivateKey(
       const std::string& identity_name,
-      base::OnceCallback<void(scoped_refptr<PrivateKey>)> callback) = 0;
+      base::OnceCallback<void(StoreErrorOr<scoped_refptr<PrivateKey>>)>
+          callback) = 0;
 
   // Will store the given `certificate` in the database under `identity_name`.
-  // Will call `callback` with a boolean to indicate whether the operation
-  // succeeded or not.
+  // Will call `callback` with std::nullopt if successful, or an error if not.
   virtual void CommitCertificate(
       const std::string& identity_name,
       scoped_refptr<net::X509Certificate> certificate,
-      base::OnceCallback<void(bool)> callback) = 0;
+      base::OnceCallback<void(std::optional<StoreError>)> callback) = 0;
 
+  // Will attempt to retrieve an identity with name `identity_name` from the
+  // database and load it into memory. Will return the loaded identity via
+  // `callback`. Will invoke `callback` with std::nullopt if the identity
+  // doesn't exist, or with an error if something went wrong.
   virtual void GetIdentity(
       const std::string& identity_name,
-      base::OnceCallback<void(std::optional<ClientIdentity>)> callback) = 0;
+      base::OnceCallback<void(StoreErrorOr<std::optional<ClientIdentity>>)>
+          callback) = 0;
 };
 
 }  // namespace client_certificates
