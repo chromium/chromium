@@ -14426,12 +14426,6 @@
             ],
             "experiments": [
                 {
-                    "name": "PrivacySandboxAttestationsHigherComponentRegistrationPriority",
-                    "enable_features": [
-                        "PrivacySandboxAttestationsHigherComponentRegistrationPriority"
-                    ]
-                },
-                {
                     "name": "PrivacySandboxAttestationsUserBlockingPriority",
                     "enable_features": [
                         "PrivacySandboxAttestationsUserBlockingPriority"
