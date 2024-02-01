@@ -63,11 +63,6 @@ chromium-metrics-reviews@google.com.
   <variant name="SameSite"/>
 </variants>
 
-<variants name="SurfaceIdStatus">
-  <variant name="LocalSurfaceIdNotUpdated"/>
-  <variant name="LocalSurfaceIdUpdated"/>
-</variants>
-
 <histogram name="BackForwardCache.AllSites.EvictedAfterDocumentRestoredReason"
     enum="BackForwardCacheEvictedAfterDocumentRestoredReason"
     expires_after="2024-07-07">
@@ -1052,18 +1047,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="Navigation.MainframeSameDocumentNavigationCommitToPresentFirstFrame.{SurfaceIdStatus}"
+    name="Navigation.MainframeSameDocumentNavigationCommitToPresentFirstFrame"
     units="ms" expires_after="M130">
   <owner>liuwilliam@chromium.org</owner>
   <owner>chrome-seamless-core@google.com</owner>
   <summary>
     Records the time to present the first frame since the same-document
     navigation has finished in the mainframe's renderer.
-
-    LocalSurfaceIdUpdated indicates whether the LocalSurfaceId was incremented
-    in the renderer due to this navigation.
   </summary>
-  <token key="SurfaceIdStatus" variants="SurfaceIdStatus"/>
 </histogram>
 
 <histogram name="Navigation.MainFrameScheme2" enum="NavigationScheme"
