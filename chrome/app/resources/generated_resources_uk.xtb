@@ -4595,7 +4595,6 @@
 <translation id="4546345569117159016">Права кнопка</translation>
 <translation id="4546509872654834602"><ph name="SUPERVISED_USER_NAME" /> хоче використовувати це розширення:</translation>
 <translation id="4546692474302123343">Голосовий ввід через Google Асистента</translation>
-<translation id="4547538408998421970">Ви вичерпали денний ліміт.</translation>
 <translation id="4547659257713117923">Немає вкладок з інших пристроїв</translation>
 <translation id="4547672827276975204">Налаштовувати автоматично</translation>
 <translation id="4548858987594081919">Щоб зберегти ваші облікові дані в Google Менеджері паролів, додайте ім’я користувача для цього сайту</translation>
@@ -5201,7 +5200,6 @@
 <translation id="5032430150487044192">Не вдається створити QR-код</translation>
 <translation id="5033137252639132982">Заборонено використовувати датчики руху</translation>
 <translation id="5033266061063942743">Геометричні фігури</translation>
-<translation id="5033646801355533305">Повторіть спробу завтра.</translation>
 <translation id="5035846135112863536">Натисніть "Докладніше" нижче, щоб отримати докладнішу інформацію від сервісу "<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />".</translation>
 <translation id="5037676449506322593">Вибрати всі</translation>
 <translation id="5038818366306248416">Раніше ви вирішили заборонити всі розширення на сторінці <ph name="ORIGIN" /></translation>

@@ -4578,7 +4578,6 @@
 <translation id="4546345569117159016">Правая кнопка</translation>
 <translation id="4546509872654834602"><ph name="SUPERVISED_USER_NAME" /> просит разрешить использовать это расширение:</translation>
 <translation id="4546692474302123343">Голосовой ввод в Google Ассистенте</translation>
-<translation id="4547538408998421970">Достигнуто дневное ограничение.</translation>
 <translation id="4547659257713117923">Нет вкладок с других устройств</translation>
 <translation id="4547672827276975204">Автоматическое определение</translation>
 <translation id="4548858987594081919">Укажите имя пользователя для этого сайта, чтобы данные для входа были полностью сохранены в Google Менеджере паролей.</translation>
@@ -5184,7 +5183,6 @@
 <translation id="5032430150487044192">Не удалось создать QR-код.</translation>
 <translation id="5033137252639132982">Запретить сайтам использовать датчики движения</translation>
 <translation id="5033266061063942743">Геометрические фигуры</translation>
-<translation id="5033646801355533305">Повторите попытку завтра.</translation>
 <translation id="5035846135112863536">Чтобы изучить информацию, предоставленную сервисом "<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />", нажмите "Подробнее" ниже.</translation>
 <translation id="5037676449506322593">Выделить все</translation>
 <translation id="5038818366306248416">Ранее вы запретили все расширения на странице <ph name="ORIGIN" /></translation>
