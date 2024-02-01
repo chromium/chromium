@@ -552,7 +552,7 @@ void SavedTabGroupKeyedService::RecordTabGroupMetrics() {
 
     const TabStripModel* const tab_strip_model = browser->tab_strip_model();
     if (!tab_strip_model->SupportsTabGroups()) {
-      return;
+      continue;
     }
 
     const TabGroupModel* group_model = tab_strip_model->group_model();
