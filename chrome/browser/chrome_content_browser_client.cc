@@ -7011,9 +7011,13 @@ void ChromeContentBrowserClient::ReportLegacyTechEvent(
   if (!profile) {
     return;
   }
-  enterprise_reporting::LegacyTechServiceFactory::GetForProfile(profile)
-      ->ReportEvent(type, url, frame_url, filename, line, column,
-                    cookie_issue_details);
+  enterprise_reporting::LegacyTechService* service =
+      enterprise_reporting::LegacyTechServiceFactory::GetForProfile(profile);
+  if (!service) {
+    return;
+  }
+  service->ReportEvent(type, url, frame_url, filename, line, column,
+                       cookie_issue_details);
 }
 
 bool ChromeContentBrowserClient::CanAcceptUntrustedExchangesIfNeeded() {
