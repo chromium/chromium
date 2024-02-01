@@ -2019,7 +2019,7 @@ bool SkiaOutputSurfaceImplOnGpu::InitializeForGL() {
             shared_gpu_deps_->memory_tracker(),
             GetDidSwapBuffersCompleteCallback(), GetReleaseOverlaysCallback());
 #else   // !BUILDFLAG(IS_WIN)
-        output_device_ = std::make_unique<SkiaOutputDeviceDCompPresenter>(
+        output_device_ = std::make_unique<SkiaOutputDeviceDComp>(
             shared_image_representation_factory_.get(), context_state_.get(),
             presenter_, feature_info_, shared_gpu_deps_->memory_tracker(),
             GetDidSwapBuffersCompleteCallback());
@@ -2031,23 +2031,11 @@ bool SkiaOutputSurfaceImplOnGpu::InitializeForGL() {
               shared_gpu_deps_->memory_tracker(),
               GetDidSwapBuffersCompleteCallback());
         } else {
-#if BUILDFLAG(IS_WIN)
-          if (gl_surface_->SupportsDCLayers()) {
-            output_device_ = std::make_unique<SkiaOutputDeviceDCompGLSurface>(
-                shared_image_representation_factory_.get(),
-                context_state_.get(), gl_surface_, feature_info_,
-                shared_gpu_deps_->memory_tracker(),
-                GetDidSwapBuffersCompleteCallback());
-          }
-#endif
-          if (!output_device_) {
-            // Used by Android, Linux, and Windows (when there is no DComp
-            // support, e.g. Win7)
-            output_device_ = std::make_unique<SkiaOutputDeviceGL>(
-                context_state_.get(), gl_surface_, feature_info_,
-                shared_gpu_deps_->memory_tracker(),
-                GetDidSwapBuffersCompleteCallback());
-          }
+          // Used by Android, Linux, and Windows (when DComp has been disabled).
+          output_device_ = std::make_unique<SkiaOutputDeviceGL>(
+              context_state_.get(), gl_surface_, feature_info_,
+              shared_gpu_deps_->memory_tracker(),
+              GetDidSwapBuffersCompleteCallback());
         }
       }
     } else {
@@ -2184,7 +2172,7 @@ bool SkiaOutputSurfaceImplOnGpu::InitializeForDawn() {
 #elif BUILDFLAG(IS_WIN)
   presenter_ = dependency_->CreatePresenter(weak_ptr_factory_.GetWeakPtr());
   if (presenter_) {
-    output_device_ = std::make_unique<SkiaOutputDeviceDCompPresenter>(
+    output_device_ = std::make_unique<SkiaOutputDeviceDComp>(
         shared_image_representation_factory_.get(), context_state_.get(),
         presenter_, feature_info_, shared_gpu_deps_->memory_tracker(),
         GetDidSwapBuffersCompleteCallback());
