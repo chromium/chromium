@@ -57,7 +57,8 @@ class EnterpriseWarnPage
 
  private:
   const raw_ptr<safe_browsing::BaseUIManager> ui_manager_;
-  safe_browsing::SafeBrowsingBlockingPage::UnsafeResourceList unsafe_resources_;
+  const safe_browsing::SafeBrowsingBlockingPage::UnsafeResourceList
+      unsafe_resources_;
   void PopulateStringsForSharedHTML(base::Value::Dict& load_time_data);
 };
 

@@ -8,6 +8,7 @@
 
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/enterprise/connectors/interstitials/enterprise_interstitial_util.h"
 #include "components/grit/components_resources.h"
 #include "components/safe_browsing/content/browser/base_ui_manager.h"
 #include "components/safe_browsing/core/common/features.h"
@@ -22,28 +23,6 @@
 #include "ui/base/l10n/l10n_util.h"
 
 using security_interstitials::MetricsHelper;
-
-namespace {
-std::u16string GetUrlFilteringCustomMessage(
-    const safe_browsing::MatchedUrlNavigationRule& rule) {
-  std::u16string custom_message = u"";
-  if (rule.has_custom_message()) {
-    for (const auto& custom_segment :
-         rule.custom_message().message_segments()) {
-      if (custom_segment.has_link() && GURL(custom_segment.link()).is_valid()) {
-        base::StrAppend(&custom_message,
-                        {u"<a target=\"_blank\" href=\"",
-                         base::UTF8ToUTF16(custom_segment.link()), u"\">",
-                         base::UTF8ToUTF16(custom_segment.text()), u"</a>"});
-      } else {
-        base::StrAppend(&custom_message,
-                        {base::UTF8ToUTF16(custom_segment.text())});
-      }
-    }
-  }
-  return custom_message;
-}
-}  // namespace
 
 // static
 const security_interstitials::SecurityInterstitialPage::TypeID
@@ -90,19 +69,8 @@ void EnterpriseWarnPage::PopulateInterstitialStrings(
   load_time_data.Set("heading",
                      l10n_util::GetStringUTF16(IDS_ENTERPRISE_WARN_HEADING));
 
-  std::u16string custom_message = u"";
-  if (base::FeatureList::IsEnabled(
-          safe_browsing::kRealTimeUrlFilteringCustomMessage) &&
-      !unsafe_resources_.empty()) {
-    // Threat info already ordered by severity
-    if (!unsafe_resources_.empty() &&
-        !unsafe_resources_[0].rt_lookup_response.threat_info().empty()) {
-      custom_message =
-          GetUrlFilteringCustomMessage(unsafe_resources_[0]
-                                           .rt_lookup_response.threat_info()[0]
-                                           .matched_url_navigation_rule());
-    }
-  }
+  std::u16string custom_message =
+      enterprise_connectors::GetUrlFilteringCustomMessage(unsafe_resources_);
   if (!custom_message.empty()) {
     load_time_data.Set("primaryParagraph",
                        l10n_util::GetStringFUTF16(

@@ -495,6 +495,8 @@ static_library("browser") {
     "enterprise/connectors/interstitials/enterprise_block_controller_client.h",
     "enterprise/connectors/interstitials/enterprise_block_page.cc",
     "enterprise/connectors/interstitials/enterprise_block_page.h",
+    "enterprise/connectors/interstitials/enterprise_interstitial_util.cc",
+    "enterprise/connectors/interstitials/enterprise_interstitial_util.h",
     "enterprise/connectors/interstitials/enterprise_warn_controller_client.cc",
     "enterprise/connectors/interstitials/enterprise_warn_controller_client.h",
     "enterprise/connectors/interstitials/enterprise_warn_page.cc",

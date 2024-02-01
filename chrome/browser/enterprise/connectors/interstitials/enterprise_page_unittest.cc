@@ -72,13 +72,15 @@ class EnterprisePageTest : public testing::Test {
 
 TEST_F(EnterprisePageTest, EnterpriseBlock_ShownAndMetricsRecorded) {
   base::HistogramTester histograms;
+  auto unsafe_resources =
+      safe_browsing::SafeBrowsingBlockingPage::UnsafeResourceList();
 
   histograms.ExpectTotalCount(kBlockDecisionHistogram, 0);
 
-  EnterpriseBlockPage test_page =
-      EnterpriseBlockPage(web_contents(), GURL("exampleurl.net"),
-                          std::make_unique<EnterpriseBlockControllerClient>(
-                              web_contents(), GURL("exampleurl.net")));
+  EnterpriseBlockPage test_page = EnterpriseBlockPage(
+      web_contents(), GURL("exampleurl.net"), unsafe_resources,
+      std::make_unique<EnterpriseBlockControllerClient>(
+          web_contents(), GURL("exampleurl.net")));
 
   // Total count = pages shown + proceeding disabled on the page that was shown
   histograms.ExpectTotalCount(kBlockDecisionHistogram, 2);
@@ -119,6 +121,28 @@ TEST_F(EnterprisePageTest, EnterpriseWarn_CustomMessageDisplayed) {
       nullptr, web_contents(), GURL("exampleurl.net"), unsafe_resources,
       std::make_unique<EnterpriseWarnControllerClient>(web_contents(),
                                                        GURL("exampleurl.net")));
+
+  base::Value::Dict load_time_data;
+  std::string final_message = test_page.GetCustomMessageForTesting();
+  std::string expected_message = base::StrCat(
+      {"Your administrator says: ", "\"<a target=\"_blank\" href=\"", kTestUrl,
+       "\">", kTestMessage, "</a>\""});
+  EXPECT_EQ(expected_message, final_message);
+}
+
+TEST_F(EnterprisePageTest, EnterpriseBlock_CustomMessageDisplayed) {
+  enable_custom_message_feature();
+
+  auto unsafe_resources =
+      safe_browsing::SafeBrowsingBlockingPage::UnsafeResourceList();
+  security_interstitials::UnsafeResource resource;
+  AddCustomMessageToResource(resource);
+  unsafe_resources.emplace_back(resource);
+
+  EnterpriseBlockPage test_page = EnterpriseBlockPage(
+      web_contents(), GURL("exampleurl.net"), unsafe_resources,
+      std::make_unique<EnterpriseBlockControllerClient>(
+          web_contents(), GURL("exampleurl.net")));
 
   base::Value::Dict load_time_data;
   std::string final_message = test_page.GetCustomMessageForTesting();
