@@ -857,7 +857,7 @@
         "name": "executeScript",
         "deprecated": "Replaced by $(ref:scripting.executeScript) in Manifest V3.",
         "type": "function",
-        "description": "Injects JavaScript code into a page. For details, see the <a href='develop/concepts/content-scripts#programmatic'>programmatic injection</a> section of the content scripts doc.",
+        "description": "Injects JavaScript code into a page. For details, see the <a href='/docs/extensions/develop/concepts/content-scripts#programmatic'>programmatic injection</a> section of the content scripts doc.",
         "parameters": [
           {"type": "integer", "name": "tabId", "minimum": 0, "optional": true, "description": "The ID of the tab in which to run the script; defaults to the active tab of the current window."},
           {
@@ -885,7 +885,7 @@
         "name": "insertCSS",
         "deprecated": "Replaced by $(ref:scripting.insertCSS) in Manifest V3.",
         "type": "function",
-        "description": "Injects CSS into a page. Styles inserted with this method can be removed with $(ref:scripting.removeCSS). For details, see the <a href='develop/concepts/content-scripts#programmatic'>programmatic injection</a> section of the content scripts doc.",
+        "description": "Injects CSS into a page. Styles inserted with this method can be removed with $(ref:scripting.removeCSS). For details, see the <a href='/docs/extensions/develop/concepts/content-scripts#programmatic'>programmatic injection</a> section of the content scripts doc.",
         "parameters": [
           {"type": "integer", "name": "tabId", "minimum": 0, "optional": true, "description": "The ID of the tab in which to insert the CSS; defaults to the active tab of the current window."},
           {
