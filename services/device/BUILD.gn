@@ -130,10 +130,8 @@ source_set("tests") {
 
   sources = [
     "battery/battery_status_service_unittest.cc",
-    "compute_pressure/cpu_probe_unittest.cc",
+    "compute_pressure/cpu_probe_manager_unittest.cc",
     "compute_pressure/pressure_manager_impl_unittest.cc",
-    "compute_pressure/pressure_test_support.cc",
-    "compute_pressure/pressure_test_support.h",
     "generic_sensor/absolute_orientation_euler_angles_fusion_algorithm_using_accelerometer_and_magnetometer_unittest.cc",
     "generic_sensor/fake_platform_sensor_and_provider.cc",
     "generic_sensor/fake_platform_sensor_and_provider.h",
@@ -174,6 +172,7 @@ source_set("tests") {
     "//base/test:test_support",
     "//base/third_party/dynamic_annotations",
     "//build:chromeos_buildflags",
+    "//components/system_cpu:test_support",
     "//components/variations",
     "//device/base/synchronization",
     "//mojo/public/cpp/bindings",
@@ -201,7 +200,6 @@ source_set("tests") {
   if (is_win) {
     sources += [
       "battery/battery_status_manager_win_unittest.cc",
-      "compute_pressure/cpu_probe_win_unittest.cc",
       "generic_sensor/platform_sensor_and_provider_unittest_win.cc",
       "geolocation/wifi_data_provider_win_unittest.cc",
     ]
@@ -307,14 +305,6 @@ source_set("tests") {
     }
   }
 
-  if (is_linux || is_chromeos) {
-    sources += [
-      "compute_pressure/core_times_unittest.cc",
-      "compute_pressure/cpu_probe_linux_unittest.cc",
-      "compute_pressure/procfs_stat_cpu_parser_unittest.cc",
-    ]
-  }
-
   if (is_serial_enabled_platform) {
     sources += [
       "serial/bluetooth_serial_device_enumerator_unittests.cc",
@@ -374,13 +364,6 @@ source_set("tests") {
 
   if (is_apple) {
     sources += [ "geolocation/core_location_provider_unittest.mm" ]
-  }
-
-  if (is_mac) {
-    sources += [
-      "compute_pressure/core_times_unittest.cc",
-      "compute_pressure/cpu_probe_mac_unittest.cc",
-    ]
   }
 
   # UsbContext is a libusb-specific object.

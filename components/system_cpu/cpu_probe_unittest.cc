@@ -131,7 +131,7 @@ TEST_F(CpuProbeTest, DestroyWhileSampling) {
 }
 
 // TODO(crbug.com/1513286): Fix test flakily timing out and re-enable.
-TEST_F(CpuProbeDeathTest, DISABLED_CalculateStateWrongValue) {
+TEST_F(CpuProbeDeathTest, DISABLED_CpuUtilizationTooLarge) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   std::vector<PressureSample> samples = {
@@ -149,6 +149,27 @@ TEST_F(CpuProbeDeathTest, DISABLED_CalculateStateWrongValue) {
   cpu_probe_->StartSampling();
   RequestRepeatedUpdates(base::Milliseconds(1));
   EXPECT_CHECK_DEATH_WITH(run_loop.Run(), "cpu_utilization <= 1.0");
+}
+
+// TODO(crbug.com/1513286): Fix test flakily timing out and re-enable.
+TEST_F(CpuProbeDeathTest, DISABLED_CpuUtilizationTooSmall) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  std::vector<PressureSample> samples = {
+      // Value right after construction.
+      PressureSample{0.6},
+      // Value after first Update(), should be discarded.
+      PressureSample{0.9},
+      // Crash expected.
+      PressureSample{-0.5},
+  };
+
+  base::RunLoop run_loop;
+  cpu_probe_ = std::make_unique<StreamingCpuProbe>(std::move(samples),
+                                                   run_loop.QuitClosure());
+  cpu_probe_->StartSampling();
+  RequestRepeatedUpdates(base::Milliseconds(1));
+  EXPECT_CHECK_DEATH_WITH(run_loop.Run(), "cpu_utilization >= 0.0");
 }
 
 // TODO(crbug.com/1513286): Fix test flakily timing out and re-enable.

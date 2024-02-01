@@ -52,18 +52,13 @@ source_set("system_cpu") {
 source_set("unit_tests") {
   testonly = true
 
-  sources = [
-    "cpu_probe_unittest.cc",
-    "pressure_test_support.cc",
-    "pressure_test_support.h",
-  ]
+  sources = [ "cpu_probe_unittest.cc" ]
 
   deps = [
     ":system_cpu",
-    "//base",
+    ":test_support",
     "//base/test:test_support",
     "//testing/gmock",
-    "//testing/gtest",
   ]
 
   if (is_linux || is_chromeos) {
@@ -84,4 +79,20 @@ source_set("unit_tests") {
   if (is_win) {
     sources += [ "cpu_probe_win_unittest.cc" ]
   }
+}
+
+source_set("test_support") {
+  testonly = true
+
+  sources = [
+    "pressure_test_support.cc",
+    "pressure_test_support.h",
+  ]
+
+  deps = [
+    ":system_cpu",
+    "//base",
+    "//base/test:test_support",
+    "//testing/gtest",
+  ]
 }

@@ -8,11 +8,10 @@ source_set("compute_pressure") {
   visibility = [ "//services/device:*" ]
 
   sources = [
-    "cpu_probe.cc",
-    "cpu_probe.h",
+    "cpu_probe_manager.cc",
+    "cpu_probe_manager.h",
     "pressure_manager_impl.cc",
     "pressure_manager_impl.h",
-    "pressure_sample.h",
   ]
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
@@ -21,40 +20,10 @@ source_set("compute_pressure") {
 
   deps = [
     "//base",
+    "//components/system_cpu:system_cpu",
     "//mojo/public/cpp/bindings",
     "//services/device/public/cpp:device_features",
   ]
 
   libs = []
-
-  if (is_linux || is_chromeos) {
-    sources += [
-      "core_times.cc",
-      "core_times.h",
-      "cpu_probe_linux.cc",
-      "cpu_probe_linux.h",
-      "procfs_stat_cpu_parser.cc",
-      "procfs_stat_cpu_parser.h",
-    ]
-  }
-
-  if (is_win) {
-    sources += [
-      "cpu_probe_win.cc",
-      "cpu_probe_win.h",
-    ]
-
-    libs += [ "pdh.lib" ]
-  }
-
-  if (is_mac) {
-    sources += [
-      "core_times.cc",
-      "core_times.h",
-      "cpu_probe_mac.cc",
-      "cpu_probe_mac.h",
-      "host_processor_info_scanner.cc",
-      "host_processor_info_scanner.h",
-    ]
-  }
 }

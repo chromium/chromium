@@ -60,6 +60,10 @@ class CpuProbe {
   // first.
   void RequestSample(SampleCallback callback);
 
+  // Called to return a WeakPtr to the CpuProbe. Subclasses must own a
+  // WeakPtrFactory to implement this.
+  virtual base::WeakPtr<CpuProbe> GetWeakPtr() = 0;
+
  protected:
   // The constructor is intentionally only exposed to subclasses. Production
   // code must use the Create() factory method.
@@ -68,10 +72,6 @@ class CpuProbe {
   // Implemented by subclasses to retrieve the CPU usage for different operating
   // systems. It must call `callback` with the result.
   virtual void Update(SampleCallback callback) = 0;
-
-  // Called to return a WeakPtr to the CpuProbe. Subclasses must own a
-  // WeakPtrFactory to implement this.
-  virtual base::WeakPtr<CpuProbe> GetWeakPtr() = 0;
 
   SEQUENCE_CHECKER(sequence_checker_);
 
