@@ -31,6 +31,15 @@ proto_library("proto") {
   ]
 }
 
+source_set("internal_structs") {
+  public = [ "session_authz_service.h" ]
+  sources = [
+    "session_authz_service.cc",
+    "session_authz_service.h",
+  ]
+  deps = [ "//base" ]
+}
+
 source_set("internal_stubs") {
   public = [ "internal_stubs.h" ]
 
@@ -40,6 +49,7 @@ source_set("internal_stubs") {
   ]
 
   deps = [
+    ":internal_structs",
     "//base",
     "//third_party/protobuf:protobuf_lite",
   ]
