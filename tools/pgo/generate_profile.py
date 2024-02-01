@@ -68,6 +68,12 @@ def main():
                         'default this is '
                         '/data/data/<package>/cache/pgo_profiles/ but you can '
                         'override it for your device if needed.')
+    parser.add_argument('--skip-profdata',
+                        action='store_true',
+                        default=False,
+                        help='Only run benchmarks and skip merging profile '
+                        'data. Used for sample-based profiling for Propeller '
+                        'and BOLT')
     parser.add_argument(
         '--run-public-benchmarks-only',
         action='store_true',
@@ -137,6 +143,9 @@ def main():
             ]
 
         subprocess.run(cmd, check=True, env=env, cwd=ROOT_DIR)
+        if args.skip_profdata:
+            return
+
         profdata_path = f'{profiledir}/{name}.profdata'
 
         # Android's `adb pull` does not allow * globbing (i.e. pulling
@@ -166,10 +175,11 @@ def main():
             'rendering.desktop', '--also-run-disabled-tests',
             '--story-tag-filter=motionmark_fixed_2_seconds'
         ])
-
-    subprocess.run([PROFDATA, 'merge', '-o', f'{builddir}/profile.profdata'] +
-                   glob.glob(f'{profiledir}/*.profdata'),
-                   check=True)
+    if not args.skip_profdata:
+        subprocess.run(
+            [PROFDATA, 'merge', '-o', f'{builddir}/profile.profdata'] +
+            glob.glob(f'{profiledir}/*.profdata'),
+            check=True)
 
     if not args.keep_temps:
         shutil.rmtree(profiledir)
