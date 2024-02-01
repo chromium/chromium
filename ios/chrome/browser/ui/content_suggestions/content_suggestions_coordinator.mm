@@ -27,6 +27,7 @@
 #import "ios/chrome/browser/favicon/model/ios_chrome_large_icon_cache_factory.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_large_icon_service_factory.h"
 #import "ios/chrome/browser/favicon/model/large_icon_cache.h"
+#import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/ntp/model/set_up_list_item_type.h"
 #import "ios/chrome/browser/ntp/model/set_up_list_prefs.h"
@@ -70,6 +71,7 @@
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_item.h"
+#import "ios/chrome/browser/ui/content_suggestions/cells/shortcuts_mediator.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_collection_utils.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_delegate.h"
@@ -173,6 +175,8 @@
 
   // The coordinator used to present an alert to enable Tips notifications.
   NotificationsOptInAlertCoordinator* _notificationsOptInAlertCoordinator;
+
+  ShortcutsMediator* _shortcutsMediator;
 }
 
 - (void)start {
@@ -237,7 +241,6 @@
            initWithLargeIconService:largeIconService
                      largeIconCache:cache
                     mostVisitedSite:std::move(mostVisitedFactory)
-                   readingListModel:readingListModel
                         prefService:prefs
       isGoogleDefaultSearchProvider:isGoogleDefaultSearchProvider
                         syncService:syncService
@@ -254,6 +257,21 @@
   self.contentSuggestionsMediator.promosManager = promosManager;
   self.contentSuggestionsMediator.contentSuggestionsMetricsRecorder =
       self.contentSuggestionsMetricsRecorder;
+
+  _shortcutsMediator = [[ShortcutsMediator alloc]
+      initWithReadingListModel:readingListModel
+      featureEngagementTracker:feature_engagement::TrackerFactory::
+                                   GetForBrowserState(
+                                       self.browser->GetBrowserState())
+                   authService:authenticationService];
+  _shortcutsMediator.delegate = self.contentSuggestionsMediator;
+  _shortcutsMediator.contentSuggestionsMetricsRecorder =
+      self.contentSuggestionsMetricsRecorder;
+  _shortcutsMediator.dispatcher =
+      static_cast<id<ApplicationCommands, BrowserCoordinatorCommands>>(
+          self.browser->GetCommandDispatcher());
+  self.contentSuggestionsMediator.shortcutsMediator = _shortcutsMediator;
+
   if (IsIOSParcelTrackingEnabled() &&
       !IsParcelTrackingDisabled(GetApplicationContext()->GetLocalState())) {
     self.parcelTrackingMediator = [[ParcelTrackingMediator alloc]
@@ -300,6 +318,7 @@
 
   self.contentSuggestionsMediator.consumer =
       self.contentSuggestionsViewController;
+  _shortcutsMediator.consumer = self.contentSuggestionsViewController;
 }
 
 - (void)stop {
@@ -312,6 +331,8 @@
   }
   [self.parcelTrackingMediator disconnect];
   self.parcelTrackingMediator = nil;
+  [_shortcutsMediator disconnect];
+  _shortcutsMediator = nil;
   [self.contentSuggestionsMediator disconnect];
   self.contentSuggestionsMediator = nil;
   [self.contentSuggestionsMetricsRecorder disconnect];

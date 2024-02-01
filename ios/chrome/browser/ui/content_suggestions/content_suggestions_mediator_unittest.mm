@@ -27,6 +27,7 @@
 #import "ios/chrome/browser/default_browser/model/utils_test_support.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_large_icon_cache_factory.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_large_icon_service_factory.h"
+#import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/first_run/model/first_run.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/ntp/model/set_up_list_item_type.h"
@@ -55,7 +56,9 @@
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_action_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_return_to_recent_tab_item.h"
+#import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_shortcut_tile_view.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/query_suggestion_view.h"
+#import "ios/chrome/browser/ui/content_suggestions/cells/shortcuts_mediator.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_consumer.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_mediator_util.h"
@@ -130,9 +133,6 @@ class ContentSuggestionsMediatorTest : public PlatformTest {
         base::BindRepeating(&BuildReadingListModelWithFakeStorage,
                             std::vector<scoped_refptr<ReadingListEntry>>()));
     test_cbs_builder.AddTestingFactory(
-        AuthenticationServiceFactory::GetInstance(),
-        base::BindRepeating(AuthenticationServiceFactory::GetDefaultFactory()));
-    test_cbs_builder.AddTestingFactory(
         segmentation_platform::SegmentationPlatformServiceFactory::
             GetInstance(),
         segmentation_platform::SegmentationPlatformServiceFactory::
@@ -192,9 +192,6 @@ class ContentSuggestionsMediatorTest : public PlatformTest {
             &pref_service_, /*top_sites*/ nullptr, /*popular_sites*/ nullptr,
             /*custom_links*/ nullptr, /*icon_cacher*/ nullptr,
             /*supervisor=*/nullptr, true);
-    ReadingListModel* readingListModel =
-        ReadingListModelFactory::GetForBrowserState(
-            chrome_browser_state_.get());
 
     syncer::SyncService* sync_service =
         SyncServiceFactory::GetForBrowserState(chrome_browser_state_.get());
@@ -210,7 +207,6 @@ class ContentSuggestionsMediatorTest : public PlatformTest {
              initWithLargeIconService:largeIconService
                        largeIconCache:cache
                       mostVisitedSite:std::move(mostVisitedSites)
-                     readingListModel:readingListModel
                           prefService:chrome_browser_state_.get()->GetPrefs()
         isGoogleDefaultSearchProvider:NO
                           syncService:sync_service
@@ -279,22 +275,6 @@ class ContentSuggestionsMediatorTest : public PlatformTest {
   std::unique_ptr<base::HistogramTester> histogram_tester_;
   ContentSuggestionsMetricsRecorder* metrics_recorder_;
 };
-
-// Tests that the command is sent to the dispatcher when opening the Reading
-// List.
-TEST_F(ContentSuggestionsMediatorTest, TestOpenReadingList) {
-  OCMExpect([dispatcher_ showReadingList]);
-
-  OCMExpect([mediator_.NTPMetricsDelegate shortcutTileOpened]);
-
-  // Action.
-  ContentSuggestionsMostVisitedActionItem* readingList =
-      ReadingListActionItem();
-  [mediator_ openMostVisitedItem:readingList atIndex:1];
-
-  // Test.
-  EXPECT_OCMOCK_VERIFY(dispatcher_);
-}
 
 // Tests that MostRecentTab can be opened and that its title is correct when
 // tab has a title.
@@ -402,19 +382,6 @@ TEST_F(ContentSuggestionsMediatorTest, TestStartSurfaceRecentTabObserving) {
 
   OCMExpect([consumer_ hideReturnToRecentTabTile]);
   [mediator_ mostRecentTabWasRemoved:web_state];
-}
-
-// Tests that the command is sent to the dispatcher when opening the What's new.
-TEST_F(ContentSuggestionsMediatorTest, TestOpenWhatsNew) {
-  OCMExpect([dispatcher_ showWhatsNew]);
-
-  OCMExpect([mediator_.NTPMetricsDelegate shortcutTileOpened]);
-
-  // Action.
-  ContentSuggestionsMostVisitedActionItem* whatsNew = WhatsNewActionItem();
-  [mediator_ openMostVisitedItem:whatsNew atIndex:1];
-  // Test.
-  EXPECT_OCMOCK_VERIFY(dispatcher_);
 }
 
 // Tests that the reload logic (e.g. setting the consumer) triggers the correct
@@ -600,6 +567,16 @@ TEST_F(ContentSuggestionsMediatorTest, TestModuleClickIndexMetric) {
        {kMagicStack, {{kMagicStackMostVisitedModuleParam, "true"}}}},
       {});
 
+  ShortcutsMediator* shortcutsMediator = [[ShortcutsMediator alloc]
+      initWithReadingListModel:ReadingListModelFactory::GetForBrowserState(
+                                   chrome_browser_state_.get())
+      featureEngagementTracker:feature_engagement::TrackerFactory::
+                                   GetForBrowserState(
+                                       browser_->GetBrowserState())
+                   authService:AuthenticationServiceFactory::GetForBrowserState(
+                                   chrome_browser_state_.get())];
+  shortcutsMediator.delegate = mediator_;
+  mediator_.shortcutsMediator = shortcutsMediator;
   mediator_.segmentationService =
       segmentation_platform::SegmentationPlatformServiceFactory::
           GetForBrowserState(chrome_browser_state_.get());
@@ -621,9 +598,14 @@ TEST_F(ContentSuggestionsMediatorTest, TestModuleClickIndexMetric) {
   histogram_tester_->ExpectUniqueSample(
       "IOS.MagicStack.Module.Click.MostVisited", 3, 1);
 
-  [mediator_
-      openMostVisitedItem:[[ContentSuggestionsMostVisitedActionItem alloc] init]
-                  atIndex:0];
+  ContentSuggestionsMostVisitedActionItem* readingList =
+      ReadingListActionItem();
+  ContentSuggestionsShortcutTileView* shortcutView =
+      [[ContentSuggestionsShortcutTileView alloc]
+          initWithConfiguration:readingList];
+  UIGestureRecognizer* recognizer = [[UIGestureRecognizer alloc] init];
+  [shortcutView addGestureRecognizer:recognizer];
+  [shortcutsMediator shortcutsTapped:recognizer];
   histogram_tester_->ExpectUniqueSample("IOS.MagicStack.Module.Click.Shortcuts",
                                         4, 1);
 }

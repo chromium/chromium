@@ -31,7 +31,9 @@
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_selection_actions.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_shortcut_tile_view.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_tile_layout_util.h"
+#import "ios/chrome/browser/ui/content_suggestions/cells/most_visited_tiles_commands.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/query_suggestion_view.h"
+#import "ios/chrome/browser/ui/content_suggestions/cells/shortcuts_commands.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_collection_utils.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_commands.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_constants.h"
@@ -535,8 +537,8 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
               @"%@%li",
               kContentSuggestionsShortcutsAccessibilityIdentifierPrefix, index];
       UITapGestureRecognizer* tapRecognizer = [[UITapGestureRecognizer alloc]
-          initWithTarget:self
-                  action:@selector(contentSuggestionsElementTapped:)];
+          initWithTarget:config.commandHandler
+                  action:@selector(shortcutsTapped:)];
       [view addGestureRecognizer:tapRecognizer];
       [self.mostVisitedTapRecognizers addObject:tapRecognizer];
       [self.shortcutsStackView addArrangedSubview:view];
@@ -884,21 +886,7 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
 
 - (void)contentSuggestionsElementTapped:(UIGestureRecognizer*)sender {
   if ([sender.view
-          isKindOfClass:[ContentSuggestionsMostVisitedTileView class]]) {
-    ContentSuggestionsMostVisitedTileView* mostVisitedView =
-        static_cast<ContentSuggestionsMostVisitedTileView*>(sender.view);
-    [self.suggestionCommandHandler
-        openMostVisitedItem:mostVisitedView.config
-                    atIndex:mostVisitedView.config.index];
-  } else if ([sender.view
-                 isKindOfClass:[ContentSuggestionsShortcutTileView class]]) {
-    ContentSuggestionsShortcutTileView* shortcutView =
-        static_cast<ContentSuggestionsShortcutTileView*>(sender.view);
-    int index = static_cast<int>(shortcutView.config.index);
-    [self.suggestionCommandHandler openMostVisitedItem:shortcutView.config
-                                               atIndex:index];
-  } else if ([sender.view isKindOfClass:[ContentSuggestionsReturnToRecentTabView
-                                            class]]) {
+          isKindOfClass:[ContentSuggestionsReturnToRecentTabView class]]) {
     ContentSuggestionsReturnToRecentTabView* returnToRecentTabView =
         static_cast<ContentSuggestionsReturnToRecentTabView*>(sender.view);
     __weak ContentSuggestionsReturnToRecentTabView* weakRecentTabView =
@@ -1110,8 +1098,8 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
 - (void)addMostVisitedTilesToStackView {
   for (ContentSuggestionsMostVisitedTileView* view in self.mostVisitedViews) {
     UITapGestureRecognizer* tapRecognizer = [[UITapGestureRecognizer alloc]
-        initWithTarget:self
-                action:@selector(contentSuggestionsElementTapped:)];
+        initWithTarget:_mostVisitedTileConfig.commandHandler
+                action:@selector(mostVisitedTileTapped:)];
     [view addGestureRecognizer:tapRecognizer];
     tapRecognizer.enabled = YES;
     [self.mostVisitedTapRecognizers addObject:tapRecognizer];

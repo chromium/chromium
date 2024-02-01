@@ -10,6 +10,7 @@
 #include <memory>
 
 #include "components/prefs/pref_service.h"
+#import "ios/chrome/browser/ui/content_suggestions/cells/shortcuts_mediator.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_commands.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_consumer.h"
 #import "ios/chrome/browser/ui/content_suggestions/parcel_tracking/parcel_tracking_mediator.h"
@@ -52,7 +53,7 @@ class GURL;
 class LargeIconCache;
 @protocol NewTabPageMetricsDelegate;
 class PromosManager;
-class ReadingListModel;
+@class ShortcutsMediator;
 @protocol SnackbarCommands;
 class WebStateList;
 
@@ -60,6 +61,7 @@ class WebStateList;
 @interface ContentSuggestionsMediator
     : NSObject <ContentSuggestionsCommands,
                 ParcelTrackingMediatorDelegate,
+                ShortcutsMediatorDelegate,
                 StartSurfaceRecentTabObserving>
 
 // Default initializer.
@@ -68,7 +70,6 @@ class WebStateList;
                    largeIconCache:(LargeIconCache*)largeIconCache
                   mostVisitedSite:(std::unique_ptr<ntp_tiles::MostVisitedSites>)
                                       mostVisitedSites
-                 readingListModel:(ReadingListModel*)readingListModel
                       prefService:(PrefService*)prefService
     isGoogleDefaultSearchProvider:(BOOL)isGoogleDefaultSearchProvider
                       syncService:(syncer::SyncService*)syncService
@@ -128,6 +129,9 @@ class WebStateList;
 
 // Parcel Tracking Mediator.
 @property(nonatomic, weak) ParcelTrackingMediator* parcelTrackingMediator;
+
+// Shortcuts Mediator.
+@property(nonatomic, weak) ShortcutsMediator* shortcutsMediator;
 
 // Disconnects the mediator.
 - (void)disconnect;

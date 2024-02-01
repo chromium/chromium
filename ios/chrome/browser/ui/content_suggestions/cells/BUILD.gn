@@ -26,6 +26,7 @@ source_set("cells") {
     "multi_row_container_view.mm",
     "query_suggestion_view.h",
     "query_suggestion_view.mm",
+    "shortcuts_commands.h",
     "suggested_content.h",
   ]
   deps = [
@@ -94,6 +95,31 @@ source_set("most_visited_tiles") {
   public_deps = [ "//ios/third_party/material_components_ios" ]
 }
 
+source_set("shortcuts") {
+  sources = [
+    "shortcuts_mediator.h",
+    "shortcuts_mediator.mm",
+  ]
+  deps = [
+    ":cells",
+    "//components/feature_engagement/public",
+    "//components/reading_list/core",
+    "//components/reading_list/ios",
+    "//ios/chrome/browser/default_browser/model:utils",
+    "//ios/chrome/browser/feature_engagement/model",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/ui/content_suggestions:constants",
+    "//ios/chrome/browser/ui/content_suggestions:content_suggestions_ui_util",
+    "//ios/chrome/browser/ui/content_suggestions:metrics",
+    "//ios/chrome/browser/ui/content_suggestions:public",
+    "//ios/chrome/browser/ui/content_suggestions/magic_stack",
+    "//ios/chrome/browser/ui/ntp",
+    "//ios/chrome/browser/ui/whats_new:util",
+  ]
+}
+
 source_set("constants") {
   sources = [
     "content_suggestions_cells_constants.h",
@@ -119,19 +145,31 @@ source_set("unit_tests") {
     "content_suggestions_tile_layout_util_unittest.mm",
     "content_suggestions_tile_saver_unittest.mm",
     "most_visited_tiles_mediator_unittest.mm",
+    "shortcuts_mediator_unittest.mm",
   ]
   deps = [
     ":cells",
     ":constants",
     ":most_visited_tiles",
+    ":shortcuts",
     "//base",
     "//base/test:test_support",
+    "//components/feature_engagement/test:test_support",
     "//components/ntp_tiles",
+    "//components/reading_list/core",
     "//components/sync_preferences:test_support",
     "//ios/chrome/browser/favicon/model",
+    "//ios/chrome/browser/feature_engagement/model",
+    "//ios/chrome/browser/reading_list/model",
+    "//ios/chrome/browser/reading_list/model:test_support",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser/test:test_support",
     "//ios/chrome/browser/shared/model/browser_state:test_support",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/signin/model:test_support",
+    "//ios/chrome/browser/ui/content_suggestions:constants",
+    "//ios/chrome/browser/ui/content_suggestions:content_suggestions_ui_util",
     "//ios/chrome/browser/ui/content_suggestions:metrics",
     "//ios/chrome/browser/ui/favicon",
     "//ios/chrome/browser/ui/ntp",

@@ -21,15 +21,12 @@
 #import "base/time/time.h"
 #import "components/favicon/ios/web_favicon_driver.h"
 #import "components/feature_engagement/public/event_constants.h"
-#import "components/feature_engagement/public/tracker.h"
 #import "components/feed/core/v2/public/ios/pref_names.h"
 #import "components/history/core/browser/features.h"
 #import "components/ntp_tiles/most_visited_sites.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #import "components/pref_registry/pref_registry_syncable.h"
 #import "components/prefs/ios/pref_observer_bridge.h"
-#import "components/reading_list/core/reading_list_model.h"
-#import "components/reading_list/ios/reading_list_model_bridge_observer.h"
 #import "components/search_engines/search_terms_data.h"
 #import "components/search_engines/template_url.h"
 #import "components/segmentation_platform/public/constants.h"
@@ -43,7 +40,6 @@
 #import "components/url_formatter/elide_url.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/application_delegate/app_state_observer.h"
-#import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/intents/intents_donation_helper.h"
 #import "ios/chrome/browser/net/model/crurl.h"
@@ -63,7 +59,6 @@
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
-#import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -124,11 +119,9 @@ constexpr base::TimeDelta kSafetyCheckRunThreshold = base::Hours(24);
                                           IdentityManagerObserverBridgeDelegate,
                                           MostVisitedTilesMediatorDelegate,
                                           SyncObserverModelBridge,
-                                          ReadingListModelBridgeObserver,
                                           PrefObserverDelegate,
                                           SafetyCheckManagerObserver,
                                           SyncedSessionsObserver> {
-  std::unique_ptr<ReadingListModelBridge> _readingListModelBridge;
   std::unique_ptr<synced_sessions::SyncedSessionsObserverBridge>
       _syncedSessionsObserver;
 }
@@ -152,15 +145,6 @@ constexpr base::TimeDelta kSafetyCheckRunThreshold = base::Hours(24);
 // Item for the "Return to Recent Tab" tile.
 @property(nonatomic, strong)
     ContentSuggestionsReturnToRecentTabItem* returnToRecentTabItem;
-// Item for the reading list action item.  Reference is used to update the
-// reading list count.
-@property(nonatomic, strong)
-    ContentSuggestionsMostVisitedActionItem* readingListItem;
-// Indicates if reading list model is loaded. Readlist cannot be triggered until
-// it is.
-@property(nonatomic, assign) NSInteger readingListModelIsLoaded;
-// Number of unread items in reading list model.
-@property(nonatomic, assign) NSInteger readingListUnreadCount;
 // YES if the Return to Recent Tab tile is being shown.
 @property(nonatomic, assign, getter=mostRecentTabStartSurfaceTileIsShowing)
     BOOL showMostRecentTabStartSurfaceTile;
@@ -205,7 +189,6 @@ constexpr base::TimeDelta kSafetyCheckRunThreshold = base::Hours(24);
   // any additions beyond `_magicStackOrderFromSegmentation` (e.g. Set Up List).
   NSArray<NSNumber*>* _latestMagicStackOrder;
   MostVisitedTilesMediator* _mostVisitedTilesMediator;
-  ShortcutsConfig* _shortcutsConfig;
   SetUpListMediator* _setUpListMediator;
 }
 
@@ -216,7 +199,6 @@ constexpr base::TimeDelta kSafetyCheckRunThreshold = base::Hours(24);
                    largeIconCache:(LargeIconCache*)largeIconCache
                   mostVisitedSite:(std::unique_ptr<ntp_tiles::MostVisitedSites>)
                                       mostVisitedSites
-                 readingListModel:(ReadingListModel*)readingListModel
                       prefService:(PrefService*)prefService
     isGoogleDefaultSearchProvider:(BOOL)isGoogleDefaultSearchProvider
                       syncService:(syncer::SyncService*)syncService
@@ -240,11 +222,7 @@ constexpr base::TimeDelta kSafetyCheckRunThreshold = base::Hours(24);
          URLLoadingBrowserAgent:UrlLoadingBrowserAgent::FromBrowser(browser)];
     _mostVisitedTilesMediator.delegate = self;
     _mostVisitedTilesMediator.contentSuggestionsDelegate = self.delegate;
-    _mostVisitedTilesMediator.NTPMetricsDelegate = self.NTPMetricsDelegate;
     _mostVisitedTilesMediator.actionFactory = actionFactory;
-
-    _readingListModelBridge =
-        std::make_unique<ReadingListModelBridge>(self, readingListModel);
 
     _syncService = syncService;
 
@@ -336,7 +314,6 @@ constexpr base::TimeDelta kSafetyCheckRunThreshold = base::Hours(24);
   _setUpListMediator = nil;
   [_mostVisitedTilesMediator disconnect];
   _mostVisitedTilesMediator = nil;
-  _readingListModelBridge.reset();
   _syncObserverBridge.reset();
   _identityObserverBridge.reset();
   _safetyCheckManagerObserver.reset();
@@ -475,49 +452,6 @@ constexpr base::TimeDelta kSafetyCheckRunThreshold = base::Hours(24);
 }
 
 #pragma mark - ContentSuggestionsCommands
-
-- (void)openMostVisitedItem:(NSObject*)item
-                    atIndex:(NSInteger)mostVisitedIndex {
-  // Checks if the item is a shortcut tile. Does not include Most Visited URL
-  // tiles.
-  if ([item isKindOfClass:[ContentSuggestionsMostVisitedActionItem class]]) {
-    ContentSuggestionsMostVisitedActionItem* mostVisitedItem =
-        base::apple::ObjCCastStrict<ContentSuggestionsMostVisitedActionItem>(
-            item);
-    if (mostVisitedItem.disabled) {
-      return;
-    }
-    [self.NTPMetricsDelegate shortcutTileOpened];
-    if (IsMagicStackEnabled()) {
-      [self logMagicStackEngagementForType:ContentSuggestionsModuleType::
-                                               kShortcuts];
-    }
-    [self.contentSuggestionsMetricsRecorder
-        recordShortcutTileTapped:mostVisitedItem.collectionShortcutType];
-    switch (mostVisitedItem.collectionShortcutType) {
-      case NTPCollectionShortcutTypeBookmark:
-        LogBookmarkUseForDefaultBrowserPromo();
-        [self.dispatcher showBookmarksManager];
-        break;
-      case NTPCollectionShortcutTypeReadingList:
-        [self.dispatcher showReadingList];
-        break;
-      case NTPCollectionShortcutTypeRecentTabs:
-        [self.dispatcher showRecentTabs];
-        break;
-      case NTPCollectionShortcutTypeHistory:
-        [self.dispatcher showHistory];
-        break;
-      case NTPCollectionShortcutTypeWhatsNew:
-        [self.dispatcher showWhatsNew];
-        break;
-      case NTPCollectionShortcutTypeCount:
-        NOTREACHED();
-        break;
-    }
-    return;
-  }
-}
 
 - (void)openMostRecentTab {
   [self.NTPMetricsDelegate recentTabTileOpened];
@@ -786,10 +720,8 @@ constexpr base::TimeDelta kSafetyCheckRunThreshold = base::Hours(24);
   // 2) The Set Up List and Magic Stack are not enabled (Set Up List replaced
   // Shortcuts).
   if ((IsMagicStackEnabled() || ![self shouldShowSetUpList])) {
-    _shortcutsConfig = [[ShortcutsConfig alloc] init];
-    _shortcutsConfig.shortcutItems = [self shortcutItems];
-    _shortcutsConfig.commandHandler = self;
-    [self.consumer setShortcutTilesConfig:_shortcutsConfig];
+    [self.consumer
+        setShortcutTilesConfig:self.shortcutsMediator.shortcutsConfig];
   }
 
   if (IsSafetyCheckMagicStackEnabled() &&
@@ -822,32 +754,6 @@ constexpr base::TimeDelta kSafetyCheckRunThreshold = base::Hours(24);
       url_formatter::
           FormatUrlForDisplayOmitSchemePathTrivialSubdomainsAndMobilePrefix(
               URL));
-}
-
-- (BOOL)shouldShowWhatsNewActionItem {
-  if (WasWhatsNewUsed()) {
-    return NO;
-  }
-
-  // TODO(crbug.com/1510484): The FET is not ready upon app launch in the NTP.
-  // Consequently, we must load a URL first and then load the NTP where the FET
-  // becomes ready.
-  feature_engagement::Tracker* tracker =
-      feature_engagement::TrackerFactory::GetForBrowserState(
-          self.browser->GetBrowserState());
-  DCHECK(tracker);
-  if (!tracker->WouldTriggerHelpUI(
-          feature_engagement::kIPHWhatsNewUpdatedFeature)) {
-    return NO;
-  }
-
-  AuthenticationService* authService =
-      AuthenticationServiceFactory::GetForBrowserState(
-          self.browser->GetBrowserState());
-  BOOL isSignedIn =
-      authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin);
-
-  return !isSignedIn;
 }
 
 // Returns an array that represents the order of the modules to be shown in the
@@ -1199,26 +1105,7 @@ constexpr base::TimeDelta kSafetyCheckRunThreshold = base::Hours(24);
   return YES;
 }
 
-- (void)shortcutsTapped:(UIGestureRecognizer*)sender {
-  ContentSuggestionsShortcutTileView* shortcutView =
-      static_cast<ContentSuggestionsShortcutTileView*>(sender.view);
-  int index = static_cast<int>(shortcutView.config.index);
-  [self openMostVisitedItem:shortcutView.config atIndex:index];
-}
-
 #pragma mark - Properties
-
-- (NSArray<ContentSuggestionsMostVisitedActionItem*>*)shortcutItems {
-  self.readingListItem = ReadingListActionItem();
-  self.readingListItem.count = self.readingListUnreadCount;
-  self.readingListItem.disabled = !self.readingListModelIsLoaded;
-  NSArray<ContentSuggestionsMostVisitedActionItem*>* shortcuts = @[
-    [self shouldShowWhatsNewActionItem] ? WhatsNewActionItem()
-                                        : BookmarkActionItem(),
-    self.readingListItem, RecentTabsActionItem(), HistoryActionItem()
-  ];
-  return shortcuts;
-}
 
 - (void)setCommandHandler:(id<ContentSuggestionsCommands>)commandHandler {
   if (_commandHandler == commandHandler)
@@ -1232,6 +1119,11 @@ constexpr base::TimeDelta kSafetyCheckRunThreshold = base::Hours(24);
         dispatcher {
   _dispatcher = dispatcher;
   _mostVisitedTilesMediator.snackbarHandler = _dispatcher;
+}
+
+- (void)setNTPMetricsDelegate:(id<NewTabPageMetricsDelegate>)delegate {
+  _NTPMetricsDelegate = delegate;
+  _mostVisitedTilesMediator.NTPMetricsDelegate = delegate;
 }
 
 - (void)setContentSuggestionsMetricsRecorder:
@@ -1321,21 +1213,6 @@ constexpr base::TimeDelta kSafetyCheckRunThreshold = base::Hours(24);
 
 - (void)safetyCheckManagerWillShutdown {
   _safetyCheckManagerObserver.reset();
-}
-
-#pragma mark - ReadingListModelBridgeObserver
-
-- (void)readingListModelLoaded:(const ReadingListModel*)model {
-  [self readingListModelDidApplyChanges:model];
-}
-
-- (void)readingListModelDidApplyChanges:(const ReadingListModel*)model {
-  self.readingListUnreadCount = model->unread_size();
-  self.readingListModelIsLoaded = model->loaded();
-  if (self.readingListItem) {
-    _shortcutsConfig.shortcutItems = [self shortcutItems];
-    [self.consumer setShortcutTilesConfig:_shortcutsConfig];
-  }
 }
 
 #pragma mark - SyncObserverModelBridge

@@ -530,9 +530,7 @@ TEST_F(NewTabPageCoordinatorTest, ShortcutsStartMetricLogging) {
   ContentSuggestionsMostVisitedActionItem* item =
       [[ContentSuggestionsMostVisitedActionItem alloc] init];
   item.title = @"Bookmarks 0";
-  [coordinator_.contentSuggestionsCoordinator.contentSuggestionsMediator
-      openMostVisitedItem:item
-                  atIndex:0];
+  [coordinator_ shortcutTileOpened];
   // Force the URL load callback to simulate the NavigationManager receiving the
   // URL load signal from the URLLoadingBrowserAgent.
   web::FakeNavigationContext navigation_context;
