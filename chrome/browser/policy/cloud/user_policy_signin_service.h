@@ -104,6 +104,7 @@ class UserPolicySigninService : public UserPolicySigninServiceBase,
   bool CanApplyPolicies(bool check_for_refresh_token) override;
   CloudPolicyClient::DeviceDMTokenCallback
   GetDeviceDMTokenIfAffiliatedCallback() override;
+  std::string GetProfileId() override;
 
   // Helper method that attempts calls |InitializeForSignedInUser| only if
   // |policy_manager| is not-nul. Expects that there is a refresh token for

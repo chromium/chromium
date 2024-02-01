@@ -129,7 +129,7 @@ class UserRemoteCommandsServiceTest : public PlatformBrowserTest {
         profile()->GetUserCloudPolicyManager();
     policy_manager->Connect(
         g_browser_process->local_state(),
-        policy::UserPolicySigninServiceBase::CreateCloudPolicyClient(
+        std::make_unique<policy::CloudPolicyClient>(
             g_browser_process->browser_policy_connector()
                 ->device_management_service(),
             g_browser_process->shared_url_loader_factory()));

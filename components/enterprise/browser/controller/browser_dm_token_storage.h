@@ -107,6 +107,9 @@ class BrowserDMTokenStorage {
   static void SetForTesting(BrowserDMTokenStorage* storage) {
     storage_for_testing_ = storage;
   }
+  // Force the class to initialize again. Use it when some fields are changed
+  // during test.
+  void ResetForTesting() { is_initialized_ = false; }
 
  protected:
   friend class base::NoDestructor<BrowserDMTokenStorage>;

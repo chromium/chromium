@@ -8,6 +8,7 @@
 #include "base/functional/callback.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/signin/profile_token_web_signin_interceptor.h"
+#include "chrome/browser/policy/cloud/user_policy_signin_service_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
@@ -170,6 +171,10 @@ bool ProfileTokenPolicyWebSigninService::CanApplyPolicies(
           ->GetProfileAttributesStorage()
           .GetProfileAttributesWithPath(profile_->GetPath());
   return entry && !entry->GetProfileManagementEnrollmentToken().empty();
+}
+
+std::string ProfileTokenPolicyWebSigninService::GetProfileId() {
+  return ::policy::GetProfileId(profile_);
 }
 
 // Initializes the ProfileTokenPolicyWebSigninService once its owning Profile

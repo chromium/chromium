@@ -115,6 +115,11 @@ bool UserPolicySigninService::CanApplyPolicies(bool check_for_refresh_token) {
                                          identity_manager());
 }
 
+std::string UserPolicySigninService::GetProfileId() {
+  // Profile ID hasn't been implemented on iOS yet.
+  return std::string();
+}
+
 base::TimeDelta UserPolicySigninService::GetTryRegistrationDelay() {
   return GetTryRegistrationDelayFromPrefs(browser_state_prefs_);
 }
