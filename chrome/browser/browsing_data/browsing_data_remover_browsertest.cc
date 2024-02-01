@@ -285,6 +285,25 @@ class BrowsingDataRemoverBrowserTest
         ->GetNetworkContext();
   }
 
+  void ClearSiteDataAndWait(
+      const url::Origin& origin,
+      const std::optional<net::CookiePartitionKey>& cookie_partition_key,
+      const std::optional<blink::StorageKey>& storage_key,
+      const std::set<std::string>& storage_buckets_to_remove) {
+    base::RunLoop loop;
+    content::ClearSiteData(
+        GetBrowser()->profile()->GetWeakPtr(),
+        /*storage_partition_config=*/std::nullopt,
+        /*origin=*/origin, content::ClearSiteDataTypeSet::All(),
+        /*storage_buckets_to_remove=*/storage_buckets_to_remove,
+        /*avoid_closing_connections=*/true,
+        /*cookie_partition_key=*/cookie_partition_key,
+        /*storage_key=*/storage_key,
+        /*partitioned_state_allowed_only=*/false,
+        /*callback=*/loop.QuitClosure());
+    loop.Run();
+  }
+
  private:
   void OnCacheSizeResult(
       base::RunLoop* run_loop,
@@ -805,42 +824,8 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest, HistoryDeletion) {
   EXPECT_FALSE(HasDataForType(kType));
 }
 
-class BrowsingDataRemoverWithPasswordsAccountStorageBrowserTest
-    : public BrowsingDataRemoverBrowserTest {
- public:
-  BrowsingDataRemoverWithPasswordsAccountStorageBrowserTest() {
-    features_.InitWithFeatures(
-        /*enabled_features=*/{password_manager::features::
-                                  kEnablePasswordsAccountStorage},
-        /*disabled_features=*/{switches::kUnoDesktop});
-  }
-
-  void ClearSiteDataAndWait(
-      const url::Origin& origin,
-      const std::optional<net::CookiePartitionKey>& cookie_partition_key,
-      const std::optional<blink::StorageKey>& storage_key,
-      const std::set<std::string>& storage_buckets_to_remove) {
-    base::RunLoop loop;
-    content::ClearSiteData(
-        GetBrowser()->profile()->GetWeakPtr(),
-        /*storage_partition_config=*/std::nullopt,
-        /*origin=*/origin, content::ClearSiteDataTypeSet::All(),
-        /*storage_buckets_to_remove=*/storage_buckets_to_remove,
-        /*avoid_closing_connections=*/true,
-        /*cookie_partition_key=*/cookie_partition_key,
-        /*storage_key=*/storage_key,
-        /*partitioned_state_allowed_only=*/false,
-        /*callback=*/loop.QuitClosure());
-    loop.Run();
-  }
-
- private:
-  base::test::ScopedFeatureList features_;
-};
-
-IN_PROC_BROWSER_TEST_F(
-    BrowsingDataRemoverWithPasswordsAccountStorageBrowserTest,
-    ClearingCookiesAlsoClearsPasswordAccountStorageOptIn) {
+IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest,
+                       ClearingCookiesAlsoClearsPasswordAccountStorageOptIn) {
   PrefService* prefs = GetProfile()->GetPrefs();
   syncer::SyncService* sync_service =
       SyncServiceFactory::GetForProfile(GetProfile());
@@ -858,7 +843,7 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 IN_PROC_BROWSER_TEST_F(
-    BrowsingDataRemoverWithPasswordsAccountStorageBrowserTest,
+    BrowsingDataRemoverBrowserTest,
     ClearingCookiesWithFilterAlsoClearsPasswordAccountStorageOptIn) {
   PrefService* prefs = GetProfile()->GetPrefs();
   syncer::SyncService* sync_service =
@@ -896,9 +881,7 @@ IN_PROC_BROWSER_TEST_F(
       sync_service));
 }
 
-IN_PROC_BROWSER_TEST_F(
-    BrowsingDataRemoverWithPasswordsAccountStorageBrowserTest,
-    ClearSiteData) {
+IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest, ClearSiteData) {
   PrefService* prefs = GetProfile()->GetPrefs();
   syncer::SyncService* sync_service =
       SyncServiceFactory::GetForProfile(GetProfile());
