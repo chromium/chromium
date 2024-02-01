@@ -6827,6 +6827,7 @@ const CSSValue* PositionFallback::ParseSingleValue(
   }
   return nullptr;
 }
+
 const CSSValue* PositionFallback::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
     const LayoutObject*,
@@ -6859,6 +6860,13 @@ const CSSValue* PositionFallbackBounds::CSSValueFromComputedStyleInternal(
   }
   return MakeGarbageCollected<CSSCustomIdentValue>(
       *style.PositionFallbackBounds());
+}
+
+const CSSValue* PositionTryOrder::CSSValueFromComputedStyleInternal(
+    const ComputedStyle& style,
+    const LayoutObject*,
+    bool allow_visited_style) const {
+  return CSSIdentifierValue::Create(style.PositionTryOrder());
 }
 
 const CSSValue* Quotes::ParseSingleValue(CSSParserTokenRange& range,

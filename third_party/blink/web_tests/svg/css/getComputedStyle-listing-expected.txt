@@ -295,6 +295,7 @@ popover-show-delay: 0.5s
 position: static
 position-fallback: none
 position-fallback-bounds: normal
+position-try-order: normal
 r: 0px
 resize: none
 right: auto

@@ -1785,5 +1785,12 @@
     // inline
     // auto (legacy version of -internal-textarea-auto)
     "-internal-textarea-auto",
+
+    // position-try-order
+    // normal
+    "most-width",
+    "most-height",
+    "most-block-size",
+    "most-inline-size",
   ],
 }
