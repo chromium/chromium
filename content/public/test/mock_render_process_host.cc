@@ -22,7 +22,6 @@
 #include "content/browser/child_process_host_impl.h"
 #include "content/browser/child_process_security_policy_impl.h"
 #include "content/browser/file_system_access/file_system_access_error.h"
-#include "content/browser/loader/url_loader_factory_utils.h"
 #include "content/browser/process_lock.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
 #include "content/browser/renderer_host/render_view_host_impl.h"
@@ -36,11 +35,8 @@
 #include "content/public/browser/render_process_host_priority_client.h"
 #include "content/public/browser/render_widget_host_iterator.h"
 #include "content/public/browser/site_instance.h"
-#include "content/public/browser/storage_partition.h"
 #include "content/test/fake_network_url_loader_factory.h"
 #include "media/media_buildflags.h"
-#include "services/network/public/cpp/url_loader_factory_builder.h"
-#include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 
 namespace content {
@@ -503,24 +499,6 @@ mojom::Renderer* MockRenderProcessHost::GetRendererInterface() {
         renderer_interface_->BindNewEndpointAndPassDedicatedReceiver();
   }
   return renderer_interface_->get();
-}
-
-// TODO(crbug.com/1506871): This is mostly duplicate of
-// RenderProcessHostImpl::CreateURLLoaderFactory(). Dedup and remove this.
-void MockRenderProcessHost::CreateURLLoaderFactory(
-    mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver,
-    network::mojom::URLLoaderFactoryParamsPtr params) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(params);
-  DCHECK_EQ(GetID(), static_cast<int>(params->process_id));
-
-  network::URLLoaderFactoryBuilder factory_builder;
-  if (url_loader_factory::GetTestingInterceptor()) {
-    url_loader_factory::GetTestingInterceptor().Run(GetID(), factory_builder);
-  }
-  std::move(factory_builder)
-      .Finish(std::move(receiver), GetStoragePartition()->GetNetworkContext(),
-              std::move(params));
 }
 
 bool MockRenderProcessHost::MayReuseHost() {

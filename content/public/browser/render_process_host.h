@@ -546,17 +546,6 @@ class CONTENT_EXPORT RenderProcessHost : public IPC::Sender,
   // MockRenderProcessHost usage in tests.
   virtual mojom::Renderer* GetRendererInterface() = 0;
 
-  // Create an URLLoaderFactory from |this| renderer process.
-  //
-  // This method will bind |receiver| with a new URLLoaderFactory created from
-  // the storage partition's Network Context. Note that the URLLoaderFactory
-  // returned by this method does NOT support auto-reconnect after a crash of
-  // Network Service.
-  // TODO(crbug.com/1506871): Remove this.
-  virtual void CreateURLLoaderFactory(
-      mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver,
-      network::mojom::URLLoaderFactoryParamsPtr params) = 0;
-
   // Whether this process is locked out from ever being reused for sites other
   // than the ones it currently has.
   virtual bool MayReuseHost() = 0;

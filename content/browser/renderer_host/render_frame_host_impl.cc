@@ -89,6 +89,7 @@
 #include "content/browser/loader/keep_alive_url_loader_service.h"
 #include "content/browser/loader/navigation_early_hints_manager.h"
 #include "content/browser/loader/subresource_proxying_url_loader_service.h"
+#include "content/browser/loader/url_loader_factory_utils.h"
 #include "content/browser/log_console_message.h"
 #include "content/browser/media/media_devices_util.h"
 #include "content/browser/media/media_interface_proxy.h"
@@ -11526,19 +11527,23 @@ bool RenderFrameHostImpl::CreateNetworkServiceDefaultFactoryInternal(
     mojo::PendingReceiver<network::mojom::URLLoaderFactory>
         default_factory_receiver) {
   DCHECK(params->request_initiator_origin_lock.has_value());
-  const url::Origin& request_initiator =
+  const url::Origin request_initiator =
       params->request_initiator_origin_lock.value();
 
-  network::URLLoaderFactoryBuilder factory_builder;
   bool bypass_redirect_checks = false;
-  WillCreateURLLoaderFactory(request_initiator, factory_builder, ukm_source_id,
-                             &params->header_client, &bypass_redirect_checks,
-                             &params->disable_secure_dns,
-                             &params->factory_override);
-
-  std::move(factory_builder)
-      .Finish(std::move(default_factory_receiver), GetProcess(),
-              std::move(params));
+  url_loader_factory::CreateAndConnectToPendingReceiver(
+      std::move(default_factory_receiver),
+      ContentBrowserClient::URLLoaderFactoryType::kDocumentSubResource,
+      url_loader_factory::TerminalParams::ForNetworkContext(
+          GetProcess()->GetStoragePartition()->GetNetworkContext(),
+          std::move(params), url_loader_factory::HeaderClientOption::kAllow,
+          url_loader_factory::FactoryOverrideOption::kAllow,
+          url_loader_factory::DisableSecureDnsOption::kAllow),
+      url_loader_factory::ContentClientParams(
+          GetBrowserContext(), this, GetProcess()->GetID(), request_initiator,
+          ukm_source_id, &bypass_redirect_checks),
+      devtools_instrumentation::WillCreateURLLoaderFactoryParams::ForFrame(
+          this));
   return bypass_redirect_checks;
 }
 

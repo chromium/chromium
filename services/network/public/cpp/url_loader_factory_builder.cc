@@ -69,4 +69,12 @@ void URLLoaderFactoryBuilder::ConnectTerminal(
   terminal_factory->Clone(std::move(pending_receiver));
 }
 
+void URLLoaderFactoryBuilder::ConnectTerminal(
+    mojo::PendingReceiver<network::mojom::URLLoaderFactory> pending_receiver,
+    network::mojom::NetworkContext* terminal_context,
+    network::mojom::URLLoaderFactoryParamsPtr factory_param) {
+  terminal_context->CreateURLLoaderFactory(std::move(pending_receiver),
+                                           std::move(factory_param));
+}
+
 }  // namespace network

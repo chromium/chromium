@@ -302,9 +302,6 @@ class CONTENT_EXPORT RenderProcessHostImpl
   void DisableRefCounts() override;
   bool AreRefCountsDisabled() override;
   mojom::Renderer* GetRendererInterface() override;
-  void CreateURLLoaderFactory(
-      mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver,
-      network::mojom::URLLoaderFactoryParamsPtr params) override;
 
   bool MayReuseHost() override;
   bool IsUnused() override;

@@ -175,6 +175,8 @@ std::tuple<bool, bool> GetIsNavigationAndDownload(
     // TODO(crbug.com/1506871): Return proper values once non-nullopt
     // `devtools_params` is given.
     case ContentBrowserClient::URLLoaderFactoryType::kPrefetch:
+    case ContentBrowserClient::URLLoaderFactoryType::kDevTools:
+    case ContentBrowserClient::URLLoaderFactoryType::kEarlyHints:
       NOTREACHED_NORETURN();
   }
 }

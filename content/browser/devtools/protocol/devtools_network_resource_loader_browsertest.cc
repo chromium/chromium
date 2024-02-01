@@ -8,6 +8,7 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "content/browser/devtools/protocol/devtools_network_resource_loader.h"
+#include "content/browser/loader/url_loader_factory_utils.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/url_loader_factory_params_helper.h"
 #include "content/browser/web_contents/web_contents_impl.h"
@@ -31,7 +32,6 @@
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "services/network/public/cpp/resource_request.h"
-#include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "url/gurl.h"
@@ -70,7 +70,6 @@ class DevtoolsNetworkResourceLoaderTest : public ContentBrowserTest {
   }
 
   mojo::Remote<network::mojom::URLLoaderFactory> CreateURLLoaderFactory() {
-    mojo::Remote<network::mojom::URLLoaderFactory> url_loader_factory;
     auto* frame = current_frame_host();
     auto params = URLLoaderFactoryParamsHelper::CreateForFrame(
         frame, frame->GetLastCommittedOrigin(),
@@ -84,9 +83,15 @@ class DevtoolsNetworkResourceLoaderTest : public ContentBrowserTest {
     // JSON and would otherwise require a CORS fetch + correct response headers.
     // See BUG(chromium:1076435) for more context.
     params->is_corb_enabled = false;
-    current_frame_host()->GetProcess()->CreateURLLoaderFactory(
-        url_loader_factory.BindNewPipeAndPassReceiver(), std::move(params));
-    return url_loader_factory;
+    return mojo::Remote<network::mojom::URLLoaderFactory>(
+        url_loader_factory::CreatePendingRemote(
+            ContentBrowserClient::URLLoaderFactoryType::kDevTools,
+            url_loader_factory::TerminalParams::ForNetworkContext(
+                current_frame_host()
+                    ->GetProcess()
+                    ->GetStoragePartition()
+                    ->GetNetworkContext(),
+                std::move(params))));
   }
 
   // Repeats |number_of_error_A| times |error_A|, then continues with |error_B|.

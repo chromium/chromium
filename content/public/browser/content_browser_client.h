@@ -1760,6 +1760,12 @@ class CONTENT_EXPORT ContentBrowserClient {
 
     // For prefetches.
     kPrefetch,
+
+    // For DevTools-initiated requests.
+    kDevTools,
+
+    // For early hints.
+    kEarlyHints,
   };
 
   // Allows the embedder to intercept URLLoaderFactory interfaces used by the

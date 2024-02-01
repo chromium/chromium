@@ -42,14 +42,6 @@ namespace blink {
 class StorageKey;
 }  // namespace blink
 
-namespace network {
-namespace mojom {
-
-class URLLoaderFactory;
-
-}  // namespace mojom
-}  // namespace network
-
 namespace content {
 
 class MockRenderProcessHostFactory;
@@ -184,9 +176,6 @@ class MockRenderProcessHost : public RenderProcessHost {
   void DecrementPendingReuseRefCount() override;
   bool AreRefCountsDisabled() override;
   mojom::Renderer* GetRendererInterface() override;
-  void CreateURLLoaderFactory(
-      mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver,
-      network::mojom::URLLoaderFactoryParamsPtr params) override;
 
   bool MayReuseHost() override;
   bool IsUnused() override;

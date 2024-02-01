@@ -1145,6 +1145,8 @@ void WebRequestProxyingURLLoaderFactory::InProgressRequest::
     case URLLoaderFactoryType::kServiceWorkerScript:
     case URLLoaderFactoryType::kDownload:
     case URLLoaderFactoryType::kPrefetch:
+    case URLLoaderFactoryType::kDevTools:
+    case URLLoaderFactoryType::kEarlyHints:
       break;
   }
 

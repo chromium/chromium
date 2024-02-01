@@ -99,7 +99,6 @@
 #include "content/browser/gpu/gpu_data_manager_impl.h"
 #include "content/browser/gpu/gpu_disk_cache_factory.h"
 #include "content/browser/gpu/gpu_process_host.h"
-#include "content/browser/loader/url_loader_factory_utils.h"
 #include "content/browser/locks/lock_manager.h"
 #include "content/browser/media/frameless_media_interface_proxy.h"
 #include "content/browser/media/media_internals.h"
@@ -192,7 +191,6 @@
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/metrics/public/mojom/ukm_interface.mojom.h"
 #include "services/metrics/ukm_recorder_factory_impl.h"
-#include "services/network/public/cpp/url_loader_factory_builder.h"
 #include "services/network/public/mojom/network_service.mojom.h"
 #include "services/resource_coordinator/public/mojom/memory_instrumentation/memory_instrumentation.mojom.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
@@ -2848,22 +2846,6 @@ mojom::Renderer* RenderProcessHostImpl::GetRendererInterface() {
 
 ProcessLock RenderProcessHostImpl::GetProcessLock() const {
   return ChildProcessSecurityPolicyImpl::GetInstance()->GetProcessLock(GetID());
-}
-
-void RenderProcessHostImpl::CreateURLLoaderFactory(
-    mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver,
-    network::mojom::URLLoaderFactoryParamsPtr params) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(params);
-  DCHECK_EQ(GetID(), static_cast<int>(params->process_id));
-
-  network::URLLoaderFactoryBuilder factory_builder;
-  if (url_loader_factory::GetTestingInterceptor()) {
-    url_loader_factory::GetTestingInterceptor().Run(GetID(), factory_builder);
-  }
-  std::move(factory_builder)
-      .Finish(std::move(receiver), GetStoragePartition()->GetNetworkContext(),
-              std::move(params));
 }
 
 bool RenderProcessHostImpl::MayReuseHost() {

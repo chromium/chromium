@@ -37,6 +37,7 @@
 #include "content/browser/devtools/render_frame_devtools_agent_host.h"
 #include "content/browser/devtools/service_worker_devtools_agent_host.h"
 #include "content/browser/devtools/service_worker_devtools_manager.h"
+#include "content/browser/loader/url_loader_factory_utils.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
@@ -3257,10 +3258,11 @@ CreateNetworkFactoryForDevTools(
   params->is_corb_enabled = false;
 
   if (scheme == url::kHttpScheme || scheme == url::kHttpsScheme) {
-    mojo::PendingRemote<network::mojom::URLLoaderFactory> remote;
-    host->CreateURLLoaderFactory(remote.InitWithNewPipeAndPassReceiver(),
-                                 std::move(params));
-    return remote;
+    return url_loader_factory::CreatePendingRemote(
+        ContentBrowserClient::URLLoaderFactoryType::kDevTools,
+        url_loader_factory::TerminalParams::ForNetworkContext(
+            host->GetStoragePartition()->GetNetworkContext(),
+            std::move(params)));
   }
 
   if (scheme != url::kFileScheme) {
