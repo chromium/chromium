@@ -84,6 +84,11 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/ui/signin/fre/SigninFirstRunProperties.java",
     "java/src/org/chromium/chrome/browser/ui/signin/fre/SigninFirstRunView.java",
     "java/src/org/chromium/chrome/browser/ui/signin/fre/SigninFirstRunViewBinder.java",
+    "java/src/org/chromium/chrome/browser/ui/signin/history_sync/HistorySyncCoordinator.java",
+    "java/src/org/chromium/chrome/browser/ui/signin/history_sync/HistorySyncMediator.java",
+    "java/src/org/chromium/chrome/browser/ui/signin/history_sync/HistorySyncProperties.java",
+    "java/src/org/chromium/chrome/browser/ui/signin/history_sync/HistorySyncView.java",
+    "java/src/org/chromium/chrome/browser/ui/signin/history_sync/HistorySyncViewBinder.java",
   ]
   resources_package = "org.chromium.chrome.browser.ui.signin"
 }
@@ -114,6 +119,7 @@ android_resources("java_resources") {
     "java/res/layout/account_row.xml",
     "java/res/layout/confirm_import_sync_data.xml",
     "java/res/layout/fre_uma_dialog.xml",
+    "java/res/layout/history_sync_view.xml",
     "java/res/layout/signin_first_run_bottom_group_view.xml",
     "java/res/layout/signin_first_run_landscape_view.xml",
     "java/res/layout/signin_first_run_portrait_view.xml",
