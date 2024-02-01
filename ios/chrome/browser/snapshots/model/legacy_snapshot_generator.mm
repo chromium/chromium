@@ -2,11 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/snapshots/model/snapshot_generator.h"
-
-// It is required to implement ViewHierarchyContainsWebView to check if
-// the view is `WKWebView`.
-#import <WebKit/WebKit.h>
+#import "ios/chrome/browser/snapshots/model/legacy_snapshot_generator.h"
 
 #import "base/functional/bind.h"
 #import "build/blink_buildflags.h"
@@ -26,29 +22,9 @@ struct SnapshotInfo {
   CGRect snapshotFrameInWindow;
 };
 
-// Returns YES if `view` or any view it contains is a WKWebView.
-BOOL ViewHierarchyContainsWebView(UIView* view) {
-  if ([view isKindOfClass:[WKWebView class]]) {
-    return YES;
-  }
-#if BUILDFLAG(USE_BLINK)
-  // TODO(crbug.com/1419001): Remove NSClassFromString and use the class
-  // directly when possible.
-  if ([view isKindOfClass:[NSClassFromString(@"RenderWidgetUIView") class]]) {
-    return YES;
-  }
-#endif  // USE_BLINK
-  for (UIView* subview in view.subviews) {
-    if (ViewHierarchyContainsWebView(subview)) {
-      return YES;
-    }
-  }
-  return NO;
-}
-
 }  // namespace
 
-@implementation SnapshotGenerator {
+@implementation LegacySnapshotGenerator {
   // The associated WebState.
   base::WeakPtr<web::WebState> _webState;
 }
@@ -134,7 +110,7 @@ BOOL ViewHierarchyContainsWebView(UIView* view) {
 
   SnapshotInfo snapshotInfo = [self snapshotInfo];
   auto wrappedCompletion =
-      ^(__weak SnapshotGenerator* generator, UIImage* image) {
+      ^(__weak LegacySnapshotGenerator* generator, UIImage* image) {
         if (!generator) {
           completion(nil);
         }
@@ -147,7 +123,7 @@ BOOL ViewHierarchyContainsWebView(UIView* view) {
         }
       };
 
-  __weak SnapshotGenerator* weakSelf = self;
+  __weak LegacySnapshotGenerator* weakSelf = self;
   _webState->TakeSnapshot(snapshotInfo.snapshotFrameInBaseView,
                           base::BindRepeating(wrappedCompletion, weakSelf));
 }
@@ -196,20 +172,6 @@ BOOL ViewHierarchyContainsWebView(UIView* view) {
   __block BOOL snapshotSuccess = YES;
   UIImage* image =
       [renderer imageWithActions:^(UIGraphicsImageRendererContext* UIContext) {
-        if (baseView.window && ViewHierarchyContainsWebView(baseView)) {
-          // `-renderInContext:` is the preferred way to render a snapshot, but
-          // it's buggy for WKWebView, which is used for some WebUI pages such
-          // as "No internet" or "Site can't be reached". If a
-          // WKWebView-containing hierarchy must be snapshotted, the UIView
-          // `-drawViewHierarchyInRect:` method is used instead.
-          // `drawViewHierarchyInRect:` has undefined behavior when the view is
-          // not in the visible view hierarchy. In practice, when this method is
-          // called on a view that is part of view controller containment and
-          // not in the view hierarchy, an
-          // UIViewControllerHierarchyInconsistency exception will be thrown.
-          snapshotSuccess = [baseView drawViewHierarchyInRect:baseView.bounds
-                                           afterScreenUpdates:YES];
-        } else {
           // Render the view's layer via `-renderInContext:`.
           // To mitigate against crashes like crbug.com/1429512, ensure that
           // the layer's position is valid. If not, mark the snapshotting as
@@ -221,7 +183,6 @@ BOOL ViewHierarchyContainsWebView(UIView* view) {
           } else {
             [layer renderInContext:UIContext.CGContext];
           }
-        }
       }];
 
   if (!snapshotSuccess) {

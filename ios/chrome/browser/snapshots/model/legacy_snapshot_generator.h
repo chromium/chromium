@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_SNAPSHOTS_MODEL_SNAPSHOT_GENERATOR_H_
-#define IOS_CHROME_BROWSER_SNAPSHOTS_MODEL_SNAPSHOT_GENERATOR_H_
+#ifndef IOS_CHROME_BROWSER_SNAPSHOTS_MODEL_LEGACY_SNAPSHOT_GENERATOR_H_
+#define IOS_CHROME_BROWSER_SNAPSHOTS_MODEL_LEGACY_SNAPSHOT_GENERATOR_H_
 
 #import <UIKit/UIKit.h>
 
@@ -15,7 +15,9 @@ class WebState;
 
 // A class that generates snapshot images for the WebState associated with this
 // class. This lives on the UI thread.
-@interface SnapshotGenerator : NSObject
+// TODO(crbug.com/1502841): Remove this class once the new implementation
+// written in Swift is used by default.
+@interface LegacySnapshotGenerator : NSObject
 
 // The SnapshotGenerator delegate.
 @property(nonatomic, weak) id<SnapshotGeneratorDelegate> delegate;
@@ -45,4 +47,4 @@ class WebState;
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_SNAPSHOTS_MODEL_SNAPSHOT_GENERATOR_H_
+#endif  // IOS_CHROME_BROWSER_SNAPSHOTS_MODEL_LEGACY_SNAPSHOT_GENERATOR_H_
