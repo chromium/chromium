@@ -919,7 +919,10 @@ void BookmarkBridge::DeleteBookmark(
   long bookmark_id = JavaBookmarkIdGetId(env, j_bookmark_id_obj);
   int type = JavaBookmarkIdGetType(env, j_bookmark_id_obj);
   const BookmarkNode* node = GetNodeByID(bookmark_id, type);
+  DeleteBookmarkImpl(node, type);
+}
 
+void BookmarkBridge::DeleteBookmarkImpl(const BookmarkNode* node, int type) {
   // TODO(crbug.com/1425438): Switch to an early returns after debugging why
   // this is called with a nullptr.
   if (!node) {
@@ -974,7 +977,7 @@ void BookmarkBridge::MoveBookmark(
     JNIEnv* env,
     const JavaParamRef<jobject>& j_bookmark_id_obj,
     const JavaParamRef<jobject>& j_parent_id_obj,
-    jint index) {
+    jint j_index) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(IsLoaded());
 
@@ -982,13 +985,82 @@ void BookmarkBridge::MoveBookmark(
   int type = JavaBookmarkIdGetType(env, j_bookmark_id_obj);
   const BookmarkNode* node = GetNodeByID(bookmark_id, type);
   DCHECK(IsEditable(node));
-  bookmark_id = JavaBookmarkIdGetId(env, j_parent_id_obj);
-  type = JavaBookmarkIdGetType(env, j_parent_id_obj);
-  const BookmarkNode* new_parent_node = GetNodeByID(bookmark_id, type);
-  // Bookmark should not be moved to its own parent folder
-  if (node->parent() != new_parent_node) {
+
+  long parent_bookmark_id = JavaBookmarkIdGetId(env, j_parent_id_obj);
+  int parent_type = JavaBookmarkIdGetType(env, j_parent_id_obj);
+  const BookmarkNode* parent_node =
+      GetNodeByID(parent_bookmark_id, parent_type);
+  MoveBookmarkImpl(node, type, parent_node, parent_type,
+                   static_cast<size_t>(j_index));
+}
+
+void BookmarkBridge::MoveBookmarkImpl(const BookmarkNode* node,
+                                      int type,
+                                      const BookmarkNode* new_parent_node,
+                                      int parent_type,
+                                      int index) {
+  // Bookmark should not be moved to its own parent folder.
+  if (node->parent() == new_parent_node) {
+    return;
+  }
+
+  // If the types of the parents don't match or we're dealing with a reading
+  // list node, then we can't just defer to bookmark_model.
+  if (type != parent_type ||
+      parent_type == bookmarks::BOOKMARK_TYPE_READING_LIST) {
+    MoveNodeBetweenReadingListAndBookmarks(node, type, new_parent_node,
+                                           parent_type, index);
+  } else {
     bookmark_model_->Move(node, new_parent_node, static_cast<size_t>(index));
   }
+}
+
+void BookmarkBridge::MoveNodeBetweenReadingListAndBookmarks(
+    const BookmarkNode* node,
+    int type,
+    const BookmarkNode* new_parent_node,
+    int parent_type,
+    int index) {
+  DCHECK(type != parent_type ||
+         parent_type == bookmarks::BOOKMARK_TYPE_READING_LIST);
+
+  const BookmarkNode* old_parent_node = node->parent();
+  size_t old_index = old_parent_node->GetIndexOf(node).value();
+  const BookmarkNode* new_node;
+
+  // Suppress observer notifications while doing this work to make java only
+  // see the move operation.
+  {
+    base::AutoReset<bool> auto_reset_suppress_observer_notifications(
+        &suppress_observer_notifications_, true);
+
+    // Add a new node to the correct model, depending on the parent_type.
+    if (parent_type == bookmarks::BOOKMARK_TYPE_NORMAL) {
+      new_node = bookmark_model_->AddNewURL(new_parent_node, index,
+                                            node->GetTitle(), node->url());
+    } else if (parent_type == bookmarks::BOOKMARK_TYPE_READING_LIST) {
+      ReadingListManager* manager =
+          GetReadingListManagerFromParentNode(new_parent_node);
+      new_node = manager->Add(node->url(), base::UTF16ToUTF8(node->GetTitle()));
+    } else {
+      new_node = nullptr;
+      NOTREACHED() << "Type swapping is only supported for reading list.";
+    }
+
+    // The add operations aren't guaranteed to succeed, so bail early if
+    // new_node is null.
+    if (!new_node) {
+      return;
+    }
+
+    // Once the new node has been added successfully, remove the old node and
+    // notify java observers of the event.
+    DeleteBookmarkImpl(node, type);
+  }
+
+  BookmarkNodeMoved(bookmark_model_, old_parent_node, old_index,
+                    new_parent_node,
+                    new_parent_node->GetIndexOf(new_node).value());
 }
 
 ScopedJavaLocalRef<jobject> BookmarkBridge::AddBookmark(
@@ -1343,8 +1415,10 @@ void BookmarkBridge::FilterUnreachableBookmarks(
 // Called when there are changes to the bookmark model. It is most
 // likely changes to the partner bookmarks.
 void BookmarkBridge::BookmarkModelChanged() {
-  if (!IsLoaded() || !java_bookmark_model_)
+  if (!IsLoaded() || !java_bookmark_model_ ||
+      suppress_observer_notifications_) {
     return;
+  }
 
   Java_BookmarkBridge_bookmarkModelChanged(
       AttachCurrentThread(), ScopedJavaLocalRef<jobject>(java_bookmark_model_));
@@ -1367,8 +1441,10 @@ void BookmarkBridge::BookmarkNodeMoved(BookmarkModel* model,
                                        size_t old_index,
                                        const BookmarkNode* new_parent,
                                        size_t new_index) {
-  if (!IsLoaded() || !java_bookmark_model_)
+  if (!IsLoaded() || !java_bookmark_model_ ||
+      suppress_observer_notifications_) {
     return;
+  }
 
   Java_BookmarkBridge_bookmarkNodeMoved(
       AttachCurrentThread(), ScopedJavaLocalRef<jobject>(java_bookmark_model_),
@@ -1380,8 +1456,10 @@ void BookmarkBridge::BookmarkNodeAdded(BookmarkModel* model,
                                        const BookmarkNode* parent,
                                        size_t index,
                                        bool added_by_user) {
-  if (!IsLoaded() || !java_bookmark_model_)
+  if (!IsLoaded() || !java_bookmark_model_ ||
+      suppress_observer_notifications_) {
     return;
+  }
 
   Java_BookmarkBridge_bookmarkNodeAdded(
       AttachCurrentThread(), ScopedJavaLocalRef<jobject>(java_bookmark_model_),
@@ -1393,8 +1471,10 @@ void BookmarkBridge::BookmarkNodeRemoved(BookmarkModel* model,
                                          size_t old_index,
                                          const BookmarkNode* node,
                                          const std::set<GURL>& removed_urls) {
-  if (!IsLoaded() || !java_bookmark_model_)
+  if (!IsLoaded() || !java_bookmark_model_ ||
+      suppress_observer_notifications_) {
     return;
+  }
 
   Java_BookmarkBridge_bookmarkNodeRemoved(
       AttachCurrentThread(), ScopedJavaLocalRef<jobject>(java_bookmark_model_),
@@ -1405,8 +1485,10 @@ void BookmarkBridge::BookmarkNodeRemoved(BookmarkModel* model,
 void BookmarkBridge::BookmarkAllUserNodesRemoved(
     BookmarkModel* model,
     const std::set<GURL>& removed_urls) {
-  if (!IsLoaded() || !java_bookmark_model_)
+  if (!IsLoaded() || !java_bookmark_model_ ||
+      suppress_observer_notifications_) {
     return;
+  }
 
   Java_BookmarkBridge_bookmarkAllUserNodesRemoved(
       AttachCurrentThread(), ScopedJavaLocalRef<jobject>(java_bookmark_model_));
@@ -1414,8 +1496,10 @@ void BookmarkBridge::BookmarkAllUserNodesRemoved(
 
 void BookmarkBridge::BookmarkNodeChanged(BookmarkModel* model,
                                          const BookmarkNode* node) {
-  if (!IsLoaded() || !java_bookmark_model_)
+  if (!IsLoaded() || !java_bookmark_model_ ||
+      suppress_observer_notifications_) {
     return;
+  }
 
   Java_BookmarkBridge_bookmarkNodeChanged(
       AttachCurrentThread(), ScopedJavaLocalRef<jobject>(java_bookmark_model_),
@@ -1424,8 +1508,10 @@ void BookmarkBridge::BookmarkNodeChanged(BookmarkModel* model,
 
 void BookmarkBridge::BookmarkNodeChildrenReordered(BookmarkModel* model,
                                                    const BookmarkNode* node) {
-  if (!IsLoaded() || !java_bookmark_model_)
+  if (!IsLoaded() || !java_bookmark_model_ ||
+      suppress_observer_notifications_) {
     return;
+  }
 
   Java_BookmarkBridge_bookmarkNodeChildrenReordered(
       AttachCurrentThread(), ScopedJavaLocalRef<jobject>(java_bookmark_model_),
@@ -1433,26 +1519,38 @@ void BookmarkBridge::BookmarkNodeChildrenReordered(BookmarkModel* model,
 }
 
 void BookmarkBridge::ExtensiveBookmarkChangesBeginning(BookmarkModel* model) {
-  if (!IsLoaded() || !java_bookmark_model_)
+  if (!IsLoaded() || !java_bookmark_model_ ||
+      suppress_observer_notifications_) {
     return;
+  }
 
   Java_BookmarkBridge_extensiveBookmarkChangesBeginning(
       AttachCurrentThread(), ScopedJavaLocalRef<jobject>(java_bookmark_model_));
 }
 
 void BookmarkBridge::ExtensiveBookmarkChangesEnded(BookmarkModel* model) {
-  if (!IsLoaded() || !java_bookmark_model_)
+  if (!IsLoaded() || !java_bookmark_model_ ||
+      suppress_observer_notifications_) {
     return;
+  }
 
   Java_BookmarkBridge_extensiveBookmarkChangesEnded(
       AttachCurrentThread(), ScopedJavaLocalRef<jobject>(java_bookmark_model_));
 }
 
 void BookmarkBridge::PartnerShimChanged(PartnerBookmarksShim* shim) {
+  if (suppress_observer_notifications_) {
+    return;
+  }
+
   BookmarkModelChanged();
 }
 
 void BookmarkBridge::PartnerShimLoaded(PartnerBookmarksShim* shim) {
+  if (suppress_observer_notifications_) {
+    return;
+  }
+
   NotifyIfDoneLoading();
 }
 
@@ -1465,6 +1563,10 @@ void BookmarkBridge::ReadingListLoaded() {
 }
 
 void BookmarkBridge::ReadingListChanged() {
+  if (suppress_observer_notifications_) {
+    return;
+  }
+
   BookmarkModelChanged();
 }
 

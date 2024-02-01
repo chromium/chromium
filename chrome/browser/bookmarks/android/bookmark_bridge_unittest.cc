@@ -449,3 +449,102 @@ TEST_F(BookmarkBridgeTest, TestSearchBookmarks) {
       bookmark_bridge()->SearchBookmarksImpl(query2, 999);
   EXPECT_EQ(1u, results2.size());
 }
+
+TEST_F(BookmarkBridgeTest, TestMoveBookmark) {
+  GURL url = GURL("http://foo.com");
+
+  const BookmarkNode* node =
+      AddURL(bookmark_model()->other_node(), 0, u"test", url);
+  bookmark_bridge()->MoveBookmarkImpl(node, bookmarks::BOOKMARK_TYPE_NORMAL,
+                                      bookmark_model()->bookmark_bar_node(),
+                                      bookmarks::BOOKMARK_TYPE_NORMAL, 0);
+  // Get children of new parent and verify it has the node in it.
+  std::vector<const BookmarkNode*> children =
+      bookmark_bridge()->GetChildIdsImpl(bookmark_model()->bookmark_bar_node());
+  ASSERT_EQ(1u, children.size());
+  ASSERT_EQ(children[0], node);
+
+  // Get children of old parent and verify it has no nodes.
+  children = bookmark_bridge()->GetChildIdsImpl(bookmark_model()->other_node());
+  ASSERT_EQ(0u, children.size());
+}
+
+TEST_F(BookmarkBridgeTest, TestMoveBookmarkToOwnParentReturnsEarly) {
+  GURL url = GURL("http://foo.com");
+
+  const BookmarkNode* node =
+      AddURL(bookmark_model()->other_node(), 0, u"test", url);
+  bookmark_bridge()->MoveBookmarkImpl(node, bookmarks::BOOKMARK_TYPE_NORMAL,
+                                      bookmark_model()->other_node(),
+                                      bookmarks::BOOKMARK_TYPE_NORMAL, 0);
+  // Early return means we don't hit a DCHECK.
+}
+
+TEST_F(BookmarkBridgeTest, TestMoveBookmarkToReadingList) {
+  GURL url = GURL("http://foo.com");
+  const std::u16string title = u"test";
+
+  const BookmarkNode* node =
+      AddURL(bookmark_model()->other_node(), 0, title, url);
+  bookmark_bridge()->MoveBookmarkImpl(
+      node, bookmarks::BOOKMARK_TYPE_NORMAL,
+      local_or_syncable_reading_list_manager_->GetRoot(),
+      bookmarks::BOOKMARK_TYPE_READING_LIST, 0);
+  // Get children of new parent and verify it has the node in it.
+  std::vector<const BookmarkNode*> children =
+      bookmark_bridge()->GetChildIdsImpl(
+          local_or_syncable_reading_list_manager_->GetRoot());
+  ASSERT_EQ(1u, children.size());
+  ASSERT_EQ(children[0]->GetTitle(), title);
+  ASSERT_EQ(children[0]->url(), url);
+
+  // Get children of old parent and verify it has no nodes.
+  children = bookmark_bridge()->GetChildIdsImpl(bookmark_model()->other_node());
+  ASSERT_EQ(0u, children.size());
+}
+
+TEST_F(BookmarkBridgeTest, TestMoveBookmarkToReadingListAddFails) {
+  GURL url = GURL("chrome://newtab");
+  const std::u16string title = u"native page";
+
+  const BookmarkNode* node =
+      AddURL(bookmark_model()->other_node(), 0, title, url);
+  bookmark_bridge()->MoveBookmarkImpl(
+      node, bookmarks::BOOKMARK_TYPE_NORMAL,
+      local_or_syncable_reading_list_manager_->GetRoot(),
+      bookmarks::BOOKMARK_TYPE_READING_LIST, 0);
+  // Get children of new parent and verify it hasn't been moved
+  std::vector<const BookmarkNode*> children =
+      bookmark_bridge()->GetChildIdsImpl(
+          local_or_syncable_reading_list_manager_->GetRoot());
+  ASSERT_EQ(0u, children.size());
+
+  // Get children of old parent and verify the original bookmark is still there.
+  children = bookmark_bridge()->GetChildIdsImpl(bookmark_model()->other_node());
+  ASSERT_EQ(1u, children.size());
+  ASSERT_EQ(children[0]->GetTitle(), title);
+  ASSERT_EQ(children[0]->url(), url);
+}
+
+TEST_F(BookmarkBridgeTest, TestMoveReadingListToBookmark) {
+  GURL url = GURL("http://foo.com");
+  const std::u16string title = u"test";
+
+  const BookmarkNode* node =
+      local_or_syncable_reading_list_manager()->Add(url, "test");
+  bookmark_bridge()->MoveBookmarkImpl(node,
+                                      bookmarks::BOOKMARK_TYPE_READING_LIST,
+                                      bookmark_model()->bookmark_bar_node(),
+                                      bookmarks::BOOKMARK_TYPE_NORMAL, 0);
+  // Get children of new parent and verify it has the node in it.
+  std::vector<const BookmarkNode*> children =
+      bookmark_bridge()->GetChildIdsImpl(bookmark_model()->bookmark_bar_node());
+  ASSERT_EQ(1u, children.size());
+  ASSERT_EQ(children[0]->GetTitle(), title);
+  ASSERT_EQ(children[0]->url(), url);
+
+  // Get children of old parent and verify it has no nodes.
+  children = bookmark_bridge()->GetChildIdsImpl(
+      local_or_syncable_reading_list_manager_->GetRoot());
+  ASSERT_EQ(0u, children.size());
+}
