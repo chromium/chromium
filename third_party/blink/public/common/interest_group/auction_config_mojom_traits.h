@@ -417,13 +417,12 @@ struct BLINK_COMMON_EXPORT
     return params.expects_direct_from_seller_signals_header_ad_slot;
   }
 
-  // TODO(https://crbug.com/1523625): These should be unit16!
-  static std::optional<std::int16_t> seller_experiment_group_id(
+  static std::optional<std::uint16_t> seller_experiment_group_id(
       const blink::AuctionConfig& config) {
     return config.seller_experiment_group_id;
   }
 
-  static std::optional<std::int16_t> all_buyer_experiment_group_id(
+  static std::optional<std::uint16_t> all_buyer_experiment_group_id(
       const blink::AuctionConfig& config) {
     return config.all_buyer_experiment_group_id;
   }

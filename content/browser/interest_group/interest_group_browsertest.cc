@@ -14574,6 +14574,66 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
+                       RunAdAuctionWithLargeExperimentGroupId) {
+  // https://crbug.com/1523625 --- make sure all 16 bits go through.
+  const char kPublisher[] = "a.test";
+  const char kBidder[] = "b.test";
+  const char kSeller[] = "c.test";
+
+  // Navigate to bidder site, and add an interest group.
+  GURL bidder_url = embedded_https_test_server().GetURL(kBidder, "/echo");
+  ASSERT_TRUE(NavigateToURL(shell(), bidder_url));
+  url::Origin bidder_origin = url::Origin::Create(bidder_url);
+  EXPECT_EQ(
+      kSuccess,
+      JoinInterestGroupAndVerify(
+          blink::TestInterestGroupBuilder(
+              /*owner=*/bidder_origin,
+              /*name=*/"cars")
+              .SetBiddingUrl(embedded_https_test_server().GetURL(
+                  kBidder, "/interest_group/bidding_logic.js"))
+              .SetTrustedBiddingSignalsUrl(embedded_https_test_server().GetURL(
+                  kBidder, "/interest_group/trusted_bidding_signals.json"))
+              .SetTrustedBiddingSignalsKeys({{"key1"}})
+              .SetAds({{{GURL("https://example.com/render"),
+                         R"({"ad":"metadata","here":[1,2]})"}}})
+              .Build()));
+
+  // Navigate to publisher.
+  ASSERT_TRUE(NavigateToURL(
+      shell(), embedded_https_test_server().GetURL(kPublisher, "/echo")));
+  GURL seller_logic_url = embedded_https_test_server().GetURL(
+      kSeller, "/interest_group/decision_logic.js");
+
+  const char kAuctionConfigTemplate[] = R"({
+    seller: $1,
+    decisionLogicURL: $2,
+    trustedScoringSignalsURL: $3,
+    interestGroupBuyers: [$4],
+    sellerExperimentGroupId: 50000,
+    perBuyerExperimentGroupIds: {'*': 40000},
+  })";
+
+  EXPECT_EQ("https://example.com/render",
+            RunAuctionAndWaitForUrl(JsReplace(
+                kAuctionConfigTemplate, url::Origin::Create(seller_logic_url),
+                seller_logic_url,
+                embedded_https_test_server().GetURL(
+                    kSeller, "/interest_group/trusted_scoring_signals.json"),
+                bidder_origin)));
+
+  // Make sure that the right trusted signals URLs got fetched, incorporating
+  // the experiment group ID.
+  WaitForUrl(embedded_https_test_server().GetURL(
+      "/interest_group/trusted_bidding_signals.json?hostname=a.test&keys=key1"
+      "&interestGroupNames=cars&experimentGroupId=40000"));
+  WaitForUrl(embedded_https_test_server().GetURL(
+      "/interest_group/trusted_scoring_signals.json?hostname=a.test"
+      "&renderUrls=https%3A%2F%2Fexample.com%2Frender&experimentGroupId="
+      "50000"));
+}
+
+IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
                        RunAdAuctionWithPerBuyerExperimentGroupId) {
   const char kPublisher[] = "a.test";
   const char kBidder[] = "b.test";
