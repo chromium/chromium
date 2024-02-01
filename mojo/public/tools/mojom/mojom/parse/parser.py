@@ -525,12 +525,14 @@ class Parser:
     return self.source.split('\n')[lineno - 1]
 
 
-def Parse(source, filename):
+def Parse(source, filename, with_comments=False):
   """Parse source file to AST.
 
   Args:
     source: The source text as a str (Python 2 or 3) or unicode (Python 2).
     filename: The filename that |source| originates from.
+    with_comments: If True, parses comments and attaches them to AST nodes.
+        Otherwise, they are discarded.
 
   Returns:
     The AST as a mojom.parse.ast.Mojom object.
@@ -542,4 +544,160 @@ def Parse(source, filename):
   yacc.yacc(module=parser, debug=0, write_tables=0)
 
   tree = yacc.parse(source)
+  if with_comments:
+    _AssignComments(tree, lexer.line_comments, lexer.suffix_comments)
   return tree
+
+
+def _AssignComments(tree, line_comments, suffix_comments):
+  """Attaches comments to AST nodes in `tree`. Uses the algorithm described at
+  https://jayconrod.com/posts/129/preserving-comments-when-parsing-and-formatting-code
+  by performing two tree traversals for assigning line and suffix comments.
+  """
+  walker = _AstWalker()
+  walker.Walk(tree)
+
+  # The only types of nodes that may not have lexpos state.
+  no_lexpos_nodes = (ast.Mojom, ast.Module, ast.ParameterList)
+
+  # Assign comments on their own line to the node that immediately follows.
+  comment_index = 0
+  for node in walker.pre:
+    if not node.start[0]:
+      assert isinstance(node, no_lexpos_nodes), f'Missing lexpos for {node}'
+      continue
+    while comment_index < len(line_comments):
+      comment = line_comments[comment_index]
+      if node.start.lexpos > comment.lexpos:
+        if isinstance(node, _BodyEnd):
+          # If this is the end of an enclosing scope, then attach it to the
+          # "after" comments section.
+          node.node.append_comment(after=comment)
+        else:
+          # The comment precedes this node.
+          node.append_comment(before=comment)
+        comment_index += 1
+      else:
+        break
+
+  # Any remaining line comments are at the end of the file.
+  walker.pre[0].comments_after = line_comments[comment_index:]
+
+  # Assign suffix comments in reverse order.
+  for node in reversed(walker.post):
+    if not node.start[0]:
+      assert isinstance(node, no_lexpos_nodes), f'Missing lexpos for {node}'
+      continue
+
+    # Don't assign suffix comments to block nodes.
+    if node.start.line != node.end.line:
+      continue
+
+    comment_index = len(suffix_comments) - 1
+    while comment_index >= 0:
+      comment = suffix_comments[comment_index]
+      if node.start.line == comment.lineno:
+        if isinstance(node, _BodyEnd):
+          # Transform suffix comments on the body end to be at the end of
+          # the inner enclosing node.
+          node.node.append_comment(after=comment)
+        else:
+          node.append_comment(suffix=comment)
+        del suffix_comments[comment_index]
+      comment_index -= 1
+    # Iterating in reverse means comments order should be
+    # reversed.
+    if node.comments_suffix:
+      node.comments_suffix = list(reversed(node.comments_suffix))
+
+  # Attach any remaining suffix comments to the first sub-node of the
+  # ast.Mojom.
+  if suffix_comments:
+    for comment in suffix_comments:
+      walker.post[-2].append_comment(before=comment)
+
+
+class _BodyEnd(ast.NodeBase):
+  """A synthetic AST node used to demarcate the end of an AST node's children.
+  This can be thought of as the trailing semicolon of a struct or interface
+  definition.
+  """
+
+  def __init__(self, node):
+    super().__init__(filename=node.filename)
+    self.start = node.end
+    self.end = ast.Location(node.end.line, node.end.lexpos + 1)
+    self.node = node
+
+
+class _AstWalker:
+  """Iterates the AST nodes to which comments should be attached in pre- and
+  post-order traversal, storing the results in two lists. Nodes of type
+  NodeListBase are un-rolled by the parent node. To identify the end of scopes,
+  a _BodyEnd node is inserted. Not all AST nodes are emitted, if comment nodes
+  should be associated with a higher AST node instead of the lower leaf.
+  """
+
+  def __init__(self):
+    self.pre = []
+    self.post = []
+
+  def Walk(self, node):
+    if node is None:
+      return
+
+    self.pre.append(node)
+
+    if isinstance(node, ast.Mojom):
+      self.Walk(node.module)
+      for item in node.import_list:
+        self.Walk(item)
+      for item in node.definition_list:
+        self.Walk(item)
+    elif isinstance(node, ast.Module):
+      pass
+    elif isinstance(node, ast.Import):
+      pass
+    elif isinstance(node, ast.Interface):
+      for item in node.body:
+        self.Walk(item)
+      self.Walk(_BodyEnd(node))
+    elif isinstance(node, ast.Method):
+      for param in node.parameter_list:
+        self.Walk(param)
+      if node.response_parameter_list:
+        for param in node.response_parameter_list:
+          self.Walk(param)
+    elif isinstance(node, ast.Parameter):
+      pass
+    elif isinstance(node, ast.Const):
+      pass
+    elif isinstance(node, ast.Enum):
+      if node.enum_value_list:
+        for item in node.enum_value_list:
+          self.Walk(item)
+        self.Walk(_BodyEnd(node))
+    elif isinstance(node, ast.EnumValue):
+      pass
+    elif isinstance(node, (ast.Struct, ast.Feature)):
+      if node.body:
+        for item in node.body:
+          self.Walk(item)
+        self.Walk(_BodyEnd(node))
+    elif isinstance(node, ast.StructField):
+      pass
+    elif isinstance(node, ast.Union):
+      for item in node.body:
+        self.Walk(item)
+      self.Walk(_BodyEnd(node))
+    elif isinstance(node, ast.UnionField):
+      pass
+    elif isinstance(node, ast.AttributeList):
+      for item in node:
+        self.Walk(item)
+    elif isinstance(node, _BodyEnd):
+      pass
+    else:
+      raise ValueError(f'Unexpected AST node {repr(node)}')
+
+    self.post.append(node)

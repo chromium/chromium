@@ -27,6 +27,14 @@ class NodeBase:
     self.start = Location(0, 0)
     self.end = Location(0, 0)
 
+    # Comments that appear on the lines before the node.
+    self.comments_before = None
+    # Comments that appear after the body of the node but before the node's
+    # span ends.
+    self.comments_after = None
+    # End-of-line comments.
+    self.comments_suffix = None
+
   def __eq__(self, other):
     # We want strict comparison of the two object's types. Disable pylint's
     # insistence upon recommending isinstance().
@@ -36,6 +44,23 @@ class NodeBase:
   # Make != the inverse of ==. (Subclasses shouldn't have to override this.)
   def __ne__(self, other):
     return not self == other
+
+  def append_comment(self, before=None, after=None, suffix=None):
+    if before:
+      if not self.comments_before:
+        self.comments_before = [before]
+      else:
+        self.comments_before.append(before)
+    if after:
+      if not self.comments_after:
+        self.comments_after = [after]
+      else:
+        self.comments_after.append(after)
+    if suffix:
+      if not self.comments_suffix:
+        self.comments_suffix = [suffix]
+      else:
+        self.comments_suffix.append(suffix)
 
 
 # TODO(vtl): Some of this is complicated enough that it should be tested.

@@ -9,7 +9,7 @@ from mojom import fileutil
 from mojom.error import Error
 
 fileutil.AddLocalRepoThirdPartyDirToModulePath()
-from ply.lex import TOKEN
+from ply.lex import LexToken, TOKEN
 
 
 class LexError(Error):
@@ -24,6 +24,8 @@ class LexError(Error):
 class Lexer:
   def __init__(self, filename):
     self.filename = filename
+    self.line_comments = []
+    self.suffix_comments = []
 
   ######################--   PRIVATE   --######################
 
@@ -153,6 +155,8 @@ class Lexer:
   octal_or_hex_ordinal_disallowed = (
       r'@((0[0-9]+)|(' + hex_prefix + hex_digits + '))')
 
+  comment = r'(/\*(.|\n)*?\*/)|(//.*(\n[ \t]*//.*)*)'
+
   ##
   ## Rules for the normal state
   ##
@@ -238,10 +242,32 @@ class Lexer:
     t.type = self.keyword_map.get(t.value, "NAME")
     return t
 
-  # Ignore C and C++ style comments
+  # Collect comments in the lexer, but don't promote them to the parser.
+  @TOKEN(comment)
   def t_COMMENT(self, t):
-    r'(/\*(.|\n)*?\*/)|(//.*(\n[ \t]*//.*)*)'
+    # Clone the LexToken object to only hold the needed data and not other
+    # references.
+    comment = LexToken()
+    for a in ('value', 'type', 'lineno', 'lexpos'):
+      setattr(comment, a, getattr(t, a))
+
     t.lexer.lineno += t.value.count("\n")
+
+    # Walk back to see if this is a comment on its own line.
+    pos = t.lexpos - 1
+    while pos >= 0:
+      c = t.lexer.lexdata[pos]
+      if c in t.lexer.lexignore:
+        pos -= 1
+      else:
+        if c == '\n':
+          self.line_comments.append(comment)
+        else:
+          self.suffix_comments.append(comment)
+        return
+
+    # Reached the beginning of the file, so this must be a line comment.
+    self.line_comments.append(comment)
 
   def t_error(self, t):
     msg = "Illegal character %s" % repr(t.value[0])

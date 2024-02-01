@@ -1616,5 +1616,109 @@ class ParserTest(unittest.TestCase):
     self.assertEquals(ast.Location(2, 33), field.default_value.start)
     self.assertEquals(ast.Location(2, 37), field.default_value.end)
 
+  def testCommentAttachment(self):
+    source1 = """\
+        // Before import 1.
+        // Can span two lines.
+
+        // Before import 2.
+        import "foo.mojom";  // End-of-import.
+
+        // Before struct.
+        struct Foo {
+          // Before field.
+          string field;  // End-of-field.
+
+          // End of struct.
+        };
+
+        // End-of-file 1.
+
+        // End-of-file 2.
+        """
+    tree = parser.Parse(source1, "my_file.mojom", with_comments=True)
+
+    self.assertEquals(1, len(tree.import_list.items))
+    self.assertEquals(2, len(tree.import_list.items[0].comments_before))
+    self.assertIn('// Before import 1.\n',
+                  tree.import_list.items[0].comments_before[0].value)
+    self.assertIn('// Can span two lines.',
+                  tree.import_list.items[0].comments_before[0].value)
+    self.assertEquals('// Before import 2.',
+                      tree.import_list.items[0].comments_before[1].value)
+
+    self.assertEquals(1, len(tree.definition_list))
+    struct = tree.definition_list[0]
+    self.assertEquals(1, len(struct.comments_before))
+    self.assertEquals('// Before struct.', struct.comments_before[0].value)
+    self.assertEquals(1, len(struct.comments_after))
+    self.assertEquals('// End of struct.', struct.comments_after[0].value)
+    self.assertEquals(1, len(struct.body.items))
+
+    field = struct.body.items[0]
+    self.assertEquals(1, len(field.comments_before))
+    self.assertEquals('// Before field.', field.comments_before[0].value)
+    self.assertEquals(1, len(field.comments_suffix))
+    self.assertEquals('// End-of-field.', field.comments_suffix[0].value)
+
+    self.assertEquals(2, len(tree.comments_after))
+    self.assertEquals('// End-of-file 1.', tree.comments_after[0].value)
+    self.assertEquals('// End-of-file 2.', tree.comments_after[1].value)
+
+    source2 = "// Comment only.\n// Comment two.\n"
+    tree = parser.Parse(source2, "my_file.mojom", with_comments=True)
+    self.assertEquals(1, len(tree.comments_after))
+    self.assertEquals(source2.strip(), tree.comments_after[0].value)
+
+    source3 = """\
+        // Before interface.
+        interface Foo {  // End of interface.
+          Method();
+
+          // Interface 1.
+
+          // Interface 2.
+
+          // Interface 3.
+          [Sync] Foo(
+                string a,  // End param a.
+                int32 b);  // End param b.
+
+          // Interface 4.
+          // Continuation of 4.
+
+          // Interface 5.
+        };  // Trailing interface.
+        """
+    tree = parser.Parse(source3, "my_file.mojom", with_comments=True)
+    interface = tree.definition_list[0]
+    self.assertEquals(2, len(interface.comments_before))
+    self.assertEquals('// Before interface.',
+                      interface.comments_before[0].value)
+    # This is an odd place to attach the comment, but it is also an odd
+    # place to leave a comment.
+    self.assertEquals('// End of interface.',
+                      interface.comments_before[1].value)
+    self.assertEquals(2, interface.start.line)
+
+    meth = interface.body.items[1]
+    self.assertEquals(3, len(meth.comments_before))
+    self.assertEquals('// Interface 1.', meth.comments_before[0].value)
+    self.assertEquals('// Interface 2.', meth.comments_before[1].value)
+    self.assertEquals('// Interface 3.', meth.comments_before[2].value)
+    self.assertEquals(1, len(meth.parameter_list.items[0].comments_suffix))
+    self.assertEquals('// End param a.',
+                      meth.parameter_list.items[0].comments_suffix[0].value)
+    self.assertEquals(1, len(meth.parameter_list.items[1].comments_suffix))
+    self.assertEquals('// End param b.',
+                      meth.parameter_list.items[1].comments_suffix[0].value)
+
+    self.assertEquals(3, len(interface.comments_after))
+    self.assertIn('// Interface 4.\n', interface.comments_after[0].value)
+    self.assertIn('// Continuation of 4.', interface.comments_after[0].value)
+    self.assertEquals('// Interface 5.', interface.comments_after[1].value)
+    self.assertEquals('// Trailing interface.',
+                      interface.comments_after[2].value)
+
 if __name__ == "__main__":
   unittest.main()
