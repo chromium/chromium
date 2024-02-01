@@ -15,6 +15,7 @@
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/common/extensions/extension_constants.h"
+#include "chromeos/components/kiosk/kiosk_utils.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "extensions/common/constants.h"
 #include "google_apis/gaia/gaia_auth_util.h"
@@ -188,6 +189,10 @@ bool EditorSwitch::IsAllowedForUse() const {
   }
 
   if (profile_ == nullptr) {
+    return false;
+  }
+
+  if (chromeos::IsKioskSession()) {
     return false;
   }
 
