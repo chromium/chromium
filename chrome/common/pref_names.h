@@ -1441,6 +1441,11 @@ inline constexpr char kIsDefaultPageColorsOnHighContrast[] =
     "settings.a11y.is_default_page_colors_on_high_contrast";
 #endif  // BUILDFLAG(IS_WIN)
 
+// Boolean that indicates whether a user prefers to have default scrollbar
+// styles.
+inline constexpr char kPrefersDefaultScrollbarStyles[] =
+    "settings.a11y.prefers_default_scrollbar_styles";
+
 #if BUILDFLAG(IS_MAC)
 // Boolean that indicates whether the application should show the info bar
 // asking the user to set up automatic updates when Keystone promotion is

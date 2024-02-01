@@ -149,6 +149,8 @@ static_library("browser") {
     "accessibility/page_colors.h",
     "accessibility/page_colors_factory.cc",
     "accessibility/page_colors_factory.h",
+    "accessibility/prefers_default_scrollbar_styles_prefs.cc",
+    "accessibility/prefers_default_scrollbar_styles_prefs.h",
     "after_startup_task_utils.cc",
     "after_startup_task_utils.h",
     "app_mode/app_mode_utils.cc",

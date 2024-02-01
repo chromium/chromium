@@ -4201,6 +4201,9 @@ void ChromeContentBrowserClient::OverrideWebkitPrefs(
   for (auto& parts : extra_parts_) {
     parts->OverrideWebkitPrefs(web_contents, web_prefs);
   }
+
+  web_prefs->prefers_default_scrollbar_styles =
+      prefs->GetBoolean(prefs::kPrefersDefaultScrollbarStyles);
 }
 
 bool ChromeContentBrowserClientParts::OverrideWebPreferencesAfterNavigation(

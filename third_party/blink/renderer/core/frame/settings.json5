@@ -1201,5 +1201,11 @@
       initial: 1.5,
       type: "float",
     },
+    {
+      name: "prefersDefaultScrollbarStyles",
+      initial: false,
+      invalidate: ["Style"],
+      type: "bool",
+    },
   ],
 }
