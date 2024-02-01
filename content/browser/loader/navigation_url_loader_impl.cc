@@ -1383,22 +1383,19 @@ NavigationURLLoaderImpl::NavigationURLLoaderImpl(
   std::string scheme = resource_request_->url.scheme();
   scoped_refptr<network::SharedURLLoaderFactory> factory_for_webui;
   if (base::Contains(schemes, scheme)) {
-    network::URLLoaderFactoryBuilder factory_builder;
-    GetContentClient()->browser()->WillCreateURLLoaderFactory(
-        browser_context_, frame_tree_node->current_frame_host(),
-        frame_tree_node->current_frame_host()->GetProcess()->GetID(),
-        ContentBrowserClient::URLLoaderFactoryType::kNavigation, url::Origin(),
-        frame_tree_node->navigation_request()->GetNavigationId(), ukm_id,
-        factory_builder, /*header_client=*/nullptr,
-        /*bypass_redirect_checks=*/nullptr, /*disable_secure_dns=*/nullptr,
-        /*factory_override=*/nullptr,
-        content::GetUIThreadTaskRunner(
-            {content::BrowserTaskType::kNavigationNetworkResponse}));
-
-    factory_for_webui =
-        std::move(factory_builder)
-            .Finish(CreateWebUIURLLoaderFactory(
-                frame_tree_node->current_frame_host(), scheme, {}));
+    factory_for_webui = url_loader_factory::Create(
+        ContentBrowserClient::URLLoaderFactoryType::kNavigation,
+        url_loader_factory::TerminalParams::ForNonNetwork(
+            CreateWebUIURLLoaderFactory(frame_tree_node->current_frame_host(),
+                                        scheme, {})),
+        url_loader_factory::ContentClientParams(
+            browser_context_, frame_tree_node->current_frame_host(),
+            frame_tree_node->current_frame_host()->GetProcess()->GetID(),
+            url::Origin(), ukm_id,
+            /*bypass_redirect_checks=*/nullptr,
+            frame_tree_node->navigation_request()->GetNavigationId(),
+            content::GetUIThreadTaskRunner(
+                {content::BrowserTaskType::kNavigationNetworkResponse})));
   }
 
   network_loader_factory_ = CreateNetworkLoaderFactory(
@@ -1681,46 +1678,42 @@ void NavigationURLLoaderImpl::
   DCHECK(frame_tree_node);
   DCHECK(frame_tree_node->navigation_request());
 
-  network::URLLoaderFactoryBuilder factory_builder;
-
   auto* frame = frame_tree_node->current_frame_host();
-  GetContentClient()->browser()->WillCreateURLLoaderFactory(
-      frame->GetSiteInstance()->GetBrowserContext(), frame,
-      frame->GetProcess()->GetID(),
-      ContentBrowserClient::URLLoaderFactoryType::kNavigation, url::Origin(),
-      frame_tree_node->navigation_request()->GetNavigationId(),
-      ukm::SourceIdObj::FromInt64(ukm_source_id_), factory_builder,
-      /*header_client=*/nullptr,
-      /*bypass_redirect_checks=*/nullptr, /*disable_secure_dns=*/nullptr,
-      /*factory_override=*/nullptr,
-      content::GetUIThreadTaskRunner(
-          {content::BrowserTaskType::kNavigationNetworkResponse}));
-
-  // TODO(lukasza, jam): It is unclear why FileURLLoaderFactory is the only
-  // non-http factory that allows DevTools intereception.  For comparison all
-  // non-WebUI cases in RFHI::CommitNavigation allow DevTools
-  // interception.  Let's try to be more consistent / less ad-hoc.
-  if (url.SchemeIs(url::kFileScheme)) {
-    if (frame_tree_node) {  // May be nullptr in some unit tests.
-      devtools_instrumentation::WillCreateURLLoaderFactoryParams::ForFrame(
-          frame)
-          .Run(
-              /*is_navigation=*/true, /*is_download=*/false, factory_builder,
-              /*factory_override=*/nullptr);
-    }
-  }
 
   auto it = non_network_url_loader_factories_.find(url.scheme());
-  if (it != non_network_url_loader_factories_.end()) {
-    mojo::Remote<network::mojom::URLLoaderFactory> remote(
-        std::move(it->second));
-    std::move(factory_builder)
-        .Finish(std::move(factory_receiver), std::move(remote));
-    non_network_url_loader_factories_.erase(it);
+  if (it == non_network_url_loader_factories_.end()) {
+    DVLOG(1) << "Ignoring request with unknown scheme: " << url.spec();
     return;
   }
+  mojo::PendingRemote<network::mojom::URLLoaderFactory> terminal =
+      std::move(it->second);
+  non_network_url_loader_factories_.erase(it);
 
-  DVLOG(1) << "Ignoring request with unknown scheme: " << url.spec();
+  // TODO(lukasza, jam): It is unclear why FileURLLoaderFactory is the only
+  // non-http factory that allows DevTools interception. For comparison all
+  // non-WebUI cases in RFHI::CommitNavigation allow DevTools interception.
+  // Let's try to be more consistent / less ad-hoc.
+  std::optional<devtools_instrumentation::WillCreateURLLoaderFactoryParams>
+      devtools_params =
+          url.SchemeIs(url::kFileScheme)
+              ? std::make_optional(
+                    devtools_instrumentation::WillCreateURLLoaderFactoryParams::
+                        ForFrame(frame))
+              : std::nullopt;
+
+  url_loader_factory::CreateAndConnectToPendingReceiver(
+      std::move(factory_receiver),
+      ContentBrowserClient::URLLoaderFactoryType::kNavigation,
+      url_loader_factory::TerminalParams::ForNonNetwork(std::move(terminal)),
+      url_loader_factory::ContentClientParams(
+          frame->GetSiteInstance()->GetBrowserContext(), frame,
+          frame->GetProcess()->GetID(), url::Origin(),
+          ukm::SourceIdObj::FromInt64(ukm_source_id_),
+          /*bypass_redirect_checks=*/nullptr,
+          frame_tree_node->navigation_request()->GetNavigationId(),
+          content::GetUIThreadTaskRunner(
+              {content::BrowserTaskType::kNavigationNetworkResponse})),
+      devtools_params);
 }
 
 void NavigationURLLoaderImpl::RecordReceivedResponseUkmForOutermostMainFrame() {
