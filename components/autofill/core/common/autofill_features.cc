@@ -599,6 +599,15 @@ BASE_FEATURE(kAutofillVoteForSelectOptionValues,
              "AutofillVoteForSelectOptionValues",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Improves the selection of phone country codes by also considering address
+// country codes / names.
+// See GetStreetAddressForInput() in field_filling_address_util.cc for a details
+// description.
+// TODO(crbug.com/1395740). Clean up when launched.
+BASE_FEATURE(kAutofillEnableFillingPhoneCountryCodesByAddressCountryCodes,
+             "AutofillEnableFillingPhoneCountryCodesByAddressCountryCodes",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Controls autofill popup style, if enabled it becomes more prominent,
 // i.e. its shadow becomes more emphasized, position is also updated.
 // TODO(crbug.com/1354136): Remove once the experiment is over.

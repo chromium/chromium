@@ -20,6 +20,7 @@
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_parsing/regex_patterns.h"
 #include "components/autofill/core/browser/geo/alternative_state_name_map_test_utils.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
 #include "components/autofill/core/common/autofill_util.h"
 #include "components/prefs/pref_service.h"
@@ -434,29 +435,45 @@ INSTANTIATE_TEST_SUITE_P(
 
 // Tests that augment phone country code fields are filled correctly.
 struct FillAugmentedPhoneCountryCodeTestCase {
-  std::vector<const char*> phone_country_code_selection_options;
+  std::vector<SelectOption> phone_country_code_selection_options;
   std::u16string phone_home_whole_number_value;
   std::u16string expected_value;
+  // Expected value if
+  // kAutofillEnableFillingPhoneCountryCodesByAddressCountryCodes is enabled.
+  std::u16string expected_value_with_new_cc_filling;
 };
 
+// The first parameter indicates whether
+// kAutofillEnableFillingPhoneCountryCodesByAddressCountryCodes is enabled.
 class AutofillFillAugmentedPhoneCountryCodeTest
     : public FieldFillingAddressUtilTest,
       public testing::WithParamInterface<
-          FillAugmentedPhoneCountryCodeTestCase> {};
+          std::tuple<bool, FillAugmentedPhoneCountryCodeTestCase>> {};
 
 void DoTestFillAugmentedPhoneCountryCodeField(
+    bool enable_filling_phone_country_codes_by_address_country_codes,
     const FillAugmentedPhoneCountryCodeTestCase& test_case,
     FormControlType field_type) {
+  base::test::ScopedFeatureList features;
+  features.InitWithFeatureState(
+      features::kAutofillEnableFillingPhoneCountryCodesByAddressCountryCodes,
+      enable_filling_phone_country_codes_by_address_country_codes);
+
   AutofillField field(test::CreateTestSelectOrSelectListField(
       /*label=*/"", /*name=*/"", /*value=*/"", /*autocomplete=*/"",
-      test_case.phone_country_code_selection_options,
-      test_case.phone_country_code_selection_options, field_type));
+      /*values=*/{}, /*contents=*/{}, field_type));
+  field.options = test_case.phone_country_code_selection_options;
   field.set_heuristic_type(GetActiveHeuristicSource(), PHONE_HOME_COUNTRY_CODE);
 
   AutofillProfile profile(AddressCountryCode("US"));
   profile.SetRawInfo(PHONE_HOME_WHOLE_NUMBER,
                      test_case.phone_home_whole_number_value);
-  EXPECT_EQ(test_case.expected_value,
+
+  std::u16string expected_value =
+      enable_filling_phone_country_codes_by_address_country_codes
+          ? test_case.expected_value_with_new_cc_filling
+          : test_case.expected_value;
+  EXPECT_EQ(expected_value,
             GetValueForProfile(profile, kAppLocale,
                                AutofillType(PHONE_HOME_COUNTRY_CODE), field,
                                /*address_normalizer=*/nullptr));
@@ -464,59 +481,172 @@ void DoTestFillAugmentedPhoneCountryCodeField(
 
 TEST_P(AutofillFillAugmentedPhoneCountryCodeTest,
        FillAugmentedPhoneCountryCodeField) {
-  DoTestFillAugmentedPhoneCountryCodeField(GetParam(),
+  DoTestFillAugmentedPhoneCountryCodeField(std::get<0>(GetParam()),
+                                           std::get<1>(GetParam()),
                                            FormControlType::kSelectOne);
 }
 
 TEST_P(AutofillFillAugmentedPhoneCountryCodeTest,
        FillAugmentedPhoneCountryCodeSelectListField) {
-  DoTestFillAugmentedPhoneCountryCodeField(GetParam(),
+  DoTestFillAugmentedPhoneCountryCodeField(std::get<0>(GetParam()),
+                                           std::get<1>(GetParam()),
                                            FormControlType::kSelectList);
 }
 
 INSTANTIATE_TEST_SUITE_P(
     FieldFillingAddressUtilTest,
     AutofillFillAugmentedPhoneCountryCodeTest,
-    testing::Values(
-        // Filling phone country code selection field when one of the options
-        // exactly matches the phone country code.
-        FillAugmentedPhoneCountryCodeTestCase{{"91", "1", "20", "49"},
-                                              u"+15145554578",
-                                              u"1"},
-        // Filling phone country code selection field when the options
-        // are preceded by a plus sign and the field is of
-        // `PHONE_HOME_COUNTRY_CODE` type.
-        FillAugmentedPhoneCountryCodeTestCase{{"+91", "+1", "+20", "+49"},
-                                              u"+918890888888",
-                                              u"+91"},
-        // Filling phone country code selection field when the options
-        // are preceded by a '00' and the field is of `PHONE_HOME_COUNTRY_CODE`
-        // type.
-        FillAugmentedPhoneCountryCodeTestCase{{"0091", "001", "0020", "0049"},
-                                              u"+918890888888",
-                                              u"0091"},
-        // Filling phone country code selection field when the options are
-        // composed of the country code and the country name.
-        FillAugmentedPhoneCountryCodeTestCase{
-            {"Please select an option", "+91 (India)", "+1 (United States)",
-             "+20 (Egypt)", "+49 (Germany)"},
-            u"+49151669087345",
-            u"+49 (Germany)"},
-        // Filling phone country code selection field when the options are
-        // composed of the country code having whitespace and the country name.
-        FillAugmentedPhoneCountryCodeTestCase{
-            {"Please select an option", "(00 91) India", "(00 1) United States",
-             "(00 20) Egypt", "(00 49) Germany"},
-            u"+49151669087345",
-            u"(00 49) Germany"},
-        // Filling phone country code selection field when the options are
-        // composed of the country code that is preceded by '00' and the country
-        // name.
-        FillAugmentedPhoneCountryCodeTestCase{
-            {"Please select an option", "(0091) India", "(001) United States",
-             "(0020) Egypt", "(0049) Germany"},
-            u"+49151669087345",
-            u"(0049) Germany"}));
+    testing::Combine(
+        testing::Bool(),
+        testing::Values(
+            // Filling phone country code selection field when one of the
+            // options exactly matches the phone country code.
+            FillAugmentedPhoneCountryCodeTestCase{
+                {{u"91", u"91"}, {u"1", u"1"}, {u"20", u"20"}, {u"49", u"49"}},
+                u"+15145554578",
+                u"1",
+                u"1"},
+            // Filling phone country code selection field when the options
+            // are preceded by a plus sign and the field is of
+            // `PHONE_HOME_COUNTRY_CODE` type.
+            FillAugmentedPhoneCountryCodeTestCase{{{u"+91", u"+91"},
+                                                   {u"+1", u"+1"},
+                                                   {u"+20", u"+20"},
+                                                   {u"+49", u"+49"}},
+                                                  u"+918890888888",
+                                                  u"+91",
+                                                  u"+91"},
+            // Filling phone country code selection field when the options
+            // are preceded by a '00' and the field is of
+            // `PHONE_HOME_COUNTRY_CODE` type.
+            FillAugmentedPhoneCountryCodeTestCase{{{u"0091", u"0091"},
+                                                   {u"001", u"001"},
+                                                   {u"0020", u"0020"},
+                                                   {u"0049", u"0049"}},
+                                                  u"+918890888888",
+                                                  u"0091",
+                                                  u"0091"},
+            // Filling phone country code selection field when the options are
+            // composed of the country code and the country name.
+            FillAugmentedPhoneCountryCodeTestCase{
+                {{u"Please select an option", u"Please select an option"},
+                 {u"+91 (India)", u"+91 (India)"},
+                 {u"+1 (United States)", u"+1 (United States)"},
+                 {u"+20 (Egypt)", u"+20 (Egypt)"},
+                 {u"+49 (Germany)", u"+49 (Germany)"}},
+                u"+49151669087345",
+                u"+49 (Germany)",
+                u"+49 (Germany)"},
+            // Filling phone country code selection field when the options are
+            // composed of the country code having whitespace and the country
+            // name.
+            FillAugmentedPhoneCountryCodeTestCase{
+                {{u"Please select an option", u"Please select an option"},
+                 {u"(00 91) India", u"(00 91) India"},
+                 {u"(00 1) United States", u"(00 1) United States"},
+                 {u"(00 20) Egypt", u"(00 20) Egypt"},
+                 {u"(00 49) Germany", u"(00 49) Germany"}},
+                u"+49151669087345",
+                u"(00 49) Germany",
+                u"(00 49) Germany"},
+            // Filling phone country code selection field when the options are
+            // composed of the country code that is preceded by '00' and the
+            // country name.
+            FillAugmentedPhoneCountryCodeTestCase{
+                {{u"Please select an option", u"Please select an option"},
+                 {u"(0091) India", u"(0091) India"},
+                 {u"(001) United States", u"(001) United States"},
+                 {u"(0020) Egypt", u"(0020) Egypt"},
+                 {u"(0049) Germany", u"(0049) Germany"}},
+                u"+49151669087345",
+                u"(0049) Germany",
+                u"(0049) Germany"},
+            // Checking that the filling is smart about the filling of country
+            // codes if the select options are identified by 2-character country
+            // codes. In this case we, we try to use the country of the address
+            // profile (unless that contradicts the phone country code).
+            FillAugmentedPhoneCountryCodeTestCase{
+                {
+                    {u"AF", u"Afghanistan (+93)"},
+                    {u"AX", u"Åland Islands (+358)"},
+                    {u"AG", u"Antigua & Barbuda (+1)"},
+                    {u"CA", u"Canada (+1)"},
+                    {u"US", u"United States (+1)"},
+                },
+                u"+13124568754",
+                u"AG",  // This is undesired default behavior w/o the fix.
+                u"US"},
+            // If matches for the phone country code exist but a) they are
+            // ambiguous and b) the entry selected by the address country code
+            // does not contain a matching phone country code, we pick the first
+            // match of the phone country code.
+            FillAugmentedPhoneCountryCodeTestCase{
+                {
+                    {u"AF", u"Afghanistan (+93)"},
+                    {u"AX", u"Åland Islands (+358)"},
+                    {u"AG", u"Antigua & Barbuda (+1)"},
+                    {u"CA", u"Canada (+1)"},
+                    {u"US", u"United States (+49)"},
+                },
+                u"+13124568754",
+                u"AG",
+                u"AG"},
+            // Check that if the option values don't match a country code, we
+            // can match based on country name in the option label.
+            FillAugmentedPhoneCountryCodeTestCase{
+                {
+                    {u"AF-93", u"Afghanistan (+93)"},
+                    {u"AX-358", u"Åland Islands (+358)"},
+                    {u"AG-1", u"Antigua & Barbuda (+1)"},
+                    {u"CA-1", u"Canada (+1)"},
+                    {u"US-1", u"United States (+1)"},
+                },
+                u"+13124568754",
+                u"AG-1",  // This is undesired default behavior w/o the fix.
+                u"US-1"},
+            // Test that autofill is capable of selecting "USA" even though it
+            // matches neither the country code (US) nor the fully spelled out
+            // name used in Chrome ("United States").
+            FillAugmentedPhoneCountryCodeTestCase{
+                {
+                    // Entries have a pending whitespace to make life extra
+                    // difficult for the test.
+                    {u"uuid1", u"(+93) Afghanistan "},
+                    {u"uuid2", u"(+358) Åland Islands "},
+                    {u"uuid3", u"(+1) Antigua & Barbuda "},
+                    {u"uuid4", u"(+1) Canada "},
+                    {u"uuid5", u"(+1) USA "},
+                },
+                u"+13124568754",
+                u"uuid3",  // This is undesired default behavior w/o the fix.
+                u"uuid5"},
+            // This is undesired behavior but documents the status quo. If the
+            // phone country code matches a number in the options, it gets
+            // picked.
+            FillAugmentedPhoneCountryCodeTestCase{
+                {
+                    {u"1", u"Afghanistan (+93)"},
+                    {u"2", u"Åland Islands (+358)"},
+                    {u"3", u"Antigua & Barbuda (+1)"},
+                    {u"4", u"Canada (+1)"},
+                    {u"5", u"United States (+1)"},
+                },
+                u"+13124568754",
+                u"1",
+                u"1"},
+            // Test that everything works if no phone country code can be
+            // identified and only country names are presented.
+            FillAugmentedPhoneCountryCodeTestCase{
+                {
+                    {u"AF", u"Afghanistan"},
+                    {u"AX", u"Åland Islands"},
+                    {u"AG", u"Antigua & Barbuda"},
+                    {u"CA", u"Canada"},
+                    {u"US", u"United States"},
+                },
+                u"+13124568754",
+                u"",  // This is undesired default behavior w/o the fix.
+                u"US"})));
 
 // Tests that the abbreviated state names are selected correctly.
 TEST_F(FieldFillingAddressUtilTest, FillSelectAbbreviatedState) {
