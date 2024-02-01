@@ -71,9 +71,6 @@ std::ostream& operator<<(std::ostream& os,
 
 typedef std::vector<ContentSettingPatternSource> ContentSettingsForOneType;
 
-typedef std::map<std::string, ContentSettingsForOneType>
-    HostIndexedContentSettings;
-
 struct RendererContentSettingRules {
   // Returns true if |content_type| is a type that is contained in this class.
   // Any new type added below must also update this method.
