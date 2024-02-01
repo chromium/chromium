@@ -1402,12 +1402,12 @@ bool InputHandler::IsInitialScrollHitTestReliable(
   }
 
   // If `first_scrollable_or_opaque_to_hit_test_layer` is not a scrollbar, and
-  // its scroll tree index corresponds to the first scrollable ancestor for
-  // `layer_impl`, the hit test has not escaped to other areas of the scroll
-  // tree and is reliable.
+  // it and `layer_impl` will scroll the same scroll node, the hit test has not
+  // escaped to other areas of the scroll tree and is reliable so far.
   if (!first_scrollable_or_opaque_to_hit_test_layer->IsScrollbarLayer() &&
-      closest_scroll_node->id ==
-          first_scrollable_or_opaque_to_hit_test_layer->scroll_tree_index()) {
+      closest_scroll_node == GetNodeToScroll(scroll_tree.Node(
+                                 first_scrollable_or_opaque_to_hit_test_layer
+                                     ->scroll_tree_index()))) {
     out_node_to_scroll = closest_scroll_node;
     return true;
   }

@@ -17960,26 +17960,26 @@ class UnifiedScrollingTest : public LayerTreeHostImplTest {
     DrawFrame();
   }
 
+  void CreateLayerCoveringWholeViewport(const LayerImpl* parent_scroller,
+                                        HitTestOpaqueness opaqueness) {
+    LayerImpl* layer = AddLayer();
+    layer->SetBounds(gfx::Size(100, 100));
+    layer->SetDrawsContent(true);
+    layer->SetHitTestOpaqueness(opaqueness);
+    CopyProperties(parent_scroller, layer);
+    UpdateDrawProperties(host_impl_->active_tree());
+  }
+
   void CreateLayerCoveringWholeViewportEscapingScrollers(
       HitTestOpaqueness opaqueness) {
     // Add a layer with the outer viewport as its scroll parent but it covers
     // the entire viewport and any scrollers underneath it.
-    LayerImpl* layer = AddLayer();
-    layer->SetBounds(gfx::Size(100, 100));
-    layer->SetDrawsContent(true);
-    layer->SetHitTestOpaqueness(opaqueness);
-    CopyProperties(OuterViewportScrollLayer(), layer);
-    UpdateDrawProperties(host_impl_->active_tree());
+    CreateLayerCoveringWholeViewport(OuterViewportScrollLayer(), opaqueness);
   }
 
   void CreateLayerCoveringWholeViewportInScroller(
       HitTestOpaqueness opaqueness) {
-    LayerImpl* layer = AddLayer();
-    layer->SetBounds(gfx::Size(100, 100));
-    layer->SetDrawsContent(true);
-    layer->SetHitTestOpaqueness(opaqueness);
-    CopyProperties(scroller_layer_.get(), layer);
-    UpdateDrawProperties(host_impl_->active_tree());
+    CreateLayerCoveringWholeViewport(scroller_layer_.get(), opaqueness);
   }
 
   ScrollStatus ScrollBegin(const gfx::Vector2d& delta) {
@@ -18294,6 +18294,22 @@ TEST_F(UnifiedScrollingTest, LayerOpaqueToHitTestScrollsOnCompositor) {
               status.main_thread_hit_test_reasons);
     // We can start scroll the scroll parent of the layer, which is the outer
     // viewport scroll layer.
+    EXPECT_EQ(host_impl_->OuterViewportScrollNode(), CurrentlyScrollingNode());
+  }
+}
+
+TEST_F(UnifiedScrollingTest, FixedLayerOpaqueToHitTestScrollsOnCompositor) {
+  CreateScroller(MainThreadScrollingReason::kNotScrollingOnMain);
+  CreateLayerCoveringWholeViewport(InnerViewportScrollLayer(),
+                                   HitTestOpaqueness::kOpaque);
+
+  {
+    ScrollStatus status = ScrollBegin(gfx::Vector2d(0, 10));
+    EXPECT_EQ(ScrollThread::kScrollOnImplThread, status.thread);
+    EXPECT_EQ(MainThreadScrollingReason::kNotScrollingOnMain,
+              status.main_thread_hit_test_reasons);
+    // See InputHandler::GetNodeToScroll() for why the scrolling node is the
+    // outer viewport scroll node instead of the inner viewport scroll node.
     EXPECT_EQ(host_impl_->OuterViewportScrollNode(), CurrentlyScrollingNode());
   }
 }
