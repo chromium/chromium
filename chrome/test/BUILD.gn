@@ -2880,6 +2880,7 @@ if (!is_android) {
     if (enable_supervised_users) {
       sources += [
         # TODO(b/301587955): Fix placement of supervised_user/e2e test files and their dependencies.
+        "../browser/supervised_user/advanced_content_restrictions_interactive_uitest.cc",
         "../browser/supervised_user/incognito_mode_interactive_uitest.cc",
         "../browser/supervised_user/url_filter_interactive_uitest.cc",
         "supervised_user/family_live_test.cc",
