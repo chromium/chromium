@@ -7555,7 +7555,10 @@
         {
             "platforms": [
                 "mac",
-                "windows"
+                "windows",
+                "linux",
+                "chromeos",
+                "chromeos_lacros"
             ],
             "experiments": [
                 {
