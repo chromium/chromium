@@ -47,15 +47,14 @@ using content::BrowsingDataRemover;
 
 namespace {
 
-void OnBrowsingDataRemoverDone(
-    JavaObjectWeakGlobalRef weak_chrome_native_preferences,
-    uint64_t failed_data_types) {
-  JNIEnv* env = AttachCurrentThread();
-  auto java_obj = weak_chrome_native_preferences.get(env);
-  if (java_obj.is_null())
+void OnBrowsingDataRemoverDone(const ScopedJavaGlobalRef<jobject>& callback,
+                               uint64_t failed_data_types) {
+  if (!callback) {
     return;
+  }
 
-  Java_BrowsingDataBridge_browsingDataCleared(env, java_obj);
+  JNIEnv* env = AttachCurrentThread();
+  Java_OnClearBrowsingDataListener_onBrowsingDataCleared(env, callback);
 }
 
 PrefService* GetPrefService() {
@@ -79,6 +78,7 @@ static void JNI_BrowsingDataBridge_ClearBrowsingData(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj,
     const JavaParamRef<jobject>& jprofile,
+    const JavaParamRef<jobject>& jcallback,
     const JavaParamRef<jintArray>& data_types,
     jint time_period,
     const JavaParamRef<jobjectArray>& jexcluding_domains,
@@ -157,7 +157,7 @@ static void JNI_BrowsingDataBridge_ClearBrowsingData(
   }
 
   base::OnceCallback<void(uint64_t)> callback = base::BindOnce(
-      &OnBrowsingDataRemoverDone, JavaObjectWeakGlobalRef(env, obj));
+      &OnBrowsingDataRemoverDone, ScopedJavaGlobalRef<jobject>(env, jcallback));
 
   browsing_data::TimePeriod period =
       static_cast<browsing_data::TimePeriod>(time_period);

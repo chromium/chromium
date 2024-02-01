@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.browsing_data;
 
-import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.NativeMethods;
@@ -19,11 +18,9 @@ import org.chromium.chrome.browser.profiles.Profile;
 public final class BrowsingDataBridge {
     private static BrowsingDataBridge sInstance;
 
-    // Object to notify when "clear browsing data" completes.
-    private OnClearBrowsingDataListener mClearBrowsingDataListener;
-
     /** Interface for a class that is listening to clear browser data events. */
     public interface OnClearBrowsingDataListener {
+        @CalledByNative("OnClearBrowsingDataListener")
         void onBrowsingDataCleared();
     }
 
@@ -73,15 +70,6 @@ public final class BrowsingDataBridge {
         return sInstance;
     }
 
-    @CalledByNative
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    void browsingDataCleared() {
-        if (mClearBrowsingDataListener != null) {
-            mClearBrowsingDataListener.onBrowsingDataCleared();
-            mClearBrowsingDataListener = null;
-        }
-    }
-
     /**
      * Clear the specified types of browsing data asynchronously.
      * |listener| is an object to be notified when clearing completes.
@@ -127,12 +115,11 @@ public final class BrowsingDataBridge {
             int[] excludedDomainReasons,
             String[] ignoredDomains,
             int[] ignoredDomainReasons) {
-        assert mClearBrowsingDataListener == null;
-        mClearBrowsingDataListener = listener;
         BrowsingDataBridgeJni.get()
                 .clearBrowsingData(
                         BrowsingDataBridge.this,
                         getProfile(),
+                        listener,
                         dataTypes,
                         timePeriod,
                         excludedDomains,
@@ -149,12 +136,11 @@ public final class BrowsingDataBridge {
      */
     public void clearBrowsingDataIncognitoForTesting(
             OnClearBrowsingDataListener listener, int[] dataTypes, @TimePeriod int timePeriod) {
-        assert mClearBrowsingDataListener == null;
-        mClearBrowsingDataListener = listener;
         BrowsingDataBridgeJni.get()
                 .clearBrowsingData(
                         BrowsingDataBridge.this,
                         getProfile().getPrimaryOTRProfile(/* createIfNeeded= */ true),
+                        listener,
                         dataTypes,
                         timePeriod,
                         new String[0],
@@ -283,6 +269,7 @@ public final class BrowsingDataBridge {
         void clearBrowsingData(
                 BrowsingDataBridge caller,
                 Profile profile,
+                OnClearBrowsingDataListener callback,
                 int[] dataTypes,
                 int timePeriod,
                 String[] excludedDomains,

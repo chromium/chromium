@@ -293,6 +293,7 @@ public class QuickDeleteControllerTest {
                                     any(),
                                     any(),
                                     any(),
+                                    any(),
                                     eq(TimePeriod.LAST_HOUR),
                                     any(),
                                     any(),
@@ -303,7 +304,15 @@ public class QuickDeleteControllerTest {
         onViewWaiting(withId(R.id.positive_button)).perform(click());
         verify(mBrowsingDataBridgeMock)
                 .clearBrowsingData(
-                        any(), any(), any(), eq(TimePeriod.LAST_HOUR), any(), any(), any(), any());
+                        any(),
+                        any(),
+                        any(),
+                        any(),
+                        eq(TimePeriod.LAST_HOUR),
+                        any(),
+                        any(),
+                        any(),
+                        any());
     }
 
     @Test

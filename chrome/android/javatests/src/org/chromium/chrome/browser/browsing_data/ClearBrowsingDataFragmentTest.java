@@ -65,6 +65,7 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.JniMocker;
+import org.chromium.chrome.browser.browsing_data.BrowsingDataBridge.OnClearBrowsingDataListener;
 import org.chromium.chrome.browser.browsing_data.ClearBrowsingDataFragment.DialogOption;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -127,13 +128,14 @@ public class ClearBrowsingDataFragmentTest {
         doAnswer(
                         (Answer<Void>)
                                 invocation -> {
-                                    ((BrowsingDataBridge) invocation.getArgument(0))
-                                            .browsingDataCleared();
+                                    ((OnClearBrowsingDataListener) invocation.getArgument(2))
+                                            .onBrowsingDataCleared();
                                     mCallbackHelper.notifyCalled();
                                     return null;
                                 })
                 .when(mBrowsingDataBridgeMock)
-                .clearBrowsingData(any(), any(), any(), anyInt(), any(), any(), any(), any());
+                .clearBrowsingData(
+                        any(), any(), any(), any(), anyInt(), any(), any(), any(), any());
 
         // Default to delete all history.
         when(mBrowsingDataBridgeMock.getBrowsingDataDeletionTimePeriod(any(), anyInt()))
@@ -300,6 +302,7 @@ public class ClearBrowsingDataFragmentTest {
                 .clearBrowsingData(
                         any(),
                         any(),
+                        any(),
                         eq(getAllDataTypes()),
                         eq(DEFAULT_TIME_PERIOD),
                         any(),
@@ -339,6 +342,7 @@ public class ClearBrowsingDataFragmentTest {
         // Verify that we got the appropriate call to clear all data.
         verify(mBrowsingDataBridgeMock)
                 .clearBrowsingData(
+                        any(),
                         any(),
                         any(),
                         eq(new int[] {BrowsingDataType.CACHE}),
@@ -514,7 +518,15 @@ public class ClearBrowsingDataFragmentTest {
         // Should be cleared again.
         verify(mBrowsingDataBridgeMock, times(2))
                 .clearBrowsingData(
-                        any(), any(), eq(expectedTypes), anyInt(), any(), any(), any(), any());
+                        any(),
+                        any(),
+                        any(),
+                        eq(expectedTypes),
+                        anyInt(),
+                        any(),
+                        any(),
+                        any(),
+                        any());
     }
 
     /**
@@ -526,6 +538,7 @@ public class ClearBrowsingDataFragmentTest {
         // TODO(yfriedman): Add testing for time period.
         verify(mBrowsingDataBridgeMock)
                 .clearBrowsingData(
+                        any(),
                         any(),
                         any(),
                         eq(types),
@@ -661,7 +674,8 @@ public class ClearBrowsingDataFragmentTest {
 
         // Nothing was cleared.
         verify(mBrowsingDataBridgeMock, never())
-                .clearBrowsingData(any(), any(), any(), anyInt(), any(), any(), any(), any());
+                .clearBrowsingData(
+                        any(), any(), any(), any(), anyInt(), any(), any(), any(), any());
     }
 
     /**
@@ -721,6 +735,7 @@ public class ClearBrowsingDataFragmentTest {
 
         verify(mBrowsingDataBridgeMock)
                 .clearBrowsingData(
+                        any(),
                         any(),
                         any(),
                         eq(expectedTypes),
