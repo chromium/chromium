@@ -113,7 +113,15 @@ TEST_F(PickerSessionMetricsTest, RecordsPresentationLatencyForSearchField) {
                             latency_upper_bound.InMilliseconds()));
 }
 
-TEST_F(PickerSessionMetricsTest, RecordsPresentationLatencyForResults) {
+// TODO(https://crbug.com/1524073): Flaky on linux-chromeos
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#define MAYBE_RecordsPresentationLatencyForResults \
+  DISABLED_RecordsPresentationLatencyForResults
+#else
+#define MAYBE_RecordsPresentationLatencyForResults \
+  RecordsPresentationLatencyForResults
+#endif
+TEST_F(PickerSessionMetricsTest, MAYBE_RecordsPresentationLatencyForResults) {
   base::HistogramTester histogram;
   std::unique_ptr<views::Widget> widget = CreateFramelessTestWidget();
 
