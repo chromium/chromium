@@ -2144,64 +2144,6 @@
             ]
         }
     ],
-    "BackForwardCache": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "allowed_websites": "",
-                        "cache_size": "6",
-                        "check_eligibility_after_pagehide": "true",
-                        "file_system_api_supported": "true",
-                        "foreground_cache_size": "2",
-                        "grace_period_to_finish_loading_in_seconds": "60",
-                        "max_buffered_bytes": "200000",
-                        "max_buffered_bytes_per_process": "1024000"
-                    },
-                    "enable_features": [
-                        "BackForwardCache",
-                        "FreezeWhileKeepActive",
-                        "LoadingTasksUnfreezable"
-                    ]
-                }
-            ]
-        },
-        {
-            "platforms": [
-                "chromeos",
-                "chromeos_lacros",
-                "fuchsia",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "allowed_websites": "",
-                        "cache_size": "6",
-                        "check_eligibility_after_pagehide": "true",
-                        "file_system_api_supported": "true",
-                        "foreground_cache_size": "2",
-                        "grace_period_to_finish_loading_in_seconds": "60",
-                        "max_buffered_bytes": "200000",
-                        "max_buffered_bytes_per_process": "1024000",
-                        "unload_support": "no"
-                    },
-                    "enable_features": [
-                        "BackForwardCache",
-                        "FreezeWhileKeepActive",
-                        "LoadingTasksUnfreezable"
-                    ]
-                }
-            ]
-        }
-    ],
     "BackForwardCacheCaptureBlockingDetails": [
         {
             "platforms": [
