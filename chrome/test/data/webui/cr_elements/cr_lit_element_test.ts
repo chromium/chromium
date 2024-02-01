@@ -6,6 +6,7 @@ import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 import {CrLitElement, html} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import {html as polymerHtml, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertNotReached, assertNull, assertThrows, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 type Constructor<T> = new (...args: any[]) => T;
 
@@ -259,5 +260,21 @@ suite('CrLitElement', function() {
     assertTrue(element.fooBarBoolean);
     assertEquals('world', element.fooBarString);
     assertEquals('custom', element.fooBarStringCustom);
+  });
+
+  test('Fire', async function() {
+    const element = document.createElement('cr-dummy-lit');
+    document.body.appendChild(element);
+
+    const dummyEventName = 'dummy-event';
+    const dummyPayload = 'hello dummy';
+
+    const whenFired = eventToPromise(dummyEventName, element);
+    element.fire(dummyEventName, dummyPayload);
+
+    const event = await whenFired;
+    assertTrue(event.bubbles);
+    assertTrue(event.composed);
+    assertEquals(dummyPayload, event.detail);
   });
 });

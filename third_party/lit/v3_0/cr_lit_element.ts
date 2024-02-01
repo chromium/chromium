@@ -93,6 +93,11 @@ export class CrLitElement extends LitElement {
     this.willUpdatePending_ = false;
   }
 
+  fire(eventName: string, detail?: any) {
+    this.dispatchEvent(
+        new CustomEvent(eventName, {bubbles: true, composed: true, detail}));
+  }
+
   // Modifies the 'properties' object by automatically specifying
   // "attribute: <attr_name>" for each reactive property where attr_name is a
   // dash-case equivalent of the property's name. For example a 'fooBar'
