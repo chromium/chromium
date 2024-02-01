@@ -5,9 +5,9 @@
 #include "third_party/blink/renderer/core/paint/text_combine_painter.h"
 
 #include "third_party/blink/renderer/core/layout/layout_text_combine.h"
-#include "third_party/blink/renderer/core/layout/text_decoration_offset.h"
 #include "third_party/blink/renderer/core/paint/paint_auto_dark_mode.h"
 #include "third_party/blink/renderer/core/paint/paint_info.h"
+#include "third_party/blink/renderer/core/paint/text_decoration_painter.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/fonts/text_fragment_paint_info.h"
 #include "third_party/blink/renderer/platform/fonts/text_run_paint_info.h"
@@ -17,12 +17,14 @@
 namespace blink {
 
 TextCombinePainter::TextCombinePainter(GraphicsContext& context,
+                                       const gfx::Rect& visual_rect,
                                        const ComputedStyle& style,
                                        const LineRelativeOffset& text_origin)
-    : TextPainterBase(context,
-                      style.GetFont(),
-                      text_origin,
-                      /* horizontal */ false),
+    : TextPainter(context,
+                  style.GetFont(),
+                  visual_rect,
+                  text_origin,
+                  /* horizontal */ false),
       style_(style) {}
 
 TextCombinePainter::~TextCombinePainter() = default;
@@ -65,18 +67,36 @@ void TextCombinePainter::Paint(const PaintInfo& paint_info,
       text_frame_rect.ComputeRelativeToPhysicalTransform(
           style.GetWritingMode()));
 
-  TextCombinePainter text_painter(paint_info.context, style,
-                                  text_frame_rect.offset);
+  TextCombinePainter text_painter(paint_info.context,
+                                  text_combine.VisualRectForPaint(paint_offset),
+                                  style, text_frame_rect.offset);
   const TextPaintStyle text_style = TextPainterBase::TextPaintingStyle(
       text_combine.GetDocument(), style, paint_info);
+
+  // Setup arguments for painting text decorations
+  std::optional<TextDecorationInfo> decoration_info;
+  std::optional<TextDecorationPainter> decoration_painter;
+  if (has_text_decoration) {
+    decoration_info.emplace(text_frame_rect.offset,
+                            text_frame_rect.InlineSize(), style,
+                            /* inline_context */ nullptr, std::nullopt);
+    decoration_painter.emplace(text_painter, /* inline_context */ nullptr,
+                               paint_info, style, text_style, text_frame_rect,
+                               nullptr);
+
+    // Paint underline and overline text decorations.
+    decoration_painter->PaintExceptLineThrough(*decoration_info, text_style,
+                                               TextFragmentPaintInfo{},
+                                               ~TextDecorationLine::kNone);
+  }
 
   if (has_emphasis_mark) {
     text_painter.PaintEmphasisMark(text_style, style.GetFont());
   }
 
   if (has_text_decoration) {
-    text_painter.PaintDecorations(paint_info, text_frame_rect.InlineSize(),
-                                  text_style);
+    // Paint line through if needed.
+    decoration_painter->PaintOnlyLineThrough(*decoration_info, text_style);
   }
 }
 
@@ -92,23 +112,6 @@ void TextCombinePainter::ClipDecorationsStripe(const TextFragmentPaintInfo&,
                                                float stripe_width,
                                                float dilation) {
   // Nothing to do.
-}
-
-void TextCombinePainter::PaintDecorations(const PaintInfo& paint_info,
-                                          LayoutUnit width,
-                                          const TextPaintStyle& text_style) {
-  // Setup arguments for painting text decorations
-  TextDecorationInfo decoration_info(text_origin_, width, style_,
-                                     /* inline_context */ nullptr, {});
-  const TextDecorationOffset decoration_offset(style_);
-
-  // Paint underline and overline text decorations
-  PaintUnderOrOverLineDecorations(TextFragmentPaintInfo{}, decoration_offset,
-                                  decoration_info, ~TextDecorationLine::kNone,
-                                  text_style);
-
-  // Paint line through if needed
-  PaintDecorationsOnlyLineThrough(decoration_info, text_style);
 }
 
 void TextCombinePainter::PaintEmphasisMark(const TextPaintStyle& text_style,

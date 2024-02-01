@@ -88,17 +88,9 @@ class CORE_EXPORT TextPainter : public TextPainterBase {
                          DOMNodeId node_id,
                          const AutoDarkMode& auto_dark_mode);
 
-  void PaintDecorationsExceptLineThrough(
-      const TextFragmentPaintInfo& fragment_paint_info,
-      const TextDecorationOffset& decoration_offset,
-      const PaintInfo& paint_info,
-      const TextPaintStyle& text_style,
-      TextDecorationInfo& decoration_info,
-      TextDecorationLine lines_to_paint);
-
-  void PaintDecorationsOnlyLineThrough(const PaintInfo& paint_info,
-                                       const TextPaintStyle& text_style,
-                                       TextDecorationInfo& decoration_info);
+  void PaintDecorationLine(const TextDecorationInfo& decoration_info,
+                           const Color& line_color,
+                           const TextFragmentPaintInfo* fragment_paint_info);
 
   SvgTextPaintState& SetSvgState(const LayoutSVGInlineText&,
                                  const ComputedStyle&,
@@ -124,14 +116,6 @@ class CORE_EXPORT TextPainter : public TextPainterBase {
   void PaintSvgTextFragment(const TextFragmentPaintInfo&,
                             DOMNodeId node_id,
                             const AutoDarkMode& auto_dark_mode);
-  void PaintSvgDecorationsExceptLineThrough(
-      const TextFragmentPaintInfo&,
-      const TextDecorationOffset& decoration_offset,
-      TextDecorationInfo& decoration_info,
-      TextDecorationLine lines_to_paint,
-      const TextPaintStyle& text_style);
-  void PaintSvgDecorationsOnlyLineThrough(TextDecorationInfo& decoration_info,
-                                          const TextPaintStyle& text_style);
 
   const gfx::Rect visual_rect_;
   absl::optional<SvgTextPaintState> svg_text_paint_state_;

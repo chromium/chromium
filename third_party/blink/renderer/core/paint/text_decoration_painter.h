@@ -59,6 +59,14 @@ class CORE_EXPORT TextDecorationPainter {
   void PaintExceptLineThrough(const TextFragmentPaintInfo&);
   void PaintOnlyLineThrough();
 
+  // Variants of the above that can be called without calling begin. The
+  // provided state overrides that bound to the TextDecorationPainter.
+  void PaintExceptLineThrough(TextDecorationInfo&,
+                              const TextPaintStyle&,
+                              const TextFragmentPaintInfo&,
+                              TextDecorationLine lines_to_paint);
+  void PaintOnlyLineThrough(TextDecorationInfo&, const TextPaintStyle&);
+
   const InlinePaintContext* InlineContext() const { return inline_context_; }
 
   // Expand a rect to be suitable for clipping without affecting
@@ -69,6 +77,12 @@ class CORE_EXPORT TextDecorationPainter {
  private:
   enum Step { kBegin, kExcept, kOnly };
   void ClipIfNeeded(GraphicsContextStateSaver&);
+
+  void PaintUnderOrOverLineDecorations(TextDecorationInfo&,
+                                       const TextFragmentPaintInfo&,
+                                       const TextPaintStyle&,
+                                       TextDecorationLine lines_to_paint);
+  void PaintLineThroughDecorations(TextDecorationInfo&, const TextPaintStyle&);
 
   TextPainter& text_painter_;
   const InlinePaintContext* inline_context_;

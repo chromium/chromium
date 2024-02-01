@@ -5,7 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_TEXT_COMBINE_PAINTER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_TEXT_COMBINE_PAINTER_H_
 
-#include "third_party/blink/renderer/core/paint/text_painter_base.h"
+#include "third_party/blink/renderer/core/paint/text_painter.h"
 
 namespace blink {
 
@@ -15,9 +15,10 @@ struct LineRelativeOffset;
 
 // The painter for painting text decorations and emphasis marks for
 // LayoutTextCombine.
-class TextCombinePainter final : public TextPainterBase {
+class TextCombinePainter final : public TextPainter {
  public:
   TextCombinePainter(GraphicsContext& context,
+                     const gfx::Rect& visual_rect,
                      const ComputedStyle& style,
                      const LineRelativeOffset& text_origin);
   ~TextCombinePainter();
@@ -35,9 +36,6 @@ class TextCombinePainter final : public TextPainterBase {
                              float dilation) override;
 
  private:
-  void PaintDecorations(const PaintInfo& paint_info,
-                        LayoutUnit width,
-                        const TextPaintStyle& text_style);
   // Paints emphasis mark as for ideographic full stop character. Callers of
   // this function should rotate canvas to paint emphasis mark at left/right
   // side instead of top/bottom side.

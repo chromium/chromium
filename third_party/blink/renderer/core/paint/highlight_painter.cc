@@ -748,10 +748,9 @@ void HighlightPainter::PaintOneSpellingGrammarDecoration(
   GraphicsContextStateSaver saver{paint_info_.context};
   ClipToPartDecorations(rect);
 
-  const TextDecorationOffset decoration_offset(fragment_item_.Style());
-  text_painter_.PaintDecorationsExceptLineThrough(
+  decoration_painter_.PaintExceptLineThrough(
+      *decoration_info, text_style,
       fragment_paint_info_.Slice(paint_start_offset, paint_end_offset),
-      decoration_offset, paint_info_, text_style, *decoration_info,
       LineFor(marker_type));
 }
 
@@ -1167,11 +1166,10 @@ void HighlightPainter::PaintDecorationsExceptLineThrough(
       }
     }
 
-    const TextDecorationOffset decoration_offset(fragment_item_.Style());
-    text_painter_.PaintDecorationsExceptLineThrough(
+    decoration_painter_.PaintExceptLineThrough(
+        *decoration_info, decoration_layer.text_style,
         fragment_paint_info_.Slice(part.range.from, part.range.to),
-        decoration_offset, paint_info_, decoration_layer.text_style,
-        *decoration_info, lines_to_paint);
+        lines_to_paint);
   }
 }
 
@@ -1234,8 +1232,8 @@ void HighlightPainter::PaintDecorationsOnlyLineThrough(
       }
     }
 
-    text_painter_.PaintDecorationsOnlyLineThrough(
-        paint_info_, decoration_layer.text_style, *decoration_info);
+    decoration_painter_.PaintOnlyLineThrough(*decoration_info,
+                                             decoration_layer.text_style);
   }
 }
 
