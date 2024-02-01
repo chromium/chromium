@@ -1110,6 +1110,22 @@ IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest,
 }
 
 IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest,
+                       OsAppsPageAppManagementPagePermissionItem) {
+  RunSettingsTest("os_apps_page/app_management_page/permission_item_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest,
+                       OsAppsPageAppManagementPageFileHandlingItem) {
+  RunSettingsTest(
+      "os_apps_page/app_management_page/file_handling_item_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest,
+                       OsAppsPageAppManagementPageUninstallButton) {
+  RunSettingsTest("os_apps_page/app_management_page/uninstall_button_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest,
                        OsAppsPageAppNotificationsPageAppNotificationRow) {
   RunSettingsTest(
       "os_apps_page/app_notifications_page/app_notification_row_test.js");

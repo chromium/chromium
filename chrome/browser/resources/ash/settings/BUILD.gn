@@ -207,6 +207,16 @@ build_webui("build") {
     "os_apps_page/app_management_page/read_only_permission_item.ts",
     "os_apps_page/app_management_page/resize_lock_item.ts",
     "os_apps_page/app_management_page/sub_apps_item.ts",
+    "os_apps_page/app_management_page/app_content_dialog.ts",
+    "os_apps_page/app_management_page/app_content_item.ts",
+    "os_apps_page/app_management_page/file_handling_item.ts",
+    "os_apps_page/app_management_page/more_permissions_item.ts",
+    "os_apps_page/app_management_page/permission_item.ts",
+    "os_apps_page/app_management_page/supported_links_dialog.ts",
+    "os_apps_page/app_management_page/supported_links_item.ts",
+    "os_apps_page/app_management_page/supported_links_overlapping_apps_dialog.ts",
+    "os_apps_page/app_management_page/toggle_row.ts",
+    "os_apps_page/app_management_page/uninstall_button.ts",
     "os_apps_page/app_management_page/borealis_page/borealis_detail_view.ts",
     "os_apps_page/app_management_page/plugin_vm_page/plugin_vm_detail_view.ts",
     "os_apps_page/app_notifications_page/app_notification_row.ts",
@@ -447,6 +457,7 @@ build_webui("build") {
   ]
 
   icons_html_files = [
+    "app_management_icons.html",
     "icons.html",
     "os_settings_icons.html",
   ]

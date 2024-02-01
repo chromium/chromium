@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import './app_details_item.js';
-import 'chrome://resources/cr_components/app_management/more_permissions_item.js';
+import './more_permissions_item.js';
 import './pin_to_shelf_item.js';
 import './app_management_cros_shared_style.css.js';
 

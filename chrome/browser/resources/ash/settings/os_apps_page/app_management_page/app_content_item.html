@@ -1,0 +1,21 @@
+<style include="app-management-cros-shared-style">
+  :host {
+    cursor: pointer;
+  }
+
+  #appContent {
+  /* Remove unnecessary padding. */
+    padding: 0;
+  }
+</style>
+<cr-link-row
+  id="appContent"
+  label="[[i18n('appManagementAppContentLabel')]]"
+  sub-label="[[i18n('appManagementAppContentSublabel')]]"
+  on-click="onAppContentClick_">
+</cr-link-row>
+<template is="dom-if" if="[[showAppContentDialog]]" restamp>
+  <app-management-app-content-dialog id="appContentDialog" app="[[app]]"
+      on-close="onAppContentDialogClose_">
+  </app-management-app-content-dialog>
+</template>

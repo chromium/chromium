@@ -121,6 +121,7 @@ export class FakePageHandler implements PageHandlerInterface {
   private apps_: App[];
   private receiver_: PageHandlerReceiver;
   private resolverMap_: Map<string, PromiseResolver<void>>;
+  private callCountMap_: Map<string, number>;
 
   constructor(page: PageRemote) {
     this.receiver_ = new PageHandlerReceiver(this);
@@ -131,25 +132,41 @@ export class FakePageHandler implements PageHandlerInterface {
 
     this.apps_ = [];
     this.resolverMap_ = new Map();
+    this.callCountMap_ = new Map();
     this.resolverMap_.set('setPreferredApp', new PromiseResolver());
+    this.resolverMap_.set('setPermission', new PromiseResolver());
     this.resolverMap_.set('getOverlappingPreferredApps', new PromiseResolver());
     this.resolverMap_.set('setAppLocale', new PromiseResolver());
+    this.resolverMap_.set('uninstall', new PromiseResolver());
   }
 
-  private getResolver_(methodName: string): PromiseResolver<void> {
+  private getResolver_(methodName: string): PromiseResolver<any> {
     const method = this.resolverMap_.get(methodName);
     assert(method, `Method '${methodName}' not found.`);
     return method;
   }
 
-  methodCalled(methodName: string): void {
-    this.getResolver_(methodName).resolve();
+  getCallCount(methodName: string): number {
+    const count = this.callCountMap_.get(methodName);
+    return count ? count : 0;
   }
 
-  async whenCalled(methodName: string): Promise<void> {
-    await this.getResolver_(methodName).promise;
+  methodCalled(methodName: string, returnValue?: any): void {
+    const count = this.callCountMap_.get(methodName);
+    if (count) {
+      this.callCountMap_.set(methodName, count + 1);
+    } else {
+      this.callCountMap_.set(methodName, 1);
+    }
+
+    this.getResolver_(methodName).resolve(returnValue);
+  }
+
+  async whenCalled(methodName: string): Promise<any> {
+    const promise = await this.getResolver_(methodName).promise;
     // Support sequential calls to whenCalled by replacing the promise.
     this.resolverMap_.set(methodName, new PromiseResolver());
+    return promise;
   }
 
   getRemote(): PageHandlerRemote {
@@ -200,6 +217,7 @@ export class FakePageHandler implements PageHandlerInterface {
     newPermissions[permission.permissionType] = permission;
     const newApp = {...app, permissions: newPermissions};
     this.page.onAppChanged(newApp);
+    this.methodCalled('setPermission', [appId, permission]);
   }
 
   setResizeLocked(appId: string, resizeLocked: boolean): void {
@@ -219,6 +237,7 @@ export class FakePageHandler implements PageHandlerInterface {
   }
 
   uninstall(appId: string): void {
+    this.methodCalled('uninstall', appId);
     this.page.onAppRemoved(appId);
   }
 

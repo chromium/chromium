@@ -7,10 +7,10 @@ import './pin_to_shelf_item.js';
 import './read_only_permission_item.js';
 import './resize_lock_item.js';
 import './app_management_cros_shared_style.css.js';
-import 'chrome://resources/cr_components/app_management/icons.html.js';
-import 'chrome://resources/cr_components/app_management/more_permissions_item.js';
-import 'chrome://resources/cr_components/app_management/permission_item.js';
-import 'chrome://resources/cr_components/app_management/supported_links_item.js';
+import '../../app_management_icons.html.js';
+import './more_permissions_item.js';
+import './permission_item.js';
+import './supported_links_item.js';
 import 'chrome://resources/cr_elements/icons.html.js';
 
 import {App} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';

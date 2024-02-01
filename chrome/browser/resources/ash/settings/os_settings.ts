@@ -87,9 +87,6 @@ export {ProfileInfo, ProfileInfoBrowserProxy, ProfileInfoBrowserProxyImpl} from 
 export {PageStatus, StatusAction, StoredAccount, SyncBrowserProxy, SyncBrowserProxyImpl, SyncPrefs, SyncStatus} from '/shared/settings/people_page/sync_browser_proxy.js';
 export {MetricsReporting, PrivacyPageBrowserProxy, PrivacyPageBrowserProxyImpl, ResolverOption, SecureDnsMode, SecureDnsSetting, SecureDnsUiManagementMode} from '/shared/settings/privacy_page/privacy_page_browser_proxy.js';
 export {ApnDetailDialog} from 'chrome://resources/ash/common/network/apn_detail_dialog.js';
-export {AppManagementFileHandlingItemElement} from 'chrome://resources/cr_components/app_management/file_handling_item.js';
-export {AppManagementSupportedLinksItemElement} from 'chrome://resources/cr_components/app_management/supported_links_item.js';
-export {AppManagementToggleRowElement} from 'chrome://resources/cr_components/app_management/toggle_row.js';
 export {LocalizedLinkElement} from 'chrome://resources/cr_components/localized_link/localized_link.js';
 export {SettingsPrefsElement} from 'chrome://resources/cr_components/settings_prefs/prefs.js';
 export {CrSettingsPrefs} from 'chrome://resources/cr_components/settings_prefs/prefs_types.js';
@@ -207,7 +204,10 @@ export {AboutPageBrowserProxy, AboutPageBrowserProxyImpl, BrowserChannel, Channe
 export {DeviceNameBrowserProxyImpl} from './os_about_page/device_name_browser_proxy.js';
 export {DeviceNameState, SetDeviceNameResult} from './os_about_page/device_name_util.js';
 export {AndroidAppsBrowserProxy, AndroidAppsBrowserProxyImpl} from './os_apps_page/android_apps_browser_proxy.js';
+export {AppManagementFileHandlingItemElement} from './os_apps_page/app_management_page/file_handling_item.js';
 export {PluginVmBrowserProxy, PluginVmBrowserProxyImpl} from './os_apps_page/app_management_page/plugin_vm_page/plugin_vm_browser_proxy.js';
+export {AppManagementSupportedLinksItemElement} from './os_apps_page/app_management_page/supported_links_item.js';
+export {AppManagementToggleRowElement} from './os_apps_page/app_management_page/toggle_row.js';
 export {setAppNotificationProviderForTesting} from './os_apps_page/app_notifications_page/mojo_interface_provider.js';
 export {OsSettingsAppsPageElement} from './os_apps_page/os_apps_page.js';
 export {OsBluetoothDevicesSubpageBrowserProxy, OsBluetoothDevicesSubpageBrowserProxyImpl} from './os_bluetooth_page/os_bluetooth_devices_subpage_browser_proxy.js';

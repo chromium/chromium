@@ -1,0 +1,35 @@
+<style include="app-management-cros-shared-style">
+  #dialogBody {
+    display: flex;
+    flex-direction: column;
+    height: 350px;
+    overflow-y: auto;
+  }
+
+  .list-item {
+    border-bottom: var(--cr-separator-line);
+    align-items: center;
+    display: flex;
+    min-height: 36px;
+    padding: 0;
+  }
+
+  iron-list {
+  /* Text selection in an iron-list is problematic because the items are
+   * reused. The result is the selection happens somewhat arbitrarily.*/
+    user-select: none;
+  }
+</style>
+<cr-dialog id="dialog" close-text="[[i18n('close')]]" show-on-attach show-close-button>
+  <div slot="title">[[i18n('appManagementIntentSettingsDialogTitle')]]</div>
+  <div id="dialogBody" slot="body" scrollable>
+    <iron-list id="list" scroll-target="dialogBody"
+        items="[[app.supportedLinks]]">
+      <template>
+        <div class="list-item">
+          [[item]]
+        </div>
+      </template>
+    </iron-list>
+  </div>
+</cr-dialog>

@@ -7,7 +7,7 @@
  * 'os-settings-privacy-hub-subpage' contains privacy hub configurations.
  */
 
-import 'chrome://resources/cr_components/app_management/icons.html.js';
+import '../app_management_icons.html.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import '../controls/settings_toggle_button.js';
