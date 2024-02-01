@@ -20,8 +20,6 @@ namespace screen_ai {
 
 class ScreenAIInstallState {
  public:
-  // TODO(crbug.com/1520424): Remove `kFailed` and `kReady` when all use cases
-  // updated.
   enum class State {
     // Component does not exist on device.
     kNotDownloaded,

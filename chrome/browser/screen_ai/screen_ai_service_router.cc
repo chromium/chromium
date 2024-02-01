@@ -337,6 +337,7 @@ void ScreenAIServiceRouter::InitializeOCR(
     return;
   }
 
+  CHECK(features::IsScreenAIOCREnabled());
   screen_ai_service_factory_->InitializeOCR(
       component_files->library_binary_path_,
       std::move(component_files->model_files_), std::move(receiver),
@@ -353,6 +354,7 @@ void ScreenAIServiceRouter::InitializeMainContentExtraction(
     return;
   }
 
+  CHECK(features::IsScreenAIMainContentExtractionEnabled());
   screen_ai_service_factory_->InitializeMainContentExtraction(
       component_files->library_binary_path_,
       std::move(component_files->model_files_), std::move(receiver),
