@@ -4,6 +4,7 @@
 
 #include "services/viz/public/cpp/compositing/bitmap_in_shared_memory_mojom_traits.h"
 
+#include <cstdint>
 #include <memory>
 
 namespace {
@@ -29,7 +30,7 @@ uint64_t StructTraits<viz::mojom::BitmapInSharedMemoryDataView,
                       viz::CopyOutputResult::ScopedSkBitmap>::
     row_bytes(const viz::CopyOutputResult::ScopedSkBitmap& scoped_bitmap) {
   auto sk_bitmap = scoped_bitmap.bitmap();
-  return sk_bitmap.rowBytes();
+  return sk_bitmap.info().minRowBytes();
 }
 
 // static
@@ -38,17 +39,45 @@ StructTraits<viz::mojom::BitmapInSharedMemoryDataView,
              viz::CopyOutputResult::ScopedSkBitmap>::
     pixels(const viz::CopyOutputResult::ScopedSkBitmap& scoped_bitmap) {
   auto sk_bitmap = scoped_bitmap.bitmap();
-  if (!sk_bitmap.readyToDraw())
+  if (!sk_bitmap.readyToDraw()) {
     return std::nullopt;
+  }
 
-  size_t byte_size = sk_bitmap.computeByteSize();
+  // The buffer for `sk_bitmap` could be larger than the minimum size required
+  // to hold all the pixels. Minimize the shared memory allocation size here
+  // since the pixel data is already being copied.
+  size_t min_row_bytes = sk_bitmap.info().minRowBytes();
+  size_t byte_size = sk_bitmap.info().computeByteSize(min_row_bytes);
+
+  if (min_row_bytes == 0 || byte_size == 0) {
+    return std::nullopt;
+  }
+
+  CHECK_GE(byte_size, sk_bitmap.height() * min_row_bytes);
+
   base::WritableSharedMemoryRegion region =
       base::WritableSharedMemoryRegion::Create(byte_size);
   {
     base::WritableSharedMemoryMapping mapping = region.Map();
-    if (!mapping.IsValid())
+    if (!mapping.IsValid()) {
       return std::nullopt;
-    memcpy(mapping.memory(), sk_bitmap.getPixels(), byte_size);
+    }
+
+    auto* src_pixels = static_cast<const uint8_t*>(sk_bitmap.getPixels());
+    size_t src_stride = sk_bitmap.rowBytes();
+    auto* dst_pixels = static_cast<uint8_t*>(mapping.memory());
+
+    // If source and destination stride are the same use a single copy
+    // operation, otherwise do a row-by-row copy.
+    if (src_stride == min_row_bytes) {
+      memcpy(dst_pixels, src_pixels, byte_size);
+    } else {
+      for (int y = 0; y < sk_bitmap.height(); ++y) {
+        memcpy(dst_pixels, src_pixels, min_row_bytes);
+        src_pixels += src_stride;
+        dst_pixels += min_row_bytes;
+      }
+    }
   }
   return region;
 }
