@@ -29,6 +29,7 @@ try_.defaults.set(
     siso_configs = ["builder"],
     siso_enable_cloud_profiler = True,
     siso_enable_cloud_trace = True,
+    siso_enabled = True,
     siso_project = siso.project.DEFAULT_UNTRUSTED,
 )
 
@@ -149,7 +150,6 @@ try_.orchestrator_builder(
     # TODO (crbug.com/1372179): Use orchestrator pool once overloaded test pools
     # are addressed
     #use_orchestrator_pool = True,
-    siso_enabled = True,
     tryjob = try_.job(),
     use_clang_coverage = True,
 )
@@ -161,7 +161,6 @@ try_.compilator_builder(
     # TODO (crbug.com/1245171): Revert when root issue is fixed
     grace_period = 4 * time.minute,
     main_list_view = "try",
-    siso_enabled = True,
 )
 
 try_.builder(
@@ -198,7 +197,6 @@ try_.builder(
     ssd = True,
     main_list_view = "try",
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
-    siso_enabled = True,
     tryjob = try_.job(
         # TODO(crbug.com/1335555) Remove once cancelling doesn't wipe
         # out builder cache
@@ -343,7 +341,6 @@ try_.compilator_builder(
     contact_team_email = "chrome-desktop-engprod@google.com",
     grace_period = 3 * time.minute,
     main_list_view = "try",
-    siso_enabled = True,
 )
 
 try_.orchestrator_builder(
@@ -369,7 +366,6 @@ try_.orchestrator_builder(
     compilator = "win-arm64-rel-compilator",
     contact_team_email = "chrome-desktop-engprod@google.com",
     coverage_test_types = ["unit", "overall"],
-    siso_enabled = True,
     use_clang_coverage = True,
     # Enable when stable.
     # main_list_view = "try",
