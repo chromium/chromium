@@ -288,7 +288,15 @@
   }
 
   #inspirationToggle {
-    --cr-icon-button-size: 16px;
+    cursor: pointer;
+  }
+
+  #inspirationToggle:hover {
+    background-color: var(--cr-hover-background-color);
+  }
+
+  #inspirationToggle .cr-icon {
+    margin-inline-start: 0;
   }
 
   .collapse-carets {
@@ -455,14 +463,17 @@
   <hr class="sp-cards-separator" hidden$="[[!shouldShowInspiration_]]">
   <div class="sp-card" id="inspirationCard"
       hidden$="[[!shouldShowInspiration_]]">
-    <sp-heading hide-back-button>
+    <sp-heading hide-back-button role="button"
+        aria-label="$i18n{showInspirationCardToggle}"
+        title="$i18n{showInspirationCardToggle}"
+        on-click="onInspirationToggleClick_"
+        on-keydown="onButtonKeydown_"
+        aria-expanded="[[openInspirations_]]"
+        tabindex="0"
+        id="inspirationToggle">
       <h2 slot="heading">$i18n{wallpaperSearchInspirationHeader}</h2>
-      <cr-icon-button id="inspirationToggle" class$="[[inspirationToggleIcon_]]"
-          aria-label="$i18n{showInspirationCardToggle}"
-          title="$i18n{showInspirationCardToggle}" slot="buttons"
-          on-click="onInspirationToggleClick_"
-          aria-expanded="[[openInspirations_]]">
-      </cr-icon-button>
+      <div class$="cr-icon [[inspirationToggleIcon_]]" slot="buttons">
+      </div>
     </sp-heading>
     <iron-collapse opened="[[openInspirations_]]">
       <div class="inspirations-content">
@@ -470,7 +481,7 @@
           <h3>
             <div class="inspiration-title" role="button" tabindex="0"
                 on-click="onInspirationGroupTitleClick_"
-                on-keydown="onInspirationGroupTitleKeydown_"
+                on-keydown="onButtonKeydown_"
                 aria-current$="[[getInspirationDescriptorsCheckedStatus_(item.descriptors, selectedDescriptorA_, selectedDescriptorB_, selectedDescriptorC_, selectedDefaultColor_)]]">
               [[getInspirationGroupTitle_(item.descriptors)]]
             </div>
