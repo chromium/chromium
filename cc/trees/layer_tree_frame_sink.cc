@@ -184,10 +184,10 @@ void LayerTreeFrameSink::OnGpuChannelLost() {
   client_->DidLoseLayerTreeFrameSink();
 }
 
-gpu::ClientSharedImageInterface* LayerTreeFrameSink::shared_image_interface()
-    const {
+scoped_refptr<gpu::ClientSharedImageInterface>
+LayerTreeFrameSink::shared_image_interface() const {
   return base::FeatureList::IsEnabled(features::kSharedBitmapToSharedImage)
-             ? shared_image_interface_.get()
+             ? shared_image_interface_
              : nullptr;
 }
 

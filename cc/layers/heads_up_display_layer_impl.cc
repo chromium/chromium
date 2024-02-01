@@ -179,7 +179,7 @@ class HudSoftwareBacking : public ResourcePool::SoftwareBacking {
  public:
   ~HudSoftwareBacking() override {
     if (shared_image) {
-      auto* sii = layer_tree_frame_sink->shared_image_interface();
+      auto sii = layer_tree_frame_sink->shared_image_interface();
       if (sii) {
         sii->DestroySharedImage(mailbox_sync_token, std::move(shared_image));
       }
@@ -331,7 +331,7 @@ void HeadsUpDisplayLayerImpl::UpdateHudTexture(
   } else {
     DCHECK_EQ(draw_mode, DRAW_MODE_SOFTWARE);
 
-    auto* sii = layer_tree_frame_sink->shared_image_interface();
+    auto sii = layer_tree_frame_sink->shared_image_interface();
     if (sii) {
       pool_resource = pool_->AcquireResource(internal_content_bounds_,
                                              viz::SinglePlaneFormat::kBGRA_8888,
@@ -453,10 +453,9 @@ void HeadsUpDisplayLayerImpl::UpdateHudTexture(
     SkiaPaintCanvas canvas(surface->getCanvas());
     DrawHudContents(&canvas);
 
-    if (backing->shared_image) {
-      backing->mailbox_sync_token =
-          layer_tree_frame_sink->shared_image_interface()
-              ->GenVerifiedSyncToken();
+    auto sii = layer_tree_frame_sink->shared_image_interface();
+    if (backing->shared_image && sii) {
+      backing->mailbox_sync_token = sii->GenVerifiedSyncToken();
     }
   }
 

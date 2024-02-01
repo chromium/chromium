@@ -112,7 +112,7 @@ class CC_EXPORT LayerTreeFrameSink : public viz::SharedBitmapReporter,
   gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager() const {
     return gpu_memory_buffer_manager_;
   }
-  gpu::ClientSharedImageInterface* shared_image_interface() const;
+  scoped_refptr<gpu::ClientSharedImageInterface> shared_image_interface() const;
 
   // If supported, this sets the viz::LocalSurfaceId the LayerTreeFrameSink will
   // use to submit a CompositorFrame.
