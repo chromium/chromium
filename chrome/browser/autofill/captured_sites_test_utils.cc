@@ -16,6 +16,7 @@
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_string_value_serializer.h"
+#include "base/logging.h"
 #include "base/path_service.h"
 #include "base/process/launch.h"
 #include "base/strings/strcat.h"
@@ -870,6 +871,7 @@ bool TestRecipeReplayer::ReplayTest(
     const base::FilePath& capture_file_path,
     const base::FilePath& recipe_file_path,
     const std::optional<base::FilePath>& command_file_path) {
+  logging::SetMinLogLevel(logging::LOGGING_WARNING);
   if (!web_page_replay_server_wrapper()->Start(capture_file_path))
     return false;
   if (OverrideAutofillClock(capture_file_path))
@@ -1121,9 +1123,9 @@ bool TestRecipeReplayer::ReplayRecordedActions(
         }
       }
     }
-    LOG(INFO) << "Proceeding with execution with action "
-              << execution_state.index << " of " << execution_state.length
-              << ": " << (*action_list)[execution_state.index];
+    VLOG(1) << "Proceeding with execution with action " << execution_state.index
+            << " of " << execution_state.length << ": "
+            << (*action_list)[execution_state.index];
 
     if (!(*action_list)[execution_state.index].is_dict()) {
       ADD_FAILURE()

@@ -341,7 +341,7 @@ bool FillFormSplitCache(const AutofillPageQueryRequest& query_request,
     std::string http_text =
         MakeHTTPTextFromSplit(response_header_text, compressed_response_body);
 
-    VLOG(1) << "Adding key:" << key
+    VLOG(2) << "Adding key:" << key
             << "\nAnd response:" << individual_form_response;
     (*cache_to_fill)[key] = std::move(http_text);
   }
@@ -390,7 +390,7 @@ ServerCacheReplayer::Status PopulateCacheFromQueryNode(
                                          "SerializedResponse",
                                          &compressed_response_text)) {
           (*cache_to_fill)[key] = compressed_response_text;
-          VLOG(1) << "Cached response content for key: " << key;
+          VLOG(2) << "Cached response content for key: " << key;
           continue;
         }
       } else {
@@ -517,7 +517,7 @@ ServerCacheReplayer::Status PopulateCacheFromJSONFile(
           PopulateCacheFromQueryNode(query_node, options, cache_to_fill);
       if (!status.Ok())
         return status;
-      VLOG(1) << "Filled cache with " << cache_to_fill->size()
+      VLOG(2) << "Filled cache with " << cache_to_fill->size()
               << " requests for Query node with URL: " << query_node.url;
     }
   }
@@ -867,7 +867,7 @@ bool InterceptAutofillRequestHelper(
   auto http_pair = SplitHTTP(http_response);
   content::URLLoaderInterceptor::WriteResponse(
       http_pair.first, http_pair.second, params->client.get());
-  VLOG(1) << "Giving back response from cache";
+  VLOG(2) << "Giving back response from cache";
   return true;
 }
 
