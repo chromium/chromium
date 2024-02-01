@@ -15,6 +15,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
 #include "chrome/browser/password_manager/profile_password_store_factory.h"
 #include "chrome/browser/signin/chrome_signin_client_factory.h"
@@ -786,4 +787,21 @@ TEST_F(SaveUpdateBubbleControllerTest, ShowsUpdateEvenIfNoExistingCredential) {
                  PasswordBubbleControllerBase::DisplayReason::kAutomatic);
 
   EXPECT_TRUE(controller()->IsCurrentStateUpdate());
+}
+
+TEST_F(SaveUpdateBubbleControllerTest,
+       ShouldNotShowPasswordStoreComboboxIfFlagEnabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      password_manager::features::kButterOnDesktopFollowup);
+  PretendPasswordWaiting();
+
+  ON_CALL(*password_feature_manager(), ShouldShowAccountStorageBubbleUi)
+      .WillByDefault(Return(true));
+
+  ON_CALL(*password_feature_manager(),
+          ShouldOfferOptInAndMoveToAccountStoreAfterSavingLocally)
+      .WillByDefault(Return(false));
+
+  EXPECT_FALSE(controller()->ShouldShowPasswordStorePicker());
 }

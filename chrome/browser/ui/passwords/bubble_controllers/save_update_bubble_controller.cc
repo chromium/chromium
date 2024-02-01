@@ -254,6 +254,10 @@ bool SaveUpdateBubbleController::ShouldShowPasswordStorePicker() const {
            ->ShouldShowAccountStorageBubbleUi()) {
     return false;
   }
+  if (base::FeatureList::IsEnabled(
+          password_manager::features::kButterOnDesktopFollowup)) {
+    return false;
+  }
   if (delegate_->GetPasswordFeatureManager()
           ->ShouldOfferOptInAndMoveToAccountStoreAfterSavingLocally()) {
     // If the user will be asked to opt-in *after* saving the current password
