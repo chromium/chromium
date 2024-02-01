@@ -17,6 +17,7 @@
 #include "base/memory/weak_ptr.h"
 #include "ui/accessibility/ax_enums.mojom-forward.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/display/display_observer.h"
 #include "ui/events/event.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
@@ -42,6 +43,7 @@ class SystemShadow;
 // and other implementation specific details.
 class ASH_EXPORT TrayBubbleView : public views::BubbleDialogDelegateView,
                                   public views::MouseWatcherListener,
+                                  public display::DisplayObserver,
                                   public message_center::MessageCenterObserver {
  public:
   METADATA_HEADER(TrayBubbleView);
@@ -253,6 +255,9 @@ class ASH_EXPORT TrayBubbleView : public views::BubbleDialogDelegateView,
   void OnNotificationDisplayed(
       const std::string& notification_id,
       const message_center::DisplaySource source) override;
+
+  // display::DisplayObserver:
+  void OnDisplayTabletStateChanged(display::TabletState state) override;
 
   // Notify tray bubble's observers and `StatusAreaWidget` that this tray is
   // being open (only applicable to bubble that is anchored to status area).

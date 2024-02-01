@@ -14,11 +14,13 @@
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/accelerators.h"
 #include "ash/public/cpp/style/color_provider.h"
+#include "ash/shelf/shelf.h"
 #include "ash/shell.h"
 #include "ash/style/ash_color_id.h"
 #include "ash/style/system_shadow.h"
 #include "ash/system/tray/system_tray_notifier.h"
 #include "ash/system/tray/tray_constants.h"
+#include "ash/system/tray/tray_utils.h"
 #include "base/memory/raw_ptr.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "third_party/skia/include/core/SkCanvas.h"
@@ -34,6 +36,7 @@
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_type.h"
 #include "ui/compositor_extra/shadow.h"
+#include "ui/display/manager/display_manager.h"
 #include "ui/events/event.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_palette.h"
@@ -333,9 +336,11 @@ TrayBubbleView::TrayBubbleView(const InitParams& init_params)
   }
 
   message_center::MessageCenter::Get()->AddObserver(this);
+  Shell::Get()->display_manager()->AddObserver(this);
 }
 
 TrayBubbleView::~TrayBubbleView() {
+  Shell::Get()->display_manager()->RemoveObserver(this);
   message_center::MessageCenter::Get()->RemoveObserver(this);
 
   mouse_watcher_.reset();
@@ -615,6 +620,30 @@ void TrayBubbleView::OnNotificationDisplayed(
     aura::Window* tray_window = GetWidget()->GetNativeView();
     tray_window->parent()->StackChildAtBottom(tray_window);
   }
+}
+
+void TrayBubbleView::OnDisplayTabletStateChanged(display::TabletState state) {
+  if (display::IsTabletStateChanging(state)) {
+    // Do nothing when the tablet state is still in the process of transition.
+    return;
+  }
+
+  aura::Window* tray_window = GetWidget()->GetNativeView();
+  Shelf* shelf = Shelf::ForWindow(tray_window);
+  if (params_.anchor_mode == AnchorMode::kRect) {
+    SetAnchorRect(shelf->GetSystemTrayAnchorRect());
+  }
+
+  // The shelf alignment may change when transitioning between tablet and
+  // clamshell mode. In those cases, we need to update the shelf alighment.
+  if (ash::ShelfAlignment current_alignment = shelf->alignment();
+      current_alignment != params_.shelf_alignment) {
+    params_.shelf_alignment = current_alignment;
+    ChangeAnchorAlignment(current_alignment);
+  }
+
+  SetBubbleBorderInsets(GetTrayBubbleInsets(tray_window));
+  UpdateBubble();
 }
 
 void TrayBubbleView::NotifyTrayBubbleOpen() {
