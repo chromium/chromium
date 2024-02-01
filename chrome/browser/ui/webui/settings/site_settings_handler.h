@@ -229,8 +229,8 @@ class SiteSettingsHandler
  private:
   friend class SiteSettingsHandlerBaseTest;
   friend class SiteSettingsHandlerInfobarTest;
-  // TODO(crbug.com/1373962): Remove this friend class when
-  // Persistent Permissions is launched.
+  // TODO(crbug.com/1011533): Remove this friend class when the Persistent
+  // Permissions feature flag is removed.
   friend class PersistentPermissionsSiteSettingsHandlerTest;
 
   // Rebuilds the BrowsingDataModel & CookiesTreeModel. Pending requests are

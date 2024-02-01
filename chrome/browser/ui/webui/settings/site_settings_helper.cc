@@ -630,7 +630,7 @@ base::Value::Dict GetFileSystemExceptionForPage(
     bool is_embargoed) {
   base::Value::Dict exception;
   exception.Set(kOrigin, origin);
-  // TODO(crbug.com/1373962): Replace `LossyDisplayName` method with a
+  // TODO(crbug.com/1011533): Replace `LossyDisplayName` method with a
   // new method that returns the full file path in a human-readable format.
   exception.Set(kDisplayName, file_path.LossyDisplayName());
   std::string setting_string =

@@ -71,24 +71,21 @@ typedef std::map<std::pair<ContentSettingsPattern, std::string>,
 // A set of <origin, source, incognito> tuple for organizing granted permission
 // objects that belong to the same device.
 using ChooserExceptionDetails = std::set<std::tuple<GURL, std::string, bool>>;
-
-// TODO(crbug.com/1373962): Prefix the types related to the File System Access
-// API so that their relation to the file system is more apparent.
 constexpr char kChooserType[] = "chooserType";
 constexpr char kCloseDescription[] = "closeDescription";
 constexpr char kDisabled[] = "disabled";
 constexpr char kDisplayName[] = "displayName";
 constexpr char kDescription[] = "description";
-constexpr char kEditGrants[] = "editGrants";
 constexpr char kEmbeddingOrigin[] = "embeddingOrigin";
 constexpr char kEmbeddingDisplayName[] = "embeddingDisplayName";
 constexpr char kExceptions[] = "exceptions";
-constexpr char kFilePath[] = "filePath";
+constexpr char kFileSystemFilePath[] = "filePath";
+constexpr char kFileSystemIsDirectory[] = "isDirectory";
+constexpr char kFileSystemEditGrants[] = "editGrants";
+constexpr char kFileSystemViewGrants[] = "viewGrants";
 constexpr char kHostOrSpec[] = "hostOrSpec";
 constexpr char kIncognito[] = "incognito";
-constexpr char kIsDirectory[] = "isDirectory";
 constexpr char kIsEmbargoed[] = "isEmbargoed";
-constexpr char kIsWritable[] = "isWritable";
 constexpr char kObject[] = "object";
 constexpr char kOpenDescription[] = "openDescription";
 constexpr char kOrigin[] = "origin";
@@ -102,7 +99,6 @@ constexpr char kSource[] = "source";
 constexpr char kType[] = "type";
 constexpr char kNotificationPermissionsReviewListMaybeChangedEvent[] =
     "notification-permission-review-list-maybe-changed";
-constexpr char kViewGrants[] = "viewGrants";
 
 enum class SiteSettingSource {
   kAllowlist,

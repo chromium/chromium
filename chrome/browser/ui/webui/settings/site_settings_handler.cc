@@ -2585,10 +2585,6 @@ BrowsingDataModel* SiteSettingsHandler::GetBrowsingDataModelForTesting() {
 //   }
 //  ...
 // ]
-
-// TODO(crbug.com/1373962): Store the `FilePathToValue(file_path)` value
-// as a separate variable throughout the `PopulateFileSystemGrantData` function
-// where possible, instead of computing the value every time that it is needed.
 base::Value::List SiteSettingsHandler::PopulateFileSystemGrantData() {
   base::Value::List grants;
 
@@ -2616,8 +2612,8 @@ base::Value::List SiteSettingsHandler::PopulateFileSystemGrantData() {
     base::Value::Dict origin_file_system_permission_grants;
     base::Value::List view_grants;
     base::Value::List edit_grants;
-    std::vector<base::Value> directory_edit_grants_file_paths;
-    std::vector<base::Value> file_edit_grants_file_paths;
+    std::vector<const std::string> directory_edit_grants_file_paths;
+    std::vector<const std::string> file_edit_grants_file_paths;
 
     std::string origin_string = origin.GetURL().spec();
     origin_file_system_permission_grants.Set(site_settings::kOrigin,
@@ -2627,54 +2623,56 @@ base::Value::List SiteSettingsHandler::PopulateFileSystemGrantData() {
     // permissions.
     for (auto& file_path : grantObj.directory_write_grants) {
       base::Value::Dict directory_write_grant;
+      const std::string file_path_string =
+          FilePathToValue(file_path).GetString();
       directory_write_grant.Set(site_settings::kOrigin, origin_string);
-      directory_write_grant.Set(site_settings::kFilePath,
-                                FilePathToValue(file_path));
-      directory_write_grant.Set(site_settings::kDisplayName,
-                                FilePathToValue(file_path));
-      directory_write_grant.Set(site_settings::kIsDirectory, true);
-      directory_edit_grants_file_paths.push_back(FilePathToValue(file_path));
+      directory_write_grant.Set(site_settings::kFileSystemFilePath,
+                                file_path_string);
+      directory_write_grant.Set(site_settings::kDisplayName, file_path_string);
+      directory_write_grant.Set(site_settings::kFileSystemIsDirectory, true);
+      directory_edit_grants_file_paths.push_back(file_path_string);
       edit_grants.Append(std::move(directory_write_grant));
     }
 
     for (auto& file_path : grantObj.directory_read_grants) {
-      if (base::Contains(directory_edit_grants_file_paths,
-                         FilePathToValue(file_path))) {
+      const std::string file_path_string =
+          FilePathToValue(file_path).GetString();
+      if (base::Contains(directory_edit_grants_file_paths, file_path_string)) {
         continue;
       }
       base::Value::Dict directory_read_grant;
       directory_read_grant.Set(site_settings::kOrigin, origin_string);
-      directory_read_grant.Set(site_settings::kFilePath,
-                               FilePathToValue(file_path));
-      directory_read_grant.Set(site_settings::kDisplayName,
-                               FilePathToValue(file_path));
-      directory_read_grant.Set(site_settings::kIsDirectory, true);
+      directory_read_grant.Set(site_settings::kFileSystemFilePath,
+                               file_path_string);
+      directory_read_grant.Set(site_settings::kDisplayName, file_path_string);
+      directory_read_grant.Set(site_settings::kFileSystemIsDirectory, true);
       view_grants.Append(std::move(directory_read_grant));
     }
 
     for (auto& file_path : grantObj.file_write_grants) {
       base::Value::Dict file_write_grant;
+      const std::string file_path_string =
+          FilePathToValue(file_path).GetString();
       file_write_grant.Set(site_settings::kOrigin, origin_string);
-      file_write_grant.Set(site_settings::kFilePath,
-                           FilePathToValue(file_path));
-      file_write_grant.Set(site_settings::kDisplayName,
-                           FilePathToValue(file_path));
-      file_write_grant.Set(site_settings::kIsDirectory, false);
-      file_edit_grants_file_paths.push_back(FilePathToValue(file_path));
+      file_write_grant.Set(site_settings::kFileSystemFilePath,
+                           file_path_string);
+      file_write_grant.Set(site_settings::kDisplayName, file_path_string);
+      file_write_grant.Set(site_settings::kFileSystemIsDirectory, false);
+      file_edit_grants_file_paths.push_back(file_path_string);
       edit_grants.Append(std::move(file_write_grant));
     }
 
     for (auto& file_path : grantObj.file_read_grants) {
-      if (base::Contains(file_edit_grants_file_paths,
-                         FilePathToValue(file_path))) {
+      const std::string file_path_string =
+          FilePathToValue(file_path).GetString();
+      if (base::Contains(file_edit_grants_file_paths, file_path_string)) {
         continue;
       }
       base::Value::Dict file_read_grant;
       file_read_grant.Set(site_settings::kOrigin, origin_string);
-      file_read_grant.Set(site_settings::kFilePath, FilePathToValue(file_path));
-      file_read_grant.Set(site_settings::kDisplayName,
-                          FilePathToValue(file_path));
-      file_read_grant.Set(site_settings::kIsDirectory, false);
+      file_read_grant.Set(site_settings::kFileSystemFilePath, file_path_string);
+      file_read_grant.Set(site_settings::kDisplayName, file_path_string);
+      file_read_grant.Set(site_settings::kFileSystemIsDirectory, false);
       view_grants.Append((base::Value(std::move(file_read_grant))));
     }
     origin_file_system_permission_grants.Set("viewGrants",
