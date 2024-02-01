@@ -644,7 +644,7 @@ bool VariationsService::DoFetchFromURL(const GURL& url, bool is_http_retry) {
       if (!EncryptString(serial_number, &serial_number)) {
         return false;
       }
-      base::Base64Encode(serial_number, &serial_number);
+      serial_number = base::Base64Encode(serial_number);
     }
     resource_request->headers.SetHeader("If-None-Match", serial_number);
   }

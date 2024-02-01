@@ -41,8 +41,7 @@ TEST_F(CrxCreatorTest, Create) {
   auto signing_key = crypto::RSAPrivateKey::Create(4096);
   std::vector<uint8_t> public_key;
   signing_key->ExportPublicKey(&public_key);
-  const std::string expected_public_key =
-      base::Base64Encode(std::string(public_key.begin(), public_key.end()));
+  const std::string expected_public_key = base::Base64Encode(public_key);
 
   // Create a CRX File.
   base::FilePath temp_file;
@@ -69,8 +68,7 @@ TEST_F(CrxCreatorTest, VerifyCrxWithVerifiedContents) {
   auto signing_key = crypto::RSAPrivateKey::Create(4096);
   std::vector<uint8_t> public_key;
   signing_key->ExportPublicKey(&public_key);
-  const std::string expected_public_key =
-      base::Base64Encode(std::string(public_key.begin(), public_key.end()));
+  const std::string expected_public_key = base::Base64Encode(public_key);
 
   // Create a CRX File.
   base::FilePath temp_file;

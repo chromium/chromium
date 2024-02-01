@@ -2580,9 +2580,8 @@ std::string SerializeContentAnalysisRequest(
     request_data.Set("filename", request.request_data().filename());
     request_data.Set("digest", request.request_data().digest());
     if (request.request_data().has_csd()) {
-      std::string csd_base64;
-      base::Base64Encode(request.request_data().csd().SerializeAsString(),
-                         &csd_base64);
+      std::string csd_base64 =
+          base::Base64Encode(request.request_data().csd().SerializeAsString());
       request_data.Set("csd", csd_base64);
     }
     request_data.Set("content_type", request.request_data().content_type());

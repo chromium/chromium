@@ -207,9 +207,7 @@ bool SignHmacSha1(const std::string& text,
   bool result = hmac.Init(key) &&
       hmac.Sign(text, digest, kHmacDigestLength);
   if (result) {
-    base::Base64Encode(
-        std::string(reinterpret_cast<const char*>(digest), kHmacDigestLength),
-        signature_return);
+    *signature_return = base::Base64Encode(digest);
   }
   return result;
 }

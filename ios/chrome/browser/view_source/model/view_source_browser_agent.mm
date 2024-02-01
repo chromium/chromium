@@ -51,8 +51,7 @@ void ViewSourceBrowserAgent::OnHandleViewSourceForActiveWebStateResult(
 
 void ViewSourceBrowserAgent::InsertSourceViewTab(NSString* source,
                                                  web::WebState* web_state) {
-  std::string base64HTML;
-  base::Base64Encode(base::SysNSStringToUTF8(source), &base64HTML);
+  std::string base64HTML = base::Base64Encode(base::SysNSStringToUTF8(source));
   GURL URL(std::string("data:text/plain;charset=utf-8;base64,") + base64HTML);
   web::Referrer referrer(web_state->GetLastCommittedURL(),
                          web::ReferrerPolicyDefault);

@@ -400,7 +400,7 @@ std::string URLDownloader::ReplaceImagesInHTML(
     base::Value value(images[i].url.spec());
 
     base::JSONWriter::Write(value, &image_url);
-    base::Base64Encode(images[i].data, &image_data);
+    image_data = base::Base64Encode(images[i].data);
 
     std::string src_with_data =
         base::StringPrintf("data:image/png;base64,%s", image_data.c_str());

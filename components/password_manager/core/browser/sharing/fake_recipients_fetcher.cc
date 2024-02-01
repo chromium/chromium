@@ -27,7 +27,7 @@ void FakeRecipientsFetcher::FetchFamilyMembers(
       recipient.user_id = num_str;
       recipient.user_name = "user" + num_str;
       recipient.email = "user" + num_str + "@gmail.com";
-      base::Base64Encode("123456789" + num_str, &recipient.public_key.key);
+      recipient.public_key.key = base::Base64Encode("123456789" + num_str);
       recipient.public_key.key_version = 0;
       recipients.push_back(recipient);
     }

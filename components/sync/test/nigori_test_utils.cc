@@ -181,8 +181,8 @@ sync_pb::NigoriSpecifics BuildCustomPassphraseNigoriSpecifics(
       // Nigori.
       break;
     case KeyDerivationMethod::SCRYPT_8192_8_11:
-      base::Base64Encode(passphrase_key_params.derivation_params.scrypt_salt(),
-                         &encoded_salt);
+      encoded_salt = base::Base64Encode(
+          passphrase_key_params.derivation_params.scrypt_salt());
       nigori.set_custom_passphrase_key_derivation_salt(encoded_salt);
       break;
   }

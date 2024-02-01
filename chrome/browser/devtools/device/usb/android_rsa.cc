@@ -13,6 +13,7 @@
 #include <memory>
 
 #include "base/base64.h"
+#include "base/containers/span.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
 #include "components/sync_preferences/pref_service_syncable.h"
@@ -262,7 +263,8 @@ std::string AndroidRSAPublicKey(crypto::RSAPrivateKey* key) {
   BnFree(n);
   BnFree(r);
   BnFree(rr);
-  return base::Base64Encode(base::as_bytes(base::span(&pkey, 1u)));
+
+  return base::Base64Encode(base::byte_span_from_ref(pkey));
 }
 
 std::string AndroidRSASign(crypto::RSAPrivateKey* key,

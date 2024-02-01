@@ -112,7 +112,7 @@ base::Value::Dict CreateDictionaryFromVerdict(const T& verdict,
              static_cast<int>(receive_time.InSecondsFSinceUnixEpoch()));
   std::string serialized_proto(verdict.SerializeAsString());
   // Performs a base64 encoding on the serialized proto.
-  base::Base64Encode(serialized_proto, &serialized_proto);
+  serialized_proto = base::Base64Encode(serialized_proto);
   result.Set(proto_name, serialized_proto);
   return result;
 }

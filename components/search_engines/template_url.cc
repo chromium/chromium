@@ -1348,9 +1348,8 @@ std::string TemplateURLRef::HandleReplacements(
         break;
 
       case GOOGLE_IMAGE_THUMBNAIL_BASE64: {
-        std::string base64_thumbnail_content;
-        base::Base64Encode(search_terms_args.image_thumbnail_content,
-                           &base64_thumbnail_content);
+        std::string base64_thumbnail_content =
+            base::Base64Encode(search_terms_args.image_thumbnail_content);
         HandleReplacement(std::string(), base64_thumbnail_content, replacement,
                           &url);
         if (replacement.is_post_param) {

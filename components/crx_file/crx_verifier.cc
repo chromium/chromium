@@ -220,7 +220,7 @@ VerifierResult VerifyCrx3(
   if (!ReadHashAndVerifyArchive(file, hash, verifiers))
     return VerifierResult::ERROR_SIGNATURE_VERIFICATION_FAILED;
 
-  base::Base64Encode(public_key_bytes, public_key);
+  *public_key = base::Base64Encode(public_key_bytes);
   *crx_id = declared_crx_id;
   return VerifierResult::OK_FULL;
 }

@@ -86,8 +86,8 @@ constexpr char kTestChallenge[] = "VGhpcyBpcyBhIHRlc3QgY2hhbGxlbmdl";
 constexpr char kCredentialId[] = "VGhpcyBpcyBhIHRlc3QgQ3JlZGVudGlhbCBJRC4=";
 constexpr char kGooglePaymentsRpid[] = "google.com";
 
-std::string BytesToBase64(const std::vector<uint8_t> bytes) {
-  return base::Base64Encode(std::string(bytes.begin(), bytes.end()));
+std::string BytesToBase64(const std::vector<uint8_t>& bytes) {
+  return base::Base64Encode(bytes);
 }
 #endif
 

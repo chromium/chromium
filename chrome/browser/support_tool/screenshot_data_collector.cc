@@ -264,9 +264,8 @@ void ScreenshotDataCollector::OnScreenshotTaken(
     scoped_refptr<base::RefCountedMemory> data) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (data && data.get()) {
-    screenshot_base64_ = base::StrCat(
-        {kBase64Header,
-         base::Base64Encode(base::make_span(data->data(), data->size()))});
+    screenshot_base64_ =
+        base::StrCat({kBase64Header, base::Base64Encode(*data)});
     std::move(data_collector_done_callback_).Run(/*error=*/std::nullopt);
     return;
   }

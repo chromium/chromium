@@ -271,7 +271,7 @@ TEST_F(VerdictCacheManagerTest, TestParseInvalidVerdictEntry) {
 
   std::string verdict_serialized;
   verdict.SerializeToString(&verdict_serialized);
-  base::Base64Encode(verdict_serialized, &verdict_serialized);
+  verdict_serialized = base::Base64Encode(verdict_serialized);
 
   base::Value::Dict verdict_entry;
   verdict_entry.Set("cache_creation_time", "invalid_time");
@@ -537,7 +537,7 @@ TEST_F(VerdictCacheManagerTest, TestCleanUpExpiredVerdictWithInvalidEntry) {
 
   std::string verdict_serialized;
   verdict.SerializeToString(&verdict_serialized);
-  base::Base64Encode(verdict_serialized, &verdict_serialized);
+  verdict_serialized = base::Base64Encode(verdict_serialized);
 
   base::Value::Dict verdict_entry;
   verdict_entry.Set("cache_creation_time", "invalid_time");

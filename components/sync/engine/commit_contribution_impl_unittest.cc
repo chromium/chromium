@@ -82,8 +82,8 @@ TEST(CommitContributionImplTest, PopulateCommitProtoDefault) {
   CommitRequestData request_data;
   request_data.sequence_number = 2;
   request_data.base_version = kBaseVersion;
-  base::Base64Encode(base::SHA1HashString(data->specifics.SerializeAsString()),
-                     &request_data.specifics_hash);
+  request_data.specifics_hash = base::Base64Encode(
+      base::SHA1HashString(data->specifics.SerializeAsString()));
   request_data.entity = std::move(data);
 
   SyncEntity entity;
@@ -123,8 +123,8 @@ TEST(CommitContributionImplTest, PopulateCommitProtoTombstone) {
   CommitRequestData request_data;
   request_data.sequence_number = 2;
   request_data.base_version = kBaseVersion;
-  base::Base64Encode(base::SHA1HashString(data->specifics.SerializeAsString()),
-                     &request_data.specifics_hash);
+  request_data.specifics_hash = base::Base64Encode(
+      base::SHA1HashString(data->specifics.SerializeAsString()));
   request_data.entity = std::move(data);
 
   SyncEntity entity;
@@ -172,8 +172,8 @@ TEST(CommitContributionImplTest, PopulateCommitProtoBookmark) {
   CommitRequestData request_data;
   request_data.sequence_number = 2;
   request_data.base_version = kBaseVersion;
-  base::Base64Encode(base::SHA1HashString(data->specifics.SerializeAsString()),
-                     &request_data.specifics_hash);
+  request_data.specifics_hash = base::Base64Encode(
+      base::SHA1HashString(data->specifics.SerializeAsString()));
   request_data.deprecated_bookmark_folder = false;
   request_data.deprecated_bookmark_unique_position =
       UniquePosition::FromProto(data->specifics.bookmark().unique_position());
@@ -217,8 +217,8 @@ TEST(CommitContributionImplTest, PopulateCommitProtoBookmarkFolder) {
   CommitRequestData request_data;
   request_data.sequence_number = 2;
   request_data.base_version = kBaseVersion;
-  base::Base64Encode(base::SHA1HashString(data->specifics.SerializeAsString()),
-                     &request_data.specifics_hash);
+  request_data.specifics_hash = base::Base64Encode(
+      base::SHA1HashString(data->specifics.SerializeAsString()));
   request_data.deprecated_bookmark_folder = true;
   request_data.deprecated_bookmark_unique_position =
       UniquePosition::FromProto(data->specifics.bookmark().unique_position());

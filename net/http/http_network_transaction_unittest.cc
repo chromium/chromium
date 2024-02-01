@@ -11805,26 +11805,16 @@ TEST_P(HttpNetworkTransactionTest, NTLMOverHttp2WithWebsockets) {
                        MockRead(SYNCHRONOUS, ERR_IO_PENDING, 6)};
 
   // Generate the NTLM messages based on known test data.
-  std::string negotiate_msg;
-  std::string challenge_msg;
-  std::string authenticate_msg;
-  base::Base64Encode(
-      base::StringPiece(
-          reinterpret_cast<const char*>(ntlm::test::kExpectedNegotiateMsg),
-          std::size(ntlm::test::kExpectedNegotiateMsg)),
-      &negotiate_msg);
-  base::Base64Encode(
-      base::StringPiece(
-          reinterpret_cast<const char*>(ntlm::test::kChallengeMsgFromSpecV2),
-          std::size(ntlm::test::kChallengeMsgFromSpecV2)),
-      &challenge_msg);
-  base::Base64Encode(
-      base::StringPiece(
-          reinterpret_cast<const char*>(
-              ntlm::test::kExpectedAuthenticateMsgEmptyChannelBindingsV2),
-          std::size(
-              ntlm::test::kExpectedAuthenticateMsgEmptyChannelBindingsV2)),
-      &authenticate_msg);
+  std::string negotiate_msg = base::Base64Encode(base::StringPiece(
+      reinterpret_cast<const char*>(ntlm::test::kExpectedNegotiateMsg),
+      std::size(ntlm::test::kExpectedNegotiateMsg)));
+  std::string challenge_msg = base::Base64Encode(base::StringPiece(
+      reinterpret_cast<const char*>(ntlm::test::kChallengeMsgFromSpecV2),
+      std::size(ntlm::test::kChallengeMsgFromSpecV2)));
+  std::string authenticate_msg = base::Base64Encode(base::StringPiece(
+      reinterpret_cast<const char*>(
+          ntlm::test::kExpectedAuthenticateMsgEmptyChannelBindingsV2),
+      std::size(ntlm::test::kExpectedAuthenticateMsgEmptyChannelBindingsV2)));
 
   // Retry yet again using HTTP/1.1.
   MockWrite writes1[] = {

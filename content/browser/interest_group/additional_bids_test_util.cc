@@ -44,8 +44,7 @@ std::string GenerateSignedAdditionalBidHeaderPayloadPortion(
     CHECK(ok);
     base::Value::Dict sig_dict;
     sig_dict.Set("key", base64_public_keys[i]);
-    sig_dict.Set("signature",
-                 base::Base64Encode(base::make_span(sig, sizeof(sig))));
+    sig_dict.Set("signature", base::Base64Encode(sig));
     signatures_list.Append(std::move(sig_dict));
 
     if (inject_fault == SignedAdditionalBidFault::kOneInvalidSignature) {

@@ -128,9 +128,7 @@ std::optional<std::vector<uint8_t>> SharingSyncPreference::GetVapidKey() const {
 void SharingSyncPreference::SetVapidKey(
     const std::vector<uint8_t>& vapid_key) const {
   base::Time creation_timestamp = base::Time::Now();
-  std::string base64_vapid_key =
-      base::Base64Encode(std::string(vapid_key.begin(), vapid_key.end()));
-
+  std::string base64_vapid_key = base::Base64Encode(vapid_key);
   ScopedDictPrefUpdate update(prefs_, prefs::kSharingVapidKey);
   update->Set(kVapidECPrivateKey, base64_vapid_key);
   update->Set(kVapidCreationTimestamp, base::TimeToValue(creation_timestamp));

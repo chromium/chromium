@@ -384,9 +384,9 @@ TEST_F(V4GetHashProtocolManagerTest, TestGetHashRequest) {
   }
 
   // Serialize and Base64 encode.
-  std::string req_data, req_base64;
+  std::string req_data;
   req.SerializeToString(&req_data);
-  base::Base64Encode(req_data, &req_base64);
+  std::string req_base64 = base::Base64Encode(req_data);
 
   std::vector<HashPrefixStr> prefixes_to_request = {one, two};
   EXPECT_EQ(req_base64, pm->GetHashRequest(prefixes_to_request, client_states));

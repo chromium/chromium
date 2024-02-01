@@ -118,8 +118,9 @@ std::unique_ptr<CommitRequestData> MockModelTypeProcessor::CommitRequest(
   request_data->entity = std::move(data);
   request_data->sequence_number = GetNextSequenceNumber(tag_hash);
   request_data->base_version = base_version;
-  base::Base64Encode(base::SHA1HashString(specifics.SerializeAsString()),
-                     &request_data->specifics_hash);
+  request_data->specifics_hash =
+      base::Base64Encode(base::SHA1HashString(specifics.SerializeAsString()));
+
   if (specifics.has_bookmark()) {
     request_data->deprecated_bookmark_folder =
         (specifics.bookmark().type() == sync_pb::BookmarkSpecifics::FOLDER);

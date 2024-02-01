@@ -98,7 +98,7 @@ TEST(ModelUtilTest,
   metadata.set_type_url("sometypeurl");
   std::string encoded_metadata;
   metadata.SerializeToString(&encoded_metadata);
-  base::Base64Encode(encoded_metadata, &encoded_metadata);
+  encoded_metadata = base::Base64Encode(encoded_metadata);
 
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
       switches::kModelOverride,
@@ -118,7 +118,7 @@ TEST(ModelUtilTest, GetModelOverrideForOptimizationTargetOneFilePath) {
   metadata.set_type_url("sometypeurl");
   std::string encoded_metadata;
   metadata.SerializeToString(&encoded_metadata);
-  base::Base64Encode(encoded_metadata, &encoded_metadata);
+  encoded_metadata = base::Base64Encode(encoded_metadata);
 #if BUILDFLAG(IS_WIN)
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
       switches::kModelOverride,
@@ -146,7 +146,7 @@ TEST(ModelUtilTest, GetModelOverrideForOptimizationTargetMultipleFilePath) {
   metadata.set_type_url("sometypeurl");
   std::string encoded_metadata;
   metadata.SerializeToString(&encoded_metadata);
-  base::Base64Encode(encoded_metadata, &encoded_metadata);
+  encoded_metadata = base::Base64Encode(encoded_metadata);
 #if BUILDFLAG(IS_WIN)
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
       switches::kModelOverride,

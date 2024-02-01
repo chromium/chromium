@@ -227,7 +227,7 @@ void GetBookmarksMatchingProperties(
 void EncodeMetaForStorage(const PowerBookmarkMeta& meta, std::string* out) {
   std::string data;
   meta.SerializeToString(&data);
-  base::Base64Encode(data, out);
+  *out = base::Base64Encode(data);
 }
 
 bool DecodeMetaFromStorage(const std::string& data, PowerBookmarkMeta* out) {

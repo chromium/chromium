@@ -240,12 +240,10 @@ net::NetworkTrafficAnnotationTag GetNetworkTrafficAnnotation(
 
 std::string SerializeReportingInfo(
     const metrics::ReportingInfo& reporting_info) {
-  std::string result;
   std::string bytes;
   bool success = reporting_info.SerializeToString(&bytes);
   DCHECK(success);
-  base::Base64Encode(bytes, &result);
-  return result;
+  return base::Base64Encode(bytes);
 }
 
 // Encrypts a |plaintext| string, using the encrypted_messages component,
@@ -276,7 +274,7 @@ bool EncryptAndBase64EncodeString(const std::string& plaintext,
     return false;
   }
 
-  base::Base64Encode(encrypted_text, encoded);
+  *encoded = base::Base64Encode(encrypted_text);
   return true;
 }
 

@@ -51,7 +51,7 @@ std::string ExportSpki(crypto::RSAPrivateKey* rsa) {
     LOG(ERROR) << "Key export has failed.";
     return "";
   }
-  return base::Base64Encode(std::string(spki.begin(), spki.end()));
+  return base::Base64Encode(spki);
 }
 
 }  // namespace arc

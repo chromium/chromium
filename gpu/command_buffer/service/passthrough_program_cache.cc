@@ -167,10 +167,8 @@ void PassthroughProgramCache::Set(Key&& key, Value&& value) {
                                    key.size());
       base::StringPiece value_string(
           reinterpret_cast<const char*>(value.data()), value.size());
-      std::string key_string_64;
-      std::string value_string_64;
-      base::Base64Encode(key_string, &key_string_64);
-      base::Base64Encode(value_string, &value_string_64);
+      std::string key_string_64 = base::Base64Encode(key_string);
+      std::string value_string_64 = base::Base64Encode(value_string);
       cache_program_callback_.Run(key_string_64, value_string_64);
     }
 

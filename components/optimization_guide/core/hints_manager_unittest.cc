@@ -558,7 +558,7 @@ TEST_F(HintsManagerTest, ProcessHintsWithValidCommandLineOverride) {
 
   std::string encoded_config;
   config.SerializeToString(&encoded_config);
-  base::Base64Encode(encoded_config, &encoded_config);
+  encoded_config = base::Base64Encode(encoded_config);
 
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
       switches::kHintsProtoOverride, encoded_config);
@@ -630,7 +630,7 @@ TEST_F(HintsManagerTest,
 
   std::string encoded_config;
   config.SerializeToString(&encoded_config);
-  base::Base64Encode(encoded_config, &encoded_config);
+  encoded_config = base::Base64Encode(encoded_config);
 
   {
     base::HistogramTester histogram_tester;
@@ -2161,7 +2161,7 @@ TEST_F(HintsManagerFetchingTest,
   opt->set_optimization_type(proto::DEFER_ALL_SCRIPT);
   std::string encoded_config;
   config.SerializeToString(&encoded_config);
-  base::Base64Encode(encoded_config, &encoded_config);
+  encoded_config = base::Base64Encode(encoded_config);
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
       switches::kHintsProtoOverride, encoded_config);
 
