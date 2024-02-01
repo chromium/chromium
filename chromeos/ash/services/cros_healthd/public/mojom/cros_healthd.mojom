@@ -948,7 +948,6 @@ interface CrosHealthdSystemService {
 // See go/wilco-ec for more information
 //
 // NextMinVersion: 1, NextIndex: 4
-[Stable]
 interface WilcoEcServiceController {
   // Adds an observer to be notified on EC events. The caller can remove the
   // observer created by this call by closing their end of the message pipe.

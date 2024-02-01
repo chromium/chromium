@@ -23,14 +23,13 @@ module ash.cros_healthd.mojom;
 // information.
 //
 // NextMinVersion: 1, NextIndex: 3
-[Stable]
 struct EcEvent {
   // Derived value representing the reason/cause of the EC event.
   //
   // NOTE: This is a computed value and not sent by the EC.
   //
   // NextMinVersion: 1, NextIndex: 10
-  [Stable, Extensible]
+  [Extensible]
   enum Reason {
     // This is required for backwards compatibility, should not be used.
     [Default] kUnmappedEnumField = 9,
@@ -58,7 +57,7 @@ struct EcEvent {
   };
 
   // The |type| member will be one of these.
-  [Stable, Extensible]
+  [Extensible]
   enum Type {
     // This is required for backwards compatibility, should not be used.
     [Default] kUnmappedEnumField = 0,
@@ -72,10 +71,9 @@ struct EcEvent {
 };
 
 // NextMinVersion: 1, NextIndex: 2
-[Stable]
 struct GetEcTelemetryResponse {
   // NextMinVersion: 2, NextIndex: 5
-  [Stable, Extensible]
+  [Extensible]
   enum Status {
     // This is required for backwards compatibility, should not be used.
     [MinVersion=1, Default] kUnmappedEnumField = 4,
@@ -94,7 +92,6 @@ struct GetEcTelemetryResponse {
 };
 
 // Implemented by clients who desire EC notifications.
-[Stable]
 interface WilcoEcObserver {
   // Fired when an EC event occurs.
   OnEcEvent@0(EcEvent ec_event);
