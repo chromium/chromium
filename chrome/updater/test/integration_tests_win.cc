@@ -1269,6 +1269,12 @@ HRESULT DoUpdate(UpdaterScope scope,
         if (!done) {
           EXPECT_HRESULT_SUCCEEDED(bundle->download());
         }
+
+        // `IAppBundleWeb::cancel` calls `UpdateServiceImpl::CancelInstalls`,
+        // which does nothing right now, but if this test starts failing, remove
+        // this line, and write a proper test for `IAppBundleWeb::cancel`.
+        EXPECT_HRESULT_SUCCEEDED(bundle->cancel());
+
         break;
       }
 

@@ -558,8 +558,17 @@ class AppWebImpl : public IDispatchImpl<IAppWeb> {
   }
 
   IFACEMETHODIMP cancel() override {
-    LOG(ERROR) << "Reached unimplemented COM method: " << __func__;
-    return E_NOTIMPL;
+    AppServerWin::PostRpcTask(base::BindOnce(
+        [](const std::string& app_id) {
+          scoped_refptr<UpdateService> update_service =
+              GetAppServerWinInstance()->update_service();
+          if (!update_service) {
+            return;
+          }
+          update_service->CancelInstalls(app_id);
+        },
+        app_id_));
+    return S_OK;
   }
 
   IFACEMETHODIMP get_currentState(IDispatch** current_state) override {
@@ -858,8 +867,8 @@ class AppBundleWebImpl : public IDispatchImpl<IAppBundleWeb> {
   }
 
   IFACEMETHODIMP cancel() override {
-    LOG(ERROR) << "Reached unimplemented COM method: " << __func__;
-    return E_NOTIMPL;
+    base::AutoLock lock{lock_};
+    return app_web_ ? app_web_->cancel() : E_UNEXPECTED;
   }
 
   IFACEMETHODIMP downloadPackage(BSTR app_id, BSTR package_name) override {
