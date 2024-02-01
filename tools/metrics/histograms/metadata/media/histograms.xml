@@ -3988,28 +3988,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Media.MediaFoundation.VideoColorSpace.PrimaryID"
-    enum="VideoColorSpace.PrimaryID" expires_after="2023-08-27">
-  <owner>dalecurtis@chromium.org</owner>
-  <owner>macrabil@microsoft.com</owner>
-  <owner>media-dev-uma@chromium.org</owner>
-  <summary>
-    Recorded when the VideoColorSpace VideoPrimaries value is passed to
-    MediaFoundation for HDR content.
-  </summary>
-</histogram>
-
-<histogram name="Media.MediaFoundation.VideoColorSpace.TransferID"
-    enum="VideoColorSpace.TransferID" expires_after="2023-08-02">
-  <owner>dalecurtis@chromium.org</owner>
-  <owner>wicarr@microsoft.com</owner>
-  <owner>media-dev-uma@chromium.org</owner>
-  <summary>
-    Recorded when the VideoColorSpace TransferFunction value is passed to
-    MediaFoundation for HDR content.
-  </summary>
-</histogram>
-
 <histogram name="Media.MediaFoundationRenderer.CreateMediaEngineError"
     enum="Hresult" expires_after="2024-07-07">
   <owner>xhwang@chromium.org</owner>

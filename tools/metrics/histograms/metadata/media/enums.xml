@@ -2186,43 +2186,6 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Using DirectShow as fallback"/>
 </enum>
 
-<enum name="VideoColorSpace.PrimaryID">
-  <int value="0" label="INVALID"/>
-  <int value="1" label="BT709"/>
-  <int value="2" label="UNSPECIFIED"/>
-  <int value="4" label="BT470M"/>
-  <int value="5" label="BT470BG"/>
-  <int value="6" label="SMPTE170M"/>
-  <int value="7" label="SMPTE240M"/>
-  <int value="8" label="FILM"/>
-  <int value="9" label="BT2020"/>
-  <int value="10" label="SMPTEST428_1"/>
-  <int value="11" label="SMPTEST431_2"/>
-  <int value="12" label="SMPTEST432_1"/>
-  <int value="22" label="EBU_3213_E"/>
-</enum>
-
-<enum name="VideoColorSpace.TransferID">
-  <int value="0" label="INVALID"/>
-  <int value="1" label="BT709"/>
-  <int value="2" label="UNSPECIFIED"/>
-  <int value="4" label="GAMMA22"/>
-  <int value="5" label="GAMMA28"/>
-  <int value="6" label="SMPTE170M"/>
-  <int value="7" label="SMPTE240M"/>
-  <int value="8" label="LINEAR"/>
-  <int value="9" label="LOG"/>
-  <int value="10" label="LOG_SQRT"/>
-  <int value="11" label="IEC61966_2_4"/>
-  <int value="12" label="BT1361_ECG"/>
-  <int value="13" label="IEC61966_2_1"/>
-  <int value="14" label="BT2020_10"/>
-  <int value="15" label="BT2020_12"/>
-  <int value="16" label="SMPTEST2084"/>
-  <int value="17" label="SMPTEST428_1"/>
-  <int value="18" label="ARIB_STD_B67"/>
-</enum>
-
 <enum name="VideoFrameStorageType">
   <int value="0" label="Invalid"/>
   <int value="1" label="Unknown"/>
