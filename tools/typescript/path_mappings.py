@@ -76,6 +76,7 @@ def _add_ash_mappings(path_mappings, root_gen_dir, root_src_dir):
       "cellular_setup",
       "cr_elements",
       "personalization",
+      "sea_pen",
 
       # List more folders here as they get migrated to use build_webui().
   ]

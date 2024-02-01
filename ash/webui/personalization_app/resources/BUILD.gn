@@ -164,6 +164,7 @@ build_webui("build") {
   ts_deps = [
     "//ash/webui/common/resources:build_ts",
     "//ash/webui/common/resources/personalization:build_ts",
+    "//ash/webui/common/resources/sea_pen:build_ts",
     "//third_party/polymer/v3_0:library",
     "//ui/webui/resources/cr_components/color_change_listener:build_ts",
     "//ui/webui/resources/cr_components/localized_link:build_ts",
