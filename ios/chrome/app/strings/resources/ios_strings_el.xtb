@@ -148,6 +148,7 @@
 <translation id="1753905327828125965">Πιο Δημοφιλή</translation>
 <translation id="1757699834933698436">{count,plural, =1{{count} ασθενής κωδικός πρόσβασης}other{{count} ασθενείς κωδικοί πρόσβασης}}</translation>
 <translation id="1767766085187034454">Μετάφραση Google</translation>
+<translation id="1769106850515800431">Εξατομικευμένο περιεχόμενο</translation>
 <translation id="1789803444939621101">Καλώς ορίσατε πάλι, <ph name="USER_NAME" /></translation>
 <translation id="1803264062614276815">Όνομα κατόχου κάρτας</translation>
 <translation id="1809939268435598390">Διαγραφή φακέλου</translation>
@@ -828,6 +829,7 @@
 <translation id="5327753393331509826">Λήψη ειδοποιήσεων περιεχομένου</translation>
 <translation id="5329451663851195956">Μπορείτε να σύρετε προς τα κάτω για ανανέωση.</translation>
 <translation id="5339316356165661760">Ενεργοποίηση συγχρονισμού</translation>
+<translation id="5343472494710226394">Ειδήσεις, αθλητικά και περιεχόμενο με βάση τα ενδιαφέροντά σας.</translation>
 <translation id="5345660046352249607">{COUNT,plural, =1{Παρακολούθηση αυτού του πακέτου;}other{Παρακολούθηση {COUNT} πακέτων;}}</translation>
 <translation id="536067926684072644">Εμφάνιση σελιδοδεικτών</translation>
 <translation id="5360976571138293719">Για περισσότερες ρυθμίσεις που σχετίζονται με το απόρρητο, την ασφάλεια και τη συλλογή δεδομένων, ανατρέξτε στην ενότητα <ph name="BEGIN_LINK" />υπηρεσίες Google<ph name="END_LINK" />.</translation>
@@ -898,6 +900,7 @@
 <translation id="5737974891429562743">Τα στοιχεία σύνδεσης λογαριασμού δεν είναι ενημερωμένα. Ενημερώστε τα για να ξεκινήσει ο συγχρονισμός.</translation>
 <translation id="5738385766833540397">Διαχειριστείτε τον τρόπο με τον οποίο λαμβάνετε τις ειδοποιήσεις πτώσεων τιμών για τα προϊόντα που παρακολουθείτε</translation>
 <translation id="5738887413654608789">Αυτό σας επιτρέπει να ανακαλύψετε σχετικές ιστοσελίδες βάσει του περιβάλλοντός σας.</translation>
+<translation id="5744274077973758795">Οι ειδοποιήσεις <ph name="FEATURE_NAME" /> ενεργοποιήθηκαν</translation>
 <translation id="5745916533876677730">Μετάβαση στην προηγούμενη καρτέλα</translation>
 <translation id="574762237186762643">Συμβάντα</translation>
 <translation id="5748177854685749242">Άφιξη <ph name="DATE" /></translation>
@@ -922,6 +925,7 @@
 <translation id="5850913622988109693">Επιλογές για την παρακολούθηση πακέτων</translation>
 <translation id="5854790677617711513">Παλαιότερο από 30 ημέρες</translation>
 <translation id="5857090052475505287">Νέος φάκελος</translation>
+<translation id="5857361196621230935">Προσθήκη καρτέλας στην ομάδα</translation>
 <translation id="5857770089550859117">Απαιτείται φράση πρόσβασης για έναρξη του συγχρονισμού.</translation>
 <translation id="5859715514067755465">Μετάβαση προς τα εμπρός</translation>
 <translation id="5860033963881614850">Απενεργοποιημένη</translation>
@@ -1275,6 +1279,7 @@
 <translation id="7649070708921625228">Βοήθεια</translation>
 <translation id="7658239707568436148">Ακύρωση</translation>
 <translation id="7666861622396822790">Μπορείτε να διαχειριστείτε αυτή την επιλογή στις <ph name="BEGIN_LINK" />Ρυθμίσεις περιεχομένου<ph name="END_LINK" />.</translation>
+<translation id="7669493687462784703">Συνέχιση λήψης ενός προφίλ διαμόρφωσης από <ph name="WEBSITE" />;</translation>
 <translation id="7671141431838911305">ΕΓΚΑΤΑΣΤΑΣΗ</translation>
 <translation id="7673346542062368520">Μπορείτε να σύρετε προς τα αριστερά για ανώνυμη περιήγηση.</translation>
 <translation id="7679915578945954324">Οι διευθύνσεις ιστοτόπων αντιγράφηκαν</translation>
@@ -1523,6 +1528,7 @@
 <translation id="891282356902782456">Αυτός ο κωδικός πρόσβασης αποθηκεύεται μόνο σε αυτήν τη συσκευή. Για να τον χρησιμοποιήσετε στις άλλες συσκευές σας, αποθηκεύστε τον στον Λογαριασμό σας Google, <ph name="EMAIL" />.</translation>
 <translation id="8917490105272468696">Ναι, συμφωνώ</translation>
 <translation id="8928133177108699615">Για υπολογιστή</translation>
+<translation id="8937676484307616731">Ενεργοποίηση ειδοποιήσεων για τη λειτουργία <ph name="FEATURE_NAME" /></translation>
 <translation id="894191600409472540">Δημιουργήστε ισχυρούς κωδικούς πρόσβασης</translation>
 <translation id="8952559610785099500">Προσθήκη κωδικού πρόσβασης</translation>
 <translation id="8953046091948372197">Εδώ θα βρείτε τους κωδικούς πρόσβασής σας</translation>

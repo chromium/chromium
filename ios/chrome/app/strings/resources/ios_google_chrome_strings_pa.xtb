@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="pa">
+<translation id="1021782183249308751">Chrome ਪ੍ਰਤੀਕ ਨੂੰ ਦਬਾਈ ਰੱਖੋ ਅਤੇ "ਹੋਮ ਸਕ੍ਰੀਨ ਦਾ ਸੰਪਾਦਨ ਕਰੋ" 'ਤੇ ਕਲਿੱਕ ਕਰੋ</translation>
 <translation id="1066101356081285416">Chrome ਤੁਹਾਡੇ ਵੱਲੋਂ ਦੇਖੀਆਂ ਗਈਆਂ ਸਾਈਟਾਂ ਦੇ ਟਰੈਕਿੰਗ ਨੰਬਰਾਂ ਦਾ ਪਤਾ ਲਗਾਵੇਗਾ ਅਤੇ ਨਵੇਂ ਟੈਬ ਪੰਨੇ 'ਤੇ ਤੁਹਾਨੂੰ ਪੈਕੇਜ ਸੰਬੰਧੀ ਅੱਪਡੇਟਾਂ ਦਿਖਾਵੇਗਾ। ਇਹ ਵਿਸ਼ੇਸ਼ਤਾ ਮੁਹੱਈਆ ਕਰਨ ਅਤੇ ਹਰ ਕਿਸੇ ਲਈ Google ਖਰੀਦਦਾਰੀ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਨੂੰ ਬਿਹਤਰ ਬਣਾਉਣ ਲਈ ਪੈਕੇਜ ਟਰੈਕਿੰਗ ਨੰਬਰ ਅਤੇ ਵੈੱਬਸਾਈਟ ਦਾ ਨਾਮ Google ਨੂੰ ਭੇਜਿਆ ਜਾਵੇਗਾ। ਤੁਸੀਂ ਇਸਨੂੰ ਕਿਸੇ ਵੇਲੇ ਵੀ <ph name="BEGIN_LINK" />ਪੈਕੇਜ ਟਰੈਕਿੰਗ ਸੈਟਿੰਗਾਂ<ph name="END_LINK" /> ਵਿੱਚ ਅੱਪਡੇਟ ਕਰ ਸਕਦੇ ਹੋ।</translation>
 <translation id="1085696779717592361">Chrome ਨੂੰ ਪੂਰਵ-ਨਿਰਧਾਰਿਤ ਤੌਰ 'ਤੇ ਵਰਤੋ</translation>
 <translation id="1105362920864247682">Chrome ਵਿੱਚ ਬ੍ਰਾਊਜ਼ਿੰਗ ਡਾਟਾ ਕਲੀਅਰ ਕਰੋ।</translation>
@@ -96,6 +97,7 @@
 <translation id="3345341804167540816">ਹਰ ਥਾਂ 'ਤੇ Chrome ਵਰਤੋ</translation>
 <translation id="3360031466389132716">{THRESHOLD,plural, =1{ਅਜਿਹਾ ਉਦੋਂ ਹੁੰਦਾ ਹੈ, ਜਦੋਂ {THRESHOLD} ਮਿੰਟ ਲਈ Chrome ਦੀ ਵਰਤੋਂ ਨਹੀਂ ਕੀਤੀ ਜਾਂਦੀ}one{ਅਜਿਹਾ ਉਦੋਂ ਹੁੰਦਾ ਹੈ, ਜਦੋਂ {THRESHOLD} ਮਿੰਟ ਲਈ Chrome ਦੀ ਵਰਤੋਂ ਨਹੀਂ ਕੀਤੀ ਜਾਂਦੀ}other{ਅਜਿਹਾ ਉਦੋਂ ਹੁੰਦਾ ਹੈ, ਜਦੋਂ {THRESHOLD} ਮਿੰਟ ਲਈ Chrome ਦੀ ਵਰਤੋਂ ਨਹੀਂ ਕੀਤੀ ਜਾਂਦੀ}}</translation>
 <translation id="3399930248910934354">Chrome ਸੈਟਿੰਗਾਂ ਖੋਲ੍ਹੋ</translation>
+<translation id="344736123700721678">ਆਪਣੇ ਹੋਮ ਸਕ੍ਰੀਨ ਡੌਕ ਤੋਂ Chrome ਤੱਕ ਤੇਜ਼ੀ ਨਾਲ ਪਹੁੰਚ ਕਰੋ</translation>
 <translation id="3472587960215700950">Chrome ਤੁਹਾਨੂੰ ਪਛਾਣੇ ਗਏ ਪਤਿਆਂ 'ਤੇ ਦਿਸ਼ਾਵਾਂ ਅਤੇ ਸਥਾਨਕ ਜਾਣਕਾਰੀ ਦੇਣ ਲਈ Google Maps ਦੀ ਵਰਤੋਂ ਕਰਦਾ ਹੈ।</translation>
 <translation id="3503014945441706099">ਇਸ Chrome ਪ੍ਰੋਫਾਈਲ ਲਈ ਵੀ ਵਿਸਤ੍ਰਿਤ ਸੁਰੱਖਿਅਤ ਬ੍ਰਾਊਜ਼ਿੰਗ ਵਿਸ਼ੇਸ਼ਤਾ ਨੂੰ ਪ੍ਰਾਪਤ ਕਰੋ</translation>
 <translation id="3522659714780527202">ਜਿਸ ਡੀਵਾਈਸ 'ਤੇ ਵੀ ਤੁਸੀਂ Chrome ਵਰਤਦੇ ਹੋ, ਉੱਥੇ ਆਪਣੀਆਂ ਟੈਬਾਂ ਦੇਖਣ ਲਈ ਸਿੰਕ ਚਾਲੂ ਕਰੋ</translation>

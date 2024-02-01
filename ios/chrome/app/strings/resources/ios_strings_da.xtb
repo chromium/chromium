@@ -148,6 +148,7 @@
 <translation id="1753905327828125965">Mest besøgte</translation>
 <translation id="1757699834933698436">{count,plural, =1{{count} svag adgangskode}one{{count} svag adgangskode}other{{count} svage adgangskoder}}</translation>
 <translation id="1767766085187034454">Google Oversæt</translation>
+<translation id="1769106850515800431">Personligt tilpasset indhold</translation>
 <translation id="1789803444939621101">Velkommen tilbage, <ph name="USER_NAME" /></translation>
 <translation id="1803264062614276815">Kortindehaverens navn</translation>
 <translation id="1809939268435598390">Slet mappe</translation>
@@ -828,6 +829,7 @@ Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis de
 <translation id="5327753393331509826">Få indholdsnotifikationer</translation>
 <translation id="5329451663851195956">Træk nedad for at opdatere.</translation>
 <translation id="5339316356165661760">Aktivér synkronisering</translation>
+<translation id="5343472494710226394">Nyheder, sport og indhold baseret på dine interesser.</translation>
 <translation id="5345660046352249607">{COUNT,plural, =1{Vil du spore denne pakke?}one{Vil du spore {COUNT} pakke?}other{Vil du spore {COUNT} pakker?}}</translation>
 <translation id="536067926684072644">Vis bogmærker</translation>
 <translation id="5360976571138293719">Du kan finde flere indstillinger vedrørende privatliv, sikkerhed og dataindsamling under <ph name="BEGIN_LINK" />Google-tjenester<ph name="END_LINK" />.</translation>
@@ -898,6 +900,7 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="5737974891429562743">Loginoplysningerne for kontoen er forældede. Opdater dem for at påbegynde synkroniseringen.</translation>
 <translation id="5738385766833540397">Administrer, hvordan du modtager underretninger om prisfald på produkter, du holder øje med</translation>
 <translation id="5738887413654608789">Dette giver dig mulighed for at opdage relevante websider baseret på dine omgivelser.</translation>
+<translation id="5744274077973758795">Notifikationer er aktiveret for <ph name="FEATURE_NAME" /></translation>
 <translation id="5745916533876677730">Gå til forrige fane</translation>
 <translation id="574762237186762643">Begivenheder</translation>
 <translation id="5748177854685749242">Ankommer <ph name="DATE" /></translation>
@@ -922,6 +925,7 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="5850913622988109693">Muligheder for at spore pakker</translation>
 <translation id="5854790677617711513">Ældre end 30 dage</translation>
 <translation id="5857090052475505287">Ny mappe</translation>
+<translation id="5857361196621230935">Føj fane til gruppe</translation>
 <translation id="5857770089550859117">Angiv adgangssætningen for at påbegynde synkroniseringen.</translation>
 <translation id="5859715514067755465">Frem</translation>
 <translation id="5860033963881614850">Fra</translation>
@@ -1274,6 +1278,7 @@ Når du er i Inkognito, kan websites ikke bruge cookies til at se din browserhis
 <translation id="7649070708921625228">Hjælp</translation>
 <translation id="7658239707568436148">Annuller</translation>
 <translation id="7666861622396822790">Du kan administrere dette i <ph name="BEGIN_LINK" />indstillingerne for indhold<ph name="END_LINK" />.</translation>
+<translation id="7669493687462784703">Vil du fortsætte med at downloade en konfigurationsprofil fra <ph name="WEBSITE" />?</translation>
 <translation id="7671141431838911305">INSTALLER</translation>
 <translation id="7673346542062368520">Du kan stryge til venstre for at browse i inkognitotilstand.</translation>
 <translation id="7679915578945954324">Websiteadresserne er kopieret</translation>
@@ -1522,6 +1527,7 @@ Websites kan bruge cookies til at se din browseraktivitet på forskellige websit
 <translation id="891282356902782456">Denne adgangskode gemmes kun på denne enhed. Hvis du vil bruge den på dine andre enheder, skal du gemme den på din Google-konto, <ph name="EMAIL" />.</translation>
 <translation id="8917490105272468696">Ja tak</translation>
 <translation id="8928133177108699615">Computer</translation>
+<translation id="8937676484307616731">Aktivér notifikationer for <ph name="FEATURE_NAME" /></translation>
 <translation id="894191600409472540">Opret stærke adgangskoder</translation>
 <translation id="8952559610785099500">Tilføj adgangskode</translation>
 <translation id="8953046091948372197">Her finder du dine adgangskoder</translation>

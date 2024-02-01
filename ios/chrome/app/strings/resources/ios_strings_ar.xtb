@@ -567,6 +567,7 @@
 <translation id="3929457972718048006">العناوين</translation>
 <translation id="3948600256434252210">يمكنك التمرير سريعًا إلى اليسار للتصفُّح في "وضع التصفّح المتخفي".</translation>
 <translation id="3955822496205734389">لديك كلمات مرور ضعيفة.</translation>
+<translation id="3958312024468322930">اسحب رمز التطبيق إلى شريط التطبيقات في أسفل شاشتك الرئيسية</translation>
 <translation id="3959736869653157332">القائمة ← علامة تبويب جديدة في وضع التصفّح المتخفي</translation>
 <translation id="3962326069546168954">حفظ</translation>
 <translation id="3967822245660637423">اكتمل التنزيل</translation>
@@ -1463,6 +1464,7 @@
 <translation id="8620640915598389714">تعديل</translation>
 <translation id="8624447588354561276">رقم الطرد</translation>
 <translation id="8624753446837753970">ضبط الموضع</translation>
+<translation id="8625706492572042370">تعديل الشاشة الرئيسية</translation>
 <translation id="8626393685701737946">يمكنك تغيير طريقة العرض التلقائية للمواقع الإلكترونية على الكمبيوتر المكتبي في الإعدادات &gt; إعدادات المحتوى.</translation>
 <translation id="8636825310635137004">للحصول على علامات التبويب من أجهزتك الأخرى، فعِّل المزامنة.</translation>
 <translation id="8637431369725868556">يمكنك حماية متصفّحك من المواقع الإلكترونية الخطيرة.</translation>
@@ -1537,7 +1539,7 @@
 <translation id="8981454092730389528">‏عناصر التحكم في النشاط على Google</translation>
 <translation id="8985320356172329008">‏أنت مسجّل الدخول إلى Google باستخدام</translation>
 <translation id="8991382496704361510">على هذا الجهاز</translation>
-<translation id="8998289560386111590">الوضع غير متاح على جهازك.</translation>
+<translation id="8998289560386111590">غير متاح على جهازك</translation>
 <translation id="8999545564078155498">‏فتح القفل باستخدام ميزة Face ID</translation>
 <translation id="9000089900434778519">محرّك بحثك هو <ph name="DSE_NAME" />. اطّلِع على تعليمات محرّك البحث الذي تستخدمه بشأن حذف سجلّ البحث، إن أمكن.</translation>
 <translation id="9008201768610948239">تجاهل</translation>

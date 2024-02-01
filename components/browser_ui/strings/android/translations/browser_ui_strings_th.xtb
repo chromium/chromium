@@ -66,6 +66,7 @@
 <translation id="2228071138934252756">หากต้องการอนุญาตให้ <ph name="APP_NAME" /> เข้าถึงกล้องถ่ายรูป ให้เปิดใช้กล้องใน<ph name="BEGIN_LINK" />การตั้งค่า Android<ph name="END_LINK" /> ด้วย</translation>
 <translation id="2235344399760031203">บล็อกคุกกี้ของบุคคลที่สามอยู่</translation>
 <translation id="2238944249568001759">การค้นหาที่แนะนําโดยอิงจากแท็บล่าสุด</translation>
+<translation id="2241587408274973373">การ์ดหน้าแท็บใหม่</translation>
 <translation id="2241634353105152135">เพียงครั้งเดียว</translation>
 <translation id="2253414712144136228">นำ<ph name="NAME_OF_LIST_ITEM" />ออก</translation>
 <translation id="2253989982043948086">{NUM_SELECTED,plural, =1{มี 1 เว็บไซต์ที่ถูกบล็อก}other{มี # เว็บไซต์ที่ถูกบล็อก}}</translation>
@@ -281,6 +282,7 @@
 <translation id="5706552988683188916">การดำเนินการนี้จะลบคุกกี้และข้อมูลเว็บไซต์อื่นๆ ของ <ph name="WEBSITE" /></translation>
 <translation id="5723967018671998714">บล็อกคุกกี้ของบุคคลที่สามในโหมดไม่ระบุตัวตนอยู่</translation>
 <translation id="5740126560802162366">เว็บไซต์สามารถบันทึกข้อมูลในอุปกรณ์ของคุณได้</translation>
+<translation id="5749158352074143502">ดำเนินการต่อโดยใช้แท็บนี้</translation>
 <translation id="5771720122942595109">บล็อก<ph name="PERMISSION_1" /></translation>
 <translation id="5804241973901381774">สิทธิ์</translation>
 <translation id="5844448279347999754">เมื่อเปิด เว็บไซต์จะขอดูข้อความและรูปภาพที่บันทึกไว้ในคลิปบอร์ดได้ เมื่อปิด เว็บไซต์จะดูข้อความหรือรูปภาพที่บันทึกไว้ในคลิปบอร์ดไม่ได้</translation>
@@ -421,6 +423,7 @@
 <translation id="7990211076305263060">เมื่อเปิด เว็บไซต์จะขอใช้ไมโครโฟนของคุณได้ เมื่อปิด เว็บไซต์จะใช้ไมโครโฟนไม่ได้</translation>
 <translation id="8007176423574883786">ปิดสำหรับอุปกรณ์นี้</translation>
 <translation id="802154636333426148">การดาวน์โหลดล้มเหลว</translation>
+<translation id="8024161440284949905">ดำเนินการต่อโดยใช้แท็บเหล่านี้</translation>
 <translation id="8042586301629853791">จัดเรียงตาม</translation>
 <translation id="8067883171444229417">เล่นวิดีโอ</translation>
 <translation id="8068648041423924542">เลือกใบรับรองไม่ได้</translation>

@@ -882,7 +882,6 @@
 <translation id="2674804415323431591">सुझाव छिपाएं</translation>
 <translation id="2677696497921480781">जन्मदिन और नामकरण का दिन</translation>
 <translation id="2677748264148917807">छोड़ें</translation>
-<translation id="2678468611080193228">कुछ समय के लिए तीसरे पक्ष की कुकी को अनुमति दें. इसका मतलब है कि साइट की सुविधाएं काम करेंगी, लेकिन आपकी सुरक्षा का स्तर कम हो जाएगा</translation>
 <translation id="2686919536310834199">'लिखने में मेरी मदद करें' सुविधा के लिए सुझाव/राय भेजें या शिकायत करें.</translation>
 <translation id="2687555958734450033">सबसे बढ़िया फ़िटिंग</translation>
 <translation id="2688186765492306706">500 x 760 मि॰मी॰</translation>
@@ -1099,7 +1098,6 @@
 <translation id="3157931365184549694">वापस लाएं</translation>
 <translation id="3158539265159265653">डिस्क</translation>
 <translation id="3162559335345991374">आप जिस वाई-फ़ाई का उपयोग कर रहे हैं, आपको उसके लॉगिन पेज पर जाने की ज़रूरत पड़ सकती है.</translation>
-<translation id="3166370127092388416">{NUM_COOKIES,plural, =0{तीसरे पक्ष की कुकी, किसी भी साइट को अनुमति नहीं है}=1{तीसरे पक्ष की कुकी, 1 साइट को अनुमति है}one{तीसरे पक्ष की कुकी, # साइट को अनुमति है}other{तीसरे पक्ष की कुकी, # साइटों को अनुमति है}}</translation>
 <translation id="3168744840365648658">रेडियो इक्विपमेंट</translation>
 <translation id="3169472444629675720">डिस्कवर</translation>
 <translation id="3171703252520926121">रीयल एस्टेट सेवाएं</translation>
@@ -1157,7 +1155,6 @@
 <translation id="3262698603497362968">खरीदने के विकल्प</translation>
 <translation id="3266367459139339908">हम ऐसे नए तरीके लॉन्च कर रहे हैं जिनसे यह तय किया जा सकेगा कि साइटें, आपकी दिलचस्पी के मुताबिक विज्ञापन दिखाने के लिए कौनसी जानकारी सेव कर सकती हैं. जैसे:</translation>
 <translation id="3266793032086590337">मान (मेल नहीं खा रहा)</translation>
-<translation id="3266972086368072861">{NUM_COOKIES,plural, =0{मिलती-जुलती साइटों समेत, कोई भी साइट ब्लॉक नहीं की गई है}=1{मिलती-जुलती साइटों समेत, 1 साइट ब्लॉक की गई है}one{मिलती-जुलती साइटों समेत, # साइट ब्लॉक की गई है}other{मिलती-जुलती साइटों समेत, # साइटें ब्लॉक की गई हैं}}</translation>
 <translation id="3268451620468152448">खुले सत्र</translation>
 <translation id="3270041629388773465">सीवीसी सेव होने पर तेज़ी से पैसे चुकाए जा सकते हैं</translation>
 <translation id="3270156322180235608">हवाई यात्रा</translation>
@@ -1202,7 +1199,6 @@
 <translation id="3359565626472459400">शादी</translation>
 <translation id="3360103848165129075">पैसे चुकाने की हैंडलर शीट</translation>
 <translation id="3360313521703038580">ईकोलॉजी और एनवायरमेंट</translation>
-<translation id="3360753465334942529">{NUM_COOKIES,plural, =0{तीसरे पक्ष की कुकी, कोई साइट ब्लॉक नहीं की गई}=1{तीसरे पक्ष की कुकी, 1 साइट ब्लॉक की गई}one{तीसरे पक्ष की कुकी, # साइट ब्लॉक की गई}other{तीसरे पक्ष की कुकी, # साइटें ब्लॉक की गईं}}</translation>
 <translation id="3362968246557010467">इस नीति को हटाई गई <ph name="OLD_POLICY" /> नीति से अपने आप कॉपी किया गया था. आपको इसके बजाय, इस नीति का इस्तेमाल करना चाहिए.</translation>
 <translation id="3364869320075768271"><ph name="URL" /> आपका वर्चुअल रिएलिटी वाला डिवाइस और डेटा इस्तेमाल करना चाहता है</translation>
 <translation id="3366477098757335611">कार्ड देखें</translation>
@@ -1605,7 +1601,6 @@
 <translation id="4151403195736952345">वैश्‍विक डिफ़ॉल्‍ट का उपयोग करें (पता करें)</translation>
 <translation id="4152318981910038897">{COUNT,plural, =1{पेज 1}one{पेज {COUNT}}other{पेज {COUNT}}}</translation>
 <translation id="4154277373259957087">पेमेंट के तरीके भरने से पहले, Chrome आपकी पहचान की पुष्टि करेगा. <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" /> में जाकर, इसे कभी भी अपडेट किया जा सकता है.</translation>
-<translation id="4159149286839604525">इसका मतलब है कि साइट की ज़्यादातर सुविधाएं काम करेंगी, लेकिन आपकी सुरक्षा का स्तर कम हो जाएगा</translation>
 <translation id="4159784952369912983">बैंगनी</translation>
 <translation id="4165986682804962316">साइट सेटिंग</translation>
 <translation id="4169535189173047238">अनुमति न दें</translation>
@@ -2028,7 +2023,6 @@
 <translation id="4983145717627482381">निर्देशों के साथ सैर और छुट्टियां</translation>
 <translation id="498323057460789381">स्कीमा की पुष्टि करने के दौरान कोई गड़बड़ी हुई: <ph name="ERROR" /></translation>
 <translation id="4984088539114770594">क्या आप माइक्रोफ़ोन का इस्तेमाल करना चाहते हैं?</translation>
-<translation id="4985206706500620449">आपने इस साइट के लिए तीसरे पक्ष की कुकी को अनुमति दी है</translation>
 <translation id="4989163558385430922">सभी देखें</translation>
 <translation id="4989542687859782284">अनुपलब्ध</translation>
 <translation id="4989809363548539747">यह प्लग इन समर्थित नहीं है</translation>
@@ -2244,7 +2238,6 @@
 <translation id="5414511064953050917">फिर भी ट्रांसफ़र करें</translation>
 <translation id="5421136146218899937">ब्राउज़िंग डेटा मिटाएं...</translation>
 <translation id="5423269318075950257">कीमत ट्रैक करें</translation>
-<translation id="5425241977284572032">{NUM_COOKIES,plural, =0{कोई साइट ब्लॉक नहीं की गई है}=1{1 साइट ब्लॉक की गई है}one{# साइट ब्लॉक की गई है}other{# साइटें ब्लॉक की गई हैं}}</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> वेबसाइट आपको सूचनाएं भेजना चाहती है</translation>
 <translation id="5430298929874300616">बुकमार्क निकालें</translation>
 <translation id="5434798570900738152">Chromium यह जानकारी <ph name="BEGIN_EMPHASIS" />सेव नहीं करेगा<ph name="END_EMPHASIS" />:
@@ -2801,7 +2794,6 @@
 <translation id="6521745193039995384">चालू नहीं</translation>
 <translation id="6524830701589638230">'सुलभता सेटिंग को मैनेज करें' बटन, Chrome की सेटिंग में सुलभता टूल को अपने हिसाब से बनाने के लिए इसे चालू करें</translation>
 <translation id="6529173248185917884">सातवां रोल</translation>
-<translation id="652937045869844725">तीसरे पक्ष की कुकी को अनुमति दें. इसका मतलब है कि साइट की सुविधाएं काम करेंगी, लेकिन आपकी सुरक्षा का स्तर कम हो जाएगा</translation>
 <translation id="6529602333819889595">मिटाना &amp;फिर से करें</translation>
 <translation id="6535751101619004418">मुद्राएं और विदेशी मुद्रा विनिमय</translation>
 <translation id="6536221421038631327"><ph name="DEVICE_TYPE" /> से पासपॉइंट सदस्यता हटाने पर, उससे जुड़े नेटवर्क भी हट जाएंगे. अपनी सदस्यता की योजना में बदलाव करने के लिए, "<ph name="FRIENDLY_NAME" />" से संपर्क करें. <ph name="LEARN_MORE" /></translation>
@@ -3124,7 +3116,7 @@
 <translation id="7174545416324379297">आपस में मिला दिया गया</translation>
 <translation id="7175097078723125014">'पते में बदलाव करें' विकल्प चुना गया</translation>
 <translation id="7175401108899573750">{SHIPPING_OPTIONS,plural, =0{<ph name="SHIPPING_OPTION_PREVIEW" />}=1{<ph name="SHIPPING_OPTION_PREVIEW" /> और <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> अन्य}one{<ph name="SHIPPING_OPTION_PREVIEW" /> और <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> अन्य}other{<ph name="SHIPPING_OPTION_PREVIEW" /> और <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> अन्य}}</translation>
-<translation id="7179323680825933600">भुगतान के तरीके सेव करें और भरें</translation>
+<translation id="7179323680825933600">पेमेंट के तरीके सेव करें और जानकारी भरें</translation>
 <translation id="7180611975245234373">रीफ्रेश करें</translation>
 <translation id="7181261019481237103">गुप्त विंडो खोलें</translation>
 <translation id="7182878459783632708">कोई नीति सेट नहीं की गई है</translation>
@@ -3155,7 +3147,6 @@
 <translation id="7221855153210829124">नोटिफ़िकेशन दिखाएं</translation>
 <translation id="7221857374443660083">बैंक आपकी पहचान की पुष्टि करना चाहता है</translation>
 <translation id="722454870747268814">नया गुप्त टैब</translation>
-<translation id="7226276626900992675">आपने इस साइट को तीसरे पक्ष की कुकी का इस्तेमाल करने की अनुमति दी है. इसका मतलब है कि साइट की ज़्यादातर सुविधाएं काम करेंगी, लेकिन आपकी सुरक्षा का स्तर कम हो जाएगा.</translation>
 <translation id="7227293336683593977">कीमत का इतिहास</translation>
 <translation id="7227747683324411744">मुमकिन है कि आपने जिस साइट पर विज़िट किया है वहां हमलावर आपसे धोखे से नुकसान पहुंचाने वाले सॉफ़्टवेयर इंस्टॉल करवा दें. इससे आपके ब्राउज़ करने के तरीके पर असर पड़ सकता है. जैसे, वे आपके होम पेज में बदलाव कर सकते हैं या आपको उस साइट पर ज़्यादा विज्ञापन दिखा सकते हैं.</translation>
 <translation id="7233592378249864828">जिस शीट की पुष्टि की गई है उसे प्रिंट करें</translation>
@@ -3772,7 +3763,6 @@
 <translation id="8398335999901363925">टच करके भरी जाने वाली पेमेंट के तरीकों की सूची, पूरी स्क्रीन पर खुली है.</translation>
 <translation id="8398446215576328011">लागू नीतियों को वापस लाएं</translation>
 <translation id="8398790343843005537">अपना फ़ोन ढूंढें</translation>
-<translation id="8401772916834964810">{COUNT,plural, =0{Chrome आज फिर से कुकी ब्लॉक करेगा}=1{Chrome कल फिर से कुकी ब्लॉक करेगा}one{Chrome # दिन बाद फिर से कुकी ब्लॉक करेगा}other{Chrome # दिन बाद फिर से कुकी ब्लॉक करेगा}}</translation>
 <translation id="8403506619177967839">फ़ैन फ़िक्शन</translation>
 <translation id="8405579342203358118">Chrome की सेटिंग में आप जो जानकारी सिंक करते हैं उसे मैनेज करें</translation>
 <translation id="8406071103346257942">पासवर्ड डालने के लिए, स्क्रीन लॉक का इस्तेमाल करना बंद करें</translation>

@@ -66,6 +66,7 @@
 <translation id="2228071138934252756">የእርስዎን ካሜራ <ph name="APP_NAME" /> እንዲደርስበት ለማድረግ፣ በ <ph name="BEGIN_LINK" />Android ቅንብሮች<ph name="END_LINK" /> ውስጥ ካሜራን በተጨማሪ ያብሩ።</translation>
 <translation id="2235344399760031203">የሦስተኛ ወገን ኩኪዎች ታግደዋል</translation>
 <translation id="2238944249568001759">በእርስዎ የመጨረሻ ትር ላይ በመመስረት የተጠቆሙ ፍለጋዎች</translation>
+<translation id="2241587408274973373">አዲስ የትር ገጽ ካርዶች</translation>
 <translation id="2241634353105152135">አንድ ጊዜ ብቻ</translation>
 <translation id="2253414712144136228"><ph name="NAME_OF_LIST_ITEM" />ን አስወግድ</translation>
 <translation id="2253989982043948086">{NUM_SELECTED,plural, =1{1 ጣቢያ አግዷል}one{# ጣቢያ አግዷል}other{# ጣቢያዎች አግደዋል}}</translation>
@@ -281,6 +282,7 @@
 <translation id="5706552988683188916">ይህ ለ<ph name="WEBSITE" /> ኩኪዎችን እና ሌላ የጣቢያ ውሂብን ይሰርዛል</translation>
 <translation id="5723967018671998714">ማንነት በማያሳውቅ ሁነታ ላይ የሦስተኛ ወገን ኩኪዎች ይታገዳሉ</translation>
 <translation id="5740126560802162366">ጣቢያዎች በመሣሪያዎ ላይ ውሂብ ማስቀመጥ ይችላሉ</translation>
+<translation id="5749158352074143502">በዚህ ትር ላይ ይቀጥሉ</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" /> ታግዷል</translation>
 <translation id="5804241973901381774">ፍቃዶች</translation>
 <translation id="5844448279347999754">ሲበራ፣ ጣቢያዎች ወደ ቅንጥብ ሰሌዳዎ የተቀመጡ ጽሑፎችን እና ምስሎችን ለማየት መጠየቅ ይችላሉ። ሲጠፋ፣ ጣቢያዎች ወደ ቅንጥብ ሰሌዳዎ የተቀመጡ ጽሑፎችን ወይም ምስሎችን ማየት አይችሉም።</translation>
@@ -421,6 +423,7 @@
 <translation id="7990211076305263060">ሲበራ፣ ጣቢያዎች ማይክሮፎንዎን ለመጠቀም ሊጠይቁ ይችላሉ። ሲጠፋ፣ ጣቢያዎች ማይክሮፎንዎን መጠቀም አይችሉም።</translation>
 <translation id="8007176423574883786">ለዚህ መሣሪያ ጠፍቷል</translation>
 <translation id="802154636333426148">ማውረድ አልተሳካም</translation>
+<translation id="8024161440284949905">በእነዚህ ትሮች ላይ ይቀጥሉ</translation>
 <translation id="8042586301629853791">ደርድር በ፦</translation>
 <translation id="8067883171444229417">ቪዲዮ አጫውት</translation>
 <translation id="8068648041423924542">የዕውቅና ማረጋገጫን መምረጥ አልተቻለም።</translation>

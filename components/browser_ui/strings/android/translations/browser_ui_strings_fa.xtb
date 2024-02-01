@@ -66,6 +66,7 @@
 <translation id="2228071138934252756">‏برای اینکه به <ph name="APP_NAME" /> اجازه دهید به دوربین دسترسی پیدا کند، دوربین را در <ph name="BEGIN_LINK" />تنظیمات Android<ph name="END_LINK" /> نیز روشن کنید.</translation>
 <translation id="2235344399760031203">کوکی‌های شخص ثالث مسدود شده‌اند</translation>
 <translation id="2238944249568001759">جستجوهای پیشنهادی براساس آخرین برگه شما</translation>
+<translation id="2241587408274973373">کارت‌های صفحه برگه جدید</translation>
 <translation id="2241634353105152135">فقط یک بار</translation>
 <translation id="2253414712144136228">برداشتن <ph name="NAME_OF_LIST_ITEM" /></translation>
 <translation id="2253989982043948086">{NUM_SELECTED,plural, =1{یک سایت مسدود است}one{# سایت مسدود است}other{# سایت مسدود هستند}}</translation>
@@ -234,7 +235,7 @@
 <translation id="5039804452771397117">اجازه دادن</translation>
 <translation id="5048398596102334565">مجاز بودن دسترسی سایت‌ها به حسگرهای حرکتی (توصیه می‌شود)</translation>
 <translation id="5050380848339752099">این سایت می‌خواهد خارج از «حالت ناشناس»، اطلاعاتی را با برنامه‌ای هم‌رسانی کند.</translation>
-<translation id="5063480226653192405">کاربر </translation>
+<translation id="5063480226653192405">مصرف</translation>
 <translation id="5091013926750941408">سایت ویژه تلفن همراه</translation>
 <translation id="509133520954049755">درخواست نمای رایانه</translation>
 <translation id="5091663350197390230">هرگاه روشن باشد، سایت‌ها می‌توانند از جاوا اسکریپت استفاده کنند. هرگاه خاموش باشد، سایت‌ها نمی‌توانند از جاوا اسکریپت استفاده کنند.</translation>
@@ -281,6 +282,7 @@
 <translation id="5706552988683188916">با این کار کوکی‌ها و دیگر داده‌های سایت برای <ph name="WEBSITE" /> حذف می‌شود</translation>
 <translation id="5723967018671998714">کوکی‌های شخص ثالث در «حالت ناشناس» مسدود شده‌اند</translation>
 <translation id="5740126560802162366">سایت‌ها می‌توانند در دستگاه داده ذخیره کنند</translation>
+<translation id="5749158352074143502">ادامه کار با این برگه</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" /> مسدود شد</translation>
 <translation id="5804241973901381774">اجازه‌ها</translation>
 <translation id="5844448279347999754">هرگاه روشن باشد، سایت‌ها می‌توانند از شما بخواهند نوشتار و تصاویر ذخیره‌شده در بریده‌دان شما را ببینند. هرگاه روشن باشد، سایت‌ها نمی‌توانند نوشتار و تصاویر ذخیره‌شده در بریده‌دان شما را ببینند.</translation>
@@ -397,7 +399,7 @@
 <translation id="7561196759112975576">همیشه</translation>
 <translation id="757524316907819857">مسدود کردن سایت‌ها برای پخش محتوای محافظت‌شده</translation>
 <translation id="7594634374516752650">به دستگاه بلوتوث متصل است</translation>
-<translation id="7641339528570811325">پاک کردن داده‌های محصول مرور…</translation>
+<translation id="7641339528570811325">پاک کردن داده‌های مرور…</translation>
 <translation id="7649070708921625228">راهنما</translation>
 <translation id="7658239707568436148">لغو</translation>
 <translation id="7667547420449112975">جادوگر شهر اُز</translation>
@@ -421,6 +423,7 @@
 <translation id="7990211076305263060">هرگاه روشن باشد، سایت‌ها می‌توانند استفاده از میکروفون را درخواست کنند. هرگاه خاموش باشد، سایت‌ها نمی‌توانند از میکروفون استفاده کنند.</translation>
 <translation id="8007176423574883786">برای این دستگاه غیرفعال شد</translation>
 <translation id="802154636333426148">بارگیری نشد</translation>
+<translation id="8024161440284949905">ادامه کار با این برگه‌ها</translation>
 <translation id="8042586301629853791">مرتب‌سازی براساس:</translation>
 <translation id="8067883171444229417">پخش ویدیو</translation>
 <translation id="8068648041423924542">انتخاب گواهی ممکن نیست.</translation>

@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="is">
+<translation id="1021782183249308751">Ýttu á og haltu inni Chrome-tákninu og smelltu á „Breyta heimaskjá“</translation>
 <translation id="1066101356081285416">Chrome mun greina rakningarnúmer á vefsvæðum sem þú opnar og birta þér fréttir af pökkum á síðu nýrra flipa. Rakningarnúmer pakkans og heiti vefsvæðisins verða send til Google í því skyni að veita þennan eiginleika og bæta verslunareiginleika Google fyrir alla. Þú getur uppfært þetta hvenær sem er í <ph name="BEGIN_LINK" />stillingum pakkarakningar<ph name="END_LINK" />.</translation>
 <translation id="1085696779717592361">Nota Chrome sjálfgefið</translation>
 <translation id="1105362920864247682">Hreinsa vefskoðunargögn í Chrome.</translation>
@@ -96,6 +97,7 @@ Aðeins einstaklingar sem eru með aðgangsorðið þitt geta lesið dulkóðuð
 <translation id="3345341804167540816">Notaðu Chrome alls staðar</translation>
 <translation id="3360031466389132716">{THRESHOLD,plural, =1{Þetta gerist þegar Chrome er ekki í notkun í {THRESHOLD} mín.}one{Þetta gerist þegar Chrome er ekki í notkun í {THRESHOLD} mín.}other{Þetta gerist þegar Chrome er ekki í notkun í {THRESHOLD} mín.}}</translation>
 <translation id="3399930248910934354">Opna stillingar Chrome</translation>
+<translation id="344736123700721678">Opnaðu Chrome hraðar úr heimaskjásdokkunni þinni</translation>
 <translation id="3472587960215700950">Chrome notar Google-kort til að sýna þér leiðarlýsingu og staðbundnar upplýsingar um heimilisföng sem greinast.</translation>
 <translation id="3503014945441706099">Fáðu „Enn öruggari vefskoðun“ fyrir þennan Chrome-prófíl líka</translation>
 <translation id="3522659714780527202">Kveiktu á samstillingu til að sjá flipana þína hvar sem þú notar Chrome</translation>

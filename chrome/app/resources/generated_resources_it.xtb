@@ -239,6 +239,7 @@ Controlla le password in qualsiasi momento in <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="1177073277575830464">Configurazione rapida di Android completata. Continua la configurazione sul tuo dispositivo <ph name="DEVICE_TYPE" />.</translation>
 <translation id="1177440945615690056">Puoi connetterti a qualsiasi rete mobile idonea in Impostazioni</translation>
 <translation id="1177863135347784049">Personalizzati</translation>
+<translation id="1178093605842850860">Estensione autorizzata a leggere e modificare questo sito</translation>
 <translation id="1178581264944972037">Pausa</translation>
 <translation id="1178601482396475810">Gestisci la sincronizzazione dei dispositivi</translation>
 <translation id="117916940443676133">Il token di sicurezza non è protetto tramite PIN. Per poter gestire i dati di accesso devi creare un PIN.</translation>
@@ -2600,6 +2601,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2935314715123552088">Disattiva profilo eSIM attivo</translation>
 <translation id="2935654492420446828">Aggiungi un account della scuola in un secondo momento</translation>
 <translation id="2936851848721175671">Backup e ripristino</translation>
+<translation id="2938981087412273365">Non autorizzata a leggere e modificare questo sito</translation>
 <translation id="2939908794993783865">Altri siti non attivi</translation>
 <translation id="2939938020978911855">Mostra dispositivi Bluetooth disponibili</translation>
 <translation id="2941112035454246133">Bassa</translation>
@@ -3408,6 +3410,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3602894439067790744">Leggi i numeri come</translation>
 <translation id="3603622770190368340">Ottieni certificato di rete</translation>
 <translation id="3605156246402033687">{COUNT,plural, =1{{COUNT} account utilizza la stessa password}other{{COUNT} account utilizzano la stessa password}}</translation>
+<translation id="3605515937536882518">Valori del modulo aggiornati</translation>
 <translation id="3605780360466892872">Ventiquattrore</translation>
 <translation id="3607671391978830431">Per un bambino</translation>
 <translation id="3608460311600621471">Inserisci un motivo per voler stampare questi dati:</translation>
@@ -4474,6 +4477,7 @@ Potrebbero essere incluse informazioni su software installati, file, browser e s
 <translation id="4410545552906060960">Usa un numero (PIN) anziché una password per sbloccare il dispositivo. Per impostare il PIN in un secondo momento, vai alle Impostazioni.</translation>
 <translation id="4411578466613447185">Certificato di firma del codice</translation>
 <translation id="4411719918614785832">Queste passkey sono salvate in Windows Hello su questo computer e non nel tuo Account Google.</translation>
+<translation id="4412544493002546580">Riprova o seleziona uno dei suggerimenti di seguito.</translation>
 <translation id="4412547955014928315">Vuoi eliminare le autorizzazioni e i dati del sito <ph name="SITE_NAME" /> e di tutti i relativi siti secondari?</translation>
 <translation id="4412632005703201014">È in corso la migrazione delle app di Chrome alle app web progressive. Questa app di Chrome è stata installata sul tuo browser dalla tua organizzazione. Per aprire l'app web progressiva dall'elenco App, contatta innanzitutto l'amministratore e chiedigli di disinstallare l'app Chrome. Nel frattempo, puoi visitare <ph name="EXTENSION_LAUNCH_URL" /> per aprire <ph name="EXTENSION_NAME" /> sul Web.</translation>
 <translation id="4412698727486357573">Centro assistenza</translation>
@@ -4889,6 +4893,7 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="4744268813103118742">Vai al sito</translation>
 <translation id="4744571849207727284">Excel</translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{Riattiva l'audio del sito}other{Riattiva l'audio dei siti}}</translation>
+<translation id="4745500401920035244">L'amministratore ha apportato una modifica a livello di sistema che disattiva alcuni vecchi profili. Non puoi più accedere a questo profilo, ma puoi comunque rimuoverlo</translation>
 <translation id="474609389162964566">Accedi al tuo assistente con "Hey Google"</translation>
 <translation id="4748783296226936791">Solitamente i siti si connettono ai dispositivi HID per funzionalità che usano tastiere insolite, controller di gioco e altri dispositivi</translation>
 <translation id="4749960740855309258">Apri una nuova scheda</translation>
@@ -5435,6 +5440,7 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="5178667623289523808">Trova precedente</translation>
 <translation id="5181140330217080051">Download in corso</translation>
 <translation id="5181172023548002891">Su Gestore delle password di Google per l'account <ph name="ACCOUNT" /></translation>
+<translation id="5181551096188687373">La password viene salvata solo su questo dispositivo. Per usarlo sugli altri tuoi dispositivi, salvalo nel tuo Account Google <ph name="USER_EMAIL" />.</translation>
 <translation id="5183344263225877832">Vuoi reimpostare tutte le autorizzazioni del dispositivo HID?</translation>
 <translation id="5184063094292164363">Console &amp;JavaScript</translation>
 <translation id="5184209580557088469">Esiste già una richiesta con questo nome utente</translation>
@@ -5721,6 +5727,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="5417312524372586921">Temi del browser</translation>
 <translation id="5417353542809767994">Usa rapidamente una password efficace</translation>
 <translation id="541737483547792035">Ingrandisci lo schermo</translation>
+<translation id="541822678830750798">Richiesta di lettura e modifica del sito in corso…</translation>
 <translation id="5419405654816502573">Voice Match</translation>
 <translation id="5420061891386124792">Consente di salvare e recuperare i gruppi di schede. Fai clic con il tasto destro del mouse su un gruppo di schede per salvarlo. Consente di recuperare i gruppi dalla barra dei preferiti.</translation>
 <translation id="5420274697768050645">Richiedi la password per sbloccare il dispositivo per maggiore sicurezza</translation>
@@ -5973,6 +5980,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="560834977503641186">Sync Wi-Fi, Ulteriori informazioni</translation>
 <translation id="5608580678041221894">Tocca i seguenti tasti per regolare o spostare l'area di ritaglio</translation>
 <translation id="5609231933459083978">L'applicazione non sembra essere valida.</translation>
+<translation id="5610867721023328944">Riprova o seleziona uno dei temi disponibili di seguito.</translation>
 <translation id="5611398002774823980">Salva nell'account</translation>
 <translation id="561236229031062396"><ph name="SHORTCUT_NAME" />, <ph name="APP_FULL_NAME" /></translation>
 <translation id="5614190747811328134">Notifica all'utente</translation>
@@ -6295,6 +6303,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="586567932979200359">Stai eseguendo <ph name="PRODUCT_NAME" /> dall'immagine disco. L'installazione sul computer permette di eseguirlo senza immagine disco e ne garantisce l'aggiornamento.</translation>
 <translation id="5865733239029070421">Invia automaticamente a Google statistiche sull'utilizzo e report sugli arresti anomali</translation>
 <translation id="5868434909835797817">Microfono non attivo sul dispositivo</translation>
+<translation id="5868479397518301468">Accesso scaduto</translation>
 <translation id="5868822853313956582">Segui i colori del dispositivo</translation>
 <translation id="5869029295770560994">OK</translation>
 <translation id="5869522115854928033">Password salvate</translation>
@@ -6645,6 +6654,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
     Visibile come <ph name="QUICK_START_DEVICE_DISPLAY_NAME" />…</translation>
 <translation id="6146409560350811147">La sincronizzazione non funziona. Prova ad accedere nuovamente.</translation>
 <translation id="6147020289383635445">Anteprima di stampa non riuscita.</translation>
+<translation id="6147253937684562370">Per sbloccare il profilo accedi con l'indirizzo email del tuo account principale: <ph name="EMAIL" /></translation>
 <translation id="6148576794665275391">Apri adesso</translation>
 <translation id="614890671148262506">Consenti sempre le notifiche da questo sito</translation>
 <translation id="6149015141270619212">Impossibile connettersi a Internet</translation>
@@ -7625,6 +7635,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="6918677045355889289">Aggiornamento di ChromeOS richiesto</translation>
 <translation id="6919354101107095996">Prova ad accedere al sito. Poi esegui nuovamente il download</translation>
 <translation id="6919952941889172531">Vuoi anche attivare la Navigazione sicura avanzata per questo profilo Chrome?</translation>
+<translation id="6920473853105515518">Verifica che <ph name="DEVICE_TYPE" /> sia connesso a internet e riprova. Puoi anche visitare la pagina play.google/play-terms su un altro dispositivo.</translation>
 <translation id="6920989436227028121">Apri in una scheda normale</translation>
 <translation id="6921104647315081813">Cancella attività</translation>
 <translation id="692114467174262153">Impossibile aprire <ph name="ALTERNATIVE_BROWSER_NAME" /></translation>
@@ -8625,7 +8636,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="769824636077131955">Il documento è troppo grande per essere sottoposto a un controllo di sicurezza. Puoi stampare documenti di dimensioni massime pari a 50 MB.</translation>
 <translation id="7698507637739331665">Alcuni elementi sono bloccati</translation>
 <translation id="7700516433658473670">Stampanti e scanner</translation>
-<translation id="7701040980221191251">Nulla</translation>
+<translation id="7701040980221191251">Nessun dato</translation>
 <translation id="7701869757853594372">Handle UTENTE</translation>
 <translation id="7702463352133825032">Interrompi la trasmissione su <ph name="DEVICE_NAME" /></translation>
 <translation id="7702574632857388784">Rimuovi <ph name="FILE_NAME" /> dall'elenco</translation>
@@ -8755,6 +8766,7 @@ Premi un sensore o un tasto assegnato per rimuovere l'assegnazione.</translation
 
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="7789963078219276159">Lo sfondo della pagina iniziale è ora <ph name="CATEGORY" />.</translation>
+<translation id="7791269138074599214">Metodo di immissione</translation>
 <translation id="7791429245559955092">Questa applicazione verrà installata sul profilo Chrome attualmente in uso</translation>
 <translation id="7791436592012979144">Scorrimento inverso attivato</translation>
 <translation id="7791543448312431591">Aggiungi</translation>
@@ -8847,6 +8859,7 @@ Premi un sensore o un tasto assegnato per rimuovere l'assegnazione.</translation
 <translation id="7861215335140947162">&amp;Download</translation>
 <translation id="7861846108263890455">Lingua dell'Account Google</translation>
 <translation id="7864539943188674973">Disattiva Bluetooth</translation>
+<translation id="7864825798076155402">Salvare nel tuo Account Google?</translation>
 <translation id="7865127013871431856">Opzioni di Traduttore</translation>
 <translation id="786957569166715433"><ph name="DEVICE_NAME" />, accoppiato</translation>
 <translation id="7869655448736341731">Qualsiasi</translation>
@@ -10027,6 +10040,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8756969031206844760">Aggiornare la password?</translation>
 <translation id="8757368836647541092">Utente <ph name="USER_NAME_OR_EMAIL" /> rimosso</translation>
 <translation id="8759753423332885148">Scopri di più.</translation>
+<translation id="876161309768861172">Impossibile accedere, riprova</translation>
 <translation id="8761945298804995673">Questo utente esiste già</translation>
 <translation id="8762886931014513155">Il dispositivo <ph name="DEVICE_TYPE" /> richiede un aggiornamento</translation>
 <translation id="8763927697961133303">Dispositivo USB</translation>
@@ -10537,6 +10551,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="9138978632494473300">Aggiungi scorciatoie per le seguenti posizioni:</translation>
 <translation id="9139988741193276691">Configurazione di Linux</translation>
 <translation id="9140067245205650184">Stai utilizzando un flag di funzione non supportato: <ph name="BAD_FLAG" />. Stabilità e sicurezza ne risentiranno.</translation>
+<translation id="914031120300235526">Impossibile sbloccare il profilo</translation>
 <translation id="9142637293078737510">Alias immagine</translation>
 <translation id="9143298529634201539">Rimuovere il suggerimento?</translation>
 <translation id="9143922477019434797">Proteggi le tue password</translation>
@@ -10665,6 +10680,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="951991426597076286">Rifiuta</translation>
 <translation id="952471655966876828">Il dispositivo si connetterà automaticamente quando verrà acceso e sarà in uso</translation>
 <translation id="953434574221655299">Autorizzati a sapere quando stai utilizzando attivamente il tuo dispositivo</translation>
+<translation id="954749761428814584">Lingua e metodo di immissione</translation>
 <translation id="956500788634395331">È attiva la protezione da estensioni potenzialmente dannose</translation>
 <translation id="957179356621191750">a 6 punti</translation>
 <translation id="957960681186851048">Questo sito ha tentato di scaricare automaticamente più file</translation>

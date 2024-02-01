@@ -66,6 +66,7 @@
 <translation id="2228071138934252756">To let <ph name="APP_NAME" /> access your camera, also turn on camera in <ph name="BEGIN_LINK" />Android settings<ph name="END_LINK" />.</translation>
 <translation id="2235344399760031203">Third-party cookies are blocked</translation>
 <translation id="2238944249568001759">Suggested searches based on your last tab</translation>
+<translation id="2241587408274973373">New tab page cards</translation>
 <translation id="2241634353105152135">Just once</translation>
 <translation id="2253414712144136228"><ph name="NAME_OF_LIST_ITEM" /> Remove</translation>
 <translation id="2253989982043948086">{NUM_SELECTED,plural, =1{1 site blocked}other{# sites blocked}}</translation>
@@ -281,6 +282,7 @@
 <translation id="5706552988683188916">This deletes cookies and other site data for <ph name="WEBSITE" /></translation>
 <translation id="5723967018671998714">Third-party cookies are blocked in Incognito mode</translation>
 <translation id="5740126560802162366">Sites can save data on your device</translation>
+<translation id="5749158352074143502">Continue with this tab</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" /> blocked</translation>
 <translation id="5804241973901381774">Permissions</translation>
 <translation id="5844448279347999754">When on, sites can ask to see text and images saved to your clipboard. When off, sites can't see text or images saved to your clipboard.</translation>
@@ -421,6 +423,7 @@
 <translation id="7990211076305263060">When on, sites can ask to use your microphone. When off, sites can't use your microphone.</translation>
 <translation id="8007176423574883786">Turned off for this device</translation>
 <translation id="802154636333426148">Download failed</translation>
+<translation id="8024161440284949905">Continue with these tabs</translation>
 <translation id="8042586301629853791">Sort by:</translation>
 <translation id="8067883171444229417">Play video</translation>
 <translation id="8068648041423924542">Unable to select certificate.</translation>

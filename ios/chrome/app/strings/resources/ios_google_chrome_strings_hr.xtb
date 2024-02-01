@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="hr">
+<translation id="1021782183249308751">Pritisnite i zadržite ikonu Chromea pa kliknite Uredite početni zaslon</translation>
 <translation id="1066101356081285416">Chrome će otkriti evidencijske brojeve na web-lokacijama koje posjećujete i prikazati vam novosti o paketima na novoj kartici preglednika. Broj za praćenje pošiljke i naziv web-lokacije poslat će se Googleu radi pružanja te značajke i poboljšanja značajki Google Shoppinga za sve korisnike. To uvijek možete ažurirati u <ph name="BEGIN_LINK" />postavkama praćenja paketa<ph name="END_LINK" />.</translation>
 <translation id="1085696779717592361">Koristite Chrome prema zadanim postavkama</translation>
 <translation id="1105362920864247682">Brisanje podataka o pregledavanju u Chromeu.</translation>
@@ -96,6 +97,7 @@ Vaše šifrirane podatke može pročitati samo osoba koja ima vašu šifru. Šif
 <translation id="3345341804167540816">Upotrebljavajte Chrome svugdje</translation>
 <translation id="3360031466389132716">{THRESHOLD,plural, =1{To se događa kad se Chrome ne koristi {THRESHOLD} minutu}one{To se događa kad se Chrome ne koristi {THRESHOLD} minutu}few{To se događa kad se Chrome ne koristi {THRESHOLD} minute}other{To se događa kad se Chrome ne koristi {THRESHOLD} minuta}}</translation>
 <translation id="3399930248910934354">Otvorite postavke Chromea</translation>
+<translation id="344736123700721678">Brže pristupite Chromeu putem donje trake početnog zaslona</translation>
 <translation id="3472587960215700950">Chrome koristi Google karte kako bi vam pružio upute i lokalne informacije o otkrivenim adresama.</translation>
 <translation id="3503014945441706099">Nabavite poboljšano sigurno pregledavanje i za ovaj profil u Chromeu</translation>
 <translation id="3522659714780527202">Da biste vidjeli svoje kartice bez obzira na to gdje koristite Chrome, uključite sinkronizaciju</translation>
@@ -220,6 +222,7 @@ Više postavki koje upotrebljavaju podatke za poboljšanje vašeg doživljaja u 
 <translation id="7175129790242719365">Savjet za Chrome: prijavite se u Chrome</translation>
 <translation id="7187993566681480880">Štiti vas na Chromeu i može se upotrebljavati za poboljšanje vaše sigurnosti u drugim Googleovim aplikacijama kad ste prijavljeni.</translation>
 <translation id="7200524487407690471">Chrome automatski pokreće sigurnosnu provjeru svaki dan kako bi vas zaštitio od neovlaštenog pristupa podacima, nesigurnih web-lokacija i drugih opasnosti. Više o sigurnosnoj provjeri možete pronaći u postavkama.</translation>
+<translation id="7203324561587388418">Pratite sadržaj i korisne savjete za Chrome.</translation>
 <translation id="72119412072970160">Zaporke koje ste spremili u Google upravitelj zaporki možete koristiti u drugim aplikacijama na iPadu.</translation>
 <translation id="723787869754590019">Upotrebljavajte Chrome za automatsko popunjavanje</translation>
 <translation id="7254380941803999489">Postavljanje Chromea kao zadanog preglednika</translation>

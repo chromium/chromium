@@ -1577,7 +1577,7 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
     <ph name="BEGIN_PARAGRAPH2" />Jadanik ez da onartzen Chrome-ko gailuak <ph name="MS_AD_NAME" /> bidez kudeatzea. Saioa hasteko, erabili beste gailu bat edo jarri gailuen administratzailearekin harremanetan.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2169062631698640254">Hasi saioa halere</translation>
 <translation id="2173302385160625112">Egiaztatu Internetera konektatuta zaudela</translation>
-<translation id="2173801458090845390">Gehitu eskaeraren IDa gailu honetan</translation>
+<translation id="2173801458090845390">Gehitu eskaera-identifikatzailea gailu honetan</translation>
 <translation id="2175384018164129879">&amp;Kudeatu bilatzaileak eta Webgune-bilaketa</translation>
 <translation id="217576141146192373">Ezin da gehitu inprimagailua. Egiaztatu ongi konfiguratuta dagoela eta saiatu berriro.</translation>
 <translation id="2175927920773552910">QR kodea</translation>
@@ -9092,7 +9092,7 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="8048977114738515028">Profil hau zuzenean atzitzeko, sortu mahaigaineko lasterbide bat gailuan</translation>
 <translation id="8049029041626250638">Konektatu teklatu edo sagu bat. Bluetooth bidezko gailuak erabiltzen ari bazara, ziurtatu parekatzeko prest daudela.</translation>
 <translation id="8049122382261047457">Bilatu irudiak Google Lens-ekin</translation>
-<translation id="8049705080247101012">Google-k intentzio txarreko programa gisa markatu du "<ph name="EXTENSION_NAME" />", eta hura instalatzea ekidin da</translation>
+<translation id="8049705080247101012">Google-k "<ph name="EXTENSION_NAME" />" asmo txarreko programa dela salatu du, eta hura instalatzea ekidin da</translation>
 <translation id="8049948037269924837">Ukipen-panelarekin gora eta behera alderantziz egiteko aukera</translation>
 <translation id="8050038245906040378">Microsoft kode komertzialen sinadurak</translation>
 <translation id="8050191834453426339">Egiaztatu berriro</translation>

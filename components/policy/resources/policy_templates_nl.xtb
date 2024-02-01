@@ -267,7 +267,6 @@ Als je het beleid toepast, kunnen gebruikers de hardware op <ph name="PRODUCT_OS
 
       Als je het beleid instelt op False of niet instelt, kunnen webpagina's de WebGL API gebruiken en kunnen plug-ins de Pepper 3D API gebruiken, maar kan in de standaardinstellingen van de browser nog steeds zijn ingesteld dat er opdrachtregelargumenten nodig zijn om deze API's te gebruiken.</translation>
 <translation id="1198458955128279215">Standaardgedrag van het functie-uitrolplan gebruiken</translation>
-<translation id="119943715168319757">MIDI-instellingen</translation>
 <translation id="1202216683470826356">Kaarten tonen op de pagina Nieuw tabblad</translation>
 <translation id="1204263402976895730">Bedrijfsprinters aangezet</translation>
 <translation id="1207301487141109411">Voorkomen dat gebruikers avatars selecteren via het lokale bestandssysteem, de camera en het Google-profiel</translation>
@@ -2801,7 +2800,6 @@ Als je dit beleid niet instelt, wordt het nieuwe gedrag gebruikt, net als bij de
 <translation id="3278042410658310805">Gesproken feedback op het inlogscherm uitzetten en de gebruiker toestaan dit tijdelijk aan te zetten</translation>
 <translation id="328347261792478720">De browser toont standaard media-aanbevelingen die zijn gepersonaliseerd voor de gebruiker. Als je dit beleid niet toepast, ziet de gebruiker deze aanbevelingen niet. Als je dit beleid toepast of niet instelt, ziet de gebruiker de media-aanbevelingen.</translation>
 <translation id="3284094172359247914">Gebruik van de WebUSB API beheren</translation>
-<translation id="3284658508278342293">MIDI-rechten toestaan op deze sites</translation>
 <translation id="3286159327013237833">Automatisch klikken op het inlogscherm aanzetten</translation>
 <translation id="3288595667065905535">Releasekanaal</translation>
 <translation id="3294430356898755483">Als je dit beleid instelt, kunnen beheerders een lijst met printers instellen voor hun gebruikers. Als gebruikers voor het eerst iets afdrukken, moeten ze een printer selecteren.
@@ -3244,11 +3242,6 @@ Als je het beleid niet instelt, worden er geen telemetriegegevens van websites g
 
 Als je dit beleid instelt, kunnen gebruikers het niet wijzigen. Als je het beleid niet instelt, is opstarten bij netstroom niet mogelijk en kunnen gebruikers dit niet veranderen.</translation>
 <translation id="3660562134618097814">SAML IdP-cookies overdragen tijdens het inloggen</translation>
-<translation id="3661897198667953320">Hiermee wordt een lijst met site-URL-patronen ingesteld waarmee sites worden gespecificeerd waarvoor MIDI-rechten automatisch worden geweigerd. Zo wordt voorkomen dat sites MIDI-apparaten gebruiken, zoals muziekinstrumenten en controllers.
-
-Ga naar https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns voor gedetailleerde informatie over geldige site-URL-patronen. Jokertekens, <ph name="WILDCARD_VALUE" />, zijn toegestaan. Dit beleid zoekt alleen overeenkomsten op basis van de herkomst, dus elk pad in het URL-patroon wordt genegeerd.
-
-Als dit beleid niet is ingesteld voor een site, is het beleid van <ph name="DEFAULT_MIDI_SETTING_POLICY_NAME" /> van toepassing op de site (als dit is ingesteld). Zo niet, dan worden de standaardinstellingen van de browser gevolgd en kunnen gebruikers per site kiezen of ze deze rechten willen verlenen.</translation>
 <translation id="3665437376055221832">De gebruiker alleen vragen als geen enkel certificaat overeenkomt met de automatische selectie.</translation>
 <translation id="3671773704245936868">Markering toetsenbordfocus uitzetten</translation>
 <translation id="3674010627788940405">CORS-verzoekheaders zonder jokertekens niet ondersteunen.</translation>
@@ -4465,9 +4458,6 @@ Als je het beleid instelt op Geen, of niet instelt, zijn <ph name="PRODUCT_OS_NA
 
       Als je het beleid niet instelt, wordt de algemene standaardwaarde gebruikt voor alle sites (geen automatische toegang).</translation>
 <translation id="471360812659157054">window.webkitStorageInfo is niet beschikbaar.</translation>
-<translation id="4714143485020697862">Als je het beleid instelt, worden alle opgegeven gegevenstypen uitgesloten van synchronisatie voor zowel <ph name="CHROME_SYNC_NAME" /> als synchronisatie van roamingprofielen. Dit kan handig zijn om het roamingprofiel te verkleinen of het type gegevens te beperken dat wordt geüpload naar de <ph name="CHROME_SYNC_NAME" />-servers.
-
-      De huidige gegevenstypen voor dit beleid zijn: 'bookmarks', 'readingList', 'preferences', 'passwords', 'autofill', 'themes', 'typedUrls', 'extensions', 'apps', 'tabs', 'wifiConfigurations', 'savedTabGroups'. Die namen zijn hoofdlettergevoelig.</translation>
 <translation id="4715773950737036924">De beschikbaarheid bepalen van extensies in de Chrome Web Store waarvan de publicatie ongedaan is gemaakt.</translation>
 <translation id="4722122254122249791">Site-isolatie voor opgegeven oorsprongen aanzetten</translation>
 <translation id="4722761845551711583">Hiermee stel je in met welk interval in seconden een afbeelding wordt getoond als de screensaver voor het inlogscherm uit meerdere afbeeldingen bestaat.
@@ -4482,7 +4472,6 @@ Dit beleid heeft geen effect als het beleid <ph name="DEVICE_SCREENSAVER_LOGIN_S
 <translation id="4726228171190098009">Niet toestaan dat het apparaat een Powerwash aanvraagt</translation>
 <translation id="4726895359147376813">Toewijzing van permanente ID's naar VM-configuraties</translation>
 <translation id="4733471537137819387">Beleid met betrekking tot geïntegreerde HTTP-authenticatie.</translation>
-<translation id="473613500147803115">MIDI-rechten blokkeren op deze sites</translation>
 <translation id="473673197014866318">Als je dit beleid instelt, worden de extensiebeheerinstellingen voor <ph name="PRODUCT_NAME" /> beheerd, waaronder instellingen die worden beheerd door bestaande, aan extensies gerelateerde beleidsregels. Dit beleid vervangt verouderde beleidsregels die misschien zijn ingesteld.
 
 Met dit beleid wordt alleen een extensie-ID of een update-URL toegewezen aan de bijbehorende specifieke instelling. Er kan een standaardconfiguratie worden ingesteld voor de speciale ID <ph name="DEFAULT_SCOPE" />, die van toepassing is op alle extensies waarvoor geen aangepaste configuratie is ingesteld in dit beleid. Bij een update-URL is de configuratie van toepassing op alle extensies met de exacte update-URL die wordt vermeld in het manifest van de extensie (http://support.google.com/chrome/a?p=Configure_ExtensionSettings_policy). Als de markering override_update_url is ingesteld op True, wordt de extensie geïnstalleerd en geüpdatet met de update-URL die is gespecificeerd in het beleid <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" /> of in het veld update_url in dit beleid. De markering override_update_url wordt genegeerd als de update_url een URL voor de Chrome Web Store is.
@@ -4805,11 +4794,6 @@ Dit beleid is alleen van kracht als de machine is ingeschreven met <ph name="CLO
 
       Als het beleid wordt ingesteld op 'True' of niet wordt ingesteld, kunnen gebruikers de achtergrond van de pagina 'Nieuw tabblad' aanpassen.</translation>
 <translation id="5076953589932162038">Instellingen voor First-Party Sets</translation>
-<translation id="507742683193937417">Hiermee wordt een lijst met site-URL-patronen ingesteld waarmee sites worden gespecificeerd waarvoor MIDI-rechten automatisch worden verleend. Zo kunnen sites MIDI-apparaten gebruiken, zoals muziekinstrumenten en controllers.
-
-Ga naar https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns voor gedetailleerde informatie over geldige site-URL-patronen. Jokertekens, <ph name="WILDCARD_VALUE" />, zijn toegestaan. Dit beleid zoekt alleen overeenkomsten op basis van de herkomst, dus elk pad in het URL-patroon wordt genegeerd.
-
-Als dit beleid niet is ingesteld voor een site, is het beleid van <ph name="DEFAULT_MIDI_SETTING_POLICY_NAME" /> van toepassing op de site (als dit is ingesteld). Zo niet, dan worden de standaardinstellingen van de browser gevolgd en kunnen gebruikers per site kiezen of ze deze rechten willen verlenen.</translation>
 <translation id="5078623750797048009">Pdf-annotaties aanzetten</translation>
 <translation id="5080300140183363718">Instellingen voor gegevensmigratie voor profielscheiding</translation>
 <translation id="5081204761483900654">Beperkte beheerde gastsessies</translation>
@@ -5136,7 +5120,6 @@ Als je dit beleid niet toepast, kunnen de browser- en downloadgeschiedenis niet 
       Als de property <ph name="AUTO_SELECT_ALL_SCREENS_NAME" /> is gedefinieerd in een <ph name="GET_DISPLAY_MEDIA_SET_NAME" />-verzoek, worden alle schermen automatisch vastgelegd zonder dat hiervoor expliciete gebruikerstoestemming is vereist.
       Als het beleid niet is ingesteld, is <ph name="AUTO_SELECT_ALL_SCREENS_NAME" /> niet beschikbaar voor web-apps.
 Omdat we de privacy willen verbeteren, ondersteunt dit beleid vanaf <ph name="PRODUCT_NAME" /> versie 116 geen dynamische vernieuwing meer. Daarom kan de gebruiker er zeker van zijn dat er geen extra pagina's zijn die de schermen kunnen vastleggen na het inloggen (als dit nog niet was toegestaan tijdens de start van de sessie).</translation>
-<translation id="5354891932736553743">Standaardinstelling voor MIDI-rechten</translation>
 <translation id="5361167871898066799">De functie voor autocorrectie op het fysieke toetsenbord beheren</translation>
 <translation id="5361708558735884308">Als je dit beleid instelt, wordt toegang geboden tot de vermelde URL's, als uitzonderingen op <ph name="URL_BLOCKLIST_POLICY_NAME" />. Zie de beschrijving van dat beleid voor de indeling van items in deze lijst. Als je <ph name="URL_BLOCKLIST_POLICY_NAME" /> bijvoorbeeld instelt op *, worden alle verzoeken geblokkeerd en kun je dit beleid gebruiken om toegang tot een beperkte lijst met URL's toe te staan. Je kunt dit beleid gebruiken om uitzonderingen voor bepaalde schema's, subdomeinen van andere domeinen, poorten of specifieke paden op te geven met de indeling die wordt gespecificeerd op (https://support.google.com/chrome/a?p=url_blocklist_filter_format). Het meest specifieke filter bepaalt of een URL wordt geblokkeerd of toegestaan. Het beleid <ph name="URL_ALLOWLIST_POLICY_NAME" /> krijgt voorrang op <ph name="URL_BLOCKLIST_POLICY_NAME" />. Dit beleid is beperkt tot 1000 items.
 
@@ -6956,7 +6939,6 @@ Als je het beleid niet toepast, wordt het icoon voor experimentele browserfuncti
       chrome://flags en andere manieren om browserfuncties aan- en uit te zetten werken nog steeds hetzelfde, ongeacht of je het beleid wel of niet hebt toegepast.</translation>
 <translation id="6795485990775913659">Alleen afdrukken toestaan zonder pincode</translation>
 <translation id="6796215185873669533">Standaard browserinstellingen gebruiken voor tekenreeksversie van User-agent.</translation>
-<translation id="6800111968763383631">MIDI-rechten worden standaard geweigerd op alle sites</translation>
 <translation id="6800181452282128474">Geen query's sturen naar Quirks Servers</translation>
 <translation id="68031099365512050">Audiostatus rapporteren</translation>
 <translation id="680356860463873420">Gebruikers niet toestaan een PluginVm te gebruiken</translation>
@@ -7328,7 +7310,6 @@ Als je dit beleid instelt, wordt de standaardwaardelijst uitgebreid met de nieuw
 
       Als het beleid is ingesteld op False of niet is ingesteld, worden de gegevens niet gerapporteerd.
       Als het beleid is ingesteld op True, worden de ventilatorgegevens van het apparaat gerapporteerd.</translation>
-<translation id="7096708978256135543">Altijd toestemming vragen als een site MIDI-rechten wil hebben</translation>
 <translation id="710003290625031750">Uitgebreide schemabeschrijving:</translation>
 <translation id="7101550508196914704">De snelkoppeling voor apps niet tonen op de bookmarkbalk</translation>
 <translation id="7105084505972468353">Als je dit beleid instelt, bepaalt dit het type vergrootglas dat wordt aangezet.
@@ -8366,11 +8347,6 @@ In <ph name="MS_WIN_NAME" /> kunnen instanties, apps en extensies van buiten de 
 In <ph name="MAC_OS_NAME" /> kunnen instanties, apps en extensies van buiten de Chrome Web Store alleen afgedwongen worden geïnstalleerd als de instantie wordt beheerd via MDM, via MCX aan een domein is gekoppeld of is ingeschreven voor <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.
 
 Opmerking: Dit beleid is niet van toepassing op de incognitomodus. Lees meer informatie over het hosten van extensies (https://developer.chrome.com/extensions/hosting).</translation>
-<translation id="798452960161141151">Als je het beleid instelt op <ph name="BLOCK_MIDI_POLICY_NAME" /> (waarde 2), wordt automatisch voorkomen dat sites MIDI-apparaten gebruiken, zoals muziekinstrumenten en controllers.
-
-Als je het beleid instelt op <ph name="ASK_MIDI_POLICY_NAME" /> (waarde 3), krijgt de gebruiker een prompt als een site MIDI-apparaten wil gebruiken.
-
-Als je het beleid niet instelt, is het beleid <ph name="ASK_MIDI_POLICY_NAME" /> van toepassing maar kunnen gebruikers deze instelling wijzigen.</translation>
 <translation id="7985242821674907985"><ph name="PRODUCT_NAME" /></translation>
 <translation id="7985781946183471651">Glanceables in <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="7986473886676689183">Android-rapporten aanzetten</translation>

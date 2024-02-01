@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="pl">
+<translation id="1021782183249308751">Naciśnij i przytrzymaj ikonę Chrome i kliknij „Edytuj ekran główny”.</translation>
 <translation id="1066101356081285416">Chrome będzie wykrywać numery śledzenia w odwiedzanych przez Ciebie witrynach i wyświetlać aktualne informacje o przesyłkach na stronie Nowa karta. Numery śledzenia przesyłek i nazwy witryn będą wysyłane do Google i używane do obsługi tej funkcji oraz do ogólnego ulepszania funkcji zakupów. Możesz to zmienić w dowolnym momencie w <ph name="BEGIN_LINK" />ustawieniach śledzenia przesyłek<ph name="END_LINK" />.</translation>
 <translation id="1085696779717592361">Domyślne korzystanie z Chrome</translation>
 <translation id="1105362920864247682">Wyczyść dane przeglądania w Chrome.</translation>
@@ -96,6 +97,7 @@ Twoje zaszyfrowane dane może odczytać tylko osoba znająca Twoje hasło wielow
 <translation id="3345341804167540816">Korzystaj z Chrome w dowolnym miejscu</translation>
 <translation id="3360031466389132716">{THRESHOLD,plural, =1{Dzieje się tak, gdy nie korzystasz z Chrome przez {THRESHOLD} minutę}few{Dzieje się tak, gdy nie korzystasz z Chrome przez {THRESHOLD} minuty}many{Dzieje się tak, gdy nie korzystasz z Chrome przez {THRESHOLD} minut}other{Dzieje się tak, gdy nie korzystasz z Chrome przez {THRESHOLD} minuty}}</translation>
 <translation id="3399930248910934354">Otwórz ustawienia Chrome</translation>
+<translation id="344736123700721678">Szybszy dostęp do Chrome z Docka na ekranie głównym</translation>
 <translation id="3472587960215700950">Chrome używa Map Google, aby podawać wskazówki dojazdu i informacje lokalne o wykrytych adresach.</translation>
 <translation id="3503014945441706099">Włącz też Ulepszone Bezpieczne przeglądanie na tym profilu Chrome</translation>
 <translation id="3522659714780527202">Aby widzieć swoje karty zawsze, kiedy korzystasz z Chrome, włącz synchronizację</translation>

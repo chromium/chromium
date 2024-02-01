@@ -177,12 +177,15 @@ Sadece parolanıza sahip olan kişiler şifrelenmiş verilerinizi okuyabilir. Pa
 <translation id="6054613632208573261">Chrome'u varsayılan olarak kullanın</translation>
 <translation id="6063091872902370735">Chrome'da oturum açmaya izin ver</translation>
 <translation id="6110625574506755980">Bazı Chrome özellikleri artık kullanılamayacak.</translation>
+<translation id="6132149203299792222">Şifrelerinizi, yer işaretleri ve daha fazlasını senkronize etmek için Google Hesabınızla oturum açın.</translation>
 <translation id="6177442314419606057">Chrome'da ara</translation>
 <translation id="6181930887571472871">Chrome'a geçin</translation>
 <translation id="6238746320622508509">Chrome'un Gizli sekmeleri kilitlemesine izin verin.</translation>
 <translation id="6247557882553405851">Google Şifre Yöneticisi</translation>
+<translation id="6272822675004864999">Chrome'dan bildirim almak için iOS ayarlarınızdan bildirimleri açın.</translation>
 <translation id="630693926528731525">Şifreniz paylaşılamadı. İnternet bağlantınızı kontrol edin ve Chrome'da oturum açtığınızdan emin olun. Daha sonra tekrar deneyin.</translation>
 <translation id="6348855835728304880">Bu cihazdaki diğer uygulamalardan Chrome şifrelerinize ve daha fazlasına erişin.</translation>
+<translation id="6389317667633680932">Chrome'dan en iyi şekilde yararlanmanıza yardımcı olacak yeni özellikleri keşfedin.</translation>
 <translation id="6412673304250309937">URL'leri, Chrome'da kayıtlı güvenli olmayan siteler listesine göre kontrol eder. Chrome, bir sitenin şifrenizi çalmaya çalışması veya zararlı bir dosya indirmeniz halinde de Güvenli Tarama'ya sayfa içeriğinden parçalarla birlikte URL'ler gönderebilir.</translation>
 <translation id="6427126399757991875">Kuruluşunuz, Chrome'u kuruyor...</translation>
 <translation id="6484712497741564393"><ph name="EMAIL" /> olarak oturum açtınız.
@@ -214,6 +217,7 @@ Veri kullanarak Chrome deneyiminizi iyileştiren daha fazla ayar görmek için <
 <translation id="7124339256045485976">Chrome'u güncel tutun</translation>
 <translation id="7161390184744336561">Google Chrome güncel değil</translation>
 <translation id="7165736900384873061">Google Chrome QR tarayıcısını kullanmaya başlayın</translation>
+<translation id="7175129790242719365">Chrome İpucu: Chrome'da Oturum Açın</translation>
 <translation id="7187993566681480880">Chrome'da güvende kalmanızı sağlar ve oturum açtığınızda diğer Google uygulamalarındaki güvenliğinizi artırmak için kullanılabilir.</translation>
 <translation id="7200524487407690471">Chrome; veri ihlalleri, güvenli olmayan web siteleri ve diğer risklere karşı güvenliğinizi sağlamak için Güvenlik Kontrolü'nü her gün otomatik olarak çalıştırır. Güvenlik Kontrolü hakkında daha fazla bilgiyi Ayarlar'da bulabilirsiniz.</translation>
 <translation id="72119412072970160">Google Şifre Yöneticisi'ne kaydettiğiniz şifreleri iPad'inizdeki diğer uygulamalarda kullanabilirsiniz.</translation>
@@ -244,6 +248,8 @@ Veri kullanarak Chrome deneyiminizi iyileştiren daha fazla ayar görmek için <
 <translation id="7897703007638178753">Chrome'daki Son Sekmeleri Göster</translation>
 <translation id="7925119591961387184">"Chrome"u seçin.</translation>
 <translation id="7933491483529363150">Chrome'daki en son sekmemi aç.</translation>
+<translation id="7948283758957877064">Chrome'daki Yenilikler</translation>
+<translation id="8006014511203279255">Mesajlardaki veya diğer uygulamalardaki bağlantılara her dokunduğunuzda Chrome'u kullanın.</translation>
 <translation id="8022947259858476807">Bağlantıları açmak, widget'lardan arama yapmak ve diğer uygulamalarda şifreleri otomatik doldurmak için varsayılan olarak Chrome'u kullanın</translation>
 <translation id="804638182476029347">Fiyat düşüşü uyarıları almak için Chrome bildirimlerine izin verin</translation>
 <translation id="8065292699993359127">URL'leri Chrome'da Gizli modda aç</translation>
@@ -280,6 +286,7 @@ Verileriniz <ph name="TIME" /> tarihinde parolanızla şifrelendi. Chrome verile
 <translation id="8765470054473112089">Adres çubuğuna veya arama kutusuna yazdığınızda Chrome, yazdıklarınızı varsayılan arama motorunuza göndererek daha iyi öneriler görmenizi sağlar. Bu ayar Gizli modda kapalıdır.</translation>
 <translation id="8772179140489533211">Chrome'da oturum açmak için istekleri gösterir.</translation>
 <translation id="8788269841521769222">Bu şifreyi hatırlamanız gerekmez. <ph name="EMAIL" /> için Google Şifre Yöneticisi'ne kaydedilir</translation>
+<translation id="878917453316810648">Chrome İpucu: Varsayılan Olarak Chrome'u Kullanın</translation>
 <translation id="8808828119384186784">Chrome Ayarları</translation>
 <translation id="8855781063981781621">Chrome'da Tam Gizlilik Modu'nu devre dışı bırakmak için bu ayarı iPad'inizde kapatın.</translation>
 <translation id="8856877214925961642">Parolayla şifreleme, ödeme yöntemlerini ve adresleri kapsamaz.

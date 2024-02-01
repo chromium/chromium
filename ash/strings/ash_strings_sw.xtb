@@ -607,9 +607,11 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="3526440770046466733">Fungua kiungo katika kichupo kipya na kiweke katika kichupo cha sasa</translation>
 <translation id="353086728817903341">Imeunganishwa kwenye vifaa <ph name="NUM_DEVICES" /></translation>
 <translation id="3533126039236445965">Programu zilizo kwenye rafu</translation>
+<translation id="3537350467437346467">Uliangalia</translation>
 <translation id="3539957339480430241">Mtandao pepe wa <ph name="DEVICE_NAME" /></translation>
 <translation id="3540893133818942399">Ondoa kidokezo cha kuweka mipangilio ya kuangalia picha na maudhui ya picha za hivi karibuni za simu yako</translation>
 <translation id="3542066395059568317">Utaona mapendekezo ili uweze kuendelea ulipoachia. Unaweza kubofya kulia ili kuondoa mapendekezo.</translation>
+<translation id="3547318469722231257">Uliibadilisha</translation>
 <translation id="3552189655002856821">Wi-Fi imezimwa</translation>
 <translation id="3554215588514239132">Onyesha au ufiche kidirisha cha Zana za Msanidi Programu</translation>
 <translation id="3554637740840164787"><ph name="ITEM_TITLE" /> imebandikwa</translation>
@@ -701,6 +703,7 @@ Chomeka kifaa chako kwenye umeme.</translation>
 <translation id="385300504083504382">Mwanzo</translation>
 <translation id="3859364108019690">Imeshindwa kutiririsha programu</translation>
 <translation id="3861651314799684201">Bonyeza enter ili urekodi skrini nzima</translation>
+<translation id="3882323608730650973">Ilibadilishwa</translation>
 <translation id="3886872229787704059">Imefunguliwa leo</translation>
 <translation id="3891340733213178823">Bonyeza Ctrl+Shift+Q mara mbili ili kuondoka katika akaunti.</translation>
 <translation id="3893630138897523026">ChromeVox (majibu yanayotamkwa)</translation>
@@ -894,6 +897,7 @@ Baadhi ya vipengele vimedhibitiwa ili kuongeza muda wa matumizi ya betri.</trans
 <translation id="4582666543382004902">Mtandao pepe umezimwa ili utumie Wi-Fi. Ili utumie mtandao pepe, zima Wi-Fi.</translation>
 <translation id="4585337515783392668">Acha kutuma kwenye kifaa au kwa mpokeaji usiyemjua</translation>
 <translation id="4596144739579517758">Mandhari meusi yamezimwa</translation>
+<translation id="4596442969149038771"><ph name="USER" /> aliituma</translation>
 <translation id="4611292653554630842">Ingia katika akaunti</translation>
 <translation id="462160925400706389"><ph name="NAME" /> imeunganishwa</translation>
 <translation id="4623167406982293031">Thibitisha akaunti</translation>
@@ -1816,6 +1820,7 @@ Arifa, madirisha na vidirisha vya baadaye vitagawanywa kati ya maeneo-kazi.</tra
 <translation id="8314772463905284467">Kitufe cha Caps Lock kimewashwa</translation>
 <translation id="8315514906653279104">Inawasha...</translation>
 <translation id="8331351032546853669">Upakuaji unashughulikiwa</translation>
+<translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · tarehe <ph name="TIME" /></translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
 <translation id="8345019317483336363">Umechagua dirisha la <ph name="WINDOW_TITLE" /></translation>
 <translation id="8349826889576450703">kifungua programu</translation>
@@ -2035,6 +2040,7 @@ Arifa, madirisha na vidirisha vya baadaye vitagawanywa kati ya maeneo-kazi.</tra
 <translation id="953431725143473984">Je, ungependa kuzima kifaa?</translation>
 <translation id="954052413789300507">Hakuna nafasi inayotosha kupakua <ph name="FILENAME" />. Futa baadhi ya faili ili upate nafasi.</translation>
 <translation id="954520015070501466">Dakika 30</translation>
+<translation id="954786879461589145"><ph name="USER" /> aliibadilisha</translation>
 <translation id="974545358917229949">Inaonyesha matokeo <ph name="RESULT_COUNT" /> ya <ph name="QUERY" /></translation>
 <translation id="981011780479609956">Hakuna tarehe ya kukamilisha</translation>
 <translation id="98120814841227350">Nenda hadi mwisho wa hati</translation>

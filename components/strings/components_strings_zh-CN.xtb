@@ -884,7 +884,6 @@
 <translation id="2674804415323431591">隐藏建议</translation>
 <translation id="2677696497921480781">生日与命名日</translation>
 <translation id="2677748264148917807">离开</translation>
-<translation id="2678468611080193228">尝试暂时允许使用第三方 Cookie，这意味着您将采用较低级别的保护措施，但网站功能更有可能正常运行</translation>
 <translation id="2686919536310834199">针对“帮我写”功能发送反馈。</translation>
 <translation id="2687555958734450033">最适合</translation>
 <translation id="2688186765492306706">500 x 760 毫米</translation>
@@ -1104,7 +1103,6 @@
 <translation id="3157931365184549694">恢复</translation>
 <translation id="3158539265159265653">光碟</translation>
 <translation id="3162559335345991374">您要使用的 Wi-Fi 网络可能需要您访问其登录页面。</translation>
-<translation id="3166370127092388416">{NUM_COOKIES,plural, =0{第三方 Cookie，不允许任何网站使用}=1{第三方 Cookie，已允许 1 个网站使用}other{第三方 Cookie，已允许 # 个网站使用}}</translation>
 <translation id="3168744840365648658">无线电设备</translation>
 <translation id="3169472444629675720">探索</translation>
 <translation id="3171703252520926121">房地产服务</translation>
@@ -1161,7 +1159,6 @@
 <translation id="3262698603497362968">购买选项</translation>
 <translation id="3266367459139339908">我们推出了新的方式来限制网站在向您展示个性化广告时可以了解关于您的哪些信息，例如：</translation>
 <translation id="3266793032086590337">值（冲突）</translation>
-<translation id="3266972086368072861">{NUM_COOKIES,plural, =0{没有阻止任何网站，包括相关网站}=1{已阻止 1 个网站，包括相关网站}other{已阻止 # 个网站，包括相关网站}}</translation>
 <translation id="3268451620468152448">打开的标签页</translation>
 <translation id="3270041629388773465">保存银行卡验证码 (CVC) 后，结账速度更快</translation>
 <translation id="3270156322180235608">航空旅行</translation>
@@ -1206,7 +1203,6 @@
 <translation id="3359565626472459400">婚姻</translation>
 <translation id="3360103848165129075">付款处理程序工作表</translation>
 <translation id="3360313521703038580">生态与环境</translation>
-<translation id="3360753465334942529">{NUM_COOKIES,plural, =0{第三方 Cookie，未禁止任何网站使用}=1{第三方 Cookie，已禁止 1 个网站使用}other{第三方 Cookie，已禁止 # 个网站使用}}</translation>
 <translation id="3362968246557010467">此政策的值是系统从已弃用的 <ph name="OLD_POLICY" /> 政策中自动复制而来的。您应改用此政策。</translation>
 <translation id="3364869320075768271"><ph name="URL" /> 想使用您的虚拟现实设备和数据</translation>
 <translation id="3366477098757335611">查看您的卡</translation>
@@ -1609,7 +1605,6 @@
 <translation id="4151403195736952345">使用全局默认设置（检测）</translation>
 <translation id="4152318981910038897">{COUNT,plural, =1{第 1 页}other{第 {COUNT} 页}}</translation>
 <translation id="4154277373259957087">现在，Chrome 会在填充付款方式之前验证是您本人在操作。您可以随时在“<ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" />”中更新这项设定。</translation>
-<translation id="4159149286839604525">这意味着大部分网站功能应该能正常运行，但您将采用较低级别的保护措施</translation>
 <translation id="4159784952369912983">紫色</translation>
 <translation id="4165986682804962316">网站设置</translation>
 <translation id="4169535189173047238">不允许</translation>
@@ -2033,7 +2028,6 @@
 <translation id="4983145717627482381">旅行团和陪同度假</translation>
 <translation id="498323057460789381">架构验证错误：<ph name="ERROR" /></translation>
 <translation id="4984088539114770594">使用麦克风？</translation>
-<translation id="4985206706500620449">您已允许此网站使用第三方 Cookie</translation>
 <translation id="4989163558385430922">查看全部</translation>
 <translation id="4989542687859782284">不受支持的实验</translation>
 <translation id="4989809363548539747">该插件不受支持</translation>
@@ -2250,7 +2244,6 @@
 <translation id="5414511064953050917">仍然移动</translation>
 <translation id="5421136146218899937">清除浏览数据...</translation>
 <translation id="5423269318075950257">跟踪价格</translation>
-<translation id="5425241977284572032">{NUM_COOKIES,plural, =0{没有阻止任何网站}=1{已阻止 1 个网站}other{已阻止 # 个网站}}</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> 想向您发送通知</translation>
 <translation id="5430298929874300616">移除书签</translation>
 <translation id="5434798570900738152">Chromium <ph name="BEGIN_EMPHASIS" />不会保存<ph name="END_EMPHASIS" />：
@@ -2809,7 +2802,6 @@
 <translation id="6521745193039995384">无效</translation>
 <translation id="6524830701589638230">“管理无障碍设置”按钮，激活它即可在 Chrome 设置中定制您的个性化无障碍工具</translation>
 <translation id="6529173248185917884">第 7 卷</translation>
-<translation id="652937045869844725">尝试允许使用第三方 Cookie，这意味着您将采用较低级别的保护措施，但网站功能更有可能正常运行</translation>
 <translation id="6529602333819889595">恢复删除(&amp;R)</translation>
 <translation id="6535751101619004418">货币与外汇兑换</translation>
 <translation id="6536221421038631327">从<ph name="DEVICE_TYPE" />移除 Passpoint 订阅后，关联的网络也会一并移除。如需更改订阅方案，请与“<ph name="FRIENDLY_NAME" />”联系。<ph name="LEARN_MORE" /></translation>
@@ -3165,7 +3157,6 @@
 <translation id="7221855153210829124">显示通知</translation>
 <translation id="7221857374443660083">银行想确认您的身份</translation>
 <translation id="722454870747268814">新的无痕式标签页</translation>
-<translation id="7226276626900992675">您已允许此网站使用第三方 Cookie。这意味着大部分网站功能应该都能正常运行，但您将采用较低级别的保护措施。</translation>
 <translation id="7227293336683593977">既往价格</translation>
 <translation id="7227747683324411744">您正在尝试访问的网站上的攻击者可能会诱使您安装有害软件，以操纵您的浏览体验，例如，更改您的主页或在您访问的网站上展示广告。</translation>
 <translation id="7233592378249864828">打印确认工作表</translation>
@@ -3785,7 +3776,6 @@
 <translation id="8398335999901363925">付款方式列表已全屏显示，轻触即可填充。</translation>
 <translation id="8398446215576328011">还原已应用的政策</translation>
 <translation id="8398790343843005537">查找您的手机</translation>
-<translation id="8401772916834964810">{COUNT,plural, =0{Chrome 将于今天再次屏蔽 Cookie}=1{Chrome 将于明天再次屏蔽 Cookie}other{Chrome 将于 # 天后再次屏蔽 Cookie}}</translation>
 <translation id="8403506619177967839">同人小说</translation>
 <translation id="8405579342203358118">在 Chrome 设置中管理您要同步的信息</translation>
 <translation id="8406071103346257942">停止使用屏幕锁定功能填充密码</translation>

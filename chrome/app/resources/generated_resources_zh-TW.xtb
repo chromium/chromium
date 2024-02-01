@@ -239,6 +239,7 @@
 <translation id="1177073277575830464">Android 快速設定已完成，請在 <ph name="DEVICE_TYPE" /> 上繼續設定</translation>
 <translation id="1177440945615690056">你可以使用「設定」連線到任何適用的行動網路</translation>
 <translation id="1177863135347784049">自訂</translation>
+<translation id="1178093605842850860">允許讀取及變更這個網站</translation>
 <translation id="1178581264944972037">暫停</translation>
 <translation id="1178601482396475810">管理裝置同步設定</translation>
 <translation id="117916940443676133">你的安全金鑰未受 PIN 碼保護。如要管理登入資料，請先建立 PIN 碼。</translation>
@@ -2600,6 +2601,7 @@
 <translation id="2935314715123552088">停用使用中的 eSIM 卡設定檔</translation>
 <translation id="2935654492420446828">稍後再新增學校帳戶</translation>
 <translation id="2936851848721175671">備份與還原</translation>
+<translation id="2938981087412273365">不允許讀取及變更這個網站</translation>
 <translation id="2939908794993783865">其他無效網站</translation>
 <translation id="2939938020978911855">顯示可用的藍牙裝置</translation>
 <translation id="2941112035454246133">低</translation>
@@ -3408,6 +3410,7 @@
 <translation id="3602894439067790744">數字讀法</translation>
 <translation id="3603622770190368340">取得網路憑證</translation>
 <translation id="3605156246402033687">{COUNT,plural, =1{{COUNT} 個帳戶使用相同的密碼}other{{COUNT} 個帳戶使用相同的密碼}}</translation>
+<translation id="3605515937536882518">表單值已更新</translation>
 <translation id="3605780360466892872">小員工</translation>
 <translation id="3607671391978830431">供子女使用</translation>
 <translation id="3608460311600621471">請提供列印這項資料的原因：</translation>
@@ -4473,6 +4476,7 @@
 <translation id="4410545552906060960">你可以使用一組數字 (PIN 碼) 來解鎖裝置，這組數字與密碼不同。如要稍後再設定 PIN 碼，請前往「設定」。</translation>
 <translation id="4411578466613447185">程式碼簽署者</translation>
 <translation id="4411719918614785832">這些密碼金鑰會儲存在這部電腦的 Windows Hello 上，不會儲存到你的 Google 帳戶。</translation>
+<translation id="4412544493002546580">請再試一次，或選擇下列其中一個靈感。</translation>
 <translation id="4412547955014928315">要刪除 <ph name="SITE_NAME" /> 和其下所有網站的網站資料和權限嗎？</translation>
 <translation id="4412632005703201014">Chrome 應用程式即將遷移至漸進式網頁應用程式。這個 Chrome 應用程式是由貴機構安裝在你的瀏覽器中。如要從「應用程式」清單中開啟漸進式網頁應用程式，請先與系統管理員聯絡，要求對方解除安裝 Chrome 應用程式。於此期間，你可以前往 <ph name="EXTENSION_LAUNCH_URL" />，在網頁上開啟 <ph name="EXTENSION_NAME" />。</translation>
 <translation id="4412698727486357573">說明中心</translation>
@@ -4888,6 +4892,7 @@
 <translation id="4744268813103118742">前往網站</translation>
 <translation id="4744571849207727284">Excel</translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{開啟這個網站的音訊}other{開啟這些網站的音訊}}</translation>
+<translation id="4745500401920035244">你的管理員變更了系統設定，部分舊的設定檔因此遭到停用。你無法再存取這個設定檔，但仍可將其移除</translation>
 <translation id="474609389162964566">說出「Ok Google」即可存取 Google 助理</translation>
 <translation id="4748783296226936791">網站通常會連線至 HID 裝置，是因為有功能需要使用非標準鍵盤、遊戲控制器和其他裝置。</translation>
 <translation id="4749960740855309258">開啟新分頁</translation>
@@ -5434,6 +5439,7 @@
 <translation id="5178667623289523808">尋找上一個項目</translation>
 <translation id="5181140330217080051">下載中</translation>
 <translation id="5181172023548002891">儲存至 <ph name="ACCOUNT" /> 的 Google 密碼管理工具</translation>
+<translation id="5181551096188687373">這個密碼只會儲存到這部裝置。如要在其他裝置上使用，請儲存到 Google 帳戶 (<ph name="USER_EMAIL" />)。</translation>
 <translation id="5183344263225877832">要重設所有 HID 裝置權限嗎？</translation>
 <translation id="5184063094292164363">JavaScript 控制台(&amp;J)</translation>
 <translation id="5184209580557088469">已有票證使用這個使用者名稱</translation>
@@ -5720,6 +5726,7 @@
 <translation id="5417312524372586921">瀏覽器主題</translation>
 <translation id="5417353542809767994">快速套用高強度密碼</translation>
 <translation id="541737483547792035">放大畫面</translation>
+<translation id="541822678830750798">正在要求讀取及變更這個網站</translation>
 <translation id="5419405654816502573">Voice Match</translation>
 <translation id="5420061891386124792">啟用儲存及恢復分頁群組的功能。如要儲存分頁群組，請在群組上按一下滑鼠右鍵；如要恢復分頁群組，請使用書籤列。</translation>
 <translation id="5420274697768050645">需要使用密碼解鎖裝置以提升安全性</translation>
@@ -5972,6 +5979,7 @@
 <translation id="560834977503641186">Wi-Fi 同步功能，瞭解詳情</translation>
 <translation id="5608580678041221894">輕觸下列按鍵可調整或移動裁剪區域</translation>
 <translation id="5609231933459083978">這似乎是無效的應用程式。</translation>
+<translation id="5610867721023328944">請再試一次，或選取下方其中一個可用的主題。</translation>
 <translation id="5611398002774823980">儲存到帳戶</translation>
 <translation id="561236229031062396"><ph name="SHORTCUT_NAME" />，<ph name="APP_FULL_NAME" /></translation>
 <translation id="5614190747811328134">使用者通知</translation>
@@ -6294,6 +6302,7 @@
 <translation id="586567932979200359">你正在透過磁碟映像執行 <ph name="PRODUCT_NAME" />。你可以直接在電腦上安裝程式，往後無需透過磁碟映像即可直接執行，而且能隨時使用最新的版本。</translation>
 <translation id="5865733239029070421">自動將使用統計資料和當機報告傳送給 Google</translation>
 <translation id="5868434909835797817">你裝置的麥克風已關閉</translation>
+<translation id="5868479397518301468">登入逾時</translation>
 <translation id="5868822853313956582">依循裝置色彩配置</translation>
 <translation id="5869029295770560994">好，我知道了</translation>
 <translation id="5869522115854928033">已儲存的密碼</translation>
@@ -6643,6 +6652,7 @@
     顯示名稱：<ph name="QUICK_START_DEVICE_DISPLAY_NAME" />...</translation>
 <translation id="6146409560350811147">同步功能無法正常運作。請嘗試重新登入。</translation>
 <translation id="6147020289383635445">列印預覽失敗。</translation>
+<translation id="6147253937684562370">如要解鎖設定檔，請使用你的主要帳戶電子郵件地址登入：<ph name="EMAIL" /></translation>
 <translation id="6148576794665275391">立即開啟</translation>
 <translation id="614890671148262506">一律允許這個網站傳送通知</translation>
 <translation id="6149015141270619212">無法連線至網際網路</translation>
@@ -7623,6 +7633,7 @@
 <translation id="6918677045355889289">需要更新 Chrome OS</translation>
 <translation id="6919354101107095996">請嘗試登入網站，然後再下載一次</translation>
 <translation id="6919952941889172531">要一併開啟這個 Chrome 設定檔的安全瀏覽強化防護功能嗎？</translation>
+<translation id="6920473853105515518">請確認 <ph name="DEVICE_TYPE" /> 已連上網際網路，然後再試一次。你也可以在其他裝置上前往 play.google/play-terms。</translation>
 <translation id="6920989436227028121">在一般分頁中開啟</translation>
 <translation id="6921104647315081813">清除活動</translation>
 <translation id="692114467174262153">無法開啟 <ph name="ALTERNATIVE_BROWSER_NAME" /></translation>
@@ -8753,6 +8764,7 @@
 
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="7789963078219276159">起始網頁背景已變更為<ph name="CATEGORY" />。</translation>
+<translation id="7791269138074599214">輸入法</translation>
 <translation id="7791429245559955092">這個應用程式將安裝在目前使用的 Chrome 設定檔</translation>
 <translation id="7791436592012979144">已啟用反向捲動功能</translation>
 <translation id="7791543448312431591">新增</translation>
@@ -8845,6 +8857,7 @@
 <translation id="7861215335140947162">下載(&amp;D)</translation>
 <translation id="7861846108263890455">Google 帳戶語言</translation>
 <translation id="7864539943188674973">停用藍牙</translation>
+<translation id="7864825798076155402">要儲存到 Google 帳戶嗎？</translation>
 <translation id="7865127013871431856">翻譯選項</translation>
 <translation id="786957569166715433"><ph name="DEVICE_NAME" /> - 已配對</translation>
 <translation id="7869655448736341731">不限</translation>
@@ -10025,6 +10038,7 @@
 <translation id="8756969031206844760">要更新密碼嗎？</translation>
 <translation id="8757368836647541092">已移除「<ph name="USER_NAME_OR_EMAIL" />」</translation>
 <translation id="8759753423332885148">瞭解詳情</translation>
+<translation id="876161309768861172">無法登入，請再試一次</translation>
 <translation id="8761945298804995673">這名使用者已經存在。</translation>
 <translation id="8762886931014513155">你的 <ph name="DEVICE_TYPE" /> 需要更新</translation>
 <translation id="8763927697961133303">USB 裝置</translation>
@@ -10535,6 +10549,7 @@
 <translation id="9138978632494473300">在以下位置新增捷徑：</translation>
 <translation id="9139988741193276691">設定 Linux</translation>
 <translation id="9140067245205650184">你正在使用不受支援的功能標幟：<ph name="BAD_FLAG" />。這可能會危及穩定性與安全性。</translation>
+<translation id="914031120300235526">無法解鎖設定檔</translation>
 <translation id="9142637293078737510">映像檔別名</translation>
 <translation id="9143298529634201539">要移除建議嗎？</translation>
 <translation id="9143922477019434797">保護密碼</translation>
@@ -10663,6 +10678,7 @@
 <translation id="951991426597076286">拒絕</translation>
 <translation id="952471655966876828">裝置開啟或處於使用狀態時，會自動連線</translation>
 <translation id="953434574221655299">可以偵測你使用裝置的時間</translation>
+<translation id="954749761428814584">語言和輸入法</translation>
 <translation id="956500788634395331">系統已限制可能有害的擴充功能</translation>
 <translation id="957179356621191750">6 點</translation>
 <translation id="957960681186851048">這個網站試圖自動下載多個檔案</translation>

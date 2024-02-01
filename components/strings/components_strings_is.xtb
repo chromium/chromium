@@ -884,7 +884,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="2674804415323431591">Fela tillögur</translation>
 <translation id="2677696497921480781">Afmæli og nafnadagar</translation>
 <translation id="2677748264148917807">Yfirgefa</translation>
-<translation id="2678468611080193228">Prófaðu að leyfa fótspor þriðju aðila tímabundið, það skilar minni vernd en eykur líkur á að eiginleikar vefsvæðisins virki</translation>
 <translation id="2686919536310834199">Senda ábendingu um rithjálp.</translation>
 <translation id="2687555958734450033">Kjörstærð</translation>
 <translation id="2688186765492306706">500 x 760 mm</translation>
@@ -1104,7 +1103,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="3157931365184549694">Endurheimta</translation>
 <translation id="3158539265159265653">Diskur</translation>
 <translation id="3162559335345991374">Wi-Fi netið sem þú notar kann að fara fram á að þú farir á innskráningarsíðu þess.</translation>
-<translation id="3166370127092388416">{NUM_COOKIES,plural, =0{Fótspor þriðju aðila, engin vefsvæði leyfð}=1{Fótspor þriðju aðila, 1 vefsvæði leyft}one{Fótspor þriðju aðila, # vefsvæði leyft}other{Fótspor þriðju aðila, # vefsvæði leyfð}}</translation>
 <translation id="3168744840365648658">Útvarpsbúnaður</translation>
 <translation id="3169472444629675720">Discover</translation>
 <translation id="3171703252520926121">Fasteignaþjónustur</translation>
@@ -1163,7 +1161,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="3262698603497362968">Kaupvalkostir</translation>
 <translation id="3266367459139339908">Við kynnum nýjar leiðir til að takmarka upplýsingarnar sem vefsvæði geta fengið um þig þegar þau birta þér sérsniðnar auglýsingar, til dæmis:</translation>
 <translation id="3266793032086590337">Gildi (skörun)</translation>
-<translation id="3266972086368072861">{NUM_COOKIES,plural, =0{Ekki lokað á nein vefsvæði, þ.m.t. tengd vefsvæði}=1{Lokað á 1 vefsvæði, þ.m.t. tengd vefsvæði}one{Lokað á # vefsvæði, þ.m.t. tengd vefsvæði}other{Lokað á # vefsvæði, þ.m.t. tengd vefsvæði}}</translation>
 <translation id="3268451620468152448">Opna flipa</translation>
 <translation id="3270041629388773465">Þú getur gengið hraðar frá kaupum þegar CVC-númerin þín eru vistuð</translation>
 <translation id="3270156322180235608">Flugferðir</translation>
@@ -1208,7 +1205,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="3359565626472459400">Hjónaband</translation>
 <translation id="3360103848165129075">Greiðsluhjálparforrit</translation>
 <translation id="3360313521703038580">Vistfræði og umhverfismál</translation>
-<translation id="3360753465334942529">{NUM_COOKIES,plural, =0{Fótspor þriðju aðila, engin vefsvæði útilokuð}=1{Fótspor þriðju aðila, 1 vefsvæði útilokað}one{Fótspor þriðju aðila, # vefsvæði útilokað}other{Fótspor þriðju aðila, # vefsvæði útilokuð}}</translation>
 <translation id="3362968246557010467">Þessi regla var sjálfkrafa afrituð úr úreltu <ph name="OLD_POLICY" /> reglunni. Þú ættir að nota þessa reglu í staðinn.</translation>
 <translation id="3364869320075768271"><ph name="URL" /> vill fá að nota sýndarveruleikatæki og -gögn</translation>
 <translation id="3366477098757335611">Skoða kort</translation>
@@ -1613,7 +1609,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="4151403195736952345">Nota altækt sjálfgildi (greina)</translation>
 <translation id="4152318981910038897">{COUNT,plural, =1{Síða 1}one{Síða {COUNT}}other{Síða {COUNT}}}</translation>
 <translation id="4154277373259957087">Chrome mun núna staðfesta hver þú ert áður en greiðslumátar eru fylltir inn. Þú getur uppfært þetta hvenær sem er í <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" />.</translation>
-<translation id="4159149286839604525">Þetta þýðir að flestir eiginleikar vefsvæðisins ættu að virka, en þú ert með minni vernd</translation>
 <translation id="4159784952369912983">Purpurarauður</translation>
 <translation id="4165986682804962316">Vefsvæðastillingar</translation>
 <translation id="4169535189173047238">Ekki leyfa</translation>
@@ -2037,7 +2032,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="4983145717627482381">Ferðir með leiðsögn og ferðalög með fararstjórn</translation>
 <translation id="498323057460789381">Villa við staðfestingu skema: <ph name="ERROR" /></translation>
 <translation id="4984088539114770594">Nota hljóðnema?</translation>
-<translation id="4985206706500620449">Þú leyfðir fótspor þriðju aðila á þessu vefsvæði</translation>
 <translation id="4989163558385430922">Sjá allt</translation>
 <translation id="4989542687859782284">Ekki tiltækt</translation>
 <translation id="4989809363548539747">Þessi viðbót er ekki studd</translation>
@@ -2254,7 +2248,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="5414511064953050917">Flytja samt</translation>
 <translation id="5421136146218899937">Hreinsa vafragögn...</translation>
 <translation id="5423269318075950257">Vakta verð</translation>
-<translation id="5425241977284572032">{NUM_COOKIES,plural, =0{Ekki lokað á nein vefsvæði}=1{Lokað á 1 vefsvæði}one{Lokað á # vefsvæði}other{Lokað á # vefsvæði}}</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> vill senda þér tilkynningar</translation>
 <translation id="5430298929874300616">Fjarlægja bókamerki</translation>
 <translation id="5434798570900738152">Chromium <ph name="BEGIN_EMPHASIS" />vistar ekki<ph name="END_EMPHASIS" />:
@@ -2814,7 +2807,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="6521745193039995384">Ekki virk</translation>
 <translation id="6524830701589638230">Hnappur til að stjórna aðgengisstillingum, virkjaðu til að sérsníða aðgengisverkfærin þín í stillingum Chrome.</translation>
 <translation id="6529173248185917884">Sjöunda rúlla</translation>
-<translation id="652937045869844725">Prófaðu að leyfa fótspor þriðju aðila, það skilar minni vernd en eykur líkur á að eiginleikar vefsvæðisins virki</translation>
 <translation id="6529602333819889595">Endu&amp;rtaka eyðingu</translation>
 <translation id="6535751101619004418">Gjaldmiðlar og gjaldeyrisskipti</translation>
 <translation id="6536221421038631327">Ef þú fjarlægir áskrift að Aðgangspunkti úr <ph name="DEVICE_TYPE" /> verða tengd netkerfi fjarlægð. Hafðu samband við „<ph name="FRIENDLY_NAME" />“ til að breyta áskriftinni þinni. <ph name="LEARN_MORE" /></translation>
@@ -3170,7 +3162,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="7221855153210829124">Sýna tilkynningar</translation>
 <translation id="7221857374443660083">Bankinn þinn vill staðfesta að um þig sé að ræða</translation>
 <translation id="722454870747268814">Nýr huliðsflipi</translation>
-<translation id="7226276626900992675">Þú leyfðir þessu vefsvæði að nota fótspor þriðju aðila. Þetta þýðir að flestir eiginleikar vefsvæðisins ættu að virka, en þú ert með minni vernd.</translation>
 <translation id="7227293336683593977">Verðferill</translation>
 <translation id="7227747683324411744">Árásaraðilar á vefsvæðinu sem þú ert að reyna að opna gætu reynt að plata þig til að setja upp skaðlegan hugbúnað sem hefur áhrif á það hvernig þú vafrar. Til dæmis með því að breyta heimasíðunni þinni eða birta þér viðbótarauglýsingar á vefsvæðum sem þú opnar.</translation>
 <translation id="7233592378249864828">Prenta staðfestingarblað</translation>
@@ -3790,7 +3781,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="8398335999901363925">Listi yfir greiðslumáta sem hægt er að færa inn við snertingu opinn í fullri hæð.</translation>
 <translation id="8398446215576328011">Afturkalla gildandi stefnu</translation>
 <translation id="8398790343843005537">Finna símann minn</translation>
-<translation id="8401772916834964810">{COUNT,plural, =0{Chrome mun aftur loka fyrir fótspor í dag}=1{Chrome mun aftur loka fyrir fótspor á morgun}one{Chrome lokar aftur fyrir fótspor eftir # dag}other{Chrome lokar aftur fyrir fótspor eftir # daga}}</translation>
 <translation id="8403506619177967839">Áhugaspuni</translation>
 <translation id="8405579342203358118">Stjórna hvaða upplýsingar eru samstilltar í stillingum Chrome</translation>
 <translation id="8406071103346257942">hætta að nota skjálásinn til að fylla út aðgangsorð</translation>

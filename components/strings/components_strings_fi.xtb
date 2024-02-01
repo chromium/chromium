@@ -884,7 +884,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="2674804415323431591">Piilota ehdotukset</translation>
 <translation id="2677696497921480781">Syntymä- ja nimipäivät</translation>
 <translation id="2677748264148917807">Poistu</translation>
-<translation id="2678468611080193228">Kokeile sallia kolmannen osapuolen evästeet väliaikaisesti. Suojaus ei tällöin ole niin vahva, mutta sivuston ominaisuudet toimivat todennäköisemmin.</translation>
 <translation id="2686919536310834199">Lähetä palautetta Auta minua kirjoittamaan ‐ominaisuudesta.</translation>
 <translation id="2687555958734450033">Sopivin koko</translation>
 <translation id="2688186765492306706">500 x 760 mm</translation>
@@ -1104,7 +1103,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="3157931365184549694">Palauta</translation>
 <translation id="3158539265159265653">Levy</translation>
 <translation id="3162559335345991374">Käyttämäsi Wi-Fi saattaa edellyttää kirjautumista.</translation>
-<translation id="3166370127092388416">{NUM_COOKIES,plural, =0{Kolmannen osapuolen evästeet, ei sallittuja sivustoja}=1{Kolmannen osapuolen evästeet, 1 sallittu sivusto}other{Kolmannen osapuolen evästeet, # sallittua sivustoa}}</translation>
 <translation id="3168744840365648658">Radiolaitteet</translation>
 <translation id="3169472444629675720">Discover</translation>
 <translation id="3171703252520926121">Kiinteistöpalvelut</translation>
@@ -1164,7 +1162,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="3262698603497362968">Ostovalinnat</translation>
 <translation id="3266367459139339908">Lanseeraamme uusia tapoja, joilla voit rajoittaa sivustojen keräämiä tietoja, kun sinulle näytetään personoituja mainoksia. Esimerkkejä:</translation>
 <translation id="3266793032086590337">Arvo (ristiriita)</translation>
-<translation id="3266972086368072861">{NUM_COOKIES,plural, =0{Ei estettyjä sivustoja, mukaan lukien niihin liittyvät sivustot}=1{1 sivusto estetty, mukaan lukien siihen liittyvät sivustot}other{# sivustoa estetty, mukaan lukien niihin liittyvät sivustot}}</translation>
 <translation id="3268451620468152448">Avoimet välilehdet</translation>
 <translation id="3270041629388773465">Voit maksaa nopeammin, kun CVC:t on tallennettu</translation>
 <translation id="3270156322180235608">Lentomatkailu</translation>
@@ -1209,7 +1206,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="3359565626472459400">Avioliitto</translation>
 <translation id="3360103848165129075">Maksujenkäsittelytaulukko</translation>
 <translation id="3360313521703038580">Ekologisuus ja ympäristö</translation>
-<translation id="3360753465334942529">{NUM_COOKIES,plural, =0{Kolmannen osapuolen evästeet, ei estettyjä sivustoja}=1{Kolmannen osapuolen evästeet, 1 estetty sivusto}other{Kolmannen osapuolen evästeet, # estettyä sivustoa}}</translation>
 <translation id="3362968246557010467">Tämä käytäntö kopioitiin automaattisesti vanhentuneesta <ph name="OLD_POLICY" /> ‑käytännöstä. Käytä tätä käytäntöä sen sijaan.</translation>
 <translation id="3364869320075768271"><ph name="URL" /> haluaa käyttää virtuaalitodellisuuslaitteitasi ja ‑dataasi</translation>
 <translation id="3366477098757335611">Näytä kortit</translation>
@@ -1614,7 +1610,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="4151403195736952345">Käytä yleistä oletusta (havaitse)</translation>
 <translation id="4152318981910038897">{COUNT,plural, =1{Sivu 1}other{Sivu {COUNT}}}</translation>
 <translation id="4154277373259957087">Chrome vahvistaa nyt henkilöllisyytesi ennen maksutapojen täyttämistä. Voit muuttaa asetusta milloin tahansa täällä: <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" />.</translation>
-<translation id="4159149286839604525">Tämä tarkoittaa, että useimpien sivuston ominaisuuksien pitäisi toimia, mutta suojaus ei ole niin vahva</translation>
 <translation id="4159784952369912983">Violetti</translation>
 <translation id="4165986682804962316">Sivustoasetukset</translation>
 <translation id="4169535189173047238">Älä salli</translation>
@@ -2038,7 +2033,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="4983145717627482381">Opastetut retket ja valmislomat</translation>
 <translation id="498323057460789381">Mallin todennusvirhe: <ph name="ERROR" /></translation>
 <translation id="4984088539114770594">Käytetäänkö mikrofonia?</translation>
-<translation id="4985206706500620449">Olet sallinut kolmannen osapuolen evästeet tällä sivustolla</translation>
 <translation id="4989163558385430922">Näytä kaikki</translation>
 <translation id="4989542687859782284">Ei käytettävissä</translation>
 <translation id="4989809363548539747">Tätä laajennusta ei tueta.</translation>
@@ -2255,7 +2249,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="5414511064953050917">Siirrä silti</translation>
 <translation id="5421136146218899937">Poista selaustiedot...</translation>
 <translation id="5423269318075950257">Hintaseuranta</translation>
-<translation id="5425241977284572032">{NUM_COOKIES,plural, =0{Ei estettyjä sivustoja}=1{1 sivusto estetty}other{# sivustoa estetty}}</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> haluaa lähettää sinulle ilmoituksia</translation>
 <translation id="5430298929874300616">Poista kirjanmerkki</translation>
 <translation id="5434798570900738152">Chromium <ph name="BEGIN_EMPHASIS" />ei tallenna<ph name="END_EMPHASIS" /> näitä tietoja:
@@ -2815,7 +2808,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="6521745193039995384">Ei aktiivinen</translation>
 <translation id="6524830701589638230">Muuta esteettömyysasetuksia ‑painike, aktivoi personoidaksesi esteettömyystyökaluja Chromen asetuksista</translation>
 <translation id="6529173248185917884">Seitsemäs rulla</translation>
-<translation id="652937045869844725">Kokeile sallia kolmannen osapuolen evästeet. Suojaus ei tällöin ole niin vahva, mutta sivuston ominaisuudet toimivat todennäköisemmin.</translation>
 <translation id="6529602333819889595">&amp;Toista poisto</translation>
 <translation id="6535751101619004418">Valuutat ja valuutanvaihto</translation>
 <translation id="6536221421038631327">Jos poistat Passpoint-tilauksen laitteelta (<ph name="DEVICE_TYPE" />), siihen liittyvät verkot poistetaan. Jos haluat tehdä muutoksia tilaussopimukseen, ota yhteyttä kumppaniin <ph name="FRIENDLY_NAME" />. <ph name="LEARN_MORE" /></translation>
@@ -3171,7 +3163,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="7221855153210829124">Näytä ilmoitukset</translation>
 <translation id="7221857374443660083">Pankkisi edellyttää henkilöllisyyden vahvistamista</translation>
 <translation id="722454870747268814">Uusi incognito-välilehti</translation>
-<translation id="7226276626900992675">Olet antanut tälle sivustolle luvan käyttää kolmannen osapuolen evästeitä. Tämä tarkoittaa, että useimpien sivuston ominaisuuksien pitäisi toimia, mutta suojaus ei ole niin vahva.</translation>
 <translation id="7227293336683593977">Hintahistoria</translation>
 <translation id="7227747683324411744">Hyökkääjät sivustolla, jolle yrität siirtyä, voivat yrittää huijata sinua asentamaan haittaohjelmia, jotka vaikuttavat selauskokemukseen. Ne voivat esimerkiksi vaihtaa aloitussivusi tai näyttää ylimääräisiä mainoksia avaamillasi sivustoilla.</translation>
 <translation id="7233592378249864828">Tulosta vahvistussivu</translation>
@@ -3791,7 +3782,6 @@ Lisätietoja:
 <translation id="8398335999901363925">Kosketusnäytöllä käytettävissä olevat maksutavat on avattu koko näytön korkeudella.</translation>
 <translation id="8398446215576328011">Palauta sovellettavat käytännöt</translation>
 <translation id="8398790343843005537">Etsi puhelimesi</translation>
-<translation id="8401772916834964810">{COUNT,plural, =0{Chrome estää evästeet uudelleen tänään}=1{Chrome estää evästeet uudelleen huomenna}other{# päivää ennen kuin Chrome estää evästeet uudelleen}}</translation>
 <translation id="8403506619177967839">Fanifiktio</translation>
 <translation id="8405579342203358118">Valitse synkronoitavat tiedot Chromen asetuksista</translation>
 <translation id="8406071103346257942">lopettaa näytön lukituksen avaustavan käytön salasanojen täyttämiseen</translation>

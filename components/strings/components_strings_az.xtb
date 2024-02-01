@@ -884,7 +884,6 @@
 <translation id="2674804415323431591">Təklifləri gizlədin</translation>
 <translation id="2677696497921480781">Doğum günləri və ad günləri</translation>
 <translation id="2677748264148917807">Tərk edin</translation>
-<translation id="2678468611080193228">Üçüncü tərəf kukilərinə müvəqqəti icazə verin. Beləcə, qoruma az olsa da, sayt funksiyalarının işləmə ehtimalı yüksəkdir</translation>
 <translation id="2686919536310834199">"Yazmağa kömək et" ilə bağlı rəy göndərin.</translation>
 <translation id="2687555958734450033">Ən uyğun</translation>
 <translation id="2688186765492306706">500 x 760 mm</translation>
@@ -1104,7 +1103,6 @@
 <translation id="3157931365184549694">Bərpa edin</translation>
 <translation id="3158539265159265653">Disk</translation>
 <translation id="3162559335345991374">İstifadə etdiyiniz Wi-Fi login səhifəsinə daxil olmağınızı tələb edə bilər.</translation>
-<translation id="3166370127092388416">{NUM_COOKIES,plural, =0{Üçüncü tərəf kukiləri, icazə verilən sayt yoxdur}=1{Üçüncü tərəf kukiləri, 1 sayta icazə verilib}other{Üçüncü tərəf kukiləri, # sayta icazə verilib}}</translation>
 <translation id="3168744840365648658">Radio təchizatı</translation>
 <translation id="3169472444629675720">Discover</translation>
 <translation id="3171703252520926121">Daşınmaz əmlak xidmətləri</translation>
@@ -1161,7 +1159,6 @@
 <translation id="3262698603497362968">Alış seçimləri</translation>
 <translation id="3266367459139339908">Sizə fərdiləşdirilmiş reklamlar göstərdikdə saytların sizin haqqınızda öyrənə biləcəklərini məhdudlaşdırmaq üçün yeni yollar başladırıq, məsələn:</translation>
 <translation id="3266793032086590337">Dəyər (zidd)</translation>
-<translation id="3266972086368072861">{NUM_COOKIES,plural, =0{Əlaqəli saytlar daxil olmaqla heç bir sayt bloklanmayıb}=1{Əlaqəli saytlar daxil olmaqla 1 sayt bloklanıb}other{Əlaqəli saytlar daxil olmaqla # sayt bloklanıb}}</translation>
 <translation id="3268451620468152448">Panelləri Açın</translation>
 <translation id="3270041629388773465">CVC-ni yadda saxlayaraq cəld ödəniş edin</translation>
 <translation id="3270156322180235608">Hava yolu ilə səyahət</translation>
@@ -1206,7 +1203,6 @@
 <translation id="3359565626472459400">Nigah</translation>
 <translation id="3360103848165129075">Ödəniş səhifəsi</translation>
 <translation id="3360313521703038580">Ekologiya və ətraf mühit</translation>
-<translation id="3360753465334942529">{NUM_COOKIES,plural, =0{Üçüncü tərəf kukiləri, bloklanmış sayt yoxdur}=1{Üçüncü tərəf kukiləri, 1 sayt bloklanıb}other{Üçüncü tərəf kukiləri, # sayt bloklanıb}}</translation>
 <translation id="3362968246557010467">Bu siyasət ləğv edilmiş <ph name="OLD_POLICY" /> siyasətindən avtomatik kopyalanıb. Əvəzinə bu siyasətdən istifadə etməlisiniz.</translation>
 <translation id="3364869320075768271"><ph name="URL" /> virtual reallıq cihazınız və datanızı istifadə etmək istəyir</translation>
 <translation id="3366477098757335611">Kartlara baxın</translation>
@@ -1609,7 +1605,6 @@
 <translation id="4151403195736952345">Qlobal defolt istifadə edin (Defekt)</translation>
 <translation id="4152318981910038897">{COUNT,plural, =1{Səhifə 1}other{Səhifə {COUNT}}}</translation>
 <translation id="4154277373259957087">Chrome ödəniş metodlarını doldurmazdan əvvəl kimliyinizi doğrulayacaq. <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" /> bölməsində yeniləyə bilərsiniz.</translation>
-<translation id="4159149286839604525">Əksər sayt funksiyaları işləyəcək, lakin qoruma az olacaq</translation>
 <translation id="4159784952369912983">Bənövşəyi</translation>
 <translation id="4165986682804962316">Sayt ayarları</translation>
 <translation id="4169535189173047238">İcazə verməyin</translation>
@@ -2033,7 +2028,6 @@
 <translation id="4983145717627482381">Bələdçili tur və müşayiət edilən tətillər</translation>
 <translation id="498323057460789381">Sxem doğrulama xətası: <ph name="ERROR" /></translation>
 <translation id="4984088539114770594">Mikrofondan istifadə edilsin?</translation>
-<translation id="4985206706500620449">Bu saytda üçüncü tərəf kukilərinə icazə verdiniz</translation>
 <translation id="4989163558385430922">Hamısına baxın</translation>
 <translation id="4989542687859782284">Əlçatmaz</translation>
 <translation id="4989809363548539747">Bu plagin dəstəklənmir</translation>
@@ -2250,7 +2244,6 @@
 <translation id="5414511064953050917">İstənilən halda köçürün</translation>
 <translation id="5421136146218899937">Baxış datasını silin...</translation>
 <translation id="5423269318075950257">Qiyməti izləyin</translation>
-<translation id="5425241977284572032">{NUM_COOKIES,plural, =0{Heç bir sayt bloklanmayıb}=1{1 sayt bloklanıb}other{# sayt bloklanıb}}</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> Sizə bildiriş göndərmək istəyir</translation>
 <translation id="5430298929874300616">Əlfəcini silin</translation>
 <translation id="5434798570900738152">Chromium <ph name="BEGIN_EMPHASIS" />yadda saxlamayacaq<ph name="END_EMPHASIS" />:
@@ -2810,7 +2803,6 @@
 <translation id="6521745193039995384">Aktiv deyil</translation>
 <translation id="6524830701589638230">"Əlçatımlıq ayarlarını idarə edin" düyməsi, aktivləşdirərək Chrome ayarlarında əlçatımlılıq alətlərini fərdiləşdirin</translation>
 <translation id="6529173248185917884">Yeddinci Rulon</translation>
-<translation id="652937045869844725">Üçüncü tərəf kukilərinə icazə verin. Beləcə, qoruma az olsa da, sayt funksiyalarının işləmə ehtimalı yüksəkdir</translation>
 <translation id="6529602333819889595">Silinməni yenidən edin</translation>
 <translation id="6535751101619004418">Valyuta və məzənnə</translation>
 <translation id="6536221421038631327"><ph name="DEVICE_TYPE" /> cihazından Keçid nöqtəsi abunəsini sildikdə əlaqədar şəbəkələr silinəcək. Abunə planına dəyişikliklər etmək üçün "<ph name="FRIENDLY_NAME" />" ilə əlaqə saxlayın. <ph name="LEARN_MORE" /></translation>
@@ -3166,7 +3158,6 @@
 <translation id="7221855153210829124">Bildirişləri göstərin</translation>
 <translation id="7221857374443660083">Bank kimliyinizi təsdiq etmək istəyir</translation>
 <translation id="722454870747268814">Yeni Incognito tabı</translation>
-<translation id="7226276626900992675">Bu sayta üçüncü tərəf kukilərindən istifadə icazəsi verdiniz. Əksər sayt funksiyaları işləyəcək, lakin qoruma az olacaq.</translation>
 <translation id="7227293336683593977">Qiymət tarixçəsi</translation>
 <translation id="7227747683324411744">Daxil olduğunuz saytda hücumçular əsas səhifəni dəyişməklə və ya əlavə reklamlar göstərməklə sizi axtarış təcrübənizə təsir edən zərərli proqram təminatı quraşdırmağa təşviq edə bilər.</translation>
 <translation id="7233592378249864828">Təsdiq vərəqini çap edin</translation>
@@ -3786,7 +3777,6 @@
 <translation id="8398335999901363925">Toxunaraq doldurulacaq ödəniş metodlarının siyahısı tam hündürlükdə açılıb.</translation>
 <translation id="8398446215576328011">Tətbiq olunmuş qaydaları geri dəyişin</translation>
 <translation id="8398790343843005537">Telefonunuzu tapın</translation>
-<translation id="8401772916834964810">{COUNT,plural, =0{Chrome bu gün kukiləri yenidən bloklayacaq}=1{Chrome sabah kukiləri yenidən bloklayacaq}other{Chrome # gün sonra kukiləri yenidən bloklayacaq}}</translation>
 <translation id="8403506619177967839">Həvəskar fantastika</translation>
 <translation id="8405579342203358118">Chrome ayarlarında sinxronlaşdırdığınız məlumatları idarə edin</translation>
 <translation id="8406071103346257942">parolları daxil etmək üçün ekran kilidindən istifadə etməyi dayandırın</translation>

@@ -43,6 +43,7 @@
 <translation id="2168108852149185974">Algunos complementos hacen que Chromium falle. Desinstala los que se indican a continuación:</translation>
 <translation id="2178608107313874732">Chromium no puede usar la cámara en este momento</translation>
 <translation id="2195025571279539885">¿Quieres que Chromium te ofrezca la posibilidad de traducir las páginas en <ph name="LANGUAGE_NAME" /> de este sitio web la próxima vez?</translation>
+<translation id="2216344354848599203">Mantén pulsado el icono de Chromium y haz clic en Editar pantalla de inicio</translation>
 <translation id="2218146227246548550">Tu organización requiere que inicies sesión para usar Chromium. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="22313767259766852">Actualmente, esta dirección está guardada en Chromium. Para usarla en los productos de Google, guárdala en tu cuenta de Google <ph name="USER_EMAIL" />.</translation>
 <translation id="2236584955986023187">Esto significa que Chromium siempre solicitará la vista del sitio web como ordenador.</translation>
@@ -191,6 +192,7 @@ Notas importantes:
 <translation id="632825460376924298">Permitir el inicio de sesión en Chromium</translation>
 <translation id="6337530241089703714">Elige si quieres borrar o conservar tus datos de Chromium en este dispositivo</translation>
 <translation id="6348483005826990855">3. Selecciona Chromium</translation>
+<translation id="6383607155624074112">Accede más rápido a Chromium desde el Dock de tu pantalla de inicio</translation>
 <translation id="6407399265324739055">Los métodos de pago y las direcciones no se cifrarán. El historial de navegación de Chromium no se sincronizará.
 
 Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifrados. La frase de contraseña no se enviará a Google, que tampoco la almacenará. Si olvidas tu frase de contraseña o quieres cambiar este ajuste, <ph name="BEGIN_LINK" />borra los datos de Chromium de tu cuenta<ph name="END_LINK" />.</translation>

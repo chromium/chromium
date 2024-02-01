@@ -883,7 +883,6 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="2674804415323431591">Tavsiyalarni berkitish</translation>
 <translation id="2677696497921480781">Tavallud va ism berish kunlari</translation>
 <translation id="2677748264148917807">Tark etish</translation>
-<translation id="2678468611080193228">Tashqi cookie fayllarga vaqtincha ruxsat bering, bunda himoya pasayadi, lekin saytdagi aksariyat funksiyalar ishlaydi</translation>
 <translation id="2686919536310834199">Yozishda yordam yuzasidan fikr-mulohaza yuborish.</translation>
 <translation id="2687555958734450033">Eng mos</translation>
 <translation id="2688186765492306706">500 x 760 mm</translation>
@@ -1103,7 +1102,6 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="3157931365184549694">Qayta tiklash</translation>
 <translation id="3158539265159265653">Disk</translation>
 <translation id="3162559335345991374">Siz ulangan Wi-Fi tarmog‘i tizimga kirishingizni talab qilishi mumkin.</translation>
-<translation id="3166370127092388416">{NUM_COOKIES,plural, =0{Tashqi cookie fayllar, barcha saytlarda taqiqlangan}=1{Tashqi cookie fayllar, 1 ta saytga ruxsat berilgan}other{Tashqi cookie fayllar, # ta saytga ruxsat berilgan}}</translation>
 <translation id="3168744840365648658">Radiotexnika</translation>
 <translation id="3169472444629675720">Discover</translation>
 <translation id="3171703252520926121">Koʻchmas mulk xizmatlari</translation>
@@ -1160,7 +1158,6 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="3262698603497362968">Xarid variantlari</translation>
 <translation id="3266367459139339908">Biz saytlar sizga moslashtirilgan reklamalarni chiqarishiga oid qanday maʼlumotlarni olishini cheklaydigan yangi usullar ustida ishlayapmiz, masalan:</translation>
 <translation id="3266793032086590337">Qiymat (ziddiyatli)</translation>
-<translation id="3266972086368072861">{NUM_COOKIES,plural, =0{Hech qaysi sayt bloklanmagan, jumladan aloqador saytlar}=1{1 ta sayt bloklangan, jumladan aloqador saytlar}other{# ta sayt bloklangan, jumladan aloqador saytlar}}</translation>
 <translation id="3268451620468152448">Ochiq ichki oynalar</translation>
 <translation id="3270041629388773465">Saqlangan CVC kodlar yordamida tezkor toʻlang</translation>
 <translation id="3270156322180235608">Avia sayohatlar</translation>
@@ -1205,7 +1202,6 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="3359565626472459400">Nikoh</translation>
 <translation id="3360103848165129075">Toʻlovni qayta ishlash vositasi</translation>
 <translation id="3360313521703038580">Ekologiya va atrof-muhit</translation>
-<translation id="3360753465334942529">{NUM_COOKIES,plural, =0{Tashqi cookie fayllar, barcha saytlarga ruxsat berilgan}=1{Tashqi cookie fayllar, 1 ta sayt bloklangan}other{Tashqi cookie fayllar, # ta sayt bloklangan}}</translation>
 <translation id="3362968246557010467">Bu parametr eskirgan <ph name="OLD_POLICY" /> siyosatidan avtomatik ravishda nusxa olgan. Oʻrniga bu parametrdan foydalaning.</translation>
 <translation id="3364869320075768271"><ph name="URL" /> virtual reallik qurilmangiz va uning maʼlumotlaridan foydalanmoqchi</translation>
 <translation id="3366477098757335611">Kartalarni ko‘rish</translation>
@@ -1608,7 +1604,6 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="4151403195736952345">Global birlamchi parametrdan foydalanish (Topilsin)</translation>
 <translation id="4152318981910038897">{COUNT,plural, =1{1-sahifa}other{{COUNT}-sahifa}}</translation>
 <translation id="4154277373259957087">Chrome toʻlov usulini kiritishdan oldin shaxsingizni tasdiqlaydi Buni istalgan vaqtda <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" /> orqali yangilash mumkin.</translation>
-<translation id="4159149286839604525">Bunda saytdagi aksariyat funksiyalar ishlaydi, lekin kamroq himoya bilan</translation>
 <translation id="4159784952369912983">Siyohrang</translation>
 <translation id="4165986682804962316">Sayt sozlamalari</translation>
 <translation id="4169535189173047238">Rad etish</translation>
@@ -2032,7 +2027,6 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="4983145717627482381">Gid bilan turlar va sherikli taʼtillar</translation>
 <translation id="498323057460789381">Sxemani tekshirish xatosi: <ph name="ERROR" /></translation>
 <translation id="4984088539114770594">Mikrofon ishlatilsinmi?</translation>
-<translation id="4985206706500620449">Bu sayt uchun tashqi cookie fayllarga ruxsat bergansiz</translation>
 <translation id="4989163558385430922">Hammasi</translation>
 <translation id="4989542687859782284">Mavjud emas</translation>
 <translation id="4989809363548539747">Ushbu plagin qo‘llab-quvvatlanmaydi</translation>
@@ -2249,7 +2243,6 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="5414511064953050917">Baribir koʻchirilsin</translation>
 <translation id="5421136146218899937">Brauzer tarixini tozalash...</translation>
 <translation id="5423269318075950257">Narxni kuzatish</translation>
-<translation id="5425241977284572032">{NUM_COOKIES,plural, =0{Hech qaysi sayt bloklanmagan}=1{1 ta sayt bloklangan}other{# ta sayt bloklangan}}</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> sayti bildirishnoma yuborishga ruxsat so‘ramoqda.</translation>
 <translation id="5430298929874300616">Xatcho‘pni o‘chirish</translation>
 <translation id="5434798570900738152">Chromium quyidagi maʼlumotlarni <ph name="BEGIN_EMPHASIS" />saqlamaydi<ph name="END_EMPHASIS" />:
@@ -2808,7 +2801,6 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="6521745193039995384">Faol emas</translation>
 <translation id="6524830701589638230">Qulaylik sozlamalari boshqarish tugmasi, Chrome sozlamalari orqali qulaylik vositalarini moslashtirish uchun faollashtiring</translation>
 <translation id="6529173248185917884">Yettinchi oʻram</translation>
-<translation id="652937045869844725">Tashqi cookie fayllarga ruxsat bering, bunda himoya pasayadi, lekin saytdagi aksariyat funksiyalar ishlaydi</translation>
 <translation id="6529602333819889595">&amp;O‘chirishni qaytarish</translation>
 <translation id="6535751101619004418">Valyuta ayirboshlash</translation>
 <translation id="6536221421038631327"><ph name="DEVICE_TYPE" /> qurilmasidan Passpoint ilovasi olib tashlansa, biriktirilgan kanallar ham olib tashlanadi. Obuna tarif rejasiga oʻzgartirish kiritish uchun “<ph name="FRIENDLY_NAME" />” bilan bogʻlaning. <ph name="LEARN_MORE" /></translation>
@@ -3164,7 +3156,6 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="7221855153210829124">Bildirishnomalarni ko‘rsatish</translation>
 <translation id="7221857374443660083">Bank shaxsingizni tasdiqlamoqchi</translation>
 <translation id="722454870747268814">Yangi Inkognito varaq</translation>
-<translation id="7226276626900992675">Bu sayt tashqi cookie fayllardan foydalanishiga ruxsat bergansiz Bunda saytdagi aksariyat funksiyalar ishlaydi, lekin kamroq himoya bilan.</translation>
 <translation id="7227293336683593977">Narxlar tarixi</translation>
 <translation id="7227747683324411744">Siz ochayotgan saytda firibgarlar — bosh sahifani oʻzgartirish yoki saytlarda qoʻshimcha reklama chiqarish orqali sizni aldab, sahifalarni kezishingizga taʼsir qiluvchi xavfli dasturni oʻrnatishi mumkin.</translation>
 <translation id="7233592378249864828">Bosmani tasdiqlash varagʻi</translation>
@@ -3784,7 +3775,6 @@ Batafsil axborot:
 <translation id="8398335999901363925">Teginib kiritiladigan toʻlov usullari roʻyxati toʻliq hajmda ochildi.</translation>
 <translation id="8398446215576328011">Amaldagi siyosatni bekor qilish</translation>
 <translation id="8398790343843005537">Telefonni topish</translation>
-<translation id="8401772916834964810">{COUNT,plural, =0{Chrome cookie fayllarni bugundan yana bloklaydi}=1{Chrome cookie fayllarni ertadan yana bloklaydi}other{Chrome cookie fayllarni # kundan keyin yana bloklaydi}}</translation>
 <translation id="8403506619177967839">Muxlislar ijodi</translation>
 <translation id="8405579342203358118">Chrome sozlamalari orqali sinxronlanadigan maʼlumotlarni boshqarish</translation>
 <translation id="8406071103346257942">parollarni kiritish uchun ekran qulfidan foydalanishni toʻxtatmoqchi</translation>

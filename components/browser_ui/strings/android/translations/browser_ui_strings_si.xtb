@@ -66,6 +66,7 @@
 <translation id="2228071138934252756"><ph name="APP_NAME" /> හට ඔබේ කැමරාවට ප්‍රවේශ වීමට ඉඩ දීමට, <ph name="BEGIN_LINK" />Android සැකසීම්<ph name="END_LINK" /> තුළද කැමරාව ක්‍රියාත්මක කරන්න.</translation>
 <translation id="2235344399760031203">තෙවන පාර්ශ්ව කුකී අවහිර කළා</translation>
 <translation id="2238944249568001759">ඔබගේ අවසන් ටැබය මත පදනම්ව යෝජිත සෙවීම්</translation>
+<translation id="2241587408274973373">නව පටිති පිටු කාඩ්පත්</translation>
 <translation id="2241634353105152135">හුදෙක් එක් වරක්</translation>
 <translation id="2253414712144136228"><ph name="NAME_OF_LIST_ITEM" /> ඉවත් කරන්න</translation>
 <translation id="2253989982043948086">{NUM_SELECTED,plural, =1{1 වෙබ් අඩවියක් අවහිර කර ඇත}one{වෙබ් අඩවි #ක් අවහිර කර ඇත}other{වෙබ් අඩවි #ක් අවහිර කර ඇත}}</translation>
@@ -281,6 +282,7 @@
 <translation id="5706552988683188916">මෙය <ph name="WEBSITE" /> සඳහා වන කුකී සහ අනෙකුත් අඩවි දත්ත මකයි</translation>
 <translation id="5723967018671998714">අප්‍රසිද්ධ ප්‍රකාරය තුළ තෙවන පාර්ශ්ව කුකී අවහිර කෙරේ</translation>
 <translation id="5740126560802162366">අඩවිවලට ඔබේ උපාංගයෙහි දත්ත සුරැකිය හැක</translation>
+<translation id="5749158352074143502">මෙම පටිත්ත සමග ඉදිරියට යන්න</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" /> අවහිර කරන ලදී</translation>
 <translation id="5804241973901381774">අවසර</translation>
 <translation id="5844448279347999754">සක්‍රීය වූ විට, අඩවිවලට ඔබේ පසුරුපුවරුවට සුරකින ලද පාඨ සහ රූප බැලීමට ඉල්ලිය හැක. අක්‍රිය වූ විට, අඩවිවලට ඔබේ පසුරුපුවරුවට සුරකින ලද පාඨ සහ රූප බැලිය නොහැක.</translation>
@@ -421,6 +423,7 @@
 <translation id="7990211076305263060">සක්‍රීය වූ විට, අඩවිවලට ඔබේ මයික්‍රොෆෝනය භාවිත කිරීමට ඉල්ලිය හැක. අක්‍රිය වූ විට, අඩවිවලට ඔබේ මයික්‍රොෆෝනය භාවිත කළ නොහැක.</translation>
 <translation id="8007176423574883786">මෙම උපාංගය සඳහා ක්‍රියාවිරහිත කරන ලදී.</translation>
 <translation id="802154636333426148">බාගැනීම අසමත් විය</translation>
+<translation id="8024161440284949905">මෙම පටිති සමග ඉදිරියට යන්න</translation>
 <translation id="8042586301629853791">අනුපිළිවෙළට සකසන්න:</translation>
 <translation id="8067883171444229417">වීඩියෝව ධාවන කරන්න</translation>
 <translation id="8068648041423924542">සහතිකය තේරීමට නොහැකිය.</translation>

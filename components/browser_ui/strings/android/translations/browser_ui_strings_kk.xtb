@@ -66,6 +66,7 @@
 <translation id="2228071138934252756"><ph name="APP_NAME" /> браузері камераны пайдалануы үшін, <ph name="BEGIN_LINK" />Android параметрлерінде<ph name="END_LINK" /> оны да қосыңыз.</translation>
 <translation id="2235344399760031203">Үшінші тараптың cookie файлдары бөгелді</translation>
 <translation id="2238944249568001759">Соңғы ашылған қойындыға негізделіп ұсынылатын іздеу сұраулары</translation>
+<translation id="2241587408274973373">Жаңа қойынды бетінің карталары</translation>
 <translation id="2241634353105152135">Бір-ақ рет</translation>
 <translation id="2253414712144136228"><ph name="NAME_OF_LIST_ITEM" /> элементін жою</translation>
 <translation id="2253989982043948086">{NUM_SELECTED,plural, =1{1 сайт блокталған}other{# сайт блокталған}}</translation>
@@ -281,6 +282,7 @@
 <translation id="5706552988683188916"><ph name="WEBSITE" /> арналған cookie файлдары мен басқа да сайт деректері өшіріледі.</translation>
 <translation id="5723967018671998714">Үшінші тараптың cookie файлдары инкогнито режимінде блокталған.</translation>
 <translation id="5740126560802162366">Сайттар деректерді құрылғыңызда сақтай алады.</translation>
+<translation id="5749158352074143502">Осы қойындымен жалғастыру</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" /> үшін тыйым салынған.</translation>
 <translation id="5804241973901381774">Рұқсаттар</translation>
 <translation id="5844448279347999754">Қосылса, сайттар буферге сақталған мәтін мен суреттерді көруге рұқсат сұрай алады. Өшірілсе, көре алмайды.</translation>
@@ -421,6 +423,7 @@
 <translation id="7990211076305263060">Қосылса, сайттар микрофонды пайдалануға рұқсат сұрай алады. Өшірілсе, пайдалана алмайды.</translation>
 <translation id="8007176423574883786">Осы құрылғы үшін өшірілді</translation>
 <translation id="802154636333426148">Жүктеу сәтсіз аяқталды</translation>
+<translation id="8024161440284949905">Осы қойындылармен жалғастыру</translation>
 <translation id="8042586301629853791">Сұрыптау шарты:</translation>
 <translation id="8067883171444229417">Бейнені ойнату</translation>
 <translation id="8068648041423924542">Сертификатты таңдау мүмкін емес.</translation>

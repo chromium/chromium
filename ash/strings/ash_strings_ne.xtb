@@ -607,9 +607,11 @@
 <translation id="3526440770046466733">यो लिंक नयाँ ट्याबमा खोल्नुहोस् तर अहिलेकै ट्याबमा रहिरहनुहोस्</translation>
 <translation id="353086728817903341"><ph name="NUM_DEVICES" /> वटा डिभाइसमा कनेक्ट गरिएको छ</translation>
 <translation id="3533126039236445965">सेल्फ बारमा भएका एपहरू</translation>
+<translation id="3537350467437346467">तपाईंले हेर्नुभएकाले</translation>
 <translation id="3539957339480430241"><ph name="DEVICE_NAME" /> हटस्पट</translation>
 <translation id="3540893133818942399">आफ्नो फोनमा भएका हालसालैका फोटो तथा मिडिया हेर्ने सुविधा सेटअप गर्ने प्रक्रिया खारेज गर्नुहोस्</translation>
 <translation id="3542066395059568317">तपाईं आफूले छाडेकै ठाउँबाट जारी राख्न सक्नुहोस् भन्नाका लागि तपाईंलाई सिफारिसहरू देखाइने छन्। तपाईं दायाँ क्लिक गरेर ती सिफारिसहरू हटाउन सक्नुहुन्छ।</translation>
+<translation id="3547318469722231257">तपाईंले परिमार्जन गर्नुभएकाले</translation>
 <translation id="3552189655002856821">Wi-Fi अफ गरियो</translation>
 <translation id="3554215588514239132">डेभलपर टुल प्यानल देखाउनुहोस् वा लुकाउनुहोस्</translation>
 <translation id="3554637740840164787"><ph name="ITEM_TITLE" /> पिन गरिएको थियो</translation>
@@ -701,6 +703,7 @@
 <translation id="385300504083504382">पाठको सुरुवातमा जानुहोस्</translation>
 <translation id="3859364108019690">एपहरू स्ट्रिम गर्न सकिएन</translation>
 <translation id="3861651314799684201">पूरा स्क्रिन रेकर्ड गर्न इन्टर थिच्नुहोस्</translation>
+<translation id="3882323608730650973">परिमार्जन गरिएकाले</translation>
 <translation id="3886872229787704059">आज खोलिएको</translation>
 <translation id="3891340733213178823">साइन आउट गर्न Ctrl+Shift+Q लाई दुईपटक थिच्नुहोस्।</translation>
 <translation id="3893630138897523026">ChromeVox (बोली पृष्ठपोषण)</translation>
@@ -894,6 +897,7 @@
 <translation id="4582666543382004902">Wi-Fi प्रयोग गर्नका निम्ति हटस्पट अफ गरिएको छ। हटस्पट प्रयोग गर्न Wi-Fi अफ गर्नुहोस्।</translation>
 <translation id="4585337515783392668">कुनै अज्ञात प्रापकमा casting गर्न छाड्नुहोस्</translation>
 <translation id="4596144739579517758">अँध्यारो थिम अफ छ</translation>
+<translation id="4596442969149038771"><ph name="USER" /> ले सेयर गर्नुभएकाले</translation>
 <translation id="4611292653554630842">लग इन गर्नुहोस्</translation>
 <translation id="462160925400706389"><ph name="NAME" /> कनेक्ट गरियो</translation>
 <translation id="4623167406982293031">खाता पुष्टि गर्नुहोस्</translation>
@@ -1815,6 +1819,7 @@
 <translation id="8314772463905284467">क्याप्स लक अन छ</translation>
 <translation id="8315514906653279104">अन हुँदै छ…</translation>
 <translation id="8331351032546853669">डाउनलोड गर्न बाँकी छ</translation>
+<translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
 <translation id="8345019317483336363"><ph name="WINDOW_TITLE" /> नामक विन्डो चयन गरियो</translation>
 <translation id="8349826889576450703">लन्चर</translation>
@@ -2034,6 +2039,7 @@
 <translation id="953431725143473984">डिभाइस सट डाउन गर्ने हो?</translation>
 <translation id="954052413789300507"><ph name="FILENAME" /> डाउनलोड गर्नका निम्ति पर्याप्त खाली ठाउँ छैन। ठाउँ खाली गर्नुहोस्।</translation>
 <translation id="954520015070501466">३० मिनेट</translation>
+<translation id="954786879461589145"><ph name="USER" /> ले परिमार्जन गर्नुभएकाले</translation>
 <translation id="974545358917229949"><ph name="RESULT_COUNT" /> सम्बन्धी <ph name="QUERY" /> परिणामहरू देखाउँदै</translation>
 <translation id="981011780479609956">पूरा गर्नु पर्ने मिति नतोकिएका</translation>
 <translation id="98120814841227350">कागजातको फेदमा जानुहोस्</translation>

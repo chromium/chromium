@@ -148,6 +148,7 @@
 <translation id="1753905327828125965">Көп көрүлгөн</translation>
 <translation id="1757699834933698436">{count,plural, =1{{count} начар сырсөз бар}other{{count} начар сырсөз бар}}</translation>
 <translation id="1767766085187034454">Google Котормочу</translation>
+<translation id="1769106850515800431">Жекелештирилген контент</translation>
 <translation id="1789803444939621101">Кайтып келишиңиз менен, <ph name="USER_NAME" /></translation>
 <translation id="1803264062614276815">Карта ээсинин аты-жөнү</translation>
 <translation id="1809939268435598390">Куржунду жок кылуу</translation>
@@ -828,6 +829,7 @@
 <translation id="5327753393331509826">Мазмун тууралуу билдирмелерди алуу</translation>
 <translation id="5329451663851195956">Жаңыртуу үчүн баракты ылдый тартсаңыз болот.</translation>
 <translation id="5339316356165661760">Шайкештирүүнү күйгүзүү</translation>
+<translation id="5343472494710226394">Сиз кызыккан нерселердин негизинде жаңылыктар, спорт жана мазмун.</translation>
 <translation id="5345660046352249607">{COUNT,plural, =1{Бул топтомго көз салынсынбы?}other{{COUNT} топтомго көз салынсынбы?}}</translation>
 <translation id="536067926684072644">Кыстармаларды көрсөтүү</translation>
 <translation id="5360976571138293719">Купуялыкка, коопсуздукка жана дайындарды чогултууга байланыштуу дагы башка параметрлерди көрүү үчүн <ph name="BEGIN_LINK" />Google кызматтары<ph name="END_LINK" /> бөлүмүнө өтүңүз.</translation>
@@ -898,6 +900,7 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="5737974891429562743">Аккаунтка кирүү тууралуу маалымат эскирип калды. Шайкештирип баштоо үчүн маалыматты жаңыртыңыз.</translation>
 <translation id="5738385766833540397">Көз салынган товарлардын баасынын төмөндөшү тууралуу эскертүүлөрдүн алынышын тескеңиз</translation>
 <translation id="5738887413654608789">Бул айланаңыздагы колдонмолордун негизинде ылайыктуу веб беттерди таап берет.</translation>
+<translation id="5744274077973758795"><ph name="FEATURE_NAME" /> боюнча билдирмелер күйгүзүлдү</translation>
 <translation id="5745916533876677730">Мурунку өтмөккө өтүү</translation>
 <translation id="574762237186762643">Иш-чаралар</translation>
 <translation id="5748177854685749242"><ph name="DATE" /> жеткирилет</translation>
@@ -922,6 +925,7 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="5850913622988109693">Таңгактарга көз салуу параметрлери</translation>
 <translation id="5854790677617711513">30 күндөн мурунку</translation>
 <translation id="5857090052475505287">Жаңы папка</translation>
+<translation id="5857361196621230935">Өтмөктү топто кошуу</translation>
 <translation id="5857770089550859117">Шайкештирип баштоо үчүн жашыруун сөз айкашы керек.</translation>
 <translation id="5859715514067755465">Багыттоо</translation>
 <translation id="5860033963881614850">Өчүк</translation>
@@ -1274,6 +1278,7 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="7649070708921625228">Жардам</translation>
 <translation id="7658239707568436148">Жокко чыгаруу</translation>
 <translation id="7666861622396822790">Муну <ph name="BEGIN_LINK" />Контент параметрлеринен<ph name="END_LINK" /> тескей аласыз.</translation>
+<translation id="7669493687462784703"><ph name="WEBSITE" /> сайтынан конфигурация профили жүктөлүп алынсынбы?</translation>
 <translation id="7671141431838911305">ОРНОТУУ</translation>
 <translation id="7673346542062368520">Жашыруун режимде карап чыгуу үчүн солго сүрүп коюңуз.</translation>
 <translation id="7679915578945954324">Сайттын даректери көчүрүлдү</translation>
@@ -1522,6 +1527,7 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="891282356902782456">Бул сырсөз ушул түзмөктө гана сакталат. Аны башка түзмөктөрдө колдонуу үчүн Google аккаунтуңузда (<ph name="EMAIL" />) сактаңыз.</translation>
 <translation id="8917490105272468696">Ооба, мен макулмун</translation>
 <translation id="8928133177108699615">Иш такта</translation>
+<translation id="8937676484307616731"><ph name="FEATURE_NAME" /> боюнча билдирмелер күйгүзүлсүн</translation>
 <translation id="894191600409472540">Татаал сырсөз түзүңүз</translation>
 <translation id="8952559610785099500">Сырсөз кошуу</translation>
 <translation id="8953046091948372197">Сырсөздөрүңүздү ушул жерден табасыз</translation>

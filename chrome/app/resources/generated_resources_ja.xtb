@@ -239,6 +239,7 @@
 <translation id="1177073277575830464">Android のクイック セットアップが完了しました。<ph name="DEVICE_TYPE" /> で設定を続行してください。</translation>
 <translation id="1177440945615690056">[設定] で、有効なモバイル ネットワークであればどれでも接続できます</translation>
 <translation id="1177863135347784049">カスタム</translation>
+<translation id="1178093605842850860">このサイトの読み取りと変更を許可しました</translation>
 <translation id="1178581264944972037">一時停止</translation>
 <translation id="1178601482396475810">デバイスの同期を管理</translation>
 <translation id="117916940443676133">セキュリティ キーは PIN で保護されていません。ログインデータを管理するには、まず PIN を作成してください。</translation>
@@ -2594,6 +2595,7 @@
 <translation id="2935314715123552088">アクティブな eSIM プロファイルを無効にする</translation>
 <translation id="2935654492420446828">学校用アカウントは後で追加します</translation>
 <translation id="2936851848721175671">バックアップと復元</translation>
+<translation id="2938981087412273365">このサイトの読み取りと変更を拒否しました</translation>
 <translation id="2939908794993783865">追加の無効なサイト</translation>
 <translation id="2939938020978911855">使用可能な Bluetooth デバイスを表示</translation>
 <translation id="2941112035454246133">低</translation>
@@ -3401,6 +3403,7 @@
 <translation id="3602894439067790744">数字の読み上げ</translation>
 <translation id="3603622770190368340">ネットワーク証明書を取得</translation>
 <translation id="3605156246402033687">{COUNT,plural, =1{{COUNT} 個のアカウントで同じパスワードを使用しています}other{{COUNT} 個のアカウントで同じパスワードを使用しています}}</translation>
+<translation id="3605515937536882518">フォームの値を更新しました</translation>
 <translation id="3605780360466892872">ボタンダウン</translation>
 <translation id="3607671391978830431">お子様が使用</translation>
 <translation id="3608460311600621471">このデータを印刷する理由を入力してください。</translation>
@@ -4467,6 +4470,7 @@
 <translation id="4410545552906060960">パスワードではなく数字（PIN）を使用してデバイスのロックを解除することができます。後で PIN を設定する場合は、[設定] に移動してください。</translation>
 <translation id="4411578466613447185">コードの署名者</translation>
 <translation id="4411719918614785832">これらのパスキーは、このパソコンの Windows Hello に保存されます。Google アカウントには保存されません。</translation>
+<translation id="4412544493002546580">もう一度お試しいただくか、以下のインスピレーションから選択してください。</translation>
 <translation id="4412547955014928315"><ph name="SITE_NAME" /> とその下にあるすべてのサイトのサイトデータと権限を削除しますか？</translation>
 <translation id="4412632005703201014">Chrome アプリはプログレッシブ ウェブアプリに移行しています。この Chrome アプリは組織によりブラウザにインストールされたものです。アプリのリストからプログレッシブ ウェブアプリを開くには、まず Chrome アプリをアンインストールするよう管理者に依頼します。その間は、<ph name="EXTENSION_LAUNCH_URL" /> にアクセスして、ウェブで <ph name="EXTENSION_NAME" /> を開いてください。</translation>
 <translation id="4412698727486357573">ヘルプセンター</translation>
@@ -4881,6 +4885,7 @@
 <translation id="4744268813103118742">サイトに移動</translation>
 <translation id="4744571849207727284">Excel</translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{サイトのミュートを解除}other{サイトのミュートを解除}}</translation>
+<translation id="4745500401920035244">管理者がシステム全体に行った変更により、一部の古いプロフィールが無効になりました。このプロフィールにアクセスすることはできませんが、削除することはできます</translation>
 <translation id="474609389162964566">「OK Google」と話しかけてアシスタントにアクセス</translation>
 <translation id="4748783296226936791">一般的ではないキーボードや、ゲーム コントローラなどのデバイスを使用する機能に対応するために、多くのサイトは HID デバイスに接続します</translation>
 <translation id="4749960740855309258">新しいタブを開く</translation>
@@ -5427,6 +5432,7 @@
 <translation id="5178667623289523808">前を検索</translation>
 <translation id="5181140330217080051">ダウンロードしています</translation>
 <translation id="5181172023548002891"><ph name="ACCOUNT" /> の Google パスワード マネージャー</translation>
+<translation id="5181551096188687373">このパスワードは、このデバイスのみに保存されます。他のデバイスで使用するには、Google アカウント（<ph name="USER_EMAIL" />）に保存してください。</translation>
 <translation id="5183344263225877832">HID デバイスの権限をすべてリセットしますか？</translation>
 <translation id="5184063094292164363">JavaScript コンソール(&amp;J)</translation>
 <translation id="5184209580557088469">このユーザー名のチケットはすでに設定されています</translation>
@@ -5711,6 +5717,7 @@
 <translation id="5417312524372586921">ブラウザのテーマ</translation>
 <translation id="5417353542809767994">簡単に安全なパスワードを使用する</translation>
 <translation id="541737483547792035">画面の拡大</translation>
+<translation id="541822678830750798">このサイトの読み取りと変更をリクエストしています</translation>
 <translation id="5419405654816502573">Voice Match</translation>
 <translation id="5420061891386124792">タブグループを保存し、呼び出す機能です。タブグループを右クリックして保存します。呼び出しはブックマーク バーから行います。</translation>
 <translation id="5420274697768050645">セキュリティ強化のため、デバイスのロック解除にパスワードを要求する</translation>
@@ -5963,6 +5970,7 @@
 <translation id="560834977503641186">Wi-Fi 同期の詳細</translation>
 <translation id="5608580678041221894">トリミング範囲を調整または移動するには次のキーをタップします</translation>
 <translation id="5609231933459083978">アプリケーションが無効になっているようです。</translation>
+<translation id="5610867721023328944">もう一度お試しいただくか、以下の使用可能なテーマから選択してください。</translation>
 <translation id="5611398002774823980">アカウントに保存</translation>
 <translation id="561236229031062396"><ph name="SHORTCUT_NAME" />、<ph name="APP_FULL_NAME" /></translation>
 <translation id="5614190747811328134">ユーザー通知</translation>
@@ -6287,6 +6295,7 @@
 <translation id="586567932979200359"><ph name="PRODUCT_NAME" /> はディスク イメージから実行されています。パソコンにインストールすると、ディスク イメージなしで実行できるようになり、常に最新の状態に維持できます。</translation>
 <translation id="5865733239029070421">使用統計情報や障害レポートを Google に自動送信します</translation>
 <translation id="5868434909835797817">デバイスのマイクはオフになっています</translation>
+<translation id="5868479397518301468">ログインがタイムアウトしました</translation>
 <translation id="5868822853313956582">デバイスの色に従う</translation>
 <translation id="5869029295770560994">OK</translation>
 <translation id="5869522115854928033">保存したパスワード</translation>
@@ -6638,6 +6647,7 @@
     <ph name="QUICK_START_DEVICE_DISPLAY_NAME" /> として表示されます...</translation>
 <translation id="6146409560350811147">同期が機能していません。もう一度ログインしてみてください。</translation>
 <translation id="6147020289383635445">印刷プレビューの表示に失敗しました。</translation>
+<translation id="6147253937684562370">プロフィールのロックを解除するには、メイン アカウントのメールアドレス（<ph name="EMAIL" />）でログインしてください</translation>
 <translation id="6148576794665275391">開く</translation>
 <translation id="614890671148262506">このサイトからの通知を常に許可する</translation>
 <translation id="6149015141270619212">インターネットに接続できません</translation>
@@ -7616,6 +7626,7 @@
 <translation id="6918677045355889289">Chrome OS の更新が必要です</translation>
 <translation id="6919354101107095996">サイトにログインしてから、もう一度ダウンロードしてください</translation>
 <translation id="6919952941889172531">この Chrome プロフィールでセーフ ブラウジング保護強化機能もオンにしますか？</translation>
+<translation id="6920473853105515518">お使いの <ph name="DEVICE_TYPE" /> がインターネットに接続されていることを確認してから、もう一度お試しください。別のデバイスで play.google/play-terms にアクセスすることもできます。</translation>
 <translation id="6920989436227028121">通常のタブとして開く</translation>
 <translation id="6921104647315081813">アクティビティを削除</translation>
 <translation id="692114467174262153"><ph name="ALTERNATIVE_BROWSER_NAME" /> を開けませんでした</translation>
@@ -8744,6 +8755,7 @@
 
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="7789963078219276159">スタートページの背景が<ph name="CATEGORY" />に変更されました。</translation>
+<translation id="7791269138074599214">入力方法</translation>
 <translation id="7791429245559955092">このアプリケーションは、現在使用している Chrome プロフィールにインストールされます</translation>
 <translation id="7791436592012979144">逆スクロールは有効です</translation>
 <translation id="7791543448312431591">追加</translation>
@@ -8836,6 +8848,7 @@
 <translation id="7861215335140947162">ダウンロード(&amp;D)</translation>
 <translation id="7861846108263890455">Google アカウントの言語</translation>
 <translation id="7864539943188674973">Bluetooth を無効にする</translation>
+<translation id="7864825798076155402">Google アカウントに保存しますか？</translation>
 <translation id="7865127013871431856">翻訳オプション</translation>
 <translation id="786957569166715433"><ph name="DEVICE_NAME" /> - ペア設定済み</translation>
 <translation id="7869655448736341731">指定なし</translation>
@@ -10016,6 +10029,7 @@
 <translation id="8756969031206844760">パスワードを更新しますか？</translation>
 <translation id="8757368836647541092"><ph name="USER_NAME_OR_EMAIL" /> を削除しました</translation>
 <translation id="8759753423332885148">詳細</translation>
+<translation id="876161309768861172">ログインできませんでした。もう一度お試しください</translation>
 <translation id="8761945298804995673">このユーザーはすでに存在しています</translation>
 <translation id="8762886931014513155">ご利用の <ph name="DEVICE_TYPE" /> は更新が必要です</translation>
 <translation id="8763927697961133303">USB デバイス</translation>
@@ -10526,6 +10540,7 @@
 <translation id="9138978632494473300">ショートカットを次の場所に追加:</translation>
 <translation id="9139988741193276691">Linux は設定中です</translation>
 <translation id="9140067245205650184">サポートされていない機能フラグ <ph name="BAD_FLAG" /> が使用されています。これにより、安全性とセキュリティが損なわれます。</translation>
+<translation id="914031120300235526">プロフィールのロックを解除できません</translation>
 <translation id="9142637293078737510">イメージ エイリアス</translation>
 <translation id="9143298529634201539">候補を削除しますか？</translation>
 <translation id="9143922477019434797">パスワードを保護する</translation>
@@ -10654,6 +10669,7 @@
 <translation id="951991426597076286">同意しない</translation>
 <translation id="952471655966876828">デバイスの電源がオンになったときや使用されているときは自動的に接続します</translation>
 <translation id="953434574221655299">このデバイスのアクティブ状態の検出を許可する</translation>
+<translation id="954749761428814584">言語と入力方法</translation>
 <translation id="956500788634395331">有害な可能性がある拡張機能から保護されています</translation>
 <translation id="957179356621191750">6 点式</translation>
 <translation id="957960681186851048">このサイトで複数ファイルの自動ダウンロードが試行されました</translation>

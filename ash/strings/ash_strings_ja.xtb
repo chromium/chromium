@@ -607,9 +607,11 @@
 <translation id="3526440770046466733">新しいタブでリンクを開いて、現在のタブにとどまる</translation>
 <translation id="353086728817903341"><ph name="NUM_DEVICES" /> 台のデバイスに接続しています</translation>
 <translation id="3533126039236445965">シェルフのアプリ</translation>
+<translation id="3537350467437346467">閲覧したファイル</translation>
 <translation id="3539957339480430241"><ph name="DEVICE_NAME" /> アクセス ポイント</translation>
 <translation id="3540893133818942399">スマートフォンの最近の写真とメディアの表示の設定を行わない</translation>
 <translation id="3542066395059568317">前回中断したところから再開できるように、おすすめが表示されます。おすすめは右クリックで削除できます。</translation>
+<translation id="3547318469722231257">変更を加えたファイル</translation>
 <translation id="3552189655002856821">Wi-Fi はオフです</translation>
 <translation id="3554215588514239132">デベロッパー ツール パネルの表示と非表示を切り替える</translation>
 <translation id="3554637740840164787"><ph name="ITEM_TITLE" /> を固定しました</translation>
@@ -701,6 +703,7 @@
 <translation id="385300504083504382">先頭</translation>
 <translation id="3859364108019690">アプリをストリーミングできません</translation>
 <translation id="3861651314799684201">全画面を録画するには Enter キーを押してください</translation>
+<translation id="3882323608730650973">変更が加えられたファイル</translation>
 <translation id="3886872229787704059">今日開いたファイル</translation>
 <translation id="3891340733213178823">ログアウトするには、Ctrl+Shift+Q を 2 回押します。</translation>
 <translation id="3893630138897523026">ChromeVox（音声フィードバック）</translation>
@@ -894,6 +897,7 @@
 <translation id="4582666543382004902">Wi-Fi を使用するためアクセス ポイントがオフになりました。アクセス ポイントを使用するには、Wi-Fi をオフにしてください。</translation>
 <translation id="4585337515783392668">不明な受信デバイスへのキャストを停止します</translation>
 <translation id="4596144739579517758">ダークモードはオフになっています</translation>
+<translation id="4596442969149038771"><ph name="USER" /> さんから共有されたファイル</translation>
 <translation id="4611292653554630842">ログイン</translation>
 <translation id="462160925400706389"><ph name="NAME" /> を接続しました</translation>
 <translation id="4623167406982293031">アカウントを確認</translation>
@@ -1816,6 +1820,7 @@
 <translation id="8314772463905284467">Caps Lock がオンになっています</translation>
 <translation id="8315514906653279104">オンにしています...</translation>
 <translation id="8331351032546853669">ダウンロード保留中</translation>
+<translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
 <translation id="8345019317483336363"><ph name="WINDOW_TITLE" /> ウィンドウが選択されています</translation>
 <translation id="8349826889576450703">ランチャー</translation>
@@ -2034,6 +2039,7 @@
 <translation id="953431725143473984">デバイスをシャットダウンしますか？</translation>
 <translation id="954052413789300507"><ph name="FILENAME" /> をダウンロードするのに十分な容量がありません。容量を空けてください。</translation>
 <translation id="954520015070501466">30 分</translation>
+<translation id="954786879461589145"><ph name="USER" /> さんが変更を加えたファイル</translation>
 <translation id="974545358917229949"><ph name="QUERY" /> の検索結果 <ph name="RESULT_COUNT" /> 件を表示しています</translation>
 <translation id="981011780479609956">期限なし</translation>
 <translation id="98120814841227350">ドキュメントの末尾に移動する</translation>

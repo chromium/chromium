@@ -43,6 +43,7 @@
 <translation id="2168108852149185974">Mae rhai ychwanegion yn achosi i Chromium dorri. Dadosodwch:</translation>
 <translation id="2178608107313874732">Ni all Chromium ddefnyddio'ch camera ar hyn o bryd</translation>
 <translation id="2195025571279539885">Ydych chi am i Chromium gynnig cyfieithu tudalennau <ph name="LANGUAGE_NAME" /> o'r wefan hon y tro nesaf?</translation>
+<translation id="2216344354848599203">Pwyswch a daliwch yr eicon Chromium a chliciwch ar 'Golygu'r Sgrîn Hafan'</translation>
 <translation id="2218146227246548550">Mae eich sefydliad yn gofyn i chi fewngofnodi i ddefnyddio Chromium. <ph name="BEGIN_LINK" />Dysgu Rhagor<ph name="END_LINK" /></translation>
 <translation id="22313767259766852">Mae'r cyfeiriad hwn wedi'i gadw i Chromium ar hyn o bryd. Er mwyn ei ddefnyddio ar draws cynhyrchion Google, cadwch ef yn eich Cyfrif Google, <ph name="USER_EMAIL" />.</translation>
 <translation id="2236584955986023187">Mae hyn yn golygu y bydd Chromium yn gofyn am y wefan bwrdd gwaith bob tro.</translation>
@@ -191,6 +192,7 @@ Pethau i'w hystyried:
 <translation id="632825460376924298">Caniatáu Mewngofnodi i Chromium</translation>
 <translation id="6337530241089703714">Dewiswch a ddylid clirio eich data Chromium o'r ddyfais hon neu eu cadw</translation>
 <translation id="6348483005826990855">3. Dewiswch Chromium</translation>
+<translation id="6383607155624074112">Cael Mynediad at Chromium yn gyflymach o'ch Doc Sgrîn Hafan</translation>
 <translation id="6407399265324739055">Ni fydd dulliau talu a chyfeiriadau yn cael eu hamgryptio. Ni fydd hanes pori o Chromium yn cysoni.
 
 Dim ond rhywun sydd â'ch cyfrinymadrodd all ddarllen eich data sydd wedi'u hamgryptio. Nid yw'r cyfrinymadrodd yn cael ei anfon at Google na'i storio. Os byddwch yn anghofio'ch cyfrinymadrodd neu eisiau newid y gosodiad hwn, <ph name="BEGIN_LINK" />cliriwch y data Chromium yn eich cyfrif<ph name="END_LINK" />.</translation>

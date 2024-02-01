@@ -696,6 +696,7 @@ Rechten die je al hebt gegeven aan apps, kunnen van toepassing zijn op dit accou
 <translation id="1535597783576881392">Met deze gids krijg je meer inzicht in je keuzes, zodat Chrome werkt zoals jij dat wilt.</translation>
 <translation id="1535753739390684432">Laat specifieke tekst voorlezen. Selecteer eerst het icoon 'Selecteer om voor te lezen' onderaan het scherm en markeer daarna de tekst.</translation>
 <translation id="1536754031901697553">Verbinding verbreken...</translation>
+<translation id="1536883206862903762">Hiermee zet je extensies uit en zet je de instellingen terug naar veilige standaardwaarden. Tabbladen, bestanden en cookies blijven bewaard. <ph name="LINK_BEGIN" />Meer informatie<ph name="LINK_END" /></translation>
 <translation id="1537254971476575106">Volledig scherm vergroten</translation>
 <translation id="15373452373711364">Grote cursor</translation>
 <translation id="1539727654733007771">Geen mobiele netwerken ingesteld. Download een nieuw <ph name="BEGIN_LINK" />profiel<ph name="END_LINK" />.</translation>
@@ -1666,6 +1667,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2246549592927364792">Afbeeldingsbeschrijvingen ophalen van Google?</translation>
 <translation id="2247738527273549923">Je apparaat wordt beheerd door je organisatie</translation>
 <translation id="2247870315273396641">Voorbeeld van stem</translation>
+<translation id="224835741840550119">Je apparaat opschonen</translation>
 <translation id="2249111429176737533">Openen als venster met tabbladen</translation>
 <translation id="2249605167705922988">bijv. 1-5, 8, 11-13</translation>
 <translation id="2249635629516220541">Pas de informatie aan die sites gebruiken om advertenties te laten zien</translation>
@@ -4591,6 +4593,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="4508765956121923607">Br&amp;on bekijken</translation>
 <translation id="4509277363725254222">Als je je <ph name="BEGIN_BOLD_USERNAME" />gebruikersnaam<ph name="END_BOLD_USERNAME" /> en <ph name="BEGIN_BOLD_PASSWORD" />wachtwoord<ph name="END_BOLD_PASSWORD" /> deelt, kan je gezinslid deze gegevens invullen via Google Wachtwoordmanager</translation>
 <translation id="4509421746503122514">Opnieuw starten om te updaten</translation>
+<translation id="4509741852167209430">Beperkte typen gegevens worden gedeeld tussen sites om de prestaties van hun advertenties te meten. Denk bijvoorbeeld aan informatie over of je een aankoop hebt gedaan na bezoek aan een site.</translation>
 <translation id="4510195992002502722">Kan feedback niet sturen. Opnieuw proberen…</translation>
 <translation id="4510479820467554003">Lijst met ouderaccounts</translation>
 <translation id="451102079304155829">winkelwagens</translation>
@@ -5973,6 +5976,7 @@ Rechten die je al hebt gegeven aan websites en apps, kunnen van toepassing zijn 
 <translation id="5609231933459083978">De app blijkt ongeldig te zijn.</translation>
 <translation id="5611398002774823980">Opslaan in account</translation>
 <translation id="561236229031062396"><ph name="SHORTCUT_NAME" />, <ph name="APP_FULL_NAME" /></translation>
+<translation id="5613074282491265467">Als je bent ingelogd bij Chrome, worden wachtwoorden die je opslaat, opgeslagen in je Google-account, <ph name="USER_EMAIL" />. Ga naar de instellingen om dit uit te zetten.</translation>
 <translation id="5614190747811328134">Gebruikerskennisgeving</translation>
 <translation id="5614553682702429503">Wachtwoord opslaan?</translation>
 <translation id="5614947000616625327">iCloud Sleutelhanger</translation>
@@ -6201,6 +6205,7 @@ Rechten die je al hebt gegeven aan websites en apps, kunnen van toepassing zijn 
 <translation id="579915268381781820">Je beveiligingssleutel is verwijderd.</translation>
 <translation id="5799478978078236781">Krijg tips, aanbiedingen en updates over <ph name="DEVICE_TYPE" /> en deel je feedback.</translation>
 <translation id="5799508265798272974">Virtuele Linux-machine: <ph name="LINUX_VM_NAME" /></translation>
+<translation id="5799971219262397777">Zet de instellingen op je ChromeOS-apparaat terug naar veilige standaardwaarden.</translation>
 <translation id="5800020978570554460">Bestemmingsbestand is afgekapt of verwijderd sinds de laatste download.</translation>
 <translation id="5800351251499368110">Zoeken in zijvenster sluiten. Zoeken is geopend in het zijvenster.</translation>
 <translation id="5800703268655655701">Licht of donker thema selecteren</translation>
@@ -7035,6 +7040,7 @@ Zichtbaar als <ph name="QUICK_START_DEVICE_DISPLAY_NAME" />...</translation>
 <translation id="6459799433792303855">Het actieve venster is verplaatst naar een ander scherm.</translation>
 <translation id="6460601847208524483">Zoek volgende</translation>
 <translation id="6461170143930046705">Zoeken naar netwerken...</translation>
+<translation id="6463596731306859179">Krijg je ongewenste pop-ups of ander onverwacht gedrag? Soms kunnen je ChromeOS-instellingen zonder je medeweten worden aangepast door apps en extensies die je installeert.</translation>
 <translation id="6463795194797719782">B&amp;ewerken</translation>
 <translation id="6464825623202322042">Dit apparaat</translation>
 <translation id="6465841119675156448">Zonder internet</translation>
@@ -9694,6 +9700,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8514746246728959655">Probeer een andere beveiligingssleutel</translation>
 <translation id="8514955299594277296">Niet toestaan dat sites gegevens opslaan op je apparaat (niet aanbevolen)</translation>
 <translation id="8515580632187889788">Als je doorgaat, geef je derden toestemming om informatie te verifiëren waarmee dit apparaat in het netwerk wordt geïdentificeerd. Wil je niet dat derden toegang hebben tot apparaatgegevens, dan kun je <ph name="BEGIN_LINK" />handmatig<ph name="END_LINK" /> een e-simkaartprofiel instellen.</translation>
+<translation id="8516472100141530292">Klik met de rechtermuisknop op de groep</translation>
 <translation id="8517759303731677493">Bewerken…</translation>
 <translation id="8518942514525208851">Grof taalgebruik verbergen</translation>
 <translation id="8519895319663397036">Kan wachtwoorden niet importeren. Het bestand moet kleiner zijn dan 150 KB.</translation>
@@ -10178,6 +10185,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8883273463630735858">Touchpadversnelling aanzetten</translation>
 <translation id="8884023684057697730"><ph name="BEGIN_BOLD" />Hoe je je gegevens kunt beheren:<ph name="END_BOLD" /> Ter bescherming van je privacy verwijderen we automatisch sites uit de lijst die ouder zijn dan 4 weken. Een site die je opnieuw bezoekt, kan weer op de lijst komen te staan. Je kunt ook sites verwijderen als je niet wilt dat deze interesses voor je definiëren.</translation>
 <translation id="8884570509232205463">Je apparaat wordt nu vergrendeld om <ph name="UNLOCK_TIME" />.</translation>
+<translation id="8885449336974696155">Help ChromeOS beter te maken door de <ph name="BEGIN_LINK" />huidige instellingen<ph name="END_LINK" /> te melden</translation>
 <translation id="8888253246822647887">Je app wordt geopend wanneer de upgrade is voltooid. Upgrades kunnen enkele minuten duren.</translation>
 <translation id="8888459276890791557">Je kunt dit zijvenster vastzetten voor snelle toegang</translation>
 <translation id="8889294078294184559">Terwijl je browst, kunnen sites via Chrome checken en met een eerder bezochte site verifiëren dat je waarschijnlijk een echte persoon bent</translation>
@@ -10346,6 +10354,7 @@ Rechten die je al hebt gegeven aan websites en apps, kunnen van toepassing zijn 
 <translation id="9011262023858991985">Dit tabblad casten</translation>
 <translation id="9011393886518328654">Release-opmerkingen</translation>
 <translation id="9012122671773859802">Scherm meebewegen met de muis</translation>
+<translation id="9012157139067635194">Opschonen</translation>
 <translation id="9012585441087414258">Beschermt tegen sites, downloads en extensies die als gevaarlijk zijn bestempeld. Als een pagina iets verdachts doet, worden URL's en delen van de paginacontent naar Google Safe Browsing gestuurd.</translation>
 <translation id="9013037634206938463">Er is <ph name="INSTALL_SIZE" /> vrije opslagruimte vereist om Linux te installeren. Verwijder bestanden op het apparaat om opslagruimte vrij te maken.</translation>
 <translation id="9014206344398081366">ChromeVox-tutorial</translation>
@@ -10353,6 +10362,7 @@ Rechten die je al hebt gegeven aan websites en apps, kunnen van toepassing zijn 
 <translation id="9016827136585652292">privacyscherm schakelen</translation>
 <translation id="90181708067259747">Vervaldatum: <ph name="CARD" /></translation>
 <translation id="9018218886431812662">De installatie is voltooid</translation>
+<translation id="901876615920222131">Klik op de groep om de groep opnieuw te openen</translation>
 <translation id="9019062154811256702">Instellingen voor 'Automatisch invullen' lezen en wijzigen</translation>
 <translation id="9019894137004772119">Gebruik de locatie. Apps en services met locatierechten mogen de locatie van je apparaat gebruiken. Google kan periodiek locatiegegevens verzamelen en anoniem gebruiken om de locatienauwkeurigheid en locatiegebaseerde services te verbeteren.</translation>
 <translation id="9019956081903586892">Kan het woordenboek voor de spellingcontrole niet downloaden</translation>

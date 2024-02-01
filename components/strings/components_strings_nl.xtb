@@ -429,6 +429,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="1752021286346845558">Mailbox 8</translation>
 <translation id="1753068535428855445">Dating en contactadvertenties</translation>
 <translation id="1753706481035618306">Paginanummer</translation>
+<translation id="1755203724116202818">Beperkte typen gegevens worden gedeeld tussen sites om de prestaties van een advertentie te meten. Denk bijvoorbeeld aan informatie over of je een aankoop hebt gedaan na bezoek aan een site.</translation>
 <translation id="1755621011177747277">Adoptie</translation>
 <translation id="1756026472674246267">Link openen in nieuw tabblad</translation>
 <translation id="175656076281618225">Magie</translation>
@@ -883,7 +884,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="2674804415323431591">Suggesties verbergen</translation>
 <translation id="2677696497921480781">Verjaardagen en naamdagen</translation>
 <translation id="2677748264148917807">Verlaten</translation>
-<translation id="2678468611080193228">Sta cookies van derden tijdelijk toe. Dit betekent dat je minder bescherming hebt, maar dat sitefuncties waarschijnlijk wel werken.</translation>
+<translation id="2683195745483370038">Andere resultaten gevonden</translation>
 <translation id="2686919536310834199">Stuur feedback voor Help me met schrijven.</translation>
 <translation id="2687555958734450033">Best passend</translation>
 <translation id="2688186765492306706">500 x 760 mm</translation>
@@ -1102,7 +1103,6 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="3157931365184549694">Herstellen</translation>
 <translation id="3158539265159265653">Schijf</translation>
 <translation id="3162559335345991374">Het is mogelijk dat je de inlogpagina moet bezoeken van het wifi-netwerk dat je gebruikt.</translation>
-<translation id="3166370127092388416">{NUM_COOKIES,plural, =0{Cookies van derden, geen sites toegestaan}=1{Cookies van derden, 1 site toegestaan}other{Cookies van derden, # sites toegestaan}}</translation>
 <translation id="3168744840365648658">Radio-apparatuur</translation>
 <translation id="3169472444629675720">Discover</translation>
 <translation id="3171703252520926121">Onroerend-goedservices</translation>
@@ -1158,7 +1158,6 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="3262698603497362968">Koopopties</translation>
 <translation id="3266367459139339908">We introduceren nieuwe manieren om te beperken wat sites over jou te weten kunnen komen wanneer ze je gepersonaliseerde advertenties laten zien, bijvoorbeeld:</translation>
 <translation id="3266793032086590337">Waarde (conflict)</translation>
-<translation id="3266972086368072861">{NUM_COOKIES,plural, =0{Geen sites geblokkeerd, waaronder gerelateerde sites}=1{1 site geblokkeerd, waaronder gerelateerde sites}other{# sites geblokkeerd, waaronder gerelateerde sites}}</translation>
 <translation id="3268451620468152448">Geopende tabbladen</translation>
 <translation id="3270041629388773465">Betaal sneller als je CVC's zijn opgeslagen</translation>
 <translation id="3270156322180235608">Vliegreizen</translation>
@@ -1203,7 +1202,6 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="3359565626472459400">Huwelijk</translation>
 <translation id="3360103848165129075">Blad voor betalingshandler</translation>
 <translation id="3360313521703038580">Ecologie en milieu</translation>
-<translation id="3360753465334942529">{NUM_COOKIES,plural, =0{Cookies van derden, geen sites geblokkeerd}=1{Cookies van derden, 1 site geblokkeerd}other{Cookies van derden, # sites geblokkeerd}}</translation>
 <translation id="3362968246557010467">Dit beleid is automatisch gekopieerd uit het beëindigde beleid: <ph name="OLD_POLICY" />. Gebruik dit beleid in plaats van het oude.</translation>
 <translation id="3364869320075768271"><ph name="URL" /> wil je virtualreality-apparaat en -gegevens gebruiken</translation>
 <translation id="3366477098757335611">Passen bekijken</translation>
@@ -1264,6 +1262,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="3462200631372590220">Gedetailleerde informatie verbergen</translation>
 <translation id="3465972433695735758">Deze pdf is niet toegankelijk. Tekst geëxtraheerd, mogelijk gemaakt door AI van Google.</translation>
 <translation id="346601286295919445">Scheikunde</translation>
+<translation id="3467081767799433066">Bij advertentiemeting worden beperkte typen gegevens gedeeld tussen sites om de prestaties van hun advertenties te meten. Denk bijvoorbeeld aan informatie over of je een aankoop hebt gedaan na bezoek aan een site.</translation>
 <translation id="3468054117417088249"><ph name="TAB_SWITCH_SUFFIX" />, momenteel geopend. druk op Tab en vervolgens op Enter om naar het geopende tabblad te schakelen</translation>
 <translation id="3470563864795286535"><ph name="CLOSE_INCOGNITO_WINDOWS_FOCUSED_FRIENDLY_MATCH_TEXT" />, druk op Tab en daarna op Enter om alle momenteel geopende incognitovensters te sluiten</translation>
 <translation id="3474392552865647225">Knop Lettertypen aanpassen in Chrome. Activeer deze om lettertypen en lettergrootten aan te passen in Chrome.</translation>
@@ -1605,7 +1604,6 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="4151403195736952345">Algemene standaard gebruiken (detecteren)</translation>
 <translation id="4152318981910038897">{COUNT,plural, =1{Pagina 1}other{Pagina {COUNT}}}</translation>
 <translation id="4154277373259957087">Chrome verifieert nu of jij het bent voordat een betaalmethode wordt ingevuld. Je kunt dit altijd updaten via <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" />.</translation>
-<translation id="4159149286839604525">Dit betekent dat de meeste sitefuncties zouden moeten werken, maar dat je minder bescherming hebt</translation>
 <translation id="4159784952369912983">Paars</translation>
 <translation id="4165986682804962316">Site-instellingen</translation>
 <translation id="4169535189173047238">Niet toestaan</translation>
@@ -2028,7 +2026,6 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="4983145717627482381">Rondleidingen en georganiseerde vakanties</translation>
 <translation id="498323057460789381">Schemavalidatiefout: <ph name="ERROR" /></translation>
 <translation id="4984088539114770594">Microfoon gebruiken?</translation>
-<translation id="4985206706500620449">Je hebt cookies van derden toegestaan voor deze site</translation>
 <translation id="4989163558385430922">Alles bekijken</translation>
 <translation id="4989542687859782284">Niet beschikbaar</translation>
 <translation id="4989809363548539747">Deze plug-in wordt niet ondersteund</translation>
@@ -2244,7 +2241,6 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="5414511064953050917">Toch verplaatsen</translation>
 <translation id="5421136146218899937">Browsegegevens wissen</translation>
 <translation id="5423269318075950257">Prijs volgen</translation>
-<translation id="5425241977284572032">{NUM_COOKIES,plural, =0{Geen sites geblokkeerd}=1{1 site geblokkeerd}other{# sites geblokkeerd}}</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> wil meldingen sturen</translation>
 <translation id="5430298929874300616">Bookmark verwijderen</translation>
 <translation id="5434798570900738152">De volgende gegevens worden <ph name="BEGIN_EMPHASIS" />niet opgeslagen<ph name="END_EMPHASIS" /> in Chromium:
@@ -2801,7 +2797,6 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="6521745193039995384">Niet actief</translation>
 <translation id="6524830701589638230">Knop Toegankelijkheidsinstellingen beheren. Activeer deze om je toegankelijkheidstools te personaliseren in de Chrome-instellingen.</translation>
 <translation id="6529173248185917884">7e rol</translation>
-<translation id="652937045869844725">Sta cookies van derden toe. Dit betekent dat je minder bescherming hebt, maar dat sitefuncties waarschijnlijk wel werken.</translation>
 <translation id="6529602333819889595">&amp;Opnieuw verwijderen</translation>
 <translation id="6535751101619004418">Valuta en wisselkantoren</translation>
 <translation id="6536221421038631327">Als je een Passpoint-abonnement van je <ph name="DEVICE_TYPE" /> verwijdert, worden de bijbehorende netwerken verwijderd. Neem contact op met <ph name="FRIENDLY_NAME" /> om wijzigingen aan te brengen in je abonnement. <ph name="LEARN_MORE" /></translation>
@@ -3157,7 +3152,6 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="7221855153210829124">Meldingen tonen</translation>
 <translation id="7221857374443660083">Je bank wil zeker weten dat jij het bent</translation>
 <translation id="722454870747268814">Nieuw incognitotabblad</translation>
-<translation id="7226276626900992675">Je hebt deze site toestemming gegeven om cookies van derden te gebruiken. Dit betekent dat de meeste sitefuncties zouden moeten werken, maar dat je minder bescherming hebt.</translation>
 <translation id="7227293336683593977">Prijsgeschiedenis</translation>
 <translation id="7227747683324411744">Aanvallers op de site die je wilt bezoeken, kunnen je misleiden zodat je schadelijke software installeert die van invloed is op de manier waarop je browst, bijvoorbeeld door je homepage te wijzigen of extra advertenties te tonen op sites die je bezoekt.</translation>
 <translation id="7233592378249864828">Bevestigingsblad afdrukken</translation>
@@ -3776,7 +3770,6 @@ Aanvullende informatie:
 <translation id="8398335999901363925">Lijst met betaalmethoden die kunnen worden ingevuld via aanraking, is op volledige hoogte geopend.</translation>
 <translation id="8398446215576328011">Toegepast beleid terugzetten</translation>
 <translation id="8398790343843005537">Je telefoon zoeken</translation>
-<translation id="8401772916834964810">{COUNT,plural, =0{Chrome blokkeert vandaag weer cookies}=1{Chrome blokkeert morgen weer cookies}other{Nog # dagen totdat Chrome weer cookies blokkeert}}</translation>
 <translation id="8403506619177967839">Fanfictie</translation>
 <translation id="8405579342203358118">De informatie die je synchroniseert beheren in de Chrome-instellingen</translation>
 <translation id="8406071103346257942">je schermvergrendeling niet meer te gebruiken om wachtwoorden in te vullen</translation>
@@ -4076,6 +4069,7 @@ Aanvullende informatie:
 <translation id="9005998258318286617">Kan pdf-document niet laden</translation>
 <translation id="9008178007718859630">Inrichting en interieurdecoratie</translation>
 <translation id="9008201768610948239">Negeren</translation>
+<translation id="9014705027639070815">Sites die je bezoekt, kunnen Chrome om informatie vragen zodat ze de prestaties van hun advertenties kunnen meten. Met Chrome kunnen sites beperkte typen gegevens verzamelen, bijvoorbeeld informatie over of je een aankoop hebt gedaan na bezoek aan een site.</translation>
 <translation id="9018120810758822233">Geef je beveiligingscode voor <ph name="CREDIT_CARD" /> op</translation>
 <translation id="901834265349196618">e-mail</translation>
 <translation id="9020542370529661692">Deze pagina is vertaald naar het <ph name="TARGET_LANGUAGE" /></translation>

@@ -430,6 +430,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1752021286346845558">Mailbox 8</translation>
 <translation id="1753068535428855445">Dating and personals</translation>
 <translation id="1753706481035618306">Page number</translation>
+<translation id="1755203724116202818">To measure the performance of an ad, limited types of data are shared between sites, such as whether you made a purchase after visiting a site.</translation>
 <translation id="1755621011177747277">Adoption</translation>
 <translation id="1756026472674246267">Open link in new tab</translation>
 <translation id="175656076281618225">Magic</translation>
@@ -884,7 +885,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2674804415323431591">Hide suggestions</translation>
 <translation id="2677696497921480781">Birthdays and name days</translation>
 <translation id="2677748264148917807">Leave</translation>
-<translation id="2678468611080193228">Try temporarily allowing third-party cookies, which means less protection but that site features are more likely to work</translation>
+<translation id="2683195745483370038">Other results found</translation>
 <translation id="2686919536310834199">Send feedback for Help me write.</translation>
 <translation id="2687555958734450033">Best fit</translation>
 <translation id="2688186765492306706">500 mm x 760 mm</translation>
@@ -1104,7 +1105,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3157931365184549694">Restore</translation>
 <translation id="3158539265159265653">Disc</translation>
 <translation id="3162559335345991374">The Wi-Fi that you are using may require you to visit its login page.</translation>
-<translation id="3166370127092388416">{NUM_COOKIES,plural, =0{Third-party cookies, no sites allowed}=1{Third-party cookies, 1 site allowed}other{Third-party cookies, # sites allowed}}</translation>
 <translation id="3168744840365648658">Radio Equipment</translation>
 <translation id="3169472444629675720">Discover</translation>
 <translation id="3171703252520926121">Property Services</translation>
@@ -1163,7 +1163,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3262698603497362968">Buying options</translation>
 <translation id="3266367459139339908">We’re launching new ways to limit what sites can learn about you when they show you personalised ads, for example:</translation>
 <translation id="3266793032086590337">Value (conflict)</translation>
-<translation id="3266972086368072861">{NUM_COOKIES,plural, =0{No sites blocked, including related sites}=1{1 site blocked, including related sites}other{# sites blocked, including related sites}}</translation>
 <translation id="3268451620468152448">Open tabs</translation>
 <translation id="3270041629388773465">Check out faster when your CVCs are saved</translation>
 <translation id="3270156322180235608">Air travel</translation>
@@ -1208,7 +1207,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3359565626472459400">Marriage</translation>
 <translation id="3360103848165129075">Payment handler sheet</translation>
 <translation id="3360313521703038580">Ecology and environment</translation>
-<translation id="3360753465334942529">{NUM_COOKIES,plural, =0{Third-party cookies, no sites blocked}=1{Third-party cookies, 1 site blocked}other{Third-party cookies, # sites blocked}}</translation>
 <translation id="3362968246557010467">This policy was automatically copied from the deprecated <ph name="OLD_POLICY" /> policy. You should use this policy instead.</translation>
 <translation id="3364869320075768271"><ph name="URL" /> wants to use your virtual reality device and data</translation>
 <translation id="3366477098757335611">View cards</translation>
@@ -1269,6 +1267,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3462200631372590220">Hide advanced</translation>
 <translation id="3465972433695735758">This PDF is inaccessible. Text extracted, powered by Google AI</translation>
 <translation id="346601286295919445">Chemistry</translation>
+<translation id="3467081767799433066">With ad measurement, limited types of data are shared between sites to measure the performance of their ads, such as whether you made a purchase after visiting a site.</translation>
 <translation id="3468054117417088249"><ph name="TAB_SWITCH_SUFFIX" />, currently open, press Tab then Enter to switch to the open tab</translation>
 <translation id="3470563864795286535"><ph name="CLOSE_INCOGNITO_WINDOWS_FOCUSED_FRIENDLY_MATCH_TEXT" />; press tab and then Enter to close all incognito windows that are currently open</translation>
 <translation id="3474392552865647225">Customise fonts in Chrome button, activate to customise font sizes and typefaces in Chrome</translation>
@@ -1613,7 +1612,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4151403195736952345">Use global default (Detect)</translation>
 <translation id="4152318981910038897">{COUNT,plural, =1{Page 1}other{Page {COUNT}}}</translation>
 <translation id="4154277373259957087">Chrome will now verify it's you before filling in payment methods. You can update this at any time in <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" />.</translation>
-<translation id="4159149286839604525">This means that most site features should work, but you have less protection</translation>
 <translation id="4159784952369912983">Purple</translation>
 <translation id="4165986682804962316">Site settings</translation>
 <translation id="4169535189173047238">Don't allow</translation>
@@ -2037,7 +2035,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4983145717627482381">Guided Tours and Escorted Holidays</translation>
 <translation id="498323057460789381">Schema validation error: <ph name="ERROR" /></translation>
 <translation id="4984088539114770594">Use microphone?</translation>
-<translation id="4985206706500620449">You allowed third-party cookies for this site</translation>
 <translation id="4989163558385430922">See all</translation>
 <translation id="4989542687859782284">Unavailable</translation>
 <translation id="4989809363548539747">This plug-in is not supported</translation>
@@ -2254,7 +2251,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5414511064953050917">Move anyway</translation>
 <translation id="5421136146218899937">Clear browsing data...</translation>
 <translation id="5423269318075950257">Track price</translation>
-<translation id="5425241977284572032">{NUM_COOKIES,plural, =0{No sites blocked}=1{1 site blocked}other{# sites blocked}}</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> wants to send you notifications</translation>
 <translation id="5430298929874300616">Remove bookmark</translation>
 <translation id="5434798570900738152">Chromium <ph name="BEGIN_EMPHASIS" />won’t save<ph name="END_EMPHASIS" />:
@@ -2814,7 +2810,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6521745193039995384">Not active</translation>
 <translation id="6524830701589638230">Manage accessibility settings button, activate to personalise your accessibility tools in Chrome settings</translation>
 <translation id="6529173248185917884">Seventh roll</translation>
-<translation id="652937045869844725">Try allowing third-party cookies, which means less protection but that site features are more likely to work</translation>
 <translation id="6529602333819889595">&amp;Redo Delete</translation>
 <translation id="6535751101619004418">Currencies and foreign exchange</translation>
 <translation id="6536221421038631327">Removing a Passpoint subscription from your <ph name="DEVICE_TYPE" /> will remove the associated networks. Contact '<ph name="FRIENDLY_NAME" />' to make changes to your subscription plan. <ph name="LEARN_MORE" /></translation>
@@ -3170,7 +3165,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="7221855153210829124">Show notifications</translation>
 <translation id="7221857374443660083">Your bank wants to make sure it's you</translation>
 <translation id="722454870747268814">New Incognito tab</translation>
-<translation id="7226276626900992675">You allowed this site to use third-party cookies. This means that most site features should work, but you have less protection.</translation>
 <translation id="7227293336683593977">Price history</translation>
 <translation id="7227747683324411744">Attackers on the site you're trying to visit might trick you into installing harmful software that affects the way you browse — for example, by changing your homepage or showing you extra ads on sites you visit.</translation>
 <translation id="7233592378249864828">Print confirmation sheet</translation>
@@ -3790,7 +3784,6 @@ Additional details:
 <translation id="8398335999901363925">Payment methods available to be filled on touch opened at full height.</translation>
 <translation id="8398446215576328011">Revert applied policies</translation>
 <translation id="8398790343843005537">Find your phone</translation>
-<translation id="8401772916834964810">{COUNT,plural, =0{Chrome will block cookies again today}=1{Chrome will block cookies again tomorrow}other{# days until Chrome blocks cookies again}}</translation>
 <translation id="8403506619177967839">Fan Fiction</translation>
 <translation id="8405579342203358118">Manage what info you sync in Chrome settings</translation>
 <translation id="8406071103346257942">stop using your screen lock for filling in passwords</translation>
@@ -4090,6 +4083,7 @@ Additional details:
 <translation id="9005998258318286617">Failed to load PDF document.</translation>
 <translation id="9008178007718859630">Home and interior decor</translation>
 <translation id="9008201768610948239">Ignore</translation>
+<translation id="9014705027639070815">Sites that you visit can ask Chrome for information to help them measure the performance of their ads. Chrome lets sites collect limited types of data, such as whether you made a purchase after visiting a site.</translation>
 <translation id="9018120810758822233">Enter your security code for <ph name="CREDIT_CARD" /></translation>
 <translation id="901834265349196618">email</translation>
 <translation id="9020542370529661692">This page has been translated to <ph name="TARGET_LANGUAGE" /></translation>

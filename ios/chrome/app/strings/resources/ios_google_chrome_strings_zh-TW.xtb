@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="zh-TW">
+<translation id="1021782183249308751">按住 Chrome 圖示，然後點選「編輯主畫面」</translation>
 <translation id="1066101356081285416">造訪網站時，Chrome 會在網站上偵測是否有追蹤號碼，並在新分頁顯示包裹配送動態。為提供這項功能，系統會將包裹追蹤號碼和網站名稱傳送給 Google。這些資料也會用於改善 Google 購物功能，造福所有使用者。你隨時可以前往<ph name="BEGIN_LINK" />包裹追蹤設定<ph name="END_LINK" />進行更新。</translation>
 <translation id="1085696779717592361">使用 Chrome 做為預設瀏覽器</translation>
 <translation id="1105362920864247682">清除 Chrome 中的瀏覽資料。</translation>
@@ -94,6 +95,7 @@
 <translation id="3345341804167540816">隨時隨地使用 Chrome</translation>
 <translation id="3360031466389132716">{THRESHOLD,plural, =1{如果 Chrome 閒置 {THRESHOLD} 分鐘，就會執行這些動作}other{如果 Chrome 閒置 {THRESHOLD} 分鐘，就會執行這些動作}}</translation>
 <translation id="3399930248910934354">開啟 Chrome 設定</translation>
+<translation id="344736123700721678">從主畫面 Dock 更快存取 Chrome</translation>
 <translation id="3472587960215700950">偵測到地址後，Chrome 會使用 Google 地圖規劃路線及提供當地資訊。</translation>
 <translation id="3503014945441706099">一併為這個 Chrome 設定檔啟用安全瀏覽強化防護功能</translation>
 <translation id="3522659714780527202">開啟同步功能後，不論從何處使用 Chrome 都能查看你的分頁</translation>
@@ -175,12 +177,15 @@
 <translation id="6054613632208573261">使用 Chrome 做為預設瀏覽器</translation>
 <translation id="6063091872902370735">允許登入 Chrome</translation>
 <translation id="6110625574506755980">部分 Chrome 功能將無法再使用。</translation>
+<translation id="6132149203299792222">登入 Google 帳戶就能同步處理密碼、書籤和其他資訊。</translation>
 <translation id="6177442314419606057">在 Chrome 中搜尋</translation>
 <translation id="6181930887571472871">改為使用 Chrome</translation>
 <translation id="6238746320622508509">讓 Chrome 鎖定你的無痕分頁。</translation>
 <translation id="6247557882553405851">Google 密碼管理工具</translation>
+<translation id="6272822675004864999">如要接收 Chrome 通知，請在 iOS 設定開啟通知功能。</translation>
 <translation id="630693926528731525">系統未分享你的密碼。請檢查網際網路連線，並確定你已登入 Chrome，然後再試一次。</translation>
 <translation id="6348855835728304880">這部裝置的其他應用程式也能使用儲存在 Chrome 中的密碼和其他資訊。</translation>
+<translation id="6389317667633680932">瞭解新功能，充分發揮 Chrome 的效用。</translation>
 <translation id="6412673304250309937">可使用儲存在 Chrome 中的不安全網站清單檢查網址。如果有網站試圖竊取你的密碼，或當你下載有害檔案時，Chrome 可能也會將網址 (包括部分網頁內容) 傳送至安全瀏覽功能。</translation>
 <translation id="6427126399757991875">貴機構正在設定 Chrome...</translation>
 <translation id="6484712497741564393">目前登入的帳戶是 <ph name="EMAIL" />。
@@ -212,6 +217,7 @@
 <translation id="7124339256045485976">取得 Chrome 最新版本</translation>
 <translation id="7161390184744336561">Google Chrome 版本過舊</translation>
 <translation id="7165736900384873061">開始使用 Google Chrome QR 掃描器</translation>
+<translation id="7175129790242719365">Chrome 提示：登入 Chrome</translation>
 <translation id="7187993566681480880">在已登入帳戶的狀態下，能確保你持續享有安全無虞的 Chrome 使用體驗，也有助於提升其他 Google 應用程式的安全機制。</translation>
 <translation id="7200524487407690471">Chrome 每天都會自動執行安全檢查，防範資料侵害或不安全網站等等。你可以前往「設定」進一步瞭解安全檢查功能。</translation>
 <translation id="72119412072970160">你可以在 iPad 上的其他應用程式，使用儲存至 Google 密碼管理員的密碼。</translation>
@@ -242,6 +248,8 @@
 <translation id="7897703007638178753">查看最近使用 Chrome 開啟的分頁</translation>
 <translation id="7925119591961387184">選取「Chrome」。</translation>
 <translation id="7933491483529363150">在 Chrome 中開啟我的最新分頁。</translation>
+<translation id="7948283758957877064">Chrome 新功能</translation>
+<translation id="8006014511203279255">隨時可以使用 Chrome 開啟訊息或其他應用程式中的連結。</translation>
 <translation id="8022947259858476807">預設使用 Chrome 來開啟連結、從小工具搜尋，以及自動在其他應用程式中填入密碼</translation>
 <translation id="804638182476029347">允許 Chrome 顯示通知才能接收降價快訊</translation>
 <translation id="8065292699993359127">在 Chrome 無痕模式中開啟網址</translation>
@@ -278,6 +286,7 @@
 <translation id="8765470054473112089">在網址列或搜尋框中輸入時，Chrome 會將你輸入的內容傳送給預設搜尋引擎，提供更符合需求的搜尋建議。這項功能在無痕模式中為關閉狀態。</translation>
 <translation id="8772179140489533211">顯示登入 Chrome 的提示。</translation>
 <translation id="8788269841521769222">你不需要記住這組密碼，系統會將密碼儲存至 <ph name="EMAIL" /> 的 Google 密碼管理員中</translation>
+<translation id="878917453316810648">Chrome 提示：將 Chrome 設為預設瀏覽器</translation>
 <translation id="8808828119384186784">Chrome 設定</translation>
 <translation id="8855781063981781621">如要停用 Chrome 的鎖定模式，請在 iPad 上將該模式關閉。</translation>
 <translation id="8856877214925961642">通關密語加密的資料不包括付款方式和地址。

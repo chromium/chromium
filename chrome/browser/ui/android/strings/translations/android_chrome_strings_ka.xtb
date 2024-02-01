@@ -334,6 +334,7 @@
 <translation id="2870560284913253234">საიტი</translation>
 <translation id="2871733351037274014">წინასწარ ჩატვირთული გვერდები</translation>
 <translation id="2876136027428473467"><ph name="CHILD_NAME" />-ს სურს, დაუდასტუროთ შემდეგი ვებსაიტი:</translation>
+<translation id="2876194821763651818"><ph name="USERNAME" />-ზე შენახული პაროლები.</translation>
 <translation id="2876628302275096482">შეიტყვეთ მეტი იმის შესახებ, თუ <ph name="BEGIN_LINK" />როგორ ინარჩუნებს Chrome თქვენი მონაცემების კონფიდენციალურობას<ph name="END_LINK" /></translation>
 <translation id="2888126860611144412">Chrome-ის შესახებ</translation>
 <translation id="2891154217021530873">გვერდის ჩატვირთვის შეწყვეტა</translation>
@@ -672,6 +673,7 @@
 <translation id="4699172675775169585">ქეშირებული სურათები და ფაილები</translation>
 <translation id="4710167854527459075">დალაგება უახლესით</translation>
 <translation id="4719927025381752090">თარგმანის შემოთავაზება</translation>
+<translation id="4720556299488643018">გამოწერის გაუქმება</translation>
 <translation id="4732120983431207637">სტეკის დამშლელი</translation>
 <translation id="4736934858538408121">ვირტუალური ბარათი</translation>
 <translation id="473775607612524610">განახლება</translation>
@@ -1194,6 +1196,7 @@
 <translation id="7313188324932846546">შეეხეთ სინქრონიზაციის დასაყენებლად</translation>
 <translation id="7324354302972299151">გაგზავნეთ „Do Not Track“ მოთხოვნა</translation>
 <translation id="7332075081379534664">შესვლა წარმატებით განხორციელდა</translation>
+<translation id="7333041109965360609">შეტყობინებების გამოწერა გაუქმდა</translation>
 <translation id="7333232495927792353">შეასრულეთ სინქრონიზაცია, Google-ისგან ყველაზე სათანადო კონტენტი რომ მიიღოთ</translation>
 <translation id="7339898014177206373">ახალი ფანჯარა</translation>
 <translation id="7340958967809483333">Discover-ის ვარიანტები</translation>
@@ -1452,6 +1455,7 @@
 <translation id="8503813439785031346">მომხმარებლის სახელი</translation>
 <translation id="8505766168025405649">ჩამოტვირთვის სტატუსი ხელმისაწვდომია შეტყობინებაში</translation>
 <translation id="8506357771923193001">აქ იპოვით თქვენს ჩამოტვირთვებს</translation>
+<translation id="8512053371384421952"><ph name="DOMAIN" />-ისგან შეტყობინებებს აღარ მიიღებთ.</translation>
 <translation id="8514477925623180633">Chrome-ში შენახული პაროლების ექსპორტი</translation>
 <translation id="8516012719330875537">სურათების რედაქტორი</translation>
 <translation id="8523928698583292556">შენახული პაროლის წაშლა</translation>
@@ -1536,6 +1540,7 @@
 <translation id="8996847606757455498">სხვა პროვაიდერის არჩევა</translation>
 <translation id="8998289560386111590">მიუწვდომელია თქვენს მოწყობილობაზე</translation>
 <translation id="8998729206196772491">თქვენ შედიხართ ანგარიშით, რომელსაც მართავს <ph name="MANAGED_DOMAIN" /> და მის ადმინისტრატორს თქვენი Chrome მონაცემების მართვის საშუალებას აძლევთ. Chrome-იდან გასვლის შემთხვევაში, თქვენი მონაცემები წაიშლება ამ მოწყობილობიდან, თუმცა ისინი თქვენს Google ანგარიშში შენარჩუნდება.</translation>
+<translation id="8998837250940831980">ჩანართის ჩაკეცვა ვერ მოხერხდა. სცადეთ მოგვიანებით.</translation>
 <translation id="9012585441087414258">დაგიცავთ ცნობილი სახიფათო საიტებისგან, ჩამოტვირთვებისა და გაფართოებებისგან. თუ გვერდზე რაიმე საეჭვო დაფიქსირდება, URL-ები და გვერდის კონტენტის ფრაგმენტები გაეგზავნება Google Safe Browsing-ს.</translation>
 <translation id="9019199799064251516">გსურთ, გააგრძელოთ მანქანის პროფილის ჩაკეტვის გარეშე?</translation>
 <translation id="9022774213089566801">ხშირად მონახულებული</translation>

@@ -66,6 +66,7 @@
 <translation id="2228071138934252756">Til að veita <ph name="APP_NAME" /> aðgang að myndavélinni þarftu einnig að kveikja á henni í <ph name="BEGIN_LINK" />stillingum Android<ph name="END_LINK" />.</translation>
 <translation id="2235344399760031203">Lokað er á fótspor frá þriðju aðilum</translation>
 <translation id="2238944249568001759">Leitartillögur byggðar á síðasta flipa</translation>
+<translation id="2241587408274973373">Kort nýrrar flipasíðu</translation>
 <translation id="2241634353105152135">Bara einu sinni</translation>
 <translation id="2253414712144136228"><ph name="NAME_OF_LIST_ITEM" /> Fjarlægja</translation>
 <translation id="2253989982043948086">{NUM_SELECTED,plural, =1{Lokað á 1 vefsvæði}one{Lokað á # vefsvæði}other{Lokað á # vefsvæði}}</translation>
@@ -281,6 +282,7 @@
 <translation id="5706552988683188916">Þetta eyðir fótsporum og öðrum vefsvæðagögnum fyrir <ph name="WEBSITE" /></translation>
 <translation id="5723967018671998714">Lokað er á fótspor frá þriðja aðila í huliðsstillingu</translation>
 <translation id="5740126560802162366">Vefsvæði geta vistað gögn í tækinu þínu</translation>
+<translation id="5749158352074143502">Halda áfram á þessum flipa</translation>
 <translation id="5771720122942595109">Lokað er fyrir <ph name="PERMISSION_1" /></translation>
 <translation id="5804241973901381774">Heimildir</translation>
 <translation id="5844448279347999754">Þegar kveikt er á þessu geta vefsvæði beðið um að sjá texta og myndir sem vistaðar eru á klippiborðinu. Þegar slökkt er á þessu geta vefsvæði ekki séð texta og myndir sem vistaðar eru á klippiborðinu.</translation>
@@ -421,6 +423,7 @@
 <translation id="7990211076305263060">Þegar kveikt er á þessu geta vefsvæði beðið um að fá að nota hljóðnemann þinn. Þegar slökkt er á þessu geta vefsvæði ekki notað hljóðnemann þinn.</translation>
 <translation id="8007176423574883786">Slökkt fyrir þetta tæki</translation>
 <translation id="802154636333426148">Niðurhal mistókst</translation>
+<translation id="8024161440284949905">Halda áfram á þessum flipum</translation>
 <translation id="8042586301629853791">Raða eftir:</translation>
 <translation id="8067883171444229417">Spila myndskeið</translation>
 <translation id="8068648041423924542">Ekki er hægt að velja vottorðið.</translation>

@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="th">
+<translation id="1021782183249308751">กดไอคอน Chrome ค้างไว้แล้วคลิก "แก้ไขหน้าจอหลัก"</translation>
 <translation id="1066101356081285416">Chrome จะตรวจหาหมายเลขติดตามพัสดุในเว็บไซต์ที่คุณเข้าชมและแสดงข้อมูลอัปเดตเกี่ยวกับพัสดุในหน้า "แท็บใหม่" ระบบจะส่งหมายเลขติดตามพัสดุและชื่อเว็บไซต์ไปยัง Google เพื่อให้บริการฟีเจอร์นี้และเพื่อปรับปรุงฟีเจอร์ต่างๆ ที่เกี่ยวกับการช็อปปิ้งของ Google สําหรับทุกคน คุณอัปเดตข้อมูลนี้ได้ทุกเมื่อใน<ph name="BEGIN_LINK" />การตั้งค่าการติดตามพัสดุภัณฑ์<ph name="END_LINK" /></translation>
 <translation id="1085696779717592361">ใช้ Chrome โดยค่าเริ่มต้น</translation>
 <translation id="1105362920864247682">ล้างข้อมูลการท่องเว็บใน Chrome</translation>
@@ -96,6 +97,7 @@
 <translation id="3345341804167540816">ใช้ Chrome ในทุกที่</translation>
 <translation id="3360031466389132716">{THRESHOLD,plural, =1{การดำเนินการนี้จะเกิดขึ้นเมื่อไม่ได้ใช้ Chrome เป็นเวลา {THRESHOLD} นาที}other{การดำเนินการนี้จะเกิดขึ้นเมื่อไม่ได้ใช้ Chrome เป็นเวลา {THRESHOLD} นาที}}</translation>
 <translation id="3399930248910934354">เปิดการตั้งค่า Chrome</translation>
+<translation id="344736123700721678">เข้าถึง Chrome ได้เร็วขึ้นจากแถบแอปในหน้าจอหลัก</translation>
 <translation id="3472587960215700950">Chrome ใช้ Google Maps เพื่อแสดงเส้นทางและข้อมูลในพื้นที่ของที่อยู่ที่ตรวจพบ</translation>
 <translation id="3503014945441706099">รับ Safe Browsing พร้อมการปกป้องที่ดียิ่งขึ้นสำหรับโปรไฟล์ Chrome นี้ด้วย</translation>
 <translation id="3522659714780527202">เปิดการซิงค์เพื่อดูแท็บที่เปิดไว้จากอุปกรณ์ที่คุณใช้ Chrome</translation>

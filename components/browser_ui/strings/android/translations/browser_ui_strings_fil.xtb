@@ -66,6 +66,7 @@
 <translation id="2228071138934252756">Para payagan ang <ph name="APP_NAME" /> na i-access ang iyong camera, i-on din ang camera sa <ph name="BEGIN_LINK" />Mga Setting ng Android<ph name="END_LINK" />.</translation>
 <translation id="2235344399760031203">Bina-block ang third-party na cookies</translation>
 <translation id="2238944249568001759">Mga iminumungkahing paghahanap batay sa iyong huling tab</translation>
+<translation id="2241587408274973373">Mga card ng page na bagong tab</translation>
 <translation id="2241634353105152135">Isang beses lang</translation>
 <translation id="2253414712144136228"><ph name="NAME_OF_LIST_ITEM" /> Alisin</translation>
 <translation id="2253989982043948086">{NUM_SELECTED,plural, =1{1 site ang naka-block}one{# site ang naka-block}other{# na site ang naka-block}}</translation>
@@ -281,6 +282,7 @@
 <translation id="5706552988683188916">Dine-delete nito ang cookies at iba pang data ng site para sa <ph name="WEBSITE" /></translation>
 <translation id="5723967018671998714">Bina-block ang third-party na cookies sa Incognito mode</translation>
 <translation id="5740126560802162366">Makakapag-save ang mga site ng data sa iyong device</translation>
+<translation id="5749158352074143502">Magpatuloy sa tab na ito</translation>
 <translation id="5771720122942595109">Naka-block ang <ph name="PERMISSION_1" /></translation>
 <translation id="5804241973901381774">Mga Pahintulot</translation>
 <translation id="5844448279347999754">Kapag naka-on, puwedeng hilingin ng mga site na makita ang text at mga larawang naka-save sa iyong clipboard. Kapag naka-off, hindi makikita ng mga site ang text o mga larawang naka-save sa iyong clipboard.</translation>
@@ -421,6 +423,7 @@
 <translation id="7990211076305263060">Kapag naka-on, puwedeng hilingin ng mga site na gamitin ang iyong mikropono. Kapag naka-off, hindi magagamit ng mga site ang iyong mikropono.</translation>
 <translation id="8007176423574883786">Naka-off para sa device na ito</translation>
 <translation id="802154636333426148">Hindi na-download</translation>
+<translation id="8024161440284949905">Magpatuloy sa mga tab na ito</translation>
 <translation id="8042586301629853791">Pagbukud-bukurin ayon sa:</translation>
 <translation id="8067883171444229417">I-play ang video</translation>
 <translation id="8068648041423924542">Hindi makapili ng certificate.</translation>

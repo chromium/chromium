@@ -607,9 +607,11 @@
 <translation id="3526440770046466733">在新分頁中開啟連結並停留在目前的分頁中</translation>
 <translation id="353086728817903341">已連接 <ph name="NUM_DEVICES" /> 部裝置</translation>
 <translation id="3533126039236445965">捷徑列中的應用程式</translation>
+<translation id="3537350467437346467">你查看過這個項目</translation>
 <translation id="3539957339480430241"><ph name="DEVICE_NAME" /> 熱點</translation>
 <translation id="3540893133818942399">取消設定查看手機最近的相片和媒體</translation>
 <translation id="3542066395059568317">系統會顯示建議，讓您繼續使用上次開啟的內容。只要在建議上按一下右鍵即可移除。</translation>
+<translation id="3547318469722231257">你修改過這個項目</translation>
 <translation id="3552189655002856821">Wi-Fi 已關閉</translation>
 <translation id="3554215588514239132">顯示或隱藏 Developer Tools 面板</translation>
 <translation id="3554637740840164787">已經將<ph name="ITEM_TITLE" />置頂</translation>
@@ -701,6 +703,7 @@
 <translation id="385300504083504382">開頭</translation>
 <translation id="3859364108019690">無法以串流方式使用應用程式</translation>
 <translation id="3861651314799684201">㩒 Enter 掣就可以錄全螢幕畫面</translation>
+<translation id="3882323608730650973">修改過</translation>
 <translation id="3886872229787704059">今天開啟過</translation>
 <translation id="3891340733213178823">按兩下 Ctrl+Shift+Q 鍵即可登出。</translation>
 <translation id="3893630138897523026">ChromeVox (互動朗讀)</translation>
@@ -894,6 +897,7 @@
 <translation id="4582666543382004902">已關閉熱點以使用 Wi-Fi。如要使用熱點，請關閉 Wi-Fi。</translation>
 <translation id="4585337515783392668">停止投放到不明嘅接收器</translation>
 <translation id="4596144739579517758">深色主題背景已關閉</translation>
+<translation id="4596442969149038771"><ph name="USER" /> 分享了這個項目</translation>
 <translation id="4611292653554630842">登入</translation>
 <translation id="462160925400706389">已連結 <ph name="NAME" /></translation>
 <translation id="4623167406982293031">驗證帳戶</translation>
@@ -1813,6 +1817,7 @@
 <translation id="8314772463905284467">啟用咗 Caps Lock 鍵</translation>
 <translation id="8315514906653279104">正在開啟…</translation>
 <translation id="8331351032546853669">等待下載</translation>
+<translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" /> <ph name="GET_STARTED" /></translation>
 <translation id="8345019317483336363">揀咗「<ph name="WINDOW_TITLE" />」視窗</translation>
 <translation id="8349826889576450703">啟動器</translation>
@@ -2032,6 +2037,7 @@
 <translation id="953431725143473984">確定要關閉裝置嗎？</translation>
 <translation id="954052413789300507">可用空間不足，無法下載「<ph name="FILENAME" />」。請騰出空間。</translation>
 <translation id="954520015070501466">30 分鐘</translation>
+<translation id="954786879461589145"><ph name="USER" />修改過這個項目</translation>
 <translation id="974545358917229949">顯示緊 <ph name="RESULT_COUNT" /> 個同「<ph name="QUERY" />」有關嘅結果</translation>
 <translation id="981011780479609956">無截止日期</translation>
 <translation id="98120814841227350">前往文件結尾</translation>

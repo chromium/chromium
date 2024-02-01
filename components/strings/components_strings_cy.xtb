@@ -883,7 +883,6 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="2674804415323431591">Cuddio awgrymiadau</translation>
 <translation id="2677696497921480781">Penblwyddi a dyddiau enwau</translation>
 <translation id="2677748264148917807">Gadael</translation>
-<translation id="2678468611080193228">Rhowch gynnig ar ganiatáu cwcis trydydd parti dros dro, sy'n golygu llai o amddiffyniad ond mae nodweddion y wefan yn fwy tebygol o weithio</translation>
 <translation id="2686919536310834199">Anfon adborth ar gyfer Helpu fi i ysgrifennu.</translation>
 <translation id="2687555958734450033">Ffit orau</translation>
 <translation id="2688186765492306706">500 x 760 mm</translation>
@@ -1102,7 +1101,6 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="3157931365184549694">Adfer</translation>
 <translation id="3158539265159265653">Disc</translation>
 <translation id="3162559335345991374">Mae'n bosib y bydd y Wi-Fi rydych yn ei ddefnyddio yn gofyn i chi fynd i'w dudalen fewngofnodi.</translation>
-<translation id="3166370127092388416">{NUM_COOKIES,plural, =0{Cwcis trydydd parti, Ni chaniateir gwefannau}=1{Cwcis trydydd parti, Caniateir 1 wefan}two{Cwcis trydydd parti, Caniateir # wefan}few{Cwcis trydydd parti, Caniateir # gwefan}many{Cwcis trydydd parti, Caniateir # gwefan}other{Cwcis trydydd parti, Caniateir # gwefan}}</translation>
 <translation id="3168744840365648658">Offer Radio</translation>
 <translation id="3169472444629675720">Discover</translation>
 <translation id="3171703252520926121">Gwasanaethau Eiddo Tiriog</translation>
@@ -1161,7 +1159,6 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="3262698603497362968">Opsiynau prynu</translation>
 <translation id="3266367459139339908">Rydym yn lansio ffyrdd newydd i gyfyngu ar yr hyn y gall gwefannau ei ddysgu amdanoch pan fyddant yn dangos hysbysebion personol i chi, er enghraifft:</translation>
 <translation id="3266793032086590337">Gwerth (gwrthdaro)</translation>
-<translation id="3266972086368072861">{NUM_COOKIES,plural, =0{Dim gwefannau wedi'u rhwystro, gan gynnwys gwefannau cysylltiedig}=1{1 gwefan wedi'i rwystro, gan gynnwys gwefannau cysylltiedig}two{# wefan wedi'u rhwystro, gan gynnwys gwefannau cysylltiedig}few{# gwefan wedi'u rhwystro, gan gynnwys gwefannau cysylltiedig}many{# gwefan wedi'u rhwystro, gan gynnwys gwefannau cysylltiedig}other{# gwefan wedi'u rhwystro, gan gynnwys gwefannau cysylltiedig}}</translation>
 <translation id="3268451620468152448">Tabiau sydd ar Agor</translation>
 <translation id="3270041629388773465">Talwch yn gyflymach pan fydd eich CVC y cael eu cadw</translation>
 <translation id="3270156322180235608">Teithio awyr</translation>
@@ -1206,7 +1203,6 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="3359565626472459400">Priodas</translation>
 <translation id="3360103848165129075">Dalen trin taliadau</translation>
 <translation id="3360313521703038580">Ecoleg a'r amgylchedd</translation>
-<translation id="3360753465334942529">{NUM_COOKIES,plural, =0{Cwcis trydydd parti, Dim gwefannau wedi'u rhwystro}=1{Cwcis trydydd parti, 1 gwefan wedi'i rwystro}two{Cwcis trydydd parti, # wefan wedi'u rhwystro}few{Cwcis trydydd parti, # gwefan wedi'u rhwystro}many{Cwcis trydydd parti, # gwefan wedi'u rhwystro}other{Cwcis trydydd parti, # gwefan wedi'u rhwystro}}</translation>
 <translation id="3362968246557010467">Copïwyd y polisi hwn yn awtomatig o'r polisi anghymeradwy <ph name="OLD_POLICY" />. Dylech ddefnyddio'r polisi hwn yn lle hynny.</translation>
 <translation id="3364869320075768271">Mae <ph name="URL" /> eisiau defnyddio'ch dyfais rhithwirionedd a'ch data</translation>
 <translation id="3366477098757335611">Gweld cardiau</translation>
@@ -1610,7 +1606,6 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="4151403195736952345">Defnyddio'r gosodiad diofyn cyffredinol (Canfod)</translation>
 <translation id="4152318981910038897">{COUNT,plural, =1{Tudalen 1}zero{Tudalen {COUNT}}two{Tudalen {COUNT}}few{Tudalen {COUNT}}many{Tudalen {COUNT}}other{Tudalen {COUNT}}}</translation>
 <translation id="4154277373259957087">Bydd Chrome nawr yn gwirio mai chi sydd yno cyn llenwi dulliau talu. Gallwch chi ddiweddaru hwn unrhyw bryd yn <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" />.</translation>
-<translation id="4159149286839604525">Mae hyn yn golygu y dylai'r rhan fwyaf o nodweddion gwefan weithio, ond mae gennych lai o amddiffyniad</translation>
 <translation id="4159784952369912983">Porffor</translation>
 <translation id="4165986682804962316">Gosodiadau gwefan</translation>
 <translation id="4169535189173047238">Peidio â chaniatáu</translation>
@@ -2033,7 +2028,6 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="4983145717627482381">Teithiau Tywys a Gwyliau Hebrwng</translation>
 <translation id="498323057460789381">Gwall dilysu sgema: <ph name="ERROR" /></translation>
 <translation id="4984088539114770594">Defnyddio'r meicroffon?</translation>
-<translation id="4985206706500620449">Rydych wedi caniatáu cwcis trydydd parti ar gyfer y wefan hon</translation>
 <translation id="4989163558385430922">Gweld popeth</translation>
 <translation id="4989542687859782284">Nid yw ar gael</translation>
 <translation id="4989809363548539747">Ni chefnogir yr ategyn hwn</translation>
@@ -2249,7 +2243,6 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="5414511064953050917">Symud beth bynnag</translation>
 <translation id="5421136146218899937">Clirio data pori…</translation>
 <translation id="5423269318075950257">Dilyn y Pris</translation>
-<translation id="5425241977284572032">{NUM_COOKIES,plural, =0{Dim gwefannau wedi'u rhwystro}=1{1 gwefan wedi'i rhwystro}two{# wefan wedi'u rhwystro}few{# gwefan wedi'u rhwystro}many{# gwefan wedi'u rhwystro}other{# gwefan wedi'u rhwystro}}</translation>
 <translation id="5426179911063097041">Mae <ph name="SITE" /> eisiau anfon hysbysiadau atoch</translation>
 <translation id="5430298929874300616">Tynnu'r nod tudalen</translation>
 <translation id="5434798570900738152"><ph name="BEGIN_EMPHASIS" />Ni fydd<ph name="END_EMPHASIS" /> Chromium yn cadw:
@@ -2807,7 +2800,6 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="6521745193039995384">Nid yw'n weithredol</translation>
 <translation id="6524830701589638230">Botwm rheoli gosodiadau hygyrchedd, gweithredwch i bersonoleiddio'ch offer hygyrchedd yn y gosodiadau Chrome</translation>
 <translation id="6529173248185917884">Seithfed Rôl</translation>
-<translation id="652937045869844725">Rhowch gynnig ar ganiatáu cwcis trydydd parti, sy'n golygu llai o amddiffyniad ond mae nodweddion y wefan yn fwy tebygol o weithio</translation>
 <translation id="6529602333819889595">&amp;Ailwneud Dileu</translation>
 <translation id="6535751101619004418">Arian cyfred a chyfnewid tramor</translation>
 <translation id="6536221421038631327">Bydd dileu tanysgrifiad Passpoint o'ch <ph name="DEVICE_TYPE" /> yn dileu'r rhwydweithiau cysylltiedig. Cysylltwch "<ph name="FRIENDLY_NAME" />" i wneud newidiadau i'ch cynllun tanysgrifio. <ph name="LEARN_MORE" /></translation>
@@ -3163,7 +3155,6 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="7221855153210829124">Dangos hysbysiadau</translation>
 <translation id="7221857374443660083">Mae eich banc eisiau sicrhau mai chi sydd yno</translation>
 <translation id="722454870747268814">Tab Anhysbys Newydd</translation>
-<translation id="7226276626900992675">Rydych wedi caniatáu i'r wefan hon ddefnyddio cwcis trydydd parti. Mae hyn yn golygu y dylai'r rhan fwyaf o nodweddion gwefan weithio, ond mae gennych lai o amddiffyniad.</translation>
 <translation id="7227293336683593977">Hanes Prisiau</translation>
 <translation id="7227747683324411744">Gallai ymosodwyr ar y wefan rydych yn ceisio ymweld â hi eich twyllo i osod meddalwedd niweidiol a allai effeithio'r ffordd rydych yn pori — er enghraifft, wrth newid eich hafan neu ddangos eich hysbysiadau ychwanegol ar wefannau rydych yn ymweld â nhw.</translation>
 <translation id="7233592378249864828">Taflen gadarnhau argraffu</translation>
@@ -3782,7 +3773,6 @@ Manylion ychwanegol:
 <translation id="8398335999901363925">Mae dulliau talu sydd ar gael i'w llenwi ar gyffwrdd wedi'u hagor ar uchder llawn.</translation>
 <translation id="8398446215576328011">Dadwneud polisïau a gymhwyswyd</translation>
 <translation id="8398790343843005537">Dod o hyd i'ch ffôn</translation>
-<translation id="8401772916834964810">{COUNT,plural, =0{Bydd Chrome yn rhwystro cwcis eto heddiw}=1{Bydd Chrome yn rhwystro cwcis eto yfory}two{# ddiwrnod nes bydd Chrome yn rhwystro cwcis eto}few{# diwrnod nes bydd Chrome yn rhwystro cwcis eto}many{# diwrnod nes bydd Chrome yn rhwystro cwcis eto}other{# diwrnod nes bydd Chrome yn rhwystro cwcis eto}}</translation>
 <translation id="8403506619177967839">Ffuglen Ffan</translation>
 <translation id="8405579342203358118">Rheoli pa wybodaeth rydych yn ei chysoni yng ngosodiadau Chrome</translation>
 <translation id="8406071103346257942">rhoi'r gorau i ddefnyddio'ch clo sgrin ar gyfer llenwi cyfrineiriau</translation>

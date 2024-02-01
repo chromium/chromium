@@ -1341,6 +1341,7 @@ Some features are limited to increase battery life.</translation>
 <translation id="6298183524022479114">Customise this device in app</translation>
 <translation id="6309219492973062892">Click or tap shelf icons 1–8</translation>
 <translation id="6315170314923504164">Voice</translation>
+<translation id="6319058840130157106">Move backwards between the bottom-right corner, Launcher, address bar, bookmarks bar, website that's open and downloads</translation>
 <translation id="6324916366299863871">Edit shortcut</translation>
 <translation id="6330012934079202188">Showing windows from all desks; press the Up arrow key to show windows from the current desk</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> is a managed session managed by <ph name="MANAGER" /></translation>
@@ -1926,6 +1927,7 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="878215960996152260"><ph name="APP_NAME" />, installed app, blocked</translation>
 <translation id="8785070478575117577">Connect to <ph name="NETWORK_NAME" /></translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
+<translation id="8790632710469941716">Move forwards between bottom-right corner, Launcher, address bar, bookmarks bar, website that's open and downloads</translation>
 <translation id="8792626944327216835">microphone</translation>
 <translation id="8801802992492329306">5G</translation>
 <translation id="8806053966018712535">Folder <ph name="FOLDER_NAME" /></translation>

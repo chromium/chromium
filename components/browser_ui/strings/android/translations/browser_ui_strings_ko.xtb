@@ -66,6 +66,7 @@
 <translation id="2228071138934252756"><ph name="APP_NAME" />에서 카메라에 액세스하도록 허용하려면 <ph name="BEGIN_LINK" />Android 설정<ph name="END_LINK" />에서도 카메라를 사용 설정하세요.</translation>
 <translation id="2235344399760031203">타사 쿠키가 차단됨</translation>
 <translation id="2238944249568001759">마지막 탭을 바탕으로 한 추천 검색어</translation>
+<translation id="2241587408274973373">새 탭 페이지 카드</translation>
 <translation id="2241634353105152135">한 번만</translation>
 <translation id="2253414712144136228"><ph name="NAME_OF_LIST_ITEM" /> 삭제</translation>
 <translation id="2253989982043948086">{NUM_SELECTED,plural, =1{차단된 사이트 1개}other{차단된 사이트 #개}}</translation>
@@ -281,6 +282,7 @@
 <translation id="5706552988683188916"><ph name="WEBSITE" />의 쿠키 및 기타 사이트 데이터가 삭제됩니다.</translation>
 <translation id="5723967018671998714">시크릿 모드에서는 타사 쿠키가 차단됨</translation>
 <translation id="5740126560802162366">사이트에서 기기에 데이터를 저장할 수 있습니다.</translation>
+<translation id="5749158352074143502">이 탭으로 계속</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" /> 차단됨</translation>
 <translation id="5804241973901381774">권한</translation>
 <translation id="5844448279347999754">사용 설정하면 사이트에서 클립보드에 저장된 텍스트 및 이미지 확인을 요청할 수 있습니다. 사용 중지하면 사이트에서 클립보드에 저장된 텍스트나 이미지를 확인할 수 없습니다.</translation>
@@ -421,6 +423,7 @@
 <translation id="7990211076305263060">사용 설정하면 사이트에서 마이크 사용을 요청할 수 있습니다. 사용 중지하면 사이트에서 마이크를 사용할 수 없습니다.</translation>
 <translation id="8007176423574883786">기기에 대해 사용 중지됨</translation>
 <translation id="802154636333426148">다운로드 실패</translation>
+<translation id="8024161440284949905">이 탭으로 계속</translation>
 <translation id="8042586301629853791">정렬 기준:</translation>
 <translation id="8067883171444229417">동영상 재생</translation>
 <translation id="8068648041423924542">인증서를 선택할 수 없습니다.</translation>

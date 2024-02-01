@@ -1499,6 +1499,7 @@ Nouvelle installation</translation>
 <translation id="6981291220124935078">Activer l'accès</translation>
 <translation id="6981982820502123353">Accessibilité</translation>
 <translation id="698231206551913481">Tous les fichiers et toutes les données locales associés à l'utilisateur seront définitivement supprimés en même temps que ce dernier.</translation>
+<translation id="6984028004251196682"><ph name="DISPLAY_NAME" /> n'est pas compatible avec la résolution de <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz). La résolution de <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" /> Hz) sera utilisée à la place. Cliquez sur Confirmer pour conserver les changements. Les paramètres précédents seront restaurés dans <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="6989752354829085073">Regardez une présentation rapide pour vous familiariser avec votre Chromebook. Configurez votre appareil en six étapes.</translation>
 <translation id="7004910047186208204">Se connecter à un réseau de données cellulaires</translation>
 <translation id="7005239792648594238">Ouvrez une application pour commencer</translation>

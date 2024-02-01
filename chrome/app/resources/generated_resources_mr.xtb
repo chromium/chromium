@@ -585,7 +585,7 @@
 
 तुम्ही अ‍ॅप्सना आधीपासून दिलेल्या परवानग्या या खात्याला लागू होऊ शकतात. तुम्ही <ph name="APPS_LINK_BEGIN" />अ‍ॅप्स सेटिंग्ज<ph name="APPS_LINK_END" /> मध्ये Android अ‍ॅप्ससाठी परवानग्या नियंत्रित करू शकता.</translation>
 <translation id="1448779317883494811">ब्रश टूल</translation>
-<translation id="1449191289887455076">असाइनमेंट कंफर्म करण्यासाठी, “<ph name="CURRENTKEY" />” प्रेस करा आणि <ph name="RESPONSE" /></translation>
+<translation id="1449191289887455076">असाइनमेंट कन्फर्म करण्यासाठी, “<ph name="CURRENTKEY" />” प्रेस करा आणि <ph name="RESPONSE" /></translation>
 <translation id="1451375123200651445">वेबपेज, एकल फाइल</translation>
 <translation id="1453561711872398978"><ph name="BEGIN_LINK" />
     डीबग लॉग<ph name="END_LINK" /> पाठवा (शिफारस केलेले)</translation>
@@ -2065,7 +2065,7 @@
         तुम्ही कार्ड मेनूमधून सेटिंग्ज व्यवस्थापित करू शकता किंवा Chrome कस्टमाइझ करा यामध्ये आणखी पर्याय पाहू शकता.</translation>
 <translation id="2514326558286966059">तुमची फिंगरप्रिंट वापरून जलदरीत्या अनलॉक करा</translation>
 <translation id="2515586267016047495">Alt</translation>
-<translation id="251722524540674480">तुमचे वापरकर्ता नाव कंफर्म करा</translation>
+<translation id="251722524540674480">तुमचे वापरकर्ता नाव कन्फर्म करा</translation>
 <translation id="2517472476991765520">स्कॅन करा</translation>
 <translation id="2518024842978892609">तुमची क्लायंट प्रमाणप‍त्रे वापरा</translation>
 <translation id="2519250377986324805">कसे ते पहा</translation>
@@ -2438,7 +2438,7 @@
 <translation id="2801954693771979815">स्क्रीनचा आकार</translation>
 <translation id="2802557211515765772">कोणतेही व्यवस्थापित केलेले प्रिंटर नाहीत.</translation>
 <translation id="2803313416453193357">फोल्डर उघडा</translation>
-<translation id="2803719750464280163">कृपया कंफर्म करा, की <ph name="DEVICE" /> या ब्लूटूथ डिव्‍हाइसवर दाखवलेली पासकी ही <ph name="PASSKEY" /> आहे.</translation>
+<translation id="2803719750464280163">कृपया कन्फर्म करा, की <ph name="DEVICE" /> या ब्लूटूथ डिव्‍हाइसवर दाखवलेली पासकी ही <ph name="PASSKEY" /> आहे.</translation>
 <translation id="2804043232879091219">पर्यायी ब्राउझर उघडता आला नाही</translation>
 <translation id="2804667941345577550">उघड्या असलेल्या टॅबच्या समावेशासह तुम्हाला या साइटमधून साइन आउट केले जाईल.</translation>
 <translation id="2804680522274557040">कॅमेरा बंद केला आहे</translation>
@@ -3325,7 +3325,7 @@
 <translation id="3518866566087677312">तुम्हाला नंतर वापरायच्या असलेल्या गोष्टी बुकमार्क करा</translation>
 <translation id="3519564332031442870">Print Backend Service</translation>
 <translation id="3519938335881974273">पेज या फॉरमॅटमध्ये सेव्ह करा...</translation>
-<translation id="3520824492621090923">कियोस्क आणि सिन्येज डिव्हाइस नोंदणी कंफर्म करायची का?</translation>
+<translation id="3520824492621090923">कियोस्क आणि सिन्येज डिव्हाइस नोंदणी कन्फर्म करायची का?</translation>
 <translation id="3521388823983121502"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> सह पुढे सुरू ठेवू शकत नाही</translation>
 <translation id="3521405806571557477"><ph name="SITE_NAME" /> साठी सेव्ह केलेला डेटा हटवा</translation>
 <translation id="3521606918211282604">डिस्कचा आकार बदला</translation>
@@ -3499,7 +3499,7 @@
 <translation id="3659929705630080526">तुम्ही खूप वेळा चुकीचा अ‍ॅक्सेस कोड एंटर केला आहे. नंतर पुन्हा प्रयत्न करा</translation>
 <translation id="3660234220361471169">अविश्‍वासू</translation>
 <translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{एक सद्य पासवर्ड आढळला आहे}other{{NUM_PASSWORDS} सद्य पासवर्ड आढळले आहेत}}</translation>
-<translation id="3662207097851752847">तुमच्या फोनवर तुमचे Google खाते कंफर्म करा</translation>
+<translation id="3662207097851752847">तुमच्या फोनवर तुमचे Google खाते कन्फर्म करा</translation>
 <translation id="3664511988987167893">एक्स्टेंशन आयकन</translation>
 <translation id="3665100783276035932">बहुतांश साइटनी अपेक्षेनुसार काम केले पाहिजे</translation>
 <translation id="3665301845536101715">साइड पॅनलमध्ये उघडा</translation>
@@ -3921,7 +3921,7 @@
 <translation id="3957844511978444971">या Google सेवा सेटिंग्ज तुमच्या निवडीची खात्री करण्यासाठी "स्वीकारा" वर टॅप करा.</translation>
 <translation id="3958088479270651626">बुकमार्क आणि सेटिंग्ज इंपोर्ट करा</translation>
 <translation id="3958110062351175311">टूलबारमध्ये विनंत्या दाखवण्याची अनुमती दिली आहे</translation>
-<translation id="3959747296451923142">सदस्यत्व काढून टाकणे कंफर्म करा</translation>
+<translation id="3959747296451923142">सदस्यत्व काढून टाकणे कन्फर्म करा</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3961005895395968120"><ph name="IBAN_DESCRIPTION" /> साठी आणखी कृती</translation>
 <translation id="3962119236270174787">धोकादायक म्हणून ओळखल्या जाणार्‍या वेबसाइट, डाउनलोड आणि एक्स्टेंशनपासून साधारण संरक्षण</translation>
@@ -5136,7 +5136,7 @@
 <translation id="4924002401726507608">फीडबॅक सबमिट करा</translation>
 <translation id="4924352752174756392">१२x</translation>
 <translation id="4925320384394644410">तुमच्या पोस्ट येथे दिसतील</translation>
-<translation id="49265687513387605">स्क्रीन कास्ट करता आली नाही. तुमची स्क्रीन शेअर करण्यासाठी आलेली सूचना तुम्ही कंफर्म केली आहे का हे पाहण्यासाठी तपासा.</translation>
+<translation id="49265687513387605">स्क्रीन कास्ट करता आली नाही. तुमची स्क्रीन शेअर करण्यासाठी आलेली सूचना तुम्ही कन्फर्म केली आहे का हे पाहण्यासाठी तपासा.</translation>
 <translation id="4927753642311223124">येथे पाहण्यासाठी काही नाही, पुढे चला.</translation>
 <translation id="4928629450964837566">आणखी सुरक्षित पासवर्ड वापरा</translation>
 <translation id="4929386379796360314">गंतव्यस्थाने प्रिंट करा</translation>
@@ -5976,7 +5976,7 @@
 <translation id="5595485650161345191">पत्ता संपादित करा</translation>
 <translation id="5596627076506792578">अधिक पर्याय</translation>
 <translation id="5599819890022137981">Windows Hello कडील</translation>
-<translation id="5600348067066185292">इंस्टॉलेशनसाठी काही सोप्या पायऱ्या लागतात. तुमच्या काँप्युटरमध्ये बदल केले जाण्यापूर्वी तुमच्याकडे कंफर्म करण्यासाठी दुसरी संधी असेल.</translation>
+<translation id="5600348067066185292">इंस्टॉलेशनसाठी काही सोप्या पायऱ्या लागतात. तुमच्या काँप्युटरमध्ये बदल केले जाण्यापूर्वी तुमच्याकडे कन्फर्म करण्यासाठी दुसरी संधी असेल.</translation>
 <translation id="5600706100022181951">अपडेट <ph name="UPDATE_SIZE_MB" /> MB मोबाइल डेटा वापरून डाउनलोड केले जाईल. तुम्हाला सुरू ठेवायचे आहे का?</translation>
 <translation id="5601503069213153581">पिन</translation>
 <translation id="5601833336918638013">साइटना ब्लूटूथ डिव्हाइस शोधण्याची अनुमती देऊ नका</translation>
@@ -9989,7 +9989,7 @@
 <translation id="8724859055372736596">फोल्डरमध्ये &amp;दर्शवा</translation>
 <translation id="8725066075913043281">पुन्हा प्रयत्न करा</translation>
 <translation id="8725178340343806893">मनपसंत/बुकमार्क</translation>
-<translation id="87254326763805752">पासकी कंफर्म करा</translation>
+<translation id="87254326763805752">पासकी कन्फर्म करा</translation>
 <translation id="8726206820263995930">सर्व्हरवरून धोरण सेटिंग्ज आणताना एरर: <ph name="CLIENT_ERROR" />.</translation>
 <translation id="8727043961453758442">Chrome चा पुरेपूर वापर करा</translation>
 <translation id="8727333994464775697">तुम्हाला या पेजवर दिसत असलेले कस्टमाइझ करा</translation>

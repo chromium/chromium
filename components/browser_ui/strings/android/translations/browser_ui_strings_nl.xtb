@@ -66,6 +66,7 @@
 <translation id="2228071138934252756">Als je <ph name="APP_NAME" /> toegang wilt geven tot je camera, moet je de camera ook aanzetten via de <ph name="BEGIN_LINK" />Android-instellingen<ph name="END_LINK" />.</translation>
 <translation id="2235344399760031203">Cookies van derden worden geblokkeerd</translation>
 <translation id="2238944249568001759">Voorgestelde zoekopdrachten op basis van je laatste tabblad</translation>
+<translation id="2241587408274973373">Kaarten op de pagina Nieuw tabblad</translation>
 <translation id="2241634353105152135">Slechts één keer</translation>
 <translation id="2253414712144136228"><ph name="NAME_OF_LIST_ITEM" /> verwijderen</translation>
 <translation id="2253989982043948086">{NUM_SELECTED,plural, =1{1 site geblokkeerd}other{# sites geblokkeerd}}</translation>
@@ -281,6 +282,7 @@
 <translation id="5706552988683188916">Hiermee worden cookies en andere sitegegevens voor <ph name="WEBSITE" /> verwijderd</translation>
 <translation id="5723967018671998714">Cookies van derden worden geblokkeerd in de incognitomodus</translation>
 <translation id="5740126560802162366">Sites kunnen gegevens opslaan op je apparaat</translation>
+<translation id="5749158352074143502">Doorgaan met dit tabblad</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" /> geblokkeerd</translation>
 <translation id="5804241973901381774">Rechten</translation>
 <translation id="5844448279347999754">Als deze optie aanstaat, kunnen sites vragen of ze tekst en afbeeldingen mogen bekijken die op je klembord zijn opgeslagen. Staat de optie uit, dan kunnen sites geen tekst of afbeeldingen bekijken die op je klembord zijn opgeslagen.</translation>
@@ -421,6 +423,7 @@
 <translation id="7990211076305263060">Als deze optie aanstaat, kunnen sites om toegang tot je microfoon vragen. Staat de optie uit, dan kunnen sites je microfoon niet gebruiken.</translation>
 <translation id="8007176423574883786">Uitgezet voor dit apparaat</translation>
 <translation id="802154636333426148">Downloaden mislukt</translation>
+<translation id="8024161440284949905">Doorgaan met deze tabbladen</translation>
 <translation id="8042586301629853791">Sorteren op:</translation>
 <translation id="8067883171444229417">Video afspelen</translation>
 <translation id="8068648041423924542">Kan certificaat niet selecteren.</translation>

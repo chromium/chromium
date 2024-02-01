@@ -883,7 +883,6 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="2674804415323431591">Masquer les suggestions</translation>
 <translation id="2677696497921480781">Fêtes et anniversaires</translation>
 <translation id="2677748264148917807">Quitter</translation>
-<translation id="2678468611080193228">Essayez d'autoriser temporairement les cookies tiers. Vous bénéficierez d'une protection réduite, mais les fonctionnalités du site seront plus susceptibles de fonctionner.</translation>
 <translation id="2686919536310834199">Envoyer des commentaires sur M'aider à écrire.</translation>
 <translation id="2687555958734450033">Taille optimale</translation>
 <translation id="2688186765492306706">500 x 760 mm</translation>
@@ -1102,7 +1101,6 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="3157931365184549694">Restaurer</translation>
 <translation id="3158539265159265653">Disque</translation>
 <translation id="3162559335345991374">Pour utiliser ce réseau Wi-Fi, il est possible que vous deviez vous rendre sur la page de connexion correspondante.</translation>
-<translation id="3166370127092388416">{NUM_COOKIES,plural, =0{Cookies tiers, aucun site autorisé}=1{Cookies tiers, 1 site autorisé}one{Cookies tiers, # site autorisé}other{Cookies tiers, # sites autorisés}}</translation>
 <translation id="3168744840365648658">Équipement radio</translation>
 <translation id="3169472444629675720">Discover</translation>
 <translation id="3171703252520926121">Services immobiliers</translation>
@@ -1161,7 +1159,6 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="3262698603497362968">Options d'achat</translation>
 <translation id="3266367459139339908">Nous lançons de nouvelles façons de limiter ce que les sites peuvent apprendre à votre sujet lorsqu'ils vous montrent des annonces personnalisées, par exemple :</translation>
 <translation id="3266793032086590337">Valeur (conflit)</translation>
-<translation id="3266972086368072861">{NUM_COOKIES,plural, =0{Aucun site bloqué, en incluant les sites associés}=1{1 site bloqué, en incluant les sites associés}one{# site bloqué, en incluant les sites associés}other{# sites bloqués, en incluant les sites associés}}</translation>
 <translation id="3268451620468152448">Onglets ouverts</translation>
 <translation id="3270041629388773465">Payez plus rapidement quand vos codes CVC sont enregistrés</translation>
 <translation id="3270156322180235608">Transport aérien</translation>
@@ -1206,7 +1203,6 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="3359565626472459400">Mariage</translation>
 <translation id="3360103848165129075">Feuille du gestionnaire de paiement</translation>
 <translation id="3360313521703038580">Écologie et environnement</translation>
-<translation id="3360753465334942529">{NUM_COOKIES,plural, =0{Cookies tiers, aucun site bloqué}=1{Cookies tiers, 1 site bloqué}one{Cookies tiers, # site bloqué}other{Cookies tiers, # sites bloqués}}</translation>
 <translation id="3362968246557010467">Cette règle a été copiée automatiquement depuis la règle obsolète "<ph name="OLD_POLICY" />". Vous devez utiliser cette nouvelle règle à la place.</translation>
 <translation id="3364869320075768271">Le site <ph name="URL" /> souhaite utiliser vos données et votre appareil de réalité virtuelle</translation>
 <translation id="3366477098757335611">Afficher les cartes</translation>
@@ -1610,7 +1606,6 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="4151403195736952345">Utiliser la valeur par défaut globale (Détection)</translation>
 <translation id="4152318981910038897">{COUNT,plural, =1{Page 1}one{Page {COUNT}}other{Page {COUNT}}}</translation>
 <translation id="4154277373259957087">Chrome va maintenant valider votre identité avant de renseigner les modes de paiement. Vous pouvez modifier cela à tout moment dans <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" />.</translation>
-<translation id="4159149286839604525">Cela signifie que la plupart des fonctionnalités devraient fonctionner, mais que votre protection est réduite</translation>
 <translation id="4159784952369912983">Violet</translation>
 <translation id="4165986682804962316">Paramètres des sites</translation>
 <translation id="4169535189173047238">Interdire</translation>
@@ -2033,7 +2028,6 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="4983145717627482381">Visites guidées et voyages accompagnés</translation>
 <translation id="498323057460789381">Erreur de validation du schéma : <ph name="ERROR" /></translation>
 <translation id="4984088539114770594">Utiliser le micro ?</translation>
-<translation id="4985206706500620449">Vous avez autorisé les cookies tiers pour ce site</translation>
 <translation id="4989163558385430922">Tout afficher</translation>
 <translation id="4989542687859782284">Indisponible</translation>
 <translation id="4989809363548539747">Ce plug-in n'est pas compatible.</translation>
@@ -2249,7 +2243,6 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="5414511064953050917">Déplacer quand même</translation>
 <translation id="5421136146218899937">Effacer les données de navigation...</translation>
 <translation id="5423269318075950257">Suivre les prix</translation>
-<translation id="5425241977284572032">{NUM_COOKIES,plural, =0{Aucun site bloqué}=1{1 site bloqué}one{# site bloqué}other{# sites bloqués}}</translation>
 <translation id="5426179911063097041">"<ph name="SITE" />" souhaite vous envoyer des notifications</translation>
 <translation id="5430298929874300616">Supprimer le favori</translation>
 <translation id="5434798570900738152">Chromium <ph name="BEGIN_EMPHASIS" />n'enregistrera pas<ph name="END_EMPHASIS" /> ce qui suit :
@@ -2807,7 +2800,6 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="6521745193039995384">Inactive</translation>
 <translation id="6524830701589638230">Bouton "Gérer les paramètres d'accessibilité" à activer pour personnaliser vos outils d'accessibilité dans les paramètres Chrome</translation>
 <translation id="6529173248185917884">7e rouleau</translation>
-<translation id="652937045869844725">Essayez d'autoriser les cookies tiers. Vous bénéficierez d'une protection réduite, mais les fonctionnalités du site seront plus susceptibles de fonctionner.</translation>
 <translation id="6529602333819889595">&amp;Rétablir la suppression</translation>
 <translation id="6535751101619004418">Change et devises</translation>
 <translation id="6536221421038631327">Supprimer un abonnement Passpoint de votre <ph name="DEVICE_TYPE" /> supprimera les réseaux associés. Contactez <ph name="FRIENDLY_NAME" /> pour modifier votre abonnement. <ph name="LEARN_MORE" /></translation>
@@ -3164,7 +3156,6 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="7221857374443660083">Votre banque souhaite vérifier votre identité</translation>
 <translation id="722454870747268814">Nouvel onglet de navigation privée 
 </translation>
-<translation id="7226276626900992675">Vous avez autorisé ce site à utiliser des cookies tiers. Cela signifie que la plupart des fonctionnalités devraient fonctionner, mais que votre protection est réduite.</translation>
 <translation id="7227293336683593977">Historique des prix</translation>
 <translation id="7227747683324411744">Des pirates informatiques qui se trouvent sur le site que vous essayez de consulter peuvent vous inciter à installer un logiciel malveillant affectant votre façon de naviguer, par exemple en modifiant votre page d'accueil ou en vous montrant des annonces supplémentaires sur les sites que vous consultez.</translation>
 <translation id="7233592378249864828">Imprimer la feuille de confirmation</translation>
@@ -3783,7 +3774,6 @@ Informations supplémentaires :
 <translation id="8398335999901363925">Liste des modes de paiement à saisir de façon tactile, ouverte à pleine hauteur.</translation>
 <translation id="8398446215576328011">Rétablir les règles applicables</translation>
 <translation id="8398790343843005537">Rechercher votre téléphone</translation>
-<translation id="8401772916834964810">{COUNT,plural, =0{Chrome bloquera de nouveau les cookies aujourd'hui}=1{Chrome bloquera de nouveau les cookies demain}one{Chrome bloquera de nouveau les cookies dans # jour}other{Chrome bloquera de nouveau les cookies dans # jours}}</translation>
 <translation id="8403506619177967839">Fan fiction</translation>
 <translation id="8405579342203358118">Gérez les infos que vous synchronisez dans les paramètres Chrome</translation>
 <translation id="8406071103346257942">de cesser d'utiliser le verrouillage de l'écran pour renseigner les mots de passe</translation>

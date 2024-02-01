@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="sv">
+<translation id="1021782183249308751">Håll nere Chrome-ikonen och tryck på Ändra hemskärmen</translation>
 <translation id="1066101356081285416">Chrome identifierar spårningsnummer på webbplatser du besöker och visar uppdateringar om försändelser på sidan Ny flik. Paketets spårningsnummer och webbplatsens namn skickas till Google för att tillhandahålla den här funktionen och förbättra shoppingfunktioner för alla. Du kan uppdatera detta när du vill i <ph name="BEGIN_LINK" />inställningarna för spårning av försändelser<ph name="END_LINK" />.</translation>
 <translation id="1085696779717592361">Använd Chrome som standard</translation>
 <translation id="1105362920864247682">Rensa webbinformation i Chrome.</translation>
@@ -96,6 +97,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="3345341804167540816">Använd Chrome överallt</translation>
 <translation id="3360031466389132716">{THRESHOLD,plural, =1{Detta händer när Chrome inte har använts på {THRESHOLD} minut}other{Detta händer när Chrome inte används på {THRESHOLD} minuter}}</translation>
 <translation id="3399930248910934354">Öppna inställningarna för Chrome</translation>
+<translation id="344736123700721678">Kom åt Chrome snabbare från hemskärmens Dock</translation>
 <translation id="3472587960215700950">Google Maps används i Chrome för att ge dig vägbeskrivningar och lokal information om identifierade adresser.</translation>
 <translation id="3503014945441706099">Få Förbättrad säker webbsökning även för den här Chromium-profilen</translation>
 <translation id="3522659714780527202">Aktivera synkronisering om du vill ha samma flikar tillgängliga på alla enheter där du använder Chrome</translation>

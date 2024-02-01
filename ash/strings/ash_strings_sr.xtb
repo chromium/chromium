@@ -607,9 +607,11 @@
 <translation id="3526440770046466733">Отвори линк на новој картици и остани на актуелној картици</translation>
 <translation id="353086728817903341">Повезани сте са <ph name="NUM_DEVICES" /> уређаја</translation>
 <translation id="3533126039236445965">Апликације на полици</translation>
+<translation id="3537350467437346467">Прегледали сте</translation>
 <translation id="3539957339480430241"><ph name="DEVICE_NAME" /> хотспот</translation>
 <translation id="3540893133818942399">Одбаците подешавање прегледа недавних слика и медија на телефону</translation>
 <translation id="3542066395059568317">Видећете препоруке да бисте могли да наставите тамо где сте стали. Можете да кликнете десним тастером да бисте уклонили препоруке.</translation>
+<translation id="3547318469722231257">Изменили сте</translation>
 <translation id="3552189655002856821">WiFi је искључен</translation>
 <translation id="3554215588514239132">Прикажи или сакриј окно Алатке за програмере</translation>
 <translation id="3554637740840164787">Ставка <ph name="ITEM_TITLE" /> је закачена</translation>
@@ -701,6 +703,7 @@
 <translation id="385300504083504382">Почетак</translation>
 <translation id="3859364108019690">Стримовање апликација није успело</translation>
 <translation id="3861651314799684201">Притисните Enter да бисте снимили цео екран</translation>
+<translation id="3882323608730650973">Измењено је</translation>
 <translation id="3886872229787704059">Отварано данас</translation>
 <translation id="3891340733213178823">Двапут притисните Ctrl+Shift+Q да бисте се одјавили.</translation>
 <translation id="3893630138897523026">ChromeVox (говорне повратне информације)</translation>
@@ -895,6 +898,7 @@
 <translation id="4582666543382004902">Хотспот је искључен да бисте користили WiFi. Да бисте користили хотспот, искључите WiFi.</translation>
 <translation id="4585337515783392668">Заустави пребацивање на непознати пријемник</translation>
 <translation id="4596144739579517758">Тамна тема је искључена</translation>
+<translation id="4596442969149038771"><ph name="USER" /> дели</translation>
 <translation id="4611292653554630842">Пријави ме</translation>
 <translation id="462160925400706389"><ph name="NAME" /> – повезанo</translation>
 <translation id="4623167406982293031">Верификујте налог</translation>
@@ -1338,6 +1342,7 @@
 <translation id="6298183524022479114">Прилагодите овај уређај у апликацији</translation>
 <translation id="6309219492973062892">Кликните на иконе полице од 1 до 8 или их додирните</translation>
 <translation id="6315170314923504164">Глас</translation>
+<translation id="6319058840130157106">Крећите се уназад из доњег десног угла на покретач, траку за адресу, траку са обележивачима, веб-сајт који је отворен и преузимања</translation>
 <translation id="6324916366299863871">Измени пречицу</translation>
 <translation id="6330012934079202188">Приказују се прозори са свих радних површина. Притисните тастер са стрелицом нагоре да би се приказивали прозори са актуелне радне површине.</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> је сесија којом управља <ph name="MANAGER" /></translation>
@@ -1817,6 +1822,7 @@
 <translation id="8314772463905284467">Caps Lock је укључен</translation>
 <translation id="8315514906653279104">Укључује се…</translation>
 <translation id="8331351032546853669">Преузимање је на чекању</translation>
+<translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
 <translation id="8345019317483336363">Прозор <ph name="WINDOW_TITLE" /> је изабран</translation>
 <translation id="8349826889576450703">Покретач</translation>
@@ -1923,6 +1929,7 @@
 <translation id="878215960996152260"><ph name="APP_NAME" />, инсталирана апликација, блокирана</translation>
 <translation id="8785070478575117577">Повежите са уређајем <ph name="NETWORK_NAME" /></translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
+<translation id="8790632710469941716">Крећите се унапред из доњег десног угла на покретач, траку за адресу, траку са обележивачима, веб-сајт који је отворен и преузимања</translation>
 <translation id="8792626944327216835">микрофон</translation>
 <translation id="8801802992492329306">5G</translation>
 <translation id="8806053966018712535">Фолдер <ph name="FOLDER_NAME" /></translation>
@@ -2036,6 +2043,7 @@
 <translation id="953431725143473984">Желите да искључите уређај?</translation>
 <translation id="954052413789300507">Нема довољно простора за <ph name="FILENAME" />. Ослободите простор.</translation>
 <translation id="954520015070501466">30 мин</translation>
+<translation id="954786879461589145">Корисник <ph name="USER" /> је изменио</translation>
 <translation id="974545358917229949">Приказују се резултати (<ph name="RESULT_COUNT" />) за: <ph name="QUERY" /></translation>
 <translation id="981011780479609956">Нема рока</translation>
 <translation id="98120814841227350">Идите на крај документа</translation>

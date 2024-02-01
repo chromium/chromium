@@ -66,6 +66,7 @@
 <translation id="2228071138934252756">I adael i <ph name="APP_NAME" /> gael mynediad at eich camera, trowch y camera ymlaen yn <ph name="BEGIN_LINK" />Gosodiadau Android<ph name="END_LINK" /> hefyd.</translation>
 <translation id="2235344399760031203">Mae cwcis trydydd parti yn cael eu rhwystro</translation>
 <translation id="2238944249568001759">Chwiliadau a awgrymir yn seiliedig ar eich tab diwethaf</translation>
+<translation id="2241587408274973373">Cardiau tudalen tab newydd</translation>
 <translation id="2241634353105152135">Unwaith yn unig</translation>
 <translation id="2253414712144136228">Tynnu <ph name="NAME_OF_LIST_ITEM" /></translation>
 <translation id="2253989982043948086">{NUM_SELECTED,plural, =1{1 wefan wedi'i rhwystro}zero{# gwefan wedi'u rhwystro}two{# wefan wedi'u rhwystro}few{# gwefan wedi'u rhwystro}many{# gwefan wedi'u rhwystro}other{# gwefan wedi'u rhwystro}}</translation>
@@ -281,6 +282,7 @@
 <translation id="5706552988683188916">Mae hyn yn dileu cwcis a data gwefan eraill ar gyfer <ph name="WEBSITE" /></translation>
 <translation id="5723967018671998714">Mae cwcis trydydd parti wedi'u rhwystro yn y Modd Anhysbys</translation>
 <translation id="5740126560802162366">Gall gwefannau gadw data ar eich dyfais</translation>
+<translation id="5749158352074143502">Parhau gyda'r tab hwn</translation>
 <translation id="5771720122942595109">Rhwystrwyd <ph name="PERMISSION_1" /></translation>
 <translation id="5804241973901381774">Caniatadau</translation>
 <translation id="5844448279347999754">Pan fydd wedi'i droi ymlaen, gall gwefannau ofyn am weld testun a lluniau sydd wedi'u cadw ar eich clipfwrdd. Pan fydd wedi'i ddiffodd, ni all gwefannau weld testun a lluniau sydd wedi'u cadw ar eich clipfwrdd.</translation>
@@ -421,6 +423,7 @@
 <translation id="7990211076305263060">Pan fydd wedi'i droi ymlaen, gall gwefannau ofyn am gael defnyddio'ch meicroffon. Pan fydd wedi'i ddiffodd, ni all gwefannau ddefnyddio'ch meicroffon.</translation>
 <translation id="8007176423574883786">Wedi'i ddiffodd ar gyfer y ddyfais hon</translation>
 <translation id="802154636333426148">Wedi methu â lawrlwytho</translation>
+<translation id="8024161440284949905">Parhau gyda'r tabiau hyn</translation>
 <translation id="8042586301629853791">Trefnu yn ôl:</translation>
 <translation id="8067883171444229417">Chwarae'r fideo</translation>
 <translation id="8068648041423924542">Methu â dewis tystysgrif.</translation>

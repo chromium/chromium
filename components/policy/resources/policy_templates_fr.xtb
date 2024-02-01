@@ -267,7 +267,6 @@ Si vous activez cette règle, les utilisateurs peuvent utiliser le matériel sur
 
       Si cette règle est définie sur "False" ou qu'elle n'est pas configurée, les pages Web peuvent accéder à l'API WebGL, et les plug-ins peuvent utiliser l'API Pepper 3D. Toutefois, il peut quand même être nécessaire d'ajouter des arguments de ligne de commande aux paramètres par défaut du navigateur pour utiliser ces API.</translation>
 <translation id="1198458955128279215">Utiliser le comportement par défaut selon le calendrier de déploiement des fonctionnalités</translation>
-<translation id="119943715168319757">Paramètres MIDI</translation>
 <translation id="1202216683470826356">Afficher les fiches sur la page Nouvel onglet</translation>
 <translation id="1204263402976895730">Imprimantes d'entreprise activées</translation>
 <translation id="1207301487141109411">Empêcher la sélection de l'avatar de l'utilisateur à partir du système de fichiers local, de l'appareil photo et du profil Google</translation>
@@ -2806,7 +2805,6 @@ Si cette règle n'est pas configurée, le nouveau comportement sera utilisé tou
 <translation id="3278042410658310805">Désactiver les commentaires audio sur l'écran de connexion et autoriser l'utilisateur à les activer temporairement</translation>
 <translation id="328347261792478720">Par défaut, le navigateur propose à l'utilisateur des recommandations personnalisées de contenus multimédias. Si cette règle est désactivée, l'utilisateur ne bénéficie pas de ces recommandations. Si cette règle est activée ou qu'elle n'est pas configurée, l'utilisateur peut voir ces recommandations.</translation>
 <translation id="3284094172359247914">Contrôler l'utilisation de l'API WebUSB</translation>
-<translation id="3284658508278342293">Accorder l'autorisation MIDI sur ces sites</translation>
 <translation id="3286159327013237833">Activer les clics automatiques sur l'écran de connexion</translation>
 <translation id="3288595667065905535">Version disponible</translation>
 <translation id="3294430356898755483">Cette règle permet aux administrateurs de configurer une liste d'imprimantes pour leurs utilisateurs. La sélection de l'imprimante est effectuée la première fois que l'utilisateur lance une impression.
@@ -3251,11 +3249,6 @@ Si cette règle n'est pas configurée, aucun rapport de données de télémétri
 
       Si vous configurez cette règle, les utilisateurs ne peuvent pas la modifier. Si cette règle n'est pas configurée, le démarrage au branchement de l'alimentation CA est désactivé, et les utilisateurs ne peuvent pas l'activer.</translation>
 <translation id="3660562134618097814">Transférer des cookies de fournisseurs d'identité SAML lors de la connexion</translation>
-<translation id="3661897198667953320">Permet de lister les formats d'URL des sites qui refusent automatiquement l'autorisation MIDI. Cette règle empêche ainsi les sites d'utiliser des appareils MIDI tels que des télécommandes et des instruments de musique.
-
-Pour en savoir plus sur les formats d'URL de site valides, veuillez consulter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Les caractères génériques (<ph name="WILDCARD_VALUE" />) sont autorisés. Cette règle ne tient compte que de l'origine. Tout chemin d'accès dans le format d'URL est donc ignoré.
-
-Si cette règle n'est pas définie pour un site, alors la règle <ph name="DEFAULT_MIDI_SETTING_POLICY_NAME" /> s'applique au site (si elle est définie). Sinon, les paramètres par défaut du navigateur s'appliquent, et les utilisateurs peuvent définir l'autorisation pour chaque site.</translation>
 <translation id="3665437376055221832">N'inviter l'utilisateur que si la règle de sélection automatique n'établit de correspondance avec aucun certificat.</translation>
 <translation id="3671773704245936868">Désactiver la mise en surbrillance des éléments sélectionnés au clavier</translation>
 <translation id="3674010627788940405">Ne prend pas en charge les en-têtes de requêtes CORS sans caractères génériques.</translation>
@@ -4485,9 +4478,6 @@ Si elle est définie sur "None" ou n'est pas définie, les certificats <ph name=
 
       Si cette règle n'est pas définie, la valeur globale par défaut est utilisée pour tous les sites (aucun accès automatique).</translation>
 <translation id="471360812659157054">window.webkitStorageInfo ne sera pas disponible.</translation>
-<translation id="4714143485020697862">Si cette règle est configurée, tous les types de données spécifiés ne seront pas synchronisés avec <ph name="CHROME_SYNC_NAME" /> ni avec le profil itinérant. Cela peut permettre de réduire la taille du profil itinérant ou de limiter les types de données importés sur les serveurs <ph name="CHROME_SYNC_NAME" />.
-
-      Les types de données actuels pour cette règle sont : "bookmarks", "readingList", "preferences", "passwords", "autofill", "themes", "typedUrls", "extensions", "apps", "tabs", "wifiConfigurations" et "savedTabGroups". Ces noms sont sensibles à la casse.</translation>
 <translation id="4715773950737036924">Contrôlez la disponibilité des extensions dont la publication a été annulée sur le Chrome Web Store.</translation>
 <translation id="4722122254122249791">Activer l'isolation des sites pour des origines définies</translation>
 <translation id="4722761845551711583">Configure l'intervalle d'affichage des images, en secondes, lorsque l'économiseur d'écran de l'écran de connexion doit afficher plusieurs images.
@@ -4502,7 +4492,6 @@ Cette règle n'a aucune incidence lorsque la règle <ph name="DEVICE_SCREENSAVER
 <translation id="4726228171190098009">Ne pas autoriser l'appareil à lancer Powerwash</translation>
 <translation id="4726895359147376813">Mappage avec les configurations de VM à partir des ID persistants</translation>
 <translation id="4733471537137819387">Stratégies liées à l'authentification HTTP intégrée</translation>
-<translation id="473613500147803115">Bloquer l'autorisation MIDI sur ces sites</translation>
 <translation id="473673197014866318">Cette règle permet de contrôler les paramètres de gestion des extensions pour <ph name="PRODUCT_NAME" />, y compris ceux contrôlés par des règles existantes liées aux extensions. Elle remplace toutes les anciennes règles susceptibles d'être configurées.
 
 Elle fait correspondre un ID d'extension ou une URL de mise à jour uniquement avec sa configuration spécifique. Une configuration par défaut peut être définie pour l'ID spécial <ph name="DEFAULT_SCOPE" />, lequel s'applique à toutes les extensions pour lesquelles aucune configuration personnalisée n'est définie dans cette règle. Avec une URL de mise à jour, la configuration s'applique aux extensions avec l'URL de mise à jour telle qu'elle est indiquée dans le fichier manifeste de ces extensions (pour en savoir plus, consultez la page http://support.google.com/chrome/a?p=Configure_ExtensionSettings_policy). Si l'indicateur "override_update_url" est défini sur "True", l'extension est installée et mise à jour à l'aide de l'URL spécifiée dans la règle "<ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" />" ou dans le champ "update_url" de cette règle. L'indicateur "override_update_url" est ignoré si le champ "update_url" contient une URL du Chrome Web Store.
@@ -4823,11 +4812,6 @@ Cette règle n'est appliquée que si l'ordinateur est enregistré avec la règle
 
       Si celle-ci est définie sur "True" ou si elle n'est pas configurée, les utilisateurs peuvent personnaliser l'arrière-plan sur la page "Nouvel onglet".</translation>
 <translation id="5076953589932162038">Paramètres des ensembles propriétaires</translation>
-<translation id="507742683193937417">Permet de lister les formats d'URL des sites qui accordent automatiquement l'autorisation MIDI. Cette règle permet ainsi aux sites d'utiliser des appareils MIDI tels que des télécommandes et des instruments de musique.
-
-Pour en savoir plus sur les formats d'URL de site valides, veuillez consulter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Les caractères génériques (<ph name="WILDCARD_VALUE" />) sont autorisés. Cette règle ne tient compte que de l'origine. Tout chemin d'accès dans le format d'URL est donc ignoré.
-
-Si cette règle n'est pas définie pour un site, alors la règle <ph name="DEFAULT_MIDI_SETTING_POLICY_NAME" /> s'applique au site (si elle est définie). Sinon, les paramètres par défaut du navigateur s'appliquent, et les utilisateurs peuvent définir l'autorisation pour chaque site.</translation>
 <translation id="5078623750797048009">Activer les annotations des PDF</translation>
 <translation id="5080300140183363718">Paramètres de migration des données de séparation des profils</translation>
 <translation id="5081204761483900654">Sessions Invité gérées restreintes</translation>
@@ -5154,7 +5138,6 @@ Si cette règle est désactivée, ces deux historiques ne peuvent pas être supp
       Si la propriété <ph name="AUTO_SELECT_ALL_SCREENS_NAME" /> est définie dans une requête <ph name="GET_DISPLAY_MEDIA_SET_NAME" />, toutes les surfaces d'écran sont automatiquement capturées sans nécessiter l'autorisation explicite de l'utilisateur.
       Si cette règle n'est pas configurée, <ph name="AUTO_SELECT_ALL_SCREENS_NAME" /> n'est disponible pour aucune application Web.
 Pour améliorer la confidentialité, à partir de la version 116 de <ph name="PRODUCT_NAME" />, cette règle ne sera plus compatible avec l'actualisation dynamique. Cela permettra à l'utilisateur de s'assurer qu'aucune page supplémentaire ne pourra capturer les écrans après la connexion, sauf celles déjà autorisées au début de la session.</translation>
-<translation id="5354891932736553743">Paramètre d'autorisation MIDI par défaut</translation>
 <translation id="5361167871898066799">Contrôler la fonctionnalité de correction automatique pour le clavier physique</translation>
 <translation id="5361708558735884308">Cette règle permet d'autoriser l'accès aux URL listées comme exceptions à <ph name="URL_BLOCKLIST_POLICY_NAME" />. Lisez sa description pour connaître le format des entrées listées. Par exemple, définir <ph name="URL_BLOCKLIST_POLICY_NAME" /> sur "*" bloque toutes les requêtes, et vous pouvez appliquer cette règle pour autoriser l'accès à une liste limitée d'URL. Utilisez-la pour définir des exceptions à certains schémas, ports, chemins d'accès spécifiques ou sous-domaines d'autres domaines à l'aide du format spécifié sur https://support.google.com/chrome/a?p=url_blocklist_filter_format. Le filtre le plus spécifique détermine si une URL est bloquée ou autorisée. La règle <ph name="URL_ALLOWLIST_POLICY_NAME" /> prévaut sur <ph name="URL_BLOCKLIST_POLICY_NAME" />. Cette règle est limitée à 1 000 entrées.
 
@@ -6990,7 +6973,6 @@ Cette règle est toujours appliquée pour <ph name="PRODUCT_OS_NAME" />.</transl
       L'activation ou la désactivation de cette règle ne change rien au fonctionnement de la page chrome://flags ni à celui de tout autre moyen d'activer ou désactiver des fonctionnalités du navigateur.</translation>
 <translation id="6795485990775913659">Autoriser l'impression sans code uniquement</translation>
 <translation id="6796215185873669533">Appliquez les paramètres par défaut du navigateur pour la version de la chaîne user-agent.</translation>
-<translation id="6800111968763383631">Refuse par défaut l'autorisation MIDI pour tous les sites</translation>
 <translation id="6800181452282128474">Ne pas envoyer de requêtes aux serveurs Quirks</translation>
 <translation id="68031099365512050">Signaler l'état audio</translation>
 <translation id="680356860463873420">Ne pas autoriser les utilisateurs à employer Plugin VM</translation>
@@ -7365,7 +7347,6 @@ Si cette règle est définie, la liste de valeurs par défaut est complétée pa
 
       Si la règle est définie sur "False" ou n'est pas définie, ces informations ne sont pas transmises.
       Si elle est définie sur "True", les informations concernant le ventilateur de l'appareil sont transmises.</translation>
-<translation id="7096708978256135543">Demander chaque fois qu'un site souhaite obtenir l'autorisation MIDI</translation>
 <translation id="710003290625031750">Description détaillée du schéma :</translation>
 <translation id="7101550508196914704">Ne pas afficher de raccourcis d'applications dans la barre de favoris</translation>
 <translation id="7105084505972468353">Si cette règle est définie, elle contrôle le type de loupe activé.
@@ -8401,11 +8382,6 @@ Pour les instances <ph name="MS_WIN_NAME" />, les applis et extensions non issue
 Pour les instances <ph name="MAC_OS_NAME" />, les applis et extensions non issues du Chrome Web Store ne peuvent être installées d'office que si l'instance est gérée via MDM, associée à un domaine via MCX ou bénéficie de la <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.
 
 Remarque : cette règle ne s'applique pas en mode navigation privée. Pour en savoir plus sur l'hébergement des extensions, consultez la page https://developer.chrome.com/extensions/hosting.</translation>
-<translation id="798452960161141151">Si cette règle est définie sur <ph name="BLOCK_MIDI_POLICY_NAME" /> (valeur 2), les sites sont automatiquement empêchés d'utiliser des appareils MIDI tels que des télécommandes et des instruments de musique.
-
-Si cette règle est définie sur <ph name="ASK_MIDI_POLICY_NAME" /> (valeur 3), l'utilisateur reçoit une invite lorsqu'un site souhaite utiliser des appareils MIDI.
-
-Si cette règle n'est pas définie, la règle <ph name="ASK_MIDI_POLICY_NAME" /> s'applique. Toutefois, les utilisateurs peuvent modifier ce paramètre.</translation>
 <translation id="7985242821674907985"><ph name="PRODUCT_NAME" /></translation>
 <translation id="7985781946183471651">Glanceables sur <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="7986473886676689183">Activer la création de rapports Android</translation>

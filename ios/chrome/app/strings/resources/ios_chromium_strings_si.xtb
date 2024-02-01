@@ -40,9 +40,11 @@
 <translation id="2054703085270098503">Chromium සමගින් ආරක්ෂිතව සිටින්න</translation>
 <translation id="2098023844024447022">Chromium තුළ මගේ නවතම පටිත්ත විවෘත කරන්න.</translation>
 <translation id="2109439615198500433">Chromium ඉඟිය</translation>
+<translation id="2147210759439165826">අන්තර්ගත සහ ප්‍රයෝජනවත් Chromium ඉඟි සමග සිටින්න.</translation>
 <translation id="2168108852149185974">ඇතැම් ඈඳුම් Chromium බිඳ වැටීමට හේතු වේ. කරුණාකර අස්ථාපනය කරන්න:</translation>
 <translation id="2178608107313874732">Chromium හට මේ අවස්ථාවේදී ඔබේ කැමරාව භාවිත කළ නොහැකිය</translation>
 <translation id="2195025571279539885">ඔබ Chromium ඊළඟ අවස්ථාවේ මෙම අඩවිය වෙතින් <ph name="LANGUAGE_NAME" /> පිටු පරිවර්තනය කිරීමට පිරිනමනවාට කැමතිද?</translation>
+<translation id="2216344354848599203">Chromium නිරූපකය ඔබා අල්ලාගෙන "මුල් තිරය සංස්කරණය කරන්න" ක්ලික් කරන්න</translation>
 <translation id="2218146227246548550">ඔබගේ සංවිධානයට ඔබ Chromium භාවිත කිරීමට පිරීම අවශ්‍ය වේ. <ph name="BEGIN_LINK" />තව දැන ගන්න<ph name="END_LINK" /></translation>
 <translation id="22313767259766852">මෙම ලිපිනය දැනට Chromium වෙත සුරැකෙයි. එය Google නිෂ්පාදන පුරා භාවිතා කිරීමට, එය ඔබේ Google ගිණුම, <ph name="USER_EMAIL" /> තුළ සුරකින්න.</translation>
 <translation id="2236584955986023187">මෙයින් අදහස් කරන්නේ Chromium සැම විටම ඩෙස්ක්ටොප් අඩවිය ඉල්ලනු ඇති බවය.</translation>
@@ -191,6 +193,7 @@
 <translation id="632825460376924298">Chromium පිරීමට ඉඩ දෙන්න</translation>
 <translation id="6337530241089703714">මෙම උපාංගයෙන් ඔබගේ Chromium දත්ත හිස් කරන්නේද හෝ එය තබා ගන්නේද යන්න තෝරන්න</translation>
 <translation id="6348483005826990855">3. Chromium තෝරන්න</translation>
+<translation id="6383607155624074112">ඔබේ මුල් තිර ඩොක් එකෙන් Chromium වෙත වේගයෙන් ප්‍රවේශ වන්න</translation>
 <translation id="6407399265324739055">ගෙවීමේ ක්‍රම සහ ලිපින සංකේතන නොකෙරේ Chromium වෙතින් බ්‍රවුස් කිරීමේ ඉතිහාසය සමමුහූර්ත නොවේ.
 
 ඔබේ සංකේතිත දත්ත කියවිය හැක්කේ ඔබේ මුර වැකිකඩ සහිත කෙනෙකුට පමණි. මුර වැකිකඩ Google වෙත යවන්නේ හෝ ගබඩා කරන්නේ නැත. ඔබට ඔබේ මුර වැකිකඩ අමතක වුවහොත් හෝ මෙම සැකසීම වෙනස් කිරීමට අවශ්‍ය නම් <ph name="BEGIN_LINK" />ඔබේ ගිණුම තුළ ඇති Chromium දත්ත හිස් කරන්න<ph name="END_LINK" />.</translation>

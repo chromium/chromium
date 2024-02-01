@@ -700,6 +700,7 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="1535597783576881392">This guide helps you to understand your choices, so that Chrome works the way you want it to</translation>
 <translation id="1535753739390684432">Hear specific text read aloud. First, select the Select to Speak icon at the bottom of your screen, then highlight text.</translation>
 <translation id="1536754031901697553">Disconnecting...</translation>
+<translation id="1536883206862903762">This will disable extensions and reset your settings to safe defaults. Tabs, files and cookies will be preserved. <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
 <translation id="1537254971476575106">Full-screen magnifier</translation>
 <translation id="15373452373711364">Large mouse cursor</translation>
 <translation id="1539727654733007771">No mobile networks set up. Download a new <ph name="BEGIN_LINK" />profile.<ph name="END_LINK" /></translation>
@@ -1679,6 +1680,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2246549592927364792">Get image descriptions from Google?</translation>
 <translation id="2247738527273549923">Your device is managed by your organisation</translation>
 <translation id="2247870315273396641">Voice preview</translation>
+<translation id="224835741840550119">Sanitise your device</translation>
 <translation id="2249111429176737533">Open as tabbed window</translation>
 <translation id="2249605167705922988">e.g. 1-5, 8, 11-13</translation>
 <translation id="2249635629516220541">Customise the info used by sites to show you ads</translation>
@@ -4612,6 +4614,7 @@ This can include information about installed software, files, your browser and t
 <translation id="4508765956121923607">View S&amp;ource</translation>
 <translation id="4509277363725254222">When you share a copy of your <ph name="BEGIN_BOLD_USERNAME" />username<ph name="END_BOLD_USERNAME" /> and <ph name="BEGIN_BOLD_PASSWORD" />password<ph name="END_BOLD_PASSWORD" />, your family member can fill them using Google Password Manager</translation>
 <translation id="4509421746503122514">Relaunch to update</translation>
+<translation id="4509741852167209430">Limited types of data are shared between sites to measure the performance of their ads, such as whether you made a purchase after visiting a site</translation>
 <translation id="4510195992002502722">Failed to send feedback. Retrying…</translation>
 <translation id="4510479820467554003">Parent account list</translation>
 <translation id="451102079304155829">baskets</translation>
@@ -5999,6 +6002,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="5610867721023328944">Try again or select from one of the available themes below.</translation>
 <translation id="5611398002774823980">Save in account</translation>
 <translation id="561236229031062396"><ph name="SHORTCUT_NAME" />, <ph name="APP_FULL_NAME" /></translation>
+<translation id="5613074282491265467">When you’re signed in to Chrome, passwords that you save will go in your Google Account, <ph name="USER_EMAIL" />. To turn this off, go to settings.</translation>
 <translation id="5614190747811328134">User Notice</translation>
 <translation id="5614553682702429503">Save password?</translation>
 <translation id="5614947000616625327">iCloud Keychain</translation>
@@ -6229,6 +6233,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="579915268381781820">Your security key was removed.</translation>
 <translation id="5799478978078236781">Get <ph name="DEVICE_TYPE" /> tips, offers and updates, and share feedback.</translation>
 <translation id="5799508265798272974">Linux Virtual Machine: <ph name="LINUX_VM_NAME" /></translation>
+<translation id="5799971219262397777">Reset settings on your ChromeOS device to safe defaults.</translation>
 <translation id="5800020978570554460">Destination file was truncated or removed since last download.</translation>
 <translation id="5800351251499368110">Close search in side panel. Search is open in the side panel.</translation>
 <translation id="5800703268655655701">Select Light or Dark theme</translation>
@@ -7067,6 +7072,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="6459799433792303855">Active window moved to another display.</translation>
 <translation id="6460601847208524483">Find Next</translation>
 <translation id="6461170143930046705">Searching for networks...</translation>
+<translation id="6463596731306859179">Getting unwanted pop-ups, or other unexpected behaviour? Sometimes, apps and extensions that you install can change your ChromeOS settings without you knowing.</translation>
 <translation id="6463795194797719782">&amp;Edit</translation>
 <translation id="6464825623202322042">This device</translation>
 <translation id="6465841119675156448">Without Internet</translation>
@@ -9733,6 +9739,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8514746246728959655">Try a different security key</translation>
 <translation id="8514955299594277296">Don't allow sites to save data on your device (not recommended)</translation>
 <translation id="8515580632187889788">By continuing, you allow third parties to verify information that identifies this device on the network If you do not wish to allow third parties access to device information, you can set up an eSIM profile <ph name="BEGIN_LINK" />manually<ph name="END_LINK" />.</translation>
+<translation id="8516472100141530292">Right-click on the group</translation>
 <translation id="8517759303731677493">Edit…</translation>
 <translation id="8518942514525208851">Hide profanity</translation>
 <translation id="8519895319663397036">Can't import passwords. The file size should be less than 150 KB.</translation>
@@ -10217,6 +10224,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8883273463630735858">Enable touchpad acceleration</translation>
 <translation id="8884023684057697730"><ph name="BEGIN_BOLD" />How you can manage your data:<ph name="END_BOLD" /> To protect your privacy, we auto-delete sites from the list that are older than four weeks. A site that you visit again might appear on the list again. Or you can remove a site if you don’t want that site to ever define interests for you.</translation>
 <translation id="8884570509232205463">Your device now locks at <ph name="UNLOCK_TIME" />.</translation>
+<translation id="8885449336974696155">Help make ChromeOS better by reporting the <ph name="BEGIN_LINK" />current settings<ph name="END_LINK" /></translation>
 <translation id="8888253246822647887">Your app will open when the upgrade is finished. Upgrades can take a few minutes.</translation>
 <translation id="8888459276890791557">You can pin this side panel for easy access</translation>
 <translation id="8889294078294184559">As you keep browsing, sites can check with Chrome and verify with a previous site that you've visited that you're likely a real person</translation>
@@ -10385,6 +10393,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="9011262023858991985">Casting this tab</translation>
 <translation id="9011393886518328654">Release notes</translation>
 <translation id="9012122671773859802">Move screen continuously as mouse moves</translation>
+<translation id="9012157139067635194">Sanitise</translation>
 <translation id="9012585441087414258">Protects against sites, downloads and extensions that are known to be dangerous. If a page does something suspicious, URLs and bits of page content are sent to Google Safe Browsing.</translation>
 <translation id="9013037634206938463"><ph name="INSTALL_SIZE" /> of free space is required to install Linux. To increase free space, delete files from your device.</translation>
 <translation id="9014206344398081366">ChromeVox tutorial</translation>
@@ -10392,6 +10401,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="9016827136585652292">Privacy screen toggle</translation>
 <translation id="90181708067259747">Expiry date: <ph name="CARD" /></translation>
 <translation id="9018218886431812662">Installation complete</translation>
+<translation id="901876615920222131">To reopen the group, click on the group</translation>
 <translation id="9019062154811256702">Read and change auto-fill settings</translation>
 <translation id="9019894137004772119">Use location. Allow apps and services with location permission to use your device’s location. Google may collect location data periodically and use this data anonymously to improve location accuracy and location-based services.</translation>
 <translation id="9019956081903586892">Couldn’t download spell check dictionary</translation>

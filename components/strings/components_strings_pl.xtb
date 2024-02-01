@@ -883,7 +883,6 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2674804415323431591">Ukryj sugestie</translation>
 <translation id="2677696497921480781">Urodziny i imieniny</translation>
 <translation id="2677748264148917807">Wyjdź</translation>
-<translation id="2678468611080193228">Spróbuj tymczasowo zezwolić na pliki cookie innych firm – oznacza to słabszą ochronę, ale jest większa szansa na to, że funkcje witryny będą działać</translation>
 <translation id="2686919536310834199">Prześlij opinię na temat opcji Pomóż mi napisać.</translation>
 <translation id="2687555958734450033">Najlepsze dopasowanie</translation>
 <translation id="2688186765492306706">500 x 760 mm</translation>
@@ -1102,7 +1101,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="3157931365184549694">Przywróć</translation>
 <translation id="3158539265159265653">Dysk</translation>
 <translation id="3162559335345991374">Sieć Wi-Fi, której używasz, może wymagać otwarcia strony logowania.</translation>
-<translation id="3166370127092388416">{NUM_COOKIES,plural, =0{Pliki cookie innych firm, brak witryn z dostępem}=1{Pliki cookie innych firm, dozwolone w 1 witrynie}few{Pliki cookie innych firm, dozwolone w # witrynach}many{Pliki cookie innych firm, dozwolone w # witrynach}other{Pliki cookie innych firm, dozwolone w # witryny}}</translation>
 <translation id="3168744840365648658">Sprzęt radiowy</translation>
 <translation id="3169472444629675720">Discover</translation>
 <translation id="3171703252520926121">Usługi w zakresie nieruchomości</translation>
@@ -1161,7 +1159,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="3262698603497362968">Opcje zakupu</translation>
 <translation id="3266367459139339908">Obecnie wprowadzamy nowe sposoby ograniczania informacji o Tobie, do których witryny mogą uzyskać dostęp podczas wyświetlania spersonalizowanych reklam, na przykład:</translation>
 <translation id="3266793032086590337">Wartość (konflikt)</translation>
-<translation id="3266972086368072861">{NUM_COOKIES,plural, =0{Brak witryn z zablokowanym dostępem, wraz z powiązanymi witrynami}=1{1 witryna z zablokowanym dostępem, wraz z powiązanymi witrynami}few{# witryny z zablokowanym dostępem, wraz z powiązanymi witrynami}many{# witryn z zablokowanym dostępem, wraz z powiązanymi witrynami}other{# witryny z zablokowanym dostępem, wraz z powiązanymi witrynami}}</translation>
 <translation id="3268451620468152448">Otwarte karty</translation>
 <translation id="3270041629388773465">Realizuj płatności szybciej dzięki zapisanym kodom CVC</translation>
 <translation id="3270156322180235608">Podróże lotnicze</translation>
@@ -1206,7 +1203,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="3359565626472459400">Małżeństwo</translation>
 <translation id="3360103848165129075">Arkusz modułu do obsługi płatności</translation>
 <translation id="3360313521703038580">Ekologia i ochrona środowiska</translation>
-<translation id="3360753465334942529">{NUM_COOKIES,plural, =0{Pliki cookie innych firm, nieblokowane w żadnej witrynie}=1{Pliki cookie innych firm, zablokowane w 1 witrynie}few{Pliki cookie innych firm, zablokowane w # witrynach}many{Pliki cookie innych firm, zablokowane w # witrynach}other{Pliki cookie innych firm, zablokowane w # witryny}}</translation>
 <translation id="3362968246557010467">Ta zasada została automatycznie skopiowana z wycofanej zasady <ph name="OLD_POLICY" />. Zalecamy używanie nowej zasady.</translation>
 <translation id="3364869320075768271"><ph name="URL" /> chce używać Twojego urządzenia i danych rzeczywistości wirtualnej</translation>
 <translation id="3366477098757335611">Wyświetl karty</translation>
@@ -1610,7 +1606,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="4151403195736952345">Użyj globalnego ustawienia domyślnego (Wykrywaj)</translation>
 <translation id="4152318981910038897">{COUNT,plural, =1{Strona 1}few{Strona {COUNT}}many{Strona {COUNT}}other{Strona {COUNT}}}</translation>
 <translation id="4154277373259957087">Teraz przed wypełnieniem form płatności Chrome będzie weryfikować Twoją tożsamość. Aby to zmienić, w dowolnym momencie otwórz <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" />.</translation>
-<translation id="4159149286839604525">Oznacza to, że większość funkcji witryny powinna działać, ale masz słabszą ochronę</translation>
 <translation id="4159784952369912983">Purpurowy</translation>
 <translation id="4165986682804962316">Ustawienia witryn</translation>
 <translation id="4169535189173047238">Nie zezwalaj</translation>
@@ -2033,7 +2028,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="4983145717627482381">Wycieczki z przewodnikiem</translation>
 <translation id="498323057460789381">Błąd weryfikacji schematu: <ph name="ERROR" /></translation>
 <translation id="4984088539114770594">Korzystać z mikrofonu?</translation>
-<translation id="4985206706500620449">W przypadku tej witryny zezwalasz na pliki cookie innych firm</translation>
 <translation id="4989163558385430922">Pokaż wszystko</translation>
 <translation id="4989542687859782284">Niedostępne</translation>
 <translation id="4989809363548539747">Ta wtyczka nie jest obsługiwana</translation>
@@ -2249,7 +2243,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="5414511064953050917">Przenieś mimo to</translation>
 <translation id="5421136146218899937">Wyczyść dane przeglądania...</translation>
 <translation id="5423269318075950257">Śledź cenę</translation>
-<translation id="5425241977284572032">{NUM_COOKIES,plural, =0{Brak witryn z zablokowanym dostępem}=1{1 witryna z zablokowanym dostępem}few{# witryny z zablokowanym dostępem}many{# witryn z zablokowanym dostępem}other{# witryny z zablokowanym dostępem}}</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> chce wysyłać Ci powiadomienia</translation>
 <translation id="5430298929874300616">Usuń zakładkę</translation>
 <translation id="5434798570900738152">Chromium <ph name="BEGIN_EMPHASIS" />nie zapisuje<ph name="END_EMPHASIS" />:
@@ -2807,7 +2800,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="6521745193039995384">Nieaktywna</translation>
 <translation id="6524830701589638230">Przycisk Zarządzaj ustawieniami ułatwień dostępu; aktywuj, aby spersonalizować narzędzia ułatwień dostępu w ustawieniach Chrome</translation>
 <translation id="6529173248185917884">Rolka 7</translation>
-<translation id="652937045869844725">Spróbuj zezwolić na pliki cookie innych firm – oznacza to słabszą ochronę, ale jest większa szansa na to, że funkcje witryny będą działać</translation>
 <translation id="6529602333819889595">&amp;Ponów usunięcie</translation>
 <translation id="6535751101619004418">Waluty i wymiana walut</translation>
 <translation id="6536221421038631327">Usunięcie subskrypcji Passpoint z urządzenia <ph name="DEVICE_TYPE" /> spowoduje też usunięcie powiązanych sieci. Aby wprowadzić zmiany w abonamencie, skontaktuj się z: „<ph name="FRIENDLY_NAME" />”. <ph name="LEARN_MORE" /></translation>
@@ -3163,7 +3155,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="7221855153210829124">Pokazywanie powiadomień</translation>
 <translation id="7221857374443660083">Bank chce potwierdzić Twoją tożsamość</translation>
 <translation id="722454870747268814">Nowa karta incognito</translation>
-<translation id="7226276626900992675">Zezwalasz tej witrynie na korzystanie z plików cookie innych firm. Oznacza to, że większość jej funkcji powinna działać, ale masz słabszą ochronę.</translation>
 <translation id="7227293336683593977">Historia cen</translation>
 <translation id="7227747683324411744">Osoby przeprowadzające atak na stronę, którą chcesz odwiedzić, mogą podstępem nakłonić Cię do zainstalowania szkodliwego oprogramowania wpływającego na sposób korzystania z internetu. Na przykład może ono zmienić stronę główną lub wyświetlać na odwiedzanych stronach dodatkowe reklamy.</translation>
 <translation id="7233592378249864828">Drukuj arkusz potwierdzenia</translation>
@@ -3782,7 +3773,6 @@ Dodatkowe informacje:
 <translation id="8398335999901363925">Formy płatności dostępne do uzupełnienia kliknięciem są otwarte na całą wysokość.</translation>
 <translation id="8398446215576328011">Przywróć obowiązujące zasady</translation>
 <translation id="8398790343843005537">Znajdź swój telefon</translation>
-<translation id="8401772916834964810">{COUNT,plural, =0{Chrome ponownie zablokuje pliki cookie dzisiaj}=1{Chrome ponownie zablokuje pliki cookie jutro}few{Chrome ponownie zablokuje pliki cookie za # dni}many{Chrome ponownie zablokuje pliki cookie za # dni}other{Chrome ponownie zablokuje pliki cookie za # dnia}}</translation>
 <translation id="8403506619177967839">Fan Fiction</translation>
 <translation id="8405579342203358118">Zarządzaj w ustawieniach Chrome danymi, które mają być synchronizowane</translation>
 <translation id="8406071103346257942">zaprzestać używania blokady ekranu do wypełniania haseł</translation>

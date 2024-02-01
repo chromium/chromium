@@ -883,7 +883,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2674804415323431591">Ocultar sugerencias</translation>
 <translation id="2677696497921480781">Cumpleaños y onomásticos</translation>
 <translation id="2677748264148917807">Abandonar</translation>
-<translation id="2678468611080193228">Intenta permitir temporalmente cookies de terceros, lo que implica menos protección, pero aumenta las probabilidades de que las funciones del sitio puedan usarse</translation>
 <translation id="2686919536310834199">Envía comentarios sobre Ayúdame a escribir.</translation>
 <translation id="2687555958734450033">Ajustar tamaño</translation>
 <translation id="2688186765492306706">500 × 760 mm</translation>
@@ -1102,7 +1101,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="3157931365184549694">Restaurar</translation>
 <translation id="3158539265159265653">Disco</translation>
 <translation id="3162559335345991374">Es posible que la red Wi-Fi que estás usando requiera que visites la página de acceso.</translation>
-<translation id="3166370127092388416">{NUM_COOKIES,plural, =0{Cookies de terceros, no se permiten sitios}=1{Cookies de terceros, se permite 1 sitio}other{Cookies de terceros, se permiten # sitios}}</translation>
 <translation id="3168744840365648658">Equipos de radio</translation>
 <translation id="3169472444629675720">Discover</translation>
 <translation id="3171703252520926121">Servicios inmobiliarios</translation>
@@ -1162,7 +1160,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="3262698603497362968">Opciones de compra</translation>
 <translation id="3266367459139339908">Chrome lanzará nuevas formas de limitar lo que los sitios pueden aprender sobre ti cuando te muestran anuncios personalizados, por ejemplo:</translation>
 <translation id="3266793032086590337">Valor (en conflicto)</translation>
-<translation id="3266972086368072861">{NUM_COOKIES,plural, =0{No se bloqueó ningún sitio, incluidos los sitios relacionados}=1{Se bloqueó 1 sitio, incluidos los sitios relacionados}other{Se bloquearon # sitios, incluidos los sitios relacionados}}</translation>
 <translation id="3268451620468152448">Pestañas abiertas</translation>
 <translation id="3270041629388773465">Guarda tus CVCs para finalizar tus compras más rápido</translation>
 <translation id="3270156322180235608">Vuelos</translation>
@@ -1207,7 +1204,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="3359565626472459400">Matrimonio</translation>
 <translation id="3360103848165129075">Hoja del controlador de pagos</translation>
 <translation id="3360313521703038580">Ecología y medioambiente</translation>
-<translation id="3360753465334942529">{NUM_COOKIES,plural, =0{Cookies de terceros, no hay sitios bloqueados}=1{Cookies de terceros, 1 sitio bloqueado}other{Cookies de terceros, # sitios bloqueados}}</translation>
 <translation id="3362968246557010467">Se copió esta política de forma automática a partir de la política obsoleta <ph name="OLD_POLICY" />. En su lugar, debes usar esta política.</translation>
 <translation id="3364869320075768271"><ph name="URL" /> quiere usar tus datos y dispositivos de realidad virtual</translation>
 <translation id="3366477098757335611">Ver tarjetas</translation>
@@ -1611,7 +1607,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="4151403195736952345">Utilizar opción predeterminada global (detectar)</translation>
 <translation id="4152318981910038897">{COUNT,plural, =1{Página 1}other{Página {COUNT}}}</translation>
 <translation id="4154277373259957087">Chrome ahora verificará tu identidad antes de completar las formas de pago. Puedes actualizar esta información en cualquier momento en <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" />.</translation>
-<translation id="4159149286839604525">Esto significa que la mayoría de las funciones deberían poder usarse, pero tendrás menos protección</translation>
 <translation id="4159784952369912983">Púrpura</translation>
 <translation id="4165986682804962316">Configuración de sitios</translation>
 <translation id="4169535189173047238">No permitir</translation>
@@ -2034,7 +2029,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="4983145717627482381">Visitas y vacaciones guiadas</translation>
 <translation id="498323057460789381">Error de validación del esquema: <ph name="ERROR" /></translation>
 <translation id="4984088539114770594">¿Permitir el uso del micrófono?</translation>
-<translation id="4985206706500620449">Permitiste las cookies de terceros para este sitio</translation>
 <translation id="4989163558385430922">Ver todo</translation>
 <translation id="4989542687859782284">No disponible</translation>
 <translation id="4989809363548539747">Este complemento no es compatible</translation>
@@ -2250,7 +2244,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="5414511064953050917">Mover de todos modos</translation>
 <translation id="5421136146218899937">Borrar datos de navegación...</translation>
 <translation id="5423269318075950257">Seguimiento de precios</translation>
-<translation id="5425241977284572032">{NUM_COOKIES,plural, =0{No se bloqueó ningún sitio}=1{Se bloqueó 1 sitio}other{Se bloquearon # sitios}}</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> quiere enviarte notificaciones</translation>
 <translation id="5430298929874300616">Eliminar marcador</translation>
 <translation id="5434798570900738152">Chromium <ph name="BEGIN_EMPHASIS" />no guardará<ph name="END_EMPHASIS" /> la siguiente información:
@@ -2808,7 +2801,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="6521745193039995384">Inactiva</translation>
 <translation id="6524830701589638230">Botón Administrar la configuración de accesibilidad: actívalo para personalizar tus herramientas de accesibilidad en la configuración de Chrome</translation>
 <translation id="6529173248185917884">Séptimo rollo</translation>
-<translation id="652937045869844725">Intenta permitir cookies de terceros, lo que implica menos protección, pero aumenta las probabilidades de que las funciones del sitio puedan usarse</translation>
 <translation id="6529602333819889595">&amp;Rehacer Eliminar</translation>
 <translation id="6535751101619004418">Monedas y mercado de divisas</translation>
 <translation id="6536221421038631327">Si quitas una suscripción a Passpoint de tu <ph name="DEVICE_TYPE" />, también se quitarán las redes asociadas. Comunícate con "<ph name="FRIENDLY_NAME" />" para hacer cambios en tu plan de suscripción. <ph name="LEARN_MORE" /></translation>
@@ -3164,7 +3156,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="7221855153210829124">Mostrar notificaciones</translation>
 <translation id="7221857374443660083">El banco quiere confirmar tu identidad</translation>
 <translation id="722454870747268814">Nueva pestaña de incógnito</translation>
-<translation id="7226276626900992675">Permitiste que este sitio usara cookies de terceros. Esto significa que la mayoría de las funciones deberían poder usarse, pero tendrás menos protección.</translation>
 <translation id="7227293336683593977">Historial de precios</translation>
 <translation id="7227747683324411744">Los atacantes del sitio que intentas visitar podrían engañarte para que instales software dañino que afecta la manera en la que navegas. Por ejemplo, pueden cambiar la página principal o mostrarte anuncios adicionales en los sitios que visitas.</translation>
 <translation id="7233592378249864828">Imprimir hoja de confirmación</translation>
@@ -3783,7 +3774,6 @@ Detalles adicionales:
 <translation id="8398335999901363925">La lista de formas de pago disponibles que se debe tocar para completar está totalmente abierta.</translation>
 <translation id="8398446215576328011">Revertir las políticas aplicadas</translation>
 <translation id="8398790343843005537">Buscar teléfono</translation>
-<translation id="8401772916834964810">{COUNT,plural, =0{Chrome volverá a bloquear las cookies hoy}=1{Chrome volverá a bloquear las cookies mañana}other{Faltan # días para que Chrome vuelva a bloquear las cookies}}</translation>
 <translation id="8403506619177967839">Fan Fiction</translation>
 <translation id="8405579342203358118">En la configuración de Chrome, administra qué información sincronizar</translation>
 <translation id="8406071103346257942">dejar de usar el bloqueo de pantalla para completar contraseñas.</translation>

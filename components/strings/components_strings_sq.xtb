@@ -883,7 +883,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="2674804415323431591">Fshih sugjerimet</translation>
 <translation id="2677696497921480781">Ditëlindjet dhe ditët e emrave</translation>
 <translation id="2677748264148917807">Largohu</translation>
-<translation id="2678468611080193228">Provo të lejosh përkohësisht kukit e palëve të treta, që do të thotë më pak mbrojtje, por veçoritë e sajteve kanë më shumë mundësi të punojnë</translation>
 <translation id="2686919536310834199">Dërgo komente për "Më ndihmo të shkruaj".</translation>
 <translation id="2687555958734450033">Përshtatja më e mirë</translation>
 <translation id="2688186765492306706">500 x 760 mm</translation>
@@ -1102,7 +1101,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="3157931365184549694">Restauro</translation>
 <translation id="3158539265159265653">Disku</translation>
 <translation id="3162559335345991374">Lidhja Wi-Fi që po përdor mund të të kërkojë që të vizitosh faqen e saj të identifikimit.</translation>
-<translation id="3166370127092388416">{NUM_COOKIES,plural, =0{Kukit e palëve të treta, nuk lejohet asnjë sajt}=1{Kukit e palëve të treta, lejohet 1 sajt}other{Kukit e palëve të treta, lejohen # sajte}}</translation>
 <translation id="3168744840365648658">Pajisje radiofonike</translation>
 <translation id="3169472444629675720">Discover</translation>
 <translation id="3171703252520926121">Shërbime për pasuri të patundshme</translation>
@@ -1161,7 +1159,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="3262698603497362968">Opsionet e blerjes</translation>
 <translation id="3266367459139339908">Ne po prezantojmë mënyra të reja për të kufizuar se çfarë mund të mësojnë sajtet rreth teje kur të shfaqin reklama të personalizuara, për shembull:</translation>
 <translation id="3266793032086590337">Vlera (konflikt)</translation>
-<translation id="3266972086368072861">{NUM_COOKIES,plural, =0{Nuk është bllokuar asnjë sajt, duke përfshirë sajtet e lidhura}=1{1 sajt i bllokuar, duke përfshirë sajtet e lidhura}other{# sajte të lidhura, duke përfshirë sajtet e lidhura}}</translation>
 <translation id="3268451620468152448">Hap skedat</translation>
 <translation id="3270041629388773465">Përfundo më shpejt blerjet kur kodet CVC janë të ruajtura</translation>
 <translation id="3270156322180235608">Udhëtimet ajrore</translation>
@@ -1206,7 +1203,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="3359565626472459400">Martesa</translation>
 <translation id="3360103848165129075">Fleta e përpunuesit të pagesës</translation>
 <translation id="3360313521703038580">Ekologjia dhe mjedisi</translation>
-<translation id="3360753465334942529">{NUM_COOKIES,plural, =0{Kukit e palëve të treta, asnjë sajt i bllokuar}=1{Kukit e palëve të treta, 1 sajt i bllokuar}other{Kukit e palëve të treta, # sajte të bllokuara}}</translation>
 <translation id="3362968246557010467">Kjo politikë është kopjuar automatikisht nga politika e vjetruar <ph name="OLD_POLICY" />. Duhet të përdorësh këtë politikë më mirë.</translation>
 <translation id="3364869320075768271"><ph name="URL" /> kërkon të përdorë pajisjen dhe të dhënat e tua të realitetit virtual</translation>
 <translation id="3366477098757335611">Shiko kartat</translation>
@@ -1610,7 +1606,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="4151403195736952345">Përdor parazgjedhjen globale (zbulo)</translation>
 <translation id="4152318981910038897">{COUNT,plural, =1{Faqja 1}other{Faqja {COUNT}}}</translation>
 <translation id="4154277373259957087">Chrome tani do të verifikojë që je ti para se të plotësojë mënyrat e pagesës. Mund ta përditësosh këtë në çdo kohë te <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" />.</translation>
-<translation id="4159149286839604525">Kjo do të thotë që shumica e veçorive të sajtit do të punojnë, por do të kesh më pak mbrojtje</translation>
 <translation id="4159784952369912983">Vjollcë</translation>
 <translation id="4165986682804962316">Cilësimet e sajtit</translation>
 <translation id="4169535189173047238">Mos lejo</translation>
@@ -2033,7 +2028,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="4983145717627482381">Ture me udhërrëfyes dhe pushime me shoqërues</translation>
 <translation id="498323057460789381">Gabim gjatë verifikimit të skemës: <ph name="ERROR" /></translation>
 <translation id="4984088539114770594">Të përdoret mikrofoni?</translation>
-<translation id="4985206706500620449">Ke lejuar kukit e palëve të treta për këtë sajt</translation>
 <translation id="4989163558385430922">Shiko të gjitha</translation>
 <translation id="4989542687859782284">Nuk ofrohen</translation>
 <translation id="4989809363548539747">Ky përbërës shtesë nuk mbështetet</translation>
@@ -2249,7 +2243,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="5414511064953050917">Zhvendos gjithsesi</translation>
 <translation id="5421136146218899937">Pastro të dhënat e shfletimit...</translation>
 <translation id="5423269318075950257">Monitoro çmimin</translation>
-<translation id="5425241977284572032">{NUM_COOKIES,plural, =0{Nuk është bllokuar asnjë sajt}=1{1 sajti i bllokuar}other{# sajte të bllokuara}}</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> dëshiron të të dërgojë njoftime</translation>
 <translation id="5430298929874300616">Hiqe faqeshënuesin</translation>
 <translation id="5434798570900738152">Chromium <ph name="BEGIN_EMPHASIS" />nuk do të ruajë<ph name="END_EMPHASIS" />:
@@ -2806,7 +2799,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="6521745193039995384">Jo aktiv</translation>
 <translation id="6524830701589638230">Butoni "Menaxho cilësimet e qasshmërisë". Aktivizoje për të personalizuar veglat e qasshmërisë te cilësimet e Chrome</translation>
 <translation id="6529173248185917884">Ruli i shtatë</translation>
-<translation id="652937045869844725">Provo të lejosh kukit e palëve të treta, që do të thotë më pak mbrojtje, por veçoritë e sajteve kanë më shumë mundësi të punojnë</translation>
 <translation id="6529602333819889595">&amp;Bëje përsëri fshirjen</translation>
 <translation id="6535751101619004418">Monedhat dhe këmbimi valutor</translation>
 <translation id="6536221421038631327">Heqja e një abonimi të Passpoint nga pajisja jote <ph name="DEVICE_TYPE" /> do t'i heqë rrjetet e lidhura. Kontakto me "<ph name="FRIENDLY_NAME" />" për të bërë ndryshime në planin tënd të abonimit. <ph name="LEARN_MORE" /></translation>
@@ -3162,7 +3154,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="7221855153210829124">Shfaq njoftimet</translation>
 <translation id="7221857374443660083">Banka jote dëshiron të sigurohet që je ti</translation>
 <translation id="722454870747268814">Skedë e re "e fshehtë"</translation>
-<translation id="7226276626900992675">E ke lejuar këtë sajt që të përdorë kuki të palëve të treta. Kjo do të thotë që shumica e veçorive të sajtit do të punojnë, por do të kesh më pak mbrojtje.</translation>
 <translation id="7227293336683593977">Historiku i çmimeve</translation>
 <translation id="7227747683324411744">Sulmuesit në sajtin që po përpiqesh të vizitosh mund të të mashtrojnë që të instalosh një softuer të dëmshëm që ndikon në mënyrën se si ti shfleton, p.sh. duke ndryshuar faqen kryesore ose duke të shfaqur reklama shtesë në sajtet që ti viziton.</translation>
 <translation id="7233592378249864828">Printo fletën e konfirmimit</translation>
@@ -3781,7 +3772,6 @@ Detaje shtesë:
 <translation id="8398335999901363925">Mënyrat e pagesës të disponueshme për t'u plotësuar me prekje janë hapur në lartësi të plotë.</translation>
 <translation id="8398446215576328011">Rivendos politikat e zbatuara</translation>
 <translation id="8398790343843005537">Gjej telefonin tënd</translation>
-<translation id="8401772916834964810">{COUNT,plural, =0{Chrome do t'i bllokojë kukit përsëri sot}=1{Chrome do t'i bllokojë kukit përsëri nesër}other{# ditë derisa Chrome t'i bllokojë përsëri kukit}}</translation>
 <translation id="8403506619177967839">Krijime nga admiruesit</translation>
 <translation id="8405579342203358118">Menaxho se çfarë informacionesh sinkronizon ti te cilësimet e Chrome</translation>
 <translation id="8406071103346257942">të ndalojë përdorimin e kyçjes së ekranit për plotësimin e fjalëkalimeve</translation>

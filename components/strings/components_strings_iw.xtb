@@ -883,7 +883,6 @@
 <translation id="2674804415323431591">הסתרת ההצעות</translation>
 <translation id="2677696497921480781">ימי הולדת</translation>
 <translation id="2677748264148917807">יציאה</translation>
-<translation id="2678468611080193228">‏אפשר להפעיל קובצי cookie של צד שלישי באופן זמני. במצב כזה יש פחות הגנה, אבל סביר יותר שהתכונות באתר יפעלו</translation>
 <translation id="2686919536310834199">ניתן לשלוח משוב בנושא העזרה בכתיבה.</translation>
 <translation id="2687555958734450033">ההתאמה הטובה ביותר</translation>
 <translation id="2688186765492306706">‏500x760 מ"מ</translation>
@@ -1102,7 +1101,6 @@
 <translation id="3157931365184549694">שחזור</translation>
 <translation id="3158539265159265653">דיסק</translation>
 <translation id="3162559335345991374">‏ייתכן שרשת ה-Wi-Fi דורשת כניסה לדף ההתחברות שלה.</translation>
-<translation id="3166370127092388416">{NUM_COOKIES,plural, =0{‏קובצי cookie של צד שלישי, אין אתרים עם הרשאה}=1{‏קובצי cookie של צד שלישי, יש אתר אחד עם השראה}one{‏קובצי cookie של צד שלישי, יש # אתרים עם הרשאה}two{‏קובצי cookie של צד שלישי, יש # אתרים עם הרשאה}other{‏קובצי cookie של צד שלישי, יש # אתרים עם הרשאה}}</translation>
 <translation id="3168744840365648658">ציוד רדיו</translation>
 <translation id="3169472444629675720">Discover</translation>
 <translation id="3171703252520926121">שירותי נדל"ן</translation>
@@ -1161,7 +1159,6 @@
 <translation id="3262698603497362968">אפשרויות הקנייה</translation>
 <translation id="3266367459139339908">אנחנו משיקים דרכים חדשות להגבלת הפרטים שאתרים יוכלו לגלות עליך כשהם יציגו לך מודעות בהתאמה אישית. לדוגמה:</translation>
 <translation id="3266793032086590337">ערך (התנגשות)</translation>
-<translation id="3266972086368072861">{NUM_COOKIES,plural, =0{אין אתרים חסומים, כולל אתרים קשורים}=1{אתר אחד נחסם, כולל אתרים קשורים}one{# אתרים חסומים, כולל אתרים קשורים}two{# אתרים חסומים, כולל אתרים קשורים}other{# אתרים חסומים, כולל אתרים קשורים}}</translation>
 <translation id="3268451620468152448">כרטיסיות פתוחות</translation>
 <translation id="3270041629388773465">‏התשלום מהיר יותר כשקודי האימות (CVC) שמורים</translation>
 <translation id="3270156322180235608">טיסות</translation>
@@ -1206,7 +1203,6 @@
 <translation id="3359565626472459400">נישואים</translation>
 <translation id="3360103848165129075">גיליון פרטי התשלום</translation>
 <translation id="3360313521703038580">אקולוגיה וסביבה</translation>
-<translation id="3360753465334942529">{NUM_COOKIES,plural, =0{‏קובצי cookie של צד שלישי, אין אתרים חסומים}=1{‏קובצי cookie של צד שלישי, אתר אחד נחסם}one{‏קובצי cookie של צד שלישי, # אתרים נחסמו}two{‏קובצי cookie של צד שלישי, # אתרים נחסמו}other{‏קובצי cookie של צד שלישי, # אתרים נחסמו}}</translation>
 <translation id="3362968246557010467">המדיניות הזו הועתקה באופן אוטומטי ממדיניות <ph name="OLD_POLICY" /> שהוצאה משימוש. צריך להשתמש במדיניות הזו במקומה.</translation>
 <translation id="3364869320075768271"><ph name="URL" /> רוצה להשתמש במכשיר המציאות המדומה ובנתוני המציאות המדומה שלך</translation>
 <translation id="3366477098757335611">הצגת כרטיסים</translation>
@@ -1610,7 +1606,6 @@
 <translation id="4151403195736952345">שימוש בברירת מחדל גלובלית (זיהוי)</translation>
 <translation id="4152318981910038897">{COUNT,plural, =1{דף 1}one{דף {COUNT}}two{דף {COUNT}}other{דף {COUNT}}}</translation>
 <translation id="4154277373259957087">‏Chrome יאמת עכשיו את הזהות שלך לפני מילוי אמצעי התשלום. תמיד אפשר לעדכן את האפשרות הזו ב<ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" />.</translation>
-<translation id="4159149286839604525">המשמעות היא שרוב התכונות באתר אמורות לפעול, אבל יש לך פחות הגנה</translation>
 <translation id="4159784952369912983">סגול</translation>
 <translation id="4165986682804962316">הגדרות לאתרים</translation>
 <translation id="4169535189173047238">לא לאפשר</translation>
@@ -2037,7 +2032,6 @@ Del</translation>
 <translation id="4983145717627482381">סיורים וטיולים מודרכים</translation>
 <translation id="498323057460789381">שגיאה באימות סכימה: <ph name="ERROR" /></translation>
 <translation id="4984088539114770594">להשתמש במיקרופון?</translation>
-<translation id="4985206706500620449">‏אישרת את השימוש בקובצי Cookie של צד שלישי באתר הזה</translation>
 <translation id="4989163558385430922">אני רוצה לראות הכול</translation>
 <translation id="4989542687859782284">לא זמין</translation>
 <translation id="4989809363548539747">הפלאגין הזה אינו נתמך</translation>
@@ -2253,7 +2247,6 @@ Del</translation>
 <translation id="5414511064953050917">אעביר בכל זאת</translation>
 <translation id="5421136146218899937">ניקוי נתוני גלישה...</translation>
 <translation id="5423269318075950257">מעקב אחר המחיר</translation>
-<translation id="5425241977284572032">{NUM_COOKIES,plural, =0{אין אתרים חסומים}=1{אתר אחד נחסם}one{# אתרים נחסמו}two{# אתרים נחסמו}other{# אתרים נחסמו}}</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> רוצה לשלוח לך הודעות</translation>
 <translation id="5430298929874300616">הסרת סימנייה</translation>
 <translation id="5434798570900738152">‏<ph name="BEGIN_EMPHASIS" />לא יישמרו<ph name="END_EMPHASIS" /> ב-Chromium הנתונים הבאים:
@@ -2812,7 +2805,6 @@ Del</translation>
 <translation id="6521745193039995384">לא פעילה</translation>
 <translation id="6524830701589638230">‏הלחצן לניהול ההגדרות בנושא נגישות, מפעילים אותו כדי להתאים אישית את כלי הנגישות בהגדרות Chrome</translation>
 <translation id="6529173248185917884">הגליל השביעי</translation>
-<translation id="652937045869844725">‏אפשר להפעיל קובצי cookie של צד שלישי. במצב כזה יש פחות הגנה, אבל סביר יותר שהתכונות באתר יפעלו</translation>
 <translation id="6529602333819889595">&amp;ביצוע מחדש של מחיקה</translation>
 <translation id="6535751101619004418">מטבעות והמרת מטבע זר</translation>
 <translation id="6536221421038631327">‏הסרת מינוי Passpoint ממכשיר <ph name="DEVICE_TYPE" /> תגרום להסרת הרשתות המשויכות. צריך ליצור קשר עם '<ph name="FRIENDLY_NAME" />' כדי לערוך שינויים בתוכנית המינוי שלך. <ph name="LEARN_MORE" /></translation>
@@ -3168,7 +3160,6 @@ Del</translation>
 <translation id="7221855153210829124">להציג הודעות</translation>
 <translation id="7221857374443660083">הבנק שלך מבקש לאמת את זהותך</translation>
 <translation id="722454870747268814">כרטיסייה פרטית חדשה</translation>
-<translation id="7226276626900992675">‏נתת לאתר הזה הרשאה להשתמש בקובצי cookie של צד שלישי. המשמעות היא שרוב התכונות באתרים אמורות לפעול, אבל יש לך פחות הגנה.</translation>
 <translation id="7227293336683593977">היסטוריית המחירים</translation>
 <translation id="7227747683324411744">תוקפים באתר שבו ניסית לבקר עשויים להשתמש בדרכי מרמה כדי לגרום לך להתקין תוכנות מזיקות שמשפיעות על אופן הגלישה שלך, למשל על ידי החלפת דף הבית או הצגת מודעות נוספות באתרים שמבקרים בהם.</translation>
 <translation id="7233592378249864828">הדפסה של גיליון אישור</translation>
@@ -3787,7 +3778,6 @@ Del</translation>
 <translation id="8398335999901363925">רשימת אמצעי התשלום הזמינים למילוי במגע נפתחה בגובה המלא של המסך.</translation>
 <translation id="8398446215576328011">ביטול כללי המדיניות שהוחלו</translation>
 <translation id="8398790343843005537">אתר את הטלפון שלך</translation>
-<translation id="8401772916834964810">{COUNT,plural, =0{‏קובצי cookie יחסמו היום שוב ב-Chrome}=1{‏קובצי cookie יחסמו מחר שוב ב-Chrome}one{‏יש עוד # ימים עד שקובצי cookie יחסמו שוב ב-Chrome}two{‏יש עוד # ימים עד שקובצי cookie יחסמו שוב ב-Chrome}other{‏יש עוד # ימים עד שקובצי cookie יחסמו שוב ב-Chrome}}</translation>
 <translation id="8403506619177967839">ספרות חובבים</translation>
 <translation id="8405579342203358118">‏ניתן לקבוע איזה מידע יסונכרן בהגדרות Chrome</translation>
 <translation id="8406071103346257942">להפסיק להשתמש בנעילת המסך למילוי סיסמאות</translation>

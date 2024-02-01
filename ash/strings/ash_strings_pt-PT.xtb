@@ -607,9 +607,11 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="3526440770046466733">Abrir o link num novo separador e permanecer no separador atual</translation>
 <translation id="353086728817903341">Ligado a <ph name="NUM_DEVICES" /> dispositivos</translation>
 <translation id="3533126039236445965">Apps na prateleira</translation>
+<translation id="3537350467437346467">Visualizou</translation>
 <translation id="3539957339480430241">Zona Wi-Fi do <ph name="DEVICE_NAME" /></translation>
 <translation id="3540893133818942399">Ignore a configuração da visualização das fotos e dos conteúdos multimédia recentes do telemóvel</translation>
 <translation id="3542066395059568317">Verá recomendações para poder continuar onde parou. Pode clicar com o botão direito do rato para remover recomendações.</translation>
+<translation id="3547318469722231257">Modificou</translation>
 <translation id="3552189655002856821">O Wi-Fi está desativado</translation>
 <translation id="3554215588514239132">Mostrar ou ocultar o painel Ferramentas para programadores</translation>
 <translation id="3554637740840164787">O item <ph name="ITEM_TITLE" /> foi fixado.</translation>
@@ -701,6 +703,7 @@ Ligue o dispositivo à corrente.</translation>
 <translation id="385300504083504382">Início</translation>
 <translation id="3859364108019690">Não é possível fazer stream de apps</translation>
 <translation id="3861651314799684201">Prima Enter para gravar o ecrã inteiro</translation>
+<translation id="3882323608730650973">Modificado</translation>
 <translation id="3886872229787704059">Aberto hoje</translation>
 <translation id="3891340733213178823">Prima Ctrl+Shift+Q duas vezes para terminar sessão.</translation>
 <translation id="3893630138897523026">ChromeVox (respostas faladas)</translation>
@@ -894,6 +897,7 @@ Algumas funcionalidades são limitadas para aumentar a autonomia da bateria.</tr
 <translation id="4582666543382004902">A zona Wi-Fi foi desativada para usar o Wi-Fi. Para usar a zona Wi-Fi, desative o Wi-Fi.</translation>
 <translation id="4585337515783392668">Parar a transmissão para um recetor desconhecido</translation>
 <translation id="4596144739579517758">O tema escuro está desativado.</translation>
+<translation id="4596442969149038771"><ph name="USER" /> partilhou</translation>
 <translation id="4611292653554630842">Iniciar sessão</translation>
 <translation id="462160925400706389">Dispositivo <ph name="NAME" /> ligado</translation>
 <translation id="4623167406982293031">Validar conta</translation>
@@ -1815,6 +1819,7 @@ Para encerrar o dispositivo, prima sem soltar o botão ligar/desligar novamente 
 <translation id="8314772463905284467">Caps Lock está ativado</translation>
 <translation id="8315514906653279104">A ativar…</translation>
 <translation id="8331351032546853669">Transferência pendente</translation>
+<translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
 <translation id="8345019317483336363">Janela <ph name="WINDOW_TITLE" /> selecionada</translation>
 <translation id="8349826889576450703">iniciador</translation>
@@ -2034,6 +2039,7 @@ Para encerrar o dispositivo, prima sem soltar o botão ligar/desligar novamente 
 <translation id="953431725143473984">Encerrar o dispositivo?</translation>
 <translation id="954052413789300507">Não existe espaço suficiente para o ficheiro <ph name="FILENAME" />. Liberte espaço.</translation>
 <translation id="954520015070501466">30 min</translation>
+<translation id="954786879461589145"><ph name="USER" /> modificou</translation>
 <translation id="974545358917229949">A apresentar <ph name="RESULT_COUNT" /> resultados para <ph name="QUERY" /></translation>
 <translation id="981011780479609956">Sem data de conclusão</translation>
 <translation id="98120814841227350">Ir para o fim do documento</translation>

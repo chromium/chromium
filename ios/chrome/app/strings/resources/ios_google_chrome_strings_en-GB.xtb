@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="en-GB">
+<translation id="1021782183249308751">Press and hold the Chrome icon and click 'Edit Home screen'</translation>
 <translation id="1066101356081285416">Chrome will detect tracking numbers on sites that you visit and show you package updates on the New tab page. The package tracking number and website name will be sent to Google to provide this feature and to improve Google Shopping features for everyone. You can update this at any time in <ph name="BEGIN_LINK" />package tracking settings<ph name="END_LINK" />.</translation>
 <translation id="1085696779717592361">Use Chrome by default</translation>
 <translation id="1105362920864247682">Clear browsing data in Chrome.</translation>
@@ -96,6 +97,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="3345341804167540816">Use Chrome Everywhere</translation>
 <translation id="3360031466389132716">{THRESHOLD,plural, =1{This happens when Chrome isn't used for {THRESHOLD} minute}other{This happens when Chrome isn't used for {THRESHOLD} minutes}}</translation>
 <translation id="3399930248910934354">Open Chrome settings</translation>
+<translation id="344736123700721678">Access Chrome faster from your Home screen dock</translation>
 <translation id="3472587960215700950">Chrome uses Google Maps to give you directions and local info on detected addresses.</translation>
 <translation id="3503014945441706099">Get Enhanced Safe Browsing for this Chrome profile, too</translation>
 <translation id="3522659714780527202">To see your tabs from wherever you use Chrome, turn on sync</translation>
@@ -220,6 +222,7 @@ For more settings that use data to improve your Chrome experience, go to <ph nam
 <translation id="7175129790242719365">Chrome tip: Sign in to Chrome</translation>
 <translation id="7187993566681480880">Keeps you safe on Chrome and may be used to improve your security in other Google apps when you are signed in.</translation>
 <translation id="7200524487407690471">Chrome automatically runs Safety Check every day to keep you safe from data breaches, unsafe websites and more. You can find more about Safety Check in Settings.</translation>
+<translation id="7203324561587388418">Keep up with content and helpful Chrome tips.</translation>
 <translation id="72119412072970160">You can use the passwords that you saved to Google Password Manager in other apps on your iPad.</translation>
 <translation id="723787869754590019">Use Chrome for auto-fill</translation>
 <translation id="7254380941803999489">Set Chrome as default browser</translation>

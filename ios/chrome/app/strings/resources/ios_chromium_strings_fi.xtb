@@ -44,6 +44,7 @@
 <translation id="2168108852149185974">Jokin laajennus kaataa Chromiumin. Poista seuraavat:</translation>
 <translation id="2178608107313874732">Chromium ei voi käyttää kameraa tällä hetkellä.</translation>
 <translation id="2195025571279539885">Haluatko Chromiumin ehdottavan sivuston kielellä <ph name="LANGUAGE_NAME" /> kirjoitettujen sivujen kääntämistä seuraavalla kerralla?</translation>
+<translation id="2216344354848599203">Paina Chromium-kuvaketta pitkään ja klikkaa "Muokkaa aloitusnäyttöä"</translation>
 <translation id="2218146227246548550">Organisaatiosi edellyttää sisäänkirjautumista, jotta voit käyttää Chromiumia. <ph name="BEGIN_LINK" />Lue lisää<ph name="END_LINK" /></translation>
 <translation id="22313767259766852">Tämä osoite on tällä hetkellä tallennettu Chromiumiin. Jos haluat käyttää sitä Googlen tuotteissa, tallenna se Google-tilillesi (<ph name="USER_EMAIL" />).</translation>
 <translation id="2236584955986023187">Tämä tarkoittaa, että Chromium pyytää aina tietokonesivustoa.</translation>
@@ -197,6 +198,7 @@ Huomioitavaa:
 <translation id="632825460376924298">Salli Chromium-kirjautuminen</translation>
 <translation id="6337530241089703714">Valitse, haluatko poistaa Chromium-datasi tältä laitteelta vai säilyttää sen</translation>
 <translation id="6348483005826990855">3. Valitse Chromium</translation>
+<translation id="6383607155624074112">Käytä Chromiumia nopeammin aloitusnäytön alapalkista</translation>
 <translation id="6407399265324739055">Maksutapoja ja osoitteita ei salata. Chromiumin selaushistoriaa ei synkronoida.
 
 Salattua dataa voi lukea vain tunnuslauseen avulla. Tunnuslausetta ei lähetetä Googlelle eikä Google tallenna sitä. Jos unohdat tunnuslauseen tai haluat muuttaa asetusta, <ph name="BEGIN_LINK" />tyhjennä tilin Chromium-data<ph name="END_LINK" />.</translation>

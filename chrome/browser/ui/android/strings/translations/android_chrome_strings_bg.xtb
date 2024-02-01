@@ -334,6 +334,7 @@
 <translation id="2870560284913253234">Сайт</translation>
 <translation id="2871733351037274014">Предварително зареждане на страници</translation>
 <translation id="2876136027428473467"><ph name="CHILD_NAME" /> иска да одобрите този уебсайт:</translation>
+<translation id="2876194821763651818">Пароли, запазени в(ъв) <ph name="USERNAME" />.</translation>
 <translation id="2876628302275096482">Научете повече за това <ph name="BEGIN_LINK" />как Chrome се грижи за поверителността на данните ви<ph name="END_LINK" /></translation>
 <translation id="2888126860611144412">Всичко за Chrome</translation>
 <translation id="2891154217021530873">Спиране на зареждането на страницата</translation>
@@ -672,6 +673,7 @@
 <translation id="4699172675775169585">Кеширани изображения и файлове</translation>
 <translation id="4710167854527459075">Сортиране по най-нови</translation>
 <translation id="4719927025381752090">Предложения за превод</translation>
+<translation id="4720556299488643018">Отписване</translation>
 <translation id="4732120983431207637">Stack Unwinder</translation>
 <translation id="4736934858538408121">Виртуална карта</translation>
 <translation id="473775607612524610">Актуализиране</translation>
@@ -1194,6 +1196,7 @@
 <translation id="7313188324932846546">Докоснете за настройване на синхронизацията</translation>
 <translation id="7324354302972299151">Изпращане на заявка Do Not Track</translation>
 <translation id="7332075081379534664">Входът в профила е успешен</translation>
+<translation id="7333041109965360609">Отписахте се от известията</translation>
 <translation id="7333232495927792353">Включете синхронизирането, за да получавате най-подходящото съдържание от Google</translation>
 <translation id="7339898014177206373">Нов прозорец</translation>
 <translation id="7340958967809483333">Опции за Discover</translation>
@@ -1452,6 +1455,7 @@
 <translation id="8503813439785031346">Потребителско име</translation>
 <translation id="8505766168025405649">Вижте известието за състоянието на изтегляне</translation>
 <translation id="8506357771923193001">Тук ще намерите изтеглянията си</translation>
+<translation id="8512053371384421952">Вече няма да получавате известия от <ph name="DOMAIN" />.</translation>
 <translation id="8514477925623180633">Експортиране на паролите, съхранявани в Chrome</translation>
 <translation id="8516012719330875537">Редактор на изображения</translation>
 <translation id="8523928698583292556">Изтриване на съхранената парола</translation>

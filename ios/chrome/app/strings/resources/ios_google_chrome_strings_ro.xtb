@@ -177,12 +177,15 @@ Numai un utilizator care deține expresia ta de acces îți poate citi datele cr
 <translation id="6054613632208573261">Folosește Chrome în mod prestabilit</translation>
 <translation id="6063091872902370735">Permite conectarea la Chrome</translation>
 <translation id="6110625574506755980">Unele funcții Chrome nu vor mai fi disponibile.</translation>
+<translation id="6132149203299792222">Conectează-te cu Contul Google pentru a sincroniza parolele, marcajele și multe altele.</translation>
 <translation id="6177442314419606057">Caută în Chrome</translation>
 <translation id="6181930887571472871">Treci la Chrome</translation>
 <translation id="6238746320622508509">Permite ca Chrome să blocheze filele incognito.</translation>
 <translation id="6247557882553405851">Manager de parole Google</translation>
+<translation id="6272822675004864999">Pentru a primi notificări de la Chrome, activează notificările din Setările iOS.</translation>
 <translation id="630693926528731525">Parola nu a fost trimisă. Verifică-ți conexiunea la internet și asigură-te că te-ai conectat la Chrome. Apoi încearcă din nou.</translation>
 <translation id="6348855835728304880">Accesează parolele Chrome și alte funcții în alte aplicații de pe acest dispozitiv.</translation>
+<translation id="6389317667633680932">Explorează noile funcții care te ajută să profiți din plin de Chrome.</translation>
 <translation id="6412673304250309937">Verifică adresele URL folosind o listă de site-uri nesigure, stocată în Chrome. Dacă un site încearcă să îți fure parola sau descarci un fișier dăunător, Chrome poate să trimită adresele URL, inclusiv fragmente din conținutul paginilor, către funcția Navigare sigură.</translation>
 <translation id="6427126399757991875">Organizația ta configurează Chrome...</translation>
 <translation id="6484712497741564393">Te-ai conectat ca <ph name="EMAIL" />.
@@ -214,6 +217,7 @@ Pentru mai multe setări care folosesc date pentru a-ți îmbunătăți experien
 <translation id="7124339256045485976">Menține browserul Chrome actualizat</translation>
 <translation id="7161390184744336561">Google Chrome este învechit</translation>
 <translation id="7165736900384873061">Începe să folosești scanerul QR din Google Chrome</translation>
+<translation id="7175129790242719365">Sfat pentru Chrome: conectează-te la Chrome</translation>
 <translation id="7187993566681480880">Te protejează în Chrome și poate fi folosită pentru a spori securitatea în alte aplicații Google dacă te-ai conectat.</translation>
 <translation id="7200524487407690471">Chrome rulează automat Verificarea de siguranță în fiecare zi pentru a te proteja împotriva încălcării securității datelor, a site-urilor nesigure și nu numai. Poți afla mai multe despre Verificarea de siguranță în Setări.</translation>
 <translation id="72119412072970160">Poți folosi parolele salvate în Managerul de parole Google în alte aplicații de pe iPad.</translation>
@@ -244,6 +248,8 @@ Pentru mai multe setări care folosesc date pentru a-ți îmbunătăți experien
 <translation id="7897703007638178753">Vezi filele recente din Chrome</translation>
 <translation id="7925119591961387184">Selectează Chrome.</translation>
 <translation id="7933491483529363150">Deschide cea mai recentă filă în Chrome.</translation>
+<translation id="7948283758957877064">Ce e nou în Chrome</translation>
+<translation id="8006014511203279255">Folosește Chrome oricând atingi linkuri în mesaje sau alte aplicații.</translation>
 <translation id="8022947259858476807">Folosește Chrome în mod prestabilit ca să deschizi linkuri, să cauți din widgeturi și să completezi automat parolele în alte aplicații</translation>
 <translation id="804638182476029347">Permite notificările Chrome ca să primești alerte privind scăderea prețurilor</translation>
 <translation id="8065292699993359127">Deschide adrese URL în Chrome în modul incognito</translation>
@@ -280,6 +286,7 @@ Datele au fost criptate cu expresia de acces pentru <ph name="TIME" />. Introdu-
 <translation id="8765470054473112089">Când introduci text în bara de adrese sau în caseta de căutare, Chrome trimite ceea ce introduci la motorul de căutare prestabilit, pentru a primi sugestii mai bune. Această opțiune este dezactivată în modul incognito.</translation>
 <translation id="8772179140489533211">Afișează solicitări pentru conectarea la Chrome.</translation>
 <translation id="8788269841521769222">Nu va trebui să reții această parolă. Ea se va salva în Managerul de parole Google pentru <ph name="EMAIL" /></translation>
+<translation id="878917453316810648">Sfat pentru Chrome: folosește Chrome în mod prestabilit</translation>
 <translation id="8808828119384186784">Setări Chrome</translation>
 <translation id="8855781063981781621">Pentru a dezactiva modul Blocare în Chrome, dezactivează-l pe iPad.</translation>
 <translation id="8856877214925961642">Criptarea cu expresie de acces nu include metodele de plată și adresele.

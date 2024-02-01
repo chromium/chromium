@@ -884,7 +884,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="2674804415323431591">Skrivanje predlogov</translation>
 <translation id="2677696497921480781">Rojstni dnevi in godovi</translation>
 <translation id="2677748264148917807">Zapusti</translation>
-<translation id="2678468611080193228">Poskusite začasno omogočiti piškotke tretjih oseb, kar pomeni manj zaščite, vendar je večja verjetnost, da bodo funkcije spletnega mesta delovale</translation>
 <translation id="2686919536310834199">Pošlji povratne informacije za funkcijo »Pomoč pri pisanju«.</translation>
 <translation id="2687555958734450033">Najustreznejše</translation>
 <translation id="2688186765492306706">500 x 760 mm</translation>
@@ -1104,7 +1103,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="3157931365184549694">Obnovi</translation>
 <translation id="3158539265159265653">Disk</translation>
 <translation id="3162559335345991374">Omrežje Wi-Fi, ki ga uporabljate, morda zahteva, da obiščete stran za prijavo.</translation>
-<translation id="3166370127092388416">{NUM_COOKIES,plural, =0{Piškotki tretjih oseb, nobeno spletno mesto ni dovoljeno}=1{Piškotki tretjih oseb, 1 dovoljeno spletno mesto}one{Piškotki tretjih oseb, # dovoljeno spletno mesto}two{Piškotki tretjih oseb, # dovoljeni spletni mesti}few{Piškotki tretjih oseb, # dovoljena spletna mesta}other{Piškotki tretjih oseb, # dovoljenih spletnih mest}}</translation>
 <translation id="3168744840365648658">Radio oprema</translation>
 <translation id="3169472444629675720">Discover</translation>
 <translation id="3171703252520926121">Nepremičninske storitve</translation>
@@ -1163,7 +1161,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="3262698603497362968">Možnosti nakupa</translation>
 <translation id="3266367459139339908">Uvajamo nove načine, s katerimi lahko omejite, kaj lahko spletna mesta izvejo o vas, ko vam prikažejo osebno prilagojene oglase, na primer:</translation>
 <translation id="3266793032086590337">Vrednost (v sporu)</translation>
-<translation id="3266972086368072861">{NUM_COOKIES,plural, =0{Ni blokiranih spletnih mest, vključno s povezanimi spletnimi mesti}=1{1 blokirano spletno mesto, vključno s povezanimi spletnimi mesti}one{# blokirano spletno mesto, vključno s povezanimi spletnimi mesti}two{# blokirani spletni mesti, vključno s povezanimi spletnimi mesti}few{# blokirana spletna mesta, vključno s povezanimi spletnimi mesti}other{# blokiranih spletnih mest, vključno s povezanimi spletnimi mesti}}</translation>
 <translation id="3268451620468152448">Odprti zavihki</translation>
 <translation id="3270041629388773465">Hitrejši zaključek nakupov, če so kode CVC shranjene</translation>
 <translation id="3270156322180235608">Letalska potovanja</translation>
@@ -1208,7 +1205,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="3359565626472459400">Zakon</translation>
 <translation id="3360103848165129075">List rutine za obravnavo plačil</translation>
 <translation id="3360313521703038580">Ekologija in okolje</translation>
-<translation id="3360753465334942529">{NUM_COOKIES,plural, =0{Piškotki tretjih oseb, ni blokiranih spletnih mest}=1{Piškotki tretjih oseb, 1 blokirano spletno mesto}one{Piškotki tretjih oseb, # blokirano spletno mesto}two{Piškotki tretjih oseb, # blokirani spletni mesti}few{Piškotki tretjih oseb, # blokirana spletna mesta}other{Piškotki tretjih oseb, # blokiranih spletnih mest}}</translation>
 <translation id="3362968246557010467">Ta pravilnik je bil samodejno kopiran iz zastarelega pravilnika <ph name="OLD_POLICY" />. Uporabite ta pravilnik.</translation>
 <translation id="3364869320075768271"><ph name="URL" /> želi uporabljati napravo in podatke za navidezno resničnost</translation>
 <translation id="3366477098757335611">Ogled kartic</translation>
@@ -1613,7 +1609,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="4151403195736952345">Globalno uporabi privzete nastavitve (zaznavanje)</translation>
 <translation id="4152318981910038897">{COUNT,plural, =1{1. stran}one{{COUNT}. stran}two{{COUNT}. stran}few{{COUNT}. stran}other{{COUNT}. stran}}</translation>
 <translation id="4154277373259957087">Chrome bo zdaj preveril vašo identiteto, preden vnesete podatke o plačilnih sredstvih. To lahko kadar koli posodobite v <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" />.</translation>
-<translation id="4159149286839604525">To pomeni, da bi morala večina funkcij spletnega mesta delovati, vendar boste imeli manj zaščite</translation>
 <translation id="4159784952369912983">Vijolična</translation>
 <translation id="4165986682804962316">Nastavitve spletnega mesta</translation>
 <translation id="4169535189173047238">Ne dovoli</translation>
@@ -2037,7 +2032,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="4983145717627482381">Vodeni izleti in počitnice v spremstvu</translation>
 <translation id="498323057460789381">Napaka pri preverjanju sheme: <ph name="ERROR" /></translation>
 <translation id="4984088539114770594">Želite uporabiti mikrofon?</translation>
-<translation id="4985206706500620449">Za to spletno mesto ste dovolili piškotke tretjih oseb</translation>
 <translation id="4989163558385430922">Pokaži vse</translation>
 <translation id="4989542687859782284">Ni na voljo</translation>
 <translation id="4989809363548539747">Ta vtičnik ni podprt</translation>
@@ -2254,7 +2248,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="5414511064953050917">Vseeno premakni</translation>
 <translation id="5421136146218899937">Izbriši podatke brskanja ...</translation>
 <translation id="5423269318075950257">Spremljanje cene</translation>
-<translation id="5425241977284572032">{NUM_COOKIES,plural, =0{Ni blokiranih spletnih mest}=1{1 blokirano spletno mesto}one{# blokirano spletno mesto}two{# blokirani spletni mesti}few{# blokirana spletna mesta}other{# blokiranih spletnih mest}}</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> vam želi pošiljati obvestila</translation>
 <translation id="5430298929874300616">Odstrani zaznamek</translation>
 <translation id="5434798570900738152">Chromium <ph name="BEGIN_EMPHASIS" />ne bo shranjeval<ph name="END_EMPHASIS" />:
@@ -2814,7 +2807,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="6521745193039995384">Nedejavno</translation>
 <translation id="6524830701589638230">Gumb za upravljanje nastavitev funkcij za ljudi s posebnimi potrebami, aktivirajte, če želite osebno prilagoditi orodja za ljudi s posebnimi potrebami v Chromovih nastavitvah</translation>
 <translation id="6529173248185917884">Kolut 7</translation>
-<translation id="652937045869844725">Poskusite omogočiti piškotke tretjih oseb, kar pomeni manj zaščite, vendar je večja verjetnost, da bodo funkcije spletnega mesta delovale</translation>
 <translation id="6529602333819889595">&amp;Uveljavi izbris</translation>
 <translation id="6535751101619004418">Valute in devizno poslovanje</translation>
 <translation id="6536221421038631327">Če iz naprave <ph name="DEVICE_TYPE" /> odstranite naročnino na Passpoint, boste odstranili povezana omrežja. Če želite spremeniti naročniško pogodbo, se obrnite na »<ph name="FRIENDLY_NAME" />«. <ph name="LEARN_MORE" /></translation>
@@ -3170,7 +3162,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="7221855153210829124">Pokaži obvestila</translation>
 <translation id="7221857374443660083">Vaša banka se želi prepričati, da ste to vi</translation>
 <translation id="722454870747268814">New Incognito Tab</translation>
-<translation id="7226276626900992675">Temu spletnemu mestu ste dovolili uporabo piškotkov tretjih oseb. To pomeni, da bi morala večina funkcij spletnega mesta delovati, vendar boste imeli manj zaščite.</translation>
 <translation id="7227293336683593977">Zgodovina cen</translation>
 <translation id="7227747683324411744">Napadalci na spletnem mestu, ki ga poskušate obiskati, vas lahko zavedejo, da namestite škodljivo programsko opremo, ki vpliva na vaš način brskanja – na primer tako, da spremenijo vašo domačo stran ali vam na spletnih mestih, ki jih obiščete, prikazujejo dodatne oglase.</translation>
 <translation id="7233592378249864828">Tiskanje potrditvenega lista</translation>
@@ -3790,7 +3781,6 @@ Dodatne podrobnosti:
 <translation id="8398335999901363925">Plačilna sredstva, ki jih je mogoče izpolniti z dotikom, odprta pri polni višini.</translation>
 <translation id="8398446215576328011">Razveljavi uporabljene pravilnike</translation>
 <translation id="8398790343843005537">Poiščite telefon</translation>
-<translation id="8401772916834964810">{COUNT,plural, =0{Chrome bo znova blokiral piškotke danes}=1{Chrome bo znova blokiral piškotke jutri}one{Še # dan in Chrome bo znova blokiral piškotke}two{Še # dneva in Chrome bo znova blokiral piškotke}few{Še # dni in Chrome bo znova blokiral piškotke}other{Še # dni in Chrome bo znova blokiral piškotke}}</translation>
 <translation id="8403506619177967839">Zgodbe, ki jih pišejo navdušenci</translation>
 <translation id="8405579342203358118">Upravljajte, kateri podatki se sinhronizirajo v Chromu.</translation>
 <translation id="8406071103346257942">ustaviti uporabo zaklepanja zaslona za izpolnjevanje gesel.</translation>

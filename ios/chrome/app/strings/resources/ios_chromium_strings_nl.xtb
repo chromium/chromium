@@ -40,9 +40,11 @@
 <translation id="2054703085270098503">Blijf veilig met Chromium</translation>
 <translation id="2098023844024447022">Open Mijn nieuwste tabblad in Chromium.</translation>
 <translation id="2109439615198500433">Chromium-tip</translation>
+<translation id="2147210759439165826">Blijf op de hoogte van content en nuttige Chromium-tips.</translation>
 <translation id="2168108852149185974">Sommige add-ons kunnen ervoor zorgen dat Chromium crasht. Verwijder de volgende add-ons:</translation>
 <translation id="2178608107313874732">Chromium kan je camera momenteel niet gebruiken</translation>
 <translation id="2195025571279539885">Wil je dat Chromium de volgende keer aanbiedt om pagina's in het <ph name="LANGUAGE_NAME" /> op deze site te vertalen?</translation>
+<translation id="2216344354848599203">Houd je vinger op het Chromium-icoon en klik op Startscherm bewerken</translation>
 <translation id="2218146227246548550">Je organisatie vereist dat je inlogt om Chromium te gebruiken. <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
 <translation id="22313767259766852">Dit adres is op dit moment opgeslagen in Chromium. Als je het wilt gebruiken in andere Google-producten, sla je het op in je Google-account (<ph name="USER_EMAIL" />).</translation>
 <translation id="2236584955986023187">Dit betekent dat Chromium altijd de desktopsite opvraagt.</translation>
@@ -191,6 +193,7 @@ Aandachtspunten:
 <translation id="632825460376924298">Inloggen bij Chromium toestaan</translation>
 <translation id="6337530241089703714">Kies of je je Chromium-gegevens voor dit apparaat wilt verwijderen of behouden</translation>
 <translation id="6348483005826990855">3. Selecteer Chromium</translation>
+<translation id="6383607155624074112">Open Chromium sneller via het dock op het startscherm</translation>
 <translation id="6407399265324739055">Betaalmethoden en adressen worden niet versleuteld. De browsegeschiedenis in Chromium wordt niet gesynchroniseerd.
 
 Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtwoordzin wordt niet gestuurd naar of opgeslagen door Google. Als je je wachtwoordzin vergeet of deze instelling wilt wijzigen, <ph name="BEGIN_LINK" />wis je de Chromium-gegevens in je account<ph name="END_LINK" />.</translation>

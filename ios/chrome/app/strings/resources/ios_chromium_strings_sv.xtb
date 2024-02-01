@@ -44,6 +44,7 @@
 <translation id="2168108852149185974">Några tillägg har fått Chromium att krascha. Avinstallera följande:</translation>
 <translation id="2178608107313874732">Chromium kan inte använda kameran just nu</translation>
 <translation id="2195025571279539885">Vill du att Chromium ska översätta sidor skrivna på <ph name="LANGUAGE_NAME" /> på den här webbplatsen nästa gång?</translation>
+<translation id="2216344354848599203">Håll nere Chromium-ikonen och tryck på Ändra hemskärmen</translation>
 <translation id="2218146227246548550">Organisationen kräver att du loggar in för att använda Chromium. <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
 <translation id="22313767259766852">Den här adressen har sparats i Chromium. Om du vill använda den i olika produkter från Google sparar du den i Google-kontot <ph name="USER_EMAIL" />.</translation>
 <translation id="2236584955986023187">Detta betyder att datorversionen av webbplatsen begärs varje gång i Chromium.</translation>
@@ -197,6 +198,7 @@ Tänk på detta:
 <translation id="632825460376924298">Tillåt inloggning i Chromium</translation>
 <translation id="6337530241089703714">Välj om din data i Chromium ska raderas från den här enheten eller vara kvar</translation>
 <translation id="6348483005826990855">3. Välj Chromium</translation>
+<translation id="6383607155624074112">Kom åt Chromium snabbare från hemskärmens Dock</translation>
 <translation id="6407399265324739055">Betalningsmetoder och adresser krypteras inte. Webbhistorik från Chromium synkroniseras inte.
 
 Din krypterade data kan endast läsas av en person som har din lösenfras. Lösenfrasen varken skickas till eller lagras av Google. Om du glömmer lösenfrasen eller vill ändra den här inställningen <ph name="BEGIN_LINK" />rensar du kontots Chromium-data<ph name="END_LINK" />.</translation>

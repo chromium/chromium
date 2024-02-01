@@ -1,7 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="tr">
-<translation id="1490261980219759295">Adres çubuğunu alta taşı veya Adres çubuğunu üste taşı'yı seçin</translation>
+<translation id="1490261980219759295">"Adres çubuğunu alta taşı" veya "Adres çubuğunu üste taşı"yı seçin</translation>
 <translation id="2137165884805511788">Adres Çubuğunu Taşıyın</translation>
 <translation id="2761788987260570878">Aramanızın fotoğrafını çekin</translation>
 <translation id="2922210239002704889">Ana sayfanıza veya klavyenize gidin</translation>
@@ -19,5 +19,5 @@
 <translation id="880967149107462122">Chrome Ayarlarına Git</translation>
 <translation id="8819155700324279105">İnternet ortamındaki tehditlere karşı ek koruma katmanı sağlayın</translation>
 <translation id="9203951165704618409">Özelleştirilmiş bir göz atma deneyimi için yukarıda olan adres çubuğunuzu aşağıda olacak şekilde değiştirin.</translation>
-<translation id="9222996962165162291">"Gizlilik ve Güvenlik"e, ardından "Güvenli Tarama"ya dokun</translation>
+<translation id="9222996962165162291">"Gizlilik ve Güvenlik"e, ardından "Güvenli Tarama"ya dokunun</translation>
 </translationbundle>

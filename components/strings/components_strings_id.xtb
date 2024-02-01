@@ -885,7 +885,6 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="2674804415323431591">Sembunyikan saran</translation>
 <translation id="2677696497921480781">Hari ulang tahun &amp; pemberian nama</translation>
 <translation id="2677748264148917807">Keluar</translation>
-<translation id="2678468611080193228">Coba izinkan cookie pihak ketiga untuk sementara, yang berarti lebih sedikit perlindungan, tetapi fitur situs biasanya berfungsi</translation>
 <translation id="2686919536310834199">Kirim masukan untuk Bantu menulis.</translation>
 <translation id="2687555958734450033">Paling pas</translation>
 <translation id="2688186765492306706">500 x 760 mm</translation>
@@ -1105,7 +1104,6 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="3157931365184549694">Pulihkan</translation>
 <translation id="3158539265159265653">Disk</translation>
 <translation id="3162559335345991374">Wi-Fi yang digunakan mungkin mewajibkan Anda mengunjungi halaman masuknya.</translation>
-<translation id="3166370127092388416">{NUM_COOKIES,plural, =0{Cookie pihak ketiga, Tidak ada situs yang diizinkan}=1{Cookie pihak ketiga, 1 situs diizinkan}other{Cookie pihak ketiga, # situs diizinkan}}</translation>
 <translation id="3168744840365648658">Perlengkapan Radio</translation>
 <translation id="3169472444629675720">Discover</translation>
 <translation id="3171703252520926121">Layanan Real Estat</translation>
@@ -1164,7 +1162,6 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="3262698603497362968">Opsi pembelian</translation>
 <translation id="3266367459139339908">Kami meluncurkan cara baru untuk membatasi informasi Anda yang dapat dipelajari situs tentang Anda saat menampilkan iklan yang dipersonalisasi, misalnya:</translation>
 <translation id="3266793032086590337">Nilai (bertentangan)</translation>
-<translation id="3266972086368072861">{NUM_COOKIES,plural, =0{Tidak ada situs yang diblokir, termasuk situs terkait}=1{1 situs diblokir, termasuk situs terkait}other{# situs diblokir, termasuk situs terkait}}</translation>
 <translation id="3268451620468152448">Tab Terbuka</translation>
 <translation id="3270041629388773465">Checkout lebih cepat jika CVC Anda disimpan</translation>
 <translation id="3270156322180235608">Perjalanan udara</translation>
@@ -1209,7 +1206,6 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="3359565626472459400">Pernikahan</translation>
 <translation id="3360103848165129075">Lembar handler pembayaran</translation>
 <translation id="3360313521703038580">Ekologi &amp; lingkungan</translation>
-<translation id="3360753465334942529">{NUM_COOKIES,plural, =0{Cookie pihak ketiga, Tidak ada situs yang diblokir}=1{Cookie pihak ketiga, 1 situs diblokir}other{Cookie pihak ketiga, # situs diblokir}}</translation>
 <translation id="3362968246557010467">Kebijakan ini otomatis disalin dari kebijakan <ph name="OLD_POLICY" /> yang tidak digunakan lagi. Sebaiknya Anda menggunakan kebijakan ini.</translation>
 <translation id="3364869320075768271"><ph name="URL" /> ingin menggunakan perangkat dan data virtual reality Anda</translation>
 <translation id="3366477098757335611">Lihat kartu</translation>
@@ -1613,7 +1609,6 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="4151403195736952345">Gunakan default global (Deteksi)</translation>
 <translation id="4152318981910038897">{COUNT,plural, =1{Halaman 1}other{Halaman {COUNT}}}</translation>
 <translation id="4154277373259957087">Chrome kini akan memverifikasi diri Anda sebelum mengisi metode pembayaran. Anda dapat memperbaruinya kapan saja di <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" />.</translation>
-<translation id="4159149286839604525">Artinya, sebagian besar fitur situs akan berfungsi, tetapi Anda memiliki perlindungan yang lebih sedikit</translation>
 <translation id="4159784952369912983">Ungu</translation>
 <translation id="4165986682804962316">Setelan situs</translation>
 <translation id="4169535189173047238">Jangan izinkan</translation>
@@ -2037,7 +2032,6 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="4983145717627482381">Tur Terpandu &amp; Liburan Paket</translation>
 <translation id="498323057460789381">Error validasi skema: <ph name="ERROR" /></translation>
 <translation id="4984088539114770594">Gunakan mikrofon?</translation>
-<translation id="4985206706500620449">Anda mengizinkan cookie pihak ketiga untuk situs ini</translation>
 <translation id="4989163558385430922">Lihat semua</translation>
 <translation id="4989542687859782284">Tidak Tersedia</translation>
 <translation id="4989809363548539747">Plugin ini tidak didukung</translation>
@@ -2254,7 +2248,6 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="5414511064953050917">Tetap pindahkan</translation>
 <translation id="5421136146218899937">Hapus data penjelajahan...</translation>
 <translation id="5423269318075950257">Pantau Harga</translation>
-<translation id="5425241977284572032">{NUM_COOKIES,plural, =0{Tidak ada situs yang diblokir}=1{1 situs diblokir}other{# situs diblokir}}</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> ingin mengirimkan notifikasi kepada Anda</translation>
 <translation id="5430298929874300616">Buang bookmark</translation>
 <translation id="5434798570900738152">Chromium <ph name="BEGIN_EMPHASIS" />tidak akan menyimpan<ph name="END_EMPHASIS" />:
@@ -2814,7 +2807,6 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="6521745193039995384">Tidak aktif</translation>
 <translation id="6524830701589638230">Tombol Kelola setelan aksesibilitas, aktifkan untuk mempersonalisasi alat aksesibilitas Anda di setelan Chrome</translation>
 <translation id="6529173248185917884">Rol Ketujuh</translation>
-<translation id="652937045869844725">Coba izinkan cookie pihak ketiga, yang berarti lebih sedikit perlindungan, tetapi fitur situs biasanya berfungsi</translation>
 <translation id="6529602333819889595">&amp;Ulangi Penghapusan</translation>
 <translation id="6535751101619004418">Mata uang asing &amp; kurs</translation>
 <translation id="6536221421038631327">Menghapus langganan Passpoint dari <ph name="DEVICE_TYPE" /> akan menghapus jaringan terkait. Hubungi "<ph name="FRIENDLY_NAME" />" untuk melakukan perubahan pada paket langganan Anda. <ph name="LEARN_MORE" /></translation>
@@ -3170,7 +3162,6 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="7221855153210829124">Tampilkan notifikasi</translation>
 <translation id="7221857374443660083">Bank Anda ingin memastikan bahwa ini memang Anda</translation>
 <translation id="722454870747268814">Tab Samaran Baru</translation>
-<translation id="7226276626900992675">Anda mengizinkan situs ini menggunakan cookie pihak ketiga. Artinya, sebagian besar fitur situs akan berfungsi, tetapi Anda memiliki perlindungan yang lebih sedikit.</translation>
 <translation id="7227293336683593977">Histori Harga</translation>
 <translation id="7227747683324411744">Penyerang di situs yang Anda coba kunjungi dapat mengelabui Anda agar menginstal software berbahaya yang memengaruhi cara Anda menjelajah — misalnya, dengan mengubah halaman beranda atau menampilkan iklan tambahan di situs yang Anda kunjungi.</translation>
 <translation id="7233592378249864828">Cetak lembar konfirmasi</translation>
@@ -3788,7 +3779,6 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="8398335999901363925">Metode pembayaran yang tersedia untuk diisi dengan gestur sentuh terbuka sepenuhnya.</translation>
 <translation id="8398446215576328011">Kembalikan kebijakan yang diterapkan</translation>
 <translation id="8398790343843005537">Temukan ponsel Anda</translation>
-<translation id="8401772916834964810">{COUNT,plural, =0{Chrome akan memblokir cookie lagi hari ini}=1{Chrome akan memblokir cookie lagi besok}other{# hari sebelum Chrome memblokir cookie lagi}}</translation>
 <translation id="8403506619177967839">Fiksi Penggemar</translation>
 <translation id="8405579342203358118">Kelola info apa saja yang Anda sinkronkan di setelan Chrome</translation>
 <translation id="8406071103346257942">berhenti menggunakan kunci layar untuk mengisi sandi</translation>

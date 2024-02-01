@@ -148,6 +148,7 @@
 <translation id="1753905327828125965">धेरै भ्रमण गरिएको</translation>
 <translation id="1757699834933698436">{count,plural, =1{{count} वटा कमजोर पासवर्ड भेटियो}other{{count} वटा कमजोर पासवर्ड भेटिए}}</translation>
 <translation id="1767766085187034454">Google Translate</translation>
+<translation id="1769106850515800431">पर्सनलाइज गरिएको सामग्री</translation>
 <translation id="1789803444939621101">फेरि स्वागत छ, <ph name="USER_NAME" /></translation>
 <translation id="1803264062614276815">कार्डवालाको नाम</translation>
 <translation id="1809939268435598390">फोल्डर मेटाउनुहोस्</translation>
@@ -828,6 +829,7 @@
 <translation id="5327753393331509826">सामग्रीसम्बन्धी सूचनाहरू प्राप्त गर्नुहोस्</translation>
 <translation id="5329451663851195956">तपाईं पेज तलतिर तानेर रिफ्रेस गर्न सक्नुहुन्छ।</translation>
 <translation id="5339316356165661760">सिंक गर्ने सुविधा अन गर्नुहोस्</translation>
+<translation id="5343472494710226394">समाचार, खेलकुद र तपाईंका रुचिहरूमा आधारित सामग्री।</translation>
 <translation id="5345660046352249607">{COUNT,plural, =1{यो प्याकेज ट्र्याक गर्ने हो?}other{{COUNT} वटा प्याकेज ट्र्याक गर्ने हो?}}</translation>
 <translation id="536067926684072644">बुकमार्कहरू देखाइयोस्</translation>
 <translation id="5360976571138293719">गोपनीयता, सुरक्षा र डेटाको सङ्कलनसँग सम्बन्धित थप सेटिङका लागि <ph name="BEGIN_LINK" />Google का सेवाहरू<ph name="END_LINK" /> नामक खण्ड हेर्नुहोस्।</translation>
@@ -898,6 +900,7 @@
 <translation id="5737974891429562743">खातामा साइन-इन गर्ने सम्बन्धी विवरणहरूको म्याद सकिएको छ। सिंक सुरु गर्न अपडेट गर्नुहोस्।</translation>
 <translation id="5738385766833540397">तपाईं आफूले ट्र्याक गरेका उत्पादनको मूल्य घट्दा पठाइने अलर्टहरू कुन माध्यमबाट प्राप्त गर्न चाहनुहुन्छ भन्ने कुरा व्यवस्थापन गर्नुहोस्</translation>
 <translation id="5738887413654608789">यसले तपाईं वरिपरिको परिवेशमा आधारित सान्दर्भिक वेब पृष्ठहरू पत्ता लगाउन अनुमति दिन्छ।</translation>
+<translation id="5744274077973758795"><ph name="FEATURE_NAME" /> सम्बन्धी सूचना प्राप्त गर्ने सुविधा अन गरिएको छ</translation>
 <translation id="5745916533876677730">अघिल्लो ट्याबमा जानुहोस्</translation>
 <translation id="574762237186762643">कार्यक्रमहरू</translation>
 <translation id="5748177854685749242">आइपुग्ने मिति: <ph name="DATE" /></translation>
@@ -922,6 +925,7 @@
 <translation id="5850913622988109693">प्याकेजहरू ट्र्याक गर्ने विकल्पहरू</translation>
 <translation id="5854790677617711513">३० दिनभन्दा पुरानो</translation>
 <translation id="5857090052475505287">नयाँ फोल्डर</translation>
+<translation id="5857361196621230935">समूहमा ट्याब हाल्नुहोस्</translation>
 <translation id="5857770089550859117">सिंक सुरु गर्न पासफ्रेज आवश्यक छ।</translation>
 <translation id="5859715514067755465">फर्वार्ड गर्नुहोस्</translation>
 <translation id="5860033963881614850">बन्द</translation>
@@ -1274,6 +1278,7 @@
 <translation id="7649070708921625228">मद्दत</translation>
 <translation id="7658239707568436148">रद्द गर्नुहोस्</translation>
 <translation id="7666861622396822790">तपाईं <ph name="BEGIN_LINK" />सामग्रीसम्बन्धी सेटिङ<ph name="END_LINK" />मा गई यो कुरा व्यवस्थापन गर्न सक्नुहुन्छ।</translation>
+<translation id="7669493687462784703"><ph name="WEBSITE" /> बाट कन्फिगुरेसन प्रोफाइल डाउनलोड गरिराख्ने हो?</translation>
 <translation id="7671141431838911305">स्थापना गर्नुहोस्</translation>
 <translation id="7673346542062368520">तपाईं इन्कोग्निटोमा ब्राउज गर्न बायाँतिर स्वाइप गर्न सक्नुहुन्छ।</translation>
 <translation id="7679915578945954324">साइटका ठेगानाहरू कपी गरिए</translation>
@@ -1522,6 +1527,7 @@
 <translation id="891282356902782456">यो पासवर्ड यो डिभाइसमा मात्र सेभ गरिन्छ। यो पासवर्ड आफ्ना अन्य डिभाइसहरूमा प्रयोग गर्न यसलाई आफ्नो Google खाता (<ph name="EMAIL" />) मा सेभ गर्नुहोस्।</translation>
 <translation id="8917490105272468696">हो, म सहमत छु</translation>
 <translation id="8928133177108699615">डेस्कटप</translation>
+<translation id="8937676484307616731"><ph name="FEATURE_NAME" /> सम्बन्धी सूचना प्राप्त गर्ने सुविधा अन गर्नुहोस्</translation>
 <translation id="894191600409472540">भरपर्दा पासवर्डहरू सिर्जना गर्नुहोस्</translation>
 <translation id="8952559610785099500">पासवर्ड थप्नुहोस्</translation>
 <translation id="8953046091948372197">तपाईंका पासवर्डहरू यहाँ देखिने छन्</translation>

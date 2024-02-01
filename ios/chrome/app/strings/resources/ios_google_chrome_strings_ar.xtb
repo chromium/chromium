@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ar">
+<translation id="1021782183249308751">‏اضغط مع الاستمرار على رمز Chrome وانقر على "تعديل الشاشة الرئيسية"</translation>
 <translation id="1066101356081285416">‏سيرصُد Chrome أرقام التتبُّع على المواقع الإلكترونية التي تزورها ويعرض لك إشعارات الطرود في صفحة "علامة تبويب جديدة". وسيتم إرسال رقم تتبُّع الطرد واسم الموقع الإلكتروني إلى فريق Google لتوفير هذه الميزة وتحسين ميزات التسوّق المقدّمة من Google للجميع. ويمكنك تغيير ذلك في أي وقت في <ph name="BEGIN_LINK" />إعدادات تتبُّع الطرود<ph name="END_LINK" />.</translation>
 <translation id="1085696779717592361">‏استخدام Chrome بشكلٍ تلقائي</translation>
 <translation id="1105362920864247682">‏يمكنك محو بيانات التصفُّح في Chrome.</translation>
@@ -96,6 +97,7 @@
 <translation id="3345341804167540816">‏استخدم Chrome في كل مكان</translation>
 <translation id="3360031466389132716">{THRESHOLD,plural, =1{‏يحدث هذا الإجراء في حال عدم استخدام Chrome لمدة دقيقة واحدة ({THRESHOLD}).}zero{‏يحدث هذا الإجراء في حال عدم استخدام Chrome لمدة {THRESHOLD} دقيقة.}two{‏يحدث هذا الإجراء في حال عدم استخدام Chrome لمدة دقيقتَين ({THRESHOLD}).}few{‏يحدث هذا الإجراء في حال عدم استخدام Chrome لمدة {THRESHOLD} دقائق.}many{‏يحدث هذا الإجراء في حال عدم استخدام Chrome لمدة {THRESHOLD} دقيقة.}other{‏يحدث هذا الإجراء في حال عدم استخدام Chrome لمدة {THRESHOLD} دقيقة.}}</translation>
 <translation id="3399930248910934354">‏افتَح إعدادات Chrome.</translation>
+<translation id="344736123700721678">‏يمكنك الوصول إلى Chrome بصورة أسرع من خلال شريط التطبيقات في الشاشة الرئيسية</translation>
 <translation id="3472587960215700950">‏يستخدم Chrome "خرائط Google" لإعلامك بالاتجاهات مع معلومات محلية عن العناوين المكتشفة.</translation>
 <translation id="3503014945441706099">‏يمكنك الاستفادة من ميزة "الحماية المحسّنة للتصفّح الآمن" لهذا الملف الشخصي على Chrome أيضًا.</translation>
 <translation id="3522659714780527202">‏للاطّلاع على علامات التبويب من أي جهاز تستخدم فيه Chrome، فعِّل المزامنة.</translation>

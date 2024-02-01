@@ -884,7 +884,6 @@
 <translation id="2674804415323431591">추천 숨기기</translation>
 <translation id="2677696497921480781">생일 및 영명 축일</translation>
 <translation id="2677748264148917807">나가기</translation>
-<translation id="2678468611080193228">서드 파티 쿠키를 일시적으로 허용해 보세요. 보안은 취약해지지만 사이트 기능이 작동할 가능성은 높아집니다.</translation>
 <translation id="2686919536310834199">작성 지원 기능에 관한 의견을 보냅니다.</translation>
 <translation id="2687555958734450033">자동 맞춤</translation>
 <translation id="2688186765492306706">500x760mm</translation>
@@ -1104,7 +1103,6 @@
 <translation id="3157931365184549694">복구</translation>
 <translation id="3158539265159265653">디스크</translation>
 <translation id="3162559335345991374">사용 중인 Wi-Fi에서 로그인 페이지 방문을 요청할 수 있습니다.</translation>
-<translation id="3166370127092388416">{NUM_COOKIES,plural, =0{서드 파티 쿠키, 허용된 사이트 없음}=1{서드 파티 쿠키, 사이트 1개 허용됨}other{서드 파티 쿠키, 사이트 #개 허용됨}}</translation>
 <translation id="3168744840365648658">라디오 장비</translation>
 <translation id="3169472444629675720">Discover</translation>
 <translation id="3171703252520926121">부동산 서비스</translation>
@@ -1163,7 +1161,6 @@
 <translation id="3262698603497362968">구매 옵션</translation>
 <translation id="3266367459139339908">Chrome에서는 사이트에서 개인 맞춤 광고를 표시할 때 수집할 수 있는 사용자에 관한 정보를 제한하는 새로운 방법을 도입합니다. 예를 들면 다음과 같습니다.</translation>
 <translation id="3266793032086590337">값(충돌)</translation>
-<translation id="3266972086368072861">{NUM_COOKIES,plural, =0{관련 사이트를 포함하여 차단된 사이트 없음}=1{관련 사이트를 포함하여 차단된 사이트 1개}other{관련 사이트를 포함하여 차단된 사이트 #개}}</translation>
 <translation id="3268451620468152448">열린 탭</translation>
 <translation id="3270041629388773465">CVC를 저장하면 더 빠르게 결제할 수 있습니다.</translation>
 <translation id="3270156322180235608">항공 여행</translation>
@@ -1208,7 +1205,6 @@
 <translation id="3359565626472459400">결혼</translation>
 <translation id="3360103848165129075">결제 핸들러 시트</translation>
 <translation id="3360313521703038580">생태학 및 환경학</translation>
-<translation id="3360753465334942529">{NUM_COOKIES,plural, =0{서드 파티 쿠키, 차단된 사이트 없음}=1{서드 파티 쿠키, 사이트 1개 차단됨}other{서드 파티 쿠키, 사이트 #개 차단됨}}</translation>
 <translation id="3362968246557010467">이 정책은 지원 중단된 <ph name="OLD_POLICY" /> 정책에서 자동으로 복사되었습니다. 이 정책을 대신 사용해야 합니다.</translation>
 <translation id="3364869320075768271"><ph name="URL" />에서 가상 현실 기기 및 데이터를 사용하려고 합니다.</translation>
 <translation id="3366477098757335611">카드 보기</translation>
@@ -1613,7 +1609,6 @@
 <translation id="4151403195736952345">글로벌 기본값 사용(감지)</translation>
 <translation id="4152318981910038897">{COUNT,plural, =1{페이지 1}other{페이지 {COUNT}}}</translation>
 <translation id="4154277373259957087">이제 Chrome에서 결제 수단을 입력하기 전에 본인 인증을 진행합니다. 언제든지 <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" />에서 업데이트할 수 있습니다.</translation>
-<translation id="4159149286839604525">대부분의 사이트 기능은 작동하지만 보안이 취약해집니다.</translation>
 <translation id="4159784952369912983">보라색</translation>
 <translation id="4165986682804962316">사이트 설정</translation>
 <translation id="4169535189173047238">허용 안함</translation>
@@ -2037,7 +2032,6 @@
 <translation id="4983145717627482381">가이드 동반 여행 및 휴가</translation>
 <translation id="498323057460789381">스키마 유효성 검사 오류: <ph name="ERROR" /></translation>
 <translation id="4984088539114770594">마이크를 사용하시겠습니까?</translation>
-<translation id="4985206706500620449">이 사이트에서 서드 파티 쿠키를 허용했습니다</translation>
 <translation id="4989163558385430922">모두 보기</translation>
 <translation id="4989542687859782284">사용할 수 없음</translation>
 <translation id="4989809363548539747">이 플러그인은 지원되지 않습니다.</translation>
@@ -2254,7 +2248,6 @@
 <translation id="5414511064953050917">무시하고 이동</translation>
 <translation id="5421136146218899937">인터넷 사용 기록 삭제...</translation>
 <translation id="5423269318075950257">가격 추적</translation>
-<translation id="5425241977284572032">{NUM_COOKIES,plural, =0{차단된 사이트 없음}=1{차단된 사이트 1개}other{차단된 사이트 #개}}</translation>
 <translation id="5426179911063097041"><ph name="SITE" />에서 알림을 보내려고 합니다.</translation>
 <translation id="5430298929874300616">북마크 삭제</translation>
 <translation id="5434798570900738152">Chromium에 <ph name="BEGIN_EMPHASIS" />저장되지 않는 항목<ph name="END_EMPHASIS" />:
@@ -2814,7 +2807,6 @@
 <translation id="6521745193039995384">활성화되지 않음</translation>
 <translation id="6524830701589638230">접근성 설정 관리 버튼, Chrome 설정에서 접근성 도구를 맞춤설정하려면 활성화하세요.</translation>
 <translation id="6529173248185917884">7번째 롤</translation>
-<translation id="652937045869844725">서드 파티 쿠키를 허용해 보세요. 보안은 취약해지지만 사이트 기능이 작동할 가능성은 높아집니다.</translation>
 <translation id="6529602333819889595">삭제 다시 실행(&amp;R)</translation>
 <translation id="6535751101619004418">통화 및 환율</translation>
 <translation id="6536221421038631327"><ph name="DEVICE_TYPE" />에서 Passpoint 구독을 삭제하면 연결된 네트워크가 삭제됩니다. 구독 요금제를 변경하려면 <ph name="FRIENDLY_NAME" />에 문의하세요. <ph name="LEARN_MORE" /></translation>
@@ -3170,7 +3162,6 @@
 <translation id="7221855153210829124">알림 표시</translation>
 <translation id="7221857374443660083">은행에서 본인 확인을 요청합니다.</translation>
 <translation id="722454870747268814">새 시크릿 탭</translation>
-<translation id="7226276626900992675">이 사이트에서 서드 파티 쿠키를 사용하도록 허용했습니다. 대부분의 사이트 기능은 작동하지만 보안이 취약해집니다.</translation>
 <translation id="7227293336683593977">가격 변동 내역</translation>
 <translation id="7227747683324411744">방문하려는 사이트의 공격자가 홈페이지를 변경하거나 방문하는 사이트에서 추가 광고를 표시하는 등 탐색 방식에 영향을 주는 유해한 소프트웨어를 설치하도록 유도할 수 있습니다.</translation>
 <translation id="7233592378249864828">인쇄 확인 시트</translation>
@@ -3789,7 +3780,6 @@
 <translation id="8398335999901363925">터치하여 입력할 수 있는 결제 수단이 전체 높이로 열렸습니다.</translation>
 <translation id="8398446215576328011">적용된 정책 되돌리기</translation>
 <translation id="8398790343843005537">휴대전화 찾기</translation>
-<translation id="8401772916834964810">{COUNT,plural, =0{오늘 Chrome에서 쿠키를 다시 차단합니다}=1{내일 Chrome에서 다시 쿠키를 차단합니다}other{#일 후 Chrome에서 다시 쿠키를 차단합니다}}</translation>
 <translation id="8403506619177967839">팬 픽션</translation>
 <translation id="8405579342203358118">Chrome 설정에서 내가 동기화하는 정보 관리</translation>
 <translation id="8406071103346257942">비밀번호 입력 시 화면 잠금 사용 중지</translation>

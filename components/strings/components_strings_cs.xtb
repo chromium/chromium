@@ -883,7 +883,6 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="2674804415323431591">Skrýt návrhy</translation>
 <translation id="2677696497921480781">Svátky a narozeniny</translation>
 <translation id="2677748264148917807">Odejít</translation>
-<translation id="2678468611080193228">Zkuste dočasně povolit soubory cookie třetích stran – budete méně chráněni, ale funkce webu budou s větší pravděpodobností fungovat</translation>
 <translation id="2686919536310834199">Zpětná vazba k funkci Pomozte mi s psaním.</translation>
 <translation id="2687555958734450033">Přizpůsobit</translation>
 <translation id="2688186765492306706">500 × 760 mm</translation>
@@ -1102,7 +1101,6 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="3157931365184549694">Obnovit</translation>
 <translation id="3158539265159265653">Disk</translation>
 <translation id="3162559335345991374">Síť Wi-Fi, kterou používáte, může vyžadovat, abyste navštívili její stránku přihlášení.</translation>
-<translation id="3166370127092388416">{NUM_COOKIES,plural, =0{Soubory cookie třetích stran, nejsou povoleny žádné weby}=1{Soubory cookie třetích stran, je povolen 1 web}few{Soubory cookie třetích stran, jsou povoleny # weby}many{Soubory cookie třetích stran, je povoleno # webu}other{Soubory cookie třetích stran, je povoleno # webů}}</translation>
 <translation id="3168744840365648658">Radiovybavení</translation>
 <translation id="3169472444629675720">Discover</translation>
 <translation id="3171703252520926121">Realitní služby</translation>
@@ -1158,7 +1156,6 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="3262698603497362968">Možnosti nákupu</translation>
 <translation id="3266367459139339908">Zavádíme nové způsoby omezení informací, které o vás weby mohou zjistit při zobrazování personalizovaných reklam, například:</translation>
 <translation id="3266793032086590337">Hodnota (konflikt)</translation>
-<translation id="3266972086368072861">{NUM_COOKIES,plural, =0{Nejsou blokovány žádné weby, včetně souvisejících webů}=1{Je blokován 1 web, včetně souvisejících webů}few{Jsou blokovány # weby, včetně souvisejících webů}many{Je blokováno # webu, včetně souvisejících webů}other{Je blokováno # webů, včetně souvisejících webů}}</translation>
 <translation id="3268451620468152448">Otevřené karty</translation>
 <translation id="3270041629388773465">S uloženými kódy CVC můžete platit rychleji</translation>
 <translation id="3270156322180235608">Letecká doprava</translation>
@@ -1203,7 +1200,6 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="3359565626472459400">Manželství</translation>
 <translation id="3360103848165129075">List obslužného nástroje pro platby</translation>
 <translation id="3360313521703038580">Ekologie a životní prostředí</translation>
-<translation id="3360753465334942529">{NUM_COOKIES,plural, =0{Soubory cookie třetích stran, nejsou blokovány žádné weby}=1{Soubory cookie třetích stran, je blokován 1 web}few{Soubory cookie třetích stran, jsou blokovány # weby}many{Soubory cookie třetích stran, je blokováno # webu}other{Soubory cookie třetích stran, je blokováno # webů}}</translation>
 <translation id="3362968246557010467">Tato zásada byla automaticky zkopírována ze zásady <ph name="OLD_POLICY" />, jejíž podpora byla ukončena. Měli byste místo ní používat tuto zásadu.</translation>
 <translation id="3364869320075768271"><ph name="URL" /> chce používat vaše zařízení a data pro virtuální realitu</translation>
 <translation id="3366477098757335611">Zobrazit karty</translation>
@@ -1606,7 +1602,6 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="4151403195736952345">Použít globální výchozí nastavení (zjistit)</translation>
 <translation id="4152318981910038897">{COUNT,plural, =1{Strana 1}few{Strana {COUNT}}many{Strana {COUNT}}other{Strana {COUNT}}}</translation>
 <translation id="4154277373259957087">Chrome nyní bude před vyplněním platebních metod ověřovat vaši totožnost. Tuto volbu můžete v <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" /> kdykoli aktualizovat.</translation>
-<translation id="4159149286839604525">To znamená, že většina funkcí webu by měla fungovat, ale máte menší ochranu</translation>
 <translation id="4159784952369912983">Nachová</translation>
 <translation id="4165986682804962316">Nastavení webu</translation>
 <translation id="4169535189173047238">Nepovolovat</translation>
@@ -2029,7 +2024,6 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="4983145717627482381">Komentované prohlídky a dovolené s doprovodem</translation>
 <translation id="498323057460789381">Chyba ověření schématu: <ph name="ERROR" /></translation>
 <translation id="4984088539114770594">Použít mikrofon?</translation>
-<translation id="4985206706500620449">Pro tento web jste povolili soubory cookie třetích stran</translation>
 <translation id="4989163558385430922">Zobrazit vše</translation>
 <translation id="4989542687859782284">Nedostupné</translation>
 <translation id="4989809363548539747">Tento plugin není podporován</translation>
@@ -2245,7 +2239,6 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="5414511064953050917">Přesto přesunout</translation>
 <translation id="5421136146218899937">Vymazat údaje o prohlížení...</translation>
 <translation id="5423269318075950257">Sledovat cenu</translation>
-<translation id="5425241977284572032">{NUM_COOKIES,plural, =0{Nejsou blokovány žádné weby}=1{Je blokován 1 web}few{Jsou blokovány # weby}many{Je blokováno # webu}other{Je blokováno # webů}}</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> vám chce zasílat oznámení</translation>
 <translation id="5430298929874300616">Odstranit záložku</translation>
 <translation id="5434798570900738152">Chromium <ph name="BEGIN_EMPHASIS" />nebude ukládat<ph name="END_EMPHASIS" />:
@@ -2802,7 +2795,6 @@ Kontaktujte administrátora systému.</translation>
 <translation id="6521745193039995384">Neaktivní</translation>
 <translation id="6524830701589638230">Tlačítko správy nastavení přístupnosti, aktivací si v nastavení Chromu můžete přizpůsobit nástroje pro usnadnění přístupu</translation>
 <translation id="6529173248185917884">Sedmá role</translation>
-<translation id="652937045869844725">Zkuste povolit soubory cookie třetích stran – budete méně chráněni, ale funkce webu budou s větší pravděpodobností fungovat</translation>
 <translation id="6529602333819889595">&amp;Opakovat smazání</translation>
 <translation id="6535751101619004418">Měny a kurzy měn</translation>
 <translation id="6536221421038631327">Odebráním předplatného Passpoint ze svého zařízení <ph name="DEVICE_TYPE" /> odstraníte přidružené sítě. Pokud ve svém tarfiu chcete provést změny, kontaktujte operátora <ph name="FRIENDLY_NAME" />. <ph name="LEARN_MORE" /></translation>
@@ -3158,7 +3150,6 @@ Kontaktujte administrátora systému.</translation>
 <translation id="7221855153210829124">Zobrazovat oznámení</translation>
 <translation id="7221857374443660083">Banka se chce ujistit, že jste to vy</translation>
 <translation id="722454870747268814">Nová anonymní karta</translation>
-<translation id="7226276626900992675">Tomuto webu jste povolili používat soubory cookie třetích stran. To znamená, že většina funkcí webu by měla fungovat, ale máte menší ochranu.</translation>
 <translation id="7227293336683593977">Historie ceny</translation>
 <translation id="7227747683324411744">Útočníci na webu, který se pokoušíte navštívit, vás mohou přimět k instalaci škodlivého softwaru, který ovlivní vaše prostředí při procházení – například vám změní domovskou stránku nebo vám na navštívených webech bude zobrazovat další reklamy.</translation>
 <translation id="7233592378249864828">Tisknout potvrzující list</translation>
@@ -3776,7 +3767,6 @@ Kontaktujte administrátora systému.</translation>
 <translation id="8398335999901363925">Platební metody dostupné k vyplnění dotykem jsou otevřené na celou výšku.</translation>
 <translation id="8398446215576328011">Vrátit použité zásady zpět</translation>
 <translation id="8398790343843005537">Najděte svůj telefon</translation>
-<translation id="8401772916834964810">{COUNT,plural, =0{Chrome dnes soubory cookie znovu zablokuje}=1{Zítra začne Chrome soubory cookie opět blokovat}few{Za # dny začne Chrome soubory cookie opět blokovat}many{Za # dne začne Chrome soubory cookie opět blokovat}other{Za # dní začne Chrome soubory cookie opět blokovat}}</translation>
 <translation id="8403506619177967839">Fanouškovská tvorba</translation>
 <translation id="8405579342203358118">Spravujte v nastavení Chromu, jaké informace synchronizujete</translation>
 <translation id="8406071103346257942">přestat používat k vyplňování hesel zámek obrazovky</translation>

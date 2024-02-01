@@ -148,6 +148,7 @@
 <translation id="1753905327828125965">Mais visitados</translation>
 <translation id="1757699834933698436">{count,plural, =1{{count} palavra-passe fraca}other{{count} palavras-passe fracas}}</translation>
 <translation id="1767766085187034454">Google Tradutor</translation>
+<translation id="1769106850515800431">Conteúdo personalizado</translation>
 <translation id="1789803444939621101">Damos-lhe as boas-vindas de volta, <ph name="USER_NAME" /></translation>
 <translation id="1803264062614276815">Nome do titular do cartão</translation>
 <translation id="1809939268435598390">Eliminar pasta</translation>
@@ -829,6 +830,7 @@ Se aplicável, consulte as instruções do motor de pesquisa para eliminar o his
 <translation id="5327753393331509826">Receba notificações de conteúdo</translation>
 <translation id="5329451663851195956">Pode puxar para baixo para atualizar.</translation>
 <translation id="5339316356165661760">Ativar sincronização</translation>
+<translation id="5343472494710226394">Notícias, desporto e conteúdos com base nos seus interesses.</translation>
 <translation id="5345660046352249607">{COUNT,plural, =1{Acompanhar esta embalagem?}other{Acompanhar {COUNT} embalagens?}}</translation>
 <translation id="536067926684072644">Mostrar marcadores</translation>
 <translation id="5360976571138293719">Para obter mais definições relacionadas com privacidade, segurança e recolha de dados, consulte <ph name="BEGIN_LINK" />Serviços Google<ph name="END_LINK" />.</translation>
@@ -899,6 +901,7 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="5737974891429562743">Os detalhes de início de sessão na conta estão desatualizados. Atualize-os para iniciar a sincronização.</translation>
 <translation id="5738385766833540397">Faça a gestão da forma como recebe alertas de descida do preço relativos a produtos que monitoriza</translation>
 <translation id="5738887413654608789">Isto permite descobrir páginas Web relevantes com base no ambiente à sua volta.</translation>
+<translation id="5744274077973758795">Notificações de <ph name="FEATURE_NAME" /> ativadas</translation>
 <translation id="5745916533876677730">Aceder ao separador anterior</translation>
 <translation id="574762237186762643">Eventos</translation>
 <translation id="5748177854685749242">Chegada: <ph name="DATE" /></translation>
@@ -923,6 +926,7 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="5850913622988109693">Opções para acompanhar encomendas</translation>
 <translation id="5854790677617711513">Com mais de 30 dias</translation>
 <translation id="5857090052475505287">Nova pasta</translation>
+<translation id="5857361196621230935">Adicionar separador a grupo</translation>
 <translation id="5857770089550859117">A frase de acesso é necessária para iniciar a sincronização.</translation>
 <translation id="5859715514067755465">Avançar</translation>
 <translation id="5860033963881614850">Desativado</translation>
@@ -1275,6 +1279,7 @@ Quando estiver na Navegação anónima, os sites não podem utilizar cookies par
 <translation id="7649070708921625228">Ajuda</translation>
 <translation id="7658239707568436148">Cancelar</translation>
 <translation id="7666861622396822790">Pode gerir esta opção nas <ph name="BEGIN_LINK" />Definições de conteúdo<ph name="END_LINK" />.</translation>
+<translation id="7669493687462784703">Quer continuar a transferir um perfil de configuração de <ph name="WEBSITE" />?</translation>
 <translation id="7671141431838911305">INSTALAR</translation>
 <translation id="7673346542062368520">Pode deslizar rapidamente para a esquerda para navegar na Navegação anónima.</translation>
 <translation id="7679915578945954324">Endereços dos sites copiados</translation>
@@ -1524,6 +1529,7 @@ Os sites podem utilizar cookies para ver a sua atividade de navegação em difer
 <translation id="891282356902782456">Esta palavra-passe está guardada apenas neste dispositivo. Para usá-la nos seus outros dispositivos, guarde-a na sua Conta Google, <ph name="EMAIL" />.</translation>
 <translation id="8917490105272468696">Sim, aceito</translation>
 <translation id="8928133177108699615">Computador</translation>
+<translation id="8937676484307616731">Ative as notificações de <ph name="FEATURE_NAME" /></translation>
 <translation id="894191600409472540">Crie palavras-passe fortes</translation>
 <translation id="8952559610785099500">Adicione uma palavra-passe</translation>
 <translation id="8953046091948372197">As suas palavras-passe são apresentadas aqui</translation>

@@ -66,6 +66,7 @@
 <translation id="2228071138934252756">Laita kamera päälle myös <ph name="BEGIN_LINK" />Androidin asetuksista<ph name="END_LINK" />, jotta <ph name="APP_NAME" /> saa pääsyn kameraasi.</translation>
 <translation id="2235344399760031203">Kolmannen osapuolen evästeet on estetty</translation>
 <translation id="2238944249568001759">Viime välilehteen perustuvat hakuehdotukset</translation>
+<translation id="2241587408274973373">Uusi välilehti ‐sivun kortit</translation>
 <translation id="2241634353105152135">Vain kerran</translation>
 <translation id="2253414712144136228">Poista <ph name="NAME_OF_LIST_ITEM" /></translation>
 <translation id="2253989982043948086">{NUM_SELECTED,plural, =1{1 sivusto estetty}other{# sivustoa estetty}}</translation>
@@ -281,6 +282,7 @@
 <translation id="5706552988683188916">Tämä poistaa evästeet ja muun sivustodatan täällä: <ph name="WEBSITE" /></translation>
 <translation id="5723967018671998714">Kolmannen osapuolen evästeet estetään incognito-tilassa</translation>
 <translation id="5740126560802162366">Sivustot voivat tallentaa dataa laitteellesi</translation>
+<translation id="5749158352074143502">Jatka tällä välilehdellä</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" /> estetty</translation>
 <translation id="5804241973901381774">Luvat</translation>
 <translation id="5844448279347999754">Kun tämä on päällä, sivustot voivat pyytää leikepöydälle tallennettujen tekstien ja kuvien näkemistä. Kun tämä on pois päältä, sivustot eivät näe leikepöydälle tallennettuja tekstejä tai kuvia.</translation>
@@ -421,6 +423,7 @@
 <translation id="7990211076305263060">Kun tämä on päällä, sivustot voivat pyytää lupaa mikrofonin käyttöön. Kun tämä on pois päältä, sivustot eivät voi käyttää mikrofonia.</translation>
 <translation id="8007176423574883786">Ei käytössä tällä laitteella</translation>
 <translation id="802154636333426148">Lataus epäonnistui.</translation>
+<translation id="8024161440284949905">Jatka näillä välilehdillä</translation>
 <translation id="8042586301629853791">Lajitteluperuste:</translation>
 <translation id="8067883171444229417">Toista video</translation>
 <translation id="8068648041423924542">Varmenteen valinta epäonnistui</translation>

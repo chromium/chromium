@@ -66,6 +66,7 @@
 <translation id="2228071138934252756">Para que <ph name="APP_NAME" /> pueda acceder a tu cámara, activa la cámara también en los <ph name="BEGIN_LINK" />ajustes de Android<ph name="END_LINK" />.</translation>
 <translation id="2235344399760031203">Se han bloqueado las cookies de terceros</translation>
 <translation id="2238944249568001759">Búsquedas sugeridas basadas en la última pestaña</translation>
+<translation id="2241587408274973373">Tarjetas de la página Nueva pestaña</translation>
 <translation id="2241634353105152135">Solo una vez</translation>
 <translation id="2253414712144136228"><ph name="NAME_OF_LIST_ITEM" /> Eliminar</translation>
 <translation id="2253989982043948086">{NUM_SELECTED,plural, =1{1 sitio bloqueado}other{# sitios bloqueados}}</translation>
@@ -281,6 +282,7 @@
 <translation id="5706552988683188916">Esta acción eliminará las cookies y otros datos de sitios de <ph name="WEBSITE" /></translation>
 <translation id="5723967018671998714">Las cookies de terceros están bloqueadas en el modo Incógnito</translation>
 <translation id="5740126560802162366">Los sitios pueden guardar datos en tu dispositivo</translation>
+<translation id="5749158352074143502">Continuar con esta pestaña</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" /> bloqueado</translation>
 <translation id="5804241973901381774">Permisos</translation>
 <translation id="5844448279347999754">Cuando esta opción está activada, los sitios pueden solicitar permiso para ver el texto y las imágenes que se han guardado en tu portapapeles. Si está desactivada, los sitios no pueden ver el texto ni las imágenes que se han guardado en tu portapapeles.</translation>
@@ -421,6 +423,7 @@
 <translation id="7990211076305263060">Cuando esta opción está activada, los sitios pueden solicitar permiso para usar tu micrófono. Si está desactivada, los sitios no pueden usar tu micrófono.</translation>
 <translation id="8007176423574883786">Desactivada para este dispositivo</translation>
 <translation id="802154636333426148">No se ha podido descargar el archivo</translation>
+<translation id="8024161440284949905">Continuar con estas pestañas</translation>
 <translation id="8042586301629853791">Ordenar por:</translation>
 <translation id="8067883171444229417">Reproducir vídeo</translation>
 <translation id="8068648041423924542">No se puede seleccionar el certificado.</translation>

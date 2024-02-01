@@ -43,6 +43,7 @@
 <translation id="2168108852149185974">ส่วนเสริมบางรายการทำให้ Chromium ขัดข้อง โปรดถอนการติดตั้ง:</translation>
 <translation id="2178608107313874732">Chromium ไม่สามารถใช้กล้องถ่ายรูปได้ในขณะนี้</translation>
 <translation id="2195025571279539885">คุณต้องการให้ Chromium เสนอการแปลหน้าภาษา<ph name="LANGUAGE_NAME" />จากเว็บไซต์นี้ในครั้งถัดไปไหม</translation>
+<translation id="2216344354848599203">กดไอคอน Chromium ค้างไว้แล้วคลิก "แก้ไขหน้าจอหลัก"</translation>
 <translation id="2218146227246548550">องค์กรกำหนดให้คุณต้องลงชื่อเพื่อเข้าใช้ Chromium <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /></translation>
 <translation id="22313767259766852">บันทึกที่อยู่นี้ไว้ใน Chromium แล้ว หากต้องการใช้ในผลิตภัณฑ์ต่างๆ ของ Google ให้บันทึกไว้ในบัญชี Google <ph name="USER_EMAIL" /></translation>
 <translation id="2236584955986023187">ซึ่งหมายความว่า Chromium จะขอเว็บไซต์ในเดสก์ท็อปทุกครั้ง</translation>
@@ -191,6 +192,7 @@
 <translation id="632825460376924298">อนุญาตให้ลงชื่อเข้าใช้ Chromium</translation>
 <translation id="6337530241089703714">เลือกว่าจะล้างข้อมูล Chromium จากอุปกรณ์นี้หรือเก็บไว้</translation>
 <translation id="6348483005826990855">3. เลือก Chromium</translation>
+<translation id="6383607155624074112">เข้าถึง Chromium ได้เร็วขึ้นจากแถบแอปในหน้าจอหลัก</translation>
 <translation id="6407399265324739055">จะไม่มีการเข้ารหัสวิธีการชำระเงินและที่อยู่ ประวัติการท่องเว็บจาก Chromium จะไม่ซิงค์
 
 เฉพาะผู้ที่มีรหัสผ่านของคุณเท่านั้นที่จะอ่านข้อมูลที่เข้ารหัสได้ Google จะไม่ได้รับหรือจัดเก็บรหัสผ่านดังกล่าว หากลืมรหัสผ่านหรือต้องการเปลี่ยนการตั้งค่านี้ ให้<ph name="BEGIN_LINK" />ล้างข้อมูล Chromium ในบัญชี<ph name="END_LINK" /></translation>

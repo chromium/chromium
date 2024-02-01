@@ -883,7 +883,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="2674804415323431591">Amaga els suggeriments</translation>
 <translation id="2677696497921480781">Aniversaris i efemèrides</translation>
 <translation id="2677748264148917807">Surt</translation>
-<translation id="2678468611080193228">Prova de permetre temporalment les galetes de tercers; la protecció serà menor, però és més probable que les funcions del lloc web estiguin disponibles</translation>
 <translation id="2686919536310834199">Envia suggeriments sobre la funció Ajuda'm a escriure.</translation>
 <translation id="2687555958734450033">Mida òptima</translation>
 <translation id="2688186765492306706">500 x 760 mm</translation>
@@ -1102,7 +1101,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="3157931365184549694">Restaura</translation>
 <translation id="3158539265159265653">Disc</translation>
 <translation id="3162559335345991374">És possible que la xarxa Wi-Fi que esteu fent servir requereixi que visiteu la seva pàgina d'inici de sessió.</translation>
-<translation id="3166370127092388416">{NUM_COOKIES,plural, =0{Galetes de tercers; no es permeten llocs web.}=1{Galetes de tercers; es permet 1 lloc web.}other{Galetes de tercers; es permeten # llocs web.}}</translation>
 <translation id="3168744840365648658">Equips de ràdio</translation>
 <translation id="3169472444629675720">Discover</translation>
 <translation id="3171703252520926121">Serveis immobiliaris</translation>
@@ -1161,7 +1159,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="3262698603497362968">Opcions de compra</translation>
 <translation id="3266367459139339908">Llançarem noves maneres de limitar la informació que els llocs web poden obtenir sobre tu quan et mostren anuncis personalitzats, per exemple:</translation>
 <translation id="3266793032086590337">Valor (en conflicte)</translation>
-<translation id="3266972086368072861">{NUM_COOKIES,plural, =0{No s'ha bloquejat cap lloc web, ni cap lloc web relacionat}=1{S'ha bloquejat 1 lloc web, inclosos els llocs web relacionats}other{S'han bloquejat # llocs web, inclosos els llocs web relacionats}}</translation>
 <translation id="3268451620468152448">Pestanyes obertes</translation>
 <translation id="3270041629388773465">Desa els CVC per tramitar les compres més ràpidament</translation>
 <translation id="3270156322180235608">Viatges aeris</translation>
@@ -1206,7 +1203,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="3359565626472459400">Matrimoni</translation>
 <translation id="3360103848165129075">Full del gestor de pagaments</translation>
 <translation id="3360313521703038580">Ecologia i medi ambient</translation>
-<translation id="3360753465334942529">{NUM_COOKIES,plural, =0{Galetes de tercers; no hi ha cap lloc web bloquejat.}=1{Galetes de tercers; 1 lloc web bloquejat.}other{Galetes de tercers; # llocs web bloquejats.}}</translation>
 <translation id="3362968246557010467">Aquesta política s'ha copiat automàticament de la política <ph name="OLD_POLICY" />, que està obsoleta. Hauries de fer servir aquesta política.</translation>
 <translation id="3364869320075768271"><ph name="URL" /> vol utilitzar les teves dades i els teus dispositius de realitat virtual</translation>
 <translation id="3366477098757335611">Mostra les targetes</translation>
@@ -1610,7 +1606,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="4151403195736952345">Utilitza el valor predeterminat global (detecta)</translation>
 <translation id="4152318981910038897">{COUNT,plural, =1{Pàgina 1}other{Pàgina {COUNT}}}</translation>
 <translation id="4154277373259957087">Chrome verificarà la teva identitat abans d'emplenar les formes de pagament. Pots actualitzar aquesta informació en qualsevol moment a <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" />.</translation>
-<translation id="4159149286839604525">Això significa que la majoria de funcions del lloc web estaran disponibles, però tindràs menys protecció</translation>
 <translation id="4159784952369912983">Porpra</translation>
 <translation id="4165986682804962316">Configuració del lloc web</translation>
 <translation id="4169535189173047238">No permetis</translation>
@@ -2033,7 +2028,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="4983145717627482381">Visites guiades i vacances en grup</translation>
 <translation id="498323057460789381">Error de validació de l'esquema: <ph name="ERROR" /></translation>
 <translation id="4984088539114770594">Vols utilitzar el micròfon?</translation>
-<translation id="4985206706500620449">Has permès les galetes de tercers en aquest lloc web</translation>
 <translation id="4989163558385430922">Mostra-ho tot</translation>
 <translation id="4989542687859782284">No disponibles</translation>
 <translation id="4989809363548539747">Aquest connector no és compatible</translation>
@@ -2249,7 +2243,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="5414511064953050917">Mou igualment</translation>
 <translation id="5421136146218899937">Esborra dades de navegació...</translation>
 <translation id="5423269318075950257">Fes un seguiment del preu</translation>
-<translation id="5425241977284572032">{NUM_COOKIES,plural, =0{No s'ha bloquejat cap lloc web}=1{S'ha bloquejat 1 lloc web}other{S'han bloquejat # llocs web}}</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> et vol enviar notificacions</translation>
 <translation id="5430298929874300616">Suprimeix l'adreça d'interès</translation>
 <translation id="5434798570900738152">Chromium <ph name="BEGIN_EMPHASIS" />no desarà<ph name="END_EMPHASIS" />:
@@ -2807,7 +2800,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="6521745193039995384">No activa</translation>
 <translation id="6524830701589638230">Botó Gestiona la configuració d'accessibilitat: activa'l per personalitzar les eines d'accessibilitat a la configuració de Chrome</translation>
 <translation id="6529173248185917884">Setè corró</translation>
-<translation id="652937045869844725">Prova de permetre les galetes de tercers; la protecció serà menor, però és més probable que les funcions del lloc web estiguin disponibles</translation>
 <translation id="6529602333819889595">&amp;Refés la supressió</translation>
 <translation id="6535751101619004418">Monedes i canvi de divisa</translation>
 <translation id="6536221421038631327">En suprimir una subscripció de Passpoint del teu <ph name="DEVICE_TYPE" />, se suprimiran les xarxes associades. Contacta amb <ph name="FRIENDLY_NAME" /> per fer canvis al pla de subscripció. <ph name="LEARN_MORE" /></translation>
@@ -3163,7 +3155,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="7221855153210829124">Mostrar notificacions</translation>
 <translation id="7221857374443660083">El banc vol confirmar la teva identitat</translation>
 <translation id="722454870747268814">Pestanya d'incògnit nova</translation>
-<translation id="7226276626900992675">Has permès que aquest lloc web utilitzi galetes de tercers. Això significa que la majoria de funcions del lloc web estaran disponibles, però tindràs menys protecció.</translation>
 <translation id="7227293336683593977">Historial de preus</translation>
 <translation id="7227747683324411744">Els atacants del lloc web que proves de visitar poden enganyar-te perquè instal·lis programari nociu que afecti la manera com navegues. Per exemple, poden canviar-te la pàgina d'inici o mostrar-te anuncis addicionals als llocs web que visites.</translation>
 <translation id="7233592378249864828">Imprimeix el full de confirmació</translation>
@@ -3782,7 +3773,6 @@ Detalls addicionals:
 <translation id="8398335999901363925">Les formes de pagament disponibles que es poden emplenar amb un toc s'han obert a alçada completa.</translation>
 <translation id="8398446215576328011">Reverteix les polítiques aplicades</translation>
 <translation id="8398790343843005537">Troba el teu telèfon</translation>
-<translation id="8401772916834964810">{COUNT,plural, =0{Chrome tornarà a bloquejar les galetes avui}=1{Chrome tornarà a bloquejar les galetes demà}other{# dies perquè Chrome torni a bloquejar les galetes}}</translation>
 <translation id="8403506619177967839">Fanficció</translation>
 <translation id="8405579342203358118">Gestiona la informació que sincronitzes a la configuració de Chrome</translation>
 <translation id="8406071103346257942">deixar d'utilitzar el bloqueig de pantalla per emplenar les contrasenyes</translation>

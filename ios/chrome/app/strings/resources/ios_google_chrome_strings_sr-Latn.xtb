@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="sr-Latn">
+<translation id="1021782183249308751">Pritisnite i zadržite ikonu Chrome-a, pa kliknite na Izmenite početni ekran</translation>
 <translation id="1066101356081285416">Chrome otkriva brojeve za praćenje na sajtovima koje posećujete i prikazuje vam novosti o paketima na stranici Nova kartica. Broj za praćenje paketa i naziv veb-sajta se šalju Google-u radi pružanja ove funkcije i poboljšanja funkcija Google kupovine za sve. To možete da ažurirate u svakom trenutku u <ph name="BEGIN_LINK" />podešavanjima praćenja paketa<ph name="END_LINK" />.</translation>
 <translation id="1085696779717592361">Podrazumevano koristite Chrome</translation>
 <translation id="1105362920864247682">Obrišite podatke pregledanja u Chrome-u.</translation>
@@ -96,6 +97,7 @@ Samo neko ko ima pristupnu frazu može da čita šifrovane podatke. Pristupna fr
 <translation id="3345341804167540816">Koristite Chrome svuda</translation>
 <translation id="3360031466389132716">{THRESHOLD,plural, =1{To se dešava kada se Chrome ne koristi {THRESHOLD} minut}one{To se dešava kada se Chrome ne koristi {THRESHOLD} minut}few{To se dešava kada se Chrome ne koristi {THRESHOLD} minuta}other{To se dešava kada se Chrome ne koristi {THRESHOLD} minuta}}</translation>
 <translation id="3399930248910934354">Otvori podešavanja Chrome-a</translation>
+<translation id="344736123700721678">Brže pristupajte Chrome-u sa fiksiranog početnog ekrana</translation>
 <translation id="3472587960215700950">Chrome koristi Google mape da bi vam pružao putanju i lokalne informacije o otkrivenim adresama.</translation>
 <translation id="3503014945441706099">Nabavite poboljšano bezbedno pregledanje i za ovaj Chrome profil</translation>
 <translation id="3522659714780527202">Da biste videli kartice na bilo kojem uređaju na kom koristite Chrome, uključite sinhronizaciju</translation>
@@ -177,12 +179,15 @@ Samo neko ko ima pristupnu frazu može da čita šifrovane podatke. Pristupna fr
 <translation id="6054613632208573261">Podrazumevano koristite Chrome</translation>
 <translation id="6063091872902370735">Dozvolite prijavljivanje u Chrome</translation>
 <translation id="6110625574506755980">Neke Chrome funkcije više neće biti dostupne.</translation>
+<translation id="6132149203299792222">Prijavite se pomoću Google naloga da biste sinhronizovali lozinke, obeleživače i drugo.</translation>
 <translation id="6177442314419606057">Pretražite u Chrome-u</translation>
 <translation id="6181930887571472871">Pređite na Chrome</translation>
 <translation id="6238746320622508509">Dozvolite Chrome-u da zaključa kartice bez arhiviranja.</translation>
 <translation id="6247557882553405851">Google menadžeru lozinki</translation>
+<translation id="6272822675004864999">Uključite obaveštenja u podešavanjima iOS-a da biste dobijali obaveštenja iz Chrome-a.</translation>
 <translation id="630693926528731525">Lozinka se ne deli. Proverite internet vezu i uverite se da ste prijavljeni u Chrome. Onda probajte ponovo.</translation>
 <translation id="6348855835728304880">Pristupajte Chrome lozinkama i ostalim funkcijama u drugim aplikacijama na ovom uređaju.</translation>
+<translation id="6389317667633680932">Istražite nove funkcije koje vam pomažu da maksimalno iskoristite Chrome.</translation>
 <translation id="6412673304250309937">Proverava URL-ove sa listom nebezbednih sajtova koji se čuvaju u Chrome-u. Ako neki sajt pokuša da ukrade vašu lozinku ili probate da preuzmete štetnu datoteku, Chrome može da pošalje URL-ove, uključujući delove sadržaja stranice, u Bezbedno pregledanje.</translation>
 <translation id="6427126399757991875">Vaša organizacija podešava Chrome...</translation>
 <translation id="6484712497741564393">Prijavljeni ste kao <ph name="EMAIL" />.
@@ -214,8 +219,10 @@ Još podešavanja koja koriste podatke za poboljšanje doživljaja Chrome-a potr
 <translation id="7124339256045485976">Redovno ažuriraju Chrome</translation>
 <translation id="7161390184744336561">Google Chrome je zastareo</translation>
 <translation id="7165736900384873061">Počnite da koristite Google Chrome QR skener</translation>
+<translation id="7175129790242719365">Savet za Chrome: Prijavite se u Chrome</translation>
 <translation id="7187993566681480880">Štiti vas u Chrome-u i može da se koristi za poboljšanje bezbednosti u drugim Google aplikacijama kada ste prijavljeni.</translation>
 <translation id="7200524487407690471">Chrome automatski pokreće Proveru bezbednosti svakog dana da bi vas zaštitio od povrede podataka, nebezbednih veb-sajtova i drugog. Više o Proveri bezbednosti možete da pronađete u Podešavanjima.</translation>
+<translation id="7203324561587388418">Budite u toku sa sadržajem i korisnim savetima za Chrome.</translation>
 <translation id="72119412072970160">Možete da koristite lozinke koje ste sačuvali u Google menadžeru lozinki u drugim aplikacijama na iPad-u.</translation>
 <translation id="723787869754590019">Koristite Chrome za automatsko popunjavanje</translation>
 <translation id="7254380941803999489">Podesi Chrome kao podrazumevani pregledač</translation>
@@ -244,6 +251,8 @@ Još podešavanja koja koriste podatke za poboljšanje doživljaja Chrome-a potr
 <translation id="7897703007638178753">Pogledajte nedavne kartice u Chrome-u</translation>
 <translation id="7925119591961387184">Izaberite „Chrome“.</translation>
 <translation id="7933491483529363150">Otvorite najnoviju karticu u Chrome-u.</translation>
+<translation id="7948283758957877064">Šta je novo u Chrome-u</translation>
+<translation id="8006014511203279255">Koristite Chrome svaki put kada dodirnete linkove u porukama i drugim aplikacijama.</translation>
 <translation id="8022947259858476807">Podrazumevano koristite Chrome da biste otvarali linkove, pretraživali iz vidžeta i automatski popunjavali lozinke u drugim aplikacijama</translation>
 <translation id="804638182476029347">Dozvolite Chrome obaveštenja da biste dobijali obaveštenja o sniženjima</translation>
 <translation id="8065292699993359127">Otvorite URL-ove u Chrome-u u režimu bez arhiviranja</translation>
@@ -280,6 +289,7 @@ Podaci su šifrovani pomoću pristupne fraze <ph name="TIME" />. Unesite je da 
 <translation id="8765470054473112089">Kada kucate u traci za adresu ili u okviru za pretragu, Chrome šalje tekst koji unosite podrazumevanom pretraživaču da biste dobijali bolje predloge. Ovo je isključeno u režimu bez arhiviranja.</translation>
 <translation id="8772179140489533211">Prikazuje upite za prijavljivanje u Chrome.</translation>
 <translation id="8788269841521769222">Ne morate da zapamtite ovu lozinku. Čuva se u Google menadžeru lozinki za <ph name="EMAIL" /></translation>
+<translation id="878917453316810648">Savet za Chrome: Podrazumevano koristite Chrome</translation>
 <translation id="8808828119384186784">Podešavanje Chrome-a</translation>
 <translation id="8855781063981781621">Da biste onemogućili režim zaključavanja u Chrome-u, isključite ga na iPad-u.</translation>
 <translation id="8856877214925961642">Šifrovanje pomoću pristupne fraze ne obuhvata načine plaćanja i adrese.

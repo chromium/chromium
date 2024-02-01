@@ -607,9 +607,11 @@
 <translation id="3526440770046466733">ბმულის გახსნა ახალ ჩანართზე და მიმდინარე ჩანართზე დარჩენა</translation>
 <translation id="353086728817903341">დაკავშირებულია <ph name="NUM_DEVICES" /> მოწყობილობასთან</translation>
 <translation id="3533126039236445965">აპები თაროზე</translation>
+<translation id="3537350467437346467">თქვენ ნახეთ</translation>
 <translation id="3539957339480430241"><ph name="DEVICE_NAME" />-ის უსადენო ქსელი</translation>
 <translation id="3540893133818942399">თქვენი ტელეფონის ბოლოდროინდელი ფოტოებისა და მედიაფაილების ნახვის დაყენების დახურვა</translation>
 <translation id="3542066395059568317">თქვენ იხილავთ რეკომენდაციებს, რომ შეძლოთ იქიდან გაგრძელება, სადაც შეჩერდით. რეკომენდაციების ამოშლა შეგიძლიათ მარჯვენა დაწკაპუნებით.</translation>
+<translation id="3547318469722231257">თქვენ შეცვალეთ</translation>
 <translation id="3552189655002856821">Wi-Fi გამორთულია</translation>
 <translation id="3554215588514239132">დეველოპერის ხელსაწყოების კონსოლის პანელის ან დამალვა</translation>
 <translation id="3554637740840164787"><ph name="ITEM_TITLE" /> ჩამაგრებულია</translation>
@@ -701,6 +703,7 @@
 <translation id="385300504083504382">დასაწყისი</translation>
 <translation id="3859364108019690">აპების სტრიმინგი ვერ ხერხდება</translation>
 <translation id="3861651314799684201">ეკრანის სრულად ჩასაწერად დააჭირეთ Enter-ს</translation>
+<translation id="3882323608730650973">შეცვლილი</translation>
 <translation id="3886872229787704059">დღეს გახსნილი</translation>
 <translation id="3891340733213178823">დააჭირეთ Ctrl+Shift+Q ორჯერ, რათა გამოხვიდეთ.</translation>
 <translation id="3893630138897523026">ChromeVox (ხმოვანი შეფასება)</translation>
@@ -894,6 +897,7 @@
 <translation id="4582666543382004902">უსადენო ქსელი გამოირთო Wi-Fi ქსელის გამოსაყენებლად. უსადენო ქსელი რომ გამოიყენოთ, გამორთეთ Wi-Fi.</translation>
 <translation id="4585337515783392668">ტრანსლირების შეწყვეტა უცნობ მიმღებში</translation>
 <translation id="4596144739579517758">მუქი თემა გამორთულია</translation>
+<translation id="4596442969149038771"><ph name="USER" />-მა გააზიარა</translation>
 <translation id="4611292653554630842">შესვლა</translation>
 <translation id="462160925400706389">დაკავშირებულია <ph name="NAME" /></translation>
 <translation id="4623167406982293031">დაადასტურეთ ანგარიში</translation>
@@ -1815,6 +1819,7 @@
 <translation id="8314772463905284467">Caps Lock ჩართულია</translation>
 <translation id="8315514906653279104">მიმდინარეობს ჩართვა...</translation>
 <translation id="8331351032546853669">ჩამოტვირთვა მოლოდინის რეჟიმშია</translation>
+<translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
 <translation id="8345019317483336363">არჩეულია ფანჯარა „<ph name="WINDOW_TITLE" />“</translation>
 <translation id="8349826889576450703">გამშვები</translation>
@@ -2034,6 +2039,7 @@
 <translation id="953431725143473984">გსურთ, გამორთოთ მოწყობილობა?</translation>
 <translation id="954052413789300507"><ph name="FILENAME" /> ვერ ჩამოიტვირთება არასაკმარისი სივრცის გამო. გაათავისუფლეთ მეხსიერება.</translation>
 <translation id="954520015070501466">30 წთ</translation>
+<translation id="954786879461589145"><ph name="USER" />-მა შეცვალა</translation>
 <translation id="974545358917229949">ნაჩვენებია <ph name="RESULT_COUNT" /> შედეგი მოთხოვნაზე: <ph name="QUERY" /></translation>
 <translation id="981011780479609956">შესრულების ვადის გარეშე</translation>
 <translation id="98120814841227350">დოკუმენტის ბოლოში გადასვლა</translation>

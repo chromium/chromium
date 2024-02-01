@@ -883,7 +883,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="2674804415323431591">Ẩn các đề xuất</translation>
 <translation id="2677696497921480781">Sinh nhật và ngày đặt tên</translation>
 <translation id="2677748264148917807">Rời khỏi</translation>
-<translation id="2678468611080193228">Hãy thử tạm thời cho phép cookie của bên thứ ba. Chế độ cài đặt này làm giảm khả năng bảo vệ nhưng các tính năng của trang web sẽ có khả năng hoạt động cao hơn</translation>
 <translation id="2686919536310834199">Gửi phản hồi về tính năng Giúp tôi viết.</translation>
 <translation id="2687555958734450033">Phù hợp nhất</translation>
 <translation id="2688186765492306706">500 x 760 mm</translation>
@@ -1102,7 +1101,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="3157931365184549694">Khôi phục</translation>
 <translation id="3158539265159265653">Đĩa</translation>
 <translation id="3162559335345991374">Wi-Fi mà bạn đang sử dụng có thể yêu cầu bạn phải truy cập trang đăng nhập của mạng đó.</translation>
-<translation id="3166370127092388416">{NUM_COOKIES,plural, =0{Cookie của bên thứ ba, Không cho phép trang web nào}=1{Cookie của bên thứ ba, Cho phép 1 trang web}other{Cookie của bên thứ ba, Cho phép # trang web}}</translation>
 <translation id="3168744840365648658">Thiết bị vô tuyến</translation>
 <translation id="3169472444629675720">Khám phá</translation>
 <translation id="3171703252520926121">Dịch vụ bất động sản</translation>
@@ -1161,7 +1159,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="3262698603497362968">Các lựa chọn mua hàng</translation>
 <translation id="3266367459139339908">Chúng tôi sắp ra mắt những cách mới để hạn chế những gì trang web có thể tìm hiểu về bạn khi cho bạn xem quảng cáo được cá nhân hoá, ví dụ:</translation>
 <translation id="3266793032086590337">Giá trị (xung đột)</translation>
-<translation id="3266972086368072861">{NUM_COOKIES,plural, =0{Không có trang web nào bị chặn, kể cả trang web có liên quan}=1{Đã chặn 1 trang web, kể cả trang web có liên quan}other{Đã chặn # trang web, kể cả trang web có liên quan}}</translation>
 <translation id="3268451620468152448">Thẻ đang mở</translation>
 <translation id="3270041629388773465">Bạn sẽ thanh toán nhanh hơn khi lưu mã CVC</translation>
 <translation id="3270156322180235608">Du lịch hàng không</translation>
@@ -1206,7 +1203,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="3359565626472459400">Hôn nhân</translation>
 <translation id="3360103848165129075">Trang tính trình xử lý thanh toán</translation>
 <translation id="3360313521703038580">Hệ sinh thái và môi trường</translation>
-<translation id="3360753465334942529">{NUM_COOKIES,plural, =0{Cookie của bên thứ ba, Không chặn trang web nào}=1{Cookie của bên thứ ba, Chặn 1 trang web}other{Cookie của bên thứ ba, Chặn # trang web}}</translation>
 <translation id="3362968246557010467">Chính sách này được sao chép tự động từ chính sách <ph name="OLD_POLICY" /> không còn dùng nữa. Thay vào đó, bạn nên sử dụng chính sách này.</translation>
 <translation id="3364869320075768271"><ph name="URL" /> muốn sử dụng dữ liệu và thiết bị thực tế ảo của bạn</translation>
 <translation id="3366477098757335611">Xem thẻ</translation>
@@ -1610,7 +1606,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="4151403195736952345">Sử dụng giá trị mặc định chung (Phát hiện)</translation>
 <translation id="4152318981910038897">{COUNT,plural, =1{Trang 1}other{Trang {COUNT}}}</translation>
 <translation id="4154277373259957087">Từ giờ trở đi, Chrome sẽ xác minh danh tính của bạn trước khi điền phương thức thanh toán. Bạn có thể cập nhật lựa chọn này bất cứ lúc nào trong phần <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" />.</translation>
-<translation id="4159149286839604525">Chế độ cài đặt này làm giảm khả năng bảo vệ nhưng hầu hết các tính năng của trang web sẽ hoạt động</translation>
 <translation id="4159784952369912983">Tím</translation>
 <translation id="4165986682804962316">Chế độ cài đặt trang web</translation>
 <translation id="4169535189173047238">Không cho phép</translation>
@@ -2033,7 +2028,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="4983145717627482381">Chuyến tham quan có hướng dẫn viên và kỳ nghỉ theo đoàn</translation>
 <translation id="498323057460789381">Lỗi xác thực giản đồ: <ph name="ERROR" /></translation>
 <translation id="4984088539114770594">Sử dụng micrô?</translation>
-<translation id="4985206706500620449">Bạn đã cho phép cookie của bên thứ ba trên trang web này</translation>
 <translation id="4989163558385430922">Xem tất cả</translation>
 <translation id="4989542687859782284">Không được hỗ trợ</translation>
 <translation id="4989809363548539747">Plugin này không được hỗ trợ</translation>
@@ -2249,7 +2243,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="5414511064953050917">Vẫn chuyển</translation>
 <translation id="5421136146218899937">Xoá dữ liệu duyệt web...</translation>
 <translation id="5423269318075950257">Theo dõi giá</translation>
-<translation id="5425241977284572032">{NUM_COOKIES,plural, =0{Không có trang web nào bị chặn}=1{1 trang web bị chặn}other{# trang web bị chặn}}</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> muốn gửi thông báo cho bạn</translation>
 <translation id="5430298929874300616">Xóa dấu trang</translation>
 <translation id="5434798570900738152">Chromium <ph name="BEGIN_EMPHASIS" />sẽ không lưu<ph name="END_EMPHASIS" />:
@@ -2807,7 +2800,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="6521745193039995384">Không hoạt động</translation>
 <translation id="6524830701589638230">Nút Quản lý chế độ cài đặt hỗ trợ tiếp cận, hãy nhấn nút này để cá nhân hoá các công cụ hỗ trợ tiếp cận của bạn trong phần cài đặt của Chrome</translation>
 <translation id="6529173248185917884">Cuộn thứ bảy</translation>
-<translation id="652937045869844725">Hãy thử cho phép cookie của bên thứ ba. Chế độ cài đặt này làm giảm khả năng bảo vệ nhưng các tính năng của trang web sẽ có khả năng hoạt động cao hơn</translation>
 <translation id="6529602333819889595">&amp;Làm lại xóa</translation>
 <translation id="6535751101619004418">Đơn vị tiền tệ và ngoại hối</translation>
 <translation id="6536221421038631327">Nếu bạn xoá gói thuê bao Passpoint khỏi <ph name="DEVICE_TYPE" />, các mạng liên kết cũng sẽ bị xoá. Hãy liên hệ với "<ph name="FRIENDLY_NAME" />" nếu bạn muốn thực hiện các thay đổi đối với gói thuê bao. <ph name="LEARN_MORE" /></translation>
@@ -3163,7 +3155,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="7221855153210829124">Hiện thông báo</translation>
 <translation id="7221857374443660083">Ngân hàng của bạn muốn đảm bảo rằng đây là bạn</translation>
 <translation id="722454870747268814">Thẻ ẩn danh mới</translation>
-<translation id="7226276626900992675">Bạn đã cho phép trang web này sử dụng cookie của bên thứ ba. Chế độ cài đặt này làm giảm khả năng bảo vệ nhưng hầu hết các tính năng của trang web sẽ hoạt động.</translation>
 <translation id="7227293336683593977">Giá theo thời gian</translation>
 <translation id="7227747683324411744">Những kẻ tấn công trên trang web bạn đang cố gắng truy cập có thể lừa bạn cài đặt phần mềm độc hại gây ảnh hưởng đến cách bạn duyệt web – chẳng hạn như bằng cách thay đổi trang chủ hoặc hiển thị thêm quảng cáo trên các trang web bạn truy cập.</translation>
 <translation id="7233592378249864828">In tờ xác nhận</translation>
@@ -3782,7 +3773,6 @@ Thông tin chi tiết bổ sung:
 <translation id="8398335999901363925">Các phương thức thanh toán có thể điền bằng thao tác chạm đã mở trên toàn màn hình.</translation>
 <translation id="8398446215576328011">Huỷ bỏ chính sách đã áp dụng</translation>
 <translation id="8398790343843005537">Tìm điện thoại của bạn</translation>
-<translation id="8401772916834964810">{COUNT,plural, =0{Hôm nay, Chrome sẽ chặn cookie trở lại}=1{Chrome sẽ chặn cookie trở lại vào ngày mai}other{Chrome sẽ chặn cookie trở lại sau # ngày nữa}}</translation>
 <translation id="8403506619177967839">Hư cấu</translation>
 <translation id="8405579342203358118">Quản lý loại thông tin bạn đồng bộ hóa trong phần Cài đặt của Chrome</translation>
 <translation id="8406071103346257942">ngừng sử dụng phương thức khoá màn hình để điền mật khẩu</translation>

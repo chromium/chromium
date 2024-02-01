@@ -884,7 +884,6 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="2674804415323431591">Slėpti pasiūlymus</translation>
 <translation id="2677696497921480781">Gimtadieniai ir vardadieniai</translation>
 <translation id="2677748264148917807">Išeiti</translation>
-<translation id="2678468611080193228">Pabandykite laikinai leisti trečiųjų šalių slapukus, o tai reiškia, kad turėsite mažiau apsaugos, bet labiau tikėtina, kad svetainės funkcijos veiks</translation>
 <translation id="2686919536310834199">Siųsti atsiliepimą apie funkciją „Padėkite man rašyti“.</translation>
 <translation id="2687555958734450033">Geriausias dydis</translation>
 <translation id="2688186765492306706">500 x 760 mm</translation>
@@ -1104,7 +1103,6 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="3157931365184549694">Atkurti</translation>
 <translation id="3158539265159265653">Diskas</translation>
 <translation id="3162559335345991374">Naudojant šį „Wi-Fi“ tinklą gali būti prašoma apsilankyti prisijungimo puslapyje.</translation>
-<translation id="3166370127092388416">{NUM_COOKIES,plural, =0{Trečiosios šalies slapukai, nėra leidžiamų svetainių}=1{Trečiosios šalies slapukai, leidžiama 1 svetainė}one{Trečiosios šalies slapukai, leidžiama # svetainė}few{Trečiosios šalies slapukai, leidžiamos # svetainės}many{Trečiosios šalies slapukai, leidžiama # svetainės}other{Trečiosios šalies slapukai, leidžiama # svetainių}}</translation>
 <translation id="3168744840365648658">Radijo įranga</translation>
 <translation id="3169472444629675720">Atradimas</translation>
 <translation id="3171703252520926121">Nekilnojamojo turto paslaugos</translation>
@@ -1164,7 +1162,6 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="3262698603497362968">Pirkimo parinktys</translation>
 <translation id="3266367459139339908">Pristatome naujus būdus, suteikiančius galimybę apriboti informaciją, kurią svetainės gali sužinoti apie jus teikdamos suasmenintus skelbimus. Toliau pateikiama pavyzdžių.</translation>
 <translation id="3266793032086590337">Vertė (nesuderinama)</translation>
-<translation id="3266972086368072861">{NUM_COOKIES,plural, =0{Nėra užblokuotų svetainių, įskaitant susijusias svetaines}=1{Užblokuota viena svetainė, įskaitant susijusias svetaines}one{Užblokuota # svetainė, įskaitant susijusias svetaines}few{Užblokuotos # svetainės, įskaitant susijusias svetaines}many{Užblokuota # svetainės, įskaitant susijusias svetaines}other{Užblokuota # svetainių, įskaitant susijusias svetaines}}</translation>
 <translation id="3268451620468152448">Atidaryti skirtukai</translation>
 <translation id="3270041629388773465">Sparčiau atsiskaitykite naudodami išsaugotus kortelės saugos kodus (CVC)</translation>
 <translation id="3270156322180235608">Kelionės lėktuvu</translation>
@@ -1209,7 +1206,6 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="3359565626472459400">Santuoka</translation>
 <translation id="3360103848165129075">Mokėjimo doroklės lapas</translation>
 <translation id="3360313521703038580">Ekologija ir aplinka</translation>
-<translation id="3360753465334942529">{NUM_COOKIES,plural, =0{Trečiosios šalies slapukai, nėra užblokuotų svetainių}=1{Trečiosios šalies slapukai, užblokuota 1 svetainė}one{Trečiosios šalies slapukai, užblokuota # svetainė}few{Trečiosios šalies slapukai, užblokuotos # svetainės}many{Trečiosios šalies slapukai, užblokuota # svetainės}other{Trečiosios šalies slapukai, užblokuota # svetainių}}</translation>
 <translation id="3362968246557010467">Ši politika automatiškai nukopijuota iš nebenaudojamos politikos „<ph name="OLD_POLICY" />“. Turėtumėte naudoti šią politiką vietoj senosios.</translation>
 <translation id="3364869320075768271"><ph name="URL" /> nori naudoti jūsų virtualiosios realybės įrenginį ir duomenis</translation>
 <translation id="3366477098757335611">Peržiūrėti korteles</translation>
@@ -1614,7 +1610,6 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="4151403195736952345">Naudoti visuotinį numatytąjį nustatymą (nustatyti)</translation>
 <translation id="4152318981910038897">{COUNT,plural, =1{1 psl.}one{{COUNT} psl.}few{{COUNT} psl.}many{{COUNT} psl.}other{{COUNT} psl}}</translation>
 <translation id="4154277373259957087">Dabar „Chrome“ patvirtins jūsų tapatybę prieš užpildydama mokėjimo metodus. Tai galite bet kada atnaujintI <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" />.</translation>
-<translation id="4159149286839604525">Tai reiškia, kad dauguma svetainės funkcijų turėtų veikti, bet turite mažiau apsaugos</translation>
 <translation id="4159784952369912983">Violetinė</translation>
 <translation id="4165986682804962316">Svetainės nustatymai</translation>
 <translation id="4169535189173047238">Neleisti</translation>
@@ -2038,7 +2033,6 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="4983145717627482381">Ekskursijos ir atostogos su vadovu</translation>
 <translation id="498323057460789381">Schemos patvirtinimo klaida: <ph name="ERROR" /></translation>
 <translation id="4984088539114770594">Naudoti mikrofoną?</translation>
-<translation id="4985206706500620449">Leidote trečiųjų šalių slapukus šioje svetainėje</translation>
 <translation id="4989163558385430922">Žr. viską</translation>
 <translation id="4989542687859782284">Nepasiekiama</translation>
 <translation id="4989809363548539747">Šis papildinys nepalaikomas</translation>
@@ -2255,7 +2249,6 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="5414511064953050917">Vis tiek perkelti</translation>
 <translation id="5421136146218899937">Išvalyti naršymo duomenis...</translation>
 <translation id="5423269318075950257">Kainos stebėjimas</translation>
-<translation id="5425241977284572032">{NUM_COOKIES,plural, =0{Nėra užblokuotų svetainių}=1{Užblokuota viena svetainė}one{Užblokuota # svetainė}few{Užblokuotos # svetainės}many{Užblokuota # svetainės}other{Užblokuota # svetainių}}</translation>
 <translation id="5426179911063097041">Svetainė <ph name="SITE" /> nori siųsti jums pranešimus</translation>
 <translation id="5430298929874300616">Pašalinti žymę</translation>
 <translation id="5434798570900738152">„Chromium“ <ph name="BEGIN_EMPHASIS" />nesaugos<ph name="END_EMPHASIS" />:
@@ -2815,7 +2808,6 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="6521745193039995384">Neaktyvi</translation>
 <translation id="6524830701589638230">Mygtukas „Tvarkyti pritaikomumo nustatymus“; suaktyvinkite, kad suasmenintumėte pritaikomumo įrankius „Chrome“ nustatymuose</translation>
 <translation id="6529173248185917884">Septintas ritinėlis</translation>
-<translation id="652937045869844725">Pabandykite leisti trečiųjų šalių slapukus, o tai reiškia, kad turėsite mažiau apsaugos, bet labiau tikėtina, kad svetainės funkcijos veiks</translation>
 <translation id="6529602333819889595">&amp;Ištrinti dar kartą</translation>
 <translation id="6535751101619004418">Valiuta ir valiutos keitimas</translation>
 <translation id="6536221421038631327">Pašalinus „Passpoint“ prenumeratą iš „<ph name="DEVICE_TYPE" />“ bus pašalinti susiję tinklai. Susisiekite su „<ph name="FRIENDLY_NAME" />“ ir atlikite prenumeratos plano pakeitimus. <ph name="LEARN_MORE" /></translation>
@@ -3171,7 +3163,6 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="7221855153210829124">Rodyti pranešimus</translation>
 <translation id="7221857374443660083">Bankas nori įsitikinti, kad tai jūs</translation>
 <translation id="722454870747268814">Naujas inkognito skirtukas</translation>
-<translation id="7226276626900992675">Leidote šiai svetainei naudoti trečiųjų šalių slapukus. Tai reiškia, kad dauguma svetainės funkcijų turėtų veikti, bet turite mažiau apsaugos.</translation>
 <translation id="7227293336683593977">Kainų istorija</translation>
 <translation id="7227747683324411744">Svetainės, kurioje bandote apsilankyti, atakos vykdytojai gali apgaule priversti jus įdiegti žalingą programinę įrangą, paveikiančią naršymo būdą, pvz., pakeitus pagrindinį puslapį ar rodant papildomus skelbimus svetainėse, kuriose lankotės.</translation>
 <translation id="7233592378249864828">Spausdinti patvirtinimo lapą</translation>
@@ -3791,7 +3782,6 @@ Papildoma išsami informacija:
 <translation id="8398335999901363925">Mokėjimo metodai, kuriuos galima užpildyti palietus, atidaryti per visą ekrano aukštį.</translation>
 <translation id="8398446215576328011">Grąžinti taikomą politiką</translation>
 <translation id="8398790343843005537">Suraskite savo telefoną</translation>
-<translation id="8401772916834964810">{COUNT,plural, =0{„Chrome“ vėl užblokuos slapukus šiandien}=1{„Chrome“ vėl užblokuos slapukus rytoj}one{Liko # diena, kol „Chrome“ vėl užblokuos slapukus}few{Liko # dienos, kol „Chrome“ vėl užblokuos slapukus}many{Liko # dienos, kol „Chrome“ vėl užblokuos slapukus}other{Liko # dienų, kol „Chrome“ vėl užblokuos slapukus}}</translation>
 <translation id="8403506619177967839">Mėgėjų literatūros veikalai</translation>
 <translation id="8405579342203358118">Tvarkykite sinchronizuojamą informaciją „Chrome“ nustatymuose</translation>
 <translation id="8406071103346257942">nebenaudoti ekrano užrakto slaptažodžiams užpildyti</translation>

@@ -883,7 +883,6 @@
 <translation id="2674804415323431591">सूचना लपवा</translation>
 <translation id="2677696497921480781">वाढदिवस आणि बारसे</translation>
 <translation id="2677748264148917807">सोडा</translation>
-<translation id="2678468611080193228">तृतीय पक्ष कुकीना तात्पुरती अनुमती देऊन पहा, ज्यामुळे कमी संरक्षण मिळेल, पण साइटची वैशिष्ट्ये काम करण्याची अधिक शक्यता आहे</translation>
 <translation id="2686919536310834199">मला लिहिण्यात मदत करा यासाठी फीडबॅक पाठवा.</translation>
 <translation id="2687555958734450033">सर्वोत्तम फिट</translation>
 <translation id="2688186765492306706">५०० x ७६० मिमी</translation>
@@ -1102,7 +1101,6 @@
 <translation id="3157931365184549694">पुनर्संचयित करा</translation>
 <translation id="3158539265159265653">डिस्क</translation>
 <translation id="3162559335345991374">तुम्ही वापरत असलेल्या वाय-फाय च्या लॉग इन पेजला तुम्हाला भेट देण्याची आवश्यकता असू शकते.</translation>
-<translation id="3166370127092388416">{NUM_COOKIES,plural, =0{Third-party cookies, No sites allowed}=1{तृतीय पक्ष कुकी, एका साइटला अनुमती आहे}other{तृतीय पक्ष कुकी, # साइटना अनुमती आहे}}</translation>
 <translation id="3168744840365648658">रेडिओ उपकरणे</translation>
 <translation id="3169472444629675720">Discover</translation>
 <translation id="3171703252520926121">रीअल इस्टेट सेवा</translation>
@@ -1161,7 +1159,6 @@
 <translation id="3262698603497362968">खरेदीचे पर्याय</translation>
 <translation id="3266367459139339908">साइट तुम्हाला पर्सनलाइझ केलेल्या जाहिराती दाखवतात, तेव्हा साइटना तुमच्याबद्दल कोणती माहिती मिळू शकते हे मर्यादित करण्याचे नवीन मार्ग आम्ही लाँच करत आहोत, उदाहरणार्थ:</translation>
 <translation id="3266793032086590337">मूल्य (परस्परविरोधी)</translation>
-<translation id="3266972086368072861">{NUM_COOKIES,plural, =0{No sites blocked, including related sites}=1{संबंधित साइटसह एक साइट ब्लॉक केली आहे}other{संबंधित साइटसह # साइट ब्लॉक केल्या आहेत}}</translation>
 <translation id="3268451620468152448">उघडे Tabs</translation>
 <translation id="3270041629388773465">तुमचे CVCs सेव्ह करून आणखी जलद चेक आउट करा</translation>
 <translation id="3270156322180235608">विमान प्रवास</translation>
@@ -1206,7 +1203,6 @@
 <translation id="3359565626472459400">विवाह</translation>
 <translation id="3360103848165129075">पेमेंट हँडलर शीट</translation>
 <translation id="3360313521703038580">जैवपरिस्थितिशास्त्र आणि पर्यावरण</translation>
-<translation id="3360753465334942529">{NUM_COOKIES,plural, =0{Third-party cookies, No sites blocked}=1{तृतीय पक्ष कुकी, १ साइट ब्लॉक केली}other{तृतीय पक्ष कुकी, # साइट ब्लॉक केल्या}}</translation>
 <translation id="3362968246557010467">हे धोरण कालबाह्य झालेल्या <ph name="OLD_POLICY" /> धोरणावरून आपोआप कॉपी केले गेले. तुम्ही त्याऐवजी हे धोरण वापरले पाहिजे.</translation>
 <translation id="3364869320075768271"><ph name="URL" /> ला तुमचे आभासी वास्तविकता डिव्हाइस आणि डेटा वापरायचा आहे</translation>
 <translation id="3366477098757335611">कार्डे पहा</translation>
@@ -1609,7 +1605,6 @@
 <translation id="4151403195736952345">जागतिक डीफॉल्‍ट (शोधणे) वापरा</translation>
 <translation id="4152318981910038897">{COUNT,plural, =1{पेज एक}other{पेज {COUNT}}}</translation>
 <translation id="4154277373259957087">Chrome हे आता पेमेंट पद्धती भरण्यापूर्वी तुम्हीच असल्याची पडताळणी करेल. तुम्ही हे <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" /> मध्ये कधीही अपडेट करू शकता.</translation>
-<translation id="4159149286839604525">याचा अर्थ बुहतेक साइट वैशिष्‍ट्यांनी काम केले पाहिजे, पण तुमच्याकडे कमी संरक्षण आहे</translation>
 <translation id="4159784952369912983">जांभळा</translation>
 <translation id="4165986682804962316">साइट सेटिंग्ज</translation>
 <translation id="4169535189173047238">अनुमती देऊ नका</translation>
@@ -2032,7 +2027,6 @@
 <translation id="4983145717627482381">मार्गदर्शित टूर आणि मार्गदर्शक असलेल्या सुट्ट्या</translation>
 <translation id="498323057460789381">स्कीमा पडताळणी एरर: <ph name="ERROR" /></translation>
 <translation id="4984088539114770594">मायक्रोफोन वापरायचा का?</translation>
-<translation id="4985206706500620449">तुम्ही या साइटसाठी तृतीय पक्ष कुकीना अनुमती दिली आहे</translation>
 <translation id="4989163558385430922">सर्व पहा</translation>
 <translation id="4989542687859782284">अनुपलब्ध</translation>
 <translation id="4989809363548539747">हे प्लगइन सपोर्टेड नाही</translation>
@@ -2248,7 +2242,6 @@
 <translation id="5414511064953050917">तरीही हलवा</translation>
 <translation id="5421136146218899937">ब्राउझिंग डेटा साफ करा...</translation>
 <translation id="5423269318075950257">किमतीचा माग ठेवा</translation>
-<translation id="5425241977284572032">{NUM_COOKIES,plural, =0{No sites blocked}=1{एक साइट ब्लॉक केली आहे}other{# साइट ब्लॉक केल्या आहेत}}</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> ला तुम्हाला सूचना पाठवायची आहे</translation>
 <translation id="5430298929874300616">बुकमार्क काढून टाका</translation>
 <translation id="5434798570900738152">Chromium <ph name="BEGIN_EMPHASIS" />सेव्ह करणार नाही<ph name="END_EMPHASIS" />:
@@ -2807,7 +2800,6 @@
 <translation id="6521745193039995384">सुरू नाही</translation>
 <translation id="6524830701589638230">अ‍ॅक्सेसिबिलिटी सेटिंग्ज व्यवस्थापित करा बटण, Chrome सेटिंग्जमध्ये तुमची अ‍ॅक्सेसिबिलिटी टूल पर्सनलाइझ करण्यासाठी ॲक्टिव्हेट करा</translation>
 <translation id="6529173248185917884">सातवा रोल</translation>
-<translation id="652937045869844725">तृतीय पक्ष कुकीना अनुमती देऊन पहा, ज्यामुळे कमी संरक्षण मिळेल, पण साइटची वैशिष्ट्ये काम करण्याची अधिक शक्यता आहे</translation>
 <translation id="6529602333819889595">&amp;पुन्हा करा हटवा</translation>
 <translation id="6535751101619004418">चलने आणि परकीय विनिमय</translation>
 <translation id="6536221421038631327">तुमच्या <ph name="DEVICE_TYPE" /> वरून पासपॉइंट सदस्यत्व काढून टाकल्यामुळे संबंधित नेटवर्क काढून टाकली जातील. तुमच्या सदस्यत्व प्लॅनमध्ये बदल करण्यासाठी "<ph name="FRIENDLY_NAME" />" शी संपर्क साधा. <ph name="LEARN_MORE" /></translation>
@@ -3163,7 +3155,6 @@
 <translation id="7221855153210829124">सूचना दर्शवा</translation>
 <translation id="7221857374443660083">हे तुम्हीच असल्याचे तुमच्या बॅंकला खात्री करायची आहे</translation>
 <translation id="722454870747268814">नवीन गुप्त टॅब</translation>
-<translation id="7226276626900992675">तुम्ही या साइटला तृतीय पक्ष कुकी वापरण्याची अनुमती दिली आहे. याचा अर्थ बुहतेक साइट वैशिष्‍ट्यांनी काम केले पाहिजे, पण तुमच्याकडे कमी संरक्षण आहे.</translation>
 <translation id="7227293336683593977">किमतीचा इतिहास</translation>
 <translation id="7227747683324411744">तुम्ही भेट देण्याचा प्रयत्न करत असलेल्या साइटवरील हल्लेखोर तुम्हाला हानिकारक सॉफ्टवेअर इंस्टॉल करण्यास फसवण्याचा प्रयत्न करू शकतात, जे तुमच्या ब्राउझ करण्याच्या पद्धतीवर परिणाम करतात — उदाहरणार्थ, तुमचे होमपेज बदलून किंवा तुम्ही भेट दिलेल्या साइटवर तुम्हाला अतिरिक्त जाहिराती दाखवून.</translation>
 <translation id="7233592378249864828">खात्री केलेले शीट प्रिंट करा</translation>
@@ -3782,7 +3773,6 @@
 <translation id="8398335999901363925">स्पर्श करून भरण्यासाठी उपलब्ध पेमेंट पद्धती पूर्ण उंचीवर उघडल्या आहेत.</translation>
 <translation id="8398446215576328011">लागू होणारी धोरणे रिव्हर्ट करा</translation>
 <translation id="8398790343843005537">तुमचा फोन शोधा</translation>
-<translation id="8401772916834964810">{COUNT,plural, =0{Chrome will block cookies again today}=1{Chrome उद्या पुन्हा कुकी ब्लॉक करेल}other{Chrome # दिवसांनंतर पुन्हा कुकी ब्लॉक करेल}}</translation>
 <translation id="8403506619177967839">फॅन फिक्शन</translation>
 <translation id="8405579342203358118">Chrome सेटिंग्जमध्ये तुम्ही कोणती माहिती सिंक करता ते व्यवस्थापित करा</translation>
 <translation id="8406071103346257942">पासवर्ड भरण्यासाठी तुमचे स्क्रीन लॉक वापरणे थांबवा</translation>

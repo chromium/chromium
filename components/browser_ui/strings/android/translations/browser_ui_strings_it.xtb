@@ -66,6 +66,7 @@
 <translation id="2228071138934252756">Per consentire all'app <ph name="APP_NAME" /> di accedere alla fotocamera, attiva la fotocamera anche nelle <ph name="BEGIN_LINK" />Impostazioni Android<ph name="END_LINK" />.</translation>
 <translation id="2235344399760031203">I cookie di terze parti sono bloccati</translation>
 <translation id="2238944249568001759">Ricerche suggerite in base all'ultima scheda</translation>
+<translation id="2241587408274973373">Schede pagina Nuova scheda</translation>
 <translation id="2241634353105152135">Solo una volta</translation>
 <translation id="2253414712144136228">Rimuovi <ph name="NAME_OF_LIST_ITEM" /></translation>
 <translation id="2253989982043948086">{NUM_SELECTED,plural, =1{1 sito bloccato}other{# siti bloccati}}</translation>
@@ -102,7 +103,7 @@
 <translation id="2653659639078652383">Invia</translation>
 <translation id="2677748264148917807">Esci</translation>
 <translation id="2678468611080193228">Prova a consentire temporaneamente i cookie di terze parti, il che significa meno protezione, ma è più probabile che le funzionalità del sito funzionino.</translation>
-<translation id="2683434792633810741">Vuoi eliminare e reimpostare?</translation>
+<translation id="2683434792633810741">Vuoi eliminare e reimpostare i dati?</translation>
 <translation id="2713106313042589954">Disattiva fotocamera</translation>
 <translation id="2717722538473713889">Indirizzi email</translation>
 <translation id="2750481671343847896">I siti possono mostrare richieste di accesso da servizi di identità.</translation>
@@ -281,6 +282,7 @@
 <translation id="5706552988683188916">Vengono eliminati i cookie e altri dati dei siti per <ph name="WEBSITE" /></translation>
 <translation id="5723967018671998714">I cookie di terze parti sono bloccati in modalità di navigazione in incognito</translation>
 <translation id="5740126560802162366">I siti possono salvare dati sul dispositivo</translation>
+<translation id="5749158352074143502">Continua con questa scheda</translation>
 <translation id="5771720122942595109">Autorizzazione <ph name="PERMISSION_1" /> bloccata</translation>
 <translation id="5804241973901381774">Autorizzazioni</translation>
 <translation id="5844448279347999754">Quando l'opzione è attiva, i siti possono chiedere di vedere testo e immagini salvati negli appunti. Quando l'opzione è disattivata, i siti non possono vedere il testo o le immagini salvati negli appunti.</translation>
@@ -421,6 +423,7 @@
 <translation id="7990211076305263060">Quando l'opzione è attiva, i siti potrebbero chiedere l'utilizzo del microfono. Quando l'opzione è disattivata, i siti non possono utilizzare il microfono.</translation>
 <translation id="8007176423574883786">Disattivata per questo dispositivo</translation>
 <translation id="802154636333426148">Download non riuscito</translation>
+<translation id="8024161440284949905">Continua con queste schede</translation>
 <translation id="8042586301629853791">Ordina per:</translation>
 <translation id="8067883171444229417">Guarda il video</translation>
 <translation id="8068648041423924542">Impossibile selezionare il certificato.</translation>

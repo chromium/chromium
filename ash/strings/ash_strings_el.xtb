@@ -607,9 +607,11 @@
 <translation id="3526440770046466733">Άνοιγμα συνδέσμου σε νέα καρτέλα και παραμονή στην τρέχουσα καρτέλα</translation>
 <translation id="353086728817903341">Πραγματοποιήθηκε σύνδεση σε <ph name="NUM_DEVICES" /> συσκευές</translation>
 <translation id="3533126039236445965">Εφαρμογές στο ράφι</translation>
+<translation id="3537350467437346467">Το είδατε</translation>
 <translation id="3539957339480430241">Σημείο πρόσβασης Wi-Fi <ph name="DEVICE_NAME" /></translation>
 <translation id="3540893133818942399">Παράβλεψη ρύθμισης προβολής των πρόσφατων φωτογραφιών και μέσων του τηλεφώνου σας</translation>
 <translation id="3542066395059568317">Θα βλέπετε προτάσεις για να συνεχίσετε από εκεί που σταματήσατε. Μπορείτε να κάνετε δεξί κλικ για να καταργήσετε προτάσεις.</translation>
+<translation id="3547318469722231257">Τροποποιήσατε</translation>
 <translation id="3552189655002856821">Το Wi-Fi είναι απενεργοποιημένο</translation>
 <translation id="3554215588514239132">Εμφάνιση ή απόκρυψη του πλαισίου Εργαλείων για προγραμματιστές</translation>
 <translation id="3554637740840164787">Το στοιχείο <ph name="ITEM_TITLE" /> καρφιτσώθηκε</translation>
@@ -701,6 +703,7 @@
 <translation id="385300504083504382">Αρχή</translation>
 <translation id="3859364108019690">Δεν είναι δυνατή η ροή εφαρμογών</translation>
 <translation id="3861651314799684201">Press Enter για εγγραφή πλήρους οθόνης</translation>
+<translation id="3882323608730650973">Τροποποιήθηκε</translation>
 <translation id="3886872229787704059">Ανοίχτηκαν σήμερα</translation>
 <translation id="3891340733213178823">Πατήστε Ctrl + Shift + Q δύο φορές για να αποσυνδεθείτε.</translation>
 <translation id="3893630138897523026">ChromeVox (προφορικά σχόλια)</translation>
@@ -894,6 +897,7 @@
 <translation id="4582666543382004902">Το σημείο πρόσβασης Wi-Fi απενεργοποιήθηκε για να χρησιμοποιηθεί το Wi-Fi. Για να χρησιμοποιήσετε το σημείο πρόσβασης Wi-Fi, απενεργοποιήστε το Wi-Fi.</translation>
 <translation id="4585337515783392668">Διακοπή μετάδοσης σε άγνωστο δέκτη</translation>
 <translation id="4596144739579517758">Το Σκούρο θέμα είναι απενεργοποιημένο.</translation>
+<translation id="4596442969149038771">Ο χρήστης <ph name="USER" /> μοιράστηκε</translation>
 <translation id="4611292653554630842">Σύνδεση</translation>
 <translation id="462160925400706389">Η συσκευή <ph name="NAME" /> συνδέθηκε.</translation>
 <translation id="4623167406982293031">Επαλήθευση λογαριασμού</translation>
@@ -1815,6 +1819,7 @@
 <translation id="8314772463905284467">Το Caps Lock είναι ενεργοποιημένο</translation>
 <translation id="8315514906653279104">Ενεργοποίηση…</translation>
 <translation id="8331351032546853669">Λήψη σε εκκρεμότητα</translation>
+<translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
 <translation id="8345019317483336363">Επιλέχτηκε το παράθυρο <ph name="WINDOW_TITLE" />.</translation>
 <translation id="8349826889576450703">εφαρμογή εκκίνησης</translation>
@@ -2034,6 +2039,7 @@
 <translation id="953431725143473984">Να τερματιστεί η λειτουργία της συσκευής;</translation>
 <translation id="954052413789300507">Ο χώρος δεν επαρκεί για το αρχείο <ph name="FILENAME" />. Ελευθερώστε χώρο.</translation>
 <translation id="954520015070501466">30 λεπτά</translation>
+<translation id="954786879461589145">Τροποποιήθηκε από <ph name="USER" /></translation>
 <translation id="974545358917229949">Εμφάνιση <ph name="RESULT_COUNT" /> αποτελεσμάτων για την αναζήτηση <ph name="QUERY" /></translation>
 <translation id="981011780479609956">Χωρίς ημερομηνία λήξης</translation>
 <translation id="98120814841227350">Μετάβαση στο τέλος του εγγράφου</translation>
