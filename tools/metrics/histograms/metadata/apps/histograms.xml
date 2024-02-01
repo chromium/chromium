@@ -136,6 +136,18 @@ chromium-metrics-reviews@google.com.
   <variant name="Swipe" summary="Open launcher by swiping on the shelf"/>
 </variants>
 
+<variants name="LauncherSearchSessionConclusionVariants">
+<!-- Should be kept in sync with enum LauncherSearchSessionConclusion in
+  tools/metrics/histograms/metadata/apps/enums.xml.
+-->
+
+  <variant name="" summary="All variants"/>
+  <variant name=".AnswerCardSeen"
+      summary="An answer card makes an impression then launcher is dismissed"/>
+  <variant name=".Launch" summary="A result is launched"/>
+  <variant name=".Quit" summary="Launcher is dismissed"/>
+</variants>
+
 <variants name="LauncherUISurface">
   <variant name=".AppsSearch" summary="App tiles search"/>
   <variant name=".AppsZeroState" summary="App tiles zero-state"/>
@@ -1092,6 +1104,35 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Apps.AppList.Search.Session2.QueryLength{SessionConclusion}"
+    units="characters" expires_after="2024-08-01">
+  <owner>amandadeacon@google.com</owner>
+  <owner>dgrebenyuk@google.com</owner>
+  <owner>yulunwu@chromium.org</owner>
+  <owner>tbarzic@chromium.org</owner>
+  <summary>
+    Records the length of a query at the conclusion of a launcher search
+    session.
+
+    A search session is started when a query is entered into the bubble launcher
+    search box or when the tablet mode device enters the kFullscreenSearch
+    AppListViewState. Each search session must conclude one of following ways:
+
+    Quit: Recorded when ending a search session without launching a result and
+    no answer card was shown long enough to have made an impression.
+
+    Launch: Recorded when a search session is ended by launching a result. An
+    answer card may or may not have been shown long enough to make an
+    impression.
+
+    AnswerCardImpression: An answer card was shown long enough to the user to
+    have made an impression at some point during the search session. The answer
+    card may or may not be shown at the moment the search session ended.
+  </summary>
+  <token key="SessionConclusion"
+      variants="LauncherSearchSessionConclusionVariants"/>
+</histogram>
+
 <histogram name="Apps.AppList.Search.Session2.{LauncherSearchEntryPoint}"
     enum="LauncherSearchSessionConclusion" expires_after="2024-06-02">
   <owner>yulunwu@chromium.org</owner>
@@ -1106,7 +1147,7 @@ chromium-metrics-reviews@google.com.
     AppListViewState. Each search session must conclude one of following ways:
 
     Quit: Recorded when ending a search session without launching a result and
-    no answer card was shown long enough to have make an impression.
+    no answer card was shown long enough to have made an impression.
 
     Launch: Recorded when a search session is ended by launching a result. An
     answer card may or may not have been shown long enough to make an
