@@ -62,7 +62,7 @@ class LookalikeUrlDecider : public web::WebStatePolicyDecider,
     }
     if (response_url.path() == kLookalikePageEmptyUrlPathForTesting) {
       lookalike_container->SetLookalikeUrlInfo(
-          GURL::EmptyGURL(), response_url,
+          GURL(), response_url,
           lookalikes::LookalikeUrlMatchType::kSkeletonMatchTop5k);
       std::move(callback).Run(CreateLookalikeErrorDecision());
       return;

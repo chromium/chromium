@@ -26,7 +26,7 @@ TEST_F(WebClientTest, PrepareErrorPage) {
   std::optional<net::SSLInfo> info = std::nullopt;
   __block bool callback_called = false;
   __block NSString* html = nil;
-  web_client.PrepareErrorPage(/*web_state*/ nullptr, GURL::EmptyGURL(), error,
+  web_client.PrepareErrorPage(/*web_state*/ nullptr, GURL(), error,
                               /*is_post=*/false,
                               /*is_off_the_record=*/false,
                               /*info=*/info,

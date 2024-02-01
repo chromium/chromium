@@ -29,7 +29,7 @@ class MockIOSChromeSavePasswordInfoBarDelegate
   static std::unique_ptr<MockIOSChromeSavePasswordInfoBarDelegate> Create(
       NSString* username,
       NSString* password,
-      const GURL& url = GURL::EmptyGURL(),
+      const GURL& url = GURL(),
       std::optional<std::string> account_to_store_password = std::nullopt);
 
   MOCK_METHOD0(InfoBarDismissed, void());

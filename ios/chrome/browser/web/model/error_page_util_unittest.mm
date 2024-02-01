@@ -117,7 +117,7 @@ TEST_F(ErrorPageUtilTest, NoUrlSpec) {
       errorWithDomain:NSURLErrorDomain
                  code:NSURLErrorTimedOut
              userInfo:nil]);
-  NSString* html = GetErrorPage(GURL::EmptyGURL(), error,
+  NSString* html = GetErrorPage(GURL(), error,
                                 /*is_post=*/false,
                                 /*is_off_the_record=*/false);
 

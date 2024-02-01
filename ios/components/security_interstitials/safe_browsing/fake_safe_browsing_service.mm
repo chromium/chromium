@@ -41,7 +41,7 @@ class FakeSafeBrowsingUrlCheckerImpl
             /*can_check_db=*/true,
             /*can_check_high_confidence_allowlist=*/true,
             /*url_lookup_service_metric_suffix=*/"",
-            /*last_committed_url=*/GURL::EmptyGURL(),
+            /*last_committed_url=*/GURL(),
             web::GetUIThreadTaskRunner({}),
             /*url_lookup_service_on_ui=*/nullptr,
             /*hash_realtime_service_on_ui=*/nullptr,

@@ -172,10 +172,10 @@ void OfflinePageTabHelper::DidStartNavigation(web::WebState* web_state,
       context->IsSameDocument()) {
     // This is the navigation triggered by loadData or loadSimulatedRequest.
     // Ignore it, to not reset the presenting_offline_page_ flag.
-    offline_navigation_triggered_ = GURL::EmptyGURL();
+    offline_navigation_triggered_ = GURL();
     return;
   }
-  offline_navigation_triggered_ = GURL::EmptyGURL();
+  offline_navigation_triggered_ = GURL();
   initial_navigation_url_ = context->GetUrl();
   loading_slow_or_failed_ = false;
   navigation_committed_ = false;

@@ -83,7 +83,7 @@ void WKHTTPSystemCookieStore::GetCookiesForURLAsync(
 
 void WKHTTPSystemCookieStore::GetAllCookiesAsync(
     SystemCookieCallbackForCookies callback) {
-  GetCookiesAsyncInternal(GURL::EmptyGURL(), std::move(callback));
+  GetCookiesAsyncInternal(GURL(), std::move(callback));
 }
 
 void WKHTTPSystemCookieStore::DeleteCookieAsync(NSHTTPCookie* cookie,

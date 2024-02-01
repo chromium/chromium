@@ -187,7 +187,7 @@ void ReadingListWebStateObserver::WebStateDestroyed(web::WebState* web_state) {
 }
 
 void ReadingListWebStateObserver::StopCheckingProgress() {
-  pending_url_ = GURL::EmptyGURL();
+  pending_url_ = GURL();
   timer_.reset();
 }
 

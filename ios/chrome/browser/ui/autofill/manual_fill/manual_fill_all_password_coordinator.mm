@@ -74,12 +74,12 @@
       self.browser->GetWebStateList()->GetActiveWebState();
   syncer::SyncService* syncService =
       SyncServiceFactory::GetForBrowserState(self.browser->GetBrowserState());
-  self.passwordMediator = [[ManualFillPasswordMediator alloc]
-       initWithFaviconLoader:faviconLoader
-                    webState:webState
-                 syncService:syncService
-                         URL:GURL::EmptyGURL()
-      invokedOnPasswordField:NO];
+  self.passwordMediator =
+      [[ManualFillPasswordMediator alloc] initWithFaviconLoader:faviconLoader
+                                                       webState:webState
+                                                    syncService:syncService
+                                                            URL:GURL()
+                                         invokedOnPasswordField:NO];
 
   ChromeBrowserState* browserState = self.browser->GetBrowserState();
   _savedPasswordsPresenter =

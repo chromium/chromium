@@ -520,7 +520,7 @@ char const kFullScreenStateHistogram[] = "IOS.Fullscreen.State";
     }
     return item->GetVirtualURL();
   }
-  return GURL::EmptyGURL();
+  return GURL();
 }
 
 - (void)reloadWithRendererInitiatedNavigation:(BOOL)rendererInitiated {
@@ -1087,8 +1087,7 @@ char const kFullScreenStateHistogram[] = "IOS.Fullscreen.State";
     GURL documentOrigin = newURL.DeprecatedGetOriginAsURL();
     web::NavigationItem* committedItem =
         self.webStateImpl->GetNavigationManager()->GetLastCommittedItem();
-    GURL committedURL =
-        committedItem ? committedItem->GetURL() : GURL::EmptyGURL();
+    GURL committedURL = committedItem ? committedItem->GetURL() : GURL();
     GURL committedOrigin = committedURL.DeprecatedGetOriginAsURL();
 
     DCHECK_EQ(documentOrigin, committedOrigin)

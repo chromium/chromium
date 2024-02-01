@@ -52,8 +52,7 @@ class PasswordInfobarBannerOverlayMediatorTest : public PlatformTest {
     infobar_ = std::make_unique<InfoBarIOS>(
         InfobarType::kInfobarTypePasswordSave,
         MockIOSChromeSavePasswordInfoBarDelegate::Create(
-            kUsername, kPassword, GURL::EmptyGURL(),
-            account_to_store_password));
+            kUsername, kPassword, GURL(), account_to_store_password));
     request_ =
         OverlayRequest::CreateWithConfig<DefaultInfobarOverlayRequestConfig>(
             infobar_.get(), InfobarOverlayType::kBanner);

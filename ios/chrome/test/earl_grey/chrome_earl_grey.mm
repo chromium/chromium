@@ -1583,7 +1583,7 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
 - (GURL)pasteboardURL {
   NSString* absoluteString = [ChromeEarlGreyAppInterface pasteboardURLSpec];
   return absoluteString ? GURL(base::SysNSStringToUTF8(absoluteString))
-                        : GURL::EmptyGURL();
+                        : GURL();
 }
 
 - (void)clearPasteboard {

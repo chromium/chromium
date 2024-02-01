@@ -296,7 +296,7 @@
     return;
   }
   [self loadEntryURL:entry->URL()
-          withOfflineURL:GURL::EmptyGURL()
+          withOfflineURL:GURL()
       loadOfflineVersion:NO
                 inNewTab:NO
                incognito:NO];
@@ -313,7 +313,7 @@
     return;
   }
   [self loadEntryURL:entry->URL()
-          withOfflineURL:GURL::EmptyGURL()
+          withOfflineURL:GURL()
       loadOfflineVersion:NO
                 inNewTab:YES
                incognito:incognito];
@@ -490,7 +490,7 @@
             return;
 
           [weakSelf loadEntryURL:item.entryURL
-                  withOfflineURL:GURL::EmptyGURL()
+                  withOfflineURL:GURL()
               loadOfflineVersion:NO
                         inNewTab:YES
                        incognito:NO];
@@ -506,7 +506,7 @@
                 return;
 
               [weakSelf loadEntryURL:item.entryURL
-                      withOfflineURL:GURL::EmptyGURL()
+                      withOfflineURL:GURL()
                   loadOfflineVersion:NO
                             inNewTab:YES
                            incognito:YES];

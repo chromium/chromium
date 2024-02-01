@@ -350,8 +350,8 @@ TEST_F(WebStateImplTest, DelegateTest) {
   EXPECT_EQ(&web_state, open_url_request->web_state);
   WebState::OpenURLParams actual_params = open_url_request->params;
   EXPECT_EQ(params.url, actual_params.url);
-  EXPECT_EQ(GURL::EmptyGURL(), params.virtual_url);
-  EXPECT_EQ(GURL::EmptyGURL(), actual_params.virtual_url);
+  EXPECT_EQ(GURL(), params.virtual_url);
+  EXPECT_EQ(GURL(), actual_params.virtual_url);
   EXPECT_EQ(params.referrer.url, actual_params.referrer.url);
   EXPECT_EQ(params.referrer.policy, actual_params.referrer.policy);
   EXPECT_EQ(params.disposition, actual_params.disposition);
@@ -434,7 +434,7 @@ TEST_F(WebStateImplTest, GlobalObserverTest) {
   EXPECT_FALSE(observer->did_start_navigation_called());
   std::unique_ptr<NavigationContextImpl> context =
       NavigationContextImpl::CreateNavigationContext(
-          web_state.get(), GURL::EmptyGURL(), /*has_user_gesture=*/true,
+          web_state.get(), GURL(), /*has_user_gesture=*/true,
           ui::PageTransition::PAGE_TRANSITION_AUTO_BOOKMARK,
           /*is_renderer_initiated=*/true);
   web_state->OnNavigationStarted(context.get());
@@ -733,7 +733,7 @@ TEST_F(WebStateImplTest, FaviconUpdateForSameDocumentNavigations) {
   // No callback if icons has not been fetched yet.
   std::unique_ptr<NavigationContextImpl> context =
       NavigationContextImpl::CreateNavigationContext(
-          &web_state, GURL::EmptyGURL(),
+          &web_state, GURL(),
           /*has_user_gesture=*/false, ui::PageTransition::PAGE_TRANSITION_LINK,
           /*is_renderer_initiated=*/false);
   context->SetIsSameDocument(true);
@@ -877,7 +877,7 @@ TEST_F(WebStateImplTest, NoUncommittedRestoreSession) {
   EXPECT_EQ(-1, session_storage.lastCommittedItemIndex);
   EXPECT_NSEQ(@[], session_storage.itemStorages);
   EXPECT_TRUE(web_state.GetTitle().empty());
-  EXPECT_EQ(GURL::EmptyGURL(), web_state.GetVisibleURL());
+  EXPECT_EQ(GURL(), web_state.GetVisibleURL());
 }
 
 // Test that lastCommittedItemIndex is end-of-list when there's no defined
@@ -892,7 +892,7 @@ TEST_F(WebStateImplTest, NoUncommittedRestoreSessionOptimisedStorage) {
   EXPECT_EQ(0, storage.navigation().items_size());
 
   EXPECT_TRUE(web_state.GetTitle().empty());
-  EXPECT_EQ(GURL::EmptyGURL(), web_state.GetVisibleURL());
+  EXPECT_EQ(GURL(), web_state.GetVisibleURL());
 }
 
 // Tests that CanTakeSnapshot() is false when a JavaScript dialog is being
