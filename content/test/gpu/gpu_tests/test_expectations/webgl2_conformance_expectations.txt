@@ -448,6 +448,7 @@ crbug.com/angleproject/6358 [ no-passthrough ] conformance/programs/program-test
 # Win failures     #
 ####################
 
+crbug.com/1251626 [ win angle-d3d11 ] conformance2/rendering/framebuffer-render-to-layer.html [ Failure ]
 crbug.com/angleproject/4417 [ win angle-d3d11 ] conformance2/rendering/framebuffer-render-to-layer-angle-issue.html [ Failure ]
 crbug.com/angleproject/7109 [ win angle-d3d11 ] conformance2/renderbuffers/invalidate-framebuffer.html [ Failure ]
 crbug.com/angleproject/1465 [ win angle-d3d11 ] conformance2/glsl3/tricky-loop-conditions.html [ Failure ]
