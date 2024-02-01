@@ -30,6 +30,7 @@ import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.InfoBarTestAnimationListener;
 import org.chromium.chrome.test.util.InfoBarUtil;
 import org.chromium.components.browser_ui.modaldialog.ModalDialogTestUtils;
+import org.chromium.components.browser_ui.modaldialog.ModalDialogView;
 import org.chromium.components.infobars.InfoBar;
 import org.chromium.components.permissions.PermissionDialogController;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -368,7 +369,11 @@ public class PermissionTestRule extends ChromeTabbedActivityTestRule {
                     default -> throw new IllegalStateException("Unexpected value: " + decision);
                 };
 
-        ViewUtils.onViewWaiting(allOf(withTagValue(is(buttonId)), isDisplayed())).perform(click());
+        ViewUtils.onViewWaiting(
+                        allOf(
+                                withTagValue(is(ModalDialogView.getTagForButtonType(buttonId))),
+                                isDisplayed()))
+                .perform(click());
     }
 
     /** Wait for the permission dialog to be in the expected shown state. */

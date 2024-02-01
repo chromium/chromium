@@ -527,12 +527,29 @@ public class ModalDialogViewTest {
         onView(
                         allOf(
                                 withTagValue(
-                                        is(ModalDialogProperties.ButtonType.POSITIVE_EPHEMERAL)),
+                                        is(
+                                                ModalDialogView.getTagForButtonType(
+                                                        ModalDialogProperties.ButtonType
+                                                                .POSITIVE_EPHEMERAL))),
                                 isDisplayed()))
                 .check(matches(touchFilterEnabled()));
-        onView(allOf(withTagValue(is(ModalDialogProperties.ButtonType.POSITIVE)), isDisplayed()))
+        onView(
+                        allOf(
+                                withTagValue(
+                                        is(
+                                                ModalDialogView.getTagForButtonType(
+                                                        ModalDialogProperties.ButtonType
+                                                                .POSITIVE))),
+                                isDisplayed()))
                 .check(matches(touchFilterEnabled()));
-        onView(allOf(withTagValue(is(ModalDialogProperties.ButtonType.NEGATIVE)), isDisplayed()))
+        onView(
+                        allOf(
+                                withTagValue(
+                                        is(
+                                                ModalDialogView.getTagForButtonType(
+                                                        ModalDialogProperties.ButtonType
+                                                                .NEGATIVE))),
+                                isDisplayed()))
                 .check(matches(touchFilterEnabled()));
     }
 
@@ -575,12 +592,29 @@ public class ModalDialogViewTest {
         onView(
                         allOf(
                                 withTagValue(
-                                        is(ModalDialogProperties.ButtonType.POSITIVE_EPHEMERAL)),
+                                        is(
+                                                ModalDialogView.getTagForButtonType(
+                                                        ModalDialogProperties.ButtonType
+                                                                .POSITIVE_EPHEMERAL))),
                                 isDisplayed()))
                 .check(matches(not(touchFilterEnabled())));
-        onView(allOf(withTagValue(is(ModalDialogProperties.ButtonType.POSITIVE)), isDisplayed()))
+        onView(
+                        allOf(
+                                withTagValue(
+                                        is(
+                                                ModalDialogView.getTagForButtonType(
+                                                        ModalDialogProperties.ButtonType
+                                                                .POSITIVE))),
+                                isDisplayed()))
                 .check(matches(not(touchFilterEnabled())));
-        onView(allOf(withTagValue(is(ModalDialogProperties.ButtonType.NEGATIVE)), isDisplayed()))
+        onView(
+                        allOf(
+                                withTagValue(
+                                        is(
+                                                ModalDialogView.getTagForButtonType(
+                                                        ModalDialogProperties.ButtonType
+                                                                .NEGATIVE))),
+                                isDisplayed()))
                 .check(matches(not(touchFilterEnabled())));
     }
 
