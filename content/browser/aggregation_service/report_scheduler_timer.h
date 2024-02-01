@@ -86,8 +86,13 @@ class CONTENT_EXPORT ReportSchedulerTimer
   void OnTimerFired();
   void Refresh(base::Time now) VALID_CONTEXT_REQUIRED(sequence_checker_);
 
+  // This method is marked `final` to enable the constructor to call it while
+  // complying with the style guide, which forbids constructors from making
+  // virtual method calls.
+  // https://google.github.io/styleguide/cppguide.html#Doing_Work_in_Constructors
+  //
   // network::NetworkConnectionTracker::NetworkConnectionObserver:
-  void OnConnectionChanged(network::mojom::ConnectionType) override;
+  void OnConnectionChanged(network::mojom::ConnectionType) final;
 
   bool IsOffline() const VALID_CONTEXT_REQUIRED(sequence_checker_);
 
