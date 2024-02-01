@@ -686,7 +686,7 @@ TEST_F(SearchControllerTest, ZeroStateResultsGetTimedOut) {
 TEST_F(SearchControllerTest, ContinueRanksDriveAboveLocal) {
   // Use the full ranking stack.
   search_controller_->set_ranker_manager_for_test(
-      std::make_unique<RankerManager>(&profile_, search_controller_.get()));
+      std::make_unique<RankerManager>(&profile_));
 
   auto drive_provider = std::make_unique<TestSearchProvider>(
       Result::kZeroStateDrive, base::Seconds(0));
@@ -714,7 +714,7 @@ TEST_F(SearchControllerTest, ContinueRanksDriveAboveLocal) {
 TEST_F(SearchControllerTest, ContinueRanksAdminTemplateAboveHelpAppAndDrive) {
   // Use the full ranking stack.
   search_controller_->set_ranker_manager_for_test(
-      std::make_unique<RankerManager>(&profile_, search_controller_.get()));
+      std::make_unique<RankerManager>(&profile_));
 
   auto desks_admin_template = std::make_unique<TestSearchProvider>(
       Result::kDesksAdminTemplate, base::Seconds(0));

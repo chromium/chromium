@@ -16,7 +16,6 @@
 #include "chrome/browser/ash/app_list/search/ranking/removed_results_ranker.h"
 #include "chrome/browser/ash/app_list/search/ranking/score_normalizing_ranker.h"
 #include "chrome/browser/ash/app_list/search/ranking/util.h"
-#include "chrome/browser/ash/app_list/search/search_controller.h"
 #include "chrome/browser/ash/app_list/search/search_features.h"
 #include "chrome/browser/ash/app_list/search/util/score_normalizer.h"
 #include "chrome/browser/ash/app_list/search/util/score_normalizer.pb.h"
@@ -32,7 +31,7 @@ constexpr base::TimeDelta kStandardWriteDelay = base::Seconds(3);
 
 }  // namespace
 
-RankerManager::RankerManager(Profile* profile, SearchController* controller) {
+RankerManager::RankerManager(Profile* profile) {
   // Score normalization parameters:
   ScoreNormalizer::Params score_normalizer_params;
   // Change this version number when changing the number of bins below.

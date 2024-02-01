@@ -74,7 +74,7 @@ SearchController::~SearchController() = default;
 void SearchController::Initialize() {
   burn_in_controller_ = std::make_unique<BurnInController>(base::BindRepeating(
       &SearchController::OnBurnInPeriodElapsed, base::Unretained(this)));
-  ranker_manager_ = std::make_unique<RankerManager>(profile_, this);
+  ranker_manager_ = std::make_unique<RankerManager>(profile_);
   metrics_manager_ =
       std::make_unique<SearchMetricsManager>(profile_, notifier_);
   session_metrics_manager_ =
