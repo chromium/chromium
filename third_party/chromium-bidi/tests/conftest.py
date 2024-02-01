@@ -26,6 +26,7 @@ from pytest_httpserver import HTTPServer
 from test_helpers import (execute_command, get_tree, goto_url,
                           read_JSON_message, wait_for_event, wait_for_events)
 
+from tools.http_proxy_server import HttpProxyServer
 from tools.local_http_server import LocalHttpServer
 
 
@@ -35,6 +36,15 @@ def local_server(httpserver) -> LocalHttpServer:
     HTTP requests locally.
     """
     return LocalHttpServer(httpserver)
+
+
+@pytest_asyncio.fixture
+def http_proxy_server() -> HttpProxyServer:
+    """ Returns and starts an instance of a HttpProxyServer.
+    """
+    server = HttpProxyServer()
+    server.start()
+    return server
 
 
 @pytest_asyncio.fixture

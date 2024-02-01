@@ -153,7 +153,7 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
       case 'browser.close':
         return this.#browserProcessor.close();
       case 'browser.createUserContext':
-        return await this.#browserProcessor.createUserContext();
+        return await this.#browserProcessor.createUserContext(command.params);
       case 'browser.getUserContexts':
         return await this.#browserProcessor.getUserContexts();
       case 'browser.removeUserContext':

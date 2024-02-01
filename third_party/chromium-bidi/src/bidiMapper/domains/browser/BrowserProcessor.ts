@@ -15,6 +15,8 @@
  * limitations under the License.
  */
 
+import type Protocol from 'devtools-protocol';
+
 import {
   type EmptyResult,
   type Browser,
@@ -38,9 +40,20 @@ export class BrowserProcessor {
     return {};
   }
 
-  async createUserContext(): Promise<Browser.CreateUserContextResult> {
+  async createUserContext(
+    params: Record<string, any>
+  ): Promise<Browser.CreateUserContextResult> {
+    const request: Protocol.Target.CreateBrowserContextRequest = {
+      proxyServer: params['goog:proxyServer'] ?? undefined,
+    };
+    const proxyBypassList: string[] | undefined =
+      params['goog:proxyBypassList'] ?? undefined;
+    if (proxyBypassList) {
+      request.proxyBypassList = proxyBypassList.join(',');
+    }
     const context = await this.#browserCdpClient.sendCommand(
-      'Target.createBrowserContext'
+      'Target.createBrowserContext',
+      request
     );
     return {
       userContext: context.browserContextId,

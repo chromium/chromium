@@ -52,3 +52,40 @@ async def test_browser_create_user_context(websocket):
                       'userContext': user_context_id
                   }],
                                               key=user_context)
+
+
+@pytest.mark.asyncio
+async def test_browser_create_user_context_proxy_server(
+        websocket, http_proxy_server):
+
+    # Localhost URLs are not proxied.
+    example_url = "http://example.com"
+
+    user_context = await execute_command(
+        websocket, {
+            "method": "browser.createUserContext",
+            "params": {
+                "goog:proxyServer": http_proxy_server.url()
+            }
+        })
+
+    browsing_context = await execute_command(
+        websocket, {
+            "method": "browsingContext.create",
+            "params": {
+                "type": "tab",
+                "userContext": user_context["userContext"]
+            }
+        })
+
+    await execute_command(
+        websocket, {
+            "method": "browsingContext.navigate",
+            "params": {
+                "url": example_url,
+                "wait": "complete",
+                "context": browsing_context["context"]
+            }
+        })
+
+    assert http_proxy_server.stop() == ["http://example.com/"]
