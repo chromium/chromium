@@ -29,6 +29,7 @@
 #include "cc/trees/clip_node.h"
 #include "cc/trees/effect_node.h"
 #include "cc/trees/mutator_host.h"
+#include "cc/trees/property_ids.h"
 #include "cc/trees/scroll_node.h"
 #include "cc/trees/sticky_position_constraint.h"
 #include "cc/trees/transform_node.h"
@@ -60,16 +61,6 @@ using SyncedScrollOffset =
     SyncedProperty<AdditionGroup<gfx::PointF, gfx::Vector2dF>>;
 
 class PropertyTrees;
-
-// Property tree node starts from index 0. See equivalent constants in
-// property_tree_manager.cc for comments.
-enum {
-  kInvalidPropertyNodeId = -1,
-  kRootPropertyNodeId = 0,
-  kSecondaryRootPropertyNodeId = 1,
-  kContentsRootPropertyNodeId = kSecondaryRootPropertyNodeId,
-  kViewportPropertyNodeId = kSecondaryRootPropertyNodeId
-};
 
 template <typename T>
 class CC_EXPORT PropertyTree {

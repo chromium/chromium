@@ -26,7 +26,7 @@ class ScrollTree;
 
 // Used as the return value of GetAnimationScales() to indicate that there is
 // no active transform animation or the scale cannot be computed.
-constexpr float kInvalidScale = 0.f;
+inline constexpr float kInvalidScale = 0.f;
 
 // A MutatorHost owns all the animation and mutation effects.
 // There is just one MutatorHost for LayerTreeHost on main renderer thread

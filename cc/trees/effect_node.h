@@ -9,6 +9,7 @@
 #include "cc/cc_export.h"
 #include "cc/paint/element_id.h"
 #include "cc/paint/filter_operations.h"
+#include "cc/trees/property_ids.h"
 #include "cc/view_transition/view_transition_element_id.h"
 #include "components/viz/common/surfaces/subtree_capture_id.h"
 #include "components/viz/common/view_transition_element_resource_id.h"
@@ -65,9 +66,9 @@ struct CC_EXPORT EffectNode {
   ~EffectNode();
 
   // The node index of this node in the effect tree node vector.
-  int id;
+  int id = kInvalidPropertyNodeId;
   // The node index of the parent node in the effect tree node vector.
-  int parent_id;
+  int parent_id = kInvalidPropertyNodeId;
 
   // An opaque, unique, stable identifier for this effect that persists across
   // frame commits. This id is used only for internal implementation
@@ -75,13 +76,13 @@ struct CC_EXPORT EffectNode {
   // be assumed to have semantic meaning.
   ElementId element_id;
 
-  float opacity;
-  float screen_space_opacity;
+  float opacity = 1.f;
+  float screen_space_opacity = 1.f;
 
   FilterOperations filters;
   FilterOperations backdrop_filters;
   std::optional<gfx::RRectF> backdrop_filter_bounds;
-  float backdrop_filter_quality;
+  float backdrop_filter_quality = 1.f;
   gfx::PointF filters_origin;
 
   // The element id corresponding to the mask to apply to the filtered backdrop
@@ -93,79 +94,79 @@ struct CC_EXPORT EffectNode {
   // effect node.
   gfx::MaskFilterInfo mask_filter_info;
 
-  SkBlendMode blend_mode;
+  SkBlendMode blend_mode = SkBlendMode::kSrcOver;
 
   gfx::Vector2dF surface_contents_scale;
 
   viz::SubtreeCaptureId subtree_capture_id;
   gfx::Size subtree_size;
 
-  bool cache_render_surface : 1;
-  bool has_copy_request : 1;
-  bool hidden_by_backface_visibility : 1;
+  bool cache_render_surface : 1 = false;
+  bool has_copy_request : 1 = false;
+  bool hidden_by_backface_visibility : 1 = false;
   // Whether the contents should continue to be visible when rotated such that
   // its back face is facing toward the camera. It's true by default.
-  bool double_sided : 1;
-  bool trilinear_filtering : 1;
-  bool is_drawn : 1;
+  bool double_sided : 1 = true;
+  bool trilinear_filtering : 1 = false;
+  bool is_drawn : 1 = true;
   // In most cases we only need to draw the visible part of any content
   // contributing to the effect. For copy request case, we would need to copy
   // the entire content, and could not only draw the visible part. In the rare
   // case of a backdrop zoom filter we need to take into consideration the
   // content offscreen to make sure the backdrop zoom filter is applied with the
   // correct center.
-  bool only_draws_visible_content : 1;
+  bool only_draws_visible_content : 1 = true;
   // TODO(jaydasika) : Delete this after implementation of
   // SetHideLayerAndSubtree is cleaned up. (crbug.com/595843)
-  bool subtree_hidden : 1;
+  bool subtree_hidden : 1 = false;
   // Whether this node has a potentially running (i.e., irrespective
   // of exact timeline) filter animation.
-  bool has_potential_filter_animation : 1;
+  bool has_potential_filter_animation : 1 = false;
   // Whether this node has a potentially running (i.e., irrespective
   // of exact timeline) backdrop-filter animation.
-  bool has_potential_backdrop_filter_animation : 1;
+  bool has_potential_backdrop_filter_animation : 1 = false;
   // Whether this node has a potentially running (i.e., irrespective
   // of exact timeline) opacity animation.
-  bool has_potential_opacity_animation : 1;
+  bool has_potential_opacity_animation : 1 = false;
   // Whether this node has a currently running filter animation.
-  bool is_currently_animating_filter : 1;
+  bool is_currently_animating_filter : 1 = false;
   // Whether this node has a currently running backdrop-filter animation.
-  bool is_currently_animating_backdrop_filter : 1;
+  bool is_currently_animating_backdrop_filter : 1 = false;
   // Whether this node has a currently running opacity animation.
-  bool is_currently_animating_opacity : 1;
+  bool is_currently_animating_opacity : 1 = false;
   // Whether this node has a child node with kDstIn blend mode.
-  bool has_masking_child : 1;
+  bool has_masking_child : 1 = false;
   // Whether this node's effect has been changed since the last
   // frame. Needed in order to compute damage rect.
-  bool effect_changed : 1;
-  bool subtree_has_copy_request : 1;
+  bool effect_changed : 1 = false;
+  bool subtree_has_copy_request : 1 = false;
   // If set, the effect node tries to not trigger a render surface due to it
   // having a rounded corner.
-  bool is_fast_rounded_corner : 1;
+  bool is_fast_rounded_corner : 1 = false;
   // If the node or it's parent has the filters, it sets to true.
-  bool node_or_ancestor_has_filters : 1;
+  bool node_or_ancestor_has_filters : 1 = false;
   // All node in the subtree starting from the containing render surface, and
   // before the backdrop filter node in pre tree order.
   // This is set and used for the impl-side effect tree only.
-  bool affected_by_backdrop_filter: 1;
+  bool affected_by_backdrop_filter : 1 = false;
   // RenderSurfaceReason::kNone if this effect node should not create a render
   // surface, or the reason that this effect node should create one.
-  RenderSurfaceReason render_surface_reason;
+  RenderSurfaceReason render_surface_reason = RenderSurfaceReason::kNone;
   // The transform node index of the transform to apply to this effect
   // node's content when rendering to a surface.
-  int transform_id;
+  int transform_id = kRootPropertyNodeId;
   // The clip node index of the clip to apply to this effect node's
   // content when rendering to a surface.
-  int clip_id;
+  int clip_id = kRootPropertyNodeId;
 
   // This is the id of the ancestor effect node that induces a
   // RenderSurfaceImpl.
   // This is set and used for the impl-side effect tree only.
-  int target_id;
-  int closest_ancestor_with_cached_render_surface_id;
-  int closest_ancestor_with_copy_request_id;
-  int closest_ancestor_being_captured_id;
-  int closest_ancestor_with_shared_element_id;
+  int target_id = 1;
+  int closest_ancestor_with_cached_render_surface_id = kInvalidPropertyNodeId;
+  int closest_ancestor_with_copy_request_id = kInvalidPropertyNodeId;
+  int closest_ancestor_being_captured_id = kInvalidPropertyNodeId;
+  int closest_ancestor_with_shared_element_id = kInvalidPropertyNodeId;
 
   // Represents a DOM element id for the view transition API.
   ViewTransitionElementId view_transition_shared_element_id;
