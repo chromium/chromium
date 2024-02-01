@@ -42,6 +42,9 @@ const CGFloat kFontSize = 14;
 const CGFloat kFaviconSize = 16;
 const CGFloat kTitleGradientWidth = 16;
 
+// Selected border background view constants.
+const CGFloat kSelectedBorderBackgroundViewWidth = 8;
+
 // Z-Index of the selected cell.
 const NSInteger kSelectedZIndex = 10;
 
@@ -71,6 +74,10 @@ UIImage* DefaultFavicon() {
   UIView* _trailingSeparatorView;
   UIView* _leadingSeparatorGradientView;
   UIView* _trailingSeparatorGradientView;
+
+  // Background views displayed when the selected cell in on an edge.
+  UIView* _leftSelectedBorderBackgroundView;
+  UIView* _rightSelectedBorderBackgroundView;
 
   // Wether the decoration layers have been updated.
   BOOL _decorationLayersUpdated;
@@ -117,6 +124,14 @@ UIImage* DefaultFavicon() {
 
     _titleContainer = [self createTitleContainer];
     [contentView addSubview:_titleContainer];
+
+    _leftSelectedBorderBackgroundView =
+        [self createSelectedBorderBackgroundView];
+    [self addSubview:_leftSelectedBorderBackgroundView];
+
+    _rightSelectedBorderBackgroundView =
+        [self createSelectedBorderBackgroundView];
+    [self addSubview:_rightSelectedBorderBackgroundView];
 
     _leftTailView = [self createTailView];
     [self addSubview:_leftTailView];
@@ -210,6 +225,22 @@ UIImage* DefaultFavicon() {
   _trailingSeparatorGradientView.hidden = trailingSeparatorGradientViewHidden;
 }
 
+- (void)setLeftSelectedBorderBackgroundViewHidden:
+    (BOOL)leftSelectedBorderBackgroundViewHidden {
+  _leftSelectedBorderBackgroundViewHidden =
+      leftSelectedBorderBackgroundViewHidden;
+  _leftSelectedBorderBackgroundView.hidden =
+      leftSelectedBorderBackgroundViewHidden;
+}
+
+- (void)setRightSelectedBorderBackgroundViewHidden:
+    (BOOL)rightSelectedBorderBackgroundViewHidden {
+  _rightSelectedBorderBackgroundViewHidden =
+      rightSelectedBorderBackgroundViewHidden;
+  _rightSelectedBorderBackgroundView.hidden =
+      rightSelectedBorderBackgroundViewHidden;
+}
+
 - (void)setSelected:(BOOL)selected {
   [super setSelected:selected];
 
@@ -232,6 +263,8 @@ UIImage* DefaultFavicon() {
   _rightTailView.hidden = !selected;
   _topLeftCornerView.hidden = !selected;
   _topRightCornerView.hidden = !selected;
+  [self setLeftSelectedBorderBackgroundViewHidden:YES];
+  [self setRightSelectedBorderBackgroundViewHidden:YES];
 
   [self updateCollapsedState];
 }
@@ -486,6 +519,28 @@ UIImage* DefaultFavicon() {
     [_topRightCornerView.heightAnchor constraintEqualToConstant:kCornerSize],
   ]];
 
+  /// `_leftSelectedBorderBackgroundView` and
+  /// `_rightSelectedBorderBackgroundView constraints.
+  [NSLayoutConstraint activateConstraints:@[
+    [_leftSelectedBorderBackgroundView.rightAnchor
+        constraintEqualToAnchor:contentView.leftAnchor],
+    [_leftSelectedBorderBackgroundView.widthAnchor
+        constraintEqualToConstant:kSelectedBorderBackgroundViewWidth],
+    [_leftSelectedBorderBackgroundView.heightAnchor
+        constraintEqualToAnchor:contentView.heightAnchor],
+    [_leftSelectedBorderBackgroundView.centerYAnchor
+        constraintEqualToAnchor:contentView.centerYAnchor],
+
+    [_rightSelectedBorderBackgroundView.leftAnchor
+        constraintEqualToAnchor:contentView.rightAnchor],
+    [_rightSelectedBorderBackgroundView.widthAnchor
+        constraintEqualToConstant:kSelectedBorderBackgroundViewWidth],
+    [_rightSelectedBorderBackgroundView.heightAnchor
+        constraintEqualToAnchor:contentView.heightAnchor],
+    [_rightSelectedBorderBackgroundView.centerYAnchor
+        constraintEqualToAnchor:contentView.centerYAnchor],
+  ]];
+
   /// `_leftTailView` and `_rightTailView` constraints.
   [NSLayoutConstraint activateConstraints:@[
     [_leftTailView.rightAnchor constraintEqualToAnchor:contentView.leftAnchor],
@@ -657,6 +712,15 @@ UIImage* DefaultFavicon() {
   separatorView.translatesAutoresizingMaskIntoConstraints = NO;
   separatorView.layer.cornerRadius = kSeparatorCornerRadius;
   return separatorView;
+}
+
+// Returns a new selected border background view.
+- (UIView*)createSelectedBorderBackgroundView {
+  UIView* backgroundView = [[UIView alloc] init];
+  backgroundView.backgroundColor = [UIColor colorNamed:kGrey200Color];
+  backgroundView.translatesAutoresizingMaskIntoConstraints = NO;
+  backgroundView.hidden = YES;
+  return backgroundView;
 }
 
 @end

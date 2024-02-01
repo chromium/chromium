@@ -301,17 +301,16 @@ class TabStripLayout: UICollectionViewFlowLayout {
     }
 
     var cellAnimated = false
-    if let cell = collectionView.cellForItem(at: indexPath) as? TabStripCell {
-      if let animationKeys = cell.layer.animationKeys() {
-        cellAnimated = !animationKeys.isEmpty
-      }
-
-      // Update cell separators.
-      cell.leadingSeparatorHidden = true
-      cell.trailingSeparatorHidden = true
-      cell.leadingSeparatorGradientViewHidden = true
-      cell.trailingSeparatorGradientViewHidden = true
+    let cell = collectionView.cellForItem(at: indexPath) as? TabStripCell
+    if let animationKeys = cell?.layer.animationKeys() {
+      cellAnimated = !animationKeys.isEmpty
     }
+
+    // Update cell separators.
+    cell?.leadingSeparatorHidden = true
+    cell?.trailingSeparatorHidden = true
+    cell?.leadingSeparatorGradientViewHidden = true
+    cell?.trailingSeparatorGradientViewHidden = true
 
     let isScrollable: Bool = collectionView.contentSize.width > collectionView.frame.width
     let collectionViewWidth = collectionView.bounds.size.width
@@ -362,6 +361,8 @@ class TabStripLayout: UICollectionViewFlowLayout {
 
     leftStaticSeparator?.isHidden = hideLeftStaticSeparator
     rightStaticSeparator?.isHidden = hideRightStaticSeparator
+    cell?.leftSelectedBorderBackgroundViewHidden = hideLeftStaticSeparator
+    cell?.rightSelectedBorderBackgroundViewHidden = hideRightStaticSeparator
 
     layoutAttributes.frame = CGRect(origin: origin, size: frame.size)
     return layoutAttributes
