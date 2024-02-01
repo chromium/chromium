@@ -494,6 +494,7 @@ void QuickStartController::HandleTransitionToQuickStartScreen() {
     // show the last step of the flow.
     if (controller_state_ == ControllerState::SETUP_COMPLETE) {
       UpdateUiState(UiState::SETUP_COMPLETE);
+      SavePhoneInstanceID();
       bootstrap_controller_->OnSetupComplete();
       return;
     }
@@ -560,7 +561,6 @@ void QuickStartController::FinishAccountCreation() {
   CHECK(!gaia_creds_.email.empty());
   CHECK(!gaia_creds_.gaia_id.empty());
 
-  SavePhoneInstanceID();
   UpdateUiState(UiState::CREATING_ACCOUNT);
   controller_state_ = ControllerState::SETUP_COMPLETE;
 
