@@ -57,6 +57,9 @@
 #import "ios/chrome/browser/shared/ui/util/pasteboard_util.h"
 #import "ios/chrome/browser/shared/ui/util/rtl_geometry.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
+#import "ios/chrome/browser/signin/model/authentication_service.h"
+#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
+#import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/ui/authentication/cells/signin_promo_view_configurator.h"
 #import "ios/chrome/browser/ui/authentication/cells/table_view_signin_promo_item.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_navigation_controller.h"
@@ -1223,7 +1226,12 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
                               editedNodesVector,
                               _localOrSyncableBookmarkModel.get(),
                               _accountBookmarkModel.get(), folder,
-                              self.browserState)];
+                              self.browserState,
+                              AuthenticationServiceFactory::GetForBrowserState(
+                                  _browserState)
+                                  ->GetWeakPtr(),
+                              SyncServiceFactory::GetForBrowserState(
+                                  _browserState))];
 }
 
 - (void)bookmarksFolderChooserCoordinatorDidCancel:

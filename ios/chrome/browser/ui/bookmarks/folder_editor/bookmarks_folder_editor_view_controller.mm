@@ -74,6 +74,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
   base::WeakPtr<BookmarkModel> _accountBookmarkModel;
   // Observer for `_accountBookmarkModel` changes.
   std::unique_ptr<BookmarkModelBridge> _accountModelBridge;
+  // The authentication service.
+  raw_ptr<AuthenticationService> _authService;
   // Observer for signin status changes.
   std::unique_ptr<AuthenticationServiceObserverBridge> _authServiceBridge;
   raw_ptr<syncer::SyncService> _syncService;
@@ -141,6 +143,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
     _editingExistingFolder = _folder != nullptr;
     _browser = browser->AsWeakPtr();
     _browserState = browser->GetBrowserState()->GetOriginalChromeBrowserState();
+    _authService = authService;
     _authServiceBridge = std::make_unique<AuthenticationServiceObserverBridge>(
         authService, self);
     _syncService = syncService;
@@ -344,7 +347,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
                                   bookmarksVector,
                                   _localOrSyncableBookmarkModel.get(),
                                   _accountBookmarkModel.get(), _parentFolder,
-                                  _browserState)];
+                                  _browserState, _authService->GetWeakPtr(),
+                                  _syncService)];
       // Move might change the pointer, grab the updated value.
       CHECK_EQ(bookmarksVector.size(), 1u);
       _folder = bookmarksVector[0];

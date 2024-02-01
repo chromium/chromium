@@ -605,9 +605,18 @@ MDCSnackbarMessage* MoveBookmarksWithUndoToast(
     bookmarks::BookmarkModel* local_model,
     bookmarks::BookmarkModel* account_model,
     const BookmarkNode* destination_folder,
-    ChromeBrowserState* browser_state) {
+    ChromeBrowserState* browser_state,
+    base::WeakPtr<AuthenticationService> authenticationService,
+    raw_ptr<syncer::SyncService> syncService) {
   size_t node_count = bookmarks_to_move.size();
   DCHECK_GT(node_count, 0u);
+  bool contains_a_folder =
+      std::find_if(bookmarks_to_move.begin(), bookmarks_to_move.end(),
+                   [](const BookmarkNode* node) {
+                     return node->is_folder();
+                   }) != bookmarks_to_move.end();
+  // We assume a folder contains multiple bookmark, and thus plural can be used.
+  bool multiple_bookmarks_to_move = node_count > 1 || contains_a_folder;
 
   UndoManagerWrapper* wrapper =
       [[UndoManagerWrapper alloc] initWithBrowserState:browser_state];
@@ -623,13 +632,17 @@ MDCSnackbarMessage* MoveBookmarksWithUndoToast(
     return nil;  // Don't return a snackbar when no real move as happened.
   }
 
-  NSString* text = nil;
-  if (node_count == 1) {
-    text = l10n_util::GetNSString(IDS_IOS_BOOKMARK_NEW_SINGLE_BOOKMARK_MOVE);
-  } else {
-    text = l10n_util::GetNSStringF(IDS_IOS_BOOKMARK_NEW_MULTIPLE_BOOKMARK_MOVE,
-                                   base::NumberToString16(node_count));
-  }
+  // As the exact number of bookmarks is not displayed, assuming there are two
+  // is fine for the purpose of the bookmark. What matters is that it leads to
+  // "bookmarks" in plural form.
+  int count = (multiple_bookmarks_to_move) ? 2 : 1;
+
+  bookmarks::StorageType storageType = bookmark_utils_ios::GetBookmarkModelType(
+      destination_folder, local_model, account_model);
+  NSString* text = messageForAddingBookmarksInFolder(
+      TitleForBookmarkNode(destination_folder),
+      /*chosenByUser=*/true, storageType, count, authenticationService,
+      syncService);
   return CreateUndoToastWithWrapper(wrapper, text,
                                     "MobileBookmarkManagerMoveToFolderUndone");
 }
