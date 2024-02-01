@@ -86,8 +86,7 @@ For questions and general discussions, please join [code-coverage group].
 
 There are several possible reasons:
 * A particular source file/test may not be available on a particular project or
-platform. As of now, only `chromium/src` project and `Linux` platform is
-supported.
+platform.
 * There is a bug in the pipeline. Please [file a bug] to report the breakage.
 
 ### How does it work?
