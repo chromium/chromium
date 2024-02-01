@@ -4,7 +4,9 @@
 
 #include "components/browsing_topics/common/semantic_tree.h"
 
+#include <map>
 #include <set>
+#include <variant>
 
 #include "base/check.h"
 #include "base/check_op.h"
