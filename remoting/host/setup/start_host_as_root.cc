@@ -4,12 +4,15 @@
 
 #include "remoting/host/setup/start_host_as_root.h"
 
+#include <errno.h>
 #include <pwd.h>
 #include <sys/wait.h>
 #include <unistd.h>
 
 #include "base/check.h"
 #include "base/command_line.h"
+#include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/process/launch.h"
 
 namespace remoting {
@@ -33,6 +36,30 @@ int StartHostAsRoot(int argc, char** argv) {
             "Must specify the --user-name or --corp-user option when running "
             "as root.\n");
     return 1;
+  }
+
+  errno = 0;
+  const passwd* user_struct = getpwnam(user_name.c_str());
+  if (!user_struct) {
+    fprintf(stderr,
+            "Failed to retrieve passwd struct for %s. errno = %s(%d)\n"
+            "Does this user account exist on the machine?\n",
+            user_name.c_str(), strerror(errno), errno);
+    return -1;
+  }
+
+  std::string home_dir = user_struct->pw_dir ?: "";
+  base::FilePath home_dir_path = base::FilePath(home_dir);
+  if (!base::DirectoryExists(home_dir_path)) {
+    fprintf(stderr,
+            "[WARNING] Can't find home directory (%s) for %s(%d).\n"
+            "Please run the 'mkhomedir_helper' utility, or similar, to create "
+            "a home directory for the user.\nThe host setup process will not "
+            "complete successfully without one.\n",
+            home_dir.c_str(), user_name.c_str(), user_struct->pw_uid);
+  } else {
+    fprintf(stdout, "Verified that home directory (%s) exists for %s(%d)\n",
+            home_dir.c_str(), user_name.c_str(), user_struct->pw_uid);
   }
 
   int return_value = 1;
