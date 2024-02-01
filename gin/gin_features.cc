@@ -256,7 +256,7 @@ BASE_FEATURE(kJavaScriptRegExpModifiers,
 
 // Enables the `with` syntax for the Import Attributes proposal.
 BASE_FEATURE(kJavaScriptImportAttributes,
-             "kJavaScriptImportAttributes",
+             "JavaScriptImportAttributes",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables the set methods proposal.
