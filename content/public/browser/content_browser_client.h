@@ -296,6 +296,12 @@ class CONTENT_EXPORT ContentBrowserClient {
   using IsClipboardPasteAllowedCallback = base::OnceCallback<void(
       std::optional<ClipboardPasteData> clipboard_paste_data)>;
 
+  // Callback used with the `IsClipboardCopyAllowedByPolicy()` method.
+  // If the copy is allowed, nullopt is passed to the callback. Otherwise, the
+  // data that should be put in the clipboard instead is passed to the callback.
+  using IsClipboardCopyAllowedCallback =
+      base::OnceCallback<void(std::optional<std::u16string> replacement_data)>;
+
   virtual ~ContentBrowserClient() = default;
 
   // Allows the embedder to set any number of custom BrowserMainParts
@@ -2463,16 +2469,14 @@ class CONTENT_EXPORT ContentBrowserClient {
       ClipboardPasteData clipboard_paste_data,
       IsClipboardPasteAllowedCallback callback);
 
-  // Returns true if a copy to the clipboard from `url` is allowed by the
-  // CopyPreventionSettings policy, false otherwise. The check is only performed
-  // if `data_size_in_bytes` is greater or equal than the minimum data size
-  // specified in the policy. If the copy is blocked `replacement_data` will be
-  // filled with an explainer message meant to be written to the clipboard for
-  // the user to see.
-  virtual bool IsClipboardCopyAllowed(content::BrowserContext* browser_context,
-                                      const GURL& url,
-                                      size_t data_size_in_bytes,
-                                      std::u16string& replacement_data);
+  // Determines if a clipboard copy is allowed by enterprise policies. The
+  // implementation might show UX to the user and call `callback`
+  // asynchronously.
+  virtual void IsClipboardCopyAllowedByPolicy(
+      content::BrowserContext* browser_context,
+      const GURL& url,
+      size_t data_size_in_bytes,
+      IsClipboardCopyAllowedCallback callback);
 
 #if BUILDFLAG(ENABLE_VR)
   // Allows the embedder to provide mechanisms to integrate with WebXR

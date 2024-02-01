@@ -215,6 +215,13 @@ class CONTENT_EXPORT ClipboardHostImpl
   using CopyAllowedCallback = base::OnceCallback<void()>;
   void CopyIfAllowed(size_t data_size_in_bytes, CopyAllowedCallback callback);
 
+  // If `replacement_data` is null, calls `callback` to copy data to the
+  // clipboard. If it is not, instead write the replacement string to the
+  // clipboard. This can be called asynchronously and should only be called by
+  // `CopyIfAllowed`.
+  void OnCopyAllowedResult(CopyAllowedCallback callback,
+                           std::optional<std::u16string> replacement_data);
+
   void OnReadPng(ui::ClipboardBuffer clipboard_buffer,
                  ReadPngCallback callback,
                  const std::vector<uint8_t>& data);

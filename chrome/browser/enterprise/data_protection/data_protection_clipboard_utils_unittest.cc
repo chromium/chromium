@@ -170,10 +170,11 @@ TEST_F(DataProtectionPasteIfAllowedByPolicyTest,
 }
 
 TEST_F(DataProtectionIsClipboardCopyAllowedByPolicyTest, Default) {
-  std::u16string replacement;
-  EXPECT_TRUE(IsClipboardCopyAllowedByPolicy(
-      browser_context(), GURL("https://source.com"), 123, replacement));
-  EXPECT_TRUE(replacement.empty());
+  base::test::TestFuture<std::optional<std::u16string>> future;
+  IsClipboardCopyAllowedByPolicy(browser_context(), GURL("https://source.com"),
+                                 123, future.GetCallback());
+  auto replacement = future.Get();
+  EXPECT_FALSE(replacement);
 }
 
 TEST_F(DataProtectionIsClipboardCopyAllowedByPolicyTest, StringReplacement) {
@@ -187,10 +188,12 @@ TEST_F(DataProtectionIsClipboardCopyAllowedByPolicyTest, StringReplacement) {
                     ]
                   })"});
 
-  std::u16string replacement;
-  EXPECT_FALSE(IsClipboardCopyAllowedByPolicy(
-      browser_context(), GURL("https://source.com"), 123, replacement));
-  EXPECT_EQ(replacement,
+  base::test::TestFuture<std::optional<std::u16string>> future;
+  IsClipboardCopyAllowedByPolicy(browser_context(), GURL("https://source.com"),
+                                 123, future.GetCallback());
+  auto replacement = future.Get();
+  EXPECT_TRUE(replacement);
+  EXPECT_EQ(*replacement,
             u"Pasting this content here is blocked by your administrator.");
 }
 
@@ -205,10 +208,11 @@ TEST_F(DataProtectionIsClipboardCopyAllowedByPolicyTest, NoStringReplacement) {
                     ]
                   })"});
 
-  std::u16string replacement;
-  EXPECT_TRUE(IsClipboardCopyAllowedByPolicy(
-      browser_context(), GURL("https://random.com"), 123, replacement));
-  EXPECT_TRUE(replacement.empty());
+  base::test::TestFuture<std::optional<std::u16string>> future;
+  IsClipboardCopyAllowedByPolicy(browser_context(), GURL("https://random.com"),
+                                 123, future.GetCallback());
+  auto replacement = future.Get();
+  EXPECT_FALSE(replacement);
 }
 
 }  // namespace enterprise_data_protection

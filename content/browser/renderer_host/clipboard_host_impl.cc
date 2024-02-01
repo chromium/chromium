@@ -692,18 +692,24 @@ void ClipboardHostImpl::FinishPasteIfAllowed(
 
 void ClipboardHostImpl::CopyIfAllowed(size_t data_size_in_bytes,
                                       CopyAllowedCallback callback) {
-  std::u16string replacement_data;
-  if (GetContentClient()->browser()->IsClipboardCopyAllowed(
-          render_frame_host().GetBrowserContext(),
-          render_frame_host().GetLastCommittedURL(), data_size_in_bytes,
-          replacement_data)) {
+  GetContentClient()->browser()->IsClipboardCopyAllowedByPolicy(
+      render_frame_host().GetBrowserContext(),
+      render_frame_host().GetLastCommittedURL(), data_size_in_bytes,
+      base::BindOnce(&ClipboardHostImpl::OnCopyAllowedResult,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void ClipboardHostImpl::OnCopyAllowedResult(
+    CopyAllowedCallback callback,
+    std::optional<std::u16string> replacement_data) {
+  if (replacement_data) {
+    clipboard_writer_->WriteText(std::move(*replacement_data));
+  } else {
     // Set the source of the clipboard text/html
     clipboard_writer_->SetDataSourceURL(
         render_frame_host().GetMainFrame()->GetLastCommittedURL(),
         render_frame_host().GetLastCommittedURL());
     std::move(callback).Run();
-  } else {
-    clipboard_writer_->WriteText(replacement_data);
   }
 }
 
