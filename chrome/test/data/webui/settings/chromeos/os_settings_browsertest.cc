@@ -60,6 +60,34 @@ class OSSettingsMochaTestRevampDisabled : public OSSettingsMochaTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+using OsAboutPageTest = OSSettingsMochaTest;
+
+IN_PROC_BROWSER_TEST_F(OsAboutPageTest, AllBuilds) {
+  RunTest("settings/chromeos/os_about_page_tests.js",
+          "runMochaSuite('<os-about-page> AllBuilds')");
+}
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+IN_PROC_BROWSER_TEST_F(OsAboutPageTest, OfficialBuild) {
+  RunTest("settings/chromeos/os_about_page_tests.js",
+          "runMochaSuite('<os-about-page> OfficialBuild')");
+}
+#endif
+
+class OSSettingsMochaTestApnRevampEnabled : public OSSettingsMochaTest {
+ protected:
+  OSSettingsMochaTestApnRevampEnabled() {
+    scoped_feature_list_.InitAndEnableFeature(ash::features::kApnRevamp);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTestApnRevampEnabled, ApnSubpage) {
+  RunSettingsTest("apn_subpage_test.js");
+}
+
 IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, ApnDetailDialog) {
   RunSettingsTest("apn_detail_dialog_test.js");
 }
@@ -86,6 +114,14 @@ IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, AppManagementManagedApps) {
 
 IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, AppManagementToggleRow) {
   RunSettingsTest("app_management/toggle_row_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, CellularNetworksList) {
+  RunSettingsTest("cellular_networks_list_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, CellularRoamingToggleButton) {
+  RunSettingsTest("cellular_roaming_toggle_button_test.js");
 }
 
 IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, ControlledButton) {
@@ -587,6 +623,34 @@ IN_PROC_BROWSER_TEST_F(OSSettingsDeviceTestPeripheralAndSplitAndRevampEnabled,
 IN_PROC_BROWSER_TEST_F(OSSettingsDeviceTestPeripheralAndSplitEnabled,
                        DevicePageStylus) {
   RunSettingsTest("device_page/stylus_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, EsimRemoveProfileDialog) {
+  RunSettingsTest("esim_remove_profile_dialog_test.js");
+}
+
+class OSSettingsInternetTestApnAndHotspotAndPasspointEnabled
+    : public OSSettingsMochaTest {
+ protected:
+  OSSettingsInternetTestApnAndHotspotAndPasspointEnabled() {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled=*/
+        {
+            ash::features::kApnRevamp,
+            ash::features::kHotspot,
+            ash::features::kPasspointSettings,
+            ash::features::kPasspointARCSupport,
+        },
+        /*disabled=*/{});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(OSSettingsInternetTestApnAndHotspotAndPasspointEnabled,
+                       InternetPage) {
+  RunSettingsTest("internet_page_tests.js");
 }
 
 IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, InternetPageCellularSetupDialog) {
@@ -1426,6 +1490,51 @@ IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, OsResetPage) {
 
 IN_PROC_BROWSER_TEST_F(OSSettingsMochaTestRevampDisabled,
                        OsResetPageResetSettingsCard) {
+  RunSettingsTest("os_reset_page/reset_settings_card_test.js");
+}
+
+class OSSettingsResetTestSanitizeEnabledRevampDisabled
+    : public OSSettingsMochaTest {
+ protected:
+  OSSettingsResetTestSanitizeEnabledRevampDisabled() {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled=*/
+        {
+            ash::features::kSanitize,
+        },
+        /*disabled=*/{
+            ash::features::kOsSettingsRevampWayfinding,
+        });
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(OSSettingsResetTestSanitizeEnabledRevampDisabled,
+                       OsResetPageResetSettingsCardWithSanitize) {
+  RunSettingsTest("os_reset_page/reset_settings_card_test.js");
+}
+
+class OSSettingsResetTestSanitizeAndRevampDisabled
+    : public OSSettingsMochaTest {
+ protected:
+  OSSettingsResetTestSanitizeAndRevampDisabled() {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled=*/
+        {},
+        /*disabled=*/{
+            ash::features::kSanitize,
+            ash::features::kOsSettingsRevampWayfinding,
+        });
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(OSSettingsResetTestSanitizeAndRevampDisabled,
+                       OsResetPageResetSettingsCardWithoutSanitize) {
   RunSettingsTest("os_reset_page/reset_settings_card_test.js");
 }
 
