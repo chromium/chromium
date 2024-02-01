@@ -216,9 +216,12 @@ void ServiceWorkerControlleeRequestHandler::MaybeCreateLoader(
     BrowserContext* browser_context,
     NavigationLoaderInterceptor::LoaderCallback loader_callback,
     NavigationLoaderInterceptor::FallbackCallback fallback_callback) {
+  loader_callback_ = std::move(loader_callback);
+  fallback_callback_ = std::move(fallback_callback);
+
   if (!container_host_) {
     // We can't do anything other than to fall back to network.
-    std::move(loader_callback).Run({});
+    CompleteWithoutLoader();
     return;
   }
 
@@ -232,7 +235,7 @@ void ServiceWorkerControlleeRequestHandler::MaybeCreateLoader(
   // anyway.
   if (skip_service_worker_ || !context_) {
     ServiceWorkerMetrics::RecordSkipServiceWorkerOnNavigation(true);
-    std::move(loader_callback).Run({});
+    CompleteWithoutLoader();
     return;
   }
   ServiceWorkerMetrics::RecordSkipServiceWorkerOnNavigation(false);
@@ -247,7 +250,7 @@ void ServiceWorkerControlleeRequestHandler::MaybeCreateLoader(
   // headers between now and when the request handler passed to
   // |loader_callback_| is invoked.
   if (ShouldFallbackToLoadOfflinePage(tentative_resource_request.headers)) {
-    std::move(loader_callback).Run({});
+    CompleteWithoutLoader();
     return;
   }
 #endif  // BUILDFLAG(ENABLE_OFFLINE_PAGES)
@@ -261,9 +264,6 @@ void ServiceWorkerControlleeRequestHandler::MaybeCreateLoader(
       TRACE_ID_LOCAL(this),
       TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT, "URL",
       tentative_resource_request.url.spec());
-
-  loader_callback_ = std::move(loader_callback);
-  fallback_callback_ = std::move(fallback_callback);
 
   // Look up a registration.
   context_->registry()->FindRegistrationForClientUrl(
@@ -773,6 +773,7 @@ void ServiceWorkerControlleeRequestHandler::OnUpdatedVersionStatusChanged(
 }
 
 void ServiceWorkerControlleeRequestHandler::CompleteWithoutLoader() {
+  fallback_callback_.Reset();
   std::move(loader_callback_).Run({});
 }
 
