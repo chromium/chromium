@@ -756,15 +756,18 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
                  &ReadAnythingAppController::SetLanguageForTesting)
       .SetMethod("initAXPositionWithNode",
                  &ReadAnythingAppController::InitAXPositionWithNode)
-      .SetMethod("getNextTextStartIndex",
-                 &ReadAnythingAppController::GetNextTextStartIndex)
-      .SetMethod("getNextTextEndIndex",
-                 &ReadAnythingAppController::GetNextTextEndIndex)
-      .SetMethod("getNextText", &ReadAnythingAppController::GetNextText)
-      .SetMethod("getPreviousText", &ReadAnythingAppController::GetPreviousText)
+      .SetMethod("getCurrentTextStartIndex",
+                 &ReadAnythingAppController::GetCurrentTextStartIndex)
+      .SetMethod("getCurrentTextEndIndex",
+                 &ReadAnythingAppController::GetCurrentTextEndIndex)
+      .SetMethod("getCurrentText", &ReadAnythingAppController::GetCurrentText)
       .SetMethod("shouldShowUI", &ReadAnythingAppController::ShouldShowUI)
       .SetMethod("getAccessibleBoundary",
-                 &ReadAnythingAppController::GetAccessibleBoundary);
+                 &ReadAnythingAppController::GetAccessibleBoundary)
+      .SetMethod("movePositionToNextGranularity",
+                 &ReadAnythingAppController::MovePositionToNextGranularity)
+      .SetMethod("movePositionToPreviousGranularity",
+                 &ReadAnythingAppController::MovePositionToPreviousGranularity);
 }
 
 ui::AXNodeID ReadAnythingAppController::RootId() const {
@@ -1264,23 +1267,24 @@ void ReadAnythingAppController::InitAXPositionWithNode(
   model_.InitAXPositionWithNode(starting_node_id);
 }
 
-std::vector<ui::AXNodeID> ReadAnythingAppController::GetNextText() {
-  return model_.GetNextText();
+std::vector<ui::AXNodeID> ReadAnythingAppController::GetCurrentText() {
+  return model_.GetCurrentText();
 }
 
-// TODO(crbug.com/1474951): Random access to processed nodes might not always
-// work (e.g. if we're switching granularities or jumping to a specific node),
-// so we should implement a method of retrieving previous text from AXPosition
-std::vector<ui::AXNodeID> ReadAnythingAppController::GetPreviousText() {
-  return model_.GetPreviousText();
+void ReadAnythingAppController::MovePositionToNextGranularity() {
+  model_.MovePositionToNextGranularity();
 }
 
-int ReadAnythingAppController::GetNextTextStartIndex(ui::AXNodeID node_id) {
-  return model_.GetNextTextStartIndex(node_id);
+void ReadAnythingAppController::MovePositionToPreviousGranularity() {
+  model_.MovePositionToPreviousGranularity();
 }
 
-int ReadAnythingAppController::GetNextTextEndIndex(ui::AXNodeID node_id) {
-  return model_.GetNextTextEndIndex(node_id);
+int ReadAnythingAppController::GetCurrentTextStartIndex(ui::AXNodeID node_id) {
+  return model_.GetCurrentTextStartIndex(node_id);
+}
+
+int ReadAnythingAppController::GetCurrentTextEndIndex(ui::AXNodeID node_id) {
+  return model_.GetCurrentTextEndIndex(node_id);
 }
 
 // TODO(crbug.com/1266555): Change line_spacing and letter_spacing types from

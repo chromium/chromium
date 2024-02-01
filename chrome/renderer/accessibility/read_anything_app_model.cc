@@ -1079,38 +1079,38 @@ void ReadAnythingAppModel::InitAXPositionWithNode(
     ax_position_ =
         ui::AXNodePosition::CreateTreePositionAtStartOfAnchor(*ax_node);
     current_text_index_ = 0;
-    processed_granularity_index_ = -1;
+    processed_granularity_index_ = 0;
     processed_granularities_on_current_page_.clear();
   }
 }
-
-std::vector<ui::AXNodeID> ReadAnythingAppModel::GetNextText() {
-  bool was_previously_processed =
-      processed_granularity_index_ <
-      processed_granularities_on_current_page_.size() - 1;
-
-  // If we've previously processed the triples at this location, return the
-  // previously processed node information. Otherwise, get this information
-  // GetNextNodes.
-  ReadAnythingAppModel::ReadAloudCurrentGranularity current_granularity =
-      (was_previously_processed) ? processed_granularities_on_current_page_
-                                       [processed_granularity_index_ + 1]
-                                 : GetNextNodes();
-
-  // If the list of nodes is empty, don't adjust the processed nodes
-  // information.
-  if (current_granularity.node_ids.size() == 0) {
-    return current_granularity.node_ids;
-  }
-
-  if (!was_previously_processed) {
-    processed_granularities_on_current_page_.push_back(current_granularity);
-  }
+void ReadAnythingAppModel::MovePositionToNextGranularity() {
   processed_granularity_index_++;
-
-  return current_granularity.node_ids;
 }
 
+void ReadAnythingAppModel::MovePositionToPreviousGranularity() {
+  if (processed_granularity_index_ > 0) {
+    processed_granularity_index_--;
+  }
+}
+
+std::vector<ui::AXNodeID> ReadAnythingAppModel::GetCurrentText() {
+  while (processed_granularities_on_current_page_.size() <=
+         processed_granularity_index_) {
+    ReadAnythingAppModel::ReadAloudCurrentGranularity next_granularity =
+        GetNextNodes();
+
+    if (next_granularity.node_ids.size() == 0) {
+      // TODO(crbug.com/1474951) think about behavior when increment happened
+      // out of the content- should we reset the state?
+      return next_granularity.node_ids;
+    }
+
+    processed_granularities_on_current_page_.push_back(next_granularity);
+  }
+
+  return processed_granularities_on_current_page_[processed_granularity_index_]
+      .node_ids;
+}
 // TODO(crbug.com/1474951): Update to use AXRange to better handle multiple
 // nodes. This may require updating GetText in ax_range.h to return AXNodeIds.
 // AXRangeType#ExpandToEnclosingTextBoundary may also be useful.
@@ -1344,7 +1344,7 @@ ReadAnythingAppModel::GetNextValidPositionFromCurrentPosition(
   return new_position;
 }
 
-int ReadAnythingAppModel::GetNextTextStartIndex(ui::AXNodeID node_id) {
+int ReadAnythingAppModel::GetCurrentTextStartIndex(ui::AXNodeID node_id) {
   if (processed_granularities_on_current_page_.size() < 1) {
     return -1;
   }
@@ -1360,7 +1360,7 @@ int ReadAnythingAppModel::GetNextTextStartIndex(ui::AXNodeID node_id) {
   return segment.text_start;
 }
 
-int ReadAnythingAppModel::GetNextTextEndIndex(ui::AXNodeID node_id) {
+int ReadAnythingAppModel::GetCurrentTextEndIndex(ui::AXNodeID node_id) {
   if (processed_granularities_on_current_page_.size() < 1) {
     return -1;
   }
@@ -1374,26 +1374,6 @@ int ReadAnythingAppModel::GetNextTextEndIndex(ui::AXNodeID node_id) {
       current_granularity.segments[node_id];
 
   return segment.text_end;
-}
-
-// TODO(crbug.com/1474951): Random access to processed nodes might not always
-// work (e.g. if we're switching granularities or jumping to a specific node),
-// so we should implement a method of retrieving previous text from AXPosition
-std::vector<ui::AXNodeID> ReadAnythingAppModel::GetPreviousText() {
-  // If GetPreviousText is called before the tree is initialized or before
-  // there are any processed granularities, return an empty vector.
-  if (processed_granularities_on_current_page_.size() == 0) {
-    return std::vector<ui::AXNodeID>();
-  }
-
-  // If we've reached the beginning of the content, we should continue to return
-  // the text grouping, so don't decrement below 0.
-  if (processed_granularity_index_ > 0) {
-    processed_granularity_index_--;
-  }
-
-  return processed_granularities_on_current_page_[processed_granularity_index_]
-      .node_ids;
 }
 
 bool ReadAnythingAppModel::NodeBeenOrWillBeSpoken(
@@ -1415,7 +1395,7 @@ bool ReadAnythingAppModel::NodeBeenOrWillBeSpoken(
 void ReadAnythingAppModel::ResetReadAloudState() {
   ax_position_ = ui::AXNodePosition::AXPosition::CreateNullPosition();
   current_text_index_ = 0;
-  processed_granularity_index_ = -1;
+  processed_granularity_index_ = 0;
   processed_granularities_on_current_page_.clear();
 }
 

@@ -250,24 +250,29 @@ declare namespace chrome {
     function initAXPositionWithNode(startingNodeId: number): void;
 
     // Gets the starting text index for the current Read Aloud text segment
-    // for the given node. nodeId should be a node returned by getNextText or
-    // getPreviousText. Returns -1 if the node is invalid.
-    function getNextTextStartIndex(nodeId: number): number;
+    // for the given node. nodeId should be a node returned by getCurrentText.
+    // Returns -1 if the node is invalid.
+    function getCurrentTextStartIndex(nodeId: number): number;
 
     // Gets the ending text index for the current Read Aloud text segment
-    // for the given node. nodeId should be a node returned by getNextText or
+    // for the given node. nodeId should be a node returned by getCurrentText or
     // getPreviousText. Returns -1 if the node is invalid.
-    function getNextTextEndIndex(nodeId: number): number;
+    function getCurrentTextEndIndex(nodeId: number): number;
 
     // Gets the nodes of the  next text that should be spoken and highlighted.
-    // Use getNextTextStartIndex and getNextTextEndIndex to get the bounds
+    // Use getCurrentTextStartIndex and getCurrentTextEndIndex to get the bounds
     // for text associated with these nodes.
-    function getNextText(): number[];
+    function getCurrentText(): number[];
 
-    // Gets the nodes for the previous text that should be spoken and
-    // highlighted. Use getNextTextStartIndex and getNextTextEndIndex to get
-    // the bounds for text associated with these nodes.
-    function getPreviousText(): number[];
+    // Increments the processed_granularity_index_ in ReadAnythingAppModel,
+    // effectively updating ReadAloud's state of the current granularity to
+    // refer to the next granularity.
+    function movePositionToNextGranularity(): void;
+
+    // Decrements the processed_granularity_index_ in ReadAnythingAppModel,
+    // effectively updating ReadAloud's state of the current granularity to
+    // refer to the previous granularity.
+    function movePositionToPreviousGranularity(): void;
 
     // Signal that the supported fonts should be updated i.e. that the brower's
     // preferred language has changed.

@@ -72,7 +72,7 @@
 
   readAnythingApp.playSpeech();
 
-  readAnythingApp.highlightAndPlayNextMessage();
+  readAnythingApp.highlightAndPlayMessage();
   assertEquals(
       container.querySelector('.current-read-highlight').textContent,
       longSentence);

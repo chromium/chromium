@@ -568,7 +568,9 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   playNextGranularity() {
     this.synth.cancel();
     this.resetPreviousHighlight();
-    if (!this.highlightAndPlayNextMessage()) {
+    chrome.readingMode.movePositionToNextGranularity();
+
+    if (!this.highlightAndPlayMessage()) {
       this.onSpeechFinished();
     }
   }
@@ -578,7 +580,11 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   playPreviousGranularity() {
     this.synth.cancel();
     this.resetPreviousHighlight();
-    this.highlightAndPlayPreviousMessage();
+    chrome.readingMode.movePositionToPreviousGranularity();
+
+    if (!this.highlightAndPlayMessage()) {
+      this.onSpeechFinished();
+    }
   }
 
   playSpeech() {
@@ -620,25 +626,20 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
       // that this step can be skipped.
       if (axNode) {
         chrome.readingMode.initAXPositionWithNode(axNode);
-        this.highlightAndPlayNextMessage();
+        this.highlightAndPlayMessage();
       }
     }
   }
 
-  highlightAndPlayNextMessage(): boolean {
-    // getNextText returns a list of triples of AXNodeIds and start / end text
-    // indices, represented as a double array.
-    const nextTextIds: number[] = chrome.readingMode.getNextText();
+  highlightAndPlayMessage(): boolean {
+    // getCurrentText gets the AX Node IDs of text that should be spoken and
+    // highlighted.
+    const nextTextIds: number[] = chrome.readingMode.getCurrentText();
     return this.highlightAndPlayTextOf(nextTextIds);
   }
 
-  highlightAndPlayPreviousMessage(): boolean {
-    const previousTextIds: number[] = chrome.readingMode.getPreviousText();
-    return this.highlightAndPlayTextOf(previousTextIds);
-  }
-
-  // Play text of these axNodeIds. When finished, call
-  // highlightAndPlayNextMessage() to read the following text.
+  // Play text of these axNodeIds. When finished, read and highlight to read the
+  // following text.
   // TODO (crbug.com/1474951): Investigate using AXRange.GetText to get text
   // between start node / end nodes and their offsets.
   private highlightAndPlayTextOf(axNodeIds: number[]): boolean {
@@ -715,8 +716,11 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
       // the document has finished.
       this.resetPreviousHighlight();
 
+      // Now that we've finiished reading this utterance, update the Granularity
+      // state to point to the next one
+      chrome.readingMode.movePositionToNextGranularity();
       // Continue speaking with the next block of text.
-      if (!this.highlightAndPlayNextMessage()) {
+      if (!this.highlightAndPlayMessage()) {
         this.onSpeechFinished();
       }
     };
@@ -746,8 +750,8 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     for (let i = 0; i < axNodeIds.length; i++) {
       assert(axNodeIds[i]);
       const nodeId = axNodeIds[i];
-      const startIndex = chrome.readingMode.getNextTextStartIndex(nodeId);
-      const endIndex = chrome.readingMode.getNextTextEndIndex(nodeId);
+      const startIndex = chrome.readingMode.getCurrentTextStartIndex(nodeId);
+      const endIndex = chrome.readingMode.getCurrentTextEndIndex(nodeId);
       const element = this.domNodeToAxNodeIdMap_.keyFrom(nodeId);
       if (!element || startIndex < 0 || endIndex < 0) {
         continue;
@@ -772,8 +776,8 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
       if (!element) {
         continue;
       }
-      const start = chrome.readingMode.getNextTextStartIndex(nodeId);
-      const end = chrome.readingMode.getNextTextEndIndex(nodeId);
+      const start = chrome.readingMode.getCurrentTextStartIndex(nodeId);
+      const end = chrome.readingMode.getCurrentTextEndIndex(nodeId);
       if ((start < 0) || (end < 0)) {
         // If the start or end index is invalid, don't use this node.
         continue;
