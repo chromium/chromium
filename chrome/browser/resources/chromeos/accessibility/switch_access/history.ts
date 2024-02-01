@@ -69,13 +69,14 @@ export class FocusHistory {
         continue;
       }
 
-      const focus = group.findChild(candidate);
+      // TODO(b/314203187): Not null asserted, check that this is correct.
+      const focus = group.findChild(candidate!);
       if (!focus) {
         continue;
       }
       newDataStack.push(new FocusData(group, focus));
 
-      group = focus.asRootNode();
+      group = focus.asRootNode()!;
       if (!group) {
         break;
       }
