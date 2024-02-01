@@ -6,7 +6,9 @@ package org.chromium.chrome.browser.app.bookmarks;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
 import static androidx.test.espresso.matcher.ViewMatchers.withContentDescription;
+import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.junit.Assert.assertEquals;
@@ -14,6 +16,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 
+import androidx.test.espresso.contrib.RecyclerViewActions;
 import androidx.test.filters.MediumTest;
 
 import org.junit.After;
@@ -38,6 +41,7 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.BookmarkModelObserver;
 import org.chromium.chrome.browser.bookmarks.BookmarkUtils;
@@ -146,6 +150,8 @@ public class BookmarkFolderPickerActivityTest {
                 () -> sBookmarkModel.addObserver(mBookmarkModelObserver));
 
         clickToolbarBackButton();
+        onView(withId(R.id.folder_recycler_view))
+                .perform(RecyclerViewActions.scrollTo(hasDescendant(withText("Reading list"))));
         onView(withText("Reading list")).perform(click());
         onView(withText("Move here")).perform(click());
 
