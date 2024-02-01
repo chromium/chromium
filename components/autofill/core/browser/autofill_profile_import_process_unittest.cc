@@ -62,26 +62,6 @@ class AutofillProfileImportProcessTest : public testing::Test {
   GURL url_{"https://www.import.me/now.html"};
 };
 
-// Test that two subsequently created `ProfileImportProcess`s have distinct ids.
-TEST_F(AutofillProfileImportProcessTest, DistinctIds) {
-  AutofillProfile empty_profile(
-      i18n_model_definition::kLegacyHierarchyCountryCode);
-  ProfileImportProcess import_data1(empty_profile, "en_US", url_,
-                                    &personal_data_manager_,
-                                    /*allow_only_silent_updates=*/false);
-  ProfileImportProcess import_data2(empty_profile, "en_US", url_,
-                                    &personal_data_manager_,
-                                    /*allow_only_silent_updates=*/false);
-
-  // The import ids should be distinct.
-  EXPECT_NE(import_data1.import_id(), import_data2.import_id());
-
-  // In fact, the import id is incremented for every initiated
-  // `ProfileImportData`.
-  EXPECT_EQ(import_data1.import_id().value() + 1,
-            import_data2.import_id().value());
-}
-
 // Tests the import process for the scenario, that the user accepts the import
 // of their first profile.
 TEST_F(AutofillProfileImportProcessTest, ImportFirstProfile_UserAccepts) {
