@@ -10,6 +10,7 @@
 #import "base/ios/crb_protocol_observers.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/scoped_feature_list.h"
+#import "ios/testing/earl_grey/app_launch_argument_generator.h"
 #import "ios/testing/earl_grey/app_launch_manager_app_interface.h"
 #import "ios/testing/earl_grey/base_earl_grey_test_case_app_interface.h"
 #import "ios/testing/earl_grey/coverage_utils.h"
@@ -214,65 +215,7 @@ bool LaunchArgumentsAreEqual(NSArray<NSString*>* args1,
 
 - (void)ensureAppLaunchedWithConfiguration:
     (AppLaunchConfiguration)configuration {
-  NSMutableArray<NSString*>* namesToEnable = [NSMutableArray array];
-  NSMutableArray<NSString*>* namesToDisable = [NSMutableArray array];
-  NSMutableArray<NSString*>* variations = [NSMutableArray array];
-
-  for (const auto& feature : configuration.features_enabled) {
-    [namesToEnable addObject:base::SysUTF8ToNSString(feature->name)];
-  }
-
-  for (const auto& feature : configuration.features_disabled) {
-    [namesToDisable addObject:base::SysUTF8ToNSString(feature->name)];
-  }
-
-  for (const variations::VariationID& variation :
-       configuration.variations_enabled) {
-    [variations addObject:[NSString stringWithFormat:@"%d", variation]];
-  }
-
-  for (const variations::VariationID& variation :
-       configuration.trigger_variations_enabled) {
-    [variations addObject:[NSString stringWithFormat:@"t%d", variation]];
-  }
-
-  NSString* enabledString = @"";
-  NSString* disabledString = @"";
-  NSString* variationString = @"";
-  if ([namesToEnable count] > 0) {
-    enabledString = [NSString
-        stringWithFormat:@"--enable-features=%@",
-                         [namesToEnable componentsJoinedByString:@","]];
-  }
-  if ([namesToDisable count] > 0) {
-    disabledString = [NSString
-        stringWithFormat:@"--disable-features=%@",
-                         [namesToDisable componentsJoinedByString:@","]];
-  }
-  if (variations.count > 0) {
-    variationString =
-        [NSString stringWithFormat:@"--force-variation-ids=%@",
-                                   [variations componentsJoinedByString:@","]];
-  }
-
-  NSMutableArray<NSString*>* arguments = [NSMutableArray
-      arrayWithObjects:enabledString, disabledString, variationString, nil];
-
-  for (const std::string& arg : configuration.additional_args) {
-    [arguments addObject:base::SysUTF8ToNSString(arg)];
-  }
-
-  // For the app to use the same language as the test module. This workaround
-  // the fact that EarlGrey tests depends on localizable strings (unfortunate)
-  // even though the test module does not have access to the system locale. To
-  // make this work, we force the app to use the same locale as used by the
-  // test module (which is the first item in -preferredLocalizations).
-  NSArray<NSString*>* languages = [NSBundle mainBundle].preferredLocalizations;
-  if (languages.count != 0) {
-    NSString* language = [languages firstObject];
-    [arguments addObject:@"-AppleLanguages"];
-    [arguments addObject:[NSString stringWithFormat:@"(%@)", language]];
-  }
+  NSArray<NSString*>* arguments = ArgumentsFromConfiguration(configuration);
 
   [self ensureAppLaunchedWithArgs:arguments
                    relaunchPolicy:configuration.relaunch_policy];

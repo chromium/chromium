@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//testing/test.gni")
+
 source_set("eg_app_support+eg2") {
   testonly = true
 
@@ -29,7 +31,6 @@ source_set("eg_test_support+eg2") {
   testonly = true
 
   sources = [
-    "app_launch_configuration.h",
     "app_launch_manager.h",
     "app_launch_manager.mm",
     "app_launch_manager_app_interface.h",
@@ -53,6 +54,7 @@ source_set("eg_test_support+eg2") {
   ]
 
   deps = [
+    ":launch_configuration",
     "//base",
     "//base/test:test_support",
     "//components/variations",
@@ -64,5 +66,33 @@ source_set("eg_test_support+eg2") {
     "//ui/display",
   ]
 
-  public_deps = [ "//ios/third_party/earl_grey2:test_lib" ]
+  public_deps = [
+    ":launch_configuration",
+    "//ios/third_party/earl_grey2:test_lib",
+  ]
+}
+
+source_set("launch_configuration") {
+  testonly = true
+  sources = [
+    "app_launch_argument_generator.h",
+    "app_launch_argument_generator.mm",
+    "app_launch_configuration.h",
+  ]
+  deps = [
+    "//base/test:test_support",
+    "//components/variations",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "app_launch_argument_generator_unittest.mm" ]
+  frameworks = [ "Foundation.framework" ]
+  deps = [
+    ":launch_configuration",
+    "//base",
+    "//base/test:test_support",
+    "//testing/gtest",
+  ]
 }
