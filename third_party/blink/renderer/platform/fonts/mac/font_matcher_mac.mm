@@ -265,8 +265,10 @@ ScopedCFTypeRef<CTFontRef> MatchUniqueFont(const AtomicString& unique_font_name,
       CTFontCopyFullName(matched_font.get()));
   // If the found font does not match in PostScript name or full font name, it's
   // not the exact match that is required, so return nullptr.
-  if (CFStringCompare(matched_postscript_name.get(), desired_name.get(),
+  if (matched_postscript_name &&
+      CFStringCompare(matched_postscript_name.get(), desired_name.get(),
                       kCFCompareCaseInsensitive) != kCFCompareEqualTo &&
+      matched_full_font_name &&
       CFStringCompare(matched_full_font_name.get(), desired_name.get(),
                       kCFCompareCaseInsensitive) != kCFCompareEqualTo) {
     return ScopedCFTypeRef<CTFontRef>(nullptr);
@@ -435,8 +437,10 @@ ScopedCFTypeRef<CTFontRef> MatchFontFamily(
 
   // If the found font does not match in PostScript name or font family name,
   // it's not the exact match that is required, so return nullptr.
-  if (CFStringCompare(matched_postscript_name.get(), desired_name.get(),
+  if (matched_postscript_name &&
+      CFStringCompare(matched_postscript_name.get(), desired_name.get(),
                       kCFCompareCaseInsensitive) != kCFCompareEqualTo &&
+      matched_family_name &&
       CFStringCompare(matched_family_name.get(), desired_name.get(),
                       kCFCompareCaseInsensitive) != kCFCompareEqualTo) {
     return ScopedCFTypeRef<CTFontRef>(nullptr);
@@ -445,7 +449,8 @@ ScopedCFTypeRef<CTFontRef> MatchFontFamily(
   CTFontSymbolicTraits desired_traits =
       ComputeDesiredTraits(desired_weight, desired_slant, desired_width);
 
-  if (CFStringCompare(matched_postscript_name.get(), desired_name.get(),
+  if (matched_postscript_name &&
+      CFStringCompare(matched_postscript_name.get(), desired_name.get(),
                       kCFCompareCaseInsensitive) == kCFCompareEqualTo) {
     CTFontSymbolicTraits traits = CTFontGetSymbolicTraits(matched_font.get());
     // Matched a font by PostScript name that has desired traits, so we
@@ -453,6 +458,10 @@ ScopedCFTypeRef<CTFontRef> MatchFontFamily(
     if ((desired_traits & traits) == desired_traits) {
       return matched_font;
     }
+  }
+
+  if (!matched_family_name) {
+    return ScopedCFTypeRef<CTFontRef>(nullptr);
   }
 
   return BestStyleMatchForFamily(matched_family_name, desired_traits,
