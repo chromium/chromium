@@ -601,8 +601,14 @@ IN_PROC_BROWSER_TEST_F(ChromeNavigationBrowserTest,
 // This test ensures that navigating to a page that returns an error code and
 // an empty document still shows Chrome's helpful error page instead of the
 // empty document.
+// TODO(crbug.com/1524083): Flaky on Mac11, Mac12, and Mac13.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_EmptyDocumentWithErrorCode DISABLED_EmptyDocumentWithErrorCode
+#else
+#define MAYBE_EmptyDocumentWithErrorCode EmptyDocumentWithErrorCode
+#endif  // BUILDFLAG(IS_MAC)
 IN_PROC_BROWSER_TEST_F(ChromeNavigationBrowserTest,
-                       EmptyDocumentWithErrorCode) {
+                       MAYBE_EmptyDocumentWithErrorCode) {
   GURL url(embedded_test_server()->GetURL("/empty_with_404.html"));
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
