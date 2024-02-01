@@ -393,16 +393,15 @@ void Database::CloseInternal(bool forced) {
               std::move(memory_dump_provider_));
     }
 
-    auto sqlite_result_code = ToSqliteResultCode(sqlite3_close(db_));
+    sqlite3* raw_db = db_;
+    db_ = nullptr;
+    auto sqlite_result_code = ToSqliteResultCode(sqlite3_close(raw_db));
 
     DCHECK_NE(sqlite_result_code, SqliteResultCode::kBusy)
         << "sqlite3_close() called while prepared statements are still alive";
     DCHECK_EQ(sqlite_result_code, SqliteResultCode::kOk)
-        << "sqlite3_close() failed in an unexpected way: " << GetErrorMessage();
-
-    // The reset must happen after the DCHECKs above. GetErrorMessage() needs a
-    // valid `db_` value.
-    db_ = nullptr;
+        << "sqlite3_close() failed in an unexpected way: "
+        << sqlite3_errmsg(raw_db);
   }
 }
 
@@ -1833,18 +1832,18 @@ bool Database::OpenInternal(const std::string& db_file_path,
 #endif  // BUILDFLAG(IS_WIN)
   }
 
+  sqlite3* db = nullptr;
   auto sqlite_result_code = ToSqliteResultCode(sqlite3_open_v2(
-      uri_file_path.c_str(), &db_, open_flags, /*zVfs=*/nullptr));
-  if (sqlite_result_code != SqliteResultCode::kOk) {
+      uri_file_path.c_str(), &db, open_flags, /*zVfs=*/nullptr));
+  if (sqlite_result_code == SqliteResultCode::kOk) {
+    db_ = db;
+  } else {
     // sqlite3_open_v2() will usually create a database connection handle, even
     // if an error occurs (see https://www.sqlite.org/c3ref/open.html).
-    // Therefore, we'll clear `db_` immediately - particularly before triggering
-    // an error callback which may check whether a database connection exists.
-    if (db_) {
+    if (db) {
       // Deallocate resources allocated during the failed open.
       // See https://www.sqlite.org/c3ref/close.html.
-      sqlite3_close(db_);
-      db_ = nullptr;
+      sqlite3_close(db);
     }
 
     OnSqliteError(ToSqliteErrorCode(sqlite_result_code), nullptr,

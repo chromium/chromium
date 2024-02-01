@@ -23,7 +23,6 @@
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_piece.h"
@@ -960,9 +959,7 @@ class COMPONENT_EXPORT(SQL) Database {
 
   // The actual sqlite database. Will be null before Init has been called or if
   // Init resulted in an error.
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
-  RAW_PTR_EXCLUSION sqlite3* db_ = nullptr;
+  raw_ptr<sqlite3> db_ = nullptr;
 
   // TODO(shuagga@microsoft.com): Make `options_` const after removing all
   // setters.
