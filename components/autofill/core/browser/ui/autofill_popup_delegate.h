@@ -60,10 +60,6 @@ class AutofillPopupDelegate {
   // Informs the delegate that the Autofill previewed form should be cleared.
   virtual void ClearPreviewedForm() = 0;
 
-  // Returns the type of the popup being shown.
-  // TODO(b/316859406): Replace with `GetMainFillingProduct`.
-  virtual PopupType GetPopupType() const = 0;
-
   // Returns the main filling product the popup being shown, which is a function
   // of the list of suggestions being shown.
   virtual FillingProduct GetMainFillingProduct() const = 0;

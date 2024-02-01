@@ -65,10 +65,6 @@ class AutofillExternalDelegate : public AutofillPopupDelegate,
   bool RemoveSuggestion(const Suggestion& suggestion) override;
   void ClearPreviewedForm() override;
 
-  // Returns PopupType::kUnspecified for all popups prior to `onQuery`, or the
-  // popup type after call to `onQuery`.
-  PopupType GetPopupType() const override;
-
   // Returns FillingProduct::kNone for all popups prior to
   // `OnSuggestionsReturned`. Returns the filling product of the first
   // suggestion that has a filling product that is not none.
@@ -263,8 +259,6 @@ class AutofillExternalDelegate : public AutofillPopupDelegate,
   // side effects are specific are not "leaked" to other forms.
   base::flat_map<Section, FieldTypeSet>
       last_field_types_to_fill_for_address_form_section_;
-
-  PopupType popup_type_ = PopupType::kUnspecified;
 
   bool show_cards_from_account_suggestion_was_shown_ = false;
 

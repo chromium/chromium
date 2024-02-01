@@ -550,10 +550,6 @@ void PasswordAutofillManager::ClearPreviewedForm() {
   password_manager_driver_->ClearPreviewedForm();
 }
 
-autofill::PopupType PasswordAutofillManager::GetPopupType() const {
-  return autofill::PopupType::kPasswords;
-}
-
 autofill::FillingProduct PasswordAutofillManager::GetMainFillingProduct()
     const {
   return autofill::FillingProduct::kPassword;

@@ -103,55 +103,6 @@ AutofillTriggerSource TriggerSourceFromSuggestionTriggerSource(
   }
   NOTREACHED_NORETURN();
 }
-
-// Returns the `PopupType` that would be shown if `field` inside `form` is
-// clicked.
-PopupType GetPopupTypeForQuery(BrowserAutofillManager& manager,
-                               const FormData& form,
-                               const FormFieldData& field,
-                               AutofillSuggestionTriggerSource trigger_source) {
-  if (IsAddressAutofillManuallyTriggered(trigger_source)) {
-    return PopupType::kAddresses;
-  }
-  if (IsPaymentsAutofillManuallyTriggered(trigger_source)) {
-    return PopupType::kCreditCards;
-  }
-  // Users can trigger autofill by left clicking on the form field or through
-  // the Chrome context menu by right clicking the form field. The type of the
-  // popup is determined by the field type in the first case and by the user's
-  // action in the second case. That's why we must make sure that the Autofill
-  // was not triggered manually before starting looking at the field type.
-  CHECK(!IsAutofillManuallyTriggered(trigger_source));
-  const AutofillField* const autofill_field =
-      manager.GetAutofillField(form, field);
-  if (!autofill_field) {
-    return PopupType::kUnspecified;
-  }
-
-  switch (autofill_field->Type().group()) {
-    case FieldTypeGroup::kNoGroup:
-    case FieldTypeGroup::kPasswordField:
-    case FieldTypeGroup::kTransaction:
-    case FieldTypeGroup::kUsernameField:
-    case FieldTypeGroup::kUnfillable:
-      return PopupType::kUnspecified;
-
-    case FieldTypeGroup::kCreditCard:
-      return PopupType::kCreditCards;
-
-    case FieldTypeGroup::kIban:
-      return PopupType::kIbans;
-
-    case FieldTypeGroup::kAddress:
-      return PopupType::kAddresses;
-
-    case FieldTypeGroup::kName:
-    case FieldTypeGroup::kEmail:
-    case FieldTypeGroup::kCompany:
-    case FieldTypeGroup::kPhone:
-      return PopupType::kAddresses;
-  }
-}
 }  // namespace
 
 AutofillExternalDelegate::AutofillExternalDelegate(
@@ -225,8 +176,6 @@ void AutofillExternalDelegate::OnQuery(
   query_field_ = field;
   element_bounds_ = element_bounds;
   trigger_source_ = trigger_source;
-  popup_type_ = GetPopupTypeForQuery(*manager_, query_form_, query_field_,
-                                     trigger_source);
 }
 
 const AutofillField* AutofillExternalDelegate::GetQueriedAutofillField() const {
@@ -336,7 +285,7 @@ void AutofillExternalDelegate::SetCurrentDataListValues(
 
 void AutofillExternalDelegate::OnPopupShown() {
   // Popups are expected to be Autofill or Autocomplete.
-  DCHECK_NE(GetPopupType(), PopupType::kPasswords);
+  DCHECK_NE(GetMainFillingProduct(), FillingProduct::kPassword);
 
   const bool has_autofill_suggestions = base::ranges::any_of(
       shown_suggestion_types_, IsAutofillAndFirstLayerSuggestionId);
@@ -864,10 +813,6 @@ void AutofillExternalDelegate::ClearPreviewedForm() {
   manager_->driver().RendererShouldClearPreviewedForm();
 }
 
-PopupType AutofillExternalDelegate::GetPopupType() const {
-  return popup_type_;
-}
-
 FillingProduct AutofillExternalDelegate::GetMainFillingProduct() const {
   for (PopupItemId popup_item_id : shown_suggestion_types_) {
     if (FillingProduct product =
@@ -1238,23 +1183,6 @@ bool AutofillExternalDelegate::IsPaymentsManualFallbackOnNonPaymentsField()
     return !field || field->Type().group() != FieldTypeGroup::kCreditCard;
   }
   return false;
-}
-
-std::u16string AutofillExternalDelegate::GetSettingsSuggestionValue() const {
-  switch (GetPopupType()) {
-    case PopupType::kAddresses:
-      return l10n_util::GetStringUTF16(IDS_AUTOFILL_MANAGE_ADDRESSES);
-
-    case PopupType::kCreditCards:
-    case PopupType::kIbans:
-      return l10n_util::GetStringUTF16(IDS_AUTOFILL_MANAGE_PAYMENT_METHODS);
-
-    case PopupType::kAutocomplete:
-    case PopupType::kPasswords:
-    case PopupType::kUnspecified:
-      NOTREACHED();
-      return std::u16string();
-  }
 }
 
 }  // namespace autofill

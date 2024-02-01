@@ -111,7 +111,6 @@ class AutofillKeyboardAccessoryAdapter : public AutofillPopupView,
       AutofillMetrics::SingleEntryRemovalMethod removal_method) override;
   void SelectSuggestion(int index) override;
   void UnselectSuggestion() override;
-  PopupType GetPopupType() const override;
   FillingProduct GetMainFillingProduct() const override;
   bool ShouldIgnoreMouseObservedOutsideItemBoundsCheck() const override;
   base::WeakPtr<AutofillPopupController> OpenSubPopup(

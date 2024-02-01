@@ -753,10 +753,6 @@ void AutofillPopupControllerImpl::UnselectSuggestion() {
   delegate_->ClearPreviewedForm();
 }
 
-PopupType AutofillPopupControllerImpl::GetPopupType() const {
-  return delegate_->GetPopupType();
-}
-
 FillingProduct AutofillPopupControllerImpl::GetMainFillingProduct() const {
   return delegate_->GetMainFillingProduct();
 }

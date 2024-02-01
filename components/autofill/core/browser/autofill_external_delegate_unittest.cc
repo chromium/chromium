@@ -392,82 +392,6 @@ class AutofillExternalDelegateCardsFromAccountTest
   }
 };
 
-TEST_F(AutofillExternalDelegateUnitTest, GetPopupTypeForCreditCardForm) {
-  FormData form =
-      CreateTestCreditCardFormData(/*is_https=*/true, /*use_month_type=*/false);
-  manager().OnFormsSeen({form}, {});
-
-  for (const FormFieldData& field : form.fields) {
-    external_delegate().OnQuery(form, field, gfx::RectF(),
-                                kDefaultTriggerSource);
-    EXPECT_EQ(PopupType::kCreditCards, external_delegate().GetPopupType());
-  }
-}
-
-TEST_F(AutofillExternalDelegateUnitTest, GetPopupTypeForAddressForm) {
-  FormData form = CreateTestAddressFormData();
-  manager().OnFormsSeen({form}, {});
-
-  for (const FormFieldData& field : form.fields) {
-    external_delegate().OnQuery(form, field, gfx::RectF(),
-                                kDefaultTriggerSource);
-    EXPECT_EQ(PopupType::kAddresses, external_delegate().GetPopupType());
-  }
-}
-
-TEST_F(AutofillExternalDelegateUnitTest,
-       GetPopupTypeForAddressManualFallback_AddressForm) {
-  FormData form = CreateTestAddressFormData();
-  manager().OnFormsSeen({form}, {});
-
-  for (const FormFieldData& field : form.fields) {
-    external_delegate().OnQuery(
-        form, field, gfx::RectF(),
-        AutofillSuggestionTriggerSource::kManualFallbackAddress);
-    EXPECT_EQ(PopupType::kAddresses, external_delegate().GetPopupType());
-  }
-}
-
-TEST_F(AutofillExternalDelegateUnitTest,
-       GetPopupTypeForAddressManualFallback_CreditCardForm) {
-  FormData form = CreateTestCreditCardFormData(/*is_https=*/true,
-                                               /*use_month_type=*/false);
-  manager().OnFormsSeen({form}, {});
-
-  for (const FormFieldData& field : form.fields) {
-    external_delegate().OnQuery(
-        form, field, gfx::RectF(),
-        AutofillSuggestionTriggerSource::kManualFallbackAddress);
-    EXPECT_EQ(PopupType::kAddresses, external_delegate().GetPopupType());
-  }
-}
-
-TEST_F(AutofillExternalDelegateUnitTest,
-       GetPopupTypeForAddressManualFallback_UnclassifiedForm) {
-  FormData form = CreateTestUnclassifiedFormData();
-  manager().OnFormsSeen({form}, {});
-
-  for (const FormFieldData& field : form.fields) {
-    external_delegate().OnQuery(
-        form, field, gfx::RectF(),
-        AutofillSuggestionTriggerSource::kManualFallbackAddress);
-    EXPECT_EQ(PopupType::kAddresses, external_delegate().GetPopupType());
-  }
-}
-
-TEST_F(AutofillExternalDelegateUnitTest,
-       GetPopupTypeForPaymentsManualFallback_AddressForm) {
-  FormData form = CreateTestAddressFormData();
-  manager().OnFormsSeen({form}, {});
-
-  for (const FormFieldData& field : form.fields) {
-    external_delegate().OnQuery(
-        form, field, gfx::RectF(),
-        AutofillSuggestionTriggerSource::kManualFallbackPayments);
-    EXPECT_EQ(PopupType::kCreditCards, external_delegate().GetPopupType());
-  }
-}
-
 TEST_F(AutofillExternalDelegateUnitTest, GetMainFillingProduct) {
   IssueOnQuery();
 
@@ -562,33 +486,6 @@ TEST_F(AutofillExternalDelegateUnitTest, GetMainFillingProduct) {
       {test::CreateAutofillSuggestion(PopupItemId::kMixedFormMessage,
                                       u"no autofill available")});
   EXPECT_EQ(external_delegate().GetMainFillingProduct(), FillingProduct::kNone);
-}
-
-TEST_F(AutofillExternalDelegateUnitTest,
-       GetPopupTypeForPaymentsManualFallback_CreditCardForm) {
-  FormData form = CreateTestCreditCardFormData(/*is_https=*/true,
-                                               /*use_month_type=*/false);
-  manager().OnFormsSeen({form}, {});
-
-  for (const FormFieldData& field : form.fields) {
-    external_delegate().OnQuery(
-        form, field, gfx::RectF(),
-        AutofillSuggestionTriggerSource::kManualFallbackPayments);
-    EXPECT_EQ(PopupType::kCreditCards, external_delegate().GetPopupType());
-  }
-}
-
-TEST_F(AutofillExternalDelegateUnitTest,
-       GetPopupTypeForPaymentsManualFallback_UnclassifiedForm) {
-  FormData form = CreateTestUnclassifiedFormData();
-  manager().OnFormsSeen({form}, {});
-
-  for (const FormFieldData& field : form.fields) {
-    external_delegate().OnQuery(
-        form, field, gfx::RectF(),
-        AutofillSuggestionTriggerSource::kManualFallbackPayments);
-    EXPECT_EQ(PopupType::kCreditCards, external_delegate().GetPopupType());
-  }
 }
 
 // Test that the address editor is not shown if there's no Autofill profile with

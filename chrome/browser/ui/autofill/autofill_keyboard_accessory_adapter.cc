@@ -174,11 +174,6 @@ AutofillKeyboardAccessoryAdapter::GetSuggestionLabelsAt(int row) const {
   return {{Suggestion::Text(labels_[OffsetIndexFor(row)])}};
 }
 
-PopupType AutofillKeyboardAccessoryAdapter::GetPopupType() const {
-  CHECK(controller_) << "Call GetPopupType only from its owner!";
-  return controller_->GetPopupType();
-}
-
 FillingProduct AutofillKeyboardAccessoryAdapter::GetMainFillingProduct() const {
   CHECK(controller_) << "Call GetPopupType only from its owner!";
   return controller_->GetMainFillingProduct();

@@ -58,7 +58,6 @@ class PasswordAutofillManager : public autofill::AutofillPopupDelegate {
       const autofill::Suggestion&) override;
   bool RemoveSuggestion(const autofill::Suggestion& suggestion) override;
   void ClearPreviewedForm() override;
-  autofill::PopupType GetPopupType() const override;
   autofill::FillingProduct GetMainFillingProduct() const override;
   int32_t GetWebContentsPopupControllerAxId() const override;
   void RegisterDeletionCallback(base::OnceClosure deletion_callback) override;
