@@ -73,9 +73,9 @@ void OAuthTokenGetterImpl::OnGetTokensResponse(const std::string& refresh_token,
   // Keep the refresh token in the authorization_credentials.
   authorization_credentials_ =
       std::make_unique<OAuthTokenGetter::OAuthAuthorizationCredentials>(
-
           std::string(), refresh_token,
-          intermediate_credentials_->is_service_account);
+          intermediate_credentials_->is_service_account,
+          intermediate_credentials_->scopes);
 
   // Clear out the one time use token.
   intermediate_credentials_.reset();
@@ -276,10 +276,9 @@ void OAuthTokenGetterImpl::RefreshAccessToken() {
       ""};
 
   SetResponsePending(true);
-  std::vector<std::string> empty_scope_list;  // Use scope from refresh token.
-  gaia_oauth_client_->RefreshToken(client_info,
-                                   authorization_credentials_->refresh_token,
-                                   empty_scope_list, kMaxRetries, this);
+  gaia_oauth_client_->RefreshToken(
+      client_info, authorization_credentials_->refresh_token,
+      authorization_credentials_->scopes, kMaxRetries, this);
 }
 
 bool OAuthTokenGetterImpl::IsResponsePending() const {
