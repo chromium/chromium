@@ -4921,6 +4921,7 @@ TEST_F(LegacySWPictureLayerImplTest, PendingOrActiveTwinLayer) {
 
   // Make an empty pending tree.
   host_impl()->CreatePendingTree();
+  pending_layer_ = old_pending_layer_ = nullptr;
   host_impl()->pending_tree()->DetachLayers();
   EXPECT_FALSE(active_layer()->GetPendingOrActiveTwinLayer());
 }

@@ -3808,6 +3808,7 @@ TEST_F(SynchronousRasterTileManagerTest, AlwaysUseImageCache) {
   host_impl()->tile_manager()->PrepareTiles(host_impl()->global_tile_state());
   static_cast<SynchronousTaskGraphRunner*>(task_graph_runner())->RunUntilIdle();
 
+  pending_layer_ = old_pending_layer_ = active_layer_ = nullptr;
   // Destroy the LTHI since it accesses the RasterBufferProvider during cleanup.
   TakeHostImpl();
 }
