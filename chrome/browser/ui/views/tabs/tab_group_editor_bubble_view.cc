@@ -43,6 +43,8 @@
 #include "chrome/browser/ui/views/controls/hover_button.h"
 #include "chrome/browser/ui/views/tabs/color_picker_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_ink_drop_util.h"
+#include "chrome/browser/user_education/user_education_service.h"
+#include "chrome/browser/user_education/user_education_service_factory.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/tab_groups/tab_group_color.h"
@@ -471,8 +473,14 @@ void TabGroupEditorBubbleView::OnSaveTogglePressed() {
     saved_tab_group_service->SaveGroup(group_);
     views::ElementTrackerViews::GetInstance()->NotifyCustomEvent(
         kTabGroupSavedCustomEventId, save_group_toggle_);
-    browser_->window()->TemporarilyShowBookmarkBar(
-        kTemporaryBookmarkBarDuration);
+
+    auto* const service =
+        UserEducationServiceFactory::GetForBrowserContext(browser_->profile());
+    if (service && !service->tutorial_service().IsRunningTutorial(
+                       kSavedTabGroupTutorialId)) {
+      browser_->window()->TemporarilyShowBookmarkBar(
+          kTemporaryBookmarkBarDuration);
+    }
   } else {
     base::RecordAction(
         base::UserMetricsAction("TabGroups_TabGroupBubble_GroupUnsaved"));
