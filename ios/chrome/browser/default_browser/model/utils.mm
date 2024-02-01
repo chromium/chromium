@@ -803,14 +803,19 @@ bool HasRecentTimestampForKey(NSString* eventKey) {
   return NO;
 }
 
-bool IsChromeLikelyDefaultBrowser7Days() {
+bool IsChromeLikelyDefaultBrowserXDays(int days) {
   return HasRecordedEventForKeyLessThanDelay(kLastHTTPURLOpenTime,
-                                             base::Days(7));
+                                             base::Days(days));
 }
 
 bool IsChromeLikelyDefaultBrowser() {
   return HasRecordedEventForKeyLessThanDelay(kLastHTTPURLOpenTime,
                                              kLatestURLOpenForDefaultBrowser);
+}
+
+bool IsChromeLikelyDefaultBrowser7Days() {
+  return HasRecordedEventForKeyLessThanDelay(kLastHTTPURLOpenTime,
+                                             base::Days(7));
 }
 
 bool IsLikelyInterestedDefaultBrowserUser(DefaultPromoType promo_type) {

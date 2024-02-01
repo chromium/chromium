@@ -1155,9 +1155,34 @@ chromium-metrics-reviews@google.com.
     likely to change certain stability metrics. Thus, it will be good to filter
     those metrics by default browser status. This metrics records whether the
     user was deemed to have set Chrome as the device's default browser. This
-    metric will be logged once per metrics log upload. As long as link is opened
-    in Chrome in the last 21 days, the user will be considered a default user.
+    metric will be logged once per metrics log upload. As long as a link is
+    opened in Chrome in the last 21 days, the user will be considered a default
+    user.
   </summary>
+</histogram>
+
+<histogram name="IOS.IsDefaultBrowser{NumberOfDays}" enum="Boolean"
+    expires_after="2024-06-16">
+  <owner>sebsg@chromium.org</owner>
+  <owner>gujen@chromium.org</owner>
+  <summary>
+    As of iOS14, users will be able to set a default browser other than Safari.
+    When Chrome is the default browser, it will receive all URL opens, which is
+    likely to change certain stability metrics. Thus, it will be good to filter
+    those metrics by default browser status. This metrics records whether the
+    user was deemed to have set Chrome as the device's default browser. This
+    metric will be logged once per metrics log upload. As long as a link is
+    opened in Chrome in the last {NumberOfDays} days, the user will be
+    considered a default user.
+  </summary>
+  <token key="NumberOfDays">
+    <variant name="1"/>
+    <variant name="3"/>
+    <variant name="14"/>
+    <variant name="28"/>
+    <variant name="35"/>
+    <variant name="42"/>
+  </token>
 </histogram>
 
 <histogram name="IOS.IsEligibleDefaultBrowserPromoUser" enum="BooleanEligible"
