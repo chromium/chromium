@@ -1846,13 +1846,13 @@
   </message>
   <message name="IDS_SETTINGS_SAFETY_CHECK_UNUSED_SITE_PERMISSIONS_PRIMARY_LABEL" desc="'Unused Site Permissions' shows unused websites for which permissions have been revoked. This label is the header of the module in the site settings page. The number represents the number of unused sites.">
     {NUM_SITES, plural,
-     =1 {Permissions removed for 1 site}
-     other {Permissions removed for {NUM_SITES} sites}}
+     =1 {Permissions removed from 1 site}
+     other {Permissions removed from {NUM_SITES} sites}}
   </message>
   <message name="IDS_SETTINGS_SAFETY_CHECK_UNUSED_SITE_PERMISSIONS_SECONDARY_LABEL" desc="'Unused Site Permissions' shows unused websites for which permissions have been revoked. This label is the description of the module in the site settings page.">
     {NUM_SITES, plural,
-     =1 {To protect your data, permissions were removed from a site you haven't visited in recently}
-     other {To protect your data, permissions were removed from sites you haven't visited in recently}}
+     =1 {To protect your data, permissions were removed from a site you haven't visited recently}
+     other {To protect your data, permissions were removed from sites you haven't visited recently}}
   </message>
   <message name="IDS_SETTINGS_SAFETY_CHECK_UNUSED_SITE_PERMISSIONS_TOAST_BULK_LABEL" desc="'Unused Site Permissions' shows unused websites for which permissions have been revoked. This label is shown in a toast popup message after a user has clicked a button to acknowledge all revoked permissions.">
     {NUM_SITES, plural,
