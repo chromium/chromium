@@ -456,6 +456,10 @@ try_.builder(
             "ci/Mac Builder (dbg)",
         ],
     ),
+    experiments = {
+        # crbug/940930
+        "chromium.enable_cleandead": 50,
+    },
     main_list_view = "try",
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
     tryjob = try_.job(),
