@@ -48,8 +48,9 @@ std::string GetHexSSID(const base::Value::Dict& service_properties) {
   if (hex_ssid)
     return *hex_ssid;
   const std::string* ssid = service_properties.FindString(shill::kSSIDProperty);
-  if (ssid)
-    return base::HexEncode(ssid->c_str(), ssid->size());
+  if (ssid) {
+    return base::HexEncode(*ssid);
+  }
   return std::string();
 }
 

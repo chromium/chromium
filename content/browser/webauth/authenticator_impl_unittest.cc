@@ -6724,8 +6724,8 @@ class ResidentKeyTestAuthenticatorRequestDelegate
         [](const device::AuthenticatorGetAssertionResponse& response) {
           const device::PublicKeyCredentialUserEntity& user =
               response.user_entity.value();
-          return base::HexEncode(user.id.data(), user.id.size()) + ":" +
-                 user.name.value_or("") + ":" + user.display_name.value_or("");
+          return base::HexEncode(user.id) + ":" + user.name.value_or("") + ":" +
+                 user.display_name.value_or("");
         });
 
     EXPECT_EQ(config_.expected_accounts, base::JoinString(string_reps, "/"));

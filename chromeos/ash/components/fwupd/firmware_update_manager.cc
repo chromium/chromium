@@ -121,8 +121,8 @@ base::File VerifyChecksum(base::File file, const std::string& checksum) {
 
   const std::string sha_contents = crypto::SHA256HashString(contents);
 
-  const std::string encoded_sha = base::ToLowerASCII(
-      base::HexEncode(sha_contents.data(), sha_contents.size()));
+  const std::string encoded_sha =
+      base::ToLowerASCII(base::HexEncode(sha_contents));
 
   if (encoded_sha != checksum) {
     LOG(ERROR) << "Wrong checksum, expected: " << checksum

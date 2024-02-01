@@ -122,8 +122,7 @@ bool ProofSourceChromium::GetProofInner(
   proof->signature.assign(reinterpret_cast<const char*>(signature.data()),
                           signature.size());
   *out_chain = chain_;
-  VLOG(1) << "signature: "
-          << base::HexEncode(proof->signature.data(), proof->signature.size());
+  VLOG(1) << "signature: " << base::HexEncode(proof->signature);
   proof->leaf_cert_scts = signed_certificate_timestamp_;
   return true;
 }

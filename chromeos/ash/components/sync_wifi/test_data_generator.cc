@@ -11,8 +11,7 @@
 namespace ash::sync_wifi {
 
 NetworkIdentifier GeneratePskNetworkId(const std::string& ssid) {
-  return NetworkIdentifier(base::HexEncode(ssid.data(), ssid.size()),
-                           shill::kSecurityClassPsk);
+  return NetworkIdentifier(base::HexEncode(ssid), shill::kSecurityClassPsk);
 }
 
 NetworkIdentifier GenerateInvalidPskNetworkId(const std::string& ssid) {

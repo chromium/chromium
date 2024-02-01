@@ -559,8 +559,7 @@ void FillInHexSSIDField(base::Value::Dict& wifi_fields) {
     NET_LOG(ERROR) << "Found empty SSID field.";
     return;
   }
-  wifi_fields.Set(::onc::wifi::kHexSSID,
-                  base::HexEncode(ssid->c_str(), ssid->size()));
+  wifi_fields.Set(::onc::wifi::kHexSSID, base::HexEncode(*ssid));
 }
 
 void SetHiddenSSIDFieldInOncObject(const OncValueSignature& signature,

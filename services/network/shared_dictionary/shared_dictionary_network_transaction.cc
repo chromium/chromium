@@ -250,9 +250,7 @@ void SharedDictionaryNetworkTransaction::ModifyRequestHeaders(
     case features::CompressionDictionaryTransportBackendVersion::kV1:
       request_headers->SetHeader(
           network::shared_dictionary::kSecAvailableDictionaryHeaderName,
-          base::ToLowerASCII(
-              base::HexEncode(shared_dictionary_->hash().data,
-                              sizeof(shared_dictionary_->hash().data))));
+          base::ToLowerASCII(base::HexEncode(shared_dictionary_->hash().data)));
       break;
     case features::CompressionDictionaryTransportBackendVersion::kV2:
       dictionary_hash_base64_ = base::StrCat(

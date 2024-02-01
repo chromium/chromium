@@ -44,8 +44,7 @@ base::Value::Dict NetLogParameterChannelBindings(
   if (!NetLogCaptureIncludesSocketBytes(capture_mode))
     return dict;
 
-  dict.Set("token", base::HexEncode(channel_binding_token.data(),
-                                    channel_binding_token.size()));
+  dict.Set("token", base::HexEncode(channel_binding_token));
   return dict;
 }
 

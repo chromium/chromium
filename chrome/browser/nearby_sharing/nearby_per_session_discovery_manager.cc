@@ -86,10 +86,9 @@ std::optional<nearby_share::mojom::TransferStatus> GetTransferStatus(
 }
 
 std::string GetDeviceIdForLogs(const ShareTarget& share_target) {
-  return (share_target.device_id
-              ? base::HexEncode(share_target.device_id.value().data(),
-                                share_target.device_id.value().size())
-              : "[null]");
+  return share_target.device_id
+             ? base::HexEncode(share_target.device_id.value())
+             : "[null]";
 }
 
 }  // namespace

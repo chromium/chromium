@@ -46,7 +46,7 @@ std::string ShortURLForReporting(const GURL& url) {
     if (comma_pos != std::string::npos && comma_pos != spec.size() - 1) {
       std::string hash_value = crypto::SHA256HashString(spec);
       spec.erase(comma_pos + 1);
-      spec += base::HexEncode(hash_value.data(), hash_value.size());
+      spec += base::HexEncode(hash_value);
     }
   }
   return spec;

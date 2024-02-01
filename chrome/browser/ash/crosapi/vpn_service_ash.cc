@@ -481,7 +481,7 @@ std::string VpnServiceForExtensionAsh::GetKey(
     const std::string& configuration_name) {
   const std::string key =
       crypto::SHA256HashString(extension_id + configuration_name);
-  return base::HexEncode(key.data(), key.size());
+  return base::HexEncode(key);
 }
 
 VpnServiceForExtensionAsh::VpnConfiguration*

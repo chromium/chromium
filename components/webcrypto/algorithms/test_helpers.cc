@@ -390,8 +390,8 @@ std::optional<base::Value::Dict> GetJwkDictionary(
   std::string k_value;
   if (!Base64DecodeUrlSafe(*value_string, &k_value))
     return ::testing::AssertionFailure() << "Base64DecodeUrlSafe(k) failed";
-  if (!base::EqualsCaseInsensitiveASCII(
-          base::HexEncode(k_value.data(), k_value.size()), k_expected_hex)) {
+  if (!base::EqualsCaseInsensitiveASCII(base::HexEncode(k_value),
+                                        k_expected_hex)) {
     return ::testing::AssertionFailure()
            << "Expected 'k' to be " << k_expected_hex
            << " but found something different";
@@ -417,7 +417,7 @@ std::optional<base::Value::Dict> GetJwkDictionary(
   std::string n_value;
   if (!Base64DecodeUrlSafe(*value_string, &n_value))
     return ::testing::AssertionFailure() << "Base64DecodeUrlSafe(n) failed";
-  if (base::HexEncode(n_value.data(), n_value.size()) != n_expected_hex) {
+  if (base::HexEncode(n_value) != n_expected_hex) {
     return ::testing::AssertionFailure() << "'n' does not match the expected "
                                             "value";
   }
@@ -430,8 +430,8 @@ std::optional<base::Value::Dict> GetJwkDictionary(
   std::string e_value;
   if (!Base64DecodeUrlSafe(*value_string, &e_value))
     return ::testing::AssertionFailure() << "Base64DecodeUrlSafe(e) failed";
-  if (!base::EqualsCaseInsensitiveASCII(
-          base::HexEncode(e_value.data(), e_value.size()), e_expected_hex)) {
+  if (!base::EqualsCaseInsensitiveASCII(base::HexEncode(e_value),
+                                        e_expected_hex)) {
     return ::testing::AssertionFailure()
            << "Expected 'e' to be " << e_expected_hex
            << " but found something different";

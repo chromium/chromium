@@ -57,7 +57,7 @@ bool DataWithTimestamp::ContainsTime(const int64_t timestamp_ms) const {
 }
 
 std::string DataWithTimestamp::DataInHex() const {
-  return "0x" + base::HexEncode(data.data(), data.size());
+  return "0x" + base::HexEncode(data);
 }
 
 bool DataWithTimestamp::operator==(const DataWithTimestamp& other) const {

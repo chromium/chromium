@@ -2628,7 +2628,7 @@ void NetworkHandler::OnSignedExchangeReceived(
     std::unique_ptr<Network::SignedExchangeSignature> signature =
         Network::SignedExchangeSignature::Create()
             .SetLabel(sig.label)
-            .SetSignature(base::HexEncode(sig.sig.data(), sig.sig.size()))
+            .SetSignature(base::HexEncode(sig.sig))
             .SetIntegrity(sig.integrity)
             .SetCertUrl(sig.cert_url.spec())
             .SetValidityUrl(sig.validity_url.url.spec())
@@ -2636,8 +2636,7 @@ void NetworkHandler::OnSignedExchangeReceived(
             .SetExpires(sig.expires)
             .Build();
     if (sig.cert_sha256) {
-      signature->SetCertSha256(base::HexEncode(sig.cert_sha256->data,
-                                               sizeof(sig.cert_sha256->data)));
+      signature->SetCertSha256(base::HexEncode(sig.cert_sha256->data));
     }
     if (certificate) {
       auto encoded_certificates = std::make_unique<protocol::Array<String>>();

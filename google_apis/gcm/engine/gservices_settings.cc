@@ -182,7 +182,6 @@ const base::TimeDelta GServicesSettings::MinimumCheckinInterval() {
 
 // static
 std::string GServicesSettings::CalculateDigest(const SettingsMap& settings) {
-  unsigned char hash[base::kSHA1Length];
   std::string data;
   for (SettingsMap::const_iterator iter = settings.begin();
        iter != settings.end();
@@ -192,10 +191,10 @@ std::string GServicesSettings::CalculateDigest(const SettingsMap& settings) {
     data += iter->second;
     data += '\0';
   }
+  uint8_t hash[base::kSHA1Length];
   base::SHA1HashBytes(
       reinterpret_cast<const unsigned char*>(&data[0]), data.size(), hash);
-  std::string digest =
-      kDigestVersionPrefix + base::HexEncode(hash, base::kSHA1Length);
+  std::string digest = kDigestVersionPrefix + base::HexEncode(hash);
   digest = base::ToLowerASCII(digest);
   return digest;
 }

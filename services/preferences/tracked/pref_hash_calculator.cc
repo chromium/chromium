@@ -28,7 +28,7 @@ std::string GetDigestString(const std::string& key,
     NOTREACHED();
     return std::string();
   }
-  return base::HexEncode(&digest[0], digest.size());
+  return base::HexEncode(digest);
 }
 
 void RemoveEmptyValueDictEntries(base::Value::Dict& dict);

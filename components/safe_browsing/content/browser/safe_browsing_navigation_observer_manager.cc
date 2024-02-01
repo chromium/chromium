@@ -98,11 +98,9 @@ std::string ShortOriginForReporting(const std::string& url) {
   GURL gurl(url);
   if (gurl.SchemeIsLocal()) {
     std::string sha_url = crypto::SHA256HashString(url);
-    return gurl.scheme() + "://" +
-           base::HexEncode(sha_url.data(), sha_url.size());
-  } else {
-    return gurl.DeprecatedGetOriginAsURL().spec();
+    return gurl.scheme() + "://" + base::HexEncode(sha_url);
   }
+  return gurl.DeprecatedGetOriginAsURL().spec();
 }
 
 base::TimeDelta GetNavigationFootprintTTL() {

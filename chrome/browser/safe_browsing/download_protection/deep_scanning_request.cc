@@ -446,9 +446,7 @@ void DeepScanningRequest::StartSingleFileScan() {
                      weak_ptr_factory_.GetWeakPtr(), item_->GetFullPath()));
   request->set_filename(item_->GetTargetFilePath().AsUTF8Unsafe());
 
-  std::string raw_digest_sha256 = item_->GetHash();
-  std::string sha256 =
-      base::HexEncode(raw_digest_sha256.data(), raw_digest_sha256.size());
+  std::string sha256 = base::HexEncode(item_->GetHash());
   request->set_digest(sha256);
 
   if (password_) {

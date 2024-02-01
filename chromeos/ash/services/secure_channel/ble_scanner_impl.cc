@@ -366,8 +366,8 @@ void BleScannerImpl::HandlePotentialScanResult(
   }
 
   // Prepare a hex string of |service_data|.
-  std::string hex_service_data = base::StrCat(
-      {"0x", base::HexEncode(service_data.data(), service_data.size())});
+  std::string hex_service_data =
+      base::StrCat({"0x", base::HexEncode(service_data)});
 
   if (results.empty()) {
     PA_LOG(WARNING) << "BleScannerImpl::HandleDeviceUpdated(): Received scan "

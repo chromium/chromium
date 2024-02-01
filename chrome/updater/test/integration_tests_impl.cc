@@ -108,7 +108,7 @@ std::string GetHashHex(const base::FilePath& file) {
   hasher->Update(mmfile.data(), mmfile.length());
   uint8_t actual_hash[crypto::kSHA256Length] = {0};
   hasher->Finish(actual_hash, sizeof(actual_hash));
-  return base::HexEncode(actual_hash, sizeof(actual_hash));
+  return base::HexEncode(actual_hash);
 }
 
 std::string GetUpdateResponseForApp(

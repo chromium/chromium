@@ -876,9 +876,8 @@ void MediaDrmBridge::OnSessionKeysChange(
     CdmKeyInformation::KeyStatus key_status =
         ConvertKeyStatus(static_cast<KeyStatus>(j_status_code), is_key_release);
 
-    DVLOG(2) << __func__ << "Key status change: "
-             << base::HexEncode(&key_id[0], key_id.size()) << ", "
-             << key_status;
+    DVLOG(2) << __func__ << "Key status change: " << base::HexEncode(key_id)
+             << ", " << key_status;
 
     cdm_keys_info.push_back(
         std::make_unique<CdmKeyInformation>(key_id, key_status, 0));

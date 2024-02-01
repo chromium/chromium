@@ -19,9 +19,8 @@ std::string GetRandomId() {
 
   // This isn't a valid UUID, so we don't attempt to format it like one.
   uint8_t random_bytes[kBytesInHandle];
-  base::RandBytes(random_bytes, sizeof(random_bytes));
-
-  return base::HexEncode(random_bytes, sizeof(random_bytes));
+  base::RandBytes(random_bytes);
+  return base::HexEncode(random_bytes);
 }
 }  // namespace
 

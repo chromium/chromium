@@ -180,8 +180,7 @@ TEST_F(NetworkStateTest, SsidNonUtf8) {
   std::vector<uint8_t> non_utf8_ssid_bytes;
   non_utf8_ssid_bytes.push_back(static_cast<uint8_t>(non_utf8_ssid.data()[0]));
 
-  std::string wifi_hex =
-      base::HexEncode(non_utf8_ssid.data(), non_utf8_ssid.size());
+  std::string wifi_hex = base::HexEncode(non_utf8_ssid);
   EXPECT_TRUE(SetStringProperty(shill::kWifiHexSsid, wifi_hex));
   EXPECT_TRUE(SignalInitialPropertiesReceived());
   EXPECT_EQ(network_state_->raw_ssid(), non_utf8_ssid_bytes);

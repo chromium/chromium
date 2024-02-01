@@ -84,10 +84,9 @@ std::string Sha256File(const base::FilePath& path) {
     ctx->Update(buffer, count);
   }
 
-  char digest_bytes[crypto::kSHA256Length];
+  uint8_t digest_bytes[crypto::kSHA256Length];
   ctx->Finish(digest_bytes, crypto::kSHA256Length);
-
-  return base::HexEncode(digest_bytes, crypto::kSHA256Length);
+  return base::HexEncode(digest_bytes);
 }
 
 }  // namespace

@@ -122,7 +122,7 @@ void PrintCertError(const std::string& error, const CertInput& cert) {
 std::string FingerPrintCryptoBuffer(const CRYPTO_BUFFER* cert_handle) {
   net::SHA256HashValue hash =
       net::X509Certificate::CalculateFingerprint256(cert_handle);
-  return base::HexEncode(hash.data, std::size(hash.data));
+  return base::HexEncode(hash.data);
 }
 
 std::string SubjectFromX509Certificate(const net::X509Certificate* cert) {

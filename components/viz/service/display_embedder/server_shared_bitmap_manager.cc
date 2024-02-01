@@ -195,7 +195,8 @@ bool ServerSharedBitmapManager::OnMemoryDump(
     BitmapData* data = pair.second.get();
 
     std::string dump_str = base::StringPrintf(
-        "sharedbitmap/%s", base::HexEncode(id.name, sizeof(id.name)).c_str());
+        "sharedbitmap/%s",
+        base::HexEncode(base::as_byte_span(id.name)).c_str());
     base::trace_event::MemoryAllocatorDump* dump =
         pmd->CreateAllocatorDump(dump_str);
     if (!dump)

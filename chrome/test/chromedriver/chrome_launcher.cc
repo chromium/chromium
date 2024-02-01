@@ -972,7 +972,7 @@ void ConvertHexadecimalToIDAlphabet(std::string& id) {
 std::string GenerateExtensionId(const std::string& input) {
   uint8_t hash[16];
   crypto::SHA256HashString(input, hash, sizeof(hash));
-  std::string output = base::ToLowerASCII(base::HexEncode(hash, sizeof(hash)));
+  std::string output = base::ToLowerASCII(base::HexEncode(hash));
   ConvertHexadecimalToIDAlphabet(output);
   return output;
 }

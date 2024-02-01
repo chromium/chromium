@@ -1974,8 +1974,7 @@ TEST(ModelTypeWorkerPopulateUpdateResponseDataTest,
   *entity.mutable_specifics()
        ->mutable_webauthn_credential()
        ->mutable_sync_id() = sync_id;
-  *entity.mutable_client_tag_hash() =
-      base::HexEncode(sync_id.data(), sync_id.size());
+  *entity.mutable_client_tag_hash() = base::HexEncode(sync_id);
 
   ASSERT_EQ(
       ModelTypeWorker::SUCCESS,

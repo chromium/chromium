@@ -304,10 +304,9 @@ base::FilePath StoragePartitionImplMap::GetStoragePartitionPath(
   if (!partition_name.empty()) {
     // For analysis of why we can ignore collisions, see the comment above
     // kPartitionNameHashBytes.
-    char buffer[kPartitionNameHashBytes];
-    crypto::SHA256HashString(partition_name, &buffer[0],
-                             sizeof(buffer));
-    return path.AppendASCII(base::HexEncode(buffer, sizeof(buffer)));
+    uint8_t buffer[kPartitionNameHashBytes];
+    crypto::SHA256HashString(partition_name, buffer, sizeof(buffer));
+    return path.AppendASCII(base::HexEncode(buffer));
   }
 
   return path.Append(kDefaultPartitionDirname);

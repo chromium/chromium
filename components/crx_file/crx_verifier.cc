@@ -142,8 +142,8 @@ VerifierResult VerifyCrx3(
   if (!signed_header_data.ParseFromString(signed_header_data_str))
     return VerifierResult::ERROR_HEADER_INVALID;
   const std::string& crx_id_encoded = signed_header_data.crx_id();
-  const std::string declared_crx_id = id_util::GenerateIdFromHex(
-      base::HexEncode(crx_id_encoded.data(), crx_id_encoded.size()));
+  const std::string declared_crx_id =
+      id_util::GenerateIdFromHex(base::HexEncode(crx_id_encoded));
 
   // Create a little-endian representation of [signed-header-size].
   const int signed_header_size = signed_header_data_str.size();

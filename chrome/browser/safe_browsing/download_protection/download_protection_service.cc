@@ -759,9 +759,8 @@ void DownloadProtectionService::OnDangerousDownloadOpened(
     router->OnDangerousDownloadOpened(
         item->GetURL(), item->GetTabUrl(),
         item->GetTargetFilePath().AsUTF8Unsafe(),
-        base::HexEncode(raw_digest_sha256.data(), raw_digest_sha256.size()),
-        item->GetMimeType(), /*scan_id*/ "", item->GetDangerType(),
-        item->GetTotalBytes());
+        base::HexEncode(raw_digest_sha256), item->GetMimeType(), /*scan_id*/ "",
+        item->GetDangerType(), item->GetTotalBytes());
   }
 }
 

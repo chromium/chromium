@@ -40,8 +40,7 @@ GetFileSystemInfoOptions CreateOptions(const base::FilePath& path,
 }
 
 std::string HexEncodeHash(const std::string& hashed_data) {
-  return base::ToLowerASCII(
-      base::HexEncode(std::data(hashed_data), hashed_data.size()));
+  return base::ToLowerASCII(base::HexEncode(hashed_data));
 }
 
 std::optional<size_t> FindItemIndexByFilePath(

@@ -3243,7 +3243,7 @@ TEST_F(DownloadProtectionServiceTest, VerifyDangerousDownloadOpenedAPICall) {
   const auto captured_args =
       std::move(event_observer.PassEventArgs().GetList()[0].GetDict());
   EXPECT_EQ("http://example.com/a.exe", *captured_args.FindString("url"));
-  EXPECT_EQ(base::HexEncode(hash.data(), hash.size()),
+  EXPECT_EQ(base::HexEncode(hash),
             *captured_args.FindString("downloadDigestSha256"));
   EXPECT_EQ(target_path.MaybeAsASCII(), *captured_args.FindString("fileName"));
 

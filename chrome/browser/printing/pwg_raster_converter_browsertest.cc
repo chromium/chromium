@@ -55,10 +55,9 @@ void GetPdfData(const char* file_name,
 }
 
 std::string HashData(const char* data, size_t len) {
-  char hash[base::kSHA1Length];
-  base::SHA1HashBytes(reinterpret_cast<const unsigned char*>(data), len,
-                      reinterpret_cast<unsigned char*>(hash));
-  return base::HexEncode(hash, base::kSHA1Length);
+  uint8_t hash[base::kSHA1Length];
+  base::SHA1HashBytes(reinterpret_cast<const uint8_t*>(data), len, hash);
+  return base::HexEncode(hash);
 }
 
 void ComparePwgOutput(const base::FilePath& expected_file,

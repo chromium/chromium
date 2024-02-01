@@ -112,8 +112,7 @@ void DownloadUrlSBClient::CheckDone(SBThreatType threat_type) {
 void DownloadUrlSBClient::ReportMalware(SBThreatType threat_type) {
   std::string post_data;
   if (!sha256_hash_.empty()) {
-    post_data +=
-        base::HexEncode(sha256_hash_.data(), sha256_hash_.size()) + "\n";
+    post_data += base::HexEncode(sha256_hash_) + "\n";
   }
   for (size_t i = 0; i < url_chain_.size(); ++i) {
     post_data += url_chain_[i].spec() + "\n";

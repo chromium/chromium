@@ -41,8 +41,7 @@ std::string GenerateFakeSerialNumber(std::string_view chromeos_user,
   std::string input(chromeos_user);
   input.append(salt.begin(), salt.end());
   const std::string hash(crypto::SHA256HashString(input));
-  return base::HexEncode(hash.data(), hash.length())
-      .substr(0, kMaxHardwareIdLen);
+  return base::HexEncode(hash).substr(0, kMaxHardwareIdLen);
 }
 
 std::string GetOrCreateSerialNumber(PrefService* local_state,
@@ -59,14 +58,13 @@ std::string GetOrCreateSerialNumber(PrefService* local_state,
     if (arc_salt_on_disk.empty()) {
       // The device doesn't have the salt file for ARC container. Create it from
       // scratch in the same way as ARC container.
-      char rand_value[kArcSaltFileSize];
-      crypto::RandBytes(rand_value, kArcSaltFileSize);
-      hex_salt = base::HexEncode(rand_value, kArcSaltFileSize);
+      uint8_t rand_value[kArcSaltFileSize];
+      crypto::RandBytes(rand_value);
+      hex_salt = base::HexEncode(rand_value);
     } else {
       // The device has the one for container. Reuse it for ARCVM.
       DCHECK_EQ(kArcSaltFileSize, arc_salt_on_disk.size());
-      hex_salt =
-          base::HexEncode(arc_salt_on_disk.data(), arc_salt_on_disk.size());
+      hex_salt = base::HexEncode(arc_salt_on_disk);
     }
     local_state->SetString(prefs::kArcSerialNumberSalt, hex_salt);
   }

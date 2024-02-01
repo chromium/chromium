@@ -113,7 +113,7 @@ std::string HashWallpaperFilesIdStr(const std::string& files_id_unhashed) {
   std::vector<uint8_t> data = *salt;
   base::ranges::copy(files_id_unhashed, std::back_inserter(data));
   base::SHA1HashBytes(data.data(), data.size(), binmd);
-  std::string result = base::HexEncode(binmd, sizeof(binmd));
+  std::string result = base::HexEncode(binmd);
   base::ranges::transform(result, result.begin(), ::tolower);
   return result;
 }

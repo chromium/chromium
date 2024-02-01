@@ -91,9 +91,8 @@ bool DecryptConfig::Matches(const DecryptConfig& config) const {
 }
 
 std::ostream& DecryptConfig::Print(std::ostream& os) const {
-  os << "key_id:'" << base::HexEncode(key_id_.data(), key_id_.size()) << "'"
-     << " iv:'" << base::HexEncode(iv_.data(), iv_.size()) << "'"
-     << " scheme:" << encryption_scheme_;
+  os << "key_id:'" << base::HexEncode(key_id_) << "'" << " iv:'"
+     << base::HexEncode(iv_) << "'" << " scheme:" << encryption_scheme_;
 
   if (encryption_pattern_) {
     os << " pattern:" << encryption_pattern_->crypt_byte_block() << ":"

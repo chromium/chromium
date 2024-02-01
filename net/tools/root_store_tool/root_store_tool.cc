@@ -240,8 +240,7 @@ bool WriteEvCppFile(const RootStore& root_store,
     // Chrome Root Store textprotos.
     const int kMaxPolicyOids = 2;
     int oids_size = anchor.ev_policy_oids_size();
-    std::string hexencode_hash =
-        base::HexEncode(sha256_hash.data(), sha256_hash.size());
+    std::string hexencode_hash = base::HexEncode(sha256_hash);
     if (oids_size > kMaxPolicyOids) {
       PLOG(ERROR) << hexencode_hash << " has too many OIDs!";
       return false;

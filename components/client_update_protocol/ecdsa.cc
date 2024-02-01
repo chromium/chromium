@@ -138,8 +138,7 @@ Ecdsa::RequestParameters Ecdsa::SignRequest(
   request_hash_ = SHA256HashStr(request_body);
 
   // Return the query string for the user to send with the request.
-  std::string request_hash_hex =
-      base::HexEncode(&request_hash_.front(), request_hash_.size());
+  std::string request_hash_hex = base::HexEncode(request_hash_);
   request_hash_hex = base::ToLowerASCII(request_hash_hex);
 
   RequestParameters request_parameters;

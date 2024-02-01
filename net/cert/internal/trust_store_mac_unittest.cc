@@ -308,7 +308,7 @@ TEST_P(TrustStoreMacImplTest, SystemCerts) {
                  std::back_inserter(all_certs));
   for (const std::string& cert_der : all_certs) {
     std::string hash = crypto::SHA256HashString(cert_der);
-    std::string hash_text = base::HexEncode(hash.data(), hash.size());
+    std::string hash_text = base::HexEncode(hash);
     SCOPED_TRACE(hash_text);
 
     bssl::CertErrors errors;

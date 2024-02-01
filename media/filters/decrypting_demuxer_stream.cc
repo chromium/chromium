@@ -323,7 +323,7 @@ void DecryptingDemuxerStream::OnBufferDecrypted(
     std::string key_id = pending_buffer_to_decrypt_->decrypt_config()->key_id();
 
     std::string log_message =
-        "no key for key ID " + base::HexEncode(key_id.data(), key_id.size()) +
+        "no key for key ID " + base::HexEncode(key_id) +
         "; will resume decrypting after new usable key is available";
     DVLOG(1) << __func__ << ": " << log_message;
     MEDIA_LOG(INFO, media_log_) << GetDisplayName() << ": " << log_message;

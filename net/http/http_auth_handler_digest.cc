@@ -376,8 +376,8 @@ class HttpAuthHandlerDigest::DigestContext {
     uint8_t md_value[EVP_MAX_MD_SIZE] = {};
     unsigned int md_len = sizeof(md_value);
     CHECK(EVP_DigestFinal_ex(md_ctx_.get(), md_value, &md_len));
-    CHECK_LE(out_len_, md_len);
-    return base::ToLowerASCII(base::HexEncode(md_value, out_len_));
+    return base::ToLowerASCII(
+        base::HexEncode(base::span(md_value).first(out_len_)));
   }
 
  private:
