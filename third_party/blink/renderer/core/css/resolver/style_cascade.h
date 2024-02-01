@@ -500,6 +500,22 @@ class CORE_EXPORT StyleCascade {
   // computed value of the property affects how e.g. margin-inline-start
   // (and other css-logical properties) cascade.
   bool depends_on_cascade_affecting_property_ = false;
+  // If true, invisible rules will be added to the cascade, setting
+  // `has_invisible_rules_` to true whenever such rules are actually seen.
+  // Otherwise, invisible rules are silently ignored.
+  //
+  // Invisible rules are not supposed to have an observable effect on the result
+  // of the cascade, and exist entirely for use-counting purposes.
+  //
+  // Invisible rules are handled as follows in StyleCascade:
+  //
+  // We first cascade while allowing invisible rules. If we didn't end up with
+  // any invisible rules (the common case), then the result is what it needs to
+  // be, and we're done. If we *do* end up with any invisible rules, we have
+  // declarations in our cascade that are not supposed to be there, and we
+  // reset and cascade again, this time without allowing invisible rules.
+  bool allow_invisible_rules_ = true;
+  bool has_invisible_rules_ = false;
   // Properties that had a signal (see CSSSelector::Signal) which changed
   // the value of the cascade map.
   HashMap<CSSPropertyName, CascadePriority>

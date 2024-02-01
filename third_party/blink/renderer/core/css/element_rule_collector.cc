@@ -1087,7 +1087,8 @@ void ElementRuleCollector::SortAndTransferMatchedRules(
              rule_data->GetValidPropertyFilter(matching_ua_rules_),
          .signal = rule_data->Selector().GetSignal(),
          .layer_order = matched_rule.LayerOrder(),
-         .is_inline_style = is_vtt_embedded_style});
+         .is_inline_style = is_vtt_embedded_style,
+         .is_invisible = rule_data->Selector().IsInvisible()});
   }
 
   if (tracker) {

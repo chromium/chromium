@@ -25,6 +25,7 @@
 
 namespace blink {
 
+using css_test_helpers::ParseInvisibleRule;
 using css_test_helpers::ParseRule;
 using css_test_helpers::ParseSignalingRule;
 
@@ -574,7 +575,7 @@ TEST_F(ElementRuleCollectorTest, FindStyleRuleWithNesting) {
   EXPECT_EQ("& > .b", DynamicTo<CSSStyleRule>(bar_css_rule_1)->selectorText());
 }
 
-class ElementRuleCollectorSignalTest : public ElementRuleCollectorTest {
+class ElementRuleCollectorWithEmptyPage : public ElementRuleCollectorTest {
  public:
   void SetUp() override {
     ElementRuleCollectorTest::SetUp();
@@ -588,6 +589,9 @@ class ElementRuleCollectorSignalTest : public ElementRuleCollectorTest {
   Persistent<Element> body_;
   Persistent<MediaQueryEvaluator> medium_;
 };
+
+class ElementRuleCollectorSignalTest
+    : public ElementRuleCollectorWithEmptyPage {};
 
 TEST_F(ElementRuleCollectorSignalTest, NoSignal) {
   RuleSet* rule_set = MakeGarbageCollected<RuleSet>();
@@ -636,6 +640,70 @@ TEST_F(ElementRuleCollectorSignalTest, SignalInMatchResult) {
   EXPECT_EQ(CSSSelector::Signal::kBareDeclarationShift,
             static_cast<CSSSelector::Signal>(
                 result.GetMatchedProperties()[1].types_.signal));
+}
+
+class ElementRuleCollectorInvisibleTest
+    : public ElementRuleCollectorWithEmptyPage {};
+
+TEST_F(ElementRuleCollectorInvisibleTest, NoInvisibleRule) {
+  RuleSet* rule_set = MakeGarbageCollected<RuleSet>();
+  rule_set->AddStyleRule(
+      DynamicTo<StyleRule>(ParseRule(GetDocument(), "body { color: green; }")),
+      *medium_, kRuleHasNoSpecialState);
+  MatchResult result;
+  CollectIntoMatchResult(body_, rule_set, result);
+  ASSERT_EQ(1u, result.GetMatchedProperties().size());
+  EXPECT_FALSE(result.GetMatchedProperties()[0].types_.is_invisible);
+}
+
+TEST_F(ElementRuleCollectorInvisibleTest, InvisibleRulePresent) {
+  RuleSet* rule_set = MakeGarbageCollected<RuleSet>();
+  rule_set->AddStyleRule(
+      ParseInvisibleRule(GetDocument(), "body { color: green; }"), *medium_,
+      kRuleHasNoSpecialState);
+  MatchResult result;
+  CollectIntoMatchResult(body_, rule_set, result);
+  ASSERT_EQ(1u, result.GetMatchedProperties().size());
+  EXPECT_TRUE(result.GetMatchedProperties()[0].types_.is_invisible);
+}
+
+TEST_F(ElementRuleCollectorInvisibleTest, InvisibleAndNonInvisible) {
+  RuleSet* rule_set = MakeGarbageCollected<RuleSet>();
+  rule_set->AddStyleRule(
+      DynamicTo<StyleRule>(ParseRule(GetDocument(), "body { width: 10px; }")),
+      *medium_, kRuleHasNoSpecialState);
+  rule_set->AddStyleRule(
+      ParseInvisibleRule(GetDocument(), "body { color: green; }"), *medium_,
+      kRuleHasNoSpecialState);
+  MatchResult result;
+  CollectIntoMatchResult(body_, rule_set, result);
+  ASSERT_EQ(2u, result.GetMatchedProperties().size());
+  EXPECT_FALSE(result.GetMatchedProperties()[0].types_.is_invisible);
+  EXPECT_TRUE(result.GetMatchedProperties()[1].types_.is_invisible);
+}
+
+TEST_F(ElementRuleCollectorInvisibleTest, InvisibleChildInGroupingRule) {
+  HeapVector<Member<StyleRuleBase>> child_rules;
+  child_rules.push_back(ParseRule(GetDocument(), "body { left: 10px; }"));
+  child_rules.push_back(
+      ParseInvisibleRule(GetDocument(), "body { color: green; }"));
+  auto* supports_rule = MakeGarbageCollected<StyleRuleSupports>(
+      "width:100px",
+      /* condition_is_supported */ true, std::move(child_rules));
+
+  auto* parser_context = MakeGarbageCollected<CSSParserContext>(GetDocument());
+  auto* style_sheet_contents =
+      MakeGarbageCollected<StyleSheetContents>(parser_context);
+  style_sheet_contents->ParserAppendRule(supports_rule);
+
+  RuleSet* rule_set = MakeGarbageCollected<RuleSet>();
+  rule_set->AddRulesFromSheet(style_sheet_contents, *medium_);
+
+  MatchResult result;
+  CollectIntoMatchResult(body_, rule_set, result);
+  ASSERT_EQ(2u, result.GetMatchedProperties().size());
+  EXPECT_FALSE(result.GetMatchedProperties()[0].types_.is_invisible);
+  EXPECT_TRUE(result.GetMatchedProperties()[1].types_.is_invisible);
 }
 
 }  // namespace blink

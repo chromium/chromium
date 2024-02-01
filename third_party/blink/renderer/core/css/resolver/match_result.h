@@ -69,6 +69,8 @@ struct CORE_EXPORT MatchedProperties {
     // Fallback styles come from fallback sizing/positioning.
     // https://drafts.csswg.org/css-anchor-position-1/#fallback
     bool is_fallback_style;
+    // See CSSSelector::IsInvisible.
+    bool is_invisible;
   };
   Data types_;
 };
@@ -91,6 +93,7 @@ struct AddMatchedPropertiesOptions {
   unsigned layer_order = CascadeLayerMap::kImplicitOuterLayerOrder;
   bool is_inline_style = false;
   bool is_fallback_style = false;
+  bool is_invisible = false;
 };
 
 class CORE_EXPORT MatchResult {
