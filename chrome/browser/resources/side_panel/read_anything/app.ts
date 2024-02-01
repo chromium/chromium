@@ -655,6 +655,19 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
 
   // Gets the accessible text boundary for the given string.
   getAccessibleTextLength(utteranceText: string): number {
+    // Splicing on commas won't work for all locales, but since this is a
+    // simple strategy for splicing text in languages that do use commas
+    // that reduces the need for calling getAccessibleBoundary.
+    // TODO(crub.com/1474951): Investigate if we can utilize comma splices
+    // directly in the utils methods called by #getAccessibleBoundary.
+    const lastCommaIndex =
+        utteranceText.substring(0, this.maxSpeechLength).lastIndexOf(',');
+
+    if (lastCommaIndex >= 0) {
+      return lastCommaIndex;
+    }
+
+
     // TODO(crbug.com/1474951): getAccessibleBoundary breaks on the nearest
     // word boundary, but if there's some type of punctuation (such as a comma),
     // it would be preferable to break on the punctuation so the pause in
