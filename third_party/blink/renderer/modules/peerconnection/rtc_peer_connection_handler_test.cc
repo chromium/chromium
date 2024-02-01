@@ -1078,7 +1078,6 @@ TEST_F(RTCPeerConnectionHandlerTest,
   WebHeap::CollectAllGarbageForTesting();
   EXPECT_FALSE(pc_handler->Initialize(
       /*context=*/nullptr, webrtc::PeerConnectionInterface::RTCConfiguration(),
-      /*media_constraints=*/nullptr,
       /*frame=*/nullptr, exception_state));
 }
 

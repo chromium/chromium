@@ -280,7 +280,6 @@ MockRTCPeerConnectionHandlerPlatform::~MockRTCPeerConnectionHandlerPlatform() =
 bool MockRTCPeerConnectionHandlerPlatform::Initialize(
     ExecutionContext*,
     const webrtc::PeerConnectionInterface::RTCConfiguration&,
-    GoogMediaConstraints*,
     WebLocalFrame*,
     ExceptionState&) {
   return true;

@@ -58,7 +58,6 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_object_string.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_string_stringsequence.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_void_function.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_goog_media_constraints.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_stream_track.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_answer_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_certificate.h"
@@ -504,7 +503,6 @@ void RTCPeerConnection::EventWrapper::Trace(Visitor* visitor) const {
 RTCPeerConnection* RTCPeerConnection::Create(
     ExecutionContext* context,
     const RTCConfiguration* rtc_configuration,
-    GoogMediaConstraints* media_constraints,
     ExceptionState& exception_state) {
   if (context->IsContextDestroyed()) {
     exception_state.ThrowDOMException(
@@ -530,13 +528,10 @@ RTCPeerConnection* RTCPeerConnection::Create(
       UseCounter::Count(context, WebFeature::kRTCPeerConnectionWithBlockingCsp);
     }
   }
-  if (media_constraints->hasMandatory() || media_constraints->hasOptional()) {
-    UseCounter::Count(context,
-                      WebFeature::kRTCPeerConnectionConstructorConstraints);
-  } else {
-    UseCounter::Count(context,
-                      WebFeature::kRTCPeerConnectionConstructorCompliant);
-  }
+  // TODO(https://crbug.com/1318448): figure out if this counter should be
+  // retired - the other alternative is removed.
+  UseCounter::Count(context,
+                    WebFeature::kRTCPeerConnectionConstructorCompliant);
 
   webrtc::PeerConnectionInterface::RTCConfiguration configuration =
       ParseConfiguration(context, rtc_configuration, &exception_state);
@@ -560,26 +555,16 @@ RTCPeerConnection* RTCPeerConnection::Create(
 
   RTCPeerConnection* peer_connection = MakeGarbageCollected<RTCPeerConnection>(
       context, std::move(configuration),
-      rtc_configuration->encodedInsertableStreams(), media_constraints,
-      exception_state);
+      rtc_configuration->encodedInsertableStreams(), exception_state);
   if (exception_state.HadException())
     return nullptr;
   return peer_connection;
-}
-
-RTCPeerConnection* RTCPeerConnection::Create(
-    ExecutionContext* context,
-    const RTCConfiguration* rtc_configuration,
-    ExceptionState& exception_state) {
-  return Create(context, rtc_configuration, GoogMediaConstraints::Create(),
-                exception_state);
 }
 
 RTCPeerConnection::RTCPeerConnection(
     ExecutionContext* context,
     webrtc::PeerConnectionInterface::RTCConfiguration configuration,
     bool encoded_insertable_streams,
-    GoogMediaConstraints* media_constraints,
     ExceptionState& exception_state)
     : ActiveScriptWrappable<RTCPeerConnection>({}),
       ExecutionContextLifecycleObserver(context),
@@ -631,8 +616,8 @@ RTCPeerConnection::RTCPeerConnection(
 
   auto* web_frame =
       static_cast<WebLocalFrame*>(WebFrame::FromCoreFrame(window->GetFrame()));
-  if (!peer_handler_->Initialize(context, configuration, media_constraints,
-                                 web_frame, exception_state)) {
+  if (!peer_handler_->Initialize(context, configuration, web_frame,
+                                 exception_state)) {
     DCHECK(exception_state.HadException());
     return;
   }

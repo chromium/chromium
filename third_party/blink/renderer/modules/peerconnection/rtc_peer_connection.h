@@ -66,7 +66,6 @@
 namespace blink {
 
 class ExceptionState;
-class GoogMediaConstraints;
 class MediaStreamTrack;
 class RTCAnswerOptions;
 class RTCConfiguration;
@@ -102,16 +101,11 @@ class MODULES_EXPORT RTCPeerConnection final
  public:
   static RTCPeerConnection* Create(ExecutionContext*,
                                    const RTCConfiguration*,
-                                   GoogMediaConstraints*,
-                                   ExceptionState&);
-  static RTCPeerConnection* Create(ExecutionContext*,
-                                   const RTCConfiguration*,
                                    ExceptionState&);
 
   RTCPeerConnection(ExecutionContext*,
                     webrtc::PeerConnectionInterface::RTCConfiguration,
                     bool encoded_insertable_streams,
-                    GoogMediaConstraints*,
                     ExceptionState&);
   ~RTCPeerConnection() override;
 

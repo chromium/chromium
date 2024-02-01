@@ -67,7 +67,7 @@ enum RTCPeerConnectionState {
     LegacyWindowAlias_Measure
 ] interface RTCPeerConnection : EventTarget {
     // TODO(https://crbug.com/1318448): Deprecated `mediaConstraints` should be removed.
-    [CallWith=ExecutionContext, RaisesException] constructor(optional RTCConfiguration configuration = {}, optional GoogMediaConstraints mediaConstraints);
+    [CallWith=ExecutionContext, RaisesException] constructor(optional RTCConfiguration configuration = {});
     [CallWith=ScriptState, RaisesException] Promise<RTCSessionDescriptionInit> createOffer(optional RTCOfferOptions options = {});
     [CallWith=ScriptState, RaisesException] Promise<RTCSessionDescriptionInit> createAnswer(optional RTCAnswerOptions options = {});
     [CallWith=ScriptState, RaisesException] Promise<void> setLocalDescription(optional RTCSessionDescriptionInit description = {});

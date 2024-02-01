@@ -32,8 +32,6 @@
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_url.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_goog_media_constraints.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_goog_media_constraints_set.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_session_description_init.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_boolean_constrainbooleanparameters.h"
 #include "third_party/blink/renderer/core/frame/deprecation/deprecation.h"
@@ -783,7 +781,6 @@ bool RTCPeerConnectionHandler::Initialize(
     ExecutionContext* context,
     const webrtc::PeerConnectionInterface::RTCConfiguration&
         server_configuration,
-    GoogMediaConstraints* media_constraints,
     WebLocalFrame* frame,
     ExceptionState& exception_state) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
