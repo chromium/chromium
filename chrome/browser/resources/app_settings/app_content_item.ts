@@ -6,11 +6,11 @@ import './app_management_shared_style.css.js';
 import './app_content_dialog.js';
 import '//resources/cr_elements/cr_link_row/cr_link_row.js';
 
+import {App} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './app_content_item.html.js';
-import {App} from './app_management.mojom-webui.js';
 
 const AppManagementAppContentItemElementBase = I18nMixin(PolymerElement);
 export class AppManagementAppContentItemElement extends

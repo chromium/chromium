@@ -5,16 +5,16 @@ import './app_management_shared_style.css.js';
 import './toggle_row.js';
 
 import {assert, assertNotReached} from '//resources/js/assert.js';
+import {App, InstallReason, Permission, PermissionType, TriState} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
+import {BrowserProxy} from 'chrome://resources/cr_components/app_management/browser_proxy.js';
+import {AppManagementUserAction} from 'chrome://resources/cr_components/app_management/constants.js';
+import {PermissionTypeIndex} from 'chrome://resources/cr_components/app_management/permission_constants.js';
+import {createBoolPermission, createTriStatePermission, getBoolPermissionValue, getTriStatePermissionValue, isBoolValue, isTriStateValue} from 'chrome://resources/cr_components/app_management/permission_util.js';
+import {getPermission, getPermissionValueBool, recordAppManagementUserAction} from 'chrome://resources/cr_components/app_management/util.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {App, InstallReason, Permission, PermissionType, TriState} from './app_management.mojom-webui.js';
-import {BrowserProxy} from './browser_proxy.js';
-import {AppManagementUserAction} from './constants.js';
-import {PermissionTypeIndex} from './permission_constants.js';
 import {getTemplate} from './permission_item.html.js';
-import {createBoolPermission, createTriStatePermission, getBoolPermissionValue, getTriStatePermissionValue, isBoolValue, isTriStateValue} from './permission_util.js';
 import {AppManagementToggleRowElement} from './toggle_row.js';
-import {getPermission, getPermissionValueBool, recordAppManagementUserAction} from './util.js';
 
 export class AppManagementPermissionItemElement extends PolymerElement {
   static get is() {

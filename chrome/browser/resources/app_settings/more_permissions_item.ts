@@ -5,13 +5,13 @@
 import './app_management_shared_style.css.js';
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 
+import {App} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
+import {BrowserProxy} from 'chrome://resources/cr_components/app_management/browser_proxy.js';
+import {AppManagementUserAction} from 'chrome://resources/cr_components/app_management/constants.js';
+import {recordAppManagementUserAction} from 'chrome://resources/cr_components/app_management/util.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {App} from './app_management.mojom-webui.js';
-import {BrowserProxy} from './browser_proxy.js';
-import {AppManagementUserAction} from './constants.js';
 import {getTemplate} from './more_permissions_item.html.js';
-import {recordAppManagementUserAction} from './util.js';
 
 export class AppManagementMorePermissionsItemElement extends PolymerElement {
   static get is() {

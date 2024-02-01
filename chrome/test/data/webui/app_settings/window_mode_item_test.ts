@@ -3,11 +3,11 @@
 // found in the LICENSE file.
 
 /** @fileoverview Test suite for app-management-window-mode-item. */
-import 'chrome://resources/cr_components/app_management/window_mode_item.js';
+import 'chrome://app-settings/window_mode_item.js';
 
 import {App} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {BrowserProxy} from 'chrome://resources/cr_components/app_management/browser_proxy.js';
-import {AppManagementWindowModeElement} from 'chrome://resources/cr_components/app_management/window_mode_item.js';
+import {AppManagementWindowModeElement} from 'chrome://app-settings/window_mode_item.js';
 import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';

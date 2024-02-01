@@ -3,12 +3,12 @@
 // found in the LICENSE file.
 
 /** @fileoverview Test suite for app-manageemnt-permission-item. */
-import 'chrome://resources/cr_components/app_management/permission_item.js';
+import 'chrome://app-settings/permission_item.js';
 
 import {TriState} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {BrowserProxy} from 'chrome://resources/cr_components/app_management/browser_proxy.js';
 import {AppManagementUserAction} from 'chrome://resources/cr_components/app_management/constants.js';
-import {AppManagementPermissionItemElement} from 'chrome://resources/cr_components/app_management/permission_item.js';
+import {AppManagementPermissionItemElement} from 'chrome://app-settings/permission_item.js';
 import {getPermissionValueBool} from 'chrome://resources/cr_components/app_management/util.js';
 import {assertEquals, assertFalse} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';

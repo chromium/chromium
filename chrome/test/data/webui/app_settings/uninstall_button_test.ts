@@ -3,18 +3,18 @@
 // found in the LICENSE file.
 
 /** @fileoverview Test suite for app-management-uninstall-button. */
-import 'chrome://resources/cr_components/app_management/uninstall_button.js';
+import 'chrome://app-settings/uninstall_button.js';
 
 import {App, InstallReason} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {BrowserProxy} from 'chrome://resources/cr_components/app_management/browser_proxy.js';
-import {AppManamentUninstallButtonElement} from 'chrome://resources/cr_components/app_management/uninstall_button.js';
+import {AppManagementUninstallButtonElement} from 'chrome://app-settings/uninstall_button.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import {createTestApp, TestAppManagementBrowserProxy} from './app_management_test_support.js';
 
 suite('AppManagementUninstallButtonTest', () => {
-  let uninstallButton: AppManamentUninstallButtonElement;
+  let uninstallButton: AppManagementUninstallButtonElement;
   let testProxy: TestAppManagementBrowserProxy;
 
   setup(async function() {

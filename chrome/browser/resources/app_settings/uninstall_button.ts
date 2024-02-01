@@ -6,15 +6,15 @@ import './app_management_shared_style.css.js';
 import '//resources/cr_elements/cr_button/cr_button.js';
 import '//resources/cr_elements/policy/cr_tooltip_icon.js';
 
+import {App} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
+import {BrowserProxy} from 'chrome://resources/cr_components/app_management/browser_proxy.js';
+import {AppManagementUserAction, InstallReason} from 'chrome://resources/cr_components/app_management/constants.js';
+import {recordAppManagementUserAction} from 'chrome://resources/cr_components/app_management/util.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {App} from './app_management.mojom-webui.js';
-import {BrowserProxy} from './browser_proxy.js';
-import {AppManagementUserAction, InstallReason} from './constants.js';
 import {getTemplate} from './uninstall_button.html.js';
-import {recordAppManagementUserAction} from './util.js';
 
-export class AppManamentUninstallButtonElement extends PolymerElement {
+export class AppManagementUninstallButtonElement extends PolymerElement {
   static get is() {
     return 'app-management-uninstall-button';
   }
@@ -82,9 +82,10 @@ export class AppManamentUninstallButtonElement extends PolymerElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'app-management-uninstall-button': AppManamentUninstallButtonElement;
+    'app-management-uninstall-button': AppManagementUninstallButtonElement;
   }
 }
 
 customElements.define(
-    AppManamentUninstallButtonElement.is, AppManamentUninstallButtonElement);
+    AppManagementUninstallButtonElement.is,
+    AppManagementUninstallButtonElement);

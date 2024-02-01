@@ -8,8 +8,14 @@ assert(is_win || is_mac || is_linux || is_fuchsia)
 
 build_webui_tests("build") {
   files = [
+    "app_management_test_support.ts",
     "app_test.ts",
     "test_app_management_browser_proxy.ts",
+    "file_handling_item_test.ts",
+    "permission_item_test.ts",
+    "supported_links_item_test.ts",
+    "uninstall_button_test.ts",
+    "window_mode_item_test.ts",
   ]
 
   ts_path_mappings =
@@ -18,6 +24,8 @@ build_webui_tests("build") {
                     target_gen_dir) ]
   ts_deps = [
     "//chrome/browser/resources/app_settings:build_ts",
+    "//chrome/test/data/webui:build_ts",
+    "//third_party/polymer/v3_0:library",
     "//ui/webui/resources/cr_components/app_management:build_ts",
     "//ui/webui/resources/cr_elements:build_ts",
     "//ui/webui/resources/js:build_ts",

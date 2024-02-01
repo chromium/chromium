@@ -7,10 +7,39 @@
 #include "chrome/test/base/web_ui_mocha_browser_test.h"
 #include "content/public/test/browser_test.h"
 
-using AppSettingsTest = WebUIMochaBrowserTest;
+class AppSettingsTest : public WebUIMochaBrowserTest {
+ protected:
+  AppSettingsTest() {
+    set_test_loader_host(chrome::kChromeUIWebAppSettingsHost);
+  }
+};
 
 IN_PROC_BROWSER_TEST_F(AppSettingsTest, App) {
-  set_test_loader_host(chrome::kChromeUIWebAppSettingsHost);
   WebAppSettingsNavigationThrottle::DisableForTesting();
   RunTest("app_settings/app_test.js", "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(AppSettingsTest, PermissionItem) {
+  WebAppSettingsNavigationThrottle::DisableForTesting();
+  RunTest("app_settings/permission_item_test.js", "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(AppSettingsTest, FileHandlingItem) {
+  WebAppSettingsNavigationThrottle::DisableForTesting();
+  RunTest("app_settings/file_handling_item_test.js", "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(AppSettingsTest, SupportedLinksItem) {
+  WebAppSettingsNavigationThrottle::DisableForTesting();
+  RunTest("app_settings/supported_links_item_test.js", "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(AppSettingsTest, UninstallButton) {
+  WebAppSettingsNavigationThrottle::DisableForTesting();
+  RunTest("app_settings/uninstall_button_test.js", "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(AppSettingsTest, WindowModeItem) {
+  WebAppSettingsNavigationThrottle::DisableForTesting();
+  RunTest("app_settings/window_mode_item_test.js", "mocha.run()");
 }

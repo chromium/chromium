@@ -6,14 +6,14 @@ import './app_management_shared_style.css.js';
 import './toggle_row.js';
 
 import {assert, assertNotReached} from '//resources/js/assert.js';
+import {App} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
+import {BrowserProxy} from 'chrome://resources/cr_components/app_management/browser_proxy.js';
+import {AppManagementUserAction, RunOnOsLoginMode} from 'chrome://resources/cr_components/app_management/constants.js';
+import {recordAppManagementUserAction} from 'chrome://resources/cr_components/app_management/util.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {App} from './app_management.mojom-webui.js';
-import {BrowserProxy} from './browser_proxy.js';
-import {AppManagementUserAction, RunOnOsLoginMode} from './constants.js';
 import {getTemplate} from './run_on_os_login_item.html.js';
 import {AppManagementToggleRowElement} from './toggle_row.js';
-import {recordAppManagementUserAction} from './util.js';
 
 function convertModeToBoolean(runOnOsLoginMode: RunOnOsLoginMode): boolean {
   switch (runOnOsLoginMode) {
@@ -104,7 +104,8 @@ export class AppManagementRunOnOsLoginItemElement extends PolymerElement {
       const runOnOsLoginModeChangeAction = booleanRunOnOsLoginMode ?
           AppManagementUserAction.RUN_ON_OS_LOGIN_MODE_TURNED_ON :
           AppManagementUserAction.RUN_ON_OS_LOGIN_MODE_TURNED_OFF;
-      recordAppManagementUserAction(this.app.type, runOnOsLoginModeChangeAction);
+      recordAppManagementUserAction(
+          this.app.type, runOnOsLoginModeChangeAction);
     }
   }
 

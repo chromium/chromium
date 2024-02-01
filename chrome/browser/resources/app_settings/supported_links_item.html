@@ -36,14 +36,6 @@
   iron-icon {
     flex-shrink: 0;  /* Prevent distortion of icons in cramped UI.*/
   }
-
-<if expr='chromeos_ash'>
-  /* This increases the height on chrome://app-settings/, so this is
-  /* only applied on ChromeOS. */
-  cr-radio-button {
-    min-height: var(--cr-section-min-height);
-  }
-</if>
 </style>
 <div class="permission-section-header">
   <localized-link id="heading" class="header-text"
