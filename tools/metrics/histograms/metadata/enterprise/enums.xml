@@ -2024,6 +2024,7 @@ chromium-metrics-reviews@google.com.
   <int value="1207" label="InsertKeyModifier"/>
   <int value="1208" label="ToolbarAvatarLabelSettings"/>
   <int value="1209" label="DeviceWeeklyScheduledSuspend"/>
+  <int value="1210" label="RemoteAccessHostAllowUrlForwarding"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">
