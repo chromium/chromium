@@ -444,6 +444,7 @@ std::unique_ptr<NotificationInputContainer>
 NotificationViewBase::GenerateNotificationInputContainer() {
   return std::make_unique<NotificationInputContainer>(this);
 }
+
 void NotificationViewBase::CreateOrUpdateHeaderView(
     const Notification& notification) {
   header_row_->SetTimestamp(notification.timestamp());
@@ -807,42 +808,6 @@ void NotificationViewBase::UpdateViewForExpandedState(bool expanded) {
   content_row_->InvalidateLayout();
 }
 
-void NotificationViewBase::ToggleInlineSettings(const ui::Event& event) {
-  bool inline_settings_visible = !settings_row_->GetVisible();
-
-  settings_row_->SetVisible(inline_settings_visible);
-  header_row_->SetDetailViewsVisible(!inline_settings_visible);
-
-  SetSettingMode(inline_settings_visible);
-
-  // Grab a weak pointer before calling SetExpanded() as it might cause |this|
-  // to be deleted.
-  {
-    auto weak_ptr = weak_ptr_factory_.GetWeakPtr();
-    SetExpanded(!inline_settings_visible);
-    if (!weak_ptr)
-      return;
-  }
-}
-
-void NotificationViewBase::ToggleSnoozeSettings(const ui::Event& event) {
-  bool snooze_settings_visible = !snooze_row_->GetVisible();
-
-  snooze_row_->SetVisible(snooze_settings_visible);
-
-  SetSettingMode(snooze_settings_visible);
-
-  // Grab a weak pointer before calling SetExpanded() as it might cause |this|
-  // to be deleted.
-  {
-    auto weak_ptr = weak_ptr_factory_.GetWeakPtr();
-    SetExpanded(!snooze_settings_visible);
-    if (!weak_ptr) {
-      return;
-    }
-  }
-}
-
 NotificationControlButtonsView* NotificationViewBase::GetControlButtonsView()
     const {
   return control_buttons_view_;
@@ -871,25 +836,40 @@ void NotificationViewBase::SetManuallyExpandedOrCollapsed(ExpandState state) {
   MessageCenter::Get()->SetNotificationExpandState(notification_id(), state);
 }
 
-void NotificationViewBase::OnSettingsButtonPressed(const ui::Event& event) {
-  for (auto& observer : *observers())
-    observer.OnSettingsButtonPressed(notification_id());
+void NotificationViewBase::ToggleInlineSettings(const ui::Event& event) {
+  bool inline_settings_visible = !settings_row_->GetVisible();
 
-  if (inline_settings_enabled_)
-    ToggleInlineSettings(event);
-  else
-    MessageView::OnSettingsButtonPressed(event);
+  settings_row_->SetVisible(inline_settings_visible);
+  header_row_->SetDetailViewsVisible(!inline_settings_visible);
+
+  SetSettingMode(inline_settings_visible);
+
+  // Grab a weak pointer before calling SetExpanded() as it might cause |this|
+  // to be deleted.
+  {
+    auto weak_ptr = weak_ptr_factory_.GetWeakPtr();
+    SetExpanded(!inline_settings_visible);
+    if (!weak_ptr) {
+      return;
+    }
+  }
 }
 
-void NotificationViewBase::OnSnoozeButtonPressed(const ui::Event& event) {
-  for (auto& observer : *observers()) {
-    observer.OnSnoozeButtonPressed(notification_id());
-  }
+void NotificationViewBase::ToggleSnoozeSettings(const ui::Event& event) {
+  bool snooze_settings_visible = !snooze_row_->GetVisible();
 
-  if (snooze_settings_enabled_) {
-    ToggleSnoozeSettings(event);
-  } else {
-    MessageView::OnSnoozeButtonPressed(event);
+  snooze_row_->SetVisible(snooze_settings_visible);
+
+  SetSettingMode(snooze_settings_visible);
+
+  // Grab a weak pointer before calling SetExpanded() as it might cause |this|
+  // to be deleted.
+  {
+    auto weak_ptr = weak_ptr_factory_.GetWeakPtr();
+    SetExpanded(!snooze_settings_visible);
+    if (!weak_ptr) {
+      return;
+    }
   }
 }
 

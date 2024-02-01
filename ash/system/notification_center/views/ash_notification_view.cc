@@ -1327,7 +1327,7 @@ void AshNotificationView::CreateOrUpdateInlineSettingsViews(
   }
 
   auto turn_off_notifications_button = GenerateNotificationLabelButton(
-      base::BindRepeating(&AshNotificationView::DisableNotification,
+      base::BindRepeating(&MessageView::DisableNotification,
                           base::Unretained(this)),
       l10n_util::GetStringUTF16(
           IDS_ASH_NOTIFICATION_INLINE_SETTINGS_TURN_OFF_BUTTON_TEXT));
@@ -1352,7 +1352,7 @@ void AshNotificationView::CreateOrUpdateSnoozeSettingsViews(
   }
 
   auto snooze_notification_1_hour_button = GenerateNotificationLabelButton(
-      base::BindRepeating(&AshNotificationView::DisableNotification,
+      base::BindRepeating(&MessageView::DisableNotification,
                           base::Unretained(this)),
       l10n_util::GetStringUTF16(
           IDS_ASH_NOTIFICATION_SNOOZE_SETTINGS_SNOOZE_1_HOUR_TEXT));
@@ -1360,7 +1360,7 @@ void AshNotificationView::CreateOrUpdateSnoozeSettingsViews(
       std::move(snooze_notification_1_hour_button));
 
   auto snooze_notification_15_minutes_button = GenerateNotificationLabelButton(
-      base::BindRepeating(&AshNotificationView::DisableNotification,
+      base::BindRepeating(&MessageView::DisableNotification,
                           base::Unretained(this)),
       l10n_util::GetStringUTF16(
           IDS_ASH_NOTIFICATION_SNOOZE_SETTINGS_SNOOZE_15_MINUTES_TEXT));
@@ -1368,7 +1368,7 @@ void AshNotificationView::CreateOrUpdateSnoozeSettingsViews(
       std::move(snooze_notification_15_minutes_button));
 
   auto snooze_notification_30_minutes_button = GenerateNotificationLabelButton(
-      base::BindRepeating(&AshNotificationView::DisableNotification,
+      base::BindRepeating(&MessageView::DisableNotification,
                           base::Unretained(this)),
       l10n_util::GetStringUTF16(
           IDS_ASH_NOTIFICATION_SNOOZE_SETTINGS_SNOOZE_30_MINUTES_TEXT));
@@ -1376,7 +1376,7 @@ void AshNotificationView::CreateOrUpdateSnoozeSettingsViews(
       std::move(snooze_notification_30_minutes_button));
 
   auto snooze_notification_2_hours_button = GenerateNotificationLabelButton(
-      base::BindRepeating(&AshNotificationView::DisableNotification,
+      base::BindRepeating(&MessageView::DisableNotification,
                           base::Unretained(this)),
       l10n_util::GetStringUTF16(
           IDS_ASH_NOTIFICATION_SNOOZE_SETTINGS_SNOOZE_2_HOURS_TEXT));
@@ -1731,10 +1731,6 @@ int AshNotificationView::GetExpandedMessageLabelWidth() {
   return notification_width - kNotificationViewPadding.width() -
          kNotificationAppIconViewSize - kMainRightViewChildPadding.width() -
          kMessageLabelInExpandedStatePadding.width();
-}
-
-void AshNotificationView::DisableNotification() {
-  message_center::MessageCenter::Get()->DisableNotification(notification_id());
 }
 
 void AshNotificationView::UpdateAppIconView(

@@ -5,6 +5,7 @@
 #include "ash/system/notification_center/views/conversation_notification_view.h"
 
 #include "ash/test/ash_test_base.h"
+#include "ui/events/test/test_event.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/views/widget/widget.h"
@@ -43,6 +44,8 @@ class ConversationNotificationViewTest : public AshTestBase {
         {u"title", u"message"}, {u"title", u"message"}};
     message_center::RichNotificationData rich_data;
     rich_data.items = items;
+    rich_data.settings_button_handler =
+        message_center::SettingsButtonHandler::INLINE;
 
     return std::make_unique<message_center::Notification>(
         message_center::NOTIFICATION_TYPE_SIMPLE, "id", u"title",
@@ -52,6 +55,22 @@ class ConversationNotificationViewTest : public AshTestBase {
 
   ConversationNotificationView* notification_view() {
     return notification_view_.get();
+  }
+
+  views::View* collapsed_preview_container() {
+    return notification_view_->collapsed_preview_container_;
+  }
+
+  views::View* conversation_container() {
+    return notification_view_->conversations_container_;
+  }
+
+  views::View* inline_settings_view() {
+    return notification_view_->inline_settings_view_;
+  }
+
+  views::View* right_controls_container() {
+    return notification_view_->right_controls_container_;
   }
 
  private:
@@ -79,6 +98,40 @@ TEST_F(ConversationNotificationViewTest, ExpandCollapse) {
   EXPECT_TRUE(notification_view()->IsExpanded());
   EXPECT_FALSE(collapsed_preview_container->GetVisible());
   EXPECT_TRUE(conversations_container->GetVisible());
+}
+
+TEST_F(ConversationNotificationViewTest, ToggleInlineSettings) {
+  ASSERT_FALSE(inline_settings_view()->GetVisible());
+  ASSERT_TRUE(notification_view()->IsExpanded());
+
+  // Test toggling inline settings when the notification is expanded.
+  notification_view()->ToggleInlineSettings(ui::test::TestEvent());
+  EXPECT_TRUE(inline_settings_view()->GetVisible());
+  EXPECT_FALSE(conversation_container()->GetVisible());
+  EXPECT_FALSE(collapsed_preview_container()->GetVisible());
+  EXPECT_FALSE(right_controls_container()->GetVisible());
+
+  notification_view()->ToggleInlineSettings(ui::test::TestEvent());
+  EXPECT_FALSE(inline_settings_view()->GetVisible());
+  EXPECT_TRUE(conversation_container()->GetVisible());
+  EXPECT_FALSE(collapsed_preview_container()->GetVisible());
+  EXPECT_TRUE(right_controls_container()->GetVisible());
+
+  // Test toggling inline settings when the notification is collapsed.
+  notification_view()->ToggleExpand();
+  ASSERT_FALSE(notification_view()->IsExpanded());
+
+  notification_view()->ToggleInlineSettings(ui::test::TestEvent());
+  EXPECT_TRUE(inline_settings_view()->GetVisible());
+  EXPECT_FALSE(conversation_container()->GetVisible());
+  EXPECT_FALSE(collapsed_preview_container()->GetVisible());
+  EXPECT_FALSE(right_controls_container()->GetVisible());
+
+  notification_view()->ToggleInlineSettings(ui::test::TestEvent());
+  EXPECT_FALSE(inline_settings_view()->GetVisible());
+  EXPECT_FALSE(conversation_container()->GetVisible());
+  EXPECT_TRUE(collapsed_preview_container()->GetVisible());
+  EXPECT_TRUE(right_controls_container()->GetVisible());
 }
 
 }  // namespace ash

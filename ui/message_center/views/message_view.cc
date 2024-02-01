@@ -189,6 +189,14 @@ void MessageView::SetManuallyExpandedOrCollapsed(ExpandState state) {
   // Not implemented by default.
 }
 
+void MessageView::ToggleInlineSettings(const ui::Event& event) {
+  // Not implemented by default.
+}
+
+void MessageView::ToggleSnoozeSettings(const ui::Event& event) {
+  // Not implemented by default.
+}
+
 void MessageView::UpdateCornerRadius(int top_radius, int bottom_radius) {
   SetCornerRadius(top_radius, bottom_radius);
   if (!GetWidget()) {
@@ -486,6 +494,10 @@ void MessageView::SetSettingMode(bool setting_mode) {
   UpdateControlButtonsVisibility();
 }
 
+void MessageView::DisableNotification() {
+  MessageCenter::Get()->DisableNotification(notification_id());
+}
+
 void MessageView::DisableSlideForcibly(bool disable) {
   disable_slide_ = disable;
   slide_out_controller_.set_slide_mode(CalculateSlideMode());
@@ -511,14 +523,22 @@ void MessageView::OnSettingsButtonPressed(const ui::Event& event) {
   for (auto& observer : observers_)
     observer.OnSettingsButtonPressed(notification_id_);
 
-  MessageCenter::Get()->ClickOnSettingsButton(notification_id_);
+  if (inline_settings_enabled_) {
+    ToggleInlineSettings(event);
+  } else {
+    MessageCenter::Get()->ClickOnSettingsButton(notification_id_);
+  }
 }
 
 void MessageView::OnSnoozeButtonPressed(const ui::Event& event) {
   for (auto& observer : observers_)
     observer.OnSnoozeButtonPressed(notification_id_);
 
-  MessageCenter::Get()->ClickOnSnoozeButton(notification_id());
+  if (snooze_settings_enabled_) {
+    ToggleSnoozeSettings(event);
+  } else {
+    MessageCenter::Get()->ClickOnSnoozeButton(notification_id());
+  }
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

@@ -8,8 +8,10 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/font.h"
 #include "ui/gfx/image/image_skia.h"
+#include "ui/views/controls/button/button.h"
 
 namespace message_center {
+class MessageView;
 class Notification;
 class NotificationItem;
 }  // namespace message_center
@@ -20,7 +22,9 @@ class ColorProvider;
 
 namespace views {
 class Background;
+class FlexLayoutView;
 class Label;
+class LabelButton;
 class View;
 }  // namespace views
 
@@ -63,6 +67,17 @@ std::unique_ptr<views::Background> CreateNotificationBackground(
 // Applies background color, background blur, highlight border and rounded
 // corners for notification views that are contained in notification popups.
 void StyleNotificationPopup(views::View* notification_view);
+
+// Returns a floating iconless `PillButton` with the provided callback and
+// label.
+std::unique_ptr<views::LabelButton> GenerateNotificationLabelButton(
+    views::Button::PressedCallback callback,
+    const std::u16string& label);
+
+// Creates a view containing a `turn_off_notifications_button` and
+// `cancel_button` that is used for inline settings in any `MessageView`.
+std::unique_ptr<views::FlexLayoutView> CreateInlineSettingsViewForMessageView(
+    message_center::MessageView* message_view);
 
 }  // namespace ash::notification_style_utils
 

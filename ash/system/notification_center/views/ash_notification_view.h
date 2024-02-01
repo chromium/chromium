@@ -258,10 +258,6 @@ class ASH_EXPORT AshNotificationView
   // Get the available space for `message_label_in_expanded_state_` width.
   int GetExpandedMessageLabelWidth();
 
-  // Disable the notification of this view. Called after the turn of
-  // notifications button is clicked.
-  void DisableNotification();
-
   // Update the color and icon for `app_icon_view_`.
   void UpdateAppIconView(const message_center::Notification* notification);
 
