@@ -2262,7 +2262,8 @@ void FederatedAuthRequestImpl::OnTokenResponseReceived(
   base::TimeDelta fetch_time = token_response_time_ - select_account_time_;
   if (should_complete_request_immediately_ ||
       identity_selection_type_ == kAutoButton ||
-      fetch_time >= kTokenRequestDelay) {
+      fetch_time >= kTokenRequestDelay ||
+      rp_mode_ == blink::mojom::RpMode::kButton) {
     std::move(complete_request_callback).Run();
     return;
   }

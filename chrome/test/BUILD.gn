@@ -7837,6 +7837,7 @@ test("unit_tests") {
       "../browser/ui/views/passwords/post_save_compromised_bubble_view_unittest.cc",
       "../browser/ui/views/passwords/shared_passwords_notification_view_unittest.cc",
       "../browser/ui/views/webid/account_selection_bubble_view_unittest.cc",
+      "../browser/ui/views/webid/account_selection_modal_view_unittest.cc",
       "../browser/ui/views/webid/fake_delegate.cc",
       "../browser/ui/views/webid/fake_delegate.h",
       "../browser/ui/views/webid/fedcm_account_selection_view_desktop_unittest.cc",

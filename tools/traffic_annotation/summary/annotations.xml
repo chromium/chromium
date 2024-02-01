@@ -318,7 +318,7 @@ Refer to README.md for content description and update process.
  <item id="help_content_provider" added_in_milestone="102" content_hash_code="0667db51" os_list="chromeos" file_path="ash/webui/os_feedback_ui/backend/help_content_provider.cc" />
  <item id="quick_answers_spellchecker" added_in_milestone="102" content_hash_code="022892f0" os_list="chromeos" file_path="chromeos/components/quick_answers/utils/spell_check_language.cc" />
  <item id="printing_oauth2_token_exchange_request" added_in_milestone="102" type="partial" second_id="printing_oauth2_http_exchange" content_hash_code="059df373" os_list="chromeos" semantics_fields="2,4" file_path="chrome/browser/ash/printing/oauth2/ipp_endpoint_token_fetcher.cc" />
- <item id="fedcm_account_profile_image_fetcher" added_in_milestone="102" content_hash_code="07d6a3e2" os_list="linux,windows,chromeos" file_path="chrome/browser/ui/views/webid/account_selection_bubble_view.cc" />
+ <item id="fedcm_account_profile_image_fetcher" added_in_milestone="102" content_hash_code="01d6ba52" os_list="linux,windows,chromeos" file_path="chrome/browser/ui/views/webid/account_selection_view_base.cc" />
  <item id="interest_group_well_known_fetcher" added_in_milestone="103" content_hash_code="01ea06eb" os_list="linux,windows,android,chromeos" file_path="content/browser/interest_group/interest_group_permissions_checker.cc" />
  <item id="speculation_rules_prefetch" added_in_milestone="103" content_hash_code="015fd398" os_list="linux,windows,android,chromeos" file_path="content/browser/preloading/prefetch/prefetch_service.cc" />
  <item id="fast_pair_image_decoder" added_in_milestone="103" content_hash_code="03a98cf1" os_list="chromeos" file_path="ash/quick_pair/repository/fast_pair/fast_pair_image_decoder_impl.cc" />
