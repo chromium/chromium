@@ -33,9 +33,6 @@ constexpr base::TimeDelta kModelExecutionValidationStartupDelay =
 constexpr base::TimeDelta kOnDeviceModelExecutionValidationStartupDelay =
     base::Seconds(12);
 
-// Set free disk space to 10GB so that model can execute on startup.
-constexpr size_t kFreeDiskSpace = 10000000000;
-
 std::unique_ptr<optimization_guide::proto::ComposeRequest>
 ParseComposeRequestFromFile(base::FilePath path) {
   std::string serialized_request;
@@ -171,10 +168,6 @@ void ModelValidatorKeyedService::PerformOnDeviceModelExecutionValidation(
   if (!opt_guide_service) {
     return;
   }
-  // The on-device model can take several minutes to initialize, so we call
-  // CompleteUpdateRegistration directly to expedite the process.
-  opt_guide_service->on_device_component_manager_->CompleteUpdateRegistration(
-      kFreeDiskSpace);
   on_device_validation_session_ = opt_guide_service->StartSession(
       proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_COMPOSE);
   on_device_validation_session_->ExecuteModel(

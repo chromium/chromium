@@ -25,7 +25,6 @@ inline constexpr std::string_view kOnDeviceModelCrxId =
     "fklghjjljmnfjoepjmlobpekiapffcja";
 
 class OnDeviceModelComponentState;
-class ModelValidatorKeyedService;
 
 // Wraps the specification needed to determine compatibility of the
 // on-device base model with any feature specific code.
@@ -133,7 +132,6 @@ class OnDeviceModelComponentStateManager
 
  private:
   friend class base::RefCounted<OnDeviceModelComponentStateManager>;
-  friend class optimization_guide::ModelValidatorKeyedService;
 
   enum class OnDeviceRegistrationDecision {
     // The component should be installed.
