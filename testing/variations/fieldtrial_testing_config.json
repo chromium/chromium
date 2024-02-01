@@ -21124,6 +21124,24 @@
             ]
         }
     ],
+    "WebApkShellUpdate": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_WebApkShellUpdate",
+                    "params": {
+                        "version": "166"
+                    },
+                    "enable_features": [
+                        "WebApkShellUpdate"
+                    ]
+                }
+            ]
+        }
+    ],
     "WebApkUniversalInstall": [
         {
             "platforms": [
