@@ -3171,17 +3171,6 @@ Called by update_autofill_enums.py.-->
   <int value="13"
       label="User did not select suggestion, user did not change form, no
              form submitted"/>
-  <int value="14"
-      label="No structure was provided, user changed form, no form submitted"/>
-  <int value="15"
-      label="No structure was provided, user did not change form, form
-             submitted"/>
-  <int value="16"
-      label="No structure was provided, user changed form, form submitted"/>
-  <int value="17"
-      label="No structure was provided, suggestions were shown (ERROR)"/>
-  <int value="18"
-      label="No structure was provided, form was autofilled (ERROR)"/>
   <int value="19"
       label="No suggestions were shown, form was autofilled (ERROR)"/>
 </enum>

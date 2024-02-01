@@ -56,11 +56,6 @@ public class AutofillProviderUMA {
     public static final int USER_NOT_SELECT_SUGGESTION_USER_CHANGE_FORM_NO_FORM_SUBMITTED = 11;
     public static final int USER_NOT_SELECT_SUGGESTION_USER_NOT_CHANGE_FORM_FORM_SUBMITTED = 12;
     public static final int USER_NOT_SELECT_SUGGESTION_USER_NOT_CHANGE_FORM_NO_FORM_SUBMITTED = 13;
-    public static final int NO_STRUCTURE_PROVIDED_USER_CHANGE_FORM_NO_FORM_SUBMITTED = 14;
-    public static final int NO_STRUCTURE_PROVIDED_USER_NOT_CHANGE_FORM_FORM_SUBMITTED = 15;
-    public static final int NO_STRUCTURE_PROVIDED_USER_CHANGE_FORM_FORM_SUBMITTED = 16;
-    public static final int NO_STRUCTURE_PROVIDED_SUGGESTION_PROVIDED = 17; // Error state.
-    public static final int NO_STRUCTURE_PROVIDED_FORM_AUTOFILLED = 18; // Error state.
     public static final int NO_SUGGESTION_FORM_AUTOFILLED = 19; // Error state.
     public static final int AUTOFILL_SESSION_HISTOGRAM_COUNT = 20;
 
@@ -232,40 +227,19 @@ public class AutofillProviderUMA {
         }
 
         private int toUMAAutofillSessionValue() {
-            // Only the below five events are considered for translating the events to
+            // No other events are recorded until EVENT_VIRTUAL_STRUCTURE_PROVIDED is recorded.
+            if ((mState & EVENT_VIRTUAL_STRUCTURE_PROVIDED) == 0) {
+                return NO_STRUCTURE_PROVIDED;
+            }
+            // We know that the structure is provided from here on.
+            // Only the below four events are considered for translating the events to
             // an AUTOFILL_SESSION record.
             int state =
                     mState
-                            & (EVENT_VIRTUAL_STRUCTURE_PROVIDED
-                                    | EVENT_SUGGESTION_DISPLAYED
+                            & (EVENT_SUGGESTION_DISPLAYED
                                     | EVENT_FORM_AUTOFILLED
                                     | EVENT_USER_CHANGED_FIELD_VALUE
                                     | EVENT_FORM_SUBMITTED);
-            if ((state & EVENT_VIRTUAL_STRUCTURE_PROVIDED) == 0) {
-                // No suggestions can be shown if the structure was not provided, which also means
-                // one cannot autofill.
-                if ((state & EVENT_SUGGESTION_DISPLAYED) != 0) { // 8 states
-                    return NO_STRUCTURE_PROVIDED_SUGGESTION_PROVIDED; // Error state.
-                }
-                if ((state & EVENT_FORM_AUTOFILLED) != 0) { // 4 states
-                    return NO_STRUCTURE_PROVIDED_FORM_AUTOFILLED; // Error state.
-                }
-                if (state == 0) { // 1 state
-                    return NO_STRUCTURE_PROVIDED;
-                }
-                if (state == EVENT_USER_CHANGED_FIELD_VALUE) { // 1 state
-                    return NO_STRUCTURE_PROVIDED_USER_CHANGE_FORM_NO_FORM_SUBMITTED;
-                }
-                if (state == EVENT_FORM_SUBMITTED) { // 1 state
-                    return NO_STRUCTURE_PROVIDED_USER_NOT_CHANGE_FORM_FORM_SUBMITTED;
-                }
-                if (state == (EVENT_USER_CHANGED_FIELD_VALUE | EVENT_FORM_SUBMITTED)) { // 1 state
-                    return NO_STRUCTURE_PROVIDED_USER_CHANGE_FORM_FORM_SUBMITTED;
-                }
-                return SESSION_UNKNOWN; // Shouldn't reach this state.
-            }
-            // We know that below the structure is provided.
-            state ^= EVENT_VIRTUAL_STRUCTURE_PROVIDED;
             if ((state & EVENT_SUGGESTION_DISPLAYED) == 0) {
                 // No suggestions were shown and hence one cannot autofill.
                 if ((state & EVENT_FORM_AUTOFILLED) != 0) { // 4 states
