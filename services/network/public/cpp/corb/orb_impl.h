@@ -82,6 +82,9 @@ class COMPONENT_EXPORT(NETWORK_CPP) OpaqueResponseBlockingAnalyzer final
   // Whether Content length was 0, or the HTTP status was 204.
   bool is_empty_response_ = false;
 
+  // Whether the response carried Attribution Reporting headers.
+  bool is_attribution_response_ = false;
+
   // Remembering which past requests sniffed as media.  Never null.
   // TODO(lukasza): Replace with raw_ref<T> or nonnull_raw_ptr<T> once
   // available.
