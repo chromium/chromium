@@ -3949,6 +3949,7 @@ test("ash_unittests") {
     "wm/window_positioner_unittest.cc",
     "wm/window_positioning_utils_unittest.cc",
     "wm/window_preview_view_unittest.cc",
+    "wm/window_restore/pine_context_menu_model_unittest.cc",
     "wm/window_restore/pine_unittest.cc",
     "wm/window_restore/window_restore_controller_unittest.cc",
     "wm/window_state_unittest.cc",

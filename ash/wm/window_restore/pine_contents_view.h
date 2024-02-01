@@ -43,7 +43,8 @@ class ASH_EXPORT PineContentsView : public views::BoxLayoutView {
       const gfx::ImageSkia& pine_image);
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(PineTest, ShowContextMenuOnSettingsButtonClicked);
+  FRIEND_TEST_ALL_PREFIXES(PineContextMenuModelTest,
+                           ShowContextMenuOnSettingsButtonClicked);
 
   void OnSettingsButtonPressed();
 

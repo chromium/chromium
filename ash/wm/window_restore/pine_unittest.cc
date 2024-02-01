@@ -46,28 +46,4 @@ TEST_F(PineTest, Show) {
             overview_session->enter_exit_overview_type());
 }
 
-TEST_F(PineTest, ShowContextMenuOnSettingsButtonClicked) {
-  base::RunLoop run_loop;
-  OverviewController::Get()->set_pine_callback_for_test(run_loop.QuitClosure());
-  Shell::Get()->window_restore_controller()->MaybeStartPineOverviewSession();
-  run_loop.Run();
-
-  // Get the active Pine widget.
-  OverviewGrid* grid = GetOverviewGridForRoot(Shell::GetPrimaryRootWindow());
-  ASSERT_TRUE(grid);
-  auto* pine_widget = grid->pine_widget_for_testing();
-  ASSERT_TRUE(pine_widget);
-
-  // The context menu should not be open.
-  PineContentsView* const contents_view =
-      views::AsViewClass<PineContentsView>(pine_widget->GetContentsView());
-  ASSERT_TRUE(contents_view);
-  PineContextMenuModel* context_menu = contents_view->context_menu_model_.get();
-  EXPECT_FALSE(context_menu);
-
-  // Click on the settings button, the context menu should appear.
-  LeftClickOn(contents_view->settings_button_view_.get());
-  EXPECT_TRUE(contents_view->context_menu_model_.get());
-}
-
 }  // namespace ash
