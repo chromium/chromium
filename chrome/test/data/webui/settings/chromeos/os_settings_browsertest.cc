@@ -290,14 +290,8 @@ class OSSettingsDevicePeripheralAndSplitEnabledRevampDisabled
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// TODO(https://crbug.com/1422799): The test is flaky on ChromeOS debug.
-#if !defined(NDEBUG)
-#define MAYBE_DevicePage DISABLED_DevicePage
-#else
-#define MAYBE_DevicePage DevicePage
-#endif
 IN_PROC_BROWSER_TEST_F(OSSettingsDevicePeripheralAndSplitEnabledRevampDisabled,
-                       MAYBE_DevicePage) {
+                       DevicePage) {
   RunSettingsTest("device_page/device_page_test.js");
 }
 
