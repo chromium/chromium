@@ -108,10 +108,8 @@ class MEDIA_GPU_EXPORT V4L2StatelessVideoDecoder
   // the |decoder_| member variable.
   bool CreateDecoder(VideoCodecProfile profile, VideoColorSpace color_space);
 
-  // Create a queue of buffers for compressed frames to go into. V4L2 needs
-  // to know |profile| and |resolution| in order to know if the queue
-  // can be created.
-  bool CreateInputQueue(VideoCodecProfile profile, const gfx::Size resolution);
+  // Trampoline the preparation of a resolution change to the client.
+  void PrepareChangeResolution(DecoderStatus status);
 
   // The uncompressed format that the driver produces is setup by the
   // |output_queue_|. This format then needs to be passed further down the

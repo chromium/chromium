@@ -17,6 +17,7 @@ StatelessDecodeSurface::StatelessDecodeSurface(uint64_t frame_id,
 
 StatelessDecodeSurface::~StatelessDecodeSurface() {
   DVLOGF(3) << "Releasing surface with id : " << frame_id_;
+  ClearReferenceSurfaces();
   std::move(enqueue_cb_).Run();
 }
 
