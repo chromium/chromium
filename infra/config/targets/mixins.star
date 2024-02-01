@@ -709,12 +709,12 @@ targets.mixin(
 )
 
 targets.mixin(
-    name = "ios_runtime_cache_17_0",
+    name = "ios_runtime_cache_17_2",
     swarming = targets.swarming(
         named_caches = [
             swarming.cache(
-                name = "runtime_ios_17_0",
-                path = "Runtime-ios-17.0",
+                name = "runtime_ios_17_2",
+                path = "Runtime-ios-17.2",
             ),
         ],
     ),
@@ -1715,12 +1715,12 @@ targets.mixin(
     name = "xcode_15_main",
     args = [
         "--xcode-build-version",
-        "15a507",
+        "15c500b",
     ],
     swarming = targets.swarming(
         named_caches = [
             swarming.cache(
-                name = "xcode_ios_15a507",
+                name = "xcode_ios_15c500b",
                 path = "Xcode.app",
             ),
         ],

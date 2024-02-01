@@ -166,7 +166,7 @@ def xcode_enum(version):
 # Keep this in-sync with the versions of bots in //ios/build/bots/.
 xcode = struct(
     # Default Xcode Version, stays in sync with x15main
-    xcode_default = xcode_enum("15a507"),
+    xcode_default = xcode_enum("15c500b"),
 
     # xc12.0 gm seed
     x12a7209 = xcode_enum("12a7209"),
@@ -183,7 +183,7 @@ xcode = struct(
     # A newer Xcode 14 RC  used on beta bots.
     x14betabots = xcode_enum("14e222b"),
     # Default Xcode 15 for chromium iOS
-    x15main = xcode_enum("15a507"),
+    x15main = xcode_enum("15c500b"),
     # A newer Xcode 15 version used on beta bots.
     x15betabots = xcode_enum("15e5178i"),
     # in use by ios-webkit-tot

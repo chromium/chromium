@@ -641,7 +641,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "15a507",
+          "15c500b",
           "--xctest"
         ],
         "merge": {
@@ -666,7 +666,7 @@
           },
           "named_caches": [
             {
-              "name": "xcode_ios_15a507",
+              "name": "xcode_ios_15c500b",
               "path": "Xcode.app"
             },
             {
@@ -685,17 +685,17 @@
           "--platform",
           "iPad Air (5th generation)",
           "--version",
-          "17.0",
+          "17.2",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "15a507",
+          "15c500b",
           "--xctest"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ios_remoting_unittests iPad Air (5th generation) 17.0",
+        "name": "ios_remoting_unittests iPad Air (5th generation) 17.2",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -714,19 +714,19 @@
           },
           "named_caches": [
             {
-              "name": "xcode_ios_15a507",
+              "name": "xcode_ios_15c500b",
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_17_0",
-              "path": "Runtime-ios-17.0"
+              "name": "runtime_ios_17_2",
+              "path": "Runtime-ios-17.2"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "ios_remoting_unittests",
         "test_id_prefix": "ninja://remoting/ios:ios_remoting_unittests/",
-        "variant_id": "iPad Air (5th generation) 17.0"
+        "variant_id": "iPad Air (5th generation) 17.2"
       },
       {
         "args": [
@@ -737,7 +737,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "15a507",
+          "15c500b",
           "--xctest"
         ],
         "merge": {
@@ -762,7 +762,7 @@
           },
           "named_caches": [
             {
-              "name": "xcode_ios_15a507",
+              "name": "xcode_ios_15c500b",
               "path": "Xcode.app"
             },
             {
@@ -781,17 +781,17 @@
           "--platform",
           "iPhone 14",
           "--version",
-          "17.0",
+          "17.2",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "15a507",
+          "15c500b",
           "--xctest"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ios_remoting_unittests iPhone 14 17.0",
+        "name": "ios_remoting_unittests iPhone 14 17.2",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -810,19 +810,19 @@
           },
           "named_caches": [
             {
-              "name": "xcode_ios_15a507",
+              "name": "xcode_ios_15c500b",
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_17_0",
-              "path": "Runtime-ios-17.0"
+              "name": "runtime_ios_17_2",
+              "path": "Runtime-ios-17.2"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "ios_remoting_unittests",
         "test_id_prefix": "ninja://remoting/ios:ios_remoting_unittests/",
-        "variant_id": "iPhone 14 17.0"
+        "variant_id": "iPhone 14 17.2"
       }
     ]
   }
