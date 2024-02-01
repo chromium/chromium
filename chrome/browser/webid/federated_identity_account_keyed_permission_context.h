@@ -26,7 +26,6 @@ class FederatedIdentityAccountKeyedPermissionContext
  public:
   FederatedIdentityAccountKeyedPermissionContext(
       content::BrowserContext* browser_context,
-      ContentSettingsType content_settings_type,
       const std::string& idp_origin_key);
 
   FederatedIdentityAccountKeyedPermissionContext(

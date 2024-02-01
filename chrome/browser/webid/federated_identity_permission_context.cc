@@ -21,10 +21,9 @@ const char kSharingIdpKey[] = "idp-origin";
 
 FederatedIdentityPermissionContext::FederatedIdentityPermissionContext(
     content::BrowserContext* browser_context)
-    : sharing_context_(new FederatedIdentityAccountKeyedPermissionContext(
-          browser_context,
-          ContentSettingsType::FEDERATED_IDENTITY_SHARING,
-          kSharingIdpKey)),
+    : sharing_context_(
+          new FederatedIdentityAccountKeyedPermissionContext(browser_context,
+                                                             kSharingIdpKey)),
       idp_signin_context_(
           new FederatedIdentityIdentityProviderSigninStatusContext(
               browser_context)),

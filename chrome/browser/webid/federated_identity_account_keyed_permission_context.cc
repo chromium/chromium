@@ -59,10 +59,9 @@ std::string BuildKey(const url::Origin& relying_party_requester,
 FederatedIdentityAccountKeyedPermissionContext::
     FederatedIdentityAccountKeyedPermissionContext(
         content::BrowserContext* browser_context,
-        ContentSettingsType content_settings_type,
         const std::string& idp_origin_key)
     : ObjectPermissionContextBase(
-          content_settings_type,
+          ContentSettingsType::FEDERATED_IDENTITY_SHARING,
           HostContentSettingsMapFactory::GetForProfile(
               Profile::FromBrowserContext(browser_context))),
       idp_origin_key_(idp_origin_key) {}
