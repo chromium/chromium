@@ -1341,7 +1341,13 @@ IN_PROC_BROWSER_TEST_F(WebUsbExtensionBrowserTest, RequestDevice) {
   LoadExtensionAndRunTest(kBackgroundJs);
 }
 
-IN_PROC_BROWSER_TEST_F(WebUsbExtensionBrowserTest, UsbConnectionTracker) {
+// TODO(crbug.com/1521554): Flaky on non-Mac release builds.
+#if !BUILDFLAG(IS_MAC) && defined(NDEBUG)
+#define MAYBE_UsbConnectionTracker DISABLED_UsbConnectionTracker
+#else
+#define MAYBE_UsbConnectionTracker UsbConnectionTracker
+#endif
+IN_PROC_BROWSER_TEST_F(WebUsbExtensionBrowserTest, MAYBE_UsbConnectionTracker) {
   constexpr char kBackgroundJs[] = R"(
     // |device| is a global variable to store UsbDevice object being tested in
     // case the local one is garbage collected, which can close the connection.
