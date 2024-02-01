@@ -1384,6 +1384,8 @@ base::Value::Dict SerializeSafeBrowsingClientProperties(
       break;
   }
   client_properties_dict.Set("url_api_type", url_api_type);
+  client_properties_dict.Set("is_async_check",
+                             client_properties.is_async_check());
   return client_properties_dict;
 }
 

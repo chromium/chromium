@@ -85,7 +85,8 @@ class WebApiHandshakeChecker::CheckerOnSB {
         /*url_lookup_service=*/nullptr,
         /*hash_realtime_service_on_ui=*/nullptr,
         /*hash_realtime_selection=*/
-        hash_realtime_utils::HashRealTimeSelection::kNone);
+        hash_realtime_utils::HashRealTimeSelection::kNone,
+        /*is_async_check=*/false);
     url_checker_->CheckUrl(
         url, "GET",
         base::BindOnce(&WebApiHandshakeChecker::CheckerOnSB::OnCheckUrlResult,

@@ -188,7 +188,8 @@ class MockSafeBrowsingUrlChecker : public SafeBrowsingUrlCheckerImpl {
       scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
       base::WeakPtr<RealTimeUrlLookupServiceBase> url_lookup_service_on_ui,
       base::WeakPtr<HashRealTimeService> hash_realtime_service_on_ui,
-      hash_realtime_utils::HashRealTimeSelection hash_realtime_selection)
+      hash_realtime_utils::HashRealTimeSelection hash_realtime_selection,
+      bool is_async_check)
       : SafeBrowsingUrlCheckerImpl(headers,
                                    load_flags,
                                    request_destination,
@@ -209,7 +210,8 @@ class MockSafeBrowsingUrlChecker : public SafeBrowsingUrlCheckerImpl {
                                    ui_task_runner,
                                    url_lookup_service_on_ui,
                                    hash_realtime_service_on_ui,
-                                   hash_realtime_selection) {}
+                                   hash_realtime_selection,
+                                   is_async_check) {}
 
   // Returns the CallbackInfo that was previously added in |AddCallbackInfo|.
   // It will crash if |AddCallbackInfo| was not called.
@@ -343,7 +345,8 @@ class SBBrowserUrlLoaderThrottleTestBase : public ::testing::Test {
             /*url_lookup_service_on_ui=*/nullptr,
             /*hash_realtime_service_on_ui=*/nullptr,
             /*hash_realtime_selection=*/
-            hash_realtime_utils::HashRealTimeSelection::kNone);
+            hash_realtime_utils::HashRealTimeSelection::kNone,
+            /*is_async_check=*/false);
     sync_url_checker_ = sync_url_checker->GetWeakPtr();
     throttle_->SetOnSyncSBCheckerCreatedCallbackForTesting(base::BindOnce(
         &SBBrowserUrlLoaderThrottleTestBase::SetSyncUrlCheckerForTesting,
@@ -351,8 +354,8 @@ class SBBrowserUrlLoaderThrottleTestBase : public ::testing::Test {
     if (async_check_enabled) {
       std::unique_ptr<MockSafeBrowsingUrlChecker> async_url_checker =
           std::make_unique<MockSafeBrowsingUrlChecker>(
-              net::HttpRequestHeaders(), /*load_flags=*/0,
-              network::mojom::RequestDestination::kDocument,
+              net::HttpRequestHeaders(), /*load_flags=*/
+              0, network::mojom::RequestDestination::kDocument,
               /*has_user_gesture=*/false, url_checker_delegate_,
               mock_web_contents_getter_.Get(),
               UnsafeResource::kNoRenderProcessId,
@@ -367,7 +370,8 @@ class SBBrowserUrlLoaderThrottleTestBase : public ::testing::Test {
               /*url_lookup_service_on_ui=*/nullptr,
               /*hash_realtime_service_on_ui=*/nullptr,
               /*hash_realtime_selection=*/
-              hash_realtime_utils::HashRealTimeSelection::kNone);
+              hash_realtime_utils::HashRealTimeSelection::kNone,
+              /*is_async_check=*/true);
       async_url_checker_ = async_url_checker->GetWeakPtr();
 
       throttle_->SetOnAsyncSBCheckerCreatedCallbackForTesting(base::BindOnce(
@@ -921,8 +925,12 @@ TEST_F(SBBrowserUrlLoaderThrottleAsyncCheckTest, VerifyCheckerParams) {
   CallWillStartRequest();
   EXPECT_FALSE(
       throttle_->GetSyncSBCheckerForTesting()->IsRealTimeCheckForTesting());
+  EXPECT_FALSE(
+      throttle_->GetSyncSBCheckerForTesting()->IsAsyncCheckForTesting());
   EXPECT_TRUE(
       throttle_->GetAsyncSBCheckerForTesting()->IsRealTimeCheckForTesting());
+  EXPECT_TRUE(
+      throttle_->GetAsyncSBCheckerForTesting()->IsAsyncCheckForTesting());
 }
 
 // Sync check completed -> WillProcessResponse called -> async check completed.

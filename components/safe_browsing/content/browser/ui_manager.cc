@@ -130,6 +130,8 @@ void SafeBrowsingUIManager::CreateAndSendClientSafeBrowsingWarningShownReport(
   report->mutable_client_properties()->set_url_api_type(
       client_report_utils::GetUrlApiTypeForThreatSource(
           resource.threat_source));
+  report->mutable_client_properties()->set_is_async_check(
+      resource.is_async_check);
   report->set_warning_shown_timestamp_msec(
       base::Time::Now().InMillisecondsSinceUnixEpoch());
   report->mutable_warning_shown_info()->set_warning_type(

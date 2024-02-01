@@ -119,6 +119,11 @@ struct UnsafeResource {
 
   // If false, skip sending Safe Browsing telemetry reports. Default to true.
   bool should_send_reports;
+
+  // If true, this UnsafeResource is created by a check that doesn't delay
+  // navigation to complete. If false, it can either be the UnsafeResource is
+  // not for navigation or it delays navigation. Default to false.
+  bool is_async_check;
 };
 
 }  // namespace security_interstitials

@@ -376,6 +376,11 @@ class FakeSafeBrowsingUIManager : public TestSafeBrowsingUIManager {
     if (SafeBrowsingUIManager::ShouldSendClientSafeBrowsingWarningShownReport(
             report.get(), web_contents)) {
       report_sent_ = true;
+      if (report->has_client_properties() &&
+          report->client_properties().has_is_async_check()) {
+        report_sent_is_async_check_ =
+            report->client_properties().is_async_check();
+      }
     }
   }
 
@@ -384,6 +389,9 @@ class FakeSafeBrowsingUIManager : public TestSafeBrowsingUIManager {
   bool report_sent() { return report_sent_; }
   std::optional<ThreatSource> hit_report_sent_threat_source() {
     return hit_report_sent_threat_source_;
+  }
+  std::optional<bool> report_sent_is_async_check() {
+    return report_sent_is_async_check_;
   }
 
   void set_threat_details_done_callback(base::OnceClosure callback) {
@@ -423,6 +431,7 @@ class FakeSafeBrowsingUIManager : public TestSafeBrowsingUIManager {
   bool expect_report_url_for_hats_ = false;
   bool expect_interstitial_interactions_ = false;
   std::optional<ThreatSource> hit_report_sent_threat_source_;
+  std::optional<bool> report_sent_is_async_check_;
 };
 
 class TestThreatDetailsFactory : public ThreatDetailsFactory {
@@ -3943,7 +3952,10 @@ class SafeBrowsingBlockingPageAsyncChecksTimingTest
   SafeBrowsingBlockingPageAsyncChecksTimingTest() = default;
 
   void SetUp() override {
-    feature_list_.InitAndEnableFeature(kSafeBrowsingAsyncRealTimeCheck);
+    feature_list_.InitWithFeatures(
+        {kSafeBrowsingAsyncRealTimeCheck,
+         kCreateWarningShownClientSafeBrowsingReports},
+        {});
     InProcessBrowserTest::SetUp();
   }
 
@@ -3986,6 +3998,12 @@ class SafeBrowsingBlockingPageAsyncChecksTimingTest
     static_cast<FakeSafeBrowsingUIManager*>(
         factory_.test_safe_browsing_service()->ui_manager().get())
         ->set_threat_details_done_callback(std::move(callback));
+  }
+
+  std::optional<bool> shown_report_sent_is_async_check() {
+    return static_cast<FakeSafeBrowsingUIManager*>(
+               factory_.test_safe_browsing_service()->ui_manager().get())
+        ->report_sent_is_async_check();
   }
 
   base::HistogramTester histogram_tester_;
@@ -4047,11 +4065,12 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingBlockingPageAsyncChecksTimingTest,
   ASSERT_TRUE(IsShowingInterstitial(
       browser()->tab_strip_model()->GetActiveWebContents()));
 
-  int report_count =
+  int hit_report_count =
       static_cast<FakeSafeBrowsingUIManager*>(
           factory_.test_safe_browsing_service()->ui_manager().get())
           ->hit_report_count();
-  EXPECT_EQ(report_count, 1);
+  EXPECT_EQ(hit_report_count, 1);
+  EXPECT_TRUE(shown_report_sent_is_async_check().value());
 
   histogram_tester_.ExpectUniqueSample(
       "interstitial.phishing.decision.after_page_shown",
@@ -4098,11 +4117,12 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingBlockingPageAsyncChecksTimingTest,
   ASSERT_TRUE(IsShowingInterstitial(
       browser()->tab_strip_model()->GetActiveWebContents()));
 
-  int report_count =
+  int hit_report_count =
       static_cast<FakeSafeBrowsingUIManager*>(
           factory_.test_safe_browsing_service()->ui_manager().get())
           ->hit_report_count();
-  EXPECT_EQ(report_count, 1);
+  EXPECT_EQ(hit_report_count, 1);
+  EXPECT_TRUE(shown_report_sent_is_async_check().value());
 
   histogram_tester_.ExpectUniqueSample(
       "interstitial.phishing.decision.after_page_shown",
@@ -4430,6 +4450,8 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageHashRealTimeCheckTest,
   EXPECT_EQ(
       report.client_properties().url_api_type(),
       ClientSafeBrowsingReportRequest_SafeBrowsingUrlApiType_PVER5_NATIVE_REAL_TIME);
+  bool is_using_async_checks = GetParam();
+  EXPECT_EQ(report.client_properties().is_async_check(), is_using_async_checks);
 }
 
 class SafeBrowsingPrerenderBrowserTest

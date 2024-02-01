@@ -29,7 +29,8 @@ UnsafeResource::UnsafeResource()
       threat_type(safe_browsing::SB_THREAT_TYPE_SAFE),
       request_destination(network::mojom::RequestDestination::kDocument),
       is_delayed_warning(false),
-      should_send_reports(true) {}
+      should_send_reports(true),
+      is_async_check(false) {}
 
 UnsafeResource::UnsafeResource(const UnsafeResource& other) = default;
 
