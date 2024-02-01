@@ -689,7 +689,7 @@ Node* Element::Clone(Document& factory,
       // 7.1 Run attach a shadow root with copy, node’s shadow root’s mode,
       // true, node’s shadow root’s delegates focus, and node’s shadow root’s
       // slot assignment.
-      // TODO(crbug.com/1521128): it seems like the `registry` parameter should
+      // TODO(crbug.com/1523816): it seems like the `registry` parameter should
       // not always be nullptr.
       ShadowRoot& cloned_shadow_root = copy->AttachShadowRootInternal(
           shadow_root->GetType(),
@@ -5288,7 +5288,7 @@ ShadowRoot* Element::attachShadow(const ShadowRootInit* shadow_root_init_dict,
           (focus_delegation == FocusDelegation::kDelegateFocus);
       parameters_mismatch |=
           existing_shadow->GetSlotAssignmentMode() != slot_assignment;
-      // TODO(crbug.com/1521128): Not sure how to check `registry` match here.
+      // TODO(crbug.com/1523816): Not sure how to check `registry` match here.
       parameters_mismatch |=
           RuntimeEnabledFeatures::DeclarativeShadowDOMSerializableEnabled() &&
           existing_shadow->serializable() != serializable;
@@ -5298,6 +5298,7 @@ ShadowRoot* Element::attachShadow(const ShadowRootInit* shadow_root_init_dict,
       // clonable:true by default, and old code doesn't know to add
       // clonable:true to attachShadow() parameters, all old web components
       // would break. See https://github.com/whatwg/html/issues/10107
+      // For now, this does not check for `clonable` mismatch.
       if (parameters_mismatch) {
         exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
                                           "Parameters used for attachShadow() "
@@ -5340,10 +5341,9 @@ bool Element::AttachDeclarativeShadowRoot(HTMLTemplateElement& template_element,
     return false;
   }
 
-  // TODO(crbug.com/1521128): Declarative shadow roots should set the registry
+  // TODO(crbug.com/1523816): Declarative shadow roots should set the registry
   // argument here.
-  // Declarative shadow roots are clonable by default.
-  bool clonable = true;
+  bool clonable = true;  // Declarative shadow roots are clonable by default.
   ShadowRoot& shadow_root =
       AttachShadowRootInternal(type, focus_delegation, slot_assignment,
                                /*registry*/ nullptr, serializable, clonable);
