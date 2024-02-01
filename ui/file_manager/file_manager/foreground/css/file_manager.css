@@ -213,6 +213,7 @@ html[dir='rtl'] #directory-tree .tree-row > .file-row > .label {
 
 #directory-tree [renaming] > .tree-row > .file-row > input {
   display: block;
+  font: var(--cros-body-2-font);
 }
 
 html:not(.col-resize) #directory-tree .tree-item:not([disabled]) >
