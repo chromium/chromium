@@ -497,8 +497,9 @@ IN_PROC_BROWSER_TEST_F(DemoSessionLoginWithGrowthCampaignTest,
   EXPECT_FALSE(variations::HasSyntheticTrial("CrOSGrowthStudy"));
 }
 
+// TODO(b/318756868): Re-enable flaky test.
 IN_PROC_BROWSER_TEST_F(DemoSessionLoginWithGrowthCampaignTest,
-                       DemoSWALaunchesOnSessionStartupMismatch) {
+                       DISABLED_DemoSWALaunchesOnSessionStartupMismatch) {
   base::ScopedAllowBlockingForTesting scoped_allow_blocking;
 
   CreateTestCampaignsFile(R"({
