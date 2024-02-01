@@ -18,7 +18,6 @@ Chromium only runs lint on apk or bundle targets that explicitly set
 
  - `//chrome/android:monochrome_public_bundle`
  - `//android_webview/support_library/boundary_interfaces:boundary_interface_example_apk`
- - `//remoting/android:remoting_apk`
 
 ## My code has a lint error
 

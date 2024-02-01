@@ -21,13 +21,6 @@ group("remoting_all") {
     }
   }
 
-  if (is_android) {
-    deps += [
-      "//remoting/android:remoting_apk",
-      "//remoting/android:remoting_test_apk",
-    ]
-  }
-
   if (is_ios) {
     deps += [
       "//remoting/ios:all",
