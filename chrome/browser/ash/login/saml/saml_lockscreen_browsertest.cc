@@ -529,8 +529,8 @@ IN_PROC_BROWSER_TEST_F(LockscreenWebUiTest, MAYBE_VerifyAgainFlow) {
   ASSERT_TRUE(session_manager::SessionManager::Get()->IsScreenLocked());
 }
 
-// TODO(crbug.com/1414002): Flaky on ChromeOS MSAN.
-#if defined(MEMORY_SANITIZER)
+// TODO(b/276829737): Flaky on ChromeOS.
+#if BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_ShowNetworkDialog DISABLED_ShowNetworkDialog
 #else
 #define MAYBE_ShowNetworkDialog ShowNetworkDialog
