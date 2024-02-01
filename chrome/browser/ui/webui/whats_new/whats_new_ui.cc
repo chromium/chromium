@@ -89,10 +89,6 @@ void WhatsNewUI::CreateBrowserCommandHandler(
     mojo::PendingReceiver<browser_command::mojom::CommandHandler>
         pending_handler) {
   std::vector<browser_command::mojom::Command> supported_commands = {
-      browser_command::mojom::Command::kOpenPerformanceSettings,
-      browser_command::mojom::Command::kOpenNTPAndStartCustomizeChromeTutorial,
-      browser_command::mojom::Command::kOpenPasswordManager,
-      browser_command::mojom::Command::kStartPasswordManagerTutorial,
       browser_command::mojom::Command::kStartSavedTabGroupTutorial,
       browser_command::mojom::Command::kOpenAISettings,
   };
