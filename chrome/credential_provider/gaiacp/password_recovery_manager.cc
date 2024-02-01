@@ -317,7 +317,7 @@ HRESULT EncryptUserPasswordUsingEscrowService(
     return E_FAIL;
   }
 
-  std::string cipher_text = base::Base64Encode(base::span(*opt));
+  std::string cipher_text = base::Base64Encode(*opt);
 
   encrypted_data =
       base::Value::Dict()
