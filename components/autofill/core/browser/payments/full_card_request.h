@@ -129,7 +129,8 @@ class FullCardRequest final : public CardUnmaskDelegate {
                    AutofillClient::UnmaskCardReason reason,
                    base::WeakPtr<ResultDelegate> result_delegate,
                    base::WeakPtr<UIDelegate> ui_delegate,
-                   const url::Origin& merchant_domain_for_footprints);
+                   const url::Origin& merchant_domain_for_footprints,
+                   std::optional<std::string> context_token = std::nullopt);
 
   // Refer to the comment above `GetFullCard()` for the high level overview of
   // how this function works. The additional fields in this function are
