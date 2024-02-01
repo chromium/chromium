@@ -5,7 +5,8 @@
 #ifndef CHROMECAST_MEDIA_API_CAST_AUDIO_DEMUXER_H_
 #define CHROMECAST_MEDIA_API_CAST_AUDIO_DEMUXER_H_
 
-#include "base/strings/string_piece.h"
+#include <string_view>
+
 #include "base/time/time.h"
 #include "chromecast/media/api/decoder_buffer_base.h"
 #include "chromecast/public/media/decoder_config.h"
@@ -49,7 +50,7 @@ class CastAudioDemuxer {
 
   // Creates a CastAudioDemuxer instance for the given |audio_data|.
   // |audio_data| must outlive the demuxer.
-  static std::unique_ptr<CastAudioDemuxer> Create(base::StringPiece audio_data,
+  static std::unique_ptr<CastAudioDemuxer> Create(std::string_view audio_data,
                                                   Delegate* delegate);
 
   // Sets the base timestamp for the audio buffers passed to
