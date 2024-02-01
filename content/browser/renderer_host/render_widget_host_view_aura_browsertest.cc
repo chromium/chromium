@@ -7,6 +7,7 @@
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/run_until.h"
 #include "base/test/test_timeouts.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -280,10 +281,7 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewAuraBrowserTest,
                    ui::VKEY_SPACE, false, false, false, false);
 
   // Wait until popup is opened.
-  while (!HasChildPopup()) {
-    base::RunLoop().RunUntilIdle();
-    base::PlatformThread::Sleep(TestTimeouts::tiny_timeout());
-  }
+  EXPECT_TRUE(base::test::RunUntil([&]() { return HasChildPopup(); }));
 
   // Page is focused to begin with.
   ASSERT_TRUE(IsRenderWidgetHostFocused(GetRenderViewHost()->GetWidget()));
@@ -364,10 +362,7 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewAuraDevtoolsBrowserTest,
                    ui::VKEY_SPACE, false, false, false, false);
 
   // Wait until popup is opened.
-  while (!HasChildPopup()) {
-    base::RunLoop().RunUntilIdle();
-    base::PlatformThread::Sleep(TestTimeouts::tiny_timeout());
-  }
+  EXPECT_TRUE(base::test::RunUntil([&]() { return HasChildPopup(); }));
 
   // Send down and enter to select next item and cause change listener to fire.
   // The event listener causes devtools to break (and enter a nested event

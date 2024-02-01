@@ -11,6 +11,7 @@
 #include "base/strings/escape.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/run_until.h"
 #include "base/test/test_timeouts.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -1018,14 +1019,11 @@ IN_PROC_BROWSER_TEST_F(AccessibilityActionBrowserTest,
   // WaitForAccessibilityTreeToContainNodeWithName seems to flake when waiting
   // for button 3, so we poll instead.
   BrowserAccessibility* node_button_3 = FindNode(ax::mojom::Role::kButton, "3");
-  while (!node_button_3) {
-    base::RunLoop run_loop;
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-        FROM_HERE, run_loop.QuitClosure(), TestTimeouts::tiny_timeout());
-    run_loop.Run();
-
+  EXPECT_TRUE(base::test::RunUntil([&]() {
     node_button_3 = FindNode(ax::mojom::Role::kButton, "3");
-  }
+    return node_button_3 != nullptr;
+  }));
+
   while (GetFocusedAccessibilityNodeInfo(shell()->web_contents()).id !=
          node_button_3->GetId()) {
     WaitForAccessibilityFocusChange();

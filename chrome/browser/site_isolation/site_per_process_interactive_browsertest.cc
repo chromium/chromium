@@ -9,6 +9,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_timeouts.h"
 #include "build/build_config.h"
@@ -85,12 +86,8 @@ size_t GetNumberOfRenderWidgetHosts() {
 // Waits and polls the current number of RenderWidgetHosts and stops when the
 // number reaches |target_count|.
 void WaitForRenderWidgetHostCount(size_t target_count) {
-  while (GetNumberOfRenderWidgetHosts() != target_count) {
-    base::RunLoop run_loop;
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-        FROM_HERE, run_loop.QuitClosure(), TestTimeouts::tiny_timeout());
-    run_loop.Run();
-  }
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return GetNumberOfRenderWidgetHosts() == target_count; }));
 }
 
 }  // namespace
@@ -1730,15 +1727,12 @@ void WaitForFramePositionUpdated(content::RenderFrameHost* render_frame_host,
                                  const gfx::Point& sample_point,
                                  const gfx::Point& transformed_point,
                                  float bound) {
-  while ((transformed_point -
-          render_frame_host->GetView()->TransformPointToRootCoordSpace(
-              sample_point))
-             .Length() > bound) {
-    base::RunLoop run_loop;
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-        FROM_HERE, run_loop.QuitClosure(), TestTimeouts::tiny_timeout());
-    run_loop.Run();
-  }
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return (transformed_point -
+            render_frame_host->GetView()->TransformPointToRootCoordSpace(
+                sample_point))
+               .Length() <= bound;
+  }));
 }
 
 // This test verifies that when clicking outside the bounds of a date picker

@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/browsing_data/content/browsing_data_model.h"
+
 #include <memory>
 #include <string>
 
@@ -11,6 +13,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/test/test_timeouts.h"
@@ -28,7 +31,6 @@
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "components/browsing_data/content/browsing_data_model.h"
 #include "components/browsing_data/content/browsing_data_model_test_util.h"
 #include "components/browsing_data/content/browsing_data_test_util.h"
 #include "components/browsing_data/content/shared_worker_info.h"
@@ -387,12 +389,8 @@ void AddLocalStorageUsage(content::RenderFrameHost* render_frame_host,
 }
 
 void WaitForModelUpdate(BrowsingDataModel* model, size_t expected_size) {
-  while (model->size() != expected_size) {
-    base::RunLoop run_loop;
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-        FROM_HERE, run_loop.QuitClosure(), TestTimeouts::tiny_timeout());
-    run_loop.Run();
-  }
+  EXPECT_TRUE(
+      base::test::RunUntil([&]() { return model->size() == expected_size; }));
 }
 
 void RemoveBrowsingDataForDataOwner(BrowsingDataModel* model,
@@ -1503,9 +1501,8 @@ IN_PROC_BROWSER_TEST_P(BrowsingDataModelBrowserTest,
 
   // Need this polling because the shared dictionary is used only if the
   // metadata database has been read when sending the HTTP request.
-  while (!HasDataForType("SharedDictionary", web_contents())) {
-    base::PlatformThread::Sleep(TestTimeouts::tiny_timeout());
-  }
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return HasDataForType("SharedDictionary", web_contents()); }));
 
   // Checking HasDataForType("SharedDictionary") accesses the registered
   // shared dictionary. This must be reported to the data model.

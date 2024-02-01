@@ -26,6 +26,7 @@
 #include "base/synchronization/lock.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/test/test_timeouts.h"
@@ -11904,12 +11905,8 @@ class PrerenderSessionHistoryBrowserTest
 
   void WaitForHttpCacheQueryCompletion(WebContentsImpl* web_contents) {
     PrerenderHostRegistry* registry = web_contents->GetPrerenderHostRegistry();
-    while (registry->HasOngoingHttpCacheQueryForTesting()) {
-      base::RunLoop run_loop;
-      base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-          FROM_HERE, run_loop.QuitClosure(), TestTimeouts::tiny_timeout());
-      run_loop.Run();
-    }
+    EXPECT_TRUE(base::test::RunUntil(
+        [&]() { return !registry->HasOngoingHttpCacheQueryForTesting(); }));
   }
 
   void ClearBackForwardCache(WebContentsImpl* web_contents) {

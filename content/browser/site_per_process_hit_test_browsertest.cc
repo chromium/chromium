@@ -16,6 +16,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_timeouts.h"
 #include "build/build_config.h"
@@ -4503,15 +4504,10 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestBrowserTest,
   gfx::Rect initial_child_view_bounds = child_view->GetViewBounds();
   EXPECT_TRUE(ExecJs(root, "window.scrollTo(0, 10);"));
   // Wait until the OOPIF positions have been updated in the browser process.
-  while (true) {
-    base::RunLoop run_loop;
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-        FROM_HERE, run_loop.QuitClosure(), TestTimeouts::tiny_timeout());
-    run_loop.Run();
-    if (initial_child_view_bounds.y() ==
-        child_view->GetViewBounds().y() + 10)
-      break;
-  }
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return initial_child_view_bounds.y() ==
+           child_view->GetViewBounds().y() + 10;
+  }));
 
   // A cursor should not be shown when the main frame is scrolled
   // and the iframe is outside the root view's visible viewport.
@@ -6093,17 +6089,14 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestBrowserTest,
   popup_waiter = std::make_unique<ShowPopupWidgetWaiter>(
       web_contents(), c_node->current_frame_host());
 
-  // Busy loop to wait for b_node's screen rect to get updated. There
-  // doesn't seem to be any better way to find out when this happens.
-  while (last_b_node_bounds_rect.x() ==
-             b_node->current_frame_host()->GetView()->GetViewBounds().x() &&
-         last_b_node_bounds_rect.y() ==
-             b_node->current_frame_host()->GetView()->GetViewBounds().y()) {
-    base::RunLoop run_loop;
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-        FROM_HERE, run_loop.QuitClosure(), TestTimeouts::tiny_timeout());
-    run_loop.Run();
-  }
+  // Wait for b_node's screen rect to get updated. There doesn't seem to be any
+  // better way to find out when this happens.
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return !(last_b_node_bounds_rect.x() ==
+                 b_node->current_frame_host()->GetView()->GetViewBounds().x() &&
+             last_b_node_bounds_rect.y() ==
+                 b_node->current_frame_host()->GetView()->GetViewBounds().y());
+  }));
 
   click_event.button = blink::WebPointerProperties::Button::kLeft;
   SetWebEventPositions(&click_event, gfx::Point(15, 15), rwhv_root);
@@ -6209,6 +6202,8 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestBrowserTest,
   EXPECT_TRUE(ExecJs(root, "window.scrollTo(0, 20);"));
 
   // Wait until the OOPIF positions have been updated in the browser process.
+  // TODO(crbug.com/1519130): Using `base::test::RunUntil` makes the test flaky
+  // on `linux-chromeos-rel`.
   while (true) {
     base::RunLoop run_loop;
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(

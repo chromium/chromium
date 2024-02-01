@@ -5,12 +5,12 @@
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
-#include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_timeouts.h"
 #include "build/build_config.h"
@@ -621,17 +621,12 @@ IN_PROC_BROWSER_TEST_F(ChromeNavigationBrowserTest,
   // Verify that the error page has correct content.  This needs to wait for
   // the error page content to be populated asynchronously by scripts after
   // DidFinishLoad.
-  while (true) {
+  EXPECT_TRUE(base::test::RunUntil([&]() {
     std::string content =
         EvalJs(web_contents, "document.body ? document.body.innerText : '';")
             .ExtractString();
-    if (content.find("HTTP ERROR 404") != std::string::npos)
-      break;
-    base::RunLoop run_loop;
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-        FROM_HERE, run_loop.QuitClosure(), TestTimeouts::tiny_timeout());
-    run_loop.Run();
-  }
+    return content.find("HTTP ERROR 404") != std::string::npos;
+  }));
 }
 
 // Test for https://crbug.com/866549#c2. It verifies that about:blank does not
