@@ -122,7 +122,8 @@ void SigninManager::UpdateUnconsentedPrimaryAccount() {
   CoreAccountInfo account = ComputeUnconsentedPrimaryAccountInfo();
 
   if (!account.IsEmpty()) {
-    if (!base::FeatureList::IsEnabled(switches::kUnoDesktop) &&
+    if (!switches::IsExplicitBrowserSigninUIOnDesktopEnabled(
+            switches::ExplicitBrowserSigninPhase::kExperimental) &&
         identity_manager_->GetPrimaryAccountInfo(
             signin::ConsentLevel::kSignin) != account) {
       DCHECK(

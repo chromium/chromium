@@ -214,7 +214,8 @@ ConsentLevel DiceAccountReconcilorDelegate::GetConsentLevelForPrimaryAccount()
   }
 #endif
 
-  if (base::FeatureList::IsEnabled(switches::kUnoDesktop)) {
+  if (switches::IsExplicitBrowserSigninUIOnDesktopEnabled(
+          switches::ExplicitBrowserSigninPhase::kExperimental)) {
     return ConsentLevel::kSignin;
   }
 
@@ -357,7 +358,8 @@ void DiceAccountReconcilorDelegate::OnAccountsCookieDeletedByUserAction(
 
   // In the UNO model the primary account should not be signed out if the
   // account cookie is deleted by user action.
-  if (base::FeatureList::IsEnabled(switches::kUnoDesktop) &&
+  if (switches::IsExplicitBrowserSigninUIOnDesktopEnabled(
+          switches::ExplicitBrowserSigninPhase::kExperimental) &&
       !identity_manager_->HasPrimaryAccount(ConsentLevel::kSync)) {
     return;
   }

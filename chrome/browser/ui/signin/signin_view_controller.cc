@@ -432,7 +432,8 @@ void SigninViewController::ShowGaiaLogoutTab(
   // the bubble and the app picker do not overlap. If the bubble is not shown,
   // open the app picker in case the user is lost.
   GURL logout_url =
-      base::FeatureList::IsEnabled(switches::kUnoDesktop)
+      switches::IsExplicitBrowserSigninUIOnDesktopEnabled(
+          switches::ExplicitBrowserSigninPhase::kExperimental)
           ? GaiaUrls::GetInstance()->LogOutURLWithContinueURL(GURL())
           : GaiaUrls::GetInstance()->service_logout_url();
   // Do not use a singleton tab. A new tab should be opened even if there is

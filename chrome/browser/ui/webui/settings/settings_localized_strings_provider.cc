@@ -554,8 +554,10 @@ void AddClearBrowsingDataStrings(content::WebUIDataSource* html_source,
           IDS_CLEAR_BROWSING_DATA_PASSWORDS_NOTICE,
           l10n_util::GetStringUTF16(IDS_PASSWORDS_WEB_LINK)));
 
-  html_source->AddBoolean("unoDesktopEnabled",
-                          base::FeatureList::IsEnabled(switches::kUnoDesktop));
+  html_source->AddBoolean(
+      "unoDesktopEnabled",
+      switches::IsExplicitBrowserSigninUIOnDesktopEnabled(
+          switches::ExplicitBrowserSigninPhase::kExperimental));
 
   html_source->AddLocalizedStrings(kLocalizedStrings);
 }
@@ -3505,7 +3507,8 @@ void AddSiteDataPageStrings(content::WebUIDataSource* html_source,
   html_source->AddLocalizedStrings(kLocalizedStrings);
   html_source->AddLocalizedString(
       "siteDataPageClearOnExitRadioSubLabel",
-      base::FeatureList::IsEnabled(switches::kUnoDesktop)
+      switches::IsExplicitBrowserSigninUIOnDesktopEnabled(
+          switches::ExplicitBrowserSigninPhase::kExperimental)
           ? IDS_SETTINGS_SITE_DATA_PAGE_CLEAR_ON_EXIT_WITH_EXCEPTION_RADIO_SUBLABEL
           : IDS_SETTINGS_SITE_DATA_PAGE_CLEAR_ON_EXIT_RADIO_SUBLABEL);
 }

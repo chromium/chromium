@@ -102,6 +102,18 @@ BASE_FEATURE(kSearchEngineChoice,
 #endif
 
 BASE_FEATURE(kUnoDesktop, "UnoDesktop", base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kExplicitBrowserSigninUIOnDesktop,
+             "ExplicitBrowserSigninUIOnDesktop",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsExplicitBrowserSigninUIOnDesktopEnabled(
+    ExplicitBrowserSigninPhase phase) {
+  if (phase == ExplicitBrowserSigninPhase::kFull) {
+    return base::FeatureList::IsEnabled(kExplicitBrowserSigninUIOnDesktop);
+  }
+  return base::FeatureList::IsEnabled(kExplicitBrowserSigninUIOnDesktop) ||
+         base::FeatureList::IsEnabled(kUnoDesktop);
+}
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || \
     BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)

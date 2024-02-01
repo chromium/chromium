@@ -924,7 +924,8 @@ class DiceWebSigninInterceptorWithUnoEnabledAndPREDisabledBrowserTest
 IN_PROC_BROWSER_TEST_F(
     DiceWebSigninInterceptorWithUnoEnabledAndPREDisabledBrowserTest,
     PRE_ChromeSignedInTransitionToUnoEnabled) {
-  ASSERT_FALSE(base::FeatureList::IsEnabled(switches::kUnoDesktop));
+  ASSERT_FALSE(switches::IsExplicitBrowserSigninUIOnDesktopEnabled(
+      switches::ExplicitBrowserSigninPhase::kExperimental));
 
   signin::MakePrimaryAccountAvailable(identity_manager(), email_,
                                       signin::ConsentLevel::kSignin);
@@ -943,7 +944,8 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(
     DiceWebSigninInterceptorWithUnoEnabledAndPREDisabledBrowserTest,
     ChromeSignedInTransitionToUnoEnabled) {
-  ASSERT_TRUE(base::FeatureList::IsEnabled(switches::kUnoDesktop));
+  ASSERT_TRUE(switches::IsExplicitBrowserSigninUIOnDesktopEnabled(
+      switches::ExplicitBrowserSigninPhase::kExperimental));
   // We are still signed in from the PRE_ test.
   ASSERT_TRUE(IsChromeSignedIn());
 
@@ -1005,7 +1007,8 @@ class DiceWebSigninInterceptorWithUnoDisabledAndPREEnabledBrowserTest
 IN_PROC_BROWSER_TEST_F(
     DiceWebSigninInterceptorWithUnoDisabledAndPREEnabledBrowserTest,
     PRE_ChromeSignedinWithUnoShouldRevertBackToDefaultWithUnoDisabled) {
-  ASSERT_TRUE(base::FeatureList::IsEnabled(switches::kUnoDesktop));
+  ASSERT_TRUE(switches::IsExplicitBrowserSigninUIOnDesktopEnabled(
+      switches::ExplicitBrowserSigninPhase::kExperimental));
 
   signin::MakeAccountAvailable(
       identity_manager(),
@@ -1029,7 +1032,8 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(
     DiceWebSigninInterceptorWithUnoDisabledAndPREEnabledBrowserTest,
     ChromeSignedinWithUnoShouldRevertBackToDefaultWithUnoDisabled) {
-  ASSERT_FALSE(base::FeatureList::IsEnabled(switches::kUnoDesktop));
+  ASSERT_FALSE(switches::IsExplicitBrowserSigninUIOnDesktopEnabled(
+      switches::ExplicitBrowserSigninPhase::kExperimental));
 
   // Disabling `switches::kUnoDesktop` should not reset the pref.
   EXPECT_TRUE(browser()->profile()->GetPrefs()->GetBoolean(

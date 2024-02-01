@@ -90,6 +90,24 @@ BASE_DECLARE_FEATURE(kSearchEngineChoice);
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kUnoDesktop);
 
+// Used for the launch of the UNO model on Desktop, as well as for the later
+// phases of the experiment.
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
+BASE_DECLARE_FEATURE(kExplicitBrowserSigninUIOnDesktop);
+
+enum class ExplicitBrowserSigninPhase {
+  // Used to enable the changes made for the experimental feature `kUnoDesktop`
+  // and for the full launch feature `kExplicitBrowserSigninUIOnDesktop`.
+  kExperimental = 0,
+  // Used to enable the changes made only for the full launch feature
+  // `kExplicitBrowserSigninUIOnDesktop`.
+  kFull = 1,
+};
+
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
+bool IsExplicitBrowserSigninUIOnDesktopEnabled(
+    ExplicitBrowserSigninPhase phase);
+
 // Controls the view mode for (history) sync screen.
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || \
     BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)

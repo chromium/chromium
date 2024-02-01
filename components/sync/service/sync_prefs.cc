@@ -270,7 +270,8 @@ UserSelectableTypeSet SyncPrefs::GetSelectedTypesForAccount(
         // this changes, also update the migration logic in
         // MigrateGlobalDataTypePrefsToAccount().
         type_enabled =
-            base::FeatureList::IsEnabled(switches::kUnoDesktop) &&
+            switches::IsExplicitBrowserSigninUIOnDesktopEnabled(
+                switches::ExplicitBrowserSigninPhase::kExperimental) &&
             pref_service_->GetBoolean(::prefs::kExplicitBrowserSignin);
 #endif
       } else if (type == UserSelectableType::kBookmarks ||

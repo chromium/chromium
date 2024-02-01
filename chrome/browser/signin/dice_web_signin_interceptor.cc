@@ -154,7 +154,8 @@ ShouldShowChromeSigninBubbleWithReason MaybeShouldShowChromeSigninBubble(
   // This is done for metric purposes, this is safe since the bubble will not be
   // shown in that case any way.
   if (manager->HasPrimaryAccount(signin::ConsentLevel::kSignin) &&
-      (base::FeatureList::IsEnabled(switches::kUnoDesktop) ||
+      (switches::IsExplicitBrowserSigninUIOnDesktopEnabled(
+           switches::ExplicitBrowserSigninPhase::kExperimental) ||
        manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin).email !=
            intercepted_email)) {
     return ShouldShowChromeSigninBubbleWithReason::
@@ -402,7 +403,8 @@ DiceWebSigninInterceptor::GetHeuristicOutcome(
   }
 
   // Showing the Chrome Signin Bubble is part of the Uno Desktop project.
-  if (base::FeatureList::IsEnabled(switches::kUnoDesktop)) {
+  if (switches::IsExplicitBrowserSigninUIOnDesktopEnabled(
+          switches::ExplicitBrowserSigninPhase::kExperimental)) {
     // If the access point is not set, it is unclear if we have to show the
     // bubble or not, so we must return nullopt.
     if (should_show_chrome_signin_bubble ==
@@ -430,7 +432,8 @@ DiceWebSigninInterceptor::GetHeuristicOutcome(
     // This is not the first account in the identity manager but there is no
     // primary account, all the accounts are in the UNO web-only state, so do
     // not intercept.
-    DCHECK(base::FeatureList::IsEnabled(switches::kUnoDesktop));
+    DCHECK(switches::IsExplicitBrowserSigninUIOnDesktopEnabled(
+        switches::ExplicitBrowserSigninPhase::kExperimental));
     return SigninInterceptionHeuristicOutcome::
         kAbortNotFirstAccountButNoPrimaryAccount;
   }
@@ -702,7 +705,8 @@ bool DiceWebSigninInterceptor::ShouldShowChromeSigninBubble(
   RecordShouldShowChromeSigninBubbleReason(
       state_->should_show_chrome_signin_bubble_.value());
 
-  return base::FeatureList::IsEnabled(switches::kUnoDesktop) &&
+  return switches::IsExplicitBrowserSigninUIOnDesktopEnabled(
+             switches::ExplicitBrowserSigninPhase::kExperimental) &&
          state_->should_show_chrome_signin_bubble_ ==
              ShouldShowChromeSigninBubbleWithReason::kShouldShow;
 }

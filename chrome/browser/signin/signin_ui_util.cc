@@ -355,7 +355,8 @@ void EnableSyncFromMultiAccountPromo(Profile* profile,
   // reverts the original primary account as primary, and keeps the secondary
   // account.
   TurnSyncOnHelper::SigninAbortedMode signin_aborted_mode =
-      base::FeatureList::IsEnabled(switches::kUnoDesktop) &&
+      switches::IsExplicitBrowserSigninUIOnDesktopEnabled(
+          switches::ExplicitBrowserSigninPhase::kExperimental) &&
               account.account_id !=
                   identity_manager
                       ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
