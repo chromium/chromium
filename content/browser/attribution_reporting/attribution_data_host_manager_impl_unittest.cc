@@ -42,6 +42,7 @@
 #include "components/attribution_reporting/source_registration_time_config.mojom.h"
 #include "components/attribution_reporting/source_type.mojom.h"
 #include "components/attribution_reporting/suitable_origin.h"
+#include "components/attribution_reporting/trigger_registration_error.mojom-shared.h"
 #include "content/browser/attribution_reporting/attribution_background_registrations_id.h"
 #include "content/browser/attribution_reporting/attribution_beacon_id.h"
 #include "content/browser/attribution_reporting/attribution_constants.h"
@@ -86,6 +87,7 @@ using ::attribution_reporting::TriggerRegistration;
 using ::attribution_reporting::mojom::RegistrationEligibility;
 using ::attribution_reporting::mojom::SourceRegistrationError;
 using ::attribution_reporting::mojom::SourceType;
+using ::attribution_reporting::mojom::TriggerRegistrationError;
 
 using AttributionFilters = ::attribution_reporting::FiltersDisjunction;
 using FilterConfig = ::attribution_reporting::FilterConfig;
@@ -3937,10 +3939,8 @@ TEST_F(AttributionDataHostManagerImplTest, BackgroundTrigger_ParsingFails) {
   for (const auto& devtools_request_id :
        std::vector<std::optional<std::string>>{std::nullopt,
                                                kDevtoolsRequestId}) {
+    base::HistogramTester histograms;
     EXPECT_CALL(mock_manager_, HandleTrigger).Times(0);
-
-    // TODO(https://crbug.com/1457238): Add expectation that
-    // NotifyFailedTriggerRegistration is called.
 
     data_host_manager_.NotifyBackgroundRegistrationStarted(
         kBackgroundId, context_origin,
@@ -3957,6 +3957,8 @@ TEST_F(AttributionDataHostManagerImplTest, BackgroundTrigger_ParsingFails) {
     data_host_manager_.NotifyBackgroundRegistrationCompleted(kBackgroundId);
 
     task_environment_.FastForwardBy(base::TimeDelta());
+    histograms.ExpectUniqueSample("Conversions.TriggerRegistrationError9",
+                                  TriggerRegistrationError::kInvalidJson, 1);
   }
 }
 

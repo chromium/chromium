@@ -112,6 +112,15 @@ base::expected<std::vector<T>, TriggerRegistrationError> ParseList(
 
 }  // namespace
 
+void RecordTriggerRegistrationError(TriggerRegistrationError error) {
+  static_assert(
+      TriggerRegistrationError::kMaxValue ==
+          TriggerRegistrationError::
+              kTriggerContextIdInvalidSourceRegistrationTimeConfig,
+      "Bump version of Conversions.TriggerRegistrationError9 histogram.");
+  base::UmaHistogramEnumeration("Conversions.TriggerRegistrationError9", error);
+}
+
 // static
 base::expected<TriggerRegistration, TriggerRegistrationError>
 TriggerRegistration::Parse(base::Value::Dict dict) {
@@ -177,13 +186,7 @@ TriggerRegistration::Parse(std::string_view json) {
   }
 
   if (!trigger.has_value()) {
-    static_assert(
-        TriggerRegistrationError::kMaxValue ==
-            TriggerRegistrationError::
-                kTriggerContextIdInvalidSourceRegistrationTimeConfig,
-        "Bump version of Conversions.TriggerRegistrationError9 histogram.");
-    base::UmaHistogramEnumeration("Conversions.TriggerRegistrationError9",
-                                  trigger.error());
+    RecordTriggerRegistrationError(trigger.error());
   }
 
   return trigger;

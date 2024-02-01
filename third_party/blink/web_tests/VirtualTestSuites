@@ -171,6 +171,16 @@
     "expires": "Apr 1, 2024"
   },
   {
+    "prefix": "attribution-reporting-in-browser-migration",
+    "platforms": ["Linux", "Mac", "Win"],
+    "bases": ["http/tests/inspector-protocol/attribution-reporting"],
+    "exclusive_tests": "ALL",
+    "args": ["--enable-features=KeepAliveInBrowserMigration,kAttributionReportingInBrowserMigration,AttributionReportingCrossAppWeb,PrivacySandboxAdsAPIsOverride",
+             "--disable-threaded-compositing", "--disable-threaded-animation"],
+    "owners": ["anthonygarant@chromium.org"],
+    "expires": "May 30, 2024"
+  },
+  {
     "prefix": "attribution-reporting-debug-mode",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["wpt_internal/attribution-reporting"],
