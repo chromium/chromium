@@ -4,8 +4,11 @@
 
 #include "components/password_manager/core/browser/features/password_manager_features_util.h"
 
+#include "base/notreached.h"
 #include "build/build_config.h"
 #include "components/password_manager/core/browser/features/password_features.h"
+#include "components/password_manager/core/common/password_manager_pref_names.h"
+#include "components/prefs/pref_service.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_user_settings.h"
 
@@ -75,6 +78,31 @@ bool IsUserEligibleForAccountStorage(const syncer::SyncService* sync_service) {
 }
 
 }  // namespace internal
+
+bool CanCreateAccountStore(const PrefService* pref_service) {
+#if BUILDFLAG(IS_ANDROID)
+  using password_manager::prefs::UseUpmLocalAndSeparateStoresState;
+  switch (
+      static_cast<UseUpmLocalAndSeparateStoresState>(pref_service->GetInteger(
+          password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores))) {
+    case UseUpmLocalAndSeparateStoresState::kOff:
+      return false;
+    // The decision regarding the presence/absence of the account store happens
+    // before the outcome of the migration is known. The decision shouldn't
+    // change, many layers cache a pointer to the store and never update it.
+    // The solution is to optimistically return true in the "migration pending"
+    // state. If the migration later fails, the store will continue to exist
+    // until the next restart, but won't actually be used (this is enforced by
+    // other predicates).
+    case UseUpmLocalAndSeparateStoresState::kOffAndMigrationPending:
+    case UseUpmLocalAndSeparateStoresState::kOn:
+      return true;
+  }
+  NOTREACHED_NORETURN();
+#else
+  return true;
+#endif
+}
 
 bool IsOptedInForAccountStorage(const syncer::SyncService* sync_service) {
   if (!internal::IsUserEligibleForAccountStorage(sync_service)) {

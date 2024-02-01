@@ -4032,7 +4032,7 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest,
   EXPECT_TRUE(prefs->GetDict(kPermissionActionsPrefPath).empty());
 }
 
-// Force-enables kEnablePasswordsAccountStorage.
+// Tests with non-null AccountPasswordStoreFactory::GetForProfile().
 class ChromeBrowsingDataRemoverDelegateWithAccountPasswordsTest
     : public ChromeBrowsingDataRemoverDelegateWithPasswordsTest {
  public:
@@ -4040,14 +4040,9 @@ class ChromeBrowsingDataRemoverDelegateWithAccountPasswordsTest
 #if BUILDFLAG(IS_ANDROID)
     // Using the account store on Android also requires UPM support for local
     // passwords.
-    feature_list_.InitWithFeatures(
-        {password_manager::features::kEnablePasswordsAccountStorage,
-         password_manager::features::
-             kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration},
-        {});
-#else
     feature_list_.InitAndEnableFeature(
-        password_manager::features::kEnablePasswordsAccountStorage);
+        password_manager::features::
+            kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration);
 #endif
   }
 };

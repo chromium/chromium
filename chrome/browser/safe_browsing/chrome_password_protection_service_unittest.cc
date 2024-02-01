@@ -1603,22 +1603,16 @@ namespace {
 class ChromePasswordProtectionServiceWithAccountPasswordStoreTest
     : public ChromePasswordProtectionServiceTest {
  public:
-  ChromePasswordProtectionServiceWithAccountPasswordStoreTest() {
-#if BUILDFLAG(IS_ANDROID)
-    // Using the account store on Android also requires UPM support for local
-    // passwords.
-    feature_list_.InitWithFeatures(
-        {password_manager::features::kEnablePasswordsAccountStorage,
-         password_manager::features::
-             kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration},
-        {});
-#else
-    feature_list_.InitAndEnableFeature(
-        password_manager::features::kEnablePasswordsAccountStorage);
-#endif
-  }
+  ChromePasswordProtectionServiceWithAccountPasswordStoreTest() = default;
+
  private:
-  base::test::ScopedFeatureList feature_list_;
+#if BUILDFLAG(IS_ANDROID)
+  // Using the account store on Android also requires UPM support for local
+  // passwords.
+  base::test::ScopedFeatureList feature_list_{
+      password_manager::features::
+          kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration};
+#endif
 };
 
 TEST_F(ChromePasswordProtectionServiceWithAccountPasswordStoreTest,
@@ -1695,16 +1689,10 @@ class PasswordCheckupWithPhishGuardAfterPasswordStoreSplitAndroidTest
     : public PasswordCheckupWithPhishGuardTest {
  public:
   void SetUp() override {
+    feature_list_.InitAndEnableFeature(
+        password_manager::features::
+            kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration);
     PasswordCheckupWithPhishGuardTest::SetUp();
-    feature_list_.InitWithFeatures(
-        {password_manager::features::kEnablePasswordsAccountStorage,
-         password_manager::features::
-             kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration},
-        {});
-    profile()->GetPrefs()->SetInteger(
-        password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores,
-        static_cast<int>(
-            password_manager::prefs::UseUpmLocalAndSeparateStoresState::kOn));
   }
 };
 
@@ -1794,15 +1782,10 @@ class PasswordCheckupWithPhishGuardUPMBeforeStoreSplitAndroidTest
     : public PasswordCheckupWithPhishGuardTest {
  public:
   void SetUp() override {
+    feature_list_.InitAndDisableFeature(
+        password_manager::features::
+            kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration);
     PasswordCheckupWithPhishGuardTest::SetUp();
-    feature_list_.InitWithFeatures(
-        {}, {password_manager::features::kEnablePasswordsAccountStorage,
-             password_manager::features::
-                 kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration});
-    profile()->GetPrefs()->SetInteger(
-        password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores,
-        static_cast<int>(
-            password_manager::prefs::UseUpmLocalAndSeparateStoresState::kOff));
   }
 };
 

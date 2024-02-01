@@ -1471,8 +1471,7 @@ class ChromePasswordManagerClientWithAccountStoreAndroidTest
     // Using the account store on Android also requires UPM support for local
     // passwords.
     feature_list_.InitWithFeatures(
-        {password_manager::features::kEnablePasswordsAccountStorage,
-         password_manager::features::
+        {password_manager::features::
              kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration,
          password_manager::features::kSharedPasswordNotificationUI},
         {});

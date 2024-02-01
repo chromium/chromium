@@ -6,7 +6,9 @@
 
 #include "chrome/browser/password_manager/account_password_store_factory.h"
 #include "chrome/browser/password_manager/profile_password_store_factory.h"
+#include "chrome/browser/profiles/profile.h"
 #include "components/password_manager/core/browser/features/password_features.h"
+#include "components/password_manager/core/browser/features/password_manager_features_util.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/password_manager/core/browser/password_store/test_password_store.h"
 
@@ -26,8 +28,8 @@ scoped_refptr<TestPasswordStore> CreateAndUseTestPasswordStore(
 
 scoped_refptr<TestPasswordStore> CreateAndUseTestAccountPasswordStore(
     content::BrowserContext* context) {
-  if (!base::FeatureList::IsEnabled(
-          password_manager::features::kEnablePasswordsAccountStorage)) {
+  if (!password_manager::features_util::CanCreateAccountStore(
+          Profile::FromBrowserContext(context)->GetPrefs())) {
     return nullptr;
   }
   TestPasswordStore* store = static_cast<TestPasswordStore*>(
