@@ -19,28 +19,7 @@
 
 namespace exo::wayland {
 
-namespace {
-
-class WaylandDisplayOutputTest : public test::WaylandServerTest {
- public:
-  WaylandDisplayOutputTest()
-      : test::WaylandServerTest(
-            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
-  WaylandDisplayOutputTest(const WaylandDisplayOutputTest&) = delete;
-  WaylandDisplayOutputTest& operator=(const WaylandDisplayOutputTest&) = delete;
-  ~WaylandDisplayOutputTest() override = default;
-
-  void TearDown() override {
-    // Force a cleanup of any remaining outputs.
-    task_environment()->FastForwardBy(
-        WaylandDisplayOutput::kDeleteTaskDelay *
-        (WaylandDisplayOutput::kDeleteRetries + 1));
-
-    test::WaylandServerTest::TearDown();
-  }
-};
-
-}  // namespace
+using WaylandDisplayOutputTest = test::WaylandServerTest;
 
 TEST_F(WaylandDisplayOutputTest, DelayedSelfDestruct) {
   class ClientData : public test::TestClient::CustomData {
