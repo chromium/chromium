@@ -6910,6 +6910,7 @@ static_library("test_support") {
   testonly = true
 
   sources = [
+    "autofill/payments/desktop_payments_window_manager_test_api.h",
     "content_settings/fake_owner.cc",
     "content_settings/fake_owner.h",
     "find_bar/find_bar_host_unittest_util.h",

@@ -15,22 +15,35 @@
 namespace autofill::payments {
 
 DesktopPaymentsWindowManager::DesktopPaymentsWindowManager(
-    ChromeAutofillClient* client)
+    AutofillClient* client)
     : client_(CHECK_DEREF(client)) {}
 
 DesktopPaymentsWindowManager::~DesktopPaymentsWindowManager() = default;
+
+void DesktopPaymentsWindowManager::InitVcn3dsAuthentication(
+    Vcn3dsContext context) {
+  CHECK_EQ(flow_type_, FlowType::kNoFlow);
+  CHECK_EQ(context.card.record_type(), CreditCard::RecordType::kVirtualCard);
+  flow_type_ = FlowType::kVcn3ds;
+  vcn_3ds_context_ = std::move(context);
+  CreatePopup(vcn_3ds_context_->url);
+}
 
 void DesktopPaymentsWindowManager::CreatePopup(const GURL& url) {
   // Create a pop-up window. The created pop-up will not have any relationship
   // to the underlying tab, because `params.opener` is not set. Ensuring the
   // original tab is not a related site instance to the pop-up is critical for
   // security reasons.
+  // Safe to cast `client_` to ChromeAutofillClient as the only version of
+  // AutofillClient that can exist on Desktop is ChromeAutofillClient.
+  content::WebContents* source_contents =
+      static_cast<ChromeAutofillClient&>(*client_).web_contents();
   NavigateParams params(
-      Profile::FromBrowserContext(client_->web_contents()->GetBrowserContext()),
-      url, ui::PAGE_TRANSITION_LINK);
+      Profile::FromBrowserContext(source_contents->GetBrowserContext()), url,
+      ui::PAGE_TRANSITION_LINK);
   params.disposition = WindowOpenDisposition::NEW_POPUP;
   params.window_action = NavigateParams::SHOW_WINDOW;
-  params.source_contents = client_->web_contents();
+  params.source_contents = source_contents;
   params.is_tab_modal_popup = true;
 
   // TODO(crbug.com/1517762): Handle the case where the pop-up is not shown by
