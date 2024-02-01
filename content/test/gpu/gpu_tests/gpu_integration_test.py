@@ -46,7 +46,7 @@ ResultType = json_results.ResultType
 
 
 # Please expand the following lists when we expand to new bot configs.
-_SUPPORTED_WIN_VERSIONS = ['win7', 'win10']
+_SUPPORTED_WIN_VERSIONS = ['win7', 'win10', 'win11']
 _SUPPORTED_WIN_GPU_VENDORS = [
     gpu_helper.GpuVendors.AMD,
     gpu_helper.GpuVendors.INTEL,
