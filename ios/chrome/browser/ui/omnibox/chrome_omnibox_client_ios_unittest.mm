@@ -48,6 +48,7 @@ class ChromeOmniboxClientIOSTest
                             const AutocompleteMatch& match);
   void FinishCurrentNavigationSuccessfully();
   void FailCurrentNavigation();
+  void RedirectNavigationWithBackButton();
 
   const ShortcutsBackend::ShortcutMap& shortcuts_map() const {
     return shortcuts_backend_->shortcuts_map();
@@ -91,6 +92,7 @@ void ChromeOmniboxClientIOSTest::SetUp() {
   web_state_ = std::make_unique<web::FakeWebState>();
   web_location_bar_->SetWebState(web_state_.get());
   navigation_context_ = std::make_unique<web::FakeNavigationContext>();
+  navigation_context_->SetPageTransition(ui::PAGE_TRANSITION_FROM_ADDRESS_BAR);
 
   shortcuts_backend_ =
       ios::ShortcutsBackendFactory::GetInstance()->GetForBrowserState(
@@ -146,6 +148,10 @@ void ChromeOmniboxClientIOSTest::FailCurrentNavigation() {
   navigation_context_->SetError(
       testing::NSErrorWithLocalizedDescription(@"error"));
   web_state_->OnNavigationFinished(navigation_context_.get());
+}
+
+void ChromeOmniboxClientIOSTest::RedirectNavigationWithBackButton() {
+  navigation_context_->SetPageTransition(ui::PAGE_TRANSITION_FORWARD_BACK);
 }
 
 // Tests that successful navigations are added to the shortcuts database.
@@ -215,4 +221,35 @@ TEST_F(ChromeOmniboxClientIOSTest, UnsuccessfulNavigationDontAddShortcut) {
   // Verify that the successful navigation is added to the database.
   ASSERT_TRUE(ShortcutExists(search_terms_3));
   ASSERT_TRUE(changed_notified());
+}
+
+// Tests that non omnibox successful navigation are not added in the shortcuts
+// database.
+TEST_F(ChromeOmniboxClientIOSTest, SuccessfulNonOmniboxDontAddShortcut) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      omnibox::kOmniboxPopulateShortcutsDatabase);
+
+  InitShortcutsBackend();
+
+  scoped_refptr<FakeAutocompleteProvider> bookmark_provider =
+      new FakeAutocompleteProvider(AutocompleteProvider::Type::TYPE_BOOKMARK);
+  AutocompleteMatch bookmark_match(bookmark_provider.get(), 400, true,
+                                   AutocompleteMatchType::BOOKMARK_TITLE);
+
+  // Navigate to `bookmark_match` with `search_terms`.
+  std::u16string search_terms = u"input";
+  UseAutocompleteMatch(search_terms, bookmark_match);
+
+  ASSERT_FALSE(changed_notified());
+  ASSERT_FALSE(ShortcutExists(search_terms));
+
+  // Navigation redirected by pressing the back button.
+  RedirectNavigationWithBackButton();
+  // Back button navigation is successful.
+  FinishCurrentNavigationSuccessfully();
+
+  // Verify that the back button navigation is not added to the database.
+  ASSERT_FALSE(ShortcutExists(search_terms));
+  ASSERT_FALSE(changed_notified());
 }
