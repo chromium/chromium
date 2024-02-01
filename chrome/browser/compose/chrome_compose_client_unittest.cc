@@ -1449,7 +1449,7 @@ TEST_F(ChromeComposeClientTest, ResetClientOnNavigation) {
   page_handler()->Compose("", false);
 
   autofill::FormFieldData field_2;
-  field_2.unique_renderer_id = autofill::FieldRendererId(2);
+  field_2.renderer_id = autofill::FieldRendererId(2);
   ShowDialogAndBindMojoWithFieldData(field_2);
 
   // There should be two sessions.

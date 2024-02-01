@@ -286,7 +286,7 @@ void AutofillHandler::OnFillOrPreviewDataModelForm(
                     ? protocol::Autofill::FillingStrategyEnum::AutofillInferred
                     : protocol::Autofill::FillingStrategyEnum::
                           AutocompleteAttribute)
-            .SetFieldId(autofill_field->unique_renderer_id.value())
+            .SetFieldId(autofill_field->renderer_id.value())
             .Build());
   }
 
