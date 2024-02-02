@@ -1961,8 +1961,7 @@ void HashTable<Key, Value, Extractor, Traits, KeyTraits, Allocator>::Trace(
     auto visitor) const
   requires Allocator::kIsGarbageCollected
 {
-  static_assert(WTF::IsWeak<ValueType>::value ||
-                    IsTraceableInCollectionTrait<Traits>::value,
+  static_assert(WTF::IsWeak<ValueType>::value || IsTraceable<ValueType>::value,
                 "Value should not be traced");
   TraceTable(visitor, AsAtomicPtr(&table_)->load(std::memory_order_relaxed));
 }

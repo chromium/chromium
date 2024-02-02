@@ -134,12 +134,6 @@ template <typename T, typename U>
 struct IsTraceable<std::pair<T, U>>
     : std::bool_constant<IsTraceable<T>::value || IsTraceable<U>::value> {};
 
-// Convenience template wrapping the IsTraceableInCollection template in
-// Collection Traits. It helps make the code more readable.
-template <typename Traits>
-struct IsTraceableInCollectionTrait
-    : std::bool_constant<Traits::template IsTraceableInCollection<>::value> {};
-
 enum WeakHandlingFlag {
   kNoWeakHandling,
   kWeakHandling,

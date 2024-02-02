@@ -18,6 +18,7 @@
 #include "third_party/blink/renderer/platform/wtf/hash_traits.h"
 #include "third_party/blink/renderer/platform/wtf/key_value_pair.h"
 #include "third_party/blink/renderer/platform/wtf/sanitizers.h"
+#include "third_party/blink/renderer/platform/wtf/type_traits.h"
 #include "v8/include/cppgc/custom-space.h"
 #include "v8/include/cppgc/explicit-management.h"
 #include "v8/include/cppgc/object-size-trait.h"
@@ -175,8 +176,7 @@ struct TraceHashTableBackingInCollectionTrait {
   using Extractor = typename Table::ExtractorType;
 
   static void Trace(blink::Visitor* visitor, const void* self) {
-    static_assert(IsTraceableInCollectionTrait<Traits>::value ||
-                      WTF::IsWeak<Value>::value,
+    static_assert(IsTraceable<Value>::value || WTF::IsWeak<Value>::value,
                   "Table should not be traced");
     const Value* array = reinterpret_cast<const Value*>(self);
     const size_t length =
@@ -252,6 +252,9 @@ struct TraceInCollectionTrait<
 template <typename T>
 struct IsWeak<internal::ConcurrentBucket<T>> : IsWeak<T> {};
 
+template <typename T>
+struct IsTraceable<internal::ConcurrentBucket<T>> : IsTraceable<T> {};
+
 }  // namespace WTF
 
 namespace cppgc {
@@ -311,9 +314,9 @@ struct TraceTrait<blink::HeapHashTableBacking<Table>> {
       }
     }
 
-    static_assert(WTF::IsTraceableInCollectionTrait<Traits>::value ||
-                      WTF::IsWeak<ValueType>::value,
-                  "T should not be traced");
+    static_assert(
+        WTF::IsTraceable<ValueType>::value || WTF::IsWeak<ValueType>::value,
+        "T should not be traced");
     WTF::TraceInCollectionTrait<weak_handling, Backing, void>::Trace(visitor,
                                                                      self);
   }
