@@ -10828,19 +10828,6 @@ const FeatureEntry kFeatureEntries[] = {
      STRING_VALUE_TYPE(ash::switches::kCoralFeatureKey, "")},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
-    {"theora-video-codec", flag_descriptions::kTheoraVideoCodecName,
-     flag_descriptions::kTheoraVideoCodecDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(media::kTheoraVideoCodec)},
-#endif
-
-#if BUILDFLAG(IS_MAC)
-    {"video-toolbox-av1-decoding",
-     flag_descriptions::kVideoToolboxAv1DecodingName,
-     flag_descriptions::kVideoToolboxAv1DecodingDescription, kOsMac,
-     FEATURE_VALUE_TYPE(media::kVideoToolboxAv1Decoding)},
-#endif
-
     {"sync-session-on-visibility-changed",
      flag_descriptions::kSyncSessionOnVisibilityChangedName,
      flag_descriptions::kSyncSessionOnVisibilityChangedDescription, kOsAll,

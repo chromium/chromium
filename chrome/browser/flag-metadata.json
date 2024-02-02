@@ -7813,11 +7813,6 @@
     "expiry_milestone": 120
   },
   {
-    "name": "theora-video-codec",
-    "owners": ["dalecurtis@chromium.org"],
-    "expiry_milestone": 123
-  },
-  {
     "name": "third-party-cookie-deprecation-trial",
     "owners": [
       "//chrome/browser/tpcd/OWNERS"
@@ -8251,11 +8246,6 @@
     "name": "video-conference",
     "owners": [ "shafron@chromium.org", "newcomer@chromium.org", "charleszhao@chromium.org", "jmpollock@chromium.org" ],
     "expiry_milestone": 120
-  },
-  {
-    "name": "video-toolbox-av1-decoding",
-    "owners": [ "dalecurtis@chromium.org", "sandersd@chromium.org" ],
-    "expiry_milestone": 123
   },
   {
     "name": "view-transition-on-navigation",
