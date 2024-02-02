@@ -74,8 +74,11 @@ void RunModelTask(
   base::WeakPtr<ModelTypeControllerDelegate> delegate = delegate_provider.Run();
   // TODO(mastiz): Migrate away from weak pointers, since there is no actual
   // need, provided that KeyedServices have proper dependencies.
-  DCHECK(delegate);
-  std::move(task).Run(delegate);
+  // TODO(crbug.com/1523624): switch to CHECK once all data types provide
+  // non-null delegates.
+  if (delegate) {
+    std::move(task).Run(delegate);
+  }
 }
 
 }  // namespace
