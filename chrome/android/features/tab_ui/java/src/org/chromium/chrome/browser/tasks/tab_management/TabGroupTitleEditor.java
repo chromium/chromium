@@ -11,8 +11,8 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
-import org.chromium.chrome.browser.tasks.tab_groups.EmptyTabGroupModelFilterObserver;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
+import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilterObserver;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -25,7 +25,7 @@ public abstract class TabGroupTitleEditor {
     private final Context mContext;
     private final ObservableSupplier<TabModelFilter> mCurrentTabModelFilterSupplier;
     private final TabModelObserver mTabModelObserver;
-    private final TabGroupModelFilter.Observer mFilterObserver;
+    private final TabGroupModelFilterObserver mFilterObserver;
     private final ValueChangedCallback<TabModelFilter> mCurrentTabModelFilterObserver =
             new ValueChangedCallback<>(this::onTabModelFilterChanged);
 
@@ -51,7 +51,7 @@ public abstract class TabGroupTitleEditor {
                 };
 
         mFilterObserver =
-                new EmptyTabGroupModelFilterObserver() {
+                new TabGroupModelFilterObserver() {
                     @Override
                     public void willMergeTabToGroup(Tab movedTab, int newRootId) {
                         String sourceGroupTitle = getTabGroupTitle(getRootId(movedTab));

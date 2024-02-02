@@ -15,8 +15,8 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelFilterProvider;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.tasks.tab_groups.EmptyTabGroupModelFilterObserver;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
+import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilterObserver;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -31,8 +31,8 @@ public class TabGroupCreationDialogDelegate {
     private final Activity mActivity;
     private final ModalDialogManager mModalDialogManager;
     private ObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
-    private EmptyTabGroupModelFilterObserver mRegularObserver;
-    private EmptyTabGroupModelFilterObserver mIncognitoObserver;
+    private TabGroupModelFilterObserver mRegularObserver;
+    private TabGroupModelFilterObserver mIncognitoObserver;
     private PropertyModel mModel;
 
     public TabGroupCreationDialogDelegate(
@@ -67,7 +67,7 @@ public class TabGroupCreationDialogDelegate {
 
     // TODO(crbug.com/1517346): Make this private and initialize it only when TabModelSelector's tab
     // state has been initialized.
-    /** Add an EmptyTabGroupModelFilterObserver to notify when a new tab group is being created. */
+    /** Add an TabGroupModelFilterObserver to notify when a new tab group is being created. */
     public void addObservers() {
         TabModelFilterProvider tabModelFilterProvider =
                 mTabModelSelectorSupplier.get().getTabModelFilterProvider();
@@ -80,9 +80,9 @@ public class TabGroupCreationDialogDelegate {
                         (TabGroupModelFilter) tabModelFilterProvider.getTabModelFilter(true));
     }
 
-    private EmptyTabGroupModelFilterObserver attachObserver(TabGroupModelFilter filter) {
-        EmptyTabGroupModelFilterObserver observer =
-                new EmptyTabGroupModelFilterObserver() {
+    private TabGroupModelFilterObserver attachObserver(TabGroupModelFilter filter) {
+        TabGroupModelFilterObserver observer =
+                new TabGroupModelFilterObserver() {
                     // Handles the tab selection editor group action and longpressing a link for a
                     // context menu to create a group.
                     @Override

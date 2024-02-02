@@ -35,85 +35,6 @@ import java.util.Set;
  * also a {@link TabList} that contains the last shown {@link Tab} from every group.
  */
 public class TabGroupModelFilter extends TabModelFilter {
-    /** An interface to be notified about changes to a {@link TabGroupModelFilter}. */
-    public interface Observer {
-        /**
-         * This method is called before a tab is moved to form a group or moved into an existed
-         * group.
-         * @param movedTab The {@link Tab} which will be moved. If a group will be merged to a tab
-         *                 or another group, this is the last tab of the merged group.
-         * @param newRootId  The new root id of the group after merge.
-         */
-        void willMergeTabToGroup(Tab movedTab, int newRootId);
-
-        /**
-         * This method is called before a tab within a group is moved out of the group.
-         *
-         * @param movedTab   The tab which will be moved.
-         * @param newRootId  The new root id of the group from which {@code movedTab} is moved out.
-         */
-        void willMoveTabOutOfGroup(Tab movedTab, int newRootId);
-
-        /**
-         * This method is called after a tab is moved to form a group or moved into an existed
-         * group.
-         * @param movedTab The {@link Tab} which has been moved. If a group is merged to a tab or
-         *                 another group, this is the last tab of the merged group.
-         * @param selectedTabIdInGroup The id of the selected {@link Tab} in group.
-         */
-        void didMergeTabToGroup(Tab movedTab, int selectedTabIdInGroup);
-
-        /**
-         * This method is called after a group is moved.
-         *
-         * @param movedTab The tab which has been moved. This is the last tab within the group.
-         * @param tabModelOldIndex The old index of the {@code movedTab} in the {@link TabModel}.
-         * @param tabModelNewIndex The new index of the {@code movedTab} in the {@link TabModel}.
-         */
-        void didMoveTabGroup(Tab movedTab, int tabModelOldIndex, int tabModelNewIndex);
-
-        /**
-         * This method is called after a tab within a group is moved.
-         *
-         * @param movedTab The tab which has been moved.
-         * @param tabModelOldIndex The old index of the {@code movedTab} in the {@link TabModel}.
-         * @param tabModelNewIndex The new index of the {@code movedTab} in the {@link TabModel}.
-         */
-        void didMoveWithinGroup(Tab movedTab, int tabModelOldIndex, int tabModelNewIndex);
-
-        /**
-         * This method is called after a tab within a group is moved out of the group.
-         *
-         * @param movedTab The tab which has been moved.
-         * @param prevFilterIndex The index in {@link TabGroupModelFilter} of the group where {@code
-         *         moveTab} is in  before ungrouping.
-         */
-        void didMoveTabOutOfGroup(Tab movedTab, int prevFilterIndex);
-
-        /**
-         * This method is called after a group is created manually by user. Either using the
-         * TabListEditor (Group tab menu item) or using drag and drop.
-         *
-         * @param tabs The list of modified {@link Tab}s.
-         * @param tabOriginalIndex The original tab index for each modified tab.
-         * @param tabOriginalRootId The original root id for each modified tab.
-         * @param destinationGroupTitle The original destination group title.
-         */
-        void didCreateGroup(
-                List<Tab> tabs,
-                List<Integer> tabOriginalIndex,
-                List<Integer> tabOriginalRootId,
-                String destinationGroupTitle);
-
-        /**
-         * This method is called after a new tab group is created, either through drag and drop, the
-         * tab selection editor, or by longpressing a link on a tab and using the context menu.
-         *
-         * @param newRootId The new root id of the group after merge.
-         */
-        void didCreateNewGroup(int newRootId);
-    }
-
     /**
      * This class is a representation of a group of tabs. It knows the last selected tab within the
      * group.
@@ -185,7 +106,7 @@ public class TabGroupModelFilter extends TabModelFilter {
         }
     }
 
-    private ObserverList<Observer> mGroupFilterObserver = new ObserverList<>();
+    private ObserverList<TabGroupModelFilterObserver> mGroupFilterObserver = new ObserverList<>();
     private Map<Integer, Integer> mGroupIdToGroupIndexMap = new HashMap<>();
     private Map<Integer, TabGroup> mGroupIdToGroupMap = new HashMap<>();
     private int mCurrentGroupIndex = TabList.INVALID_TAB_INDEX;
@@ -201,18 +122,21 @@ public class TabGroupModelFilter extends TabModelFilter {
     }
 
     /**
-     * This method adds a {@link Observer} to be notified on {@link TabGroupModelFilter} changes.
-     * @param observer The {@link Observer} to add.
+     * This method adds a {@link TabGroupModelFilterObserver} to be notified on {@link
+     * TabGroupModelFilter} changes.
+     *
+     * @param observer The {@link TabGroupModelFilterObserver} to add.
      */
-    public void addTabGroupObserver(Observer observer) {
+    public void addTabGroupObserver(TabGroupModelFilterObserver observer) {
         mGroupFilterObserver.addObserver(observer);
     }
 
     /**
-     * This method removes a {@link Observer}.
-     * @param observer The {@link Observer} to remove.
+     * This method removes a {@link TabGroupModelFilterObserver}.
+     *
+     * @param observer The {@link TabGroupModelFilterObserver} to remove.
      */
-    public void removeTabGroupObserver(Observer observer) {
+    public void removeTabGroupObserver(TabGroupModelFilterObserver observer) {
         mGroupFilterObserver.removeObserver(observer);
     }
 
@@ -289,7 +213,7 @@ public class TabGroupModelFilter extends TabModelFilter {
         String destinationGroupTitle = TabGroupTitleUtils.getTabGroupTitle(destinationGroupId);
 
         if (skipUpdateTabModel || !needToUpdateTabModel(tabsToMerge, destinationIndexInTabModel)) {
-            for (Observer observer : mGroupFilterObserver) {
+            for (TabGroupModelFilterObserver observer : mGroupFilterObserver) {
                 observer.willMergeTabToGroup(
                         tabsToMerge.get(tabsToMerge.size() - 1), destinationGroupId);
             }
@@ -310,7 +234,7 @@ public class TabGroupModelFilter extends TabModelFilter {
 
             Tab lastMergedTab = tabsToMerge.get(tabsToMerge.size() - 1);
             TabGroup group = mGroupIdToGroupMap.get(getRootId(lastMergedTab));
-            for (Observer observer : mGroupFilterObserver) {
+            for (TabGroupModelFilterObserver observer : mGroupFilterObserver) {
                 observer.didMergeTabToGroup(
                         tabsToMerge.get(tabsToMerge.size() - 1), group.getLastShownTabId());
                 // Since the undo group merge logic is unsupported when called from the tab strip,
@@ -351,7 +275,7 @@ public class TabGroupModelFilter extends TabModelFilter {
             Tab tab = tabs.get(i);
             // When merging tabs are in the same group, only make one willMergeTabToGroup call.
             if (!isSameGroup || i == tabs.size() - 1) {
-                for (Observer observer : mGroupFilterObserver) {
+                for (TabGroupModelFilterObserver observer : mGroupFilterObserver) {
                     observer.willMergeTabToGroup(tab, destinationGroupId);
                 }
             }
@@ -394,13 +318,13 @@ public class TabGroupModelFilter extends TabModelFilter {
         // If the destination tab is not part of a tab group and none of the tabs to merge were part
         // of a tab group, then this action is creating a new tab group.
         if (!isDestinationTabGroup && (uniqueRootIds.size() == originalRootIds.size())) {
-            for (Observer observer : mGroupFilterObserver) {
+            for (TabGroupModelFilterObserver observer : mGroupFilterObserver) {
                 observer.didCreateNewGroup(destinationGroupId);
             }
         }
 
         if (notify) {
-            for (Observer observer : mGroupFilterObserver) {
+            for (TabGroupModelFilterObserver observer : mGroupFilterObserver) {
                 observer.didCreateGroup(
                         tabs, originalIndexes, originalRootIds, destinationGroupTitle);
             }
@@ -437,7 +361,7 @@ public class TabGroupModelFilter extends TabModelFilter {
 
         int prevFilterIndex = mGroupIdToGroupIndexMap.get(getRootId(sourceTab));
         if (sourceTabGroup.size() == 1) {
-            for (Observer observer : mGroupFilterObserver) {
+            for (TabGroupModelFilterObserver observer : mGroupFilterObserver) {
                 observer.didMoveTabOutOfGroup(sourceTab, prevFilterIndex);
             }
             return;
@@ -455,7 +379,7 @@ public class TabGroupModelFilter extends TabModelFilter {
         }
         assert newRootId != Tab.INVALID_TAB_ID;
 
-        for (Observer observer : mGroupFilterObserver) {
+        for (TabGroupModelFilterObserver observer : mGroupFilterObserver) {
             observer.willMoveTabOutOfGroup(sourceTab, newRootId);
         }
         if (sourceTab.getId() == getRootId(sourceTab)) {
@@ -468,7 +392,7 @@ public class TabGroupModelFilter extends TabModelFilter {
         // If moving tab is already in the target index in tab model, no move in tab model.
         if (sourceIndex == targetIndex) {
             resetFilterState();
-            for (Observer observer : mGroupFilterObserver) {
+            for (TabGroupModelFilterObserver observer : mGroupFilterObserver) {
                 observer.didMoveTabOutOfGroup(sourceTab, prevFilterIndex);
             }
             return;
@@ -535,7 +459,7 @@ public class TabGroupModelFilter extends TabModelFilter {
         if (groupExistedBeforeMove) {
             TabGroup group = mGroupIdToGroupMap.get(originalGroupId);
             // Last shown tab IDs are not preserved across an undo.
-            for (Observer observer : mGroupFilterObserver) {
+            for (TabGroupModelFilterObserver observer : mGroupFilterObserver) {
                 observer.didMergeTabToGroup(tab, group.getLastShownTabId());
             }
         }
@@ -657,7 +581,7 @@ public class TabGroupModelFilter extends TabModelFilter {
                     }
 
                     // When creating a tab group with the context menu longpress, this action runs.
-                    for (Observer observer : mGroupFilterObserver) {
+                    for (TabGroupModelFilterObserver observer : mGroupFilterObserver) {
                         observer.didCreateNewGroup(groupId);
                     }
                 }
@@ -947,7 +871,7 @@ public class TabGroupModelFilter extends TabModelFilter {
             resetFilterState();
 
             int prevFilterIndex = mGroupIdToGroupIndexMap.get(groupIdBeforeMove);
-            for (Observer observer : mGroupFilterObserver) {
+            for (TabGroupModelFilterObserver observer : mGroupFilterObserver) {
                 observer.didMoveTabOutOfGroup(tab, prevFilterIndex);
             }
         } else if (isMergeTabToGroup) {
@@ -955,18 +879,18 @@ public class TabGroupModelFilter extends TabModelFilter {
             if (groupBeforeMove != null && groupBeforeMove.size() != 1) return;
 
             TabGroup group = mGroupIdToGroupMap.get(getRootId(tab));
-            for (Observer observer : mGroupFilterObserver) {
+            for (TabGroupModelFilterObserver observer : mGroupFilterObserver) {
                 observer.didMergeTabToGroup(tab, group.getLastShownTabId());
             }
         } else {
             reorder();
             if (isMoveWithinGroup(tab, curIndex, newIndex)) {
-                for (Observer observer : mGroupFilterObserver) {
+                for (TabGroupModelFilterObserver observer : mGroupFilterObserver) {
                     observer.didMoveWithinGroup(tab, curIndex, newIndex);
                 }
             } else {
                 if (!hasFinishedMovingGroup(tab, newIndex)) return;
-                for (Observer observer : mGroupFilterObserver) {
+                for (TabGroupModelFilterObserver observer : mGroupFilterObserver) {
                     observer.didMoveTabGroup(tab, curIndex, newIndex);
                 }
             }
