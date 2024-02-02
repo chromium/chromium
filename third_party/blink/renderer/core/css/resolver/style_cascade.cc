@@ -52,16 +52,14 @@ namespace blink {
 
 namespace {
 
-template <class ParserTokenStream>
-AtomicString ConsumeVariableName(ParserTokenStream& stream) {
+AtomicString ConsumeVariableName(CSSParserTokenStream& stream) {
   stream.ConsumeWhitespace();
   CSSParserToken ident_token = stream.ConsumeIncludingWhitespaceRaw();
   DCHECK_EQ(ident_token.GetType(), kIdentToken);
   return ident_token.Value().ToAtomicString();
 }
 
-template <class ParserTokenStream>
-bool ConsumeComma(ParserTokenStream& stream) {
+bool ConsumeComma(CSSParserTokenStream& stream) {
   if (stream.Peek().GetType() == kCommaToken) {
     stream.ConsumeRaw();
     return true;
@@ -1216,8 +1214,7 @@ bool StyleCascade::ResolveTokensInto(CSSParserTokenStream& stream,
   return success;
 }
 
-template <class ParserTokenStream>
-bool StyleCascade::ResolveVarInto(ParserTokenStream& stream,
+bool StyleCascade::ResolveVarInto(CSSParserTokenStream& stream,
                                   CascadeResolver& resolver,
                                   CSSTokenizer* parent_tokenizer,
                                   TokenSequence& out) {
@@ -1285,8 +1282,7 @@ bool StyleCascade::ResolveVarInto(ParserTokenStream& stream,
                     CSSVariableData::kMaxVariableBytes);
 }
 
-template <class ParserTokenStream>
-bool StyleCascade::ResolveEnvInto(ParserTokenStream& stream,
+bool StyleCascade::ResolveEnvInto(CSSParserTokenStream& stream,
                                   CascadeResolver& resolver,
                                   CSSTokenizer* parent_tokenizer,
                                   TokenSequence& out) {

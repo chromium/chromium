@@ -381,13 +381,11 @@ class CORE_EXPORT StyleCascade {
                          CascadeResolver&,
                          CSSTokenizer*,
                          TokenSequence&);
-  template <class ParserTokenStream>
-  bool ResolveVarInto(ParserTokenStream&,
+  bool ResolveVarInto(CSSParserTokenStream&,
                       CascadeResolver&,
                       CSSTokenizer*,
                       TokenSequence&);
-  template <class ParserTokenStream>
-  bool ResolveEnvInto(ParserTokenStream&,
+  bool ResolveEnvInto(CSSParserTokenStream&,
                       CascadeResolver&,
                       CSSTokenizer*,
                       TokenSequence&);
