@@ -26,7 +26,7 @@ for handover; however, the oncoming primary shepherd should operate on the
 premise all new or _under_-triaged issues are your responsibility. Please do not
 leave any unaddressed red cells in the dashboard at the end of your shift.
 
-# TL;DR Checklist for Primary Shepherding
+## TL;DR Checklist for Primary Shepherding
 (“I’m Primary Shepherd, what do I do???”)
 
 The Primary Security Shepherd is the front line of security bug triage during
@@ -56,11 +56,11 @@ were not completed from ClusterFuzz auto-triage or previous work on the bug.
 All this is hard, so please remember to [ask for help](#Ask-for-help).
 [Yell if you must](https://www.youtube.com/watch?v=5y_SbnPx_cE&t=37s)!
 
-# TL;DR Checklist for Secondary Shepherding
+## TL;DR Checklist for Secondary Shepherding
 (“I’m Secondary Shepherd, what do I do???”)
 
 * [*Check in on triaged issues*](#Check-in-on-triaged-issues) to ensure progress
-  is being made on medium+ severity security bugs.
+  is being made on medium+ (S2-S0) severity security bugs.
 * [*Manage incoming security email*](#Handle-incoming-security-emails).
 
 
@@ -111,9 +111,9 @@ need to take some specific actions here:
   bug per root cause** and marked the parent bug as `blocked on` each. The parent
   bug should be set to the severity of the full chain. Each child bug may have a
   lower severity.
-  * If taking these actions for a VRP reported issue, add the `reward_to`
-    label with that reporter's email address and cc: them on the parent issue so
-    they have access.
+  * If taking these actions for a VRP reported issue, update the Reporter field
+    with the email address of the VRP reporter and cc: them on the parent issue
+    so they have access.
 * Get everything you need from a reporter before you try and reproduce - do not
   feel bad about asking for a clear or minimized POC or repeatable steps before
   attempting to reproduce.
@@ -131,7 +131,8 @@ that, our goal is to pass them actionable reports with little ambiguity.
   by the [Security FAQ](faq.md), such as those related physically local attacks
   or inputting JavaScript in the URL bar or running Javascript directly in
   DevTools not being an indication of an XSS vulnerability. Mark as WontFix and
-  remove the `Restrict-View-SecurityTeam` label.
+  update the 'Issue access level' to `Default Visibility` so the issue is
+  publicly visible.
 * **Mark as duplicate** – we want exactly one bug per root cause problem. Please
   check for duplicate issues of a given issue from that or other reporters /
   sources (such as ClusterFuzz).
@@ -142,17 +143,23 @@ that, our goal is to pass them actionable reports with little ambiguity.
 * **Convert functional bugs to Type=Bug** For example, many reports are for
   crashes of a functional nature, rather than an exploitable security condition,
   such as most null pointer dereferences. Convert such reports from
-  Type=Bug-Security to Type=Bug. Remove `Restrict-View-SecurityTeam`, but
-  consider adding other view restrictions, such as ‘Restrict-View-EditIssue’ if
-  the immediate disclosure could result in potential abuse (e.g. denial of
+  Type=Vulnerability to Type=Bug. Do NOT remove security@chromium.org from
+  collaborators first (as this will result in orphaning the bug), but update the
+  'Issue Access Level' to the appropriate visibility. You may consider adding
+  other visibility restrictions, such as `Limited Visibility + Googlers` and
+  select / add edit-bug-access@chromium.org to the 'Add collaborator groups'
+  (this is similar to 'Restrict-View-EditAccess' in the legacy issue tracker)
+  if the immediate disclosure could result in potential abuse (e.g. denial of
   service issue).
 * **Convert to a privacy bug** - privacy issues (such as issues with incognito)
   are not considered security bugs, but functional privacy issues.
   Convert to Type=Bug and add the Privacy component. Add yourself and any other
   security team members who may potentially need access to the cc: line.
-  Remove `Restrict-View-SecurityTeam` and add `Restrict-View-ChromePrivacy`.
-* **Add `Needs-Feedback` and set a next action date of 24-48 hours for more
-  information** if there is no response, close the issue as `WontFix`.
+  Update the 'Issue access level' to `Limited Visibility + Googlers` and
+  deselect / remove security@chromium.org from the 'add collaborator groups'.
+* **Add the `Needs-Feedback` hotlist (hotlistID: 5433459) and set a Next Action
+  date of 24-48 hours for more information** if there is no response, close the
+  issue as `WontFix`.
 * **Determine issue to be theoretical** - and follow the
   [process for such issues](http://go/chrome-speculative-bug-triage) – theoretical
   issues are ones that appear to be potentially real bugs, but there the report
@@ -230,8 +237,8 @@ Use the [Security Severity Guidelines](severity-guidelines.md).
 If you can, [*reproduce it using ClusterFuzz*](clusterfuzz-for-shepherds.md), as
 the severity is usually set automatically.
 
-For V8 issues, you can tentatively set the issue as High severity – see [Assign,
-below](#Assign).
+For V8 issues, you can tentatively set the issue as High (S1) severity – see
+[Assign,below](#Assign).
 
 Please adjust severity as your understanding of the bug evolves - but please
 always add a comment explaining the change. Higher severity bugs involve
@@ -244,21 +251,21 @@ it’s important to get the severity as correct as possible.
 We do not release severe security regressions, so we need to know the earliest
 impacted Chrome release branch.
 
-First, if an issue [doesn’t impact Chrome users by default, add the label
+First, if an issue [doesn’t impact Chrome users by default, add the hotlist
 **`Security_Impact-None`**](security-labels.md#when-to-use-security_impact_none-toc_security_impact_none);
-otherwise, set a **FoundIn** label as follows:
+otherwise, set a **Found In** milestone in the `Found In` field as follows:
 
 Check [ChromiumDash](https://chromiumdash.appspot.com/releases?platform=Windows) for the earliest relevant milestone number
 (Extended Stable or Stable – sometimes they are the same).
-* If that branch is affected, set `FoundIn-MMM` in where `MMM` is that milestone
-  number.
-* Otherwise, move forward through milestone numbers. Set `FoundIn-MMM` to the
-  oldest impacted branch you find.
+* If that branch is affected, set the `Found In` field to, to the approparite
+  milestone number.
+* Otherwise, move forward through milestone numbers. Set the `Found In` field
+  to the oldest impacted branch you find.
 
 There is no general reason to test versions older than the current Extended
 Stable milestone. If you can [*reproduce using ClusterFuzz*](clusterfuzz-for-shepherds.md)
-the `FoundIn` can often be set automatically if ClusterFuzz can identify the
-culprit CL.
+the `Found In` field can often be set automatically if ClusterFuzz can identify
+the culprit CL.
 
 Otherwise, you may need to [reproduce the bug](#Reproduce-the-bug) manually to
 determine the impacted branches.
@@ -267,14 +274,14 @@ If you have a bisection or other convincing evidence, that’s sufficient. You c
 manually check which milestone has a given commit in
 [ChromiumDash commits check](https://chromiumdash.appspot.com/commits).
 
-Please *do not* base FoundIn- on the Chrome version number provided in the
+Please *do not* base Found In- on the Chrome version number provided in the
 original report. This is often based on the version number the individual is
 using when discovering this issue or is automatically set in the report by the
 tracker’s report wizard and is not correct in terms of coverage of all active
 release channels.
 
-For V8 bugs, you can set `FoundIn-<current extended stable>` unless you have
-reproduced the issue or an accurate bisection has been provided.
+For V8 bugs, you can set `Found In` as the current extended stable milestone
+unless you have reproduced the issue or an accurate bisection has been provided.
 (See [Assign, below](#Assign).)
 
 ### Set impacted operating systems
@@ -299,8 +306,8 @@ ensure it is received by the appropriate team.
 Security bugs are not automatically visible, so you must add people to get them
 fixed. For each bug, set:
 
-* The **component** – due to a limited set of auto-cc rules, this may add some
-  visibility.
+* The **Component Tags** – due to a limited set of auto-cc rules, this may add
+  some visibility.
 * An **assignee/owner**. Use `git blame` or look for similar past bugs in the
   tracker.
 * Lots of **cc**s. Copy everyone who could possibly be relevant. Use the owners
@@ -319,12 +326,12 @@ pass it along to / include someone who can direct it more precisely.
   there (please keep an eye out for any special flags and debug vs release).
   Hopefully, this will cause ClusterFuzz to reproduce and bisect the bug. If
   not:
-    * Set a provisional severity of High, assuming this causes renderer memory
-      corruption.
-    * Set a provisional `FoundIn` of the current Extended Stable.
+    * Set a provisional severity of High (S1), assuming this causes renderer
+      memory corruption.
+    * Set a provisional `Found In` of the current Extended Stable.
     * Assign it to the current [V8
       Sheriff](https://goto.google.com/current-v8-sheriff) with
-      a comment explaining that the severity and `FoundIn` are provisional.
+      a comment explaining that the severity and `Found In` are provisional.
       Note that V8 CHECK failure crashes can have security implications, so
       don't triage it yourself.
     * If for any reason you need to discuss the bug with a particular V8 contact,
@@ -360,10 +367,9 @@ pass it along to / include someone who can direct it more precisely.
   necessary bugs.
 * Chrome for iOS - bugs suspected to be in **WebKit**:
     * Reproduce using an iOS device or desktop Safari.
-    * Assign severity, impact, and component labels.
+    * Set Severity, Found In, and set Component Tags fields.
     * If the issue is in Webkit
-      * Label `ExternalDependency` and `Hotlist-WebKit`. This label is monitored
-      by Apple.
+      * Add hotlist `Status_ExternalDependency` (hotlistID: 1067723)
       * If reported by an external VRP reporter, request they report the issue
       directly to Webkit and provide us the WebKit issue ID after they have done
       so.
@@ -429,9 +435,9 @@ or so, this may require us to land a fix in a week or two.
   bugs versus simple pings on many bugs.
 
 You can’t possibly usher all bugs toward meaningful progress during your shift.
-As a general rule, expect to spend a solid ten hours ushering bugs toward
-progress during your shift. Use the `last updated` column to avoid duplicating
-the work of the previous secondary.
+As a general rule, expect to spend a solid two hours each day  ushering bugs
+toward progress during your shift. Use the `last updated` column to avoid
+duplicating the work of the previous secondary.
 
 ### Handle incoming security emails
 
@@ -464,9 +470,11 @@ What do I do here?
 You are not responsible for handling merges or approving a fix for backmerge.
 If the issue is resolved and there is a landed CL, please ensure the bug is
 closed as Fixed. Please also make sure the bug has a severity and FoundIn set.
-This will allow the bot (Sheriffbot) to add the appropriate merge review labels
-(based on rules driven by severity and security_impact, derived from FoundIn).
-See [security merge triage](../process/merge_request.md#Security-merge-triage)
+This will allow the bot (Sheriffbot) to add the appropriately update the Merge
+custom field with the appropriate request-MMM or review-MMM labels, where MMM =
+the milestones for backmerge consideration (based on rules driven by severity
+(and security_impact, derived from Found In). See
+[security merge triage](../process/merge_request.md#Security-merge-triage)
 for more information.
 
 That issue will be visible to the security merge review queue. There are
@@ -481,20 +489,22 @@ after at least the fix has had sufficient bake time on Canary.
 
 ### I have questions related to Chrome VRP policy and scope.
 
-[Chrome VRP policies and rewards page](https://g.co/chrome/vrp). You can also
-reach out directly to the Chrome VRP TL or ask questions in the
+[Chrome VRP policies and rewards page](https://g.co/chrome/vrp) and [Chrome VRP
+News and FAQs](vrp-faq.md). You can also reach out directly to the Chrome VRP
+TL or ask questions in the
 [Chrome Security Shepherds chat](http://go/chrome-security-shepherds-chat), all
 VRP Panel members are also members of that chat.
 
 ### There is PII or other data in a report we do not want to publicly disclose.
 
-For these cases, please add the `Restrict-View-SecurityEmbargo` label to the
-report. For cases of PII that can’t be permanently deleted for the report, this
-label should remain indefinitely.
+For these cases, please add the `SecurityEmbargo` hotlist (hotlistID: 1053360)
+to the report. For cases of PII that can’t be permanently deleted for the
+report, this label should remain indefinitely.
 
 For cases in which we are just delaying public disclosure (such as when a
 security issue impacts other products or vendors), please use this label and set
-a next-action date so that disclosure can be re-evaluated at that time.
+a date in the `Next Action` field so that disclosure can be re-evaluated at
+that time.
 
 ### Protecting researcher identities
 
@@ -522,12 +532,8 @@ cases:
 * As soon as possible, reach out the Shepherds chat for a Chrome Security
   Incident Responder, so they can take on IR Commander responsibilities.
 * Sometimes features can be switched off using feature flags – for example
-  [in permissions](https://docs.google.com/document/d/17JeYt3c1GgghYoxy4NKJnlxrteAX8F4x-MAzTeXqP4U).
-  Check with the engineer if that is a possibility in the case of this issue.
+  [in permissions](https://docs.google.com/document/d/17JeYt3c1GgghYoxy4NKJnlxrteAX8F4x-MAzTeXqP4U).  Check with the engineer if that is a possibility in the case of this issue.
 
-
-That's a lot of stuff! You have this resource and your peers to lean on
-for questions and expertise. Hopefully this doc helps.
+That's a lot of stuff! You have this resource and your peers to lean on for
+questions and expertise. Hopefully this doc helps.
 You're gonna do great!
-
-
