@@ -158,7 +158,8 @@ class LiveCaptionUiRemoteDriverTest : public InProcessBrowserTest {
     // many tests.
     if (stub_bounds) {
       EXPECT_CALL(*surface, GetBounds(_))
-          .WillOnce([&](auto cb) { std::move(cb).Run(gfx::Rect(1, 2, 3, 4)); })
+          .WillOnce(
+              [&](auto cb) { std::move(cb).Run(gfx::Rect(1, 1, 600, 800)); })
           .RetiresOnSaturation();
     }
 
