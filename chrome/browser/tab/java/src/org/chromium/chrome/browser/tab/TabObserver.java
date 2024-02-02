@@ -71,9 +71,6 @@ public interface TabObserver {
      */
     void onLoadUrl(Tab tab, LoadUrlParams params, LoadUrlResult loadUrlResult);
 
-    // DEPRECATED:
-    void onLoadUrl(Tab tab, LoadUrlParams params, int loadType);
-
     /**
      * Called when a tab has started to load a page.
      * <p>

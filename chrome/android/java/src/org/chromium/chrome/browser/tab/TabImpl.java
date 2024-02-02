@@ -599,8 +599,6 @@ class TabImpl implements Tab {
 
             for (TabObserver observer : mObservers) {
                 observer.onLoadUrl(this, params, result);
-                // TODO(gangwu): Delete after all the code stop using this.
-                observer.onLoadUrl(this, params, result.tabLoadStatus);
             }
             return result;
         } finally {
