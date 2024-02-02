@@ -32902,6 +32902,9 @@ would be helpful to identify which type is being sent.
   <int value="31" label="L3T2KeyShift"/>
   <int value="32" label="L3T3Key"/>
   <int value="33" label="L3T3KeyShift"/>
+  <int value="34" label="L3T1h"/>
+  <int value="35" label="L3T2h"/>
+  <int value="36" label="L3T3h"/>
 </enum>
 
 <enum name="SyncDownloadStatusWaitingForUpdatesReason">

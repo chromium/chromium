@@ -142,6 +142,12 @@ const char* GetScalabilityModeName(SVCScalabilityMode scalability_mode) {
       return "L3T3_KEY";
     case SVCScalabilityMode::kL3T3KeyShift:
       return "L3T3_KEY_SHIFT";
+    case SVCScalabilityMode::kL3T1h:
+      return "L3T1h";
+    case SVCScalabilityMode::kL3T2h:
+      return "L3T2h";
+    case SVCScalabilityMode::kL3T3h:
+      return "L3T3h";
   }
   NOTREACHED_NORETURN();
 }
