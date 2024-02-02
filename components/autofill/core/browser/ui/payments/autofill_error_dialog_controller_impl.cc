@@ -4,6 +4,7 @@
 
 #include "components/autofill/core/browser/ui/payments/autofill_error_dialog_controller_impl.h"
 
+#include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/payments/autofill_error_dialog_context.h"
@@ -22,7 +23,8 @@ AutofillErrorDialogControllerImpl::~AutofillErrorDialogControllerImpl() {
 
 void AutofillErrorDialogControllerImpl::Show(
     const AutofillErrorDialogContext& autofill_error_dialog_context,
-    base::OnceCallback<AutofillErrorDialogView*()> view_creation_callback) {
+    base::OnceCallback<base::WeakPtr<AutofillErrorDialogView>()>
+        view_creation_callback) {
   if (autofill_error_dialog_view_) {
     Dismiss();
   }
@@ -42,6 +44,11 @@ void AutofillErrorDialogControllerImpl::Show(
     base::UmaHistogramEnumeration("Autofill.ErrorDialogShown.WithServerText",
                                   autofill_error_dialog_context.type);
   }
+}
+
+base::WeakPtr<AutofillErrorDialogController>
+AutofillErrorDialogControllerImpl::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
 }
 
 void AutofillErrorDialogControllerImpl::OnDismissed() {

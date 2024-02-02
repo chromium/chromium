@@ -5,12 +5,16 @@
 #ifndef CHROME_BROWSER_UI_AUTOFILL_PAYMENTS_VIEW_FACTORY_H_
 #define CHROME_BROWSER_UI_AUTOFILL_PAYMENTS_VIEW_FACTORY_H_
 
+#include "base/memory/weak_ptr.h"
+
 namespace content {
 class WebContents;
 }
 
 namespace autofill {
 
+class AutofillErrorDialogController;
+class AutofillErrorDialogView;
 class AutofillProgressDialogController;
 class AutofillProgressDialogView;
 
@@ -22,6 +26,15 @@ class AutofillProgressDialogView;
 // when dismissed.
 AutofillProgressDialogView* CreateAndShowProgressDialog(
     AutofillProgressDialogController* controller,
+    content::WebContents* web_contents);
+
+// Factory function for creating and showing the view.
+// Note: On Desktop the view's ownership is transferred to the widget, which
+// deletes it on dismissal, so no lifecycle management is needed. However, on
+// Android this is not the case, the view's implementation must delete itself
+// when dismissed.
+base::WeakPtr<AutofillErrorDialogView> CreateAndShowAutofillErrorDialog(
+    AutofillErrorDialogController* controller,
     content::WebContents* web_contents);
 
 }  // namespace autofill

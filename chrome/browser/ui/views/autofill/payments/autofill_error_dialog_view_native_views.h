@@ -5,11 +5,13 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_AUTOFILL_PAYMENTS_AUTOFILL_ERROR_DIALOG_VIEW_NATIVE_VIEWS_H_
 #define CHROME_BROWSER_UI_VIEWS_AUTOFILL_PAYMENTS_AUTOFILL_ERROR_DIALOG_VIEW_NATIVE_VIEWS_H_
 
-#include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "components/autofill/core/browser/ui/payments/autofill_error_dialog_view.h"
 #include "ui/views/window/dialog_delegate.h"
 
 namespace autofill {
+
+class AutofillErrorDialogController;
 
 // The native views for AutofillErrorDialogView.
 class AutofillErrorDialogViewNativeViews : public AutofillErrorDialogView,
@@ -30,9 +32,13 @@ class AutofillErrorDialogViewNativeViews : public AutofillErrorDialogView,
   views::View* GetContentsView() override;
   void AddedToWidget() override;
   std::u16string GetWindowTitle() const override;
+  base::WeakPtr<AutofillErrorDialogView> GetWeakPtr() override;
 
  private:
-  raw_ptr<AutofillErrorDialogController> controller_;
+  base::WeakPtr<AutofillErrorDialogController> controller_;
+
+  base::WeakPtrFactory<AutofillErrorDialogViewNativeViews> weak_ptr_factory_{
+      this};
 };
 
 }  // namespace autofill

@@ -7,6 +7,8 @@
 
 #include <string>
 
+#include "base/memory/weak_ptr.h"
+
 namespace autofill {
 
 // Interface that exposes controller functionality to AutofillErrorDialogView.
@@ -27,6 +29,8 @@ class AutofillErrorDialogController {
   virtual const std::u16string GetDescription() = 0;
   // Text for the positive button which cancels the dialog.
   virtual const std::u16string GetButtonLabel() = 0;
+
+  virtual base::WeakPtr<AutofillErrorDialogController> GetWeakPtr() = 0;
 
  protected:
   virtual ~AutofillErrorDialogController() = default;
