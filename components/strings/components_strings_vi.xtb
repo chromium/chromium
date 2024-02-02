@@ -2459,6 +2459,8 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="5838732667866024867">Bạn có thể sử dụng mũi tên trái/phải để xem sự thay đổi giá trên biểu đồ</translation>
 <translation id="5840318881868981258">Trong Tài khoản Google của bạn, <ph name="ACCOUNT" /></translation>
 <translation id="5841338463993781099">Lưu trong tài khoản?</translation>
+<translation id="5843987376989109187">Ngôn ngữ này chưa được hỗ trợ.
+    <ph name="BEGIN_LINK" />Tìm hiểu thêm<ph name="END_LINK" /></translation>
 <translation id="5847181246682413476">Nguồn điện</translation>
 <translation id="5851548754964597211">Danh sách thẻ</translation>
 <translation id="5852909432155870672">RA4</translation>
@@ -4109,6 +4111,7 @@ Thông tin chi tiết bổ sung:
 <translation id="9049981332609050619">Bạn đã cố truy cập vào <ph name="DOMAIN" />, nhưng máy chủ cho biết chứng chỉ không hợp lệ.</translation>
 <translation id="9050666287014529139">Cụm mật khẩu</translation>
 <translation id="9051072642122229460">Cà phê và máy pha cà phê Espresso</translation>
+<translation id="9051260467258969162">Hãy <ph name="BEGIN_LINK" />đăng nhập<ph name="END_LINK" /> lại, rồi quay lại thẻ này để được trợ giúp khi viết</translation>
 <translation id="9053840549256861041">Chúng tôi sắp ra mắt tính năng mới về quyền riêng tư trong quảng cáo có tên là đo lường quảng cáo. Chrome chỉ chia sẻ một số ít thông tin giữa các trang web, chẳng hạn như thời điểm quảng cáo hiển thị với bạn, nhằm giúp các trang web đo lường hiệu suất của quảng cáo.</translation>
 <translation id="9056953843249698117">Cửa hàng</translation>
 <translation id="9062620674789239642">Tệp này có thể đã bị di chuyển, chỉnh sửa hoặc xóa.</translation>

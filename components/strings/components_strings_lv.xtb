@@ -2458,6 +2458,8 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="5838732667866024867">Lai izpētītu cenu izmaiņas diagrammā, varat izmantot kreiso un labo bultiņu</translation>
 <translation id="5840318881868981258">Jūsu Google kontā: <ph name="ACCOUNT" /></translation>
 <translation id="5841338463993781099">Vai saglabāt kontā?</translation>
+<translation id="5843987376989109187">Šī valoda vēl netiek atbalstīta.
+    <ph name="BEGIN_LINK" />Uzziniet vairāk<ph name="END_LINK" />.</translation>
 <translation id="5847181246682413476">Energoapgāde</translation>
 <translation id="5851548754964597211">Ciļņu saraksts</translation>
 <translation id="5852909432155870672">RA4</translation>
@@ -4108,6 +4110,7 @@ Papildu informācija:
 <translation id="9049981332609050619">Jūs centāties piekļūt <ph name="DOMAIN" />, bet serveris piedāvāja nederīgu sertifikātu.</translation>
 <translation id="9050666287014529139">Ieejas frāze</translation>
 <translation id="9051072642122229460">Kafijas un espreso automāti</translation>
+<translation id="9051260467258969162">Vēlreiz <ph name="BEGIN_LINK" />pierakstieties<ph name="END_LINK" /> un pēc tam atgriezieties šajā cilnē, lai saņemtu palīdzību rakstīšanā.</translation>
 <translation id="9053840549256861041">Tiek izlaista jauna reklāmu konfidencialitātes funkcija, ko dēvē par reklāmu novērtēšanu. Lai palīdzētu vietnēs novērtēt reklāmu veiktspēju, Chrome starp dažādām vietnēm kopīgo tikai ļoti ierobežotu informāciju, piemēram, par laiku, kad jums tika parādīta noteikta reklāma.</translation>
 <translation id="9056953843249698117">Veikals</translation>
 <translation id="9062620674789239642">Iespējams, tas ir pārvietots, rediģēts vai izdzēsts.</translation>

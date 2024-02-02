@@ -4503,6 +4503,21 @@ Cette règle n'a aucune incidence lorsque la règle <ph name="DEVICE_SCREENSAVER
 <translation id="4726895359147376813">Mappage avec les configurations de VM à partir des ID persistants</translation>
 <translation id="4733471537137819387">Stratégies liées à l'authentification HTTP intégrée</translation>
 <translation id="473613500147803115">Bloquer l'autorisation MIDI sur ces sites</translation>
+<translation id="4736591493257545761">Modèle URI du résolveur DNS-over-HTTPS souhaité. Pour définir plusieurs résolveurs DNS-over-HTTPS, vous devez séparer les modèles URI correspondants à l'aide d'espaces. Cette règle est très semblable à <ph name="DOH_TEMPLATES_POLICY_NAME" /> et l'ignore lorsqu'elle est spécifiée.
+Contrairement à <ph name="DOH_TEMPLATES_POLICY_NAME" />, cette règle permet de spécifier des informations d'identification.
+Les identifiants sont spécifiés à l'aide d'espaces réservés servant de variables et remplacés par des informations sur l'utilisateur ou l'appareil dans <ph name="PRODUCT_NAME" />. Les identifiants ne sont pas envoyés au serveur DNS en texte brut. Ils sont hachés avec l'algorithme <ph name="SHA256" /> et encodés en hexadécimal avec majuscules.
+
+Les identifiants sont spécifiés entre accolades, précédés du signe dollar. Pour identifier l'utilisateur, utilisez les espaces réservés <ph name="USER_EMAIL" />, <ph name="USER_EMAIL_DOMAIN" /> et <ph name="USER_EMAIL_NAME" />. Pour identifier l'appareil, utilisez les espaces réservés <ph name="DEVICE_DIRECTORY_ID" />, <ph name="DEVICE_SERIAL_NUMBER" />, <ph name="DEVICE_ASSET_ID" /> et <ph name="DEVICE_ANNOTATED_LOCATION" />.
+
+Avant la version 122, les identifiants d'appareil n'étaient pas remplacés pour les utilisateurs non affiliés. À partir de la version 122, les espaces réservés liés à l'appareil sont remplacés par la valeur <ph name="DEVICE_NOT_MANAGED" />, qui est hachée et encodée en hexadécimal.
+
+Si <ph name="DOH_MODE_POLICY_NAME" /> est défini sur <ph name="SECURE_DNS_MODE_SECURE" />, cette règle (ou la règle <ph name="DOH_TEMPLATES_POLICY_NAME" />) doit être définie. Elle ne peut pas rester vide.
+
+Si vous avez configuré cette règle et défini <ph name="DOH_MODE_POLICY_NAME" /> sur <ph name="SECURE_DNS_MODE_AUTOMATIC" />, les modèles URI spécifiés sont appliqués. Si vous n'avez pas configuré cette règle, des correspondances codées en dur sont appliquées pour tenter de passer du résolveur DNS actuel de l'utilisateur à un résolveur DoH géré par le même fournisseur.
+
+Si le modèle URI contient une variable <ph name="HTTP_VARIABLE_DNS" />, les requêtes envoyées au résolveur utilisent la méthode <ph name="HTTP_METHOD_GET" />. Sinon, elles utilisent la méthode <ph name="HTTP_METHOD_POST" />.
+
+À partir de la version 114, <ph name="DOH_SALT_POLICY_NAME" /> est facultative si cette règle est configurée.</translation>
 <translation id="473673197014866318">Cette règle permet de contrôler les paramètres de gestion des extensions pour <ph name="PRODUCT_NAME" />, y compris ceux contrôlés par des règles existantes liées aux extensions. Elle remplace toutes les anciennes règles susceptibles d'être configurées.
 
 Elle fait correspondre un ID d'extension ou une URL de mise à jour uniquement avec sa configuration spécifique. Une configuration par défaut peut être définie pour l'ID spécial <ph name="DEFAULT_SCOPE" />, lequel s'applique à toutes les extensions pour lesquelles aucune configuration personnalisée n'est définie dans cette règle. Avec une URL de mise à jour, la configuration s'applique aux extensions avec l'URL de mise à jour telle qu'elle est indiquée dans le fichier manifeste de ces extensions (pour en savoir plus, consultez la page http://support.google.com/chrome/a?p=Configure_ExtensionSettings_policy). Si l'indicateur "override_update_url" est défini sur "True", l'extension est installée et mise à jour à l'aide de l'URL spécifiée dans la règle "<ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" />" ou dans le champ "update_url" de cette règle. L'indicateur "override_update_url" est ignoré si le champ "update_url" contient une URL du Chrome Web Store.

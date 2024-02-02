@@ -4483,6 +4483,21 @@ Dit beleid heeft geen effect als het beleid <ph name="DEVICE_SCREENSAVER_LOGIN_S
 <translation id="4726895359147376813">Toewijzing van permanente ID's naar VM-configuraties</translation>
 <translation id="4733471537137819387">Beleid met betrekking tot geïntegreerde HTTP-authenticatie.</translation>
 <translation id="473613500147803115">MIDI-rechten blokkeren op deze sites</translation>
+<translation id="4736591493257545761">De URI-template van de gewenste DNS-over-HTTPS-resolver. Als je meerdere DNS-over-HTTPS-resolvers wilt invoeren, scheid je de overeenkomstige URI-templates met een spatie. Dit beleid lijkt sterk op <ph name="DOH_TEMPLATES_POLICY_NAME" />, dat wordt overschreven als dit is gespecificeerd.
+In tegenstelling tot het beleid <ph name="DOH_TEMPLATES_POLICY_NAME" /> ondersteunt dit beleid het invoeren van identiteitsgegevens.
+ID's worden ingevoerd met variabele tijdelijke aanduidingen die worden vervangen door gebruikers- of apparaatgegevens in <ph name="PRODUCT_NAME" />. De ID's worden niet in platte tekst naar de DNS-server gestuurd. In plaats daarvan worden ze gehasht met het <ph name="SHA256" />-algoritme en worden ze in hoofdletters hex-gecodeerd.
+
+ID's worden tussen accolades geplaatst en worden voorafgegaan door het dollarteken. Gebruik deze tijdelijke aanduidingen voor gebruikersidentificatie: <ph name="USER_EMAIL" />, <ph name="USER_EMAIL_DOMAIN" /> en <ph name="USER_EMAIL_NAME" />. Gebruik deze tijdelijke aanduidingen voor apparaatidentificatie: <ph name="DEVICE_DIRECTORY_ID" />, <ph name="DEVICE_SERIAL_NUMBER" />, <ph name="DEVICE_ASSET_ID" /> en <ph name="DEVICE_ANNOTATED_LOCATION" />.
+
+Vóór versie 122 werden apparaat-ID's voor niet-aangesloten gebruikers niet vervangen. Vanaf versie 122 worden de tijdelijke aanduidingen voor apparaten vervangen door de waarde <ph name="DEVICE_NOT_MANAGED" />, die is gehasht en hex-gecodeerd.
+
+Als <ph name="DOH_MODE_POLICY_NAME" /> is ingesteld op <ph name="SECURE_DNS_MODE_SECURE" />, moet je dit beleid of <ph name="DOH_TEMPLATES_POLICY_NAME" /> instellen en niet leeg houden.
+
+Als <ph name="DOH_MODE_POLICY_NAME" /> is ingesteld op <ph name="SECURE_DNS_MODE_AUTOMATIC" /> en dit beleid is ingesteld, worden de opgegeven URI-templates gebruikt. Als dit beleid niet is ingesteld, worden hardgecodeerde toewijzingen gebruikt om te proberen de huidige DNS-resolver van de gebruiker te upgraden naar een DoH-resolver van dezelfde provider.
+
+Als de URI-template een <ph name="HTTP_VARIABLE_DNS" />-variabele bevat, wordt voor verzoeken aan de resolver <ph name="HTTP_METHOD_GET" /> gebruikt; anders wordt voor verzoeken <ph name="HTTP_METHOD_POST" /> gebruikt.
+
+In versie 114 en hoger is <ph name="DOH_SALT_POLICY_NAME" /> optioneel als dit beleid is ingesteld.</translation>
 <translation id="473673197014866318">Als je dit beleid instelt, worden de extensiebeheerinstellingen voor <ph name="PRODUCT_NAME" /> beheerd, waaronder instellingen die worden beheerd door bestaande, aan extensies gerelateerde beleidsregels. Dit beleid vervangt verouderde beleidsregels die misschien zijn ingesteld.
 
 Met dit beleid wordt alleen een extensie-ID of een update-URL toegewezen aan de bijbehorende specifieke instelling. Er kan een standaardconfiguratie worden ingesteld voor de speciale ID <ph name="DEFAULT_SCOPE" />, die van toepassing is op alle extensies waarvoor geen aangepaste configuratie is ingesteld in dit beleid. Bij een update-URL is de configuratie van toepassing op alle extensies met de exacte update-URL die wordt vermeld in het manifest van de extensie (http://support.google.com/chrome/a?p=Configure_ExtensionSettings_policy). Als de markering override_update_url is ingesteld op True, wordt de extensie geïnstalleerd en geüpdatet met de update-URL die is gespecificeerd in het beleid <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" /> of in het veld update_url in dit beleid. De markering override_update_url wordt genegeerd als de update_url een URL voor de Chrome Web Store is.

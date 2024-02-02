@@ -770,7 +770,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
           <ph name="END_LIST" /></translation>
 <translation id="2448295565072560657">Perifèrics connectats a aquest dispositiu mentre tens la sessió iniciada</translation>
 <translation id="2450021089947420533">Recorreguts</translation>
-<translation id="2452837234288608067">No hem pogut ajudar-te amb això. Torna-ho a provar.</translation>
+<translation id="2452837234288608067">No hem pogut ajudar-te. Torna-ho a provar.</translation>
 <translation id="2456755709261364512">La bateria ha d'estar carregada per sobre del <ph name="REQUIRED_BATTERY_PRECENT" />%</translation>
 <translation id="2462599289530201834">Cerca <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="2463739503403862330">Emplena</translation>
@@ -2459,6 +2459,8 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="5838732667866024867">Pots fer servir les fletxes esquerra o dreta per consultar els canvis de preu al gràfic</translation>
 <translation id="5840318881868981258">Al teu Compte de Google, <ph name="ACCOUNT" /></translation>
 <translation id="5841338463993781099">Vols que es desi al compte?</translation>
+<translation id="5843987376989109187">Aquest idioma encara no s'admet.
+    <ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /></translation>
 <translation id="5847181246682413476">Fonts d'alimentació</translation>
 <translation id="5851548754964597211">Llista de pestanyes</translation>
 <translation id="5852909432155870672">RA4</translation>
@@ -4108,6 +4110,7 @@ Detalls addicionals:
 <translation id="9049981332609050619">Heu provat d'accedir a <ph name="DOMAIN" />, però el servidor ha presentat un certificat no vàlid.</translation>
 <translation id="9050666287014529139">Frase de contrasenya</translation>
 <translation id="9051072642122229460">Cafeteres i cafeteres exprés</translation>
+<translation id="9051260467258969162"><ph name="BEGIN_LINK" />Inicia la sessió<ph name="END_LINK" /> de nou i, a continuació, torna a aquesta pestanya a fi d'obtenir ajuda per escriure</translation>
 <translation id="9053840549256861041">Estem llançant una nova funció de privadesa d'anuncis anomenada "mesurament d'anuncis". Chrome només comparteix informació molt limitada entre llocs web, com ara quan se t'ha mostrat un anunci, per ajudar els llocs web a mesurar el rendiment dels anuncis.</translation>
 <translation id="9056953843249698117">Botiga</translation>
 <translation id="9062620674789239642">És possible que s'hagi mogut, editat o suprimit.</translation>

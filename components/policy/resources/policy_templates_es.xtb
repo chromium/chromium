@@ -4514,6 +4514,21 @@ Esta política no tendrá ningún efecto si se asigna el valor false a la polít
 <translation id="4726895359147376813">Asignación desde IDs persistentes a configuraciones de VM</translation>
 <translation id="4733471537137819387">Políticas relacionadas con la autenticación HTTP integrada</translation>
 <translation id="473613500147803115">Bloquear el permiso de MIDI en estos sitios</translation>
+<translation id="4736591493257545761">La plantilla URI de la resolución de DNS-over-HTTPS deseada. Para especificar varias resoluciones de DNS-over-HTTPS, separa las plantillas URI correspondientes con espacios. Esta política es muy similar a <ph name="DOH_TEMPLATES_POLICY_NAME" />, a la que anulará si se define.
+A diferencia de la política <ph name="DOH_TEMPLATES_POLICY_NAME" />, esta política permite especificar información sobre la identidad.
+Los identificadores se especifican usando marcadores de posición variables que se sustituyen por la información del usuario o del dispositivo en <ph name="PRODUCT_NAME" />. Los identificadores no se envían al servidor DNS en texto sin formato. En su lugar, se cifran con hash usando el algoritmo <ph name="SHA256" /> y se codifican en hexadecimal en mayúsculas.
+
+Los identificadores se especifican entre corchetes con el símbolo del dólar delante. Para identificar usuarios, usa los siguientes marcadores de posición: <ph name="USER_EMAIL" />, <ph name="USER_EMAIL_DOMAIN" /> y <ph name="USER_EMAIL_NAME" />. Para identificar dispositivos, usa los siguientes marcadores de posición: <ph name="DEVICE_DIRECTORY_ID" />, <ph name="DEVICE_SERIAL_NUMBER" />, <ph name="DEVICE_ASSET_ID" /> y <ph name="DEVICE_ANNOTATED_LOCATION" />.
+
+Antes de la versión 122, los identificadores de dispositivo no se sustituían para los usuarios no afiliados. A partir de la versión 122, los marcadores de posición de dispositivo se sustituyen por el valor <ph name="DEVICE_NOT_MANAGED" />, que está cifrado con hash y codificado en hexadecimal.
+
+Si se le asigna el valor <ph name="SECURE_DNS_MODE_SECURE" /> a <ph name="DOH_MODE_POLICY_NAME" />, esta política o <ph name="DOH_TEMPLATES_POLICY_NAME" /> deberán definirse y no dejarse vacías.
+
+Si se le asigna el valor <ph name="SECURE_DNS_MODE_AUTOMATIC" /> a <ph name="DOH_MODE_POLICY_NAME" /> y esta política se define, se usarán las plantillas URI especificadas. Si la política no se define, se usarán las asignaciones codificadas para intentar cambiar la resolución de DNS actual de los usuarios a una resolución de DoH administrada por el mismo proveedor.
+
+Si la plantilla URI contiene una variable <ph name="HTTP_VARIABLE_DNS" />, las solicitudes para la resolución usarán <ph name="HTTP_METHOD_GET" />; de lo contrario, las solicitudes usarán <ph name="HTTP_METHOD_POST" />.
+
+En la versión 114 y posteriores, <ph name="DOH_SALT_POLICY_NAME" /> es opcional si se define esta política.</translation>
 <translation id="473673197014866318">Si se define esta política, se controlará la configuración de gestión de extensiones de <ph name="PRODUCT_NAME" />, incluidas las que controlen las políticas existentes relacionadas con las extensiones. Esta política sustituirá a todas las políticas antiguas que se hubieran establecido.
 
 Esta política asociará un ID de extensión o una URL de actualización únicamente a su configuración específica. Se puede definir una configuración predeterminada para el ID especial <ph name="DEFAULT_SCOPE" />, que se aplicará a todas las extensiones para las que no se haya definido una configuración personalizada en esta política. Si se usa una URL de actualización, la configuración se aplicará a las extensiones que incluyan la misma URL de actualización en su archivo de manifiesto (http://support.google.com/chrome/a?p=Configure_ExtensionSettings_policy). Si al indicador "override_update_url" se le asigna el valor true, la extensión se instalará y se actualizará mediante la URL de actualización que se especifique en la política <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" /> o en el campo "update_url" de esta política. Se ignorará el indicador "override_update_url" si el valor de "update_url" es una URL de Chrome Web Store.

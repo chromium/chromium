@@ -2455,6 +2455,8 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="5838732667866024867">Pomocou šípky doľava alebo doprava môžete skontrolovať zmeny ceny na grafe</translation>
 <translation id="5840318881868981258">Vo vašom účte Google <ph name="ACCOUNT" /></translation>
 <translation id="5841338463993781099">Chcete adresu uložiť v účte?</translation>
+<translation id="5843987376989109187">Tento jazyk zatiaľ nie je podporovaný.
+    <ph name="BEGIN_LINK" />Ďalšie informácie<ph name="END_LINK" /></translation>
 <translation id="5847181246682413476">Zdroje napájania</translation>
 <translation id="5851548754964597211">Zoznam kariet</translation>
 <translation id="5852909432155870672">RA4</translation>
@@ -4104,6 +4106,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="9049981332609050619">Pokúšate sa otvoriť doménu <ph name="DOMAIN" />, ale server predložil neplatný certifikát.</translation>
 <translation id="9050666287014529139">Prístupová fráza</translation>
 <translation id="9051072642122229460">Kávovary a automaty na espreso</translation>
+<translation id="9051260467258969162">Ak chcete získať pomoc s písaním, znova <ph name="BEGIN_LINK" />sa prihláste<ph name="END_LINK" /> a vráťte sa na túto kartu</translation>
 <translation id="9053840549256861041">Predstavujeme novú funkciu ochrany súkromia pri reklamách nazvanú Meranie reklám. Na pomoc s meraním výkonnosti reklám zdieľa Chrome medzi webmi iba veľmi obmedzené informácie, napríklad to, kedy sa vám reklama zobrazila.</translation>
 <translation id="9056953843249698117">Obchod</translation>
 <translation id="9062620674789239642">Mohol byť presunutý, upravený alebo odstránený.</translation>

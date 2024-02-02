@@ -2459,6 +2459,8 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="5838732667866024867">Aby sprawdzić zmiany cen na wykresie, możesz używać strzałek w lewo i w prawo</translation>
 <translation id="5840318881868981258">Na koncie Google <ph name="ACCOUNT" /></translation>
 <translation id="5841338463993781099">Zapisać na koncie?</translation>
+<translation id="5843987376989109187">Ten język nie jest jeszcze obsługiwany.
+    <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
 <translation id="5847181246682413476">Zasilacze i ładowarki</translation>
 <translation id="5851548754964597211">Lista kart</translation>
 <translation id="5852909432155870672">RA4</translation>
@@ -4108,6 +4110,7 @@ Dodatkowe informacje:
 <translation id="9049981332609050619">Podjęto próbę nawiązania połączenia z witryną <ph name="DOMAIN" />, jednak serwer przedstawił nieprawidłowy certyfikat.</translation>
 <translation id="9050666287014529139">Hasło</translation>
 <translation id="9051072642122229460">Ekspresy do kawy</translation>
+<translation id="9051260467258969162"><ph name="BEGIN_LINK" />Zaloguj się<ph name="END_LINK" /> ponownie i wróć na tę kartę, aby uzyskać pomoc w pisaniu</translation>
 <translation id="9053840549256861041">Wprowadzamy pomiar skuteczności reklam – nową funkcję ochrony prywatności w reklamach. Chrome udostępnia witrynom bardzo ograniczone informacje (np. o tym, kiedy reklama się wyświetliła), aby pomagać im w ocenie skuteczności reklam.</translation>
 <translation id="9056953843249698117">Sklep</translation>
 <translation id="9062620674789239642">Mógł zostać przeniesiony, edytowany lub usunięty.</translation>

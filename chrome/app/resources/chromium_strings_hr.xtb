@@ -280,7 +280,7 @@ Dopuštenja koja ste već dali web-lokacijama i aplikacijama mogu se primijeniti
 <translation id="6144416395842701622">Prijavite se da biste iskoristili sve prednosti Chromiuma</translation>
 <translation id="6145820983052037069">Ovdje se možete prebacivati između profila u Chromiumu</translation>
 <translation id="615103374448673771">Ako dopustite kolačiće, Chromium ih može koristiti prilikom predučitavanja.</translation>
-<translation id="6174920971222007286">Datoteka može biti opasna<ph name="LINE_BREAK" />Chromium može provjeriti to preuzimanje za vas ako unesete zaporku. Podaci o datoteci šalju se Google sigurnom pregledavanju, ali sadržaj i zaporka datoteke ostaju na vašem uređaju.</translation>
+<translation id="6174920971222007286">Datoteka može biti opasna<ph name="LINE_BREAK" />Chromium može provjeriti tu datoteku za vas ako unesete zaporku. Podaci o datoteci šalju se Google sigurnom pregledavanju, ali sadržaj i zaporka datoteke ostaju na vašem uređaju.</translation>
 <translation id="6175304430031192654">Ovisno o postavkama, Chromium može slati kolačiće i vaš trenutačni URL</translation>
 <translation id="6182736845697986886">Instalacija nije uspjela zbog interne pogreške poslužitelja ažuriranja.</translation>
 <translation id="6183079672144801177">Obavezno se prijavite na Chromium na uređaju <ph name="TARGET_DEVICE_NAME" /> i nakon toga ponovno pokušajte sa slanjem.</translation>

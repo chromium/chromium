@@ -21,7 +21,7 @@
 <translation id="1119447706177454957">Interna pogreška</translation>
 <translation id="1124772482545689468">Korisnik</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
-<translation id="1134416403025830762">množenje</translation>
+<translation id="1134416403025830762">pomnožite</translation>
 <translation id="1145018782460575098">Otvoren je prozor za ažuriranje opreme za vanjske uređaje. Dostupna ažuriranja: <ph name="NUM_UPDATES" />.</translation>
 <translation id="1145516343487477149">Pronađite članke pomoći i odgovore na česta pitanja o Chromebooku</translation>
 <translation id="1154390310959620237">Možete prilagoditi samo 5 prečaca. Izbrišite prečac kako biste dodali novi.</translation>
@@ -89,7 +89,7 @@
 <translation id="155865706765934889">Dodirna površina</translation>
 <translation id="1561927818299383735">boja pozadinskog osvjetljenja</translation>
 <translation id="1565038567006703504">Ažuriranje uređaja <ph name="DEVICE_NAME" /> nije moguće</translation>
-<translation id="1566493343215789965">dijeljenje</translation>
+<translation id="1566493343215789965">podijelite</translation>
 <translation id="1567064801249837505">Albumi</translation>
 <translation id="1572585716423026576">Postavi kao pozadinu</translation>
 <translation id="1578784163189013834">Odabir pozadine čuvara zaslona</translation>
@@ -874,7 +874,7 @@
 <translation id="7331297744262591636">Morate imati najmanje 18 godina i prihvatiti da se na vašu upotrebu AI pozadina primjenjuju <ph name="GOOGLE_TERMS_OF_SERVICE_LINK" />Googleovi uvjeti pružanja usluge<ph name="END_LINK_GOOGLE_TERMS_OF_SERVICE" /> i <ph name="BEGIN_LINK_GEN_AI_TERMS_OF_SERVICE" />dodatni uvjeti pružanja usluge za generativni AI<ph name="END_LINK_GEN_AI_TERMS_OF_SERVICE" />.
           <ph name="LINE_BREAK" />
           <ph name="LINE_BREAK" />
-          Pozadine pomoću AI-ja možete izraditi samo za osobnu i nekomercijalnu upotrebu. Kada dobijete pomoć za pozadinu, tekst se šalje poslužiteljima Googleovog AI-ja radi generiranja prijedloga za pozadinu, u skladu s <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Googleovim pravilima o privatnosti<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />. <ph name="BEGIN_LINK_LEARN_MORE" />Saznajte više<ph name="END_LINK_LEARN_MORE" /></translation>
+          Pomoću AI-ja možete izraditi samo pozadine za osobnu i nekomercijalnu upotrebu. Kada dobijete pomoć za pozadinu, tekst se šalje poslužiteljima Googleovog AI-ja radi generiranja prijedloga za pozadinu, u skladu s <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Googleovim pravilima o privatnosti<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />. <ph name="BEGIN_LINK_LEARN_MORE" />Saznajte više<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Pritisnite Pretraži i razmaknicu da biste vidjeli rezultate u Google pretraživanju.</translation>
 <translation id="7343649194310845056">Mrežni uređaji</translation>
 <translation id="7353413232959255829">Rezultat pretraživanja <ph name="LIST_POSITION" /> od <ph name="LIST_SIZE" />: <ph name="SEARCH_RESULT_TEXT" />. Pritisnite Enter da biste otvorili prečac.</translation>

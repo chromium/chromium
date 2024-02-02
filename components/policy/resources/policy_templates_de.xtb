@@ -4487,6 +4487,21 @@ Diese Richtlinie wird nicht angewendet, wenn die Richtlinie <ph name="DEVICE_SCR
 <translation id="4726895359147376813">Zuordnung von persistenten IDs zu VM-Konfigurationen</translation>
 <translation id="4733471537137819387">Strategien im Hinblick auf die integrierte HTTP-Authentifizierung</translation>
 <translation id="473613500147803115">MIDI-Berechtigung für diese Websites blockieren</translation>
+<translation id="4736591493257545761">Die URI-Vorlage des gewünschten DNS-over-HTTPS-Resolvers. Wenn du mehrere DNS-over-HTTPS-Resolver angeben möchtest, trenne die dazugehörigen URI-Vorlagen durch Leerzeichen. Diese Richtlinie ist der Richtlinie „<ph name="DOH_TEMPLATES_POLICY_NAME" />“ sehr ähnlich, die sie überschreibt, wenn sie konfiguriert ist.
+Im Gegensatz zur Richtlinie „<ph name="DOH_TEMPLATES_POLICY_NAME" />“ unterstützt diese Richtlinie die Angabe von Informationen zur Identität.
+IDs werden mithilfe von Variablenplatzhaltern angegeben, die in <ph name="PRODUCT_NAME" /> durch Nutzer- oder Geräteinformationen ersetzt werden. Die IDs werden nicht in Nur-Text an den DNS-Server gesendet. Stattdessen werden sie mit dem <ph name="SHA256" />-Algorithmus gehasht und im Hexadezimalsystem mit Großbuchstaben codiert.
+
+IDs werden in geschweiften Klammern angegeben, denen ein Dollarzeichen vorangestellt ist. Verwende zur Nutzeridentifikation die Platzhalter „<ph name="USER_EMAIL" />“, „<ph name="USER_EMAIL_DOMAIN" />“ und „<ph name="USER_EMAIL_NAME" />“ und zur Geräteidentifikation die Platzhalter „<ph name="DEVICE_DIRECTORY_ID" />“, „<ph name="DEVICE_SERIAL_NUMBER" />“, „<ph name="DEVICE_ASSET_ID" />“ und „<ph name="DEVICE_ANNOTATED_LOCATION" />“.
+
+Vor Version 122 wurden Geräte-IDs für nicht verbundene Nutzer nicht ersetzt. Ab Version 122 werden die Geräteplatzhalter durch den Wert „<ph name="DEVICE_NOT_MANAGED" />“ ersetzt, der gehasht und im Hexadezimalsystem codiert ist.
+
+Wenn „<ph name="DOH_MODE_POLICY_NAME" />“ auf „<ph name="SECURE_DNS_MODE_SECURE" />“ gesetzt ist, muss entweder diese Richtlinie oder „<ph name="DOH_TEMPLATES_POLICY_NAME" />“ konfiguriert werden und darf nicht leer sein.
+
+Ist „<ph name="DOH_MODE_POLICY_NAME" />“ auf „<ph name="SECURE_DNS_MODE_AUTOMATIC" />“ gesetzt und diese Richtlinie konfiguriert, werden die angegebenen URI-Vorlagen verwendet. Wenn die Richtlinie nicht konfiguriert ist, werden hartcodierte Zuordnungen verwendet, um einen Upgradeversuch vom aktuellen DNS-Resolver des Nutzers auf einen DoH-Resolver vorzunehmen, der von demselben Anbieter betrieben wird.
+
+Sollte die URI-Vorlage die Variable „<ph name="HTTP_VARIABLE_DNS" />“ enthalten, wird für Anfragen an den Resolver „<ph name="HTTP_METHOD_GET" />“ verwendet. Andernfalls kommt „<ph name="HTTP_METHOD_POST" />“ zum Einsatz.
+
+In Version 114 und höher ist „<ph name="DOH_SALT_POLICY_NAME" />“ optional, wenn diese Richtlinie konfiguriert ist.</translation>
 <translation id="473673197014866318">Mit dieser Richtlinie werden Einstellungen zur Erweiterungsverwaltung für <ph name="PRODUCT_NAME" /> festgelegt, darunter Einstellungen, die von anderen auf Erweiterungen bezogenen Richtlinien geregelt werden. Durch diese Richtlinie werden alle älteren Richtlinien überschrieben.
 
 Mit dieser Richtlinie wird eine Erweiterungs-ID oder eine Update-URL nur ihrer bestimmten Einstellung zugeordnet. Eine Standardkonfiguration kann für die Spezial-ID „<ph name="DEFAULT_SCOPE" />“ festgelegt werden, die auf alle Erweiterungen angewendet wird, für die keine benutzerdefinierte Konfiguration in dieser Richtlinie konfiguriert ist. Bei einer Update-URL wird die Konfiguration auf alle Erweiterungen mit genau der im Manifest dieser Erweiterung angegebenen Update-URL angewendet (http://support.google.com/chrome/a?p=Configure_ExtensionSettings_policy). Wenn für „override_update_url“ die Option „True“ festgelegt ist, wird die Erweiterung über die in der Richtlinie „<ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" />“ oder im Feld „update_url“ dieser Richtlinie angegebene Update-URL installiert und aktualisiert. Das Flag „override_update_url“ wird ignoriert, wenn „update_url“ eine URL für den Chrome Web Store ist.

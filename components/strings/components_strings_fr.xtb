@@ -2459,6 +2459,8 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="5838732667866024867">Vous pouvez utiliser les flèches vers la gauche/droite pour consulter l'évolution des prix sur le graphique</translation>
 <translation id="5840318881868981258">Dans votre compte Google <ph name="ACCOUNT" /></translation>
 <translation id="5841338463993781099">Enregistrer dans le compte ?</translation>
+<translation id="5843987376989109187">Cette langue n'est pas encore disponible.
+    <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="5847181246682413476">Alimentation électrique</translation>
 <translation id="5851548754964597211">Liste d'onglets</translation>
 <translation id="5852909432155870672">RA4</translation>
@@ -4109,6 +4111,7 @@ Informations supplémentaires :
 <translation id="9049981332609050619">Vous avez tenté de contacter <ph name="DOMAIN" />, mais le certificat présenté par le serveur est incorrect.</translation>
 <translation id="9050666287014529139">Phrase secrète</translation>
 <translation id="9051072642122229460">Cafetières et machines à espresso</translation>
+<translation id="9051260467258969162"><ph name="BEGIN_LINK" />Reconnectez-vous<ph name="END_LINK" />, puis revenez sur cet onglet pour obtenir de l'aide pour écrire</translation>
 <translation id="9053840549256861041">Nous lançons une nouvelle fonctionnalité de confidentialité des annonces : la mesure des annonces. Chrome ne partage que des informations très limitées entre les sites, comme le moment où une annonce vous a été montrée, afin d'aider les sites à mesurer la performance des annonces.</translation>
 <translation id="9056953843249698117">Magasin</translation>
 <translation id="9062620674789239642">Il a peut-être été déplacé, modifié ou supprimé.</translation>

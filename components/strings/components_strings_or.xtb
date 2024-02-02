@@ -2457,6 +2457,8 @@
 <translation id="5838732667866024867">ଗ୍ରାଫରେ ମୂଲ୍ୟ ପରିବର୍ତ୍ତନର ସମୀକ୍ଷା କରିବା ପାଇଁ ଆପଣ ବାମ/ ଡାହାଣ ତୀର ବ୍ୟବହାର କରିପାରିବେ</translation>
 <translation id="5840318881868981258">ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରେ, <ph name="ACCOUNT" /></translation>
 <translation id="5841338463993781099">ଆକାଉଣ୍ଟରେ ସେଭ କରିବେ?</translation>
+<translation id="5843987376989109187">ଏହି ଭାଷା ଏପର୍ଯ୍ୟନ୍ତ ସମର୍ଥିତ ନୁହେଁ।
+    <ph name="BEGIN_LINK" />ଅଧିକ ଜାଣନ୍ତୁ<ph name="END_LINK" /></translation>
 <translation id="5847181246682413476">ପାୱାର ସପ୍ଲାଇ</translation>
 <translation id="5851548754964597211">ଟାବ୍‍ର ତାଲିକା</translation>
 <translation id="5852909432155870672">RA4</translation>
@@ -4105,6 +4107,7 @@
 <translation id="9049981332609050619">ଆପଣ <ph name="DOMAIN" />ରେ ପହଞ୍ଚିବାକୁ ଚେଷ୍ଟା କରିଥିଲେ କିନ୍ତୁ ସର୍ଭର୍‌ ଏକ ଅବୈଧ ସାର୍ଟିଫିକେଟ୍‍ ଉପସ୍ଥାପନ କରିଛି।</translation>
 <translation id="9050666287014529139">ପାସ୍‌ଫ୍ରେଜ୍</translation>
 <translation id="9051072642122229460">କଫି ଏବଂ ଏସ୍ପ୍ରେସୋ ମେକର</translation>
+<translation id="9051260467258969162">ଲେଖିବାରେ ସହାୟତା ପାଇବା ପାଇଁ ପୁଣି <ph name="BEGIN_LINK" />ସାଇନ ଇନ<ph name="END_LINK" /> କରି ତା'ପରେ ଏହି ଟାବକୁ ଫେରନ୍ତୁ</translation>
 <translation id="9053840549256861041">ଆମେ ବିଜ୍ଞାପନ ପରିମାପ ନାମକ ଏକ ନୂଆ ବିଜ୍ଞାପନ ଗୋପନୀୟତା ଫିଚର ଲଞ୍ଚ କରୁଛୁ। Chrome ଆପଣଙ୍କୁ ଏକ ବିଜ୍ଞାପନ ଦେଖାଇବା ସମୟରେ ବିଜ୍ଞାପନଗୁଡ଼ିକର ପରଫରମାନ୍ସ ମାପିବାରେ ସାଇଟଗୁଡ଼ିକୁ ସାହାଯ୍ୟ କରିବା ପରି ସାଇଟଗୁଡ଼ିକ ମଧ୍ୟରେ ଅତି ସୀମିତ ସୂଚନା କେବଳ ସେୟାର କରେ।</translation>
 <translation id="9056953843249698117">Store</translation>
 <translation id="9062620674789239642">ଏହା ମୁଭ୍, ଏଡିଟ୍ କିମ୍ବା ଡିଲିଟ୍ କରାଯାଇଥାଇପାରେ।</translation>

@@ -2457,6 +2457,8 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="5838732667866024867">Mit dem Links-/Rechtspfeil kannst du Preisänderungen über das Diagramm überprüfen</translation>
 <translation id="5840318881868981258">In meinem Google-Konto, <ph name="ACCOUNT" /></translation>
 <translation id="5841338463993781099">In Konto speichern?</translation>
+<translation id="5843987376989109187">Diese Sprache wird noch nicht unterstützt.
+    <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
 <translation id="5847181246682413476">Stromversorgung</translation>
 <translation id="5851548754964597211">Tab-Liste</translation>
 <translation id="5852909432155870672">RA4</translation>
@@ -4108,6 +4110,7 @@ Weitere Details:
 <translation id="9049981332609050619">Du hast versucht, auf <ph name="DOMAIN" /> zuzugreifen, der Server hat sich jedoch mit einem ungültigen Zertifikat ausgewiesen.</translation>
 <translation id="9050666287014529139">Passphrase</translation>
 <translation id="9051072642122229460">Kaffee- und Espressomaschinen</translation>
+<translation id="9051260467258969162"><ph name="BEGIN_LINK" />Melde dich wieder an<ph name="END_LINK" /> und kehre dann zu diesem Tab zurück, um Hilfe beim Schreiben zu erhalten</translation>
 <translation id="9053840549256861041">Wir führen eine neue Funktion zum Datenschutz bei Werbung ein: „Erfolgsmessung von Anzeigen“. Chrome gibt nur sehr wenige Informationen zwischen Websites weiter – dazu zählt beispielsweise, wann dir eine Anzeige präsentiert wurde, damit Websites die Leistung von Werbung analysieren können.</translation>
 <translation id="9056953843249698117">Store</translation>
 <translation id="9062620674789239642">Eventuell wurde sie verschoben, bearbeitet oder gelöscht.</translation>

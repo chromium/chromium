@@ -1601,7 +1601,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="4132448310531350254"><ph name="FILE_EXTENSION" /> fitxategi-luzapenaren kudeatzaile bikoiztuei egiten diete erreferentzia <ph name="POLICY_IDS_LIST" /> darabilten aplikazioek.</translation>
 <translation id="4134123981501319574">Sortu dokumentu bat</translation>
 <translation id="413544239732274901">Lortu informazio gehiago</translation>
-<translation id="4140905530744469899">Profilaren IDa:</translation>
+<translation id="4140905530744469899">Profil-identifikatzailea:</translation>
 <translation id="4142935452406587478">10. erretilua</translation>
 <translation id="4148925816941278100">American Express</translation>
 <translation id="4150099059797363385">Gutun-azal txinatarra 4</translation>
@@ -2455,6 +2455,8 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="5838732667866024867">Grafikoko prezio-aldaketak berrikusteko, erabili ezkerrera eta eskuinera egiteko geziak</translation>
 <translation id="5840318881868981258">Zure Google-ko kontuan (<ph name="ACCOUNT" />)</translation>
 <translation id="5841338463993781099">Kontuan gorde nahi duzu?</translation>
+<translation id="5843987376989109187">Hizkuntza hau oraindik ez da onartzen.
+    <ph name="BEGIN_LINK" />Lortu informazio gehiago<ph name="END_LINK" /></translation>
 <translation id="5847181246682413476">Elikatze-iturriak</translation>
 <translation id="5851548754964597211">Fitxen zerrenda</translation>
 <translation id="5852909432155870672">RA4</translation>
@@ -4103,6 +4105,7 @@ Xehetasun gehiago:
 <translation id="9049981332609050619"><ph name="DOMAIN" /> domeinura konektatzen saiatu zara, baina zerbitzariak balio ez duen ziurtagiria aurkeztu du.</translation>
 <translation id="9050666287014529139">Pasaesaldia</translation>
 <translation id="9051072642122229460">Kafe eta kafe espreseko makinak</translation>
+<translation id="9051260467258969162">Idazteko laguntza jasotzeko, <ph name="BEGIN_LINK" />hasi saioa<ph name="END_LINK" /> berriro eta itzuli fitxa honetara</translation>
 <translation id="9053840549256861041">Iragarkietarako pribatutasun-eginbide berri bat kaleratu dugu: iragarkien neurketa. Webguneei iragarkien errendimendua neurtzen laguntzeko informazio oso mugatua soilik partekatzen du Chrome-k webguneen artean; adibidez, noiz erakutsi dizuten iragarki bat.</translation>
 <translation id="9056953843249698117">Denda</translation>
 <translation id="9062620674789239642">Agian lekuz aldatu, editatu edo ezabatu egin da.</translation>

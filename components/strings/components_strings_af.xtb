@@ -2459,6 +2459,8 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="5838732667866024867">Jy kan die links/regs-pyl gebruik om prysveranderinge op die grafiek te hersien</translation>
 <translation id="5840318881868981258">In jou Google-rekening <ph name="ACCOUNT" /></translation>
 <translation id="5841338463993781099">Stoor in rekening?</translation>
+<translation id="5843987376989109187">Hierdie taal word nog nie gesteun nie.
+    <ph name="BEGIN_LINK" />Meer inligting<ph name="END_LINK" /></translation>
 <translation id="5847181246682413476">Kragbronne</translation>
 <translation id="5851548754964597211">Oortjielys</translation>
 <translation id="5852909432155870672">RA4</translation>
@@ -4108,6 +4110,8 @@ Bykomende besonderhede:
 <translation id="9049981332609050619">Jy het probeer om <ph name="DOMAIN" /> te bereik, maar die bediener het 'n ongeldige sertifikaat voorgehou.</translation>
 <translation id="9050666287014529139">Wagfrase</translation>
 <translation id="9051072642122229460">Koffie- en espressomakers</translation>
+<translation id="9051260467258969162"><ph name="BEGIN_LINK" />Meld weer aan<ph name="END_LINK" /> 
+    en kom dan terug na hierdie oortjie om skryfhulp te kry</translation>
 <translation id="9053840549256861041">Ons stel ’n nuwe advertensieprivaatheidkenmerk genaamd advertensiemeting bekend. Chrome deel net baie beperkte inligting tussen werwe, soos wanneer ’n advertensie vir jou gewys is, om werwe te help om advertensieprestasie te meet.</translation>
 <translation id="9056953843249698117">Winkel</translation>
 <translation id="9062620674789239642">Dit is dalk geskuif, gewysig of uitgevee.</translation>

@@ -4666,6 +4666,21 @@ Esta política no tendrá ningún efecto si estableces la política <ph name="DE
 <translation id="4726895359147376813">Asigna desde IDs persistentes hasta opciones de configuración de VM</translation>
 <translation id="4733471537137819387">Políticas relacionadas con la autenticación de HTTP integrada</translation>
 <translation id="473613500147803115">Bloquear el permiso de MIDI en estos sitios</translation>
+<translation id="4736591493257545761">La plantilla de URI del agente de resolución de DNS-over-HTTPS deseado. Si quieres especificar varios agentes de resolución de DNS-over-HTTPS, separa las plantillas de URI correspondientes con espacios. Esta política es muy similar a <ph name="DOH_TEMPLATES_POLICY_NAME" /> y, si la especificas, se anulará.
+A diferencia de la política <ph name="DOH_TEMPLATES_POLICY_NAME" />, esta política permite especificar la información de identidad.
+Los identificadores se especifican con marcadores de posición de variables que se reemplazan por la información del usuario o del dispositivo en <ph name="PRODUCT_NAME" />. Los identificadores no se envían al servidor DNS en texto sin formato. En su lugar, se les genera un hash con el algoritmo <ph name="SHA256" /> y se codifican con el formato hexadecimal en mayúsculas.
+
+Los identificadores se especifican entre llaves, precedidos por el signo de dólar. Para la identificación del usuario, usa los siguientes marcadores de posición <ph name="USER_EMAIL" />, <ph name="USER_EMAIL_DOMAIN" /> y <ph name="USER_EMAIL_NAME" />. Para identificar dispositivos, usa los siguientes marcadores de posición <ph name="DEVICE_DIRECTORY_ID" />, <ph name="DEVICE_SERIAL_NUMBER" />, <ph name="DEVICE_ASSET_ID" /> y <ph name="DEVICE_ANNOTATED_LOCATION" />.
+
+Antes de la versión 122, los identificadores de dispositivos no se reemplazaban para los usuarios no afiliados. A partir de la versión 122, los marcadores de posición del dispositivo se reemplazan por el valor <ph name="DEVICE_NOT_MANAGED" />, que tiene un hash y codificación hexadecimal.
+
+Si la estableces <ph name="DOH_MODE_POLICY_NAME" /> como <ph name="SECURE_DNS_MODE_SECURE" />, se debe establecer esta política o <ph name="DOH_TEMPLATES_POLICY_NAME" />, y no debe estar vacía.
+
+Si se configura <ph name="DOH_MODE_POLICY_NAME" /> como <ph name="SECURE_DNS_MODE_AUTOMATIC" /> y se establece esta política, se usarán las plantillas de URI especificadas. Si no se establece, se usarán las asignaciones codificadas para intentar actualizar el agente de resolución de DNS actual del usuario a un agente de resolución de DoH que opere el mismo proveedor.
+
+Si la plantilla de URI contiene una variable <ph name="HTTP_VARIABLE_DNS" />, las solicitudes al agente de resolución usarán <ph name="HTTP_METHOD_GET" />; de lo contrario, las solicitudes usarán <ph name="HTTP_METHOD_POST" />.
+
+En la versión 114 y en versiones posteriores, <ph name="DOH_SALT_POLICY_NAME" /> es opcional si se establece esta política.</translation>
 <translation id="473673197014866318">Si estableces esta política, se controlará la configuración de la administración de extensiones para <ph name="PRODUCT_NAME" />, incluido cualquier parámetro de configuración controlado por políticas existentes relacionadas con extensiones. Esta política sustituye a cualquier política heredada que se haya establecido.
 
 Esta política asigna un ID de extensión o una URL de actualización solo a su configuración específica. Se puede establecer una configuración predeterminada para el ID especial <ph name="DEFAULT_SCOPE" />, que se aplicará a todas las extensiones que no tengan una configuración personalizada en esta política. Con una URL de actualización, la configuración se aplica a todas las extensiones con la URL de actualización exacta establecida en el manifiesto de la extensión (http://support.google.com/chrome/a?p=Configure_ExtensionSettings_policy). Si estableces la función experimental "override_update_url" como verdadera, se instalará la extensión y se actualizará mediante la URL "update" especificada en la política <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" /> o en el campo "update_url" de esta política. Se ignorará la función experimental "override_update_url" si "update_url" es una URL de Chrome Web Store.

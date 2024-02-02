@@ -258,7 +258,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="1442987760062738829">Bušenje</translation>
 <translation id="1446396933673057385">Provjera točnosti</translation>
 <translation id="1447067628680007684">(x86_64)</translation>
-<translation id="1448166547804028941"><ph name="DATA_CONTROLS_FIRST_KEY_SET" />: ne može se postaviti u istom rječniku kao i <ph name="DATA_CONTROLS_SECOND_KEY_SET" /></translation>
+<translation id="1448166547804028941">Tipke <ph name="DATA_CONTROLS_FIRST_KEY_SET" /> ne mogu se postaviti u istom rječniku kao i tipke <ph name="DATA_CONTROLS_SECOND_KEY_SET" /></translation>
 <translation id="1452803302401719440">Postavke koje je odabrao tvoj roditelj sad te štite online</translation>
 <translation id="1455413310270022028">Gumica</translation>
 <translation id="1458140305240870199">Donje rublje</translation>
@@ -3658,7 +3658,7 @@ Dodatne pojedinosti:
 <translation id="8161095570253161196">Nastavi pregledavanje</translation>
 <translation id="8163866351304776260">Četverostruko bušenje s lijeve strane</translation>
 <translation id="8164078261547504572">Želite li primati e-poruke kada cijene padnu?</translation>
-<translation id="8169175551046720804"><ph name="DATA_CONTROLS_KEYS" />: ne može se postaviti u istom rječniku</translation>
+<translation id="8169175551046720804">Tipke <ph name="DATA_CONTROLS_KEYS" /> ne mogu se postaviti u istom rječniku</translation>
 <translation id="8175796834047840627">Chrome vam nudi spremanje vaših kartica na vaš Google račun jer ste prijavljeni. To ponašanje možete promijeniti u postavkama.</translation>
 <translation id="8176440868214972690">Administrator uređaja poslao je neke podatke, poput postavki ili pravila, sljedećim web-lokacijama.</translation>
 <translation id="817820454357658398">Proizvodi za žensku higijenu</translation>
@@ -4055,7 +4055,7 @@ Dodatne pojedinosti:
 <translation id="8949410982325929394">Ton</translation>
 <translation id="8949493680961858543">A1x4</translation>
 <translation id="8951415078585015151">Pravo i vlada</translation>
-<translation id="8952569554322479410">Web-lokacija upravo je zatražila pristup vašem <ph name="REQUEST_TYPE" />. Ispunite ovu jednominutnu anketu i pomozite nam da poboljšamo način na koji web-lokacije traže pristup.</translation>
+<translation id="8952569554322479410">Web-lokacija upravo je zatražila pristup značajki vašeg uređaja: <ph name="REQUEST_TYPE" />. Ispunite ovu jednominutnu anketu i pomozite nam da poboljšamo način na koji web-lokacije traže pristup.</translation>
 <translation id="8954252855949068147">Odjeća</translation>
 <translation id="8956124158020778855">Nakon što uključite tu postavku, vratite se na ovu karticu da biste počeli pisati.</translation>
 <translation id="8957210676456822347">Autorizacija obaveznog portala za autentifikaciju</translation>

@@ -2464,6 +2464,8 @@ Del</translation>
 <translation id="5838732667866024867">אפשר לבדוק את שינויי המחירים בתרשים באמצעות החץ ימינה או החץ שמאלה.</translation>
 <translation id="5840318881868981258">‏בחשבון Google שלך, <ph name="ACCOUNT" /></translation>
 <translation id="5841338463993781099">לשמור בחשבון?</translation>
+<translation id="5843987376989109187">עדיין אין תמיכה בשפה הזו.
+    <ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /></translation>
 <translation id="5847181246682413476">ספקי כוח</translation>
 <translation id="5851548754964597211">רשימת כרטיסיות</translation>
 <translation id="5852909432155870672">RA4</translation>
@@ -4113,6 +4115,8 @@ Del</translation>
 <translation id="9049981332609050619">ניסית להגיע ל-<ph name="DOMAIN" />, אך השרת הציג אישור לא חוקי.</translation>
 <translation id="9050666287014529139">ביטוי סיסמה</translation>
 <translation id="9051072642122229460">מכונות קפה ואספרסו</translation>
+<translation id="9051260467258969162">צריך <ph name="BEGIN_LINK" />להיכנס<ph name="END_LINK" /> 
+    שוב לחשבון ואז לחזור לכרטיסייה הזו כדי לקבל עזרה בכתיבה</translation>
 <translation id="9053840549256861041">‏אנחנו משיקים תכונה חדשה לשמירה על פרטיות בפרסום שנקראת 'מדידת ביצועים של מודעות'. Chrome משתף מידע מוגבל מאוד בין אתרים, למשל מתי הוצגה לך מודעה, כדי לעזור לבעלי האתרים למדוד את הביצועים של המודעות.</translation>
 <translation id="9056953843249698117">חנות</translation>
 <translation id="9062620674789239642">ייתכן שהוא הועבר, עבר עריכה או נמחק.</translation>

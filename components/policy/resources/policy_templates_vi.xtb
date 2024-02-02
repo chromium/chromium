@@ -4608,6 +4608,21 @@ Chính sách này sẽ không có hiệu lực khi bạn đặt chính sách <ph
 <translation id="4726895359147376813">Liên kết từ mã cố định đến cấu hình máy ảo</translation>
 <translation id="4733471537137819387">Các chính sách liên quan đến xác thực HTTP tích hợp.</translation>
 <translation id="473613500147803115">Chặn quyền sử dụng MIDI trên các trang web này</translation>
+<translation id="4736591493257545761">Mẫu URI của trình phân giải DNS-over-HTTPS mà bạn muốn. Để chỉ định nhiều trình phân giải DNS-over-HTTPS, hãy phân tách các mẫu URI tương ứng bằng dấu cách. Chính sách này rất giống với <ph name="DOH_TEMPLATES_POLICY_NAME" /> (sẽ bị chính sách này ghi đè nếu được chỉ định).
+Trái ngược với chính sách <ph name="DOH_TEMPLATES_POLICY_NAME" />, chính sách này hỗ trợ việc chỉ định thông tin nhận dạng.
+Giá trị nhận dạng được chỉ định bằng các phần giữ chỗ biến sẽ được thay thế bằng thông tin người dùng hoặc thông tin thiết bị trong <ph name="PRODUCT_NAME" />. Hệ thống sẽ không gửi giá trị nhận dạng đến máy chủ DNS dưới dạng văn bản thuần tuý mà sẽ băm giá trị bằng thuật toán <ph name="SHA256" /> và mã hoá dưới dạng hex viết hoa.
+
+Giá trị nhận dạng nằm giữa các dấu ngoặc nhọn, đứng trước đó là ký hiệu đô la. Để nhận dạng người dùng, hãy sử dụng các phần giữ chỗ <ph name="USER_EMAIL" />, <ph name="USER_EMAIL_DOMAIN" /> và <ph name="USER_EMAIL_NAME" />. Để nhận dạng thiết bị, hãy sử dụng các phần giữ chỗ <ph name="DEVICE_DIRECTORY_ID" />, <ph name="DEVICE_SERIAL_NUMBER" />, <ph name="DEVICE_ASSET_ID" /> và <ph name="DEVICE_ANNOTATED_LOCATION" />.
+
+Trước phiên bản 122, hệ thống sẽ không thay thế giá trị nhận dạng thiết bị đối với người dùng chưa liên kết. Kể từ phiên bản 122, giá trị <ph name="DEVICE_NOT_MANAGED" /> (được băm và mã hoá dưới dạng hex) sẽ thế chỗ cho phần giữ chỗ thiết bị.
+
+Nếu đặt <ph name="DOH_MODE_POLICY_NAME" /> thành <ph name="SECURE_DNS_MODE_SECURE" /> thì bạn phải đặt chính sách này hoặc chính sách <ph name="DOH_TEMPLATES_POLICY_NAME" /> và không được để trống.
+
+Nếu bạn đặt <ph name="DOH_MODE_POLICY_NAME" /> thành <ph name="SECURE_DNS_MODE_AUTOMATIC" /> và đặt chính sách này thì các mẫu URI đã chỉ định sẽ được sử dụng. Nếu bạn không đặt chính sách này thì các mục liên kết đã cố định giá trị trong mã sẽ được dùng nhằm nâng cấp trình phân giải hệ thống tên miền (DNS) hiện tại của người dùng lên trình phân giải DoH do cùng một nhà cung cấp điều hành.
+
+Nếu mẫu URI chứa biến <ph name="HTTP_VARIABLE_DNS" /> thì các yêu cầu gửi tới trình phân giải sẽ dùng <ph name="HTTP_METHOD_GET" />; nếu không, các yêu cầu sẽ dùng <ph name="HTTP_METHOD_POST" />.
+
+Từ phiên bản 114 trở về sau, bạn không bắt buộc phải đặt <ph name="DOH_SALT_POLICY_NAME" /> nếu đã đặt chính sách này.</translation>
 <translation id="473673197014866318">Nếu bạn đặt chính sách này, hệ thống sẽ kiểm soát các chế độ cài đặt quản lý tiện ích cho <ph name="PRODUCT_NAME" />, bao gồm cả những chế độ cài đặt chịu sự kiểm soát của các chính sách hiện có liên quan đến tiện ích. Chính sách này sẽ thay thế mọi chính sách cũ mà bạn có thể đã đặt.
 
 Chính sách này chỉ liên kết một mã tiện ích hoặc một URL cập nhật với chế độ cài đặt cụ thể tương ứng. Bạn có thể đặt cấu hình mặc định cho mã đặc biệt <ph name="DEFAULT_SCOPE" />. Cấu hình này sẽ áp dụng cho tất cả tiện ích chưa đặt cấu hình tuỳ chỉnh trong chính sách này. Với URL cập nhật, cấu hình sẽ áp dụng cho những tiện ích có URL cập nhật chính xác được nêu trong tệp kê khai của tiện ích đó (http://support.google.com/chrome/a?p=Configure_ExtensionSettings_policy). Nếu bạn đặt cờ "override_update_url" thành true, thì tiện ích đó sẽ được cài đặt và cập nhật bằng URL "cập nhật" được chỉ định trong chính sách <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" /> hoặc trong trường "update_url" của chính sách này. Cờ "override_update_url" sẽ bị bỏ qua nếu "update_url" là một URL của Chrome Web Store.

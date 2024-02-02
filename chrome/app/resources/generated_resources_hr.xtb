@@ -882,7 +882,7 @@ Dopuštenja koja ste već dali aplikacijama mogu se primijeniti na ovaj račun. 
 <translation id="1648439345221797326">ctrl + shift + <ph name="TOP_ROW_KEY" /></translation>
 <translation id="1648528859488547844">Za utvrđivanje lokacije upotrebljava se Wi‑Fi, Bluetooth ili mobilne mreže</translation>
 <translation id="164936512206786300">Rasparivanje Bluetooth uređaja</translation>
-<translation id="1650407365859096313">Otvara se u novoj kartici, dopuštenje je <ph name="PERMISSION_STATE" /></translation>
+<translation id="1650407365859096313">Otvara se u novoj kartici, status dopuštenja je <ph name="PERMISSION_STATE" /></translation>
 <translation id="1650801028905250434">Vaše datoteke na stranici Moj disk automatski će se sinkronizirati s vašim Chromebookom kako biste im mogli pristupati bez internetske veze. To uvijek možete promijeniti u odjeljku Postavke &gt; Datoteke.</translation>
 <translation id="1651008383952180276">Morate dvaput unijeti istu šifru</translation>
 <translation id="1651609627703324721">VR sadržaj ove kartice prikazuje se putem maske</translation>
@@ -1176,7 +1176,7 @@ Dopuštenja koja ste već dali aplikacijama mogu se primijeniti na ovaj račun. 
 <translation id="1871615898038944731"><ph name="DEVICE_TYPE" /> je ažuriran</translation>
 <translation id="1873920700418191231">Ponovo odobrite dopuštenja za web-lokaciju <ph name="WEBSITE" /></translation>
 <translation id="1874248162548993294">Dopušteno je prikazivanje oglasa</translation>
-<translation id="1874794096607967241">Dopustite pristup za aplikacije i web-lokacije s dopuštenjem za kameru i usluge sustava</translation>
+<translation id="1874794096607967241">Dopustite pristup aplikacijama i web-lokacijama s dopuštenjem za upotrebu kameru i usluga sustava</translation>
 <translation id="1874874185178737347">Organiziranje kartica</translation>
 <translation id="1874972853365565008">{NUM_TABS,plural, =1{Premjesti karticu u neki drugi prozor}one{Premjesti kartice u neki drugi prozor}few{Premjesti kartice u neki drugi prozor}other{Premjesti kartice u neki drugi prozor}}</translation>
 <translation id="1875387611427697908">Može se dodati jedino s usluge <ph name="CHROME_WEB_STORE" /></translation>
@@ -5380,7 +5380,7 @@ Upotrijebite Ctrl + Alt + Smanjivanje svjetline za smanjivanje prikaza.</transla
 <translation id="5125967981703109366">O ovoj kartici</translation>
 <translation id="512642543295077915">pretraživanje + backspace</translation>
 <translation id="5126611267288187364">Prikaz izmjena</translation>
-<translation id="512761462447738469">Vašu kameru mogu upotrebljavati aplikacije i web-lokacije s dopuštenjima za kameru te usluge sustava.</translation>
+<translation id="512761462447738469">Vašu kameru mogu upotrebljavati aplikacije i web-lokacije s dopuštenjem za upotrebu kamere i usluga sustava.</translation>
 <translation id="5127620150973591153">ID sigurne veze: <ph name="TOKEN" /></translation>
 <translation id="5127805178023152808">Sinkronizacija je isključena</translation>
 <translation id="5127881134400491887">upravljati mrežnim vezama</translation>
@@ -6084,7 +6084,7 @@ Dopuštenja koja ste već dali web-lokacijama i aplikacijama mogu se primijeniti
 <translation id="5691581861107245578">Primajte prijedloge emojija na temelju onoga što upisujete</translation>
 <translation id="5691772641933328258">Otisak prsta nije prepoznat</translation>
 <translation id="5692183275898619210">Ispis je dovršen</translation>
-<translation id="5693237475389615913">Upravljanje dopuštenjima za mikrofon web-lokacije u Chromeu</translation>
+<translation id="5693237475389615913">Upravljanje dopuštenjem web-lokaciji za upotrebu mikrofona u Chromeu</translation>
 <translation id="5693255400847650006">Upotrebljava se mikrofon</translation>
 <translation id="5695184138696833495">Linuxov ADB za Android aplikacije</translation>
 <translation id="5696143504434933566">Prijavi zloupotrebu za proširenje "<ph name="EXTENSION_NAME" />"</translation>
@@ -7325,7 +7325,7 @@ Imate još # ugroženih zaporki. Google upravitelj zaporki preporučuje da odmah
 <translation id="6680650203439190394">Brzina</translation>
 <translation id="6683022854667115063">Slušalice</translation>
 <translation id="6683087162435654533">V&amp;raćanje svih kartica</translation>
-<translation id="6683433919380522900">Dopuštenje je <ph name="PERMISSION_STATE" /></translation>
+<translation id="6683433919380522900">Status dopuštenja je <ph name="PERMISSION_STATE" /></translation>
 <translation id="6684827949542560880">Preuzimanje najnovijeg ažuriranja</translation>
 <translation id="668599234725812620">Otvori Google Play</translation>
 <translation id="6686490380836145850">Zatvori kartice s desne strane</translation>
@@ -9142,7 +9142,7 @@ Ključnu datoteku čuvajte na sigurnom mjestu. Trebat će vam za stvaranje novih
 <translation id="8064015586118426197">ChromeOS Flex</translation>
 <translation id="8064279191081105977">Grupa <ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENTS" /> – <ph name="COLLAPSED_STATE" /></translation>
 <translation id="8066444921260601116">Dijalog za povezivanje</translation>
-<translation id="8070572887926783747">Dopuštenje za lokaciju za <ph name="APP_NAME" /></translation>
+<translation id="8070572887926783747">Aplikacija <ph name="APP_NAME" /> ima dopuštenje za upotrebu lokacije</translation>
 <translation id="8070662218171013510">Dodirna povratna informacija</translation>
 <translation id="8071432093239591881">Ispiši kao sliku</translation>
 <translation id="8073499153683482226"><ph name="BEGIN_PARAGRAPH1" />Podaci aplikacije mogu biti bilo koji podaci koje je aplikacija spremila (na temelju postavki razvojnog programera), uključujući potencijalno osjetljive podatke kao što su kontakti, poruke i fotografije.<ph name="END_PARAGRAPH1" />
@@ -9201,7 +9201,7 @@ Ključnu datoteku čuvajte na sigurnom mjestu. Trebat će vam za stvaranje novih
 <translation id="8109991406044913868">Tema koju je izradio AI</translation>
 <translation id="8110393529211831722">Pretplata je instalirana samo na ovom uređaju i ne sinkronizira se s drugim uređajima na vašem računu. <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
 <translation id="8110489095782891123">Preuzimanje popisa kontakata...</translation>
-<translation id="8114925369073821854">Dopuštenje za mikrofon za <ph name="APP_NAME" /></translation>
+<translation id="8114925369073821854">Aplikacija <ph name="APP_NAME" /> ima dopuštenje za upotrebu mikrofona</translation>
 <translation id="8115139559594092084">S vašeg Google diska</translation>
 <translation id="8116972784401310538">&amp;Upravitelj oznaka</translation>
 <translation id="8118276691321086429"><ph name="PASSWORD_MANAGER_BRAND" /> pamti kako ste se prijavili i automatski vas prijavljuje kada je to moguće. Kada je ta značajka isključena, tražit će se potvrda svaki put.</translation>
@@ -9867,7 +9867,7 @@ Ključnu datoteku čuvajte na sigurnom mjestu. Trebat će vam za stvaranje novih
 <translation id="8639635302972078117">Slanje podataka o upotrebi i dijagnostici. Ovaj uređaj trenutačno Googleu automatski šalje dijagnostičke podatke te podatke o upotrebi uređaja i aplikacija. Ti se podaci neće upotrebljavati za identifikaciju vašeg djeteta, a pomoći će poboljšati sustav, stabilnost aplikacija i drugo. Neki skupni podaci pomoći će i Googleovim aplikacijama i partnerima, na primjer razvojnim programerima za Android. Ako je za vaše dijete uključena dodatna aktivnost na webu i u aplikacijama, ti se podaci mogu spremati na djetetov Google račun.</translation>
 <translation id="8640575194957831802">posljednje otvaranje</translation>
 <translation id="8641946446576357115">Upotreba zaporki na iOS uređajima</translation>
-<translation id="8642577642520207435">Dopuštenje za kameru za <ph name="APP_NAME" /></translation>
+<translation id="8642577642520207435">Aplikacija <ph name="APP_NAME" /> ima dopuštenje za upotrebu kamere</translation>
 <translation id="8642900771896232685">Dvije sekunde</translation>
 <translation id="8642947597466641025">Uvećaj tekst</translation>
 <translation id="8643403533759285912">Izbriši grupu</translation>
@@ -10267,7 +10267,7 @@ Ključnu datoteku čuvajte na sigurnom mjestu. Trebat će vam za stvaranje novih
 <translation id="8934732568177537184">Nastavi</translation>
 <translation id="8938800817013097409">USB-C uređaj (desni priključak sa stražnje strane)</translation>
 <translation id="8940081510938872932">Vaše računalo trenutačno radi previše stvari. Pokušajte ponovo kasnije.</translation>
-<translation id="8940228279218723234">Dopustite pristup za aplikacije i web-lokacije s dopuštenjem za kameru i usluge sustava. Da biste upotrebljavali kameru, možda ćete trebati ponovno pokrenuti aplikaciju ili osvježiti stranicu.</translation>
+<translation id="8940228279218723234">Dopustite pristup aplikacijama i web-lokacijama s dopuštenjem za upotrebu kameru i usluga sustava. Da biste upotrebljavali kameru, možda ćete trebati ponovno pokrenuti aplikaciju ili osvježiti stranicu.</translation>
 <translation id="8940381019874223173">S vaših Google fotografija</translation>
 <translation id="8940888110818450052">Opcije prijave</translation>
 <translation id="8941173171815156065">Opoziv dopuštenja "<ph name="PERMISSION" />"</translation>

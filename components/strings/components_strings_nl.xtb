@@ -2454,6 +2454,8 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="5838732667866024867">Met de pijl-links en pijl-rechts kun je de prijswijzigingen in het diagram checken</translation>
 <translation id="5840318881868981258">In je Google-account, <ph name="ACCOUNT" /></translation>
 <translation id="5841338463993781099">Opslaan in account?</translation>
+<translation id="5843987376989109187">Deze taal wordt nog niet ondersteund.
+    <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
 <translation id="5847181246682413476">Stroomvoorziening</translation>
 <translation id="5851548754964597211">Tabbladlijst</translation>
 <translation id="5852909432155870672">RA4</translation>
@@ -4102,6 +4104,7 @@ Aanvullende informatie:
 <translation id="9049981332609050619">Je probeert <ph name="DOMAIN" /> te bereiken, maar de server heeft een ongeldig certificaat geretourneerd.</translation>
 <translation id="9050666287014529139">Wachtwoordzin</translation>
 <translation id="9051072642122229460">Koffie- en espressomachines</translation>
+<translation id="9051260467258969162"><ph name="BEGIN_LINK" />Log opnieuw in<ph name="END_LINK" /> en kom daarna terug naar dit tabblad om schrijfhulp te krijgen</translation>
 <translation id="9053840549256861041">We lanceren een nieuwe functie voor advertentieprivacy: advertentiemeting. Chrome deelt alleen zeer beperkte informatie tussen sites, zoals wanneer een advertentie aan jou is getoond, zodat sites de prestaties van advertenties kunnen meten.</translation>
 <translation id="9056953843249698117">Winkel</translation>
 <translation id="9062620674789239642">Het bestand is mogelijk verplaatst, bewerkt of verwijderd.</translation>
