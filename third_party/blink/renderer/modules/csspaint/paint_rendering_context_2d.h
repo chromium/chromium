@@ -59,7 +59,8 @@ class MODULES_EXPORT PaintRenderingContext2D
   Color GetCurrentColor() const final;
 
   cc::PaintCanvas* GetOrCreatePaintCanvas() final { return GetPaintCanvas(); }
-  cc::PaintCanvas* GetPaintCanvas() final;
+  using BaseRenderingContext2D::GetPaintCanvas;  // Pull the non-const overload.
+  const cc::PaintCanvas* GetPaintCanvas() const final;
   const MemoryManagedPaintRecorder* Recorder() const override {
     return &paint_recorder_;
   }

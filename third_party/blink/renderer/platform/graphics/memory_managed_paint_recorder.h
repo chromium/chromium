@@ -66,6 +66,7 @@ class PLATFORM_EXPORT MemoryManagedPaintRecorder {
   size_t OpBytesUsed() const { return canvas_.OpBytesUsed(); }
   size_t ImageBytesUsed() const { return canvas_.ImageBytesUsed(); }
 
+  const MemoryManagedPaintCanvas& getRecordingCanvas() const { return canvas_; }
   MemoryManagedPaintCanvas& getRecordingCanvas() { return canvas_; }
 
  private:

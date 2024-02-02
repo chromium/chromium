@@ -97,7 +97,8 @@ class TestRenderingContext2D final
   cc::PaintCanvas* GetOrCreatePaintCanvas() override {
     return &recorder_.getRecordingCanvas();
   }
-  cc::PaintCanvas* GetPaintCanvas() override {
+  using BaseRenderingContext2D::GetPaintCanvas;  // Pull the non-const overload.
+  const cc::PaintCanvas* GetPaintCanvas() const override {
     return &recorder_.getRecordingCanvas();
   }
   void WillDraw(const SkIRect& dirty_rect,

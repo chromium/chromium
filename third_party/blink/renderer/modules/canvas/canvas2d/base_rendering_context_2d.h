@@ -316,10 +316,11 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
   virtual Color GetCurrentColor() const = 0;
 
   virtual cc::PaintCanvas* GetOrCreatePaintCanvas() = 0;
-  const cc::PaintCanvas* GetPaintCanvas() const {
-    return const_cast<BaseRenderingContext2D*>(this)->GetPaintCanvas();
+  virtual const cc::PaintCanvas* GetPaintCanvas() const = 0;
+  cc::PaintCanvas* GetPaintCanvas() {
+    return const_cast<cc::PaintCanvas*>(
+        const_cast<const BaseRenderingContext2D*>(this)->GetPaintCanvas());
   }
-  virtual cc::PaintCanvas* GetPaintCanvas() = 0;
 
   // Returns the paint ops recorder this context uses. Can be `nullptr` if no
   // recorder is available.

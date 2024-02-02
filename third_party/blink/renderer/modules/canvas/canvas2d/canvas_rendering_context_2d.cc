@@ -384,7 +384,7 @@ cc::PaintCanvas* CanvasRenderingContext2D::GetOrCreatePaintCanvas() {
   return bridge->GetPaintCanvas();
 }
 
-cc::PaintCanvas* CanvasRenderingContext2D::GetPaintCanvas() {
+const cc::PaintCanvas* CanvasRenderingContext2D::GetPaintCanvas() const {
   if (UNLIKELY(isContextLost() || !ResourceProvider())) {
     return nullptr;
   }

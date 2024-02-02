@@ -85,7 +85,7 @@ void PaintRenderingContext2D::setShadowOffsetY(double y) {
   BaseRenderingContext2D::setShadowOffsetY(y * effective_zoom_);
 }
 
-cc::PaintCanvas* PaintRenderingContext2D::GetPaintCanvas() {
+const cc::PaintCanvas* PaintRenderingContext2D::GetPaintCanvas() const {
   return &paint_recorder_.getRecordingCanvas();
 }
 

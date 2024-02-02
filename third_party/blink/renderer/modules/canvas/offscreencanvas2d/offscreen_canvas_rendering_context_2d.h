@@ -102,7 +102,8 @@ class MODULES_EXPORT OffscreenCanvasRenderingContext2D final
   Color GetCurrentColor() const final;
 
   cc::PaintCanvas* GetOrCreatePaintCanvas() final;
-  cc::PaintCanvas* GetPaintCanvas() final;
+  using BaseRenderingContext2D::GetPaintCanvas;  // Pull the non-const overload.
+  const cc::PaintCanvas* GetPaintCanvas() const final;
   const MemoryManagedPaintRecorder* Recorder() const final;
 
   void WillDraw(const SkIRect& dirty_rect,
