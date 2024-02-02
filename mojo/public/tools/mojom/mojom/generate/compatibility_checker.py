@@ -34,13 +34,6 @@ class BackwardCompatibilityChecker:
         self._cache[key] = False
     return result
 
-  def _IsFieldBackwardCompatible(self, new_field: mojom.Kind,
-                                 old_field: mojom.Kind):
-    if (new_field.min_version or 0) != (old_field.min_version or 0):
-      return False
-
-    return self.IsBackwardCompatible(new_field.kind, old_field.kind)
-
   # Each type should register their own compatibility check under this
   # dispatcher. Assume that both new and old are the same type when the
   # type specific compatibility checker is invoked.
@@ -53,10 +46,19 @@ class BackwardCompatibilityChecker:
   def _(self, new: mojom.Kind, old: mojom.Kind):
     return new == old
 
+  @_CheckCompat.register(mojom.Field)
+  def _(self, new: mojom.Field, old: mojom.Field):
+    if (new.min_version or 0) != (old.min_version or 0):
+      return False
+
+    return self.IsBackwardCompatible(new.kind, old.kind)
+
   @_CheckCompat.register(mojom.Struct)
   def _(self, new: mojom.Struct, old: mojom.Struct):
-    """The new struct is backward-compatible with older_struct if and only if
-    all of the following conditions hold:
+    """This struct is backward-compatible with the older_struct if they are
+    layout compatible or semantically compatible.
+    A struct is semantically compatible if and only if all the following
+    conditions hold:
       - Any newly added field is tagged with a [MinVersion] attribute specifying
         a version number greater than all previously used [MinVersion]
         attributes within the struct.
@@ -68,13 +70,25 @@ class BackwardCompatibilityChecker:
       - All reference-typed (string, array, map, struct, or union) fields tagged
         with a [MinVersion] greater than zero must be optional.
     """
+    # Check for layout compatibility first. If they are layout compatible, we
+    # are done.
+    new_packed_fields = pack.PackedStruct(new).packed_fields_in_ordinal_order
+    old_packed_fields = pack.PackedStruct(old).packed_fields_in_ordinal_order
+
+    if len(new_packed_fields) == len(old_packed_fields):
+      layout_compatible = True
+      for pair in zip(new_packed_fields, old_packed_fields):
+        (new_field, old_field) = (pair[0].field, pair[1].field)
+        if not self.IsBackwardCompatible(new_field, old_field):
+          layout_compatible = False
+          break
+
+      if layout_compatible:
+        return True
 
     def buildOrdinalFieldMap(struct):
       fields_by_ordinal = {}
       for field in struct.fields:
-        if field.ordinal in fields_by_ordinal:
-          raise Exception('Multiple fields with ordinal %s in struct %s.' %
-                          (field.ordinal, struct.mojom_name))
         fields_by_ordinal[field.ordinal] = field
       return fields_by_ordinal
 
@@ -86,8 +100,6 @@ class BackwardCompatibilityChecker:
           'Removing struct fields from struct %s is not allowed.' %
           (new.mojom_name))
 
-    # If there are N fields, existing ordinal values must exactly cover the
-    # range from 0 to N-1.
     num_old_ordinals = len(old_fields)
     max_old_min_version = 0
     for ordinal in range(num_old_ordinals):
@@ -95,7 +107,7 @@ class BackwardCompatibilityChecker:
       old_field = old_fields[ordinal]
       if (old_field.min_version or 0) > max_old_min_version:
         max_old_min_version = old_field.min_version
-      if not self._IsFieldBackwardCompatible(new_field, old_field):
+      if not self.IsBackwardCompatible(new_field, old_field):
         # Type or min-version mismatch between old and new versions of the same
         # ordinal field.
         raise CompatibilityError(
@@ -166,7 +178,7 @@ class BackwardCompatibilityChecker:
       if not new_field:
         # A field was removed, which is not OK.
         return False
-      if not self._IsFieldBackwardCompatible(new_field, old_field):
+      if not self.IsBackwardCompatible(new_field, old_field):
         # An field changed its type or MinVersion, which is not OK.
         return False
       old_min_version = old_field.min_version or 0

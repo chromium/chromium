@@ -457,3 +457,42 @@ class VersionCompatibilityTest(MojomParserTestCase):
     method on the old interface definition."""
     self.assertBackwardCompatible('interface F { A(); };',
                                   'interface F { A(); [MinVersion=1] B(); };')
+
+  def testNullableTypeLayoutCompatibility(self):
+    """Nullable value types are backwards (layout) compatible if they follow the
+    pattern:
+      struct Foo {
+        bool has_field;
+        int32 field;
+      };
+    Note that |field|'s ordinal order must immediately follow |has_field|.
+    Therefore, the following is also valid:
+      struct Foo {
+        int32 field@1;
+        bool has_field@0;
+      };
+    This is because |field|'s ordinal order immediately follows |has_field|.
+
+    The following is NOT backwards compatible:
+      struct Foo {
+        bool has_field@1;
+        int32 field@0;
+      };
+    This is because |field|'s ordinal ordering does not immediately follow
+    |has_field|."""
+    self.assertBackwardCompatible('struct S { bool has_foo; int32 foo; };',
+                                  'struct S { int32? foo; };')
+    self.assertNotBackwardCompatible(
+        'struct S { bool has_foo@1; int32 foo@0; };',
+        'struct S { int32? foo; };')
+
+    self.assertBackwardCompatible(
+        'struct S { bool has_foo = true; int32 foo = 2; };',
+        'struct S { int32? foo = 2; };')
+
+    self.assertBackwardCompatible(
+        'struct S { bool has_foo@0; double gap@2; float foo@1; };',
+        'struct S { float? foo; double gap; };')
+    self.assertNotBackwardCompatible(
+        'struct S { bool has_foo; double gap; float foo; };',
+        'struct S { float? foo; double gap; };')
