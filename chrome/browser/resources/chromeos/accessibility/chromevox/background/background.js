@@ -14,6 +14,7 @@ import {PanelCommand, PanelCommandType} from '../common/panel_command.js';
 import {PermissionChecker} from '../common/permission_checker.js';
 import {SettingsManager} from '../common/settings_manager.js';
 import {QueueMode, TtsSpeechProperties} from '../common/tts_types.js';
+import {JaPhoneticData} from '../third_party/tamachiyomi/ja_phonetic_data.js';
 import {JaPhoneticMap} from '../third_party/tamachiyomi/ja_phonetic_map.js';
 
 import {AbstractEarcons} from './abstract_earcons.js';

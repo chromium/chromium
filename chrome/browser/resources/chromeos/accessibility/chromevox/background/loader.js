@@ -5,6 +5,4 @@
 /**
  * @fileoverview Loader for the background page.
  */
-goog.require('JaPhoneticData');
-
 goog.require('goog.i18n.MessageFormat');

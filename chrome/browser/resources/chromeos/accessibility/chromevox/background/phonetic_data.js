@@ -7,6 +7,7 @@
  * languages for ChromeVox.
  */
 import {PhoneticDictionaries} from '../phonetic_dictionaries.js';
+import {JaPhoneticData} from '../third_party/tamachiyomi/ja_phonetic_data.js';
 
 export class PhoneticData {
   /**
