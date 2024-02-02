@@ -15,8 +15,7 @@
 #include "extensions/common/api/declarative_net_request.h"
 #include "third_party/flatbuffers/src/include/flatbuffers/flatbuffers.h"
 
-namespace extensions {
-namespace declarative_net_request {
+namespace extensions::declarative_net_request {
 
 struct IndexedRule;
 
@@ -81,7 +80,6 @@ class FlatRulesetIndexer {
   bool finished_ = false;
 };
 
-}  // namespace declarative_net_request
-}  // namespace extensions
+}  // namespace extensions::declarative_net_request
 
 #endif  // EXTENSIONS_BROWSER_API_DECLARATIVE_NET_REQUEST_FLAT_RULESET_INDEXER_H_

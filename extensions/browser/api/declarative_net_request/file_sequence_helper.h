@@ -19,11 +19,9 @@
 
 namespace extensions {
 
-namespace api {
-namespace declarative_net_request {
+namespace api::declarative_net_request {
 struct Rule;
-}  // namespace declarative_net_request
-}  // namespace api
+}  // namespace api::declarative_net_request
 
 namespace declarative_net_request {
 enum class DynamicRuleUpdateAction;

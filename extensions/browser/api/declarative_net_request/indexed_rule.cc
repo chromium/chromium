@@ -26,8 +26,7 @@
 #include "url/gurl.h"
 #include "url/url_constants.h"
 
-namespace extensions {
-namespace declarative_net_request {
+namespace extensions::declarative_net_request {
 
 namespace {
 
@@ -866,5 +865,4 @@ uint64_t ComputeIndexedRulePriority(int parsed_rule_priority,
          GetActionTypePriority(action_type);
 }
 
-}  // namespace declarative_net_request
-}  // namespace extensions
+}  // namespace extensions::declarative_net_request

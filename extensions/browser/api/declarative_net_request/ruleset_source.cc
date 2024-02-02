@@ -18,8 +18,7 @@
 #include "third_party/flatbuffers/src/include/flatbuffers/flatbuffers.h"
 #include "url/gurl.h"
 
-namespace extensions {
-namespace declarative_net_request {
+namespace extensions::declarative_net_request {
 
 RulesetSource::RulesetSource(RulesetID id,
                              size_t rule_count_limit,
@@ -129,5 +128,4 @@ LoadRulesetResult RulesetSource::CreateVerifiedMatcher(
   return LoadRulesetResult::kSuccess;
 }
 
-}  // namespace declarative_net_request
-}  // namespace extensions
+}  // namespace extensions::declarative_net_request

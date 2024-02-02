@@ -23,8 +23,7 @@
 #include "extensions/browser/api/declarative_net_request/utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace extensions {
-namespace declarative_net_request {
+namespace extensions::declarative_net_request {
 namespace {
 
 namespace flat_rule = url_pattern_index::flat;
@@ -726,5 +725,4 @@ TEST_F(FlatRulesetIndexerTest, RegexRules) {
 }
 
 }  // namespace
-}  // namespace declarative_net_request
-}  // namespace extensions
+}  // namespace extensions::declarative_net_request

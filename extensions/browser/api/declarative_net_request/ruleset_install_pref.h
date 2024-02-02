@@ -9,8 +9,7 @@
 #include <vector>
 #include "extensions/common/api/declarative_net_request/constants.h"
 
-namespace extensions {
-namespace declarative_net_request {
+namespace extensions::declarative_net_request {
 
 struct RulesetInstallPref {
   // ID of the ruleset.
@@ -28,7 +27,6 @@ struct RulesetInstallPref {
 
 using RulesetInstallPrefs = std::vector<RulesetInstallPref>;
 
-}  // namespace declarative_net_request
-}  // namespace extensions
+}  // namespace extensions::declarative_net_request
 
 #endif  // EXTENSIONS_BROWSER_API_DECLARATIVE_NET_REQUEST_RULESET_INSTALL_PREF_H_

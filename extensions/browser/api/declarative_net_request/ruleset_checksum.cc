@@ -4,11 +4,9 @@
 
 #include "extensions/browser/api/declarative_net_request/ruleset_checksum.h"
 
-namespace extensions {
-namespace declarative_net_request {
+namespace extensions::declarative_net_request {
 
 RulesetChecksum::RulesetChecksum(RulesetID ruleset_id, int checksum)
     : ruleset_id(ruleset_id), checksum(checksum) {}
 
-}  // namespace declarative_net_request
-}  // namespace extensions
+}  // namespace extensions::declarative_net_request

@@ -32,8 +32,7 @@
 #include "extensions/common/constants.h"
 #include "url/origin.h"
 
-namespace extensions {
-namespace declarative_net_request {
+namespace extensions::declarative_net_request {
 namespace {
 
 namespace flat_rule = url_pattern_index::flat;
@@ -475,5 +474,4 @@ bool RulesetManager::ShouldEvaluateRulesetForRequest(
   return true;
 }
 
-}  // namespace declarative_net_request
-}  // namespace extensions
+}  // namespace extensions::declarative_net_request

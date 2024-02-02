@@ -25,8 +25,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
-namespace extensions {
-namespace declarative_net_request {
+namespace extensions::declarative_net_request {
 namespace {
 
 using PageAccess = PermissionsData::PageAccess;
@@ -702,5 +701,4 @@ TEST_F(CompositeMatcherTest, RulePlacement) {
 }
 
 }  // namespace
-}  // namespace declarative_net_request
-}  // namespace extensions
+}  // namespace extensions::declarative_net_request

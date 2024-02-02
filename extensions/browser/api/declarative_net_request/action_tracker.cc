@@ -30,8 +30,7 @@
 #include "extensions/common/permissions/permissions_data.h"
 #include "services/network/public/mojom/fetch_api.mojom-shared.h"
 
-namespace extensions {
-namespace declarative_net_request {
+namespace extensions::declarative_net_request {
 
 namespace {
 
@@ -511,5 +510,4 @@ dnr_api::MatchedRuleInfo ActionTracker::CreateMatchedRuleInfo(
   return matched_rule_info;
 }
 
-}  // namespace declarative_net_request
-}  // namespace extensions
+}  // namespace extensions::declarative_net_request

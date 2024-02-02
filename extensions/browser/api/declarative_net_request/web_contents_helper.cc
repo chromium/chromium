@@ -9,8 +9,7 @@
 #include "extensions/browser/api/declarative_net_request/rules_monitor_service.h"
 #include "extensions/browser/api/declarative_net_request/ruleset_manager.h"
 
-namespace extensions {
-namespace declarative_net_request {
+namespace extensions::declarative_net_request {
 
 namespace {
 
@@ -56,5 +55,4 @@ void WebContentsHelper::DidFinishNavigation(
   ruleset_manager_->OnDidFinishNavigation(navigation_handle);
 }
 
-}  // namespace declarative_net_request
-}  // namespace extensions
+}  // namespace extensions::declarative_net_request

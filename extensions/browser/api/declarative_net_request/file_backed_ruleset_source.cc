@@ -37,8 +37,7 @@
 #include "services/data_decoder/public/cpp/data_decoder.h"
 #include "tools/json_schema_compiler/util.h"
 
-namespace extensions {
-namespace declarative_net_request {
+namespace extensions::declarative_net_request {
 
 namespace {
 
@@ -478,5 +477,4 @@ FileBackedRulesetSource::FileBackedRulesetSource(base::FilePath json_path,
       json_path_(std::move(json_path)),
       indexed_path_(std::move(indexed_path)) {}
 
-}  // namespace declarative_net_request
-}  // namespace extensions
+}  // namespace extensions::declarative_net_request

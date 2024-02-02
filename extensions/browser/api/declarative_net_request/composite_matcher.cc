@@ -21,8 +21,7 @@
 #include "extensions/browser/api/declarative_net_request/utils.h"
 #include "extensions/common/api/declarative_net_request/constants.h"
 
-namespace extensions {
-namespace declarative_net_request {
+namespace extensions::declarative_net_request {
 namespace flat_rule = url_pattern_index::flat;
 using PageAccess = PermissionsData::PageAccess;
 using ActionInfo = CompositeMatcher::ActionInfo;
@@ -244,5 +243,4 @@ bool CompositeMatcher::ComputeHasAnyExtraHeadersMatcher() const {
   return false;
 }
 
-}  // namespace declarative_net_request
-}  // namespace extensions
+}  // namespace extensions::declarative_net_request
