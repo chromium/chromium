@@ -85,7 +85,7 @@ def _CheckChromeUpdateTriggerRule(input_api, output_api):
                                   REQUEST_UPDATE_FOR_VERSION_LOCAL_PATH,
                                   REQUEST_UPDATE_FOR_VERSION_VARIABLE):
     if (len(input_api.AffectedFiles()) != 1 or
-        len(input_api.AffectedFiles[0].ChangedContents()) != 1):
+        len(input_api.AffectedFiles()[0].ChangedContents()) != 1):
       return [
         output_api.PresubmitError(
             '{} in {} must be updated in a standalone CL.'.format(
