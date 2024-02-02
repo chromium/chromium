@@ -148,6 +148,7 @@
 <translation id="1753905327828125965">കൂടുതൽ‍ സന്ദര്‍ശിച്ചത്</translation>
 <translation id="1757699834933698436">{count,plural, =1{ദുർബലമായ {count} പാസ്‌വേഡ്}other{ദുർബലമായ {count} പാസ്‌വേഡുകൾ}}</translation>
 <translation id="1767766085187034454">Google Translate</translation>
+<translation id="1780152987505130652">ഗ്രൂപ്പ് അടയ്ക്കുക</translation>
 <translation id="1789803444939621101">വീണ്ടും സ്വാഗതം, <ph name="USER_NAME" /></translation>
 <translation id="1803264062614276815">കാർഡ് ഉടമയുടെ പേര്</translation>
 <translation id="1809939268435598390">ഫോൾഡർ ഇല്ലാതാക്കുക</translation>
@@ -213,7 +214,6 @@
 <translation id="2080769225927880590">സാധുവായ അക്കൗണ്ട് ഉപയോഗിച്ച് സൈൻ ഇൻ ചെയ്യുക</translation>
 <translation id="2103075008456228677">history.google.com തുറക്കുക</translation>
 <translation id="21133533946938348">ടാബ് പിൻ ചെയ്യുക</translation>
-<translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> ഇനങ്ങൾ നീക്കി</translation>
 <translation id="2122754583996902531">നിങ്ങളുടെ ബ്രൗസർ മാനേജ് ചെയ്യപ്പെടുന്നു. <ph name="BEGIN_LINK" />കൂടുതലറിയുക<ph name="END_LINK" /></translation>
 <translation id="2139502497535990641">നിരക്കുമാറ്റ അറിയിപ്പുകൾ ഓണാക്കണോ?</translation>
 <translation id="2139867232736819575">നിങ്ങൾ പകർത്തിയ ടെക്‌സ്‌റ്റ് തിരയുക</translation>
@@ -647,6 +647,7 @@
 <translation id="4431224949908513835">പൂരിപ്പിക്കാൻ ഒരു പേയ്‌മെന്റ് രീതി തിരഞ്ഞെടുക്കുക.</translation>
 <translation id="4442550905108052454"><ph name="BEGIN_BOLD" />ക്രമീകരണം<ph name="END_BOLD" /> തുറക്കുക</translation>
 <translation id="4454246407045105932">ഭാഷ ചേർക്കുക</translation>
+<translation id="4460014764210899310">ഗ്രൂപ്പ് അല്ലാതാക്കി മാറ്റുക</translation>
 <translation id="4461286950227634995">പാസ്‌വേഡുകൾ സംരക്ഷിക്കുന്നതിനുള്ള നിർദ്ദേശം</translation>
 <translation id="4462491365653392320">ടാബുകളിൽ നിരക്കുകൾ ട്രാക്ക് ചെയ്യൂ</translation>
 <translation id="4469324811108161144">കുറിപ്പുകളിൽ <ph name="CHARACTER_LIMIT" /> പ്രതീകങ്ങൾ വരെ ഉണ്ടാകാം.</translation>
@@ -926,7 +927,6 @@
 <translation id="5857770089550859117">സമന്വയിപ്പിക്കൽ തുടങ്ങുന്നതിന്, പാസ്‌ഫ്രെയ്‌സ് ആവശ്യമാണ്.</translation>
 <translation id="5859715514067755465">മുന്നോട്ട് പോകുക</translation>
 <translation id="5860033963881614850">ഓഫാക്കുക</translation>
-<translation id="5871497086027727873">ഒരിനം നീക്കി</translation>
 <translation id="5896576662943111387">iOS-നായി സൃഷ്‌ടിച്ചത്</translation>
 <translation id="5897749768294722429">നിങ്ങൾ സന്ദർശിച്ച സൈറ്റുകളിലേക്ക് വേഗത്തിൽ മടങ്ങാൻ, ടാബുകളും ചരിത്രവും സമന്വയിപ്പിക്കുക.</translation>
 <translation id="5897956970858271241">പകർത്തിയ ലിങ്ക് സന്ദർശിക്കുക</translation>
@@ -1494,6 +1494,7 @@
 <translation id="8766790350274092814"><ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> എന്നിവയുടെ പാസ്‌വേഡുകൾ ഇല്ലാതാക്കും. നിങ്ങളുടെ അക്കൗണ്ടുകൾ ഇല്ലാതാക്കില്ല.</translation>
 <translation id="8775144690796719618">URL അസാധുവാണ്</translation>
 <translation id="8780076847684176174">{count,plural, =1{ടാബ് അവലോകനം ചെയ്യുക...}other{എല്ലാ ടാബുകളും അവലോകനം ചെയ്യുക...}}</translation>
+<translation id="8781834595282316166">ഗ്രൂപ്പിലെ പുതിയ ടാബ്</translation>
 <translation id="8782570580170191813">എപ്പോഴും പാക്കേജുകൾ ട്രാക്ക് ചെയ്യുക</translation>
 <translation id="8787968206789828143">വെബിൽ തിരയുക</translation>
 <translation id="8792626944327216835">മൈക്രോഫോൺ</translation>

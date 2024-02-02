@@ -148,6 +148,7 @@
 <translation id="1753905327828125965">అధికంగా సందర్శించేది</translation>
 <translation id="1757699834933698436">{count,plural, =1{{count} బలహీనమైన పాస్‌వర్డ్}other{{count} బలహీనమైన పాస్‌వర్డ్‌లు}}</translation>
 <translation id="1767766085187034454">Google Translate</translation>
+<translation id="1780152987505130652">గ్రూప్‌ను మూసివేయి</translation>
 <translation id="1789803444939621101">పునఃస్వాగతం, <ph name="USER_NAME" /></translation>
 <translation id="1803264062614276815">కార్డుదారుని పేరు</translation>
 <translation id="1809939268435598390">ఫోల్డర్‌ను తొలగించండి</translation>
@@ -213,7 +214,6 @@
 <translation id="2080769225927880590">చెల్లుబాటు అయ్యే ఖాతాతో సైన్ ఇన్ చేయండి</translation>
 <translation id="2103075008456228677">history.google.com తెరువు</translation>
 <translation id="21133533946938348">ట్యాబ్‌ను పిన్ చేయి</translation>
-<translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> అంశాలు తరలించబడ్డాయి</translation>
 <translation id="2122754583996902531">మీ బ్రౌజర్ మేనేజ్ చేయబడుతుంది. <ph name="BEGIN_LINK" />మరింత తెలుసుకోండి<ph name="END_LINK" /></translation>
 <translation id="2139502497535990641">ప్రైస్ అలర్ట్‌లను ఆన్ చేయాలా?</translation>
 <translation id="2139867232736819575">మీరు కాపీ చేసిన వచనం కోసం వెతకండి</translation>
@@ -565,6 +565,7 @@
 <translation id="3929457972718048006">అడ్రస్‌లు</translation>
 <translation id="3948600256434252210">మీరు అజ్ఞాతంలో బ్రౌజ్ చేయడానికి కుడి వైపునకు స్వైప్ చేయవచ్చు.</translation>
 <translation id="3955822496205734389">మీ వద్ద బలహీనమైన పాస్‌వర్డ్‌లు ఉన్నాయి.</translation>
+<translation id="3958312024468322930">దీన్ని మీ మొదటి స్క్రీన్ దిగువున ఉన్న డాక్‌కు లాగండి</translation>
 <translation id="3959736869653157332">మెనూ → కొత్త అజ్ఞాత ట్యాబ్</translation>
 <translation id="3962326069546168954">సేవ్ చేయండి</translation>
 <translation id="3967822245660637423">డౌన్‌లోడ్ పూర్తయింది</translation>
@@ -646,6 +647,7 @@
 <translation id="4431224949908513835">పూరించడం కోసం ఒక పేమెంట్ ఆప్షన్‌ను ఎంచుకోండి.</translation>
 <translation id="4442550905108052454"><ph name="BEGIN_BOLD" />సెట్టింగ్‌ల<ph name="END_BOLD" />ను తెరవండి</translation>
 <translation id="4454246407045105932">భాషను జోడించండి</translation>
+<translation id="4460014764210899310">విడివిడిగా ఉంచు</translation>
 <translation id="4461286950227634995">పాస్‌వర్డ్‌లను సేవ్ చేయమని అడగండి</translation>
 <translation id="4462491365653392320">ధరలను ట్యాబ్‌లలో ట్రాక్ చేయండి</translation>
 <translation id="4469324811108161144">గమనికలు <ph name="CHARACTER_LIMIT" /> వరకు అక్షరాలను సేవ్ చేయగలవు.</translation>
@@ -925,7 +927,6 @@
 <translation id="5857770089550859117">సింక్‌ను ప్రారంభించడానికి రహస్య పదబంధం అవసరం.</translation>
 <translation id="5859715514067755465">మందుకు వెళ్లండి</translation>
 <translation id="5860033963881614850">ఆఫ్ అయ్యింది</translation>
-<translation id="5871497086027727873">1 అంశం తరలించబడింది</translation>
 <translation id="5896576662943111387">iOS కోసం రూపొందించబడింది</translation>
 <translation id="5897749768294722429">తిరిగి మీరు బ్రౌజ్ చేసిన సైట్‌లకు క్విక్‌గా వెళ్లడానికి, మీ ట్యాబ్‌లను, హిస్టరీని సింక్ చేయండి.</translation>
 <translation id="5897956970858271241">కాపీ చేసిన లింక్‌ను సందర్శించండి</translation>
@@ -1461,6 +1462,7 @@
 <translation id="8620640915598389714">ఎడిట్</translation>
 <translation id="8624447588354561276">ప్యాకేజీ నంబర్</translation>
 <translation id="8624753446837753970">పొజిషన్‌ను సెట్ చేయండి</translation>
+<translation id="8625706492572042370">మొదటి స్క్రీన్‌ను ఎడిట్ చేయండి</translation>
 <translation id="8626393685701737946">మీరు సెట్టింగ్‌లు &gt; కంటెంట్ సెట్టింగ్‌లు ఆప్షన్‌లో ఆటోమేటిక్ సైట్ వీక్షణ సెట్టింగ్‌ను డెస్క్‌టాప్‌కు మార్చవచ్చు</translation>
 <translation id="8636825310635137004">మీ ఇతర పరికరాల నుండి మీ ట్యాబ్‌లను పొందడానికి, సింక్‌ను ఆన్ చేయండి</translation>
 <translation id="8637431369725868556">ప్రమాదకరమైన సైట్‌ల నుండి రక్షణ పొందండి.</translation>
@@ -1492,6 +1494,7 @@
 <translation id="8766790350274092814"><ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> URLలకు సంబంధించిన పాస్‌వర్డ్‌లు తొలగించబడతాయి. మీ ఖాతాలు తొలగించబడవు.</translation>
 <translation id="8775144690796719618">URL చెల్లదు</translation>
 <translation id="8780076847684176174">{count,plural, =1{ట్యాబ్‌ను రివ్యూ చేయండి...}other{అన్ని ట్యాబ్‌లను రివ్యూ చేయండి...}}</translation>
+<translation id="8781834595282316166">గ్రూప్‌లో కొత్త ట్యాబ్</translation>
 <translation id="8782570580170191813">ఎల్లప్పుడూ ప్యాకేజీలను ట్రాక్ చేయండి</translation>
 <translation id="8787968206789828143">వెబ్‌లో సెర్చ్ చేయండి</translation>
 <translation id="8792626944327216835">మైక్రోఫోన్</translation>

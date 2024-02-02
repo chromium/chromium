@@ -109,7 +109,6 @@
 <translation id="2750481671343847896">Sites kunnen inlogprompts van identiteitsservices tonen.</translation>
 <translation id="2790501146643349491">Als deze optie aanstaat, kunnen recent gesloten sites het sturen en ontvangen van gegevens afronden. Staat de optie uit, dan kunnen recent gesloten sites het sturen of ontvangen van gegevens niet afronden.</translation>
 <translation id="2822354292072154809">Weet je zeker dat je alle siterechten voor <ph name="CHOSEN_OBJECT_NAME" /> wilt resetten?</translation>
-<translation id="2836978798613876756"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> <ph name="HOST_NAME" /></translation>
 <translation id="2850913818900871965">Mobiele weergave opvragen</translation>
 <translation id="2870560284913253234">Site</translation>
 <translation id="2874939134665556319">Vorig nummer</translation>
@@ -121,7 +120,6 @@
 <translation id="2968755619301702150">Certificaatviewer</translation>
 <translation id="2979365474350987274">Cookies van derden zijn beperkt</translation>
 <translation id="3008272652534848354">Rechten resetten</translation>
-<translation id="3013291976881901233">MIDI-apparaten</translation>
 <translation id="301521992641321250">Automatisch geblokkeerd</translation>
 <translation id="3069226013421428034">Externe login toestaan voor een specifieke site.</translation>
 <translation id="3082992102194421695">{COUNT,plural, =1{Verloopt morgen}other{Verloopt over # dagen}}</translation>
@@ -192,7 +190,6 @@
 <translation id="4169549551965910670">Verbonden met een USB-apparaat</translation>
 <translation id="4194328954146351878">Vragen voordat sites informatie op NFC-apparaten mogen zien en wijzigen (aanbevolen)</translation>
 <translation id="4200726100658658164">Locatie-instellingen openen</translation>
-<translation id="4212246570487010370">Verder browsen</translation>
 <translation id="4226663524361240545">Het apparaat kan trillen bij meldingen</translation>
 <translation id="4259722352634471385">Navigatie is geblokkeerd: <ph name="URL" /></translation>
 <translation id="4278390842282768270">Toegestaan</translation>
@@ -282,7 +279,6 @@
 <translation id="5706552988683188916">Hiermee worden cookies en andere sitegegevens voor <ph name="WEBSITE" /> verwijderd</translation>
 <translation id="5723967018671998714">Cookies van derden worden geblokkeerd in de incognitomodus</translation>
 <translation id="5740126560802162366">Sites kunnen gegevens opslaan op je apparaat</translation>
-<translation id="5749158352074143502">Doorgaan met dit tabblad</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" /> geblokkeerd</translation>
 <translation id="5804241973901381774">Rechten</translation>
 <translation id="5844448279347999754">Als deze optie aanstaat, kunnen sites vragen of ze tekst en afbeeldingen mogen bekijken die op je klembord zijn opgeslagen. Staat de optie uit, dan kunnen sites geen tekst of afbeeldingen bekijken die op je klembord zijn opgeslagen.</translation>
@@ -351,7 +347,6 @@
 <translation id="6746124502594467657">Omlaag</translation>
 <translation id="6749077623962119521">Rechten resetten?</translation>
 <translation id="6766622839693428701">Swipe omlaag om te sluiten.</translation>
-<translation id="6785959295338971061"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> Vanaf <ph name="FROM_DEVICE" /></translation>
 <translation id="6787751205395685251">Selecteer een optie voor <ph name="SITE_NAME" /></translation>
 <translation id="6790428901817661496">Spelen</translation>
 <translation id="6818926723028410516">Items selecteren</translation>
@@ -423,7 +418,6 @@
 <translation id="7990211076305263060">Als deze optie aanstaat, kunnen sites om toegang tot je microfoon vragen. Staat de optie uit, dan kunnen sites je microfoon niet gebruiken.</translation>
 <translation id="8007176423574883786">Uitgezet voor dit apparaat</translation>
 <translation id="802154636333426148">Downloaden mislukt</translation>
-<translation id="8024161440284949905">Doorgaan met deze tabbladen</translation>
 <translation id="8042586301629853791">Sorteren op:</translation>
 <translation id="8067883171444229417">Video afspelen</translation>
 <translation id="8068648041423924542">Kan certificaat niet selecteren.</translation>

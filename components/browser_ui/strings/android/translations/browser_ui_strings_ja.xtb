@@ -109,7 +109,6 @@
 <translation id="2750481671343847896">サイトで ID サービスからのログイン メッセージを表示できるようにします。</translation>
 <translation id="2790501146643349491">オンにすると、最近閉じたサイトのデータの送受信を完了できます。オフにすると、最近閉じたサイトのデータの送受信を完了できません。</translation>
 <translation id="2822354292072154809">「<ph name="CHOSEN_OBJECT_NAME" />」に関するすべてのサイト権限をリセットしてもよろしいですか？</translation>
-<translation id="2836978798613876756"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> <ph name="HOST_NAME" /></translation>
 <translation id="2850913818900871965">モバイルビューをリクエストする</translation>
 <translation id="2870560284913253234">ウェブサイト</translation>
 <translation id="2874939134665556319">前のトラック</translation>
@@ -121,7 +120,6 @@
 <translation id="2968755619301702150">証明書ビューア</translation>
 <translation id="2979365474350987274">サードパーティ Cookie が制限されています</translation>
 <translation id="3008272652534848354">権限をリセット</translation>
-<translation id="3013291976881901233">MIDI デバイス</translation>
 <translation id="301521992641321250">自動でブロックされました</translation>
 <translation id="3069226013421428034">特定のサイトのサードパーティのログインを許可します。</translation>
 <translation id="3082992102194421695">{COUNT,plural, =1{明日で期限切れ}other{あと # 日で期限切れ}}</translation>
@@ -192,7 +190,6 @@
 <translation id="4169549551965910670">USB デバイスに接続されています</translation>
 <translation id="4194328954146351878">サイトが NFC デバイスの情報を参照および変更することを許可する前に確認する（推奨）</translation>
 <translation id="4200726100658658164">位置情報の設定を開く</translation>
-<translation id="4212246570487010370">引き続き閲覧</translation>
 <translation id="4226663524361240545">通知を受け取るとデバイスが振動します</translation>
 <translation id="4259722352634471385"><ph name="URL" /> へのアクセスがブロックされました</translation>
 <translation id="4278390842282768270">許可</translation>
@@ -282,7 +279,6 @@
 <translation id="5706552988683188916"><ph name="WEBSITE" /> の Cookie などのサイトデータが削除されます</translation>
 <translation id="5723967018671998714">シークレット モードでサードパーティの Cookie がブロックされています</translation>
 <translation id="5740126560802162366">サイトはデバイスにデータを保存できます</translation>
-<translation id="5749158352074143502">このタブを続行</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" />をブロック</translation>
 <translation id="5804241973901381774">権限</translation>
 <translation id="5844448279347999754">オンにすると、サイトはクリップボードに保存されたテキストや画像の参照を要求できます。オフにすると、サイトはクリップボードに保存されたテキストや画像を参照できません。</translation>
@@ -351,7 +347,6 @@
 <translation id="6746124502594467657">下に移動</translation>
 <translation id="6749077623962119521">権限をリセットしますか？</translation>
 <translation id="6766622839693428701">閉じるには下にスワイプします。</translation>
-<translation id="6785959295338971061"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> <ph name="FROM_DEVICE" /> から</translation>
 <translation id="6787751205395685251"><ph name="SITE_NAME" /> に対する設定を選択してください</translation>
 <translation id="6790428901817661496">再生</translation>
 <translation id="6818926723028410516">アイテムを選択</translation>
@@ -423,7 +418,6 @@
 <translation id="7990211076305263060">オンにすると、サイトはマイクの使用を要求できます。オフにすると、サイトはマイクを使用できません。</translation>
 <translation id="8007176423574883786">このデバイスに対して無効</translation>
 <translation id="802154636333426148">ダウンロード エラー</translation>
-<translation id="8024161440284949905">これらのタブを続行</translation>
 <translation id="8042586301629853791">並べ替え:</translation>
 <translation id="8067883171444229417">動画を再生します</translation>
 <translation id="8068648041423924542">証明書を選択できません</translation>
@@ -500,7 +494,7 @@
 <translation id="9002538116239926534">オンにすると、サイトはデバイスにデータを保存できます。オフにすると、サイトはデバイスにデータを保存できません。</translation>
 <translation id="9011903857143958461"><ph name="SITE_NAME" /> を許可しました</translation>
 <translation id="9019902583201351841">保護者により管理されています</translation>
-<translation id="9039697262778250930">これらのサイトからログアウトする可能性があります</translation>
+<translation id="9039697262778250930">これらのサイトからログアウトされる可能性があります</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9090268041676521955">このサイトは、アクティビティを確認できるグループに属しています。グループは <ph name="FPS_OWNER" /> によって定義されます</translation>
 <translation id="9106233582039520022">Cookie を削除しますか？</translation>

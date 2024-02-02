@@ -149,6 +149,7 @@
 <translation id="1757699834933698436">{count,plural, =1{{count} ደካማ የይለፍ ቃል}one{{count} ደካማ የይለፍ ቃል}other{{count} ደካማ የይለፍ ቃሎች}}</translation>
 <translation id="1767766085187034454">Google ትርጉም</translation>
 <translation id="1769106850515800431">ግላዊነት የተላበሰ ይዘት</translation>
+<translation id="1780152987505130652">ቡድንን ዝጋ</translation>
 <translation id="1789803444939621101">እንኳን በደህና ተመልሰው መጡ፣ <ph name="USER_NAME" /></translation>
 <translation id="1803264062614276815">የካርድ ያዢው ስም</translation>
 <translation id="1809939268435598390">አቃፊ ሰርዝ</translation>
@@ -215,7 +216,6 @@
 <translation id="2080769225927880590">ልክ በሆነ መለያ ይግቡ</translation>
 <translation id="2103075008456228677">history.google.comን ክፈት</translation>
 <translation id="21133533946938348">ትር አጣብቅ</translation>
-<translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> ንጥሎች ተንቀሳቅሰዋል</translation>
 <translation id="2122754583996902531">የእርስዎ አሳሽ ይተዳደራል። <ph name="BEGIN_LINK" />የበለጠ ለመረዳት<ph name="END_LINK" /></translation>
 <translation id="2139502497535990641">የዋጋ ማንቂያዎች ይብሩ?</translation>
 <translation id="2139867232736819575">የቀዱትን ጽሁፍ ይፈልጉ</translation>
@@ -653,6 +653,7 @@
 <translation id="4442550905108052454"><ph name="BEGIN_BOLD" />ቅንብሮች<ph name="END_BOLD" />ን ይክፈቱ</translation>
 <translation id="4454246407045105932">ቋንቋን ያክሉ</translation>
 <translation id="4455710003856931944">ወደ ኋላ ወይም ወደ ፊት ለመሄድ ጠርዙን ማንሸራተት ይችላሉ።</translation>
+<translation id="4460014764210899310">ነጥል</translation>
 <translation id="4461286950227634995">የይለፍ ቃላትን ለማስቀመጥ ጠይቅ</translation>
 <translation id="4462491365653392320">በትሮች ላይ ዋጋዎችን ይከታተሉ</translation>
 <translation id="4469324811108161144">ማስታወሻዎች እስከ <ph name="CHARACTER_LIMIT" /> ቁምፊዎች ድረስ ማስቀመጥ ይችላሉ።</translation>
@@ -935,7 +936,6 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="5857770089550859117">ስምረትን ለመጀመር የይለፍ ሐረግ ያስፈልጋል።</translation>
 <translation id="5859715514067755465">ወደፊት</translation>
 <translation id="5860033963881614850">አጥፋ</translation>
-<translation id="5871497086027727873">1 ንጥል ተንቀሳቅሷል</translation>
 <translation id="5896576662943111387">ለiOS የተገነባ</translation>
 <translation id="5897749768294722429">ወደጎበኟቸው ጣቢያዎች በቶሎ ለመመለስ የእርስዎን ትሮች እና ታሪክ ያስምሩ።</translation>
 <translation id="5897956970858271241">የተቀዳ አገናኝ ይጎብኙ</translation>
@@ -1505,6 +1505,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="8766790350274092814">የ<ph name="WEBSITE" /> እና <ph name="SECOND_WEBSITE" /> የይለፍ ቃላት ይሰረዛሉ። መለያዎችዎ አይሰረዙም።</translation>
 <translation id="8775144690796719618">ልክ ያልሆነ ዩአርኤል</translation>
 <translation id="8780076847684176174">{count,plural, =1{ትሩን ይገምግሙ...}one{ሁሉንም ትር ይገምግሙ...}other{ሁሉንም ትሮች ይገምግሙ...}}</translation>
+<translation id="8781834595282316166">በቡድን ውስጥ አዲስ ትር</translation>
 <translation id="8782570580170191813">ሁልጊዜ ፓኬጆችን ይከታተሉ</translation>
 <translation id="8787968206789828143">በድር ላይ ይፈልጉ</translation>
 <translation id="8792626944327216835">ማይክሮፎን</translation>

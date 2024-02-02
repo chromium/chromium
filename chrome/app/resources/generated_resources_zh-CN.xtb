@@ -2895,7 +2895,6 @@
 <translation id="3188465121994729530">移动平均值</translation>
 <translation id="3189187154924005138">大号光标</translation>
 <translation id="3190558889382726167">密码已保存</translation>
-<translation id="3191625924275846436">{NUM_SITES,plural, =1{为保护您的数据，对于您近期未访问过的这个网站，系统已撤消其权限}other{为保护您的数据，对于您近期未访问过的这些网站，系统已撤消其权限}}</translation>
 <translation id="3192586965067888278">详细描述问题。反馈将发送给 Google 进行人工审核，并可能会用于改进或开发 Google 产品和服务。</translation>
 <translation id="3192947282887913208">音频文件</translation>
 <translation id="3193695589337931419">系统信号实用程序</translation>
@@ -4052,7 +4051,6 @@
 <translation id="4078903002989614318">排序和列表选项</translation>
 <translation id="4079140982534148664">使用增强的“拼写检查”功能</translation>
 <translation id="4082333918978320301">不允许任何网站使用您的麦克风</translation>
-<translation id="4084582735848141214">{COUNT,plural, =1{有 1 个网站已被允许使用 Cookie}other{有 # 个网站已被允许使用 Cookie}}</translation>
 <translation id="4084682180776658562">添加书签</translation>
 <translation id="4084835346725913160">关闭 <ph name="TAB_NAME" /></translation>
 <translation id="4085298594534903246">已拦截此网页上的 JavaScript。</translation>
@@ -8046,7 +8044,6 @@
 <translation id="7260186537988033909">自助服务终端和数字标牌设备注册已完成</translation>
 <translation id="7261612856573623172">系统默认文字转语音声音</translation>
 <translation id="7262004276116528033">此登录服务由 <ph name="SAML_DOMAIN" /> 托管</translation>
-<translation id="7263162347647986485">{NUM_SITES,plural, =1{已撤消 1 个网站的权限}other{已撤消 {NUM_SITES} 个网站的权限}}</translation>
 <translation id="7264695323040866038">始终使用<ph name="APP" />应用打开受支持的网站链接？</translation>
 <translation id="7267044199012331848">无法安装此虚拟机。请重试，或与您的管理员联系。错误代码：<ph name="ERROR_CODE" />。</translation>
 <translation id="7267875682732693301">不时地移开手指，以便传感器更完整地记录您的指纹</translation>
@@ -9793,7 +9790,6 @@
 <translation id="859246725979739260">此网站无法使用您的位置信息。</translation>
 <translation id="8593121833493516339">发送使用情况数据和诊断数据。通过自动向 Google 发送诊断数据、设备数据和应用使用情况数据，帮助改善您孩子的 Android 使用体验。这些数据不会被用来辨识您孩子的身份，而是会被用来帮助提高系统和应用的稳定性以及实现其他方面的改进。部分汇总数据也会对 Google 应用和合作伙伴（例如 Android 开发者）有所帮助。如果您已为孩子开启“其他网络与应用活动记录”设置，这些数据可能会被保存到其 Google 账号中。<ph name="BEGIN_LINK1" />了解详情<ph name="END_LINK1" /></translation>
 <translation id="8593450223647418235">完成设置前，您无法在 Microsoft 365 中打开文件。</translation>
-<translation id="8594585498253980290">{COUNT,plural, =1{有 1 个网站已被禁止使用 Cookie}other{有 # 个网站已被禁止使用 Cookie}}</translation>
 <translation id="8596540852772265699">自定义文件</translation>
 <translation id="8597462463725156723">屏幕上不会弹出通知。不过，您仍可点击屏幕右下角的“勿扰”图标来查看通知。</translation>
 <translation id="8597845839771543242">属性格式：</translation>

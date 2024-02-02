@@ -149,6 +149,7 @@
 <translation id="1757699834933698436">{count,plural, =1{ពាក្យសម្ងាត់ខ្សោយ {count}}other{ពាក្យសម្ងាត់ខ្សោយ {count}}}</translation>
 <translation id="1767766085187034454">Google បកប្រែ</translation>
 <translation id="1769106850515800431">ខ្លឹមសារ​ដែលមានលក្ខណៈ​ផ្ទាល់ខ្លួន</translation>
+<translation id="1780152987505130652">បិទក្រុម</translation>
 <translation id="1789803444939621101">សូមស្វាគមន៍សម្រាប់ការវិលត្រឡប់មកវិញ <ph name="USER_NAME" /></translation>
 <translation id="1803264062614276815">ឈ្មោះ​ម្ចាស់​បណ្ណ</translation>
 <translation id="1809939268435598390">លុបថតឯកសារ</translation>
@@ -215,7 +216,6 @@
 <translation id="2080769225927880590">ចូលដោយប្រើគណនីដែលត្រឹមត្រូវ</translation>
 <translation id="2103075008456228677">បើក history.google.com</translation>
 <translation id="21133533946938348">ដៅផ្ទាំង</translation>
-<translation id="2116625576999540962">ធាតុ <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> ត្រូវបានផ្លាស់ទី។</translation>
 <translation id="2122754583996902531">កម្មវិធីរុករកតាមអ៊ីនធឺណិត​របស់អ្នកស្ថិតក្រោមការគ្រប់គ្រង។ <ph name="BEGIN_LINK" />ស្វែងយល់បន្ថែម<ph name="END_LINK" /></translation>
 <translation id="2139502497535990641">បើកការជូន​ដំណឹងអំពី​តម្លៃឬ?</translation>
 <translation id="2139867232736819575">ស្វែងរក​អត្ថបទ​ដែលអ្នក​បានចម្លង</translation>
@@ -653,6 +653,7 @@
 <translation id="4442550905108052454">បើក<ph name="BEGIN_BOLD" />ការកំណត់<ph name="END_BOLD" /></translation>
 <translation id="4454246407045105932">បញ្ចូល​ភាសា</translation>
 <translation id="4455710003856931944">អ្នកអាចអូសគែមដើម្បីត្រឡប់ក្រោយ ឬទៅមុខ។</translation>
+<translation id="4460014764210899310">បំបែក​ក្រុម</translation>
 <translation id="4461286950227634995">ឱ្យរក្សាទុកពាក្យសម្ងាត់</translation>
 <translation id="4462491365653392320">តាមដាន​តម្លៃនៅក្នុងផ្ទាំង</translation>
 <translation id="4469324811108161144">កំណត់ចំណាំ​អាចមាន​រហូតដល់ <ph name="CHARACTER_LIMIT" /> តួអក្សរ។</translation>
@@ -935,7 +936,6 @@ Handoff ត្រូវបើកដំណើរការនៅក្នុងផ
 <translation id="5857770089550859117">តម្រូវឲ្យមានឃ្លាសម្ងាត់ដើម្បីចាប់ផ្តើមសមកាលកម្ម។</translation>
 <translation id="5859715514067755465">ទៅមុខ</translation>
 <translation id="5860033963881614850">បិទ</translation>
-<translation id="5871497086027727873">ធាតុ 1 ត្រូវបានផ្លាស់ទី</translation>
 <translation id="5896576662943111387">បានបង្កើតឡើង​សម្រាប់ iOS</translation>
 <translation id="5897749768294722429">ដើម្បី​ត្រឡប់​ទៅកាន់​គេហទំព័រ​ដែល​អ្នកបានចូលមើល​យ៉ាង​រហ័ស សូមធ្វើសមកាលកម្មផ្ទាំង និង​ប្រវត្តិរបស់អ្នក។</translation>
 <translation id="5897956970858271241">ចូល​ទៅកាន់តំណ​ដែល​បានចម្លង</translation>
@@ -1505,6 +1505,7 @@ Handoff ត្រូវបើកដំណើរការនៅក្នុងផ
 <translation id="8766790350274092814">ពាក្យសម្ងាត់​សម្រាប់ <ph name="WEBSITE" /> និង <ph name="SECOND_WEBSITE" /> នឹង​ត្រូវ​បានលុប។ គណនី​របស់​អ្នក​នឹង​មិន​ត្រូវ​បានលុប​ទេ។</translation>
 <translation id="8775144690796719618">URL មិនត្រឹមត្រូវ</translation>
 <translation id="8780076847684176174">{count,plural, =1{ពិនិត្យមើលផ្ទាំងនេះ...}other{ពិនិត្យមើលផ្ទាំងទាំងអស់...}}</translation>
+<translation id="8781834595282316166">ផ្ទាំងថ្មី​នៅក្នុងក្រុម</translation>
 <translation id="8782570580170191813">តាមដានកញ្ចប់ជានិច្ច</translation>
 <translation id="8787968206789828143">ស្វែងរកលើអ៊ីនធឺណិត</translation>
 <translation id="8792626944327216835">មីក្រូហ្វូន</translation>

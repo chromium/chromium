@@ -44,6 +44,7 @@
 <translation id="2168108852149185974">Bazı eklentiler Chromium'un kilitlenmesine neden oluyor. Lütfen şunların yüklemelerini kaldırın:</translation>
 <translation id="2178608107313874732">Chromium şu anda kameranızı kullanamıyor</translation>
 <translation id="2195025571279539885">Chromium'un bir dahaki sefere bu siteden <ph name="LANGUAGE_NAME" /> dilindeki sayfaları çevirmeyi önermesini ister misiniz?</translation>
+<translation id="2216344354848599203">Chromium simgesini basılı tutup "Ana Ekranı Düzenle"yi tıklayın</translation>
 <translation id="2218146227246548550">Kuruluşunuz, Chromium'u kullanmak için oturum açmanızı zorunlu tutuyor. <ph name="BEGIN_LINK" />Daha Fazla Bilgi<ph name="END_LINK" /></translation>
 <translation id="22313767259766852">Bu adres şu anda Chromum'da kayıtlıdır. Adresi diğer Google ürünlerinde kullanmak için Google Hesabınıza (<ph name="USER_EMAIL" />) kaydedin.</translation>
 <translation id="2236584955986023187">Bu durumda Chromium her seferinde masaüstü siteyi ister.</translation>
@@ -197,6 +198,7 @@ Dikkate alınması gereken noktalar:
 <translation id="632825460376924298">Chromium'da Oturum Açmaya İzin Ver</translation>
 <translation id="6337530241089703714">Chromium verilerinizi bu cihazdan temizlemeyi veya saklamayı seçin</translation>
 <translation id="6348483005826990855">3. Chromium'u seçin</translation>
+<translation id="6383607155624074112">Ana ekran yuvanızdan Chromium'a daha hızlı erişin</translation>
 <translation id="6407399265324739055">Ödeme yöntemleri ve adresler şifrelenmez. Chromium'daki tarama geçmişi senkronize edilmez.
 
 Sadece parolanıza sahip olan kişiler şifrelenmiş verilerinizi okuyabilir. Parola Google'a gönderilmez veya Google tarafından saklanmaz. Parolanızı unutursanız veya bu ayarı değiştirmek isterseniz <ph name="BEGIN_LINK" />hesabınızdaki Chromium verilerini temizleyin<ph name="END_LINK" />.</translation>

@@ -398,6 +398,7 @@
 <translation id="1711528724596764268">ମେସିନ ଲର୍ନିଂ ଏବଂ ଆର୍ଟିଫିସିଆଲ ଇଣ୍ଟେଲିଜେନ୍ସ</translation>
 <translation id="1712552549805331520"><ph name="URL" /> ସ୍ଥାୟୀରୂପେ ଆପଣଙ୍କର ସ୍ଥାନୀୟ କମ୍ପ୍ୟୁଟର୍‌ରେ ଡାଟା ଷ୍ଟୋର୍ କରିବାକୁ ଚାହୁଁଛି</translation>
 <translation id="1713628304598226412">ଟ୍ରେ 2</translation>
+<translation id="1713819065634160212">ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରୁ ଠିକଣାଗୁଡ଼ିକୁ ବ୍ୟବହାର କରି ସେଭ କରନ୍ତୁ</translation>
 <translation id="1714807406136741351">ମୋଡ ବ୍ରାଉଜ କରନ୍ତୁ, ଗ୍ରାଫରେ ମୂଲ୍ୟ ପରିବର୍ତ୍ତନର ସମୀକ୍ଷା କରିବାକୁ ଆପଣ ବାମ/ଡାହାଣ ତୀର ବ୍ୟବହାର କରିବା ପାଇଁ ଫର୍ମସ ମୋଡକୁ ପରିବର୍ତ୍ତନ କରିପାରିବେ</translation>
 <translation id="1717218214683051432">ମୋସନ୍ ସେନ୍ସର୍</translation>
 <translation id="1717494416764505390">ମେଲବକ୍ସ 3</translation>
@@ -1087,6 +1088,7 @@
 <translation id="3120807611504813890">ଏନଭେଲପ (ଲାଇଟୱେଟ)</translation>
 <translation id="3121994479408824897"><ph name="DOMAIN" />କୁ ଯାଆନ୍ତୁ</translation>
 <translation id="3126023634486644099">ଲେବଲ (ସ୍ଥାୟୀ)</translation>
+<translation id="3133565499688974786">ବର୍ତ୍ତମାନ ଆପଣଙ୍କ ଡିଫଲ୍ଟ ସର୍ଚ୍ଚ ଇଞ୍ଜିନ <ph name="SEARCH_ENGINE_NAME" /> ଅଟେ</translation>
 <translation id="3140646734028448730">ବିଜିନେସ ସେବା</translation>
 <translation id="3141093262818886744">ଯେ କୌଣସି ମତେ ଖୋଲନ୍ତୁ</translation>
 <translation id="3141641372357166056">ସମ୍ମତି ନିଷ୍ପତ୍ତି ନିଆଯାଇନାହିଁ</translation>
@@ -1504,6 +1506,7 @@
 <translation id="3943857333388298514">ପେଷ୍ଟ କରନ୍ତୁ</translation>
 <translation id="3946209740501886391">ସର୍ବଦା ଏହି ସାଇଟ୍‌ରେ ପଚାରନ୍ତୁ</translation>
 <translation id="3948588869002647271">ଏହି ଆପ୍ଲିକେସନ ଉପଲବ୍ଧ ନାହିଁ କିମ୍ବା ନଷ୍ଟ ହୋଇଯାଇଛି</translation>
+<translation id="3949297482798028668">ଏଠାରେ ଏହି ବିଷୟବସ୍ତୁ ପେଷ୍ଟ କରିବାକୁ ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟରଙ୍କ ଦ୍ୱାରା ବ୍ଲକ କରାଯାଇଛି।</translation>
 <translation id="3949571496842715403">ଏହା ଏକ <ph name="DOMAIN" /> ବୋଲି ଏହି ସର୍ଭର୍ ପ୍ରମାଣ କରିପାରିଲା ନାହିଁ; ଏହାର ସୁରକ୍ଷା ସାର୍ଟିଫିକେଟ୍ ବିଷୟର ବିକଳ୍ପ ନାମକୁ ନିର୍ଦ୍ଧିଷ୍ଟ କରେନାହିଁ। ଏହା ଏକ ଭୁଲ୍‍ କନଫିଗ୍‌ରେସନ୍‌ କିମ୍ବା ଜଣେ ଆକ୍ରମଣକାରୀଙ୍କ ଦ୍ୱାରା ଆପଣଙ୍କର ସଂଯୋଗକୁ ପ୍ରତିରୋଧ କରୁଥିବା କାରଣରୁ ହୋଇପାରେ।</translation>
 <translation id="3949601375789751990">ଆପଣଙ୍କର ବ୍ରାଉଜିଂ ଇତିବୃତ୍ତି ଏଠାରେ ଦେଖାଦିଏ</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
@@ -1919,6 +1922,7 @@
 <translation id="4764680219299728632">ରେଞ୍ଜ, କୁକଟପ ଏବଂ ଓଭେନ</translation>
 <translation id="4764776831041365478"><ph name="URL" />ରେ ଥିବା ୱେବ୍‌ପୃଷ୍ଠାଟି ଅସ୍ଥାୟୀରୂପେ ଡାଉନ୍‌ ଥାଇପାରେ କିମ୍ବା ସ୍ଥାୟୀଭାବେ ଏକ ନୂତନ ୱେବ୍ ଠିକଣାକୁ ସ୍ଥାନାନ୍ତର ହୋଇପାରେ।</translation>
 <translation id="4766713847338118463">ତଳ ପଟରେ ଦୁଇଟି ଷ୍ଟାପଲ୍</translation>
+<translation id="4768864802656530630">ବିସ୍ତୃତ ସିଷ୍ଟମ ଲଗ। <ph name="BEGIN_LINK" />ଅଧିକ ଜାଣନ୍ତୁ<ph name="END_LINK" /></translation>
 <translation id="4771973620359291008">ଏକ ଅଜ୍ଞାତ ତୃଟି ସଂଘଟିତ ହୋଇଅଛି ।</translation>
 <translation id="4774055414220872623">ଆର୍ଟ ଏବଂ କ୍ରାଫ୍ଟ ସାମଗ୍ରୀ</translation>
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{ପପ୍‍-ଅପ୍ ବ୍ଲକ୍ କରାଯାଇଛି}other{#ଟି ପପ୍‍-ଅପ୍ ବ୍ଲକ୍ କରାଯାଇଛି}}</translation>
@@ -2224,6 +2228,7 @@
 <translation id="5377026284221673050">"ଆପଣଙ୍କର ଘଣ୍ଟା ପଛୁଆ ଅଛି" କିମ୍ବା "ଆପଣଙ୍କର ଘଣ୍ଟା ଆଗୁଆ ଅଛି " କିମ୍ବା "&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;"</translation>
 <translation id="5383478552402031184">ଫ୍ଲୋରିଂ</translation>
 <translation id="5385857628869214740">ବ୍ୟଙ୍ଗ</translation>
+<translation id="5385966243497224160">ଅଣ-HTTPS URLର ପ୍ରିଭ୍ୟୁ କରାଯାଇପାରିବ ନାହିଁ</translation>
 <translation id="5386426401304769735">ଏହି ସାଇଟ୍‌ ପାଇଁ ଥିବା ସାର୍ଟିଫିକେଟ୍‌ ଶୃଙ୍ଖଳାରେ SHA-1ର ବ୍ୟବହାର କରି ଦସ୍ତଖତ କରାଯାଇଥିବା ସାର୍ଟିଫିକେଟ୍‌ ଅଛି।</translation>
 <translation id="5392506727170022660">ମେଟାଲ (ସେମି-ଗ୍ଲସ)</translation>
 <translation id="5396631636586785122">ଡାହାଣ ପଟରେ ଏଜ୍ ଷ୍ଟିଚ୍</translation>
@@ -2446,6 +2451,8 @@
 <translation id="5838732667866024867">ଗ୍ରାଫରେ ମୂଲ୍ୟ ପରିବର୍ତ୍ତନର ସମୀକ୍ଷା କରିବା ପାଇଁ ଆପଣ ବାମ/ ଡାହାଣ ତୀର ବ୍ୟବହାର କରିପାରିବେ</translation>
 <translation id="5840318881868981258">ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରେ, <ph name="ACCOUNT" /></translation>
 <translation id="5841338463993781099">ଆକାଉଣ୍ଟରେ ସେଭ କରିବେ?</translation>
+<translation id="5843987376989109187">ଏହି ଭାଷା ଏପର୍ଯ୍ୟନ୍ତ ସମର୍ଥିତ ନୁହେଁ।
+    <ph name="BEGIN_LINK" />ଅଧିକ ଜାଣନ୍ତୁ<ph name="END_LINK" /></translation>
 <translation id="5847181246682413476">ପାୱାର ସପ୍ଲାଇ</translation>
 <translation id="5851548754964597211">ଟାବ୍‍ର ତାଲିକା</translation>
 <translation id="5852909432155870672">RA4</translation>
@@ -2778,7 +2785,6 @@
 <translation id="6480864723214312258">ହାଉସହୋଲ୍ଡ ବେଟେରୀ</translation>
 <translation id="6486200200930923183">ଡକ୍ୟୁମେଣ୍ଟାରୀ ମୁଭିଗୁଡ଼ିକ</translation>
 <translation id="6489534406876378309">କ୍ରାସ୍‌ଗୁଡ଼ିକ ଅପ୍‌ଲୋଡ୍‌ କରିବା ଆରମ୍ଭ କରନ୍ତୁ</translation>
-<translation id="6491663123807473970"><ph name="URL" /> ଆପଣଙ୍କ MIDI ଡିଭାଇସଗୁଡ଼ିକ ବ୍ୟବହାର କରିବାକୁ ଚାହେଁ</translation>
 <translation id="6493924760403974580">ଏହି ଆପ୍ କେବଳ ଏହି ଆକାରକୁ ସମର୍ଥନ କରେ।</translation>
 <translation id="6494750904506170417">ପପ୍-ଅପ୍ ଏବଂ ରିଡାଇରେକ୍ଟଗୁଡ଼ିକ</translation>
 <translation id="6495664197699704593">ଏହି ପାସୱାର୍ଡକୁ କେବଳ ଏହି ଡିଭାଇସରେ ସେଭ କରାଯାଏ। ଆପଣଙ୍କ ଅନ୍ୟ ଡିଭାଇସଗୁଡ଼ିକରେ ଏହାକୁ ବ୍ୟବହାର କରିବା ପାଇଁ, <ph name="GOOGLE_PASSWORD_MANAGER" />।</translation>
@@ -3655,6 +3661,7 @@
 <translation id="8194797478851900357">&amp;ଘୁଞ୍ଚାନ୍ତୁକୁ ପୂର୍ବବତ୍‍ କରନ୍ତୁ</translation>
 <translation id="8194956568907463262">ସୁଟର ଗେମ</translation>
 <translation id="8199437620497683918">ଅପ୍ଟିକାଲ ଡିସ୍କ (ଗ୍ଲସି)</translation>
+<translation id="8199730148066603000">ଅଣ-HTTPS URLର ପ୍ରିଭ୍ୟୁ କରିବାକୁ ଅନୁମତି ଦିଆଯାଏ ନାହିଁ।</translation>
 <translation id="8200772114523450471">ସାରାଶଂ</translation>
 <translation id="8202097416529803614">ଅର୍ଡର ସାରାଶଂ</translation>
 <translation id="8202370299023114387">ବିବାଦ</translation>
@@ -4091,6 +4098,7 @@
 <translation id="9049981332609050619">ଆପଣ <ph name="DOMAIN" />ରେ ପହଞ୍ଚିବାକୁ ଚେଷ୍ଟା କରିଥିଲେ କିନ୍ତୁ ସର୍ଭର୍‌ ଏକ ଅବୈଧ ସାର୍ଟିଫିକେଟ୍‍ ଉପସ୍ଥାପନ କରିଛି।</translation>
 <translation id="9050666287014529139">ପାସ୍‌ଫ୍ରେଜ୍</translation>
 <translation id="9051072642122229460">କଫି ଏବଂ ଏସ୍ପ୍ରେସୋ ମେକର</translation>
+<translation id="9051260467258969162">ଲେଖିବାରେ ସହାୟତା ପାଇବା ପାଇଁ ପୁଣି <ph name="BEGIN_LINK" />ସାଇନ ଇନ<ph name="END_LINK" /> କରି ତା'ପରେ ଏହି ଟାବକୁ ଫେରନ୍ତୁ</translation>
 <translation id="9053840549256861041">ଆମେ ବିଜ୍ଞାପନ ପରିମାପ ନାମକ ଏକ ନୂଆ ବିଜ୍ଞାପନ ଗୋପନୀୟତା ଫିଚର ଲଞ୍ଚ କରୁଛୁ। Chrome ଆପଣଙ୍କୁ ଏକ ବିଜ୍ଞାପନ ଦେଖାଇବା ସମୟରେ ବିଜ୍ଞାପନଗୁଡ଼ିକର ପରଫରମାନ୍ସ ମାପିବାରେ ସାଇଟଗୁଡ଼ିକୁ ସାହାଯ୍ୟ କରିବା ପରି ସାଇଟଗୁଡ଼ିକ ମଧ୍ୟରେ ଅତି ସୀମିତ ସୂଚନା କେବଳ ସେୟାର କରେ।</translation>
 <translation id="9056953843249698117">Store</translation>
 <translation id="9062620674789239642">ଏହା ମୁଭ୍, ଏଡିଟ୍ କିମ୍ବା ଡିଲିଟ୍ କରାଯାଇଥାଇପାରେ।</translation>

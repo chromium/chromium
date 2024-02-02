@@ -1341,6 +1341,7 @@ Algumas funcionalidades são limitadas para aumentar a autonomia da bateria.</tr
 <translation id="6298183524022479114">Personalize este dispositivo na app</translation>
 <translation id="6309219492973062892">Clicar ou tocar nos ícones de 1 a 8 na prateleira</translation>
 <translation id="6315170314923504164">Voz</translation>
+<translation id="6319058840130157106">Retroceder entre o canto inferior direito, o Launcher, a barra de endereço, a barra de marcadores, o Website aberto e as transferências</translation>
 <translation id="6324916366299863871">Editar atalho</translation>
 <translation id="6330012934079202188">Ao mostrar as janelas de todos os espaços de trabalho, prima a tecla da seta para cima para mostrar janelas do espaço de trabalho atual</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> é uma sessão gerida por <ph name="MANAGER" /></translation>
@@ -1926,6 +1927,7 @@ Para encerrar o dispositivo, prima sem soltar o botão ligar/desligar novamente 
 <translation id="878215960996152260"><ph name="APP_NAME" />, app instalada, bloqueada</translation>
 <translation id="8785070478575117577">Ligar a <ph name="NETWORK_NAME" /></translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
+<translation id="8790632710469941716">Avançar entre o canto inferior direito, o Launcher, a barra de endereço, a barra de marcadores, o Website aberto e as transferências</translation>
 <translation id="8792626944327216835">microfone</translation>
 <translation id="8801802992492329306">5G</translation>
 <translation id="8806053966018712535">Pasta <ph name="FOLDER_NAME" /></translation>

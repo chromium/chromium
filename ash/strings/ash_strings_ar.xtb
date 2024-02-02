@@ -608,9 +608,11 @@
 <translation id="3526440770046466733">فتح الرابط في علامة تبويب جديدة والبقاء في علامة التبويب الحالية</translation>
 <translation id="353086728817903341">تم الربط بـ <ph name="NUM_DEVICES" /> جهاز.</translation>
 <translation id="3533126039236445965">التطبيقات المثبَّتة في الرف</translation>
+<translation id="3537350467437346467">اطّلعت عليه</translation>
 <translation id="3539957339480430241">نقطة الاتصال في <ph name="DEVICE_NAME" /></translation>
 <translation id="3540893133818942399">عدم إعداد ميزة عرض الصور والوسائط الحديثة في هاتفك</translation>
 <translation id="3542066395059568317">ستظهر لك اقتراحات كي تتمكّن من المتابعة من حيث توقفت، ويمكنك النقر بزر الماوس الأيمن لإزالة هذه الاقتراحات.</translation>
+<translation id="3547318469722231257">عدّلته</translation>
 <translation id="3552189655002856821">‏تم إيقاف شبكة Wi-Fi.</translation>
 <translation id="3554215588514239132">إظهار لوحة "أدوات المطوِّرين" أو إخفاؤها</translation>
 <translation id="3554637740840164787">تم تثبيت <ph name="ITEM_TITLE" /></translation>
@@ -703,6 +705,7 @@
 <translation id="385300504083504382">البداية</translation>
 <translation id="3859364108019690">يتعذّر بث محتوى التطبيقات</translation>
 <translation id="3861651314799684201">‏اضغط على المفتاح Enter لتسجيل فيديو للشاشة بأكملها</translation>
+<translation id="3882323608730650973">معدَّل</translation>
 <translation id="3886872229787704059">تم فتحه اليوم.</translation>
 <translation id="3891340733213178823">‏للخروج اضغط على Ctrl+Shift+Q مرتين.</translation>
 <translation id="3893630138897523026">‏ChromeVox (التعليق المنطوق)</translation>
@@ -896,6 +899,7 @@
 <translation id="4582666543382004902">‏تم إيقاف نقطة الاتصال نتيجة تفعيل شبكة Wi-Fi، لذا عليك إيقاف شبكة Wi-Fi أولاً لاستخدام نقطة الاتصال.</translation>
 <translation id="4585337515783392668">إيقاف الإرسال إلى مستلم غير معروف</translation>
 <translation id="4596144739579517758">المظهر الداكن غير مُفعَّل.</translation>
+<translation id="4596442969149038771">تمت مشاركته من قِبل "<ph name="USER" />"</translation>
 <translation id="4611292653554630842">تسجيل الدخول</translation>
 <translation id="462160925400706389">تم ربط "<ph name="NAME" />"</translation>
 <translation id="4623167406982293031">يجب إثبات ملكية الحساب</translation>
@@ -1339,6 +1343,7 @@
 <translation id="6298183524022479114">تخصيص هذا الجهاز من خلال التطبيق</translation>
 <translation id="6309219492973062892">النقر على الرموز من 1 إلى 8 على الرف</translation>
 <translation id="6315170314923504164">الصوت</translation>
+<translation id="6319058840130157106">التنقُّل للخلف بين أسفل يسار الشاشة ومشغّل التطبيقات وشريط العناوين وشريط الإشارات والموقع الإلكتروني المفتوح وعمليات التنزيل</translation>
 <translation id="6324916366299863871">تعديل الاختصار</translation>
 <translation id="6330012934079202188">يتم الآن عرض النوافذ المفتوحة في جميع أسطح المكتب، ويمكنك الضغط على مفتاح السهم المتّجه للأعلى لعرض النوافذ المفتوحة في سطح المكتب الحالي.</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> هي جلسة تتم إدارتها من خلال <ph name="MANAGER" />.</translation>
@@ -1818,6 +1823,7 @@
 <translation id="8314772463905284467">‏مفتاح Caps Lock قيد التفعيل</translation>
 <translation id="8315514906653279104">جارٍ تفعيل نقطة الاتصال…</translation>
 <translation id="8331351032546853669">بانتظار التنزيل</translation>
+<translation id="8339706171276328417">‏<ph name="ACTION_DESCRIPTION" /> · بتاريخ ‎<ph name="TIME" /></translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
 <translation id="8345019317483336363">تم اختيار النافذة <ph name="WINDOW_TITLE" />.</translation>
 <translation id="8349826889576450703">launcher</translation>
@@ -1924,6 +1930,7 @@
 <translation id="878215960996152260"><ph name="APP_NAME" />، تطبيق مثبّت محظور</translation>
 <translation id="8785070478575117577">الاتصال بالشبكة <ph name="NETWORK_NAME" /></translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
+<translation id="8790632710469941716">التنقُّل للأمام بين أسفل يسار الشاشة ومشغّل التطبيقات وشريط العناوين وشريط الإشارات والموقع الإلكتروني المفتوح وعمليات التنزيل</translation>
 <translation id="8792626944327216835">الميكروفون</translation>
 <translation id="8801802992492329306">شبكة الجيل الخامس</translation>
 <translation id="8806053966018712535">مجلد <ph name="FOLDER_NAME" /></translation>
@@ -2037,6 +2044,7 @@
 <translation id="953431725143473984">هل تريد إطفاء الجهاز؟</translation>
 <translation id="954052413789300507">لا تتوفّر مساحة كافية لتنزيل الملف <ph name="FILENAME" />. عليك إخلاء بعض المساحة.</translation>
 <translation id="954520015070501466">30 دقيقة</translation>
+<translation id="954786879461589145">تم تعديله من قِبل "<ph name="USER" />"</translation>
 <translation id="974545358917229949">عرض <ph name="RESULT_COUNT" /> نتيجة عن <ph name="QUERY" /></translation>
 <translation id="981011780479609956">بلا تاريخ تسليم</translation>
 <translation id="98120814841227350">الانتقال إلى نهاية المستند</translation>

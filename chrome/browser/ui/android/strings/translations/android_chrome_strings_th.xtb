@@ -139,6 +139,7 @@
 <translation id="1749561566933687563">ซิงค์บุ๊กมาร์กของคุณ</translation>
 <translation id="1750259112639922169">กลุ่มแท็บ - <ph name="TAB_COUNT" /> แท็บ</translation>
 <translation id="17513872634828108">แท็บที่เปิดอยู่</translation>
+<translation id="1755203724116202818">ระบบจะแชร์เฉพาะข้อมูลบางประเภทระหว่างเว็บไซต์เพื่อวัดประสิทธิภาพของโฆษณา เช่น คุณซื้อสินค้าหลังจากเข้าชมเว็บไซต์หรือไม่</translation>
 <translation id="1757620656501361327">การอัปเดตเครื่องมือจัดการรหัสผ่านบน Google</translation>
 <translation id="1760873718737761808">{FILE_COUNT,plural, =1{หน้า มี 1 หน้าในรายการ}other{หน้า มี # หน้าในรายการ}}</translation>
 <translation id="1778457539567749232">ทำเครื่องหมายว่ายังไม่อ่าน</translation>
@@ -257,7 +258,7 @@
 <translation id="247737702124049222">คำอธิบายรูปภาพเปิดอยู่</translation>
 <translation id="2479148705183875116">ไปที่การตั้งค่า</translation>
 <translation id="2482878487686419369">การแจ้งเตือน</translation>
-<translation id="2496180316473517155">ประวัติการเข้าชมที่เรียกดู</translation>
+<translation id="2496180316473517155">ประวัติการท่องเว็บ</translation>
 <translation id="2497852260688568942">ผู้ดูแลระบบปิดใช้การซิงค์</translation>
 <translation id="250020030759455918">คุณจะเห็นสถานะการลงชื่อเข้าใช้ ข้อมูลการท่องเว็บ และข้อมูลเว็บไซต์ของ <ph name="SITE_NAME" /> ใน Chrome</translation>
 <translation id="2510106555128151389">กำลังติดตั้ง <ph name="WEBAPK_NAME" />...</translation>
@@ -334,6 +335,7 @@
 <translation id="2870560284913253234">เว็บไซต์</translation>
 <translation id="2871733351037274014">โหลดหน้าเว็บล่วงหน้า</translation>
 <translation id="2876136027428473467"><ph name="CHILD_NAME" /> อยากให้คุณอนุมัติเว็บไซต์นี้</translation>
+<translation id="2876194821763651818">บันทึกรหัสผ่านใน <ph name="USERNAME" /> แล้ว</translation>
 <translation id="2876628302275096482">ดูข้อมูลเพิ่มเติมเกี่ยวกับ<ph name="BEGIN_LINK" />วิธีที่ Chrome ช่วยรักษาข้อมูลของคุณให้เป็นส่วนตัว<ph name="END_LINK" /></translation>
 <translation id="2888126860611144412">เกี่ยวกับ Chrome</translation>
 <translation id="2891154217021530873">หยุดการโหลดหน้า</translation>
@@ -451,6 +453,7 @@
 <translation id="3443221991560634068">โหลดหน้าปัจจุบันอีกครั้ง</translation>
 <translation id="3444179773590444986">ต้องการแชร์ความคิดเห็นเกี่ยวกับธีมมืดสำหรับเว็บไซต์ไหม</translation>
 <translation id="3452832259067974318">Chrome จะไม่ป้อนรหัสผ่านลงในช่องนี้โดยอัตโนมัติเพื่อปกป้องความเป็นส่วนตัวของคุณ</translation>
+<translation id="3467081767799433066">เมื่อเปิดใช้การวัดผลโฆษณา ระบบจะแชร์เฉพาะข้อมูลบางประเภทระหว่างเว็บไซต์เพื่อวัดประสิทธิภาพของโฆษณา เช่น คุณซื้อสินค้าหลังจากเข้าชมเว็บไซต์หรือไม่</translation>
 <translation id="3474624961160222204">ดำเนินการต่อในชื่อ <ph name="NAME" /></translation>
 <translation id="3478363558367712427">คุณเลือกเครื่องมือค้นหาได้</translation>
 <translation id="3479552764303398839">ไม่ใช่ตอนนี้</translation>
@@ -631,6 +634,7 @@
 <translation id="4494806687727322324">ผู้ดูแลระบบของคุณเปิดการบันทึกรหัสผ่าน</translation>
 <translation id="4508528996305412043">เมนูของการ์ดฟีดเปิดอยู่</translation>
 <translation id="4509501256689523862">ขณะที่คุณท่องเว็บ จะมีการปรับโฆษณาที่แสดงให้เหมาะกับคุณหรือไม่นั้นขึ้นอยู่กับการตั้งค่านี้ รวมถึง<ph name="BEGIN_LINK_1" />หัวข้อโฆษณา<ph name="END_LINK_1" /> <ph name="BEGIN_LINK_2" />การตั้งค่าคุกกี้<ph name="END_LINK_2" /> และการปรับโฆษณาตามโปรไฟล์ผู้ใช้ของเว็บไซต์ที่คุณดู</translation>
+<translation id="4509741852167209430">ระบบจะแชร์เฉพาะข้อมูลบางประเภทระหว่างเว็บไซต์เพื่อวัดประสิทธิภาพของโฆษณา เช่น คุณซื้อสินค้าหลังจากเข้าชมเว็บไซต์หรือไม่</translation>
 <translation id="4513387527876475750">{DAYS,plural, =1{# วันที่ผ่านมา}other{# วันที่ผ่านมา}}</translation>
 <translation id="451872707440238414">ค้นหาบุ๊กมาร์ก</translation>
 <translation id="4521489764227272523">ระบบได้นำข้อมูลที่เลือกออกจาก Chrome และอุปกรณ์ที่ซิงค์แล้ว
@@ -672,6 +676,7 @@
 <translation id="4699172675775169585">รูปภาพและไฟล์ที่แคชไว้</translation>
 <translation id="4710167854527459075">จัดเรียงจากใหม่ที่สุด</translation>
 <translation id="4719927025381752090">เสนอการแปล</translation>
+<translation id="4720556299488643018">ยกเลิกการสมัครรับข้อมูล</translation>
 <translation id="4732120983431207637">ตัวคลายสแต็ก</translation>
 <translation id="4736934858538408121">บัตรเสมือน</translation>
 <translation id="473775607612524610">อัปเดต</translation>
@@ -1194,6 +1199,7 @@
 <translation id="7313188324932846546">แตะเพื่อตั้งค่าการซิงค์</translation>
 <translation id="7324354302972299151">ส่งคำขอ Do Not Track</translation>
 <translation id="7332075081379534664">ลงชื่อเข้าใช้สำเร็จ</translation>
+<translation id="7333041109965360609">ยกเลิกการสมัครรับข้อมูลจากการแจ้งเตือนแล้ว</translation>
 <translation id="7333232495927792353">ซิงค์เพื่อรับเนื้อหาที่เกี่ยวข้องที่สุดจาก Google</translation>
 <translation id="7339898014177206373">หน้าต่างใหม่</translation>
 <translation id="7340958967809483333">ตัวเลือกสำหรับฟีดสำรวจ</translation>
@@ -1452,6 +1458,7 @@
 <translation id="8503813439785031346">ชื่อผู้ใช้</translation>
 <translation id="8505766168025405649">ดูสถานะการดาวน์โหลดในการแจ้งเตือน</translation>
 <translation id="8506357771923193001">คุณจะเห็นการดาวน์โหลดที่นี่</translation>
+<translation id="8512053371384421952">คุณจะไม่ได้รับการแจ้งเตือนจาก <ph name="DOMAIN" /> อีกต่อไป</translation>
 <translation id="8514477925623180633">ส่งออกรหัสผ่านที่เก็บไว้ใน Chrome</translation>
 <translation id="8516012719330875537">โปรแกรมแก้ไขรูปภาพ</translation>
 <translation id="8523928698583292556">ลบรหัสผ่านที่เก็บไว้</translation>

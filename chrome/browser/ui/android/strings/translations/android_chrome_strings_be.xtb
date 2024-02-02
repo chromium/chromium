@@ -334,6 +334,7 @@
 <translation id="2870560284913253234">Сайт</translation>
 <translation id="2871733351037274014">Перадзагрузка старонак</translation>
 <translation id="2876136027428473467"><ph name="CHILD_NAME" /> просіць ухваліць гэты вэб-сайт:</translation>
+<translation id="2876194821763651818">Паролі, захаваныя ва ўліковым запісе <ph name="USERNAME" />.</translation>
 <translation id="2876628302275096482">Даведайцеся больш пра тое, <ph name="BEGIN_LINK" />як Chrome забяспечвае прыватнасць вашых даных<ph name="END_LINK" /></translation>
 <translation id="2888126860611144412">Пра браўзер Chrome</translation>
 <translation id="2891154217021530873">Спыніць загрузку старонкі</translation>
@@ -672,6 +673,7 @@
 <translation id="4699172675775169585">Відарысы і файлы ў кэшы</translation>
 <translation id="4710167854527459075">Спачатку новыя</translation>
 <translation id="4719927025381752090">Прапаноўваць пераклад</translation>
+<translation id="4720556299488643018">Адпісацца</translation>
 <translation id="4732120983431207637">Размотчык стэка</translation>
 <translation id="4736934858538408121">Віртуальная картка</translation>
 <translation id="473775607612524610">Абнавіць</translation>
@@ -1194,6 +1196,7 @@
 <translation id="7313188324932846546">Дакраніцеся, каб наладзіць сінхранізацыю</translation>
 <translation id="7324354302972299151">Адправіць запыт “Do Not Track”</translation>
 <translation id="7332075081379534664">Уваход выкананы</translation>
+<translation id="7333041109965360609">Вы адпісаліся ад апавяшчэнняў</translation>
 <translation id="7333232495927792353">Каб атрымліваць найбольш адпаведнае змесціва ад Google, уключыце сінхранізацыю</translation>
 <translation id="7339898014177206373">Новае акно</translation>
 <translation id="7340958967809483333">Параметры рэкамендацый</translation>
@@ -1452,6 +1455,7 @@
 <translation id="8503813439785031346">Імя карыстальніка</translation>
 <translation id="8505766168025405649">Стан спампоўкі можна паглядзець у апавяшчэнні</translation>
 <translation id="8506357771923193001">Тут з'явяцца вашы спампоўкі</translation>
+<translation id="8512053371384421952">Вы больш не будзеце атрымліваць апавяшчэнні ад вэб-сайта <ph name="DOMAIN" />.</translation>
 <translation id="8514477925623180633">Экспартаваць паролі, захаваныя ў Chrome</translation>
 <translation id="8516012719330875537">Рэдактар відарысаў</translation>
 <translation id="8523928698583292556">Выдаліць захаваны пароль</translation>

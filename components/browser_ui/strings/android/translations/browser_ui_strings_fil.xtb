@@ -109,7 +109,6 @@
 <translation id="2750481671343847896">Puwedeng magpakita ang mga site ng mga prompt sa pag-sign in mula sa mga serbisyo ng pagkakakilanlan.</translation>
 <translation id="2790501146643349491">Kapag naka-on, matatapos ng mga kamakailang isinarang site ang pagpapadala at pagtanggap ng data. Kapag naka-off, hindi matatapos ng mga kamakailang isinarang site ang pagpapadala at pagtanggap ng data.</translation>
 <translation id="2822354292072154809">Sigurado ka bang gusto mong i-reset ang lahat ng pahintulot sa site para sa <ph name="CHOSEN_OBJECT_NAME" />?</translation>
-<translation id="2836978798613876756"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> <ph name="HOST_NAME" /></translation>
 <translation id="2850913818900871965">Mag-request ng mobile view</translation>
 <translation id="2870560284913253234">Site</translation>
 <translation id="2874939134665556319">Nakaraang track</translation>
@@ -121,7 +120,6 @@
 <translation id="2968755619301702150">Viewer ng certificate</translation>
 <translation id="2979365474350987274">Limitado ang third-party na cookies</translation>
 <translation id="3008272652534848354">I-reset ang mga pahintulot</translation>
-<translation id="3013291976881901233">Mga MIDI device</translation>
 <translation id="301521992641321250">Awtomatikong na-block</translation>
 <translation id="3069226013421428034">Payagan ang third-party na pag-sign in para sa partikular na site.</translation>
 <translation id="3082992102194421695">{COUNT,plural, =1{Mag-e-expire bukas}one{Mag-e-expire sa loob ng # araw}other{Mag-e-expire sa loob ng # na araw}}</translation>
@@ -192,7 +190,6 @@
 <translation id="4169549551965910670">Nakakonekta sa USB device</translation>
 <translation id="4194328954146351878">Magtanong bago payagan ang mga site na tingnan at baguhin ang impormasyon sa mga NFC device (inirerekomenda)</translation>
 <translation id="4200726100658658164">Buksan ang Mga Setting ng Lokasyon</translation>
-<translation id="4212246570487010370">Magpatuloy sa pag-browse</translation>
 <translation id="4226663524361240545">Maaaring mag-vibrate ang device dahil sa mga notification</translation>
 <translation id="4259722352634471385">Naka-block ang navigation: <ph name="URL" /></translation>
 <translation id="4278390842282768270">Pinapayagan</translation>
@@ -282,7 +279,6 @@
 <translation id="5706552988683188916">Dine-delete nito ang cookies at iba pang data ng site para sa <ph name="WEBSITE" /></translation>
 <translation id="5723967018671998714">Bina-block ang third-party na cookies sa Incognito mode</translation>
 <translation id="5740126560802162366">Makakapag-save ang mga site ng data sa iyong device</translation>
-<translation id="5749158352074143502">Magpatuloy sa tab na ito</translation>
 <translation id="5771720122942595109">Naka-block ang <ph name="PERMISSION_1" /></translation>
 <translation id="5804241973901381774">Mga Pahintulot</translation>
 <translation id="5844448279347999754">Kapag naka-on, puwedeng hilingin ng mga site na makita ang text at mga larawang naka-save sa iyong clipboard. Kapag naka-off, hindi makikita ng mga site ang text o mga larawang naka-save sa iyong clipboard.</translation>
@@ -351,7 +347,6 @@
 <translation id="6746124502594467657">Ibaba</translation>
 <translation id="6749077623962119521">I-reset ang mga pahintulot?</translation>
 <translation id="6766622839693428701">Mag-swipe pababa para isara.</translation>
-<translation id="6785959295338971061"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> Mula sa <ph name="FROM_DEVICE" /></translation>
 <translation id="6787751205395685251">Pumili ng opsyon para sa <ph name="SITE_NAME" /></translation>
 <translation id="6790428901817661496">I-play</translation>
 <translation id="6818926723028410516">Pumili ng mga item</translation>
@@ -423,7 +418,6 @@
 <translation id="7990211076305263060">Kapag naka-on, puwedeng hilingin ng mga site na gamitin ang iyong mikropono. Kapag naka-off, hindi magagamit ng mga site ang iyong mikropono.</translation>
 <translation id="8007176423574883786">Naka-off para sa device na ito</translation>
 <translation id="802154636333426148">Hindi na-download</translation>
-<translation id="8024161440284949905">Magpatuloy sa mga tab na ito</translation>
 <translation id="8042586301629853791">Pagbukud-bukurin ayon sa:</translation>
 <translation id="8067883171444229417">I-play ang video</translation>
 <translation id="8068648041423924542">Hindi makapili ng certificate.</translation>

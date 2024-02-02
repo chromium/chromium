@@ -607,9 +607,11 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="3526440770046466733">Link auf neuem Tab öffnen und auf aktuellem Tab bleiben</translation>
 <translation id="353086728817903341">Mit <ph name="NUM_DEVICES" /> Geräten verbunden</translation>
 <translation id="3533126039236445965">Apps in Ablage</translation>
+<translation id="3537350467437346467">Von dir angesehen</translation>
 <translation id="3539957339480430241">Hotspot von <ph name="DEVICE_NAME" /></translation>
 <translation id="3540893133818942399">Anzeige der letzten Fotos und Medien auf deinem Smartphone nicht einrichten</translation>
 <translation id="3542066395059568317">Empfehlungen werden angezeigt, damit du dort fortfahren kannst, wo du aufgehört hast. Per Rechtsklick kannst du Empfehlungen entfernen.</translation>
+<translation id="3547318469722231257">Von dir geändert</translation>
 <translation id="3552189655002856821">WLAN ist deaktiviert</translation>
 <translation id="3554215588514239132">Steuerfeld für Entwicklertools ein- oder ausblenden</translation>
 <translation id="3554637740840164787"><ph name="ITEM_TITLE" /> wurde angepinnt</translation>
@@ -701,6 +703,7 @@ Schließe dein Gerät an eine Steckdose an.</translation>
 <translation id="385300504083504382">Anfang</translation>
 <translation id="3859364108019690">Apps können nicht gestreamt werden</translation>
 <translation id="3861651314799684201">Eingabetaste drücken, um den ganzen Bildschirm aufzuzeichnen</translation>
+<translation id="3882323608730650973">Geändert</translation>
 <translation id="3886872229787704059">Heute geöffnet</translation>
 <translation id="3891340733213178823">Drücke zum Abmelden zweimal Strg + Umschalttaste + Q.</translation>
 <translation id="3893630138897523026">ChromeVox (gesprochenes Feedback)</translation>
@@ -894,6 +897,7 @@ Einige Funktionen sind eingeschränkt, um die Akkulaufzeit zu verlängern.</tran
 <translation id="4582666543382004902">Der Hotspot wurde deaktiviert, um das WLAN zu verwenden. Deaktiviere das WLAN, wenn du den Hotspot verwenden möchtest.</translation>
 <translation id="4585337515783392668">Streaming an unbekannten Empfänger beenden</translation>
 <translation id="4596144739579517758">Dunkles Design ist deaktiviert</translation>
+<translation id="4596442969149038771">Von <ph name="USER" /> geteilt</translation>
 <translation id="4611292653554630842">Anmelden</translation>
 <translation id="462160925400706389"><ph name="NAME" /> verbunden</translation>
 <translation id="4623167406982293031">Konto bestätigen</translation>
@@ -1337,6 +1341,7 @@ Einige Funktionen sind eingeschränkt, um die Akkulaufzeit zu verlängern.</tran
 <translation id="6298183524022479114">Dieses Gerät in der App anpassen</translation>
 <translation id="6309219492973062892">Auf die Symbole 1 bis 8 in der Ablage klicken oder tippen</translation>
 <translation id="6315170314923504164">Sprache</translation>
+<translation id="6319058840130157106">Zwischen der unteren rechten Ecke, dem Launcher, der Adressleiste, der Lesezeichenleiste, der geöffneten Website und den Downloads rückwärtsgehen</translation>
 <translation id="6324916366299863871">Verknüpfung bearbeiten</translation>
 <translation id="6330012934079202188">Fenster von allen Desktops werden angezeigt – drücke den Aufwärtspfeil, um die Fenster vom aktuellen Desktop anzuzeigen</translation>
 <translation id="6338485349199627913">„<ph name="DISPLAY_NAME" />“ ist eine verwaltete Sitzung, die von <ph name="MANAGER" /> verwaltet wird</translation>
@@ -1815,6 +1820,7 @@ Halte zum Herunterfahren des Geräts die Ein-/Aus-Taste noch einmal gedrückt.</
 <translation id="8314772463905284467">Die Feststelltaste ist aktiviert.</translation>
 <translation id="8315514906653279104">Wird aktiviert…</translation>
 <translation id="8331351032546853669">Download ausstehend</translation>
+<translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" />   <ph name="TIME" /></translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" /> <ph name="GET_STARTED" /></translation>
 <translation id="8345019317483336363">Fenster „<ph name="WINDOW_TITLE" />“ ausgewählt</translation>
 <translation id="8349826889576450703">Suche</translation>
@@ -1921,6 +1927,7 @@ Halte zum Herunterfahren des Geräts die Ein-/Aus-Taste noch einmal gedrückt.</
 <translation id="878215960996152260"><ph name="APP_NAME" />, installierte App, gesperrt</translation>
 <translation id="8785070478575117577">Mit <ph name="NETWORK_NAME" /> verbinden</translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
+<translation id="8790632710469941716">Zwischen der unteren rechten Ecke, dem Launcher, der Adressleiste, der Lesezeichenleiste, der geöffneten Website und den Downloads vorwärtsgehen</translation>
 <translation id="8792626944327216835">Mikrofon</translation>
 <translation id="8801802992492329306">5G</translation>
 <translation id="8806053966018712535">Ordner <ph name="FOLDER_NAME" /></translation>
@@ -2034,6 +2041,7 @@ Halte zum Herunterfahren des Geräts die Ein-/Aus-Taste noch einmal gedrückt.</
 <translation id="953431725143473984">Gerät herunterfahren?</translation>
 <translation id="954052413789300507">Nicht genug Speicherplatz für „<ph name="FILENAME" />“. Gib Speicherplatz frei.</translation>
 <translation id="954520015070501466">30 Min.</translation>
+<translation id="954786879461589145">Von <ph name="USER" /> geändert</translation>
 <translation id="974545358917229949"><ph name="RESULT_COUNT" /> Suchergebnisse für "<ph name="QUERY" />"</translation>
 <translation id="981011780479609956">Kein Abgabetermin</translation>
 <translation id="98120814841227350">Zum Ende des Dokuments springen</translation>

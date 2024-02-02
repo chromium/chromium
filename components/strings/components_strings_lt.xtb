@@ -430,6 +430,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="1752021286346845558">8 pašto dėžutė</translation>
 <translation id="1753068535428855445">Pažinčių ir asmeniniai skelbimai</translation>
 <translation id="1753706481035618306">Puslapio numeris</translation>
+<translation id="1755203724116202818">Siekiant įvertinti skelbimo našumą, tarp svetainių bendrinami tam tikrų tipų duomenys, pvz., ar apsilankę svetainėje įsigijote pirkinį.</translation>
 <translation id="1755621011177747277">Įvaikinimas</translation>
 <translation id="1756026472674246267">Atidaryti nuorodą naujame skirtuke</translation>
 <translation id="175656076281618225">Iliuzionizmas</translation>
@@ -884,6 +885,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="2674804415323431591">Slėpti pasiūlymus</translation>
 <translation id="2677696497921480781">Gimtadieniai ir vardadieniai</translation>
 <translation id="2677748264148917807">Išeiti</translation>
+<translation id="2683195745483370038">Rasta kitų rezultatų</translation>
 <translation id="2686919536310834199">Siųsti atsiliepimą apie funkciją „Padėkite man rašyti“.</translation>
 <translation id="2687555958734450033">Geriausias dydis</translation>
 <translation id="2688186765492306706">500 x 760 mm</translation>
@@ -1266,6 +1268,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="3462200631372590220">Slėpti išsamią informaciją</translation>
 <translation id="3465972433695735758">Šis PDF failas nepasiekiamas. Tekstas išskirtas pagal „Google“ DI</translation>
 <translation id="346601286295919445">Chemija</translation>
+<translation id="3467081767799433066">Naudojant skelbimų vertinimo funkciją tarp svetainių bendrinami tam tikrų tipų duomenys, siekiant įvertinti jų skelbimų našumą, pvz., ar apsilankę svetainėje įsigijote pirkinį.</translation>
 <translation id="3468054117417088249">Šiuo metu atidarytas „<ph name="TAB_SWITCH_SUFFIX" />“. Paspauskite skirtuką, tada „Enter“, kad perjungtumėte į atidarytą skirtuką</translation>
 <translation id="3470563864795286535"><ph name="CLOSE_INCOGNITO_WINDOWS_FOCUSED_FRIENDLY_MATCH_TEXT" />; paspauskite tabuliavimo klavišą, tada – „Enter“, jei norite uždaryti visus šiuo metu atidarytus inkognito langus</translation>
 <translation id="3474392552865647225">Mygtukas „Tinkinti šriftus naršyklėje „Chrome“; suaktyvinkite, kad galėtumėte tinkinti šriftų dydį ir šriftų šeimas naršyklėje „Chrome“</translation>
@@ -2789,7 +2792,6 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="6480864723214312258">Buitinės baterijos</translation>
 <translation id="6486200200930923183">Dokumentiniai filmai</translation>
 <translation id="6489534406876378309">Pradėti įkelti strigtis</translation>
-<translation id="6491663123807473970"><ph name="URL" /> nori naudoti MIDI įrenginius</translation>
 <translation id="6493924760403974580">Ši programa palaiko tik šį dydį.</translation>
 <translation id="6494750904506170417">iššokantieji langai ir peradresavimai</translation>
 <translation id="6495664197699704593">Šis slaptažodis saugomas tik šiame įrenginyje. Jei norite jį naudoti kituose įrenginiuose, <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
@@ -4082,6 +4084,7 @@ Papildoma išsami informacija:
 <translation id="9005998258318286617">PDF dokumento įkelti nepavyko.</translation>
 <translation id="9008178007718859630">Namų ir interjero dekoravimas</translation>
 <translation id="9008201768610948239">Nepaisyti</translation>
+<translation id="9014705027639070815">Svetainės, kuriose lankotės, gali prašyti „Chrome“ pateikti informacijos, padedančios įvertinti skelbimų našumą. „Chrome“ leidžia svetainėms rinkti tam tikrų tipų duomenis, pvz., ar apsilankę svetainėje įsigijote pirkinį.</translation>
 <translation id="9018120810758822233">Įveskite <ph name="CREDIT_CARD" /> saugos kodą</translation>
 <translation id="901834265349196618">El. paštas</translation>
 <translation id="9020542370529661692">Šis puslapis išverstas į <ph name="TARGET_LANGUAGE" /></translation>

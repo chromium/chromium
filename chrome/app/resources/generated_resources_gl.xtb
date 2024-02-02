@@ -342,7 +342,7 @@ Comproba os teus contrasinais cando queiras no <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1251366534849411931">Falta unha chave de apertura: <ph name="ERROR_LINE" /></translation>
 <translation id="1251578593170406502">Buscando redes de datos móbiles...</translation>
 <translation id="125220115284141797">Predeterminadas</translation>
-<translation id="1252219782845132919">Ocultar o grupo</translation>
+<translation id="1252219782845132919">Ocultar grupo</translation>
 <translation id="1252987234827889034">Produciuse un erro no perfil</translation>
 <translation id="1253664522045778676">Fai clic nun resultado e a páxina abrirase na pestana actual</translation>
 <translation id="1254593899333212300">Conexión directa a Internet</translation>
@@ -2902,7 +2902,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="3188465121994729530">Media de movemento</translation>
 <translation id="3189187154924005138">Cursor grande</translation>
 <translation id="3190558889382726167">Gardouse o contrasinal</translation>
-<translation id="3191625924275846436">{NUM_SITES,plural, =1{Para protexer os teus datos, quitáronse os permisos dun sitio que levas un tempo sen visitar}other{Para protexer os teus datos, quitáronse os permisos dos sitios que levas un tempo sen visitar}}</translation>
 <translation id="3192586965067888278">Describe detalladamente o problema. Os comentarios enviaranse a Google para unha revisión manual e poden usarse para mellorar ou desenvolver produtos e servizos de Google.</translation>
 <translation id="3192947282887913208">Ficheiros de audio</translation>
 <translation id="3193695589337931419">Utilidades de sinais do sistema</translation>
@@ -4063,7 +4062,6 @@ Pode tratarse de información sobre o software instalado, os ficheiros, o explor
 <translation id="4078903002989614318">Opcións de ordenación e de lista</translation>
 <translation id="4079140982534148664">Utilizar corrector ortográfico mellorado</translation>
 <translation id="4082333918978320301">Ningún sitio ten permiso para usar o micrófono</translation>
-<translation id="4084582735848141214">{COUNT,plural, =1{1 sitio permitido}other{# sitios permitidos}}</translation>
 <translation id="4084682180776658562">Marcador</translation>
 <translation id="4084835346725913160">Pechar <ph name="TAB_NAME" /></translation>
 <translation id="4085298594534903246">JavaScript bloqueouse nesta páxina.</translation>
@@ -4580,7 +4578,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="4495002167047709180">Queres permitir que esta extensión se execute en <ph name="SITE" />?</translation>
 <translation id="4495419450179050807">Non mostrar nesta páxina</translation>
 <translation id="4497145443434063861">O PC e o Chromecast están conectados a redes wifi diferentes (por exemplo, a unha de 2,4 GHz e a outra de 5 GHz)</translation>
-<translation id="4497360513077910151">Ocultar o grupo</translation>
+<translation id="4497360513077910151">Ocultar grupo</translation>
 <translation id="4500114933761911433">Produciuse un fallo co complemento <ph name="PLUGIN_NAME" /></translation>
 <translation id="4500647907053779331">&amp;Traducir selección ao <ph name="LANGUAGE" /></translation>
 <translation id="450099669180426158">Icona de signo de exclamación</translation>
@@ -8056,7 +8054,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="7260186537988033909">Completouse a inscrición do dispositivo coa actualización de quiosco e de sinalización</translation>
 <translation id="7261612856573623172">Voz da conversión de texto a voz do sistema</translation>
 <translation id="7262004276116528033">Este servizo de inicio de sesión está aloxado por <ph name="SAML_DOMAIN" /></translation>
-<translation id="7263162347647986485">{NUM_SITES,plural, =1{Quitáronse os permisos de 1 sitio}other{Quitáronse os permisos de {NUM_SITES} sitios}}</translation>
 <translation id="7264695323040866038">Queres usar sempre a aplicación <ph name="APP" /> para abrir ligazóns web compatibles?</translation>
 <translation id="7267044199012331848">Non se puido instalar a máquina virtual. Téntao de novo ou ponte en contacto co teu administrador. Código de erro: <ph name="ERROR_CODE" />.</translation>
 <translation id="7267875682732693301">Continúa levantando o dedo para engadir as diferentes partes da túa impresión dixital</translation>
@@ -9802,7 +9799,6 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="859246725979739260">Impediuse que este sitio acceda á túa localización.</translation>
 <translation id="8593121833493516339">Enviar datos de uso e de diagnóstico. Envía automaticamente datos de diagnóstico e de uso do dispositivo e das aplicacións a Google para axudar a mellorar a experiencia do teu fillo en Android. Esta información non se utilizará para identificar o teu fillo, senón co obxectivo de aumentar a estabilidade do sistema e das aplicacións, e de realizar outras melloras. Algúns datos agregados tamén serán útiles para as aplicacións e os socios de Google, como os programadores de Android. Se está activada a opción de configuración Actividade web e das aplicacións adicional para o teu fillo, estes datos pódense gardar na súa conta de Google <ph name="BEGIN_LINK1" />Máis información<ph name="END_LINK1" /></translation>
 <translation id="8593450223647418235">Non poderás abrir ficheiros en Microsoft 365 ata que se complete a configuración.</translation>
-<translation id="8594585498253980290">{COUNT,plural, =1{1 sitio bloqueado}other{# sitios bloqueados}}</translation>
 <translation id="8596540852772265699">Ficheiros personalizados</translation>
 <translation id="8597462463725156723">As notificacións non aparecerán na pantalla. Para consultalas, fai clic na icona do modo Non molestar que está na parte inferior dereita da pantalla.</translation>
 <translation id="8597845839771543242">Formato de propiedade:</translation>

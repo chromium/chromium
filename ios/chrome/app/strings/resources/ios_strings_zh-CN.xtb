@@ -149,6 +149,7 @@
 <translation id="1757699834933698436">{count,plural, =1{有 {count} 个安全系数低的密码}other{有 {count} 个安全系数低的密码}}</translation>
 <translation id="1767766085187034454">Google 翻译</translation>
 <translation id="1769106850515800431">个性化内容</translation>
+<translation id="1780152987505130652">关闭组</translation>
 <translation id="1789803444939621101">欢迎回来，<ph name="USER_NAME" /></translation>
 <translation id="1803264062614276815">持卡人姓名</translation>
 <translation id="1809939268435598390">删除文件夹</translation>
@@ -214,7 +215,6 @@
 <translation id="2080769225927880590">请使用一个有效的账号登录</translation>
 <translation id="2103075008456228677">打开 history.google.com</translation>
 <translation id="21133533946938348">固定标签页</translation>
-<translation id="2116625576999540962">移动了<ph name="NUMBER_OF_SELECTED_BOOKMARKS" />项</translation>
 <translation id="2122754583996902531">您的浏览器处于受管理状态。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="2139502497535990641">开启价格变更提醒？</translation>
 <translation id="2139867232736819575">搜索您复制的文字</translation>
@@ -648,6 +648,7 @@
 <translation id="4431224949908513835">选择要填充的付款方式。</translation>
 <translation id="4442550905108052454">打开<ph name="BEGIN_BOLD" />设置<ph name="END_BOLD" /></translation>
 <translation id="4454246407045105932">添加语言</translation>
+<translation id="4460014764210899310">取消分组</translation>
 <translation id="4461286950227634995">提示保存密码</translation>
 <translation id="4462491365653392320">跟踪各个标签页上的价格</translation>
 <translation id="4469324811108161144">备注最多可以包含 <ph name="CHARACTER_LIMIT" /> 个字符。</translation>
@@ -930,7 +931,6 @@
 <translation id="5857770089550859117">必须输入密码才能开始同步。</translation>
 <translation id="5859715514067755465">前进</translation>
 <translation id="5860033963881614850">关闭</translation>
-<translation id="5871497086027727873">移动了1项</translation>
 <translation id="5896576662943111387">专为 iOS 打造</translation>
 <translation id="5897749768294722429">如果想快速重新访问浏览过的网站，请同步您的标签页和历史记录。</translation>
 <translation id="5897956970858271241">访问复制的链接</translation>
@@ -1499,6 +1499,7 @@
 <translation id="8766790350274092814">用于登录 <ph name="WEBSITE" /> 和 <ph name="SECOND_WEBSITE" /> 的密码将被删除。您的相关账号不会被删除。</translation>
 <translation id="8775144690796719618">网址无效</translation>
 <translation id="8780076847684176174">{count,plural, =1{查看标签页…}other{查看所有标签页…}}</translation>
+<translation id="8781834595282316166">在组内添加新标签页</translation>
 <translation id="8782570580170191813">始终跟踪包裹</translation>
 <translation id="8787968206789828143">在网络上搜索</translation>
 <translation id="8792626944327216835">麦克风</translation>

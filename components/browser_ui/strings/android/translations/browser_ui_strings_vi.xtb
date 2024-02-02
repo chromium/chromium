@@ -66,6 +66,7 @@
 <translation id="2228071138934252756">Để cho phép <ph name="APP_NAME" /> truy cập vào máy ảnh của bạn, hãy bật cả máy ảnh trong phần <ph name="BEGIN_LINK" />Cài đặt Android<ph name="END_LINK" />.</translation>
 <translation id="2235344399760031203">Đã chặn các cookie bên thứ ba</translation>
 <translation id="2238944249568001759">Cụm từ tìm kiếm đề xuất dựa trên thẻ gần đây nhất của bạn</translation>
+<translation id="2241587408274973373">Thẻ trên trang Thẻ mới</translation>
 <translation id="2241634353105152135">Chỉ một lần</translation>
 <translation id="2253414712144136228"><ph name="NAME_OF_LIST_ITEM" /> Xoá</translation>
 <translation id="2253989982043948086">{NUM_SELECTED,plural, =1{Đã chặn 1 trang web}other{Đã chặn # trang web}}</translation>
@@ -108,7 +109,6 @@
 <translation id="2750481671343847896">Các trang web có thể đưa ra lời nhắc đăng nhập từ các dịch vụ nhận dạng.</translation>
 <translation id="2790501146643349491">Khi bạn bật tuỳ chọn này, các trang web đã đóng gần đây có thể hoàn tất quá trình gửi và nhận dữ liệu. Khi bạn tắt tuỳ chọn này, các trang web đã đóng gần đây không thể hoàn tất quá trình gửi hoặc nhận dữ liệu.</translation>
 <translation id="2822354292072154809">Bạn có chắc muốn đặt lại tất cả các quyền của trang web cho <ph name="CHOSEN_OBJECT_NAME" /> không?</translation>
-<translation id="2836978798613876756"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> <ph name="HOST_NAME" /></translation>
 <translation id="2850913818900871965">Yêu cầu chế độ xem trên thiết bị di động</translation>
 <translation id="2870560284913253234">Trang web</translation>
 <translation id="2874939134665556319">Bản nhạc trước</translation>
@@ -120,7 +120,6 @@
 <translation id="2968755619301702150">Trình xem chứng chỉ</translation>
 <translation id="2979365474350987274">Cookie của bên thứ ba bị hạn chế</translation>
 <translation id="3008272652534848354">Đặt lại quyền</translation>
-<translation id="3013291976881901233">Thiết bị MIDI</translation>
 <translation id="301521992641321250">Tự động bị chặn</translation>
 <translation id="3069226013421428034">Cho phép đăng nhập qua bên thứ ba cho một trang web cụ thể.</translation>
 <translation id="3082992102194421695">{COUNT,plural, =1{Hết hạn ngày mai}other{Hết hạn sau # ngày nữa}}</translation>
@@ -191,7 +190,6 @@
 <translation id="4169549551965910670">Đã kết nối với một thiết bị USB</translation>
 <translation id="4194328954146351878">Hỏi trước khi cho phép các trang web xem và thay đổi thông tin trên thiết bị NFC (nên chọn)</translation>
 <translation id="4200726100658658164">Mở phần Cài đặt vị trí</translation>
-<translation id="4212246570487010370">Tiếp tục duyệt web</translation>
 <translation id="4226663524361240545">Thông báo có thể làm rung thiết bị</translation>
 <translation id="4259722352634471385">Điều hướng bị chặn: <ph name="URL" /></translation>
 <translation id="4278390842282768270">Được cho phép</translation>
@@ -349,7 +347,6 @@
 <translation id="6746124502594467657">Di chuyển xuống</translation>
 <translation id="6749077623962119521">Đặt lại quyền?</translation>
 <translation id="6766622839693428701">Vuốt xuống để đóng.</translation>
-<translation id="6785959295338971061"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> Từ <ph name="FROM_DEVICE" /></translation>
 <translation id="6787751205395685251">Chọn một lựa chọn cho <ph name="SITE_NAME" /></translation>
 <translation id="6790428901817661496">Phát</translation>
 <translation id="6818926723028410516">Chọn mục</translation>

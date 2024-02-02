@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="lv">
+<translation id="1021782183249308751">Nospiediet un turiet Chrome ikonu un noklikšķiniet uz “Rediģēt sākuma ekrānu”</translation>
 <translation id="1066101356081285416">Pārlūkā Chrome jūsu apmeklētajās vietnēs tiks noteikti izsekošanas numuri un jaunas cilnes lapā tiks parādīti jaunumi par sūtījumiem. Pakas izsekošanas numurs un vietnes nosaukums tiks nosūtīts uzņēmumam Google, lai nodrošinātu šo funkciju un uzlabotu Google iepirkšanās funkcijas visiem lietotājiem. Šo informāciju varat jebkurā laikā atjaunināt <ph name="BEGIN_LINK" />pakas izsekošanas iestatījumos<ph name="END_LINK" />.</translation>
 <translation id="1085696779717592361">Chrome izmantošana pēc noklusējuma</translation>
 <translation id="1105362920864247682">Notīrīt pārlūkošanas datus pārlūkā Chrome.</translation>
@@ -96,6 +97,7 @@ Jūsu šifrētos datus var lasīt tikai personas, kurām ir jūsu ieejas frāze.
 <translation id="3345341804167540816">Izmantojiet Chrome visur</translation>
 <translation id="3360031466389132716">{THRESHOLD,plural, =1{Tas notiek, ja pārlūks Chrome nav izmantots {THRESHOLD} minūti.}zero{Tas notiek, ja pārlūks Chrome nav izmantots {THRESHOLD} minūtes.}one{Tas notiek, ja pārlūks Chrome nav izmantots {THRESHOLD} minūti.}other{Tas notiek, ja pārlūks Chrome nav izmantots {THRESHOLD} minūtes.}}</translation>
 <translation id="3399930248910934354">Atvērt Chrome iestatījumus</translation>
+<translation id="344736123700721678">Ātrāk piekļūstiet pārlūkam Chrome no sākuma ekrāna doka</translation>
 <translation id="3472587960215700950">Chrome izmanto pakalpojumu Google Maps, lai sniegtu jums norādes un vietējo informāciju par noteiktajām adresēm.</translation>
 <translation id="3503014945441706099">Iegūstiet šim Chrome profilam arī drošu pārlūkošanu ar papildu aizsardzību</translation>
 <translation id="3522659714780527202">Lai skatītu cilnes no ierīcēm, kurās lietojat pārlūku Chrome, ieslēdziet sinhronizāciju.</translation>
@@ -177,12 +179,15 @@ Jūsu šifrētos datus var lasīt tikai personas, kurām ir jūsu ieejas frāze.
 <translation id="6054613632208573261">Chrome izmantošana pēc noklusējuma</translation>
 <translation id="6063091872902370735">Atļaut pierakstīšanos pārlūkā Chrome</translation>
 <translation id="6110625574506755980">Dažas Chrome funkcijas vairs nebūs pieejamas.</translation>
+<translation id="6132149203299792222">Pierakstieties savā Google kontā, lai sinhronizētu paroles, grāmatzīmes un citus datus.</translation>
 <translation id="6177442314419606057">Meklēšana pārlūkā Chrome</translation>
 <translation id="6181930887571472871">Pāriet uz Chrome</translation>
 <translation id="6238746320622508509">Atļaujiet pārlūkā Chrome bloķēt inkognito cilnes.</translation>
 <translation id="6247557882553405851">Google paroļu pārvaldnieks</translation>
+<translation id="6272822675004864999">Lai saņemtu paziņojumus no pārlūka Chrome, ieslēdziet paziņojumus iOS iestatījumos.</translation>
 <translation id="630693926528731525">Parole netika kopīgota. Pārbaudiet interneta savienojumu un pierakstieties pārlūkā Chrome. Pēc tam mēģiniet vēlreiz.</translation>
 <translation id="6348855835728304880">Piekļūstiet savām Chrome parolēm un citiem datiem citās lietotnēs šajā ierīcē.</translation>
+<translation id="6389317667633680932">Izpētiet jaunās funkcijas, kas palīdz pilnvērtīgi izmantot pārlūku Chrome.</translation>
 <translation id="6412673304250309937">Vietrāži URL tiek pārbaudīti, salīdzinot ar nedrošu vietņu sarakstu, kas glabājas pārlūkprogrammā Chrome. Ja kādā vietnē tiek mēģināts nozagt jūsu paroli vai ja jūs lejupielādējat kaitīgu failu, Chrome var nosūtīt attiecīgo URL un lapas satura fragmentus uz funkciju Droša pārlūkošana.</translation>
 <translation id="6427126399757991875">Notiek Chrome iestatīšana jūsu organizācijā...</translation>
 <translation id="6484712497741564393">Jūs esat pierakstījies kā <ph name="EMAIL" />.
@@ -214,6 +219,7 @@ Lai skatītu citus iestatījumus, kuros dati tiek izmantoti Chrome lietošanas i
 <translation id="7124339256045485976">Jaunākās Chrome iespējas</translation>
 <translation id="7161390184744336561">Pārlūka Google Chrome versija ir novecojusi.</translation>
 <translation id="7165736900384873061">Darba sākšana ar Google Chrome QR skeneri</translation>
+<translation id="7175129790242719365">Chrome padoms: pierakstīšanās pārlūkā Chrome</translation>
 <translation id="7187993566681480880">Tiek nodrošināta jūsu aizsardzība pārlūkprogrammā Chrome. Šis režīms var tikt izmantots jūsu drošības uzlabošanai citās Google lietotnēs, kad esat pierakstījies.</translation>
 <translation id="7200524487407690471">Pārlūkā Chrome katru dienu tiek automātiski veikta drošības pārbaude, lai pasargātu jūs no datu aizsardzības pārkāpumiem, nedrošām vietnēm un citiem apdraudējumiem. Plašāka informācija par drošības pārbaudi ir pieejama sadaļā Iestatījumi.</translation>
 <translation id="72119412072970160">Google paroļu pārvaldniekā saglabātās paroles varat izmantot citās iPad planšetdatora lietotnēs.</translation>
@@ -244,6 +250,8 @@ Lai skatītu citus iestatījumus, kuros dati tiek izmantoti Chrome lietošanas i
 <translation id="7897703007638178753">Skatīt pārlūkā Chrome nesen atvērtās cilnes</translation>
 <translation id="7925119591961387184">Atlasiet vienumu Chrome.</translation>
 <translation id="7933491483529363150">Atvērt manu jaunāko cilni pārlūkā Chrome.</translation>
+<translation id="7948283758957877064">Jaunumi pārlūkā Chrome</translation>
+<translation id="8006014511203279255">Izmantojiet pārlūku Chrome ikreiz, kad pieskaraties saitēm ziņojumos vai citās lietotnēs.</translation>
 <translation id="8022947259858476807">Lai atvērtu saites, veiktu meklēšanu logrīkos un automātiski aizpildītu paroles citās lietotnēs, izmantojiet pārlūku Chrome kā noklusējuma pārlūku</translation>
 <translation id="804638182476029347">Atļaujiet Chrome paziņojumus, lai saņemtu brīdinājumus par cenu kritumu</translation>
 <translation id="8065292699993359127">Vietrāžu URL atvēršana inkognito režīmā pārlūkā Chrome</translation>
@@ -280,6 +288,7 @@ Jūsu dati tika šifrēti, izmantojot jūsu ieejas frāzi, šādā datumā: <ph 
 <translation id="8765470054473112089">Kad rakstāt adreses joslā vai meklēšanas lodziņā, pārlūks Chrome nosūta ierakstīto tekstu jūsu noklusējuma meklētājprogrammai, lai iegūtu labākus ieteikumus. Inkognito režīmā šis iestatījums ir izslēgts.</translation>
 <translation id="8772179140489533211">Tiek rādīti aicinājumi pierakstīties pārlūkā Chrome.</translation>
 <translation id="8788269841521769222">Jums nebūs jāatceras šī parole. Tā tiks saglabāta konta <ph name="EMAIL" /> Google paroļu pārvaldniekā.</translation>
+<translation id="878917453316810648">Chrome padoms: pārlūka Chrome izmantošana pēc noklusējuma</translation>
 <translation id="8808828119384186784">Chrome iestatījumi</translation>
 <translation id="8855781063981781621">Lai pārlūkā Chrome atspējotu funkciju Lockdown Mode, izslēdziet to savā iPad planšetdatorā.</translation>
 <translation id="8856877214925961642">Ieejas frāzes šifrējumā nav iekļauti maksājumu veidi un adreses.

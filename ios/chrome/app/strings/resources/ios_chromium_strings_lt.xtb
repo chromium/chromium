@@ -41,9 +41,11 @@
 <translation id="2054703085270098503">Saugos užtikrinimas naudojant „Chromium“</translation>
 <translation id="2098023844024447022">Atidarykite savo naujausią skirtuką naršyklėje „Chromium“.</translation>
 <translation id="2109439615198500433">„Chromium“ patarimas</translation>
+<translation id="2147210759439165826">Nepraleiskite turinio ir naudingų „Chromium“ patarimų.</translation>
 <translation id="2168108852149185974">Naudojant kai kuriuos priedus „Chromium“ užstringa. Pašalinkite:</translation>
 <translation id="2178608107313874732">„Chromium“ šiuo metu negali naudoti fotoaparato</translation>
 <translation id="2195025571279539885">Ar norėtumėte, kad kitą kartą „Chromium“ būtų siūloma išversti šios svetainės puslapius <ph name="LANGUAGE_NAME" /> k.?</translation>
+<translation id="2216344354848599203">Paspauskite ir palaikykite „Chromium“ piktogramą ir spustelėkite „Redaguoti pagrindinį ekraną“</translation>
 <translation id="2218146227246548550">Organizacija reikalauja prisijungti, kad galėtumėte naudoti „Chromium“. <ph name="BEGIN_LINK" />Sužinokite daugiau<ph name="END_LINK" /></translation>
 <translation id="22313767259766852">Šis adresas šiuo metu išsaugotas naršyklėje „Chromium“. Jei norite jį naudoti „Google“ produktuose, išsaugokite „Google“ paskyroje (<ph name="USER_EMAIL" />).</translation>
 <translation id="2236584955986023187">Tai reiškia, kad kiekvieną kartą „Chromium“ teiks staliniams kompiuteriams skirtos svetainės užklausą.</translation>
@@ -197,6 +199,7 @@ Duomenys užšifruoti naudojant slaptafrazę. Įveskite ją, kad galėtumėte na
 <translation id="632825460376924298">Leisti „Chromium“ prisijungimą</translation>
 <translation id="6337530241089703714">Pasirinkite, ar norite išvalyti „Chromium“ duomenis iš šio įrenginio ar juos palikti</translation>
 <translation id="6348483005826990855">3. Pasirinkite „Chromium“</translation>
+<translation id="6383607155624074112">Greičiau pasiekite „Chromium“ naudodami pagrindinio ekrano doką</translation>
 <translation id="6407399265324739055">Mokėjimo metodai ir adresai nebus šifruojami. Naršymo istorija iš „Chromium“ nebus sinchronizuojama.
 
 Tik jūsų slaptafrazę turintis asmuo galės perskaityti šifruotus duomenis. Slaptafrazė nesiunčiama ir nesaugoma „Google“. Jei pamiršite slaptafrazę ar norėsite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />išvalykite „Chromium“ duomenis paskyroje<ph name="END_LINK" />.</translation>

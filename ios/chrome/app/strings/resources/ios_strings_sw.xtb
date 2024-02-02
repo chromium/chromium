@@ -149,6 +149,7 @@
 <translation id="1757699834933698436">{count,plural, =1{Nenosiri {count} Dhaifu}other{Manenosiri {count} Dhaifu}}</translation>
 <translation id="1767766085187034454">Google Tafsiri</translation>
 <translation id="1769106850515800431">Maudhui Yaliyowekewa Mapendeleo</translation>
+<translation id="1780152987505130652">Funga Kikundi</translation>
 <translation id="1789803444939621101">Karibu Tena, <ph name="USER_NAME" /></translation>
 <translation id="1803264062614276815">Jina la mwenye kadi</translation>
 <translation id="1809939268435598390">Futa Folda</translation>
@@ -214,7 +215,6 @@
 <translation id="2080769225927880590">Ingia ukitumia Akaunti Sahihi</translation>
 <translation id="2103075008456228677">Fungua history.google.com</translation>
 <translation id="21133533946938348">Bandikiza Kichupo</translation>
-<translation id="2116625576999540962">Vipengee <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> vimesogezwa</translation>
 <translation id="2122754583996902531">Kivinjari chako kinadhibitiwa. <ph name="BEGIN_LINK" />Pata Maelezo Zaidi<ph name="END_LINK" /></translation>
 <translation id="2139502497535990641">Je, ungependa Kuwasha Arifa kuhusu Bei?</translation>
 <translation id="2139867232736819575">Tafuta Maandishi Uliyonakili</translation>
@@ -566,6 +566,7 @@ Angalia maagizo ya mtambo wako wa kutafuta, ikiwa yapo, kuhusu jinsi ya kufuta h
 <translation id="3929457972718048006">Anwani</translation>
 <translation id="3948600256434252210">Unaweza kutelezesha kidole kulia ili uvinjari katika Hali ya faraghani.</translation>
 <translation id="3955822496205734389">Una manenosiri dhaifu.</translation>
+<translation id="3958312024468322930">Iburute hadi sehemu iliyopachikwa upande wa chini wa Skrini yako ya Kwanza</translation>
 <translation id="3959736869653157332">Menyu → Kichupo Fiche Kipya</translation>
 <translation id="3962326069546168954">Hifadhi</translation>
 <translation id="3967822245660637423">Imemaliza kupakua</translation>
@@ -647,6 +648,7 @@ Angalia maagizo ya mtambo wako wa kutafuta, ikiwa yapo, kuhusu jinsi ya kufuta h
 <translation id="4431224949908513835">Chagua njia ya kulipa ya kujaza.</translation>
 <translation id="4442550905108052454">Fungua <ph name="BEGIN_BOLD" />Mipangilio<ph name="END_BOLD" /></translation>
 <translation id="4454246407045105932">Ongeza Lugha</translation>
+<translation id="4460014764210899310">Ondoa kwenye kundi</translation>
 <translation id="4461286950227634995">Ruhusu kipengele cha Kuhifadhi Manenosiri</translation>
 <translation id="4462491365653392320">Fuatilia Bei kwenye Vichupo</translation>
 <translation id="4469324811108161144">Vidokezo vinaweza kuhifadhi hadi herufi <ph name="CHARACTER_LIMIT" />.</translation>
@@ -929,7 +931,6 @@ Lazima Handoff iwashwe pia katika sehemu ya Jumla ya Mipangilio, na lazima vifaa
 <translation id="5857770089550859117">Kauli ya siri inahitajika ili kuanza kusawazisha.</translation>
 <translation id="5859715514067755465">Sogeza Mbele</translation>
 <translation id="5860033963881614850">Kimezimwa</translation>
-<translation id="5871497086027727873">Kipengee 1 kimesogezwa</translation>
 <translation id="5896576662943111387">Imeundwa kwa ajili ya iOS</translation>
 <translation id="5897749768294722429">Ili urudi kwa haraka kwenye tovuti ulizotembelea, sawazisha vichupo na historia yako.</translation>
 <translation id="5897956970858271241">Fungua Kiungo Ulichonakili</translation>
@@ -1466,6 +1467,7 @@ Tovuti zinaweza kutumia vidakuzi kuona shughuli zako za kuvinjari kwenye tovuti 
 <translation id="8620640915598389714">Badilisha</translation>
 <translation id="8624447588354561276">Nambari ya Kifurushi</translation>
 <translation id="8624753446837753970">Weka Nafasi</translation>
+<translation id="8625706492572042370">Badilisha Skrini ya Kwanza</translation>
 <translation id="8626393685701737946">Unaweza kubadilisha mwonekano chaguomsingi wa tovuti kwenda mwonekano wa kompyuta kwenye Mipangilio &gt; Mipangilio ya Maudhui</translation>
 <translation id="8636825310635137004">Ili upate vichupo kutoka kwenye vifaa vyako vingine, washa kipengele cha usawazishaji.</translation>
 <translation id="8637431369725868556">Pata ulinzi dhidi ya tovuti hatari.</translation>
@@ -1497,6 +1499,7 @@ Tovuti zinaweza kutumia vidakuzi kuona shughuli zako za kuvinjari kwenye tovuti 
 <translation id="8766790350274092814">Manenosiri ya <ph name="WEBSITE" /> na <ph name="SECOND_WEBSITE" /> yatafutwa. Akaunti zako hazitafutwa.</translation>
 <translation id="8775144690796719618">URL si sahihi</translation>
 <translation id="8780076847684176174">{count,plural, =1{Kagua kichupo...}other{Kagua vichupo vyote...}}</translation>
+<translation id="8781834595282316166">Kichupo Kipya katika Kikundi</translation>
 <translation id="8782570580170191813">Fuatilia Vifurushi Kila Wakati</translation>
 <translation id="8787968206789828143">Tafuta kwenye tovuti</translation>
 <translation id="8792626944327216835">maikrofoni</translation>

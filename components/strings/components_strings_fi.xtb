@@ -430,6 +430,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="1752021286346845558">Postilaatikko 8</translation>
 <translation id="1753068535428855445">Treffipalvelut ja henkilökohtaista-ilmoitukset</translation>
 <translation id="1753706481035618306">Sivunumero</translation>
+<translation id="1755203724116202818">Mainostulosten mittaamiseksi sivustojen välillä jaetaan rajoitetusti tietyntyyppistä dataa, esim. teitkö ostoksen käytyäsi sivustolla.</translation>
 <translation id="1755621011177747277">Adoptio</translation>
 <translation id="1756026472674246267">Avaa linkki uudella välilehdellä</translation>
 <translation id="175656076281618225">Taikuus</translation>
@@ -884,6 +885,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="2674804415323431591">Piilota ehdotukset</translation>
 <translation id="2677696497921480781">Syntymä- ja nimipäivät</translation>
 <translation id="2677748264148917807">Poistu</translation>
+<translation id="2683195745483370038">Muita tuloksia löytyi</translation>
 <translation id="2686919536310834199">Lähetä palautetta Auta minua kirjoittamaan ‐ominaisuudesta.</translation>
 <translation id="2687555958734450033">Sopivin koko</translation>
 <translation id="2688186765492306706">500 x 760 mm</translation>
@@ -1266,6 +1268,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="3462200631372590220">Piilota lisäasetukset</translation>
 <translation id="3465972433695735758">PDF-tiedosto ei ole käytettävissä. Teksti poimittu Googlen tekoälyn avulla.</translation>
 <translation id="346601286295919445">Kemia</translation>
+<translation id="3467081767799433066">Mainosten mittaamisen yhteydessä sivustojen välillä jaetaan rajoitetusti tietyntyyppistä dataa (esim. teitkö ostoksen käytyäsi sivustolla) mainostulosten mittaamiseksi.</translation>
 <translation id="3468054117417088249"><ph name="TAB_SWITCH_SUFFIX" />, tällä hetkellä avoinna, siirry avoimelle välilehdelle painamalla ensin sarkainta ja sitten Enteriä</translation>
 <translation id="3470563864795286535"><ph name="CLOSE_INCOGNITO_WINDOWS_FOCUSED_FRIENDLY_MATCH_TEXT" />, sulje kaikki tällä hetkellä avoinna olevat incognito-ikkunat painamalla sarkainta ja sitten Enter</translation>
 <translation id="3474392552865647225">Muokkaa fontteja Chromessa ‑painike, aktivoi muokataksesi fonttien kokoja ja kirjasimia Chromessa</translation>
@@ -2789,7 +2792,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="6480864723214312258">Kotitalousparistot</translation>
 <translation id="6486200200930923183">Dokumenttielokuvat</translation>
 <translation id="6489534406876378309">Aloita kaatumistietojen lähettäminen</translation>
-<translation id="6491663123807473970"><ph name="URL" /> haluaa käyttää MIDI-laitteitasi</translation>
 <translation id="6493924760403974580">Sovellus tukee vain tätä kokoa.</translation>
 <translation id="6494750904506170417">ponnahdusikkunat ja uudelleenohjaus</translation>
 <translation id="6495664197699704593">Salasana tallennetaan vain tälle laitteelle. Jos haluat käyttää sitä muilla laitteilla, <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
@@ -4082,6 +4084,7 @@ Lisätietoja:
 <translation id="9005998258318286617">PDF-asiakirjan lataaminen epäonnistui.</translation>
 <translation id="9008178007718859630">Kodinsisustus ja sisustussuunnittelu</translation>
 <translation id="9008201768610948239">Ohita</translation>
+<translation id="9014705027639070815">Avaamasi sivustot voivat pyytää Chromelta tietoa mainostulosten mittaamiseksi. Chromen avulla sivustot voivat kerätä rajoitetusti tietyntyyppistä dataa, esim. teitkö ostoksen käytäsi sivustolla.</translation>
 <translation id="9018120810758822233">Lisää turvakoodi: <ph name="CREDIT_CARD" /></translation>
 <translation id="901834265349196618">sähköposti</translation>
 <translation id="9020542370529661692">Sivu on käännetty kielelle <ph name="TARGET_LANGUAGE" /></translation>

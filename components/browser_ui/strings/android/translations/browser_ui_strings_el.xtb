@@ -66,6 +66,7 @@
 <translation id="2228071138934252756">Για να επιτρέψετε στην εφαρμογή <ph name="APP_NAME" /> να αποκτήσει πρόσβαση στην κάμερά σας, ενεργοποιήστε επίσης την κάμερα στις <ph name="BEGIN_LINK" />Ρυθμίσεις Android<ph name="END_LINK" />.</translation>
 <translation id="2235344399760031203">Τα cookie τρίτου μέρους αποκλείστηκαν.</translation>
 <translation id="2238944249568001759">Προτεινόμενες αναζητήσεις βάσει της τελευταίας καρτέλας σας</translation>
+<translation id="2241587408274973373">Κάρτες σελίδας Νέα καρτέλα</translation>
 <translation id="2241634353105152135">Μόνο μία φορά</translation>
 <translation id="2253414712144136228"><ph name="NAME_OF_LIST_ITEM" /> Κατάργηση</translation>
 <translation id="2253989982043948086">{NUM_SELECTED,plural, =1{1 ιστότοπος έχει αποκλειστεί}other{# ιστότοποι έχουν αποκλειστεί}}</translation>
@@ -108,7 +109,6 @@
 <translation id="2750481671343847896">Οι ιστότοποι μπορούν πλέον να εμφανίζουν προτροπές σύνδεσης από υπηρεσίες ταυτότητας.</translation>
 <translation id="2790501146643349491">Όταν είναι ενεργοποιημένη αυτή η επιλογή, οι ιστότοποι που έχουν κλείσει πρόσφατα μπορούν να ολοκληρώσουν την αποστολή και τη λήψη δεδομένων. Όταν είναι απενεργοποιημένη αυτή η επιλογή, οι ιστότοποι που έχουν κλείσει πρόσφατα δεν μπορούν να ολοκληρώσουν την αποστολή ή τη λήψη δεδομένων.</translation>
 <translation id="2822354292072154809">Είστε βέβαοι ότι θέλετε να αναιρεθούν όλες οι άδειες ιστοτόπου για το αντικείμενο <ph name="CHOSEN_OBJECT_NAME" />;</translation>
-<translation id="2836978798613876756"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> <ph name="HOST_NAME" /></translation>
 <translation id="2850913818900871965">Αίτημα για προβολή για κινητά</translation>
 <translation id="2870560284913253234">Ιστότοπος</translation>
 <translation id="2874939134665556319">Προηγούμενο κομμάτι</translation>
@@ -120,7 +120,6 @@
 <translation id="2968755619301702150">Πρόγρ. προβολής πιστοποιητικού</translation>
 <translation id="2979365474350987274">Τα cookie τρίτου μέρους περιορίζονται</translation>
 <translation id="3008272652534848354">Επαναφορά αδειών</translation>
-<translation id="3013291976881901233">Συσκευές MIDI</translation>
 <translation id="301521992641321250">Αποκλείστηκε αυτόματα</translation>
 <translation id="3069226013421428034">Να επιτρέπεται η σύνδεση τρίτου μέρους για έναν συγκεκριμένο ιστότοπο.</translation>
 <translation id="3082992102194421695">{COUNT,plural, =1{Λήγει αύριο}other{Λήγει σε # ημέρες}}</translation>
@@ -191,7 +190,6 @@
 <translation id="4169549551965910670">Συνδέθηκε σε συσκευή USB</translation>
 <translation id="4194328954146351878">Να γίνεται ερώτηση πριν επιτραπεί στους ιστοτόπους να βλέπουν και να αλλάζουν πληροφορίες σε συσκευές NFC (συνιστάται)</translation>
 <translation id="4200726100658658164">Άνοιγμα ρυθμίσεων τοποθεσίας</translation>
-<translation id="4212246570487010370">Συνέχεια περιήγησης</translation>
 <translation id="4226663524361240545">Κατά τη λήψη ειδοποιήσεων ενδέχεται να δονείται η συσκευή</translation>
 <translation id="4259722352634471385">Αποκλείστηκε η μετάβαση στη διεύθυνση: <ph name="URL" /></translation>
 <translation id="4278390842282768270">Επιτρέπεται</translation>
@@ -349,7 +347,6 @@
 <translation id="6746124502594467657">Μετακίνηση προς τα κάτω</translation>
 <translation id="6749077623962119521">Επαναφορά αδειών;</translation>
 <translation id="6766622839693428701">Σύρετε προς τα κάτω για κλείσιμο.</translation>
-<translation id="6785959295338971061"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> Από <ph name="FROM_DEVICE" /></translation>
 <translation id="6787751205395685251">Ορίστε μια επιλογή για τον ιστότοπο <ph name="SITE_NAME" /></translation>
 <translation id="6790428901817661496">Αναπαραγωγή</translation>
 <translation id="6818926723028410516">Επιλέξτε στοιχεία</translation>

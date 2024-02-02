@@ -2920,7 +2920,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3188465121994729530">Moving Average</translation>
 <translation id="3189187154924005138">Large cursor</translation>
 <translation id="3190558889382726167">Password saved</translation>
-<translation id="3191625924275846436">{NUM_SITES,plural, =1{To protect your data, permissions were removed from a site you haven't visited in recently}other{To protect your data, permissions were removed from sites you haven't visited in recently}}</translation>
 <translation id="3192586965067888278">Describe the issue in detail. Feedback will be sent to Google for human review and may be used for improving or developing Google products and services.</translation>
 <translation id="3192947282887913208">Audio Files</translation>
 <translation id="3193695589337931419">System signals utilities</translation>
@@ -4078,7 +4077,6 @@ This can include information about installed software, files, your browser and t
 <translation id="4078903002989614318">Sorting and list options</translation>
 <translation id="4079140982534148664">Use Enhanced Spell Check</translation>
 <translation id="4082333918978320301">No websites are allowed to use your microphone</translation>
-<translation id="4084582735848141214">{COUNT,plural, =1{1 site allowed}other{# sites allowed}}</translation>
 <translation id="4084682180776658562">Bookmark</translation>
 <translation id="4084835346725913160">Close <ph name="TAB_NAME" /></translation>
 <translation id="4085298594534903246">JavaScript was blocked on this page.</translation>
@@ -8080,7 +8078,6 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7260186537988033909">Kiosk and signage device enrolment complete</translation>
 <translation id="7261612856573623172">System Text-to-Speech voice</translation>
 <translation id="7262004276116528033">This sign-in service is hosted by <ph name="SAML_DOMAIN" /></translation>
-<translation id="7263162347647986485">{NUM_SITES,plural, =1{Permissions removed for 1 site}other{Permissions removed for {NUM_SITES} sites}}</translation>
 <translation id="7264695323040866038">Always use the <ph name="APP" /> app to open supported web links?</translation>
 <translation id="7267044199012331848">Couldn't install the virtual machine. Please try again, or contact your administrator. Error code: <ph name="ERROR_CODE" />.</translation>
 <translation id="7267875682732693301">Keep lifting your finger to add the different parts of your fingerprint</translation>
@@ -9828,7 +9825,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="859246725979739260">This site has been blocked from accessing your location.</translation>
 <translation id="8593121833493516339">Send usage and diagnostic data. Help improve your child's Android experience by automatically sending diagnostic, device and app usage data to Google. This won't be used to identify your child, and will help system and app stability and other improvements. Some aggregate data will also help Google apps and partners, such as Android developers. If additional Web &amp; App Activity is turned on for your child, this data may be saved to their Google Account. <ph name="BEGIN_LINK1" />Find out more<ph name="END_LINK1" /></translation>
 <translation id="8593450223647418235">You won’t be able to open files in Microsoft 365 until setup is complete.</translation>
-<translation id="8594585498253980290">{COUNT,plural, =1{1 site blocked}other{# sites blocked}}</translation>
 <translation id="8596540852772265699">Customised Files</translation>
 <translation id="8597462463725156723">Notifications won't pop up on the screen. You can still see notifications by clicking the Do not disturb icon on the bottom right of your screen.</translation>
 <translation id="8597845839771543242">Property format:</translation>

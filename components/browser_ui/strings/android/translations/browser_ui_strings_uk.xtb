@@ -66,6 +66,7 @@
 <translation id="2228071138934252756">Щоб надати додатку <ph name="APP_NAME" /> доступ до камери, також увімкніть її в <ph name="BEGIN_LINK" />налаштуваннях Android<ph name="END_LINK" />.</translation>
 <translation id="2235344399760031203">Сторонні файли cookie блокуються</translation>
 <translation id="2238944249568001759">Рекомендовані пошукові запити на основі вмісту останньої вкладки</translation>
+<translation id="2241587408274973373">Картки на сторінці нової вкладки</translation>
 <translation id="2241634353105152135">Лише цього разу</translation>
 <translation id="2253414712144136228">Видалити <ph name="NAME_OF_LIST_ITEM" /></translation>
 <translation id="2253989982043948086">{NUM_SELECTED,plural, =1{Заблоковано на 1 сайті}one{Заблоковано на # сайті}few{Заблоковано на # сайтах}many{Заблоковано на # сайтах}other{Заблоковано на # сайту}}</translation>
@@ -108,7 +109,6 @@
 <translation id="2750481671343847896">Сайти можуть показувати підказки щодо входу від сервісів ідентифікації</translation>
 <translation id="2790501146643349491">Якщо цей параметр увімкнено, нещодавно закриті сайти можуть завершувати надсилання й отримання даних. Якщо його вимкнено, нещодавно закриті сайти не можуть завершувати надсилання або отримання даних.</translation>
 <translation id="2822354292072154809">Скинути всі дозволи сайту <ph name="CHOSEN_OBJECT_NAME" />?</translation>
-<translation id="2836978798613876756"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> <ph name="HOST_NAME" /></translation>
 <translation id="2850913818900871965">Запит на мобільну версію</translation>
 <translation id="2870560284913253234">Сайт</translation>
 <translation id="2874939134665556319">Попередня композиція</translation>
@@ -120,7 +120,6 @@
 <translation id="2968755619301702150">Перегляд сертифікатів</translation>
 <translation id="2979365474350987274">Сторонні файли cookie обмежено</translation>
 <translation id="3008272652534848354">Скинути дозволи</translation>
-<translation id="3013291976881901233">Пристрої MIDI</translation>
 <translation id="301521992641321250">Блокується автоматично</translation>
 <translation id="3069226013421428034">Дозволити вхід через сторонні сервіси для певного сайту.</translation>
 <translation id="3082992102194421695">{COUNT,plural, =1{Строк дії закінчується завтра}one{Строк дії закінчується через # день}few{Строк дії закінчується через # дні}many{Строк дії закінчується через # днів}other{Строк дії закінчується через # дня}}</translation>
@@ -191,7 +190,6 @@
 <translation id="4169549551965910670">Підключено до пристрою USB</translation>
 <translation id="4194328954146351878">Запитувати, перш ніж дозволяти сайтам переглядати й змінювати інформацію на пристроях NFC (рекомендовано)</translation>
 <translation id="4200726100658658164">Відкрити налаштування доступу до моїх геоданих</translation>
-<translation id="4212246570487010370">Продовжити перегляд</translation>
 <translation id="4226663524361240545">Коли надходитимуть сповіщення, пристрій може вібрувати</translation>
 <translation id="4259722352634471385">Веб-сторінку <ph name="URL" /> заблоковано</translation>
 <translation id="4278390842282768270">Дозволено</translation>
@@ -349,7 +347,6 @@
 <translation id="6746124502594467657">Вниз</translation>
 <translation id="6749077623962119521">Скинути дозволи?</translation>
 <translation id="6766622839693428701">Проведіть пальцем униз, щоб закрити.</translation>
-<translation id="6785959295338971061"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> З пристрою <ph name="FROM_DEVICE" /></translation>
 <translation id="6787751205395685251">Виберіть варіант для сайту <ph name="SITE_NAME" /></translation>
 <translation id="6790428901817661496">Відтворити</translation>
 <translation id="6818926723028410516">Виберіть елементи</translation>

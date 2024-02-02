@@ -44,6 +44,7 @@
 <translation id="2168108852149185974">Nogle tilføjelser får Chromium til at gå ned. Prøv at afinstallere:</translation>
 <translation id="2178608107313874732">Chromium kan ikke bruge dit kamera lige nu</translation>
 <translation id="2195025571279539885">Skal Chromium tilbyde at oversætte sider på <ph name="LANGUAGE_NAME" /> fra dette website næste gang?</translation>
+<translation id="2216344354848599203">Hold Chromium-ikonet nede, og klik på "Rediger hjemmeskærm"</translation>
 <translation id="2218146227246548550">Din organisation kræver, at du logger ind for at bruge Chromium. <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>
 <translation id="22313767259766852">Denne adresse gemmes i øjeblikket i Chromium. Hvis du vil bruge den i Google-produkter, skal du gemme den på din Google-konto, <ph name="USER_EMAIL" />.</translation>
 <translation id="2236584955986023187">Det betyder, at Chromium anmoder om computerwebsitet hver gang.</translation>
@@ -197,6 +198,7 @@ Vær opmærksom på følgende:
 <translation id="632825460376924298">Tillad login via Chromium</translation>
 <translation id="6337530241089703714">Vælg, om du vil rydde dine Chromium-data fra denne enhed eller beholde dem</translation>
 <translation id="6348483005826990855">3. Vælg Chromium</translation>
+<translation id="6383607155624074112">Få hurtigere adgang til Chromium via Dock på din hjemmeskærm</translation>
 <translation id="6407399265324739055">Betalingsmetoder og adresser krypteres ikke. Browserhistorik fra Chromium synkroniseres ikke.
 
 Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssætningen bliver ikke sendt til eller gemt af Google. Hvis du glemmer din adgangssætning eller vil ændre denne indstilling, skal du <ph name="BEGIN_LINK" />rydde Chromium-dataene på din konto<ph name="END_LINK" />.</translation>

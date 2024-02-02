@@ -149,6 +149,7 @@
 <translation id="1757699834933698436">{count,plural, =1{{count} Mahinang Password}one{{count} Mahinang Password}other{{count} na Mahinang Password}}</translation>
 <translation id="1767766085187034454">Google Translate</translation>
 <translation id="1769106850515800431">Naka-personalize na Content</translation>
+<translation id="1780152987505130652">Isara ang Grupo</translation>
 <translation id="1789803444939621101">Maligayang Pagbabalik, <ph name="USER_NAME" /></translation>
 <translation id="1803264062614276815">Pangalan ng Cardholder</translation>
 <translation id="1809939268435598390">I-delete ang Folder</translation>
@@ -215,7 +216,6 @@
 <translation id="2080769225927880590">Mag-sign in gamit ang isang Valid na Account</translation>
 <translation id="2103075008456228677">Buksan ang history.google.com</translation>
 <translation id="21133533946938348">Pin Tab</translation>
-<translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> (na) item ang inilipat</translation>
 <translation id="2122754583996902531">Pinapamahalaan ang iyong browser. <ph name="BEGIN_LINK" />Matuto Pa<ph name="END_LINK" /></translation>
 <translation id="2139502497535990641">I-on ang Mga Alerto sa Presyo?</translation>
 <translation id="2139867232736819575">Maghanap para sa Text na Kinopya Mo</translation>
@@ -653,6 +653,7 @@ Tingnan ang mga tagubilin ng iyong search engine para sa pag-delete sa history n
 <translation id="4442550905108052454">Buksan ang <ph name="BEGIN_BOLD" />Mga Setting<ph name="END_BOLD" /></translation>
 <translation id="4454246407045105932">Magdagdag ng Wika</translation>
 <translation id="4455710003856931944">Puwede mong i-swipe ang gilid na bahagi para bumalik o lumipat sa susunod.</translation>
+<translation id="4460014764210899310">I-ungroup</translation>
 <translation id="4461286950227634995">Mag-alok na I-save ang Mga Password</translation>
 <translation id="4462491365653392320">Subaybayan ang mga Presyo sa Mga Tab</translation>
 <translation id="4469324811108161144">Puwedeng mag-save ng hanggang <ph name="CHARACTER_LIMIT" /> character ang mga tala.</translation>
@@ -935,7 +936,6 @@ Dapat ding naka-enable ang handoff sa Pangkalahatang seksyon ng Mga Setting, at 
 <translation id="5857770089550859117">Kinakailangan ang passphrase upang masimulan ang pag-sync.</translation>
 <translation id="5859715514067755465">I-forward</translation>
 <translation id="5860033963881614850">Naka-off</translation>
-<translation id="5871497086027727873">1 item ang inilipat</translation>
 <translation id="5896576662943111387">Ginawa para sa iOS</translation>
 <translation id="5897749768294722429">Para mabilis na makabalik sa mga site na binisita mo, i-sync ang iyong mga tab at history.</translation>
 <translation id="5897956970858271241">Bisitahin ang Kinopyang Link</translation>
@@ -1505,6 +1505,7 @@ Puwedeng gumamit ng cookies ang mga site para makita ang iyong aktibidad sa pag-
 <translation id="8766790350274092814">Made-delete ang mga password para sa <ph name="WEBSITE" /> at <ph name="SECOND_WEBSITE" />. Hindi made-delete ang iyong mga account.</translation>
 <translation id="8775144690796719618">Di-wastong URL</translation>
 <translation id="8780076847684176174">{count,plural, =1{Suriin ang tab...}one{Suriin ang lahat ng tab...}other{Suriin ang lahat ng tab...}}</translation>
+<translation id="8781834595282316166">Bagong Tab sa Grupo</translation>
 <translation id="8782570580170191813">Palaging I-track ang Mga Package</translation>
 <translation id="8787968206789828143">Maghanap sa Web</translation>
 <translation id="8792626944327216835">mikropono</translation>

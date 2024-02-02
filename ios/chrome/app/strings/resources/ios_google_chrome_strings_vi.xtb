@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="vi">
+<translation id="1021782183249308751">Nhấn và giữ biểu tượng Chrome rồi nhấp vào "Chỉnh sửa Màn hình chính"</translation>
 <translation id="1066101356081285416">Chrome sẽ phát hiện số vận đơn trên các trang web bạn truy cập và cho bạn thấy thông tin cập nhật về gói hàng trên trang Thẻ mới. Số vận đơn của gói hàng và tên trang web sẽ được gửi đến Google để cung cấp tính năng này và cải thiện các tính năng mua sắm của Google cho mọi người. Bạn có thể cập nhật tuỳ chọn này bất cứ lúc nào trong phần <ph name="BEGIN_LINK" />Cài đặt theo dõi gói hàng<ph name="END_LINK" />.</translation>
 <translation id="1085696779717592361">Sử dụng Chrome theo mặc định</translation>
 <translation id="1105362920864247682">Xoá dữ liệu duyệt web trong Chrome.</translation>
@@ -96,6 +97,7 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="3345341804167540816">Sử dụng Chrome ở mọi nơi</translation>
 <translation id="3360031466389132716">{THRESHOLD,plural, =1{Thao tác này diễn ra sau {THRESHOLD} phút bạn không dùng đến Chrome}other{Thao tác này diễn ra sau {THRESHOLD} phút bạn không dùng đến Chrome}}</translation>
 <translation id="3399930248910934354">Mở phần Cài đặt của Chrome</translation>
+<translation id="344736123700721678">Truy cập Chrome nhanh hơn từ thanh dock trên Màn hình chính</translation>
 <translation id="3472587960215700950">Chrome sử dụng Google Maps để chỉ đường và cung cấp cho bạn thông tin địa phương về các địa chỉ phát hiện được.</translation>
 <translation id="3503014945441706099">Bạn có thể dùng tính năng Duyệt web an toàn có tăng cường bảo vệ cho cả hồ sơ Chrome này</translation>
 <translation id="3522659714780527202">Để xem các thẻ của bạn trên bất cứ thiết bị nào mà bạn có dùng Chrome, hãy bật tính năng đồng bộ hóa</translation>
@@ -177,12 +179,15 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="6054613632208573261">Sử dụng Chrome theo Mặc định</translation>
 <translation id="6063091872902370735">Cho phép đăng nhập vào Chrome</translation>
 <translation id="6110625574506755980">Một số tính năng của Chrome sẽ không hoạt động nữa.</translation>
+<translation id="6132149203299792222">Đăng nhập bằng Tài khoản Google để đồng bộ hoá mật khẩu, dấu trang và nhiều nội dung khác.</translation>
 <translation id="6177442314419606057">Tìm kiếm trong Chrome</translation>
 <translation id="6181930887571472871">Chuyển sang Chrome</translation>
 <translation id="6238746320622508509">Để Chrome khóa các thẻ Ẩn danh của bạn.</translation>
 <translation id="6247557882553405851">Trình quản lý mật khẩu</translation>
+<translation id="6272822675004864999">Để nhận thông báo của Chrome, hãy bật thông báo trong phần Cài đặt trên iOS.</translation>
 <translation id="630693926528731525">Mật khẩu của bạn chưa được chia sẻ. Kiểm tra kết nối Internet và đảm bảo bạn đã đăng nhập vào Chrome. Sau đó, hãy thử lại.</translation>
 <translation id="6348855835728304880">Dùng mật khẩu và các dữ liệu khác mà bạn lưu trên Chrome trong các ứng dụng khác trên thiết bị này.</translation>
+<translation id="6389317667633680932">Khám phá các tính năng mới giúp bạn khai thác tối đa Chrome.</translation>
 <translation id="6412673304250309937">Kiểm tra đối chiếu các URL với danh sách trang web không an toàn được lưu trữ trong Chrome. Nếu một trang web cố ăn cắp mật khẩu của bạn hoặc nếu bạn tải một tệp gây hại xuống, Chrome cũng có thể gửi các URL, bao gồm cả các đoạn nội dung trên trang, đến tính năng Duyệt web an toàn.</translation>
 <translation id="6427126399757991875">Tổ chức của bạn đang thiết lập Chrome...</translation>
 <translation id="6484712497741564393">Bạn đã đăng nhập bằng <ph name="EMAIL" />.
@@ -214,8 +219,10 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="7124339256045485976">Giữ cho Chrome luôn cập nhật</translation>
 <translation id="7161390184744336561">Google Chrome đã lỗi thời</translation>
 <translation id="7165736900384873061">Bắt đầu dùng trình quét QR của Chrome</translation>
+<translation id="7175129790242719365">Mẹo khi dùng Chrome: Đăng nhập vào Chrome</translation>
 <translation id="7187993566681480880">Giúp bạn an toàn trên Chrome và có thể dùng để tăng cường bảo mật cho bạn trong các ứng dụng khác của Google sau khi đăng nhập.</translation>
 <translation id="7200524487407690471">Chrome tự động chạy tính năng Kiểm tra an toàn hằng ngày để bảo vệ bạn trước các sự cố rò rỉ dữ liệu, trang web không an toàn và những vấn đề khác. Bạn có thể tìm thêm thông tin về tính năng Kiểm tra an toàn trong phần Cài đặt.</translation>
+<translation id="7203324561587388418">Luôn nắm bắt nội dung và các mẹo hữu ích về Chrome.</translation>
 <translation id="72119412072970160">Bạn có thể sử dụng mật khẩu đã lưu vào Trình quản lý mật khẩu của Google trong ứng dụng khác trên iPad.</translation>
 <translation id="723787869754590019">Dùng Chrome để tự động điền</translation>
 <translation id="7254380941803999489">Đặt Chrome làm trình duyệt mặc định</translation>
@@ -244,6 +251,8 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="7897703007638178753">Xem các thẻ gần đây trong Chrome</translation>
 <translation id="7925119591961387184">Chọn "Chrome".</translation>
 <translation id="7933491483529363150">Mở thẻ mà tôi mở gần đây nhất trong Chrome.</translation>
+<translation id="7948283758957877064">Tính năng mới trong Chrome</translation>
+<translation id="8006014511203279255">Dùng Chrome mỗi khi bạn nhấn vào đường liên kết trong thư/tin nhắn hoặc các ứng dụng khác.</translation>
 <translation id="8022947259858476807">Hãy dùng Chrome theo mặc định để mở đường liên kết, tìm kiếm trong tiện ích và tự động điền mật khẩu trên các ứng dụng khác</translation>
 <translation id="804638182476029347">Cho phép thông báo của Chrome để nhận thông báo giảm giá</translation>
 <translation id="8065292699993359127">Mở URL trong Chrome ở chế độ Ẩn danh</translation>
@@ -280,6 +289,7 @@ Dữ liệu của bạn đã được mã hoá bằng cụm mật khẩu vào <p
 <translation id="8765470054473112089">Khi bạn nhập vào thanh địa chỉ hoặc hộp tìm kiếm, Chrome sẽ gửi nội dung bạn nhập đến công cụ tìm kiếm mặc định để đề xuất cho bạn cụm từ phù hợp hơn. Tính năng này bị tắt trong chế độ Ẩn danh.</translation>
 <translation id="8772179140489533211">Hiển thị lời nhắc đăng nhập vào Chrome.</translation>
 <translation id="8788269841521769222">Bạn không cần nhớ mật khẩu này. Mật khẩu này sẽ được lưu vào Trình quản lý mật khẩu của Google cho <ph name="EMAIL" /></translation>
+<translation id="878917453316810648">Mẹo khi dùng Chrome: Dùng Chrome làm trình duyệt mặc định</translation>
 <translation id="8808828119384186784">Cài đặt Chrome</translation>
 <translation id="8855781063981781621">Để vô hiệu hoá Chế độ khoá trong Chrome, hãy tắt chế độ này trên iPad của bạn.</translation>
 <translation id="8856877214925961642">Quy trình mã hoá bằng cụm mật khẩu không bao gồm địa chỉ và phương thức thanh toán.

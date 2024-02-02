@@ -149,6 +149,7 @@
 <translation id="1757699834933698436">{count,plural, =1{{count} contrasinal pouco seguro}other{{count} contrasinais pouco seguros}}</translation>
 <translation id="1767766085187034454">Tradutor de Google</translation>
 <translation id="1769106850515800431">Contido personalizado</translation>
+<translation id="1780152987505130652">Pechar grupo</translation>
 <translation id="1789803444939621101">Dámosche a benvida de novo, <ph name="USER_NAME" /></translation>
 <translation id="1803264062614276815">Nome do titular da tarxeta</translation>
 <translation id="1809939268435598390">Eliminar cartafol</translation>
@@ -214,7 +215,6 @@
 <translation id="2080769225927880590">Inicia sesión cunha conta válida</translation>
 <translation id="2103075008456228677">Abrir history.google.com</translation>
 <translation id="21133533946938348">Ancorar pestana</translation>
-<translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> elementos movidos</translation>
 <translation id="2122754583996902531">O teu navegador está xestionado. <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
 <translation id="2139502497535990641">Queres activar as alertas de prezos?</translation>
 <translation id="2139867232736819575">Buscar texto que copiaches</translation>
@@ -566,6 +566,7 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="3929457972718048006">Enderezos</translation>
 <translation id="3948600256434252210">Podes pasar o dedo cara á dereita para navegar no modo de incógnito.</translation>
 <translation id="3955822496205734389">Tes contrasinais pouco seguros.</translation>
+<translation id="3958312024468322930">Arrastra a icona á barra de aplicacións que está na parte inferior da pantalla de inicio</translation>
 <translation id="3959736869653157332">Menú → Nova pestana do modo de incógnito</translation>
 <translation id="3962326069546168954">Gardar</translation>
 <translation id="3967822245660637423">Descarga completa</translation>
@@ -647,6 +648,7 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="4431224949908513835">Selecciona un método de pago para inserilo.</translation>
 <translation id="4442550905108052454">Abre <ph name="BEGIN_BOLD" />Settings<ph name="END_BOLD" /> (Configuración)</translation>
 <translation id="4454246407045105932">Engadir idioma</translation>
+<translation id="4460014764210899310">Desagrupar</translation>
 <translation id="4461286950227634995">Ofrecer posibilidade de gardar contrasinais</translation>
 <translation id="4462491365653392320">Facer un seguimento dos prezos nas pestanas</translation>
 <translation id="4469324811108161144">As notas poden conter <ph name="CHARACTER_LIMIT" /> caracteres como máximo.</translation>
@@ -929,7 +931,6 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="5857770089550859117">Introduce a frase de acceso para iniciar a sincronización.</translation>
 <translation id="5859715514067755465">Avanzar</translation>
 <translation id="5860033963881614850">Non</translation>
-<translation id="5871497086027727873">Moveuse un elemento</translation>
 <translation id="5896576662943111387">Compilación para iOS</translation>
 <translation id="5897749768294722429">Para volver rapidamente aos sitios que xa visitases, sincroniza as pestanas e o historial.</translation>
 <translation id="5897956970858271241">Ir á ligazón que copiaches</translation>
@@ -1466,6 +1467,7 @@ Tamén poden utilizalas para ver a túa actividade de navegación en varios siti
 <translation id="8620640915598389714">Editar</translation>
 <translation id="8624447588354561276">Número de paquete</translation>
 <translation id="8624753446837753970">Definir posición</translation>
+<translation id="8625706492572042370">Editar a pantalla de inicio</translation>
 <translation id="8626393685701737946">Podes cambiar a vista predeterminada do sitio pola aplicable a ordenadores; tan só tes que acceder a Configuración &gt; Configuración de contido</translation>
 <translation id="8636825310635137004">Activa a sincronización para sincronizar as pestanas dos demais dispositivos.</translation>
 <translation id="8637431369725868556">Protéxete contra os sitios perigosos.</translation>
@@ -1497,6 +1499,7 @@ Tamén poden utilizalas para ver a túa actividade de navegación en varios siti
 <translation id="8766790350274092814">Eliminaranse os contrasinais de <ph name="WEBSITE" /> e <ph name="SECOND_WEBSITE" />. Non se eliminarán as túas contas.</translation>
 <translation id="8775144690796719618">URL non válido</translation>
 <translation id="8780076847684176174">{count,plural, =1{Revisar a pestana...}other{Revisar as pestanas...}}</translation>
+<translation id="8781834595282316166">Nova pestana no grupo</translation>
 <translation id="8782570580170191813">Facer sempre un seguimento dos paquetes</translation>
 <translation id="8787968206789828143">Busca na Web</translation>
 <translation id="8792626944327216835">micrófono</translation>

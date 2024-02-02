@@ -334,6 +334,7 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="2870560284913253234">Sitio</translation>
 <translation id="2871733351037274014">Precargar páginas</translation>
 <translation id="2876136027428473467"><ph name="CHILD_NAME" /> quiere que apruebes este sitio web:</translation>
+<translation id="2876194821763651818">Se guardaron las contraseñas en <ph name="USERNAME" />.</translation>
 <translation id="2876628302275096482">Más información sobre <ph name="BEGIN_LINK" />cómo Chrome mantiene la privacidad de tus datos<ph name="END_LINK" /></translation>
 <translation id="2888126860611144412">Acerca de Chrome</translation>
 <translation id="2891154217021530873">Detener la carga de la página</translation>
@@ -672,6 +673,7 @@ Es posible que tu cuenta de Google tenga otros formularios de historial de naveg
 <translation id="4699172675775169585">Imágenes y archivos almacenados en caché</translation>
 <translation id="4710167854527459075">Ordenar por más reciente</translation>
 <translation id="4719927025381752090">Ofrecer la traducción</translation>
+<translation id="4720556299488643018">Anular suscripción</translation>
 <translation id="4732120983431207637">Desenredo de pila</translation>
 <translation id="4736934858538408121">Tarjeta virtual</translation>
 <translation id="473775607612524610">Actualizar</translation>
@@ -1194,6 +1196,7 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mediante anuncio
 <translation id="7313188324932846546">Presionar para configurar la sincronización</translation>
 <translation id="7324354302972299151">Enviar una solicitud de "Do Not Track"</translation>
 <translation id="7332075081379534664">Se accedió a la cuenta correctamente.</translation>
+<translation id="7333041109965360609">Se anuló la suscripción a las notificaciones</translation>
 <translation id="7333232495927792353">Utiliza la función de sincronización para obtener el contenido más relevante de Google.</translation>
 <translation id="7339898014177206373">Nueva ventana</translation>
 <translation id="7340958967809483333">Opciones para Descubre</translation>
@@ -1452,6 +1455,7 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mediante anuncio
 <translation id="8503813439785031346">Nombre de usuario</translation>
 <translation id="8505766168025405649">Consulta la notificación para conocer el estado de la descarga.</translation>
 <translation id="8506357771923193001">Encontrarás tus descargas aquí</translation>
+<translation id="8512053371384421952">Ya no recibirás notificaciones de <ph name="DOMAIN" />.</translation>
 <translation id="8514477925623180633">Exportar las contraseñas almacenadas con Chrome</translation>
 <translation id="8516012719330875537">Editor de imágenes</translation>
 <translation id="8523928698583292556">Borrar contraseña almacenada</translation>

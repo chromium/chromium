@@ -398,6 +398,7 @@
 <translation id="1711528724596764268">‏למידת מכונה ובינה מלאכותית (AI)</translation>
 <translation id="1712552549805331520"><ph name="URL" /> רוצה לאחסן נתונים במחשב המקומי שלך באופן קבוע</translation>
 <translation id="1713628304598226412">מגש 2</translation>
+<translation id="1713819065634160212">‏שימוש בכתובות ושמירה שלהן בחשבון Google</translation>
 <translation id="1714807406136741351">‏במצב עיון. אפשר לעבור למצב Forms שבו יש אפשרות להשתמש בחץ ימינה או בחץ שמאלה כדי לעיין בשינויים במחיר שרואים בתרשים</translation>
 <translation id="1717218214683051432">חיישני תנועה</translation>
 <translation id="1717494416764505390">תיבת דואר 3</translation>
@@ -1087,6 +1088,7 @@
 <translation id="3120807611504813890">Envelope (Lightweight)</translation>
 <translation id="3121994479408824897">מעבר אל <ph name="DOMAIN" /></translation>
 <translation id="3126023634486644099">Labels (Permanent)</translation>
+<translation id="3133565499688974786">מנוע החיפוש שמוגדר כברירת מחדל הוא <ph name="SEARCH_ENGINE_NAME" /></translation>
 <translation id="3140646734028448730">שירותים עסקיים</translation>
 <translation id="3141093262818886744">אני רוצה לפתוח בכל זאת</translation>
 <translation id="3141641372357166056">אין החלטה לגבי הסכמה</translation>
@@ -1507,6 +1509,7 @@
 <translation id="3943857333388298514">הדבקה</translation>
 <translation id="3946209740501886391">יש לשאול תמיד באתר הזה</translation>
 <translation id="3948588869002647271">האפליקציה הזו חסרה או פגומה</translation>
+<translation id="3949297482798028668">לפי הגדרת האדמין, האפשרות להדביק כאן תוכן חסומה.</translation>
 <translation id="3949571496842715403">‏השרת הזה לא הצליח להוכיח שהוא <ph name="DOMAIN" />; אישור האבטחה שלו לא מציין ערכי Subject Alternative Name. ייתכן שהסיבה לכך היא תצורה שגויה או תוקף המיירט את החיבור שלך.</translation>
 <translation id="3949601375789751990">היסטוריית הגלישה שלך מופיעה כאן</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
@@ -1922,6 +1925,7 @@
 <translation id="4764680219299728632">תנורים וכיריים</translation>
 <translation id="4764776831041365478">ייתכן שדף האינטרנט בכתובת <ph name="URL" /> אינו פעיל זמנית, או שהועבר לכתובת אינטרנט חדשה לצמיתות.</translation>
 <translation id="4766713847338118463">שתי סיכות הידוק בחלק התחתון</translation>
+<translation id="4768864802656530630">יומני מערכת מפורטים. <ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /></translation>
 <translation id="4771973620359291008">‏אירעה שגיאה לא מוכרת.
 
 
@@ -2230,6 +2234,7 @@ Del</translation>
 <translation id="5377026284221673050">‏"השעון מאחר", "השעון מקדים" או "&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;"</translation>
 <translation id="5383478552402031184">ריצוף</translation>
 <translation id="5385857628869214740">הומור</translation>
+<translation id="5385966243497224160">‏לא ניתן להציג כתובת URL שאינה מסוג HTTPS בתצוגה מקדימה</translation>
 <translation id="5386426401304769735">‏שרשרת האישורים של האתר הזה כוללת אישור שנחתם באמצעות SHA-1.</translation>
 <translation id="5392506727170022660">Metal (Semi-Gloss)</translation>
 <translation id="5396631636586785122">הידוק קצוות בצד ימין</translation>
@@ -2453,6 +2458,8 @@ Del</translation>
 <translation id="5838732667866024867">אפשר לבדוק את שינויי המחירים בתרשים באמצעות החץ ימינה או החץ שמאלה.</translation>
 <translation id="5840318881868981258">‏בחשבון Google שלך, <ph name="ACCOUNT" /></translation>
 <translation id="5841338463993781099">לשמור בחשבון?</translation>
+<translation id="5843987376989109187">עדיין אין תמיכה בשפה הזו.
+    <ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /></translation>
 <translation id="5847181246682413476">ספקי כוח</translation>
 <translation id="5851548754964597211">רשימת כרטיסיות</translation>
 <translation id="5852909432155870672">RA4</translation>
@@ -2786,7 +2793,6 @@ Del</translation>
 <translation id="6480864723214312258">סוללות לשימוש ביתי</translation>
 <translation id="6486200200930923183">סרטים תיעודיים</translation>
 <translation id="6489534406876378309">התחלת ההעלאה של קריסות</translation>
-<translation id="6491663123807473970">‏נשלחה מהכתובת <ph name="URL" /> בקשה להשתמש במכשירי MIDI.</translation>
 <translation id="6493924760403974580">האפליקציה תומכת רק בגודל הזה.</translation>
 <translation id="6494750904506170417">חלונות קופצים והפניות אוטומטיות</translation>
 <translation id="6495664197699704593">הסיסמה הזו שמורה רק במכשיר הזה. כדי להשתמש בה במכשירים אחרים, <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
@@ -3663,6 +3669,7 @@ Del</translation>
 <translation id="8194797478851900357">&amp;ביטול העברה</translation>
 <translation id="8194956568907463262">משחקי יריות</translation>
 <translation id="8199437620497683918">Optical Disc (Glossy)</translation>
+<translation id="8199730148066603000">‏אין הרשאה להציג כתובת URL שאינה מסוג HTTPS בתצוגה מקדימה.</translation>
 <translation id="8200772114523450471">חידוש</translation>
 <translation id="8202097416529803614">סיכום הזמנה</translation>
 <translation id="8202370299023114387">התנגשות</translation>
@@ -4099,6 +4106,8 @@ Del</translation>
 <translation id="9049981332609050619">ניסית להגיע ל-<ph name="DOMAIN" />, אך השרת הציג אישור לא חוקי.</translation>
 <translation id="9050666287014529139">ביטוי סיסמה</translation>
 <translation id="9051072642122229460">מכונות קפה ואספרסו</translation>
+<translation id="9051260467258969162">צריך <ph name="BEGIN_LINK" />להיכנס<ph name="END_LINK" /> 
+    שוב לחשבון ואז לחזור לכרטיסייה הזו כדי לקבל עזרה בכתיבה</translation>
 <translation id="9053840549256861041">‏אנחנו משיקים תכונה חדשה לשמירה על פרטיות בפרסום שנקראת 'מדידת ביצועים של מודעות'. Chrome משתף מידע מוגבל מאוד בין אתרים, למשל מתי הוצגה לך מודעה, כדי לעזור לבעלי האתרים למדוד את הביצועים של המודעות.</translation>
 <translation id="9056953843249698117">חנות</translation>
 <translation id="9062620674789239642">ייתכן שהוא הועבר, עבר עריכה או נמחק.</translation>

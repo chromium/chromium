@@ -66,6 +66,7 @@
 <translation id="2228071138934252756">তাছাড়া, যাতে <ph name="APP_NAME" /> আপনার ক্যামেরা অ্যাক্সেস করতে পারে, তার জন্য <ph name="BEGIN_LINK" />Android সেটিংসে<ph name="END_LINK" /> গিয়েও ক্যামেরা চালু করে দিন।</translation>
 <translation id="2235344399760031203">থার্ড-পার্টি কুকি ব্লক করা হয়েছে</translation>
 <translation id="2238944249568001759">আপনার শেষ ট্যাবের উপর ভিত্তি করে সাজেস্ট করা সার্চ</translation>
+<translation id="2241587408274973373">নতুন ট্যাব পৃষ্ঠার কার্ড</translation>
 <translation id="2241634353105152135">শুধুমাত্র একবার</translation>
 <translation id="2253414712144136228"><ph name="NAME_OF_LIST_ITEM" /> সরিয়ে দিন</translation>
 <translation id="2253989982043948086">{NUM_SELECTED,plural, =1{১টি সাইট ব্লক করা আছে}one{#টি সাইট ব্লক করা আছে}other{#টি সাইট ব্লক করা আছে}}</translation>
@@ -108,7 +109,6 @@
 <translation id="2750481671343847896">সাইটগুলি পরিচয় পরিষেবা প্রদানকারী থেকে সাইন-ইন প্রম্পট দেখাতে পারে।</translation>
 <translation id="2790501146643349491">চালু থাকলে, সম্প্রতি বন্ধ হওয়া সাইট ডেটা পাঠানো ও রিসিভ করা সম্পূর্ণ করতে পারে। বন্ধ থাকলে, সম্প্রতি বন্ধ হওয়া সাইট ডেটা পাঠানো ও রিসিভ করা সম্পূর্ণ করতে পারে না।</translation>
 <translation id="2822354292072154809">আপনি কি <ph name="CHOSEN_OBJECT_NAME" />-এর জন্য সাইটের সব অনুমতি রিসেট করার ব্যাপারে নিশ্চিত?</translation>
-<translation id="2836978798613876756"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> <ph name="HOST_NAME" /></translation>
 <translation id="2850913818900871965">মোবাইল ভিউয়ের অনুরোধ করুন</translation>
 <translation id="2870560284913253234">সাইট</translation>
 <translation id="2874939134665556319">পূর্ববর্তী ট্র্যাক</translation>
@@ -120,7 +120,6 @@
 <translation id="2968755619301702150">সার্টিফিকেট প্রদর্শনকারী</translation>
 <translation id="2979365474350987274">থার্ড-পার্টি কুকি সীমিত করা হয়েছে</translation>
 <translation id="3008272652534848354">অনুমতি রিসেট করুন</translation>
-<translation id="3013291976881901233">MIDI ডিভাইসগুলি</translation>
 <translation id="301521992641321250">স্বয়ংক্রিয়ভাবে ব্লক করা হয়েছে</translation>
 <translation id="3069226013421428034">কোনও নির্দিষ্ট সাইটের জন্য থার্ড-পার্টি সাইন-ইনের অনুমতি দিন।</translation>
 <translation id="3082992102194421695">{COUNT,plural, =1{আগামীকাল মেয়াদ শেষ}one{# দিনে মেয়াদ শেষ হবে}other{# দিনে মেয়াদ শেষ হবে}}</translation>
@@ -191,7 +190,6 @@
 <translation id="4169549551965910670">একটি ইউএসবি ডিভাইসে কানেক্ট করা হয়েছে</translation>
 <translation id="4194328954146351878">সাইটগুলিকে NFC ডিভাইসে তথ্য দেখতে এবং পরিবর্তন করার অনুমতি দেওয়ার আগে জিজ্ঞাসা করে নিন (প্রস্তাবিত)</translation>
 <translation id="4200726100658658164">লোকেশন সেটিংস খুলুন</translation>
-<translation id="4212246570487010370">ব্রাউজ করা চালিয়ে যান</translation>
 <translation id="4226663524361240545">বিজ্ঞপ্তি আসলে ডিভাইস ভাইব্রেট হতে পারে</translation>
 <translation id="4259722352634471385">নেভিগেশন অবরুদ্ধ করা হয়েছে: <ph name="URL" /></translation>
 <translation id="4278390842282768270">মঞ্জুরিপ্রাপ্ত</translation>
@@ -349,7 +347,6 @@
 <translation id="6746124502594467657">নিচে যান</translation>
 <translation id="6749077623962119521">অনুমতি রিসেট করবেন?</translation>
 <translation id="6766622839693428701">বন্ধ করতে নিচের দিকে সোয়াইপ করুন।</translation>
-<translation id="6785959295338971061"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> থেকে<ph name="FROM_DEVICE" /></translation>
 <translation id="6787751205395685251"><ph name="SITE_NAME" />-এর জন্য বিকল্প বেছে নিন</translation>
 <translation id="6790428901817661496">চালু করুন</translation>
 <translation id="6818926723028410516">আইটেম বেছে নিন</translation>

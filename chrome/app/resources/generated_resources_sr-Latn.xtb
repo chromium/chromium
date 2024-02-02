@@ -2903,7 +2903,6 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="3188465121994729530">Pokretni prosek</translation>
 <translation id="3189187154924005138">Veliki kursor</translation>
 <translation id="3190558889382726167">Lozinka je sačuvana</translation>
-<translation id="3191625924275846436">{NUM_SITES,plural, =1{Da bismo zaštitili podatke, dozvole su uklonjene za sajt koji niste nedavno posećivali}one{Da bismo zaštitili podatke, dozvole su uklonjene za sajtove koje niste nedavno posećivali}few{Da bismo zaštitili podatke, dozvole su uklonjene za sajtove koje niste nedavno posećivali}other{Da bismo zaštitili podatke, dozvole su uklonjene za sajtove koje niste nedavno posećivali}}</translation>
 <translation id="3192586965067888278">Detaljno opišite problem. Povratne informacije se šalju Google-u na pregled od strane ljudi i mogu da se koriste za poboljšanje ili razvoj Google proizvoda i usluga.</translation>
 <translation id="3192947282887913208">Audio datoteke</translation>
 <translation id="3193695589337931419">Uslužne aplikacije za sistemske signale</translation>
@@ -4061,7 +4060,6 @@ To može da obuhvata informacije o instaliranom softveru, fajlovima, pregledaču
 <translation id="4078903002989614318">Opcije sortiranja i lista</translation>
 <translation id="4079140982534148664">Koristite poboljšanu proveru pravopisa</translation>
 <translation id="4082333918978320301">Nijednom veb-sajtu nije dozvoljeno da koristi mikrofon</translation>
-<translation id="4084582735848141214">{COUNT,plural, =1{1 sajt je dozvoljen}one{# sajt je dozvoljen}few{# sajta su dozvoljena}other{# sajtova je dozvoljeno}}</translation>
 <translation id="4084682180776658562">Obeleživač</translation>
 <translation id="4084835346725913160">Zatvori <ph name="TAB_NAME" /></translation>
 <translation id="4085298594534903246">JavaScript je blokiran na ovoj stranici.</translation>
@@ -8066,7 +8064,6 @@ Imate još # ugroženih lozinki. Google menadžer lozinki preporučuje da odmah 
 <translation id="7260186537988033909">Registracija kioska i uređaja za prijavljivanje je dovršena</translation>
 <translation id="7261612856573623172">Sistemski glas za pretvaranje teksta u govor</translation>
 <translation id="7262004276116528033">Ovu uslugu prijavljivanja hostuje <ph name="SAML_DOMAIN" />.</translation>
-<translation id="7263162347647986485">{NUM_SITES,plural, =1{Dozvole su uklonjene za 1 sajt}one{Dozvole su uklonjene za {NUM_SITES} sajt}few{Dozvole su uklonjene za {NUM_SITES} sajta}other{Dozvole su uklonjene za {NUM_SITES} sajtova}}</translation>
 <translation id="7264695323040866038">Uvek ćete koristiti aplikaciju <ph name="APP" /> za otvaranje podržanih veb-linkova?</translation>
 <translation id="7267044199012331848">Instaliranje virtuelne mašine nije uspelo. Probajte ponovo ili se obratite administratoru. Kôd greške: <ph name="ERROR_CODE" />.</translation>
 <translation id="7267875682732693301">Nastavite da podižete prst da biste dodali različite delove otiska prsta</translation>
@@ -9814,7 +9811,6 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="859246725979739260">Ovom sajtu je zabranjeno da pristupa lokaciji.</translation>
 <translation id="8593121833493516339">Šaljite podatke o korišćenju i dijagnostičke podatke. Pomozite nam da poboljšamo Android doživljaj za dete tako što ćete automatski slati Google-u podatke o dijagnostici i korišćenju uređaja i aplikacija. Te informacije se neće koristiti za identifikaciju deteta i pomoći će u održavanju stabilnosti sistema i aplikacije i drugim podešavanjima. Neki objedinjeni podaci će takođe pomoći Google aplikacijama i partnerima, poput Android programera. Ako za dete uključite dodatne aktivnosti na vebu i u aplikacijama, ti podaci će se možda čuvati na Google nalogu deteta. <ph name="BEGIN_LINK1" />Saznajte više<ph name="END_LINK1" /></translation>
 <translation id="8593450223647418235">Nećete moći da otvarate fajlove u Microsoft-u 365 dok se podešavanje ne završi.</translation>
-<translation id="8594585498253980290">{COUNT,plural, =1{1 sajt je blokiran}one{# sajt je blokiran}few{# sajta su blokirana}other{# sajtova je blokirano}}</translation>
 <translation id="8596540852772265699">Prilagođene datoteke</translation>
 <translation id="8597462463725156723">Obaveštenja se neće prikazivati na ekranu. I dalje možete da vidite obaveštenja klikom na ikonu Ne uznemiravaj u donjem desnom uglu ekrana.</translation>
 <translation id="8597845839771543242">Format svojstva:</translation>

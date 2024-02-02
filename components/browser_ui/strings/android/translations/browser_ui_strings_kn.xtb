@@ -66,6 +66,7 @@
 <translation id="2228071138934252756"><ph name="APP_NAME" /> ನಿಮ್ಮ ಕ್ಯಾಮರಾವನ್ನು ಪ್ರವೇಶಿಸುವುದಕ್ಕೆ ಅನುಮತಿಸಲು, <ph name="BEGIN_LINK" />Android ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ<ph name="END_LINK" /> ಕ್ಯಾಮರಾವನ್ನು ಸಹ ಆನ್ ಮಾಡಬೇಕಾಗುತ್ತದೆ.</translation>
 <translation id="2235344399760031203">ಥರ್ಡ್-ಪಾರ್ಟಿ ಕುಕೀಗಳನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ</translation>
 <translation id="2238944249568001759">ನಿಮ್ಮ ಹಿಂದಿನ ಟ್ಯಾಬ್ ಅನ್ನು ಆಧರಿಸಿ ಸೂಚಿಸಲಾದ ಹುಡುಕಾಟಗಳು</translation>
+<translation id="2241587408274973373">ಹೊಸ ಟ್ಯಾಬ್ ಪುಟದ ಕಾರ್ಡ್‌ಗಳು</translation>
 <translation id="2241634353105152135">ಕೇವಲ ಒಂದು ಬಾರಿ</translation>
 <translation id="2253414712144136228"><ph name="NAME_OF_LIST_ITEM" /> ಅನ್ನು ತೆಗೆದುಹಾಕಿ</translation>
 <translation id="2253989982043948086">{NUM_SELECTED,plural, =1{1 ಸೈಟ್ ಅನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ}one{# ಸೈಟ್‌ಗಳನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ}other{# ಸೈಟ್‌ಗಳನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ}}</translation>
@@ -108,7 +109,6 @@
 <translation id="2750481671343847896">ಸೈಟ್‌ಗಳು ಗುರುತಿನ ಸೇವೆಗಳ ಸೈನ್ ಇನ್ ಪ್ರಾಂಪ್ಟ್‌ಗಳನ್ನು ತೋರಿಸಬಲ್ಲವು.</translation>
 <translation id="2790501146643349491">ಆನ್ ಆಗಿರುವಾಗ, ಇತ್ತೀಚೆಗೆ ಮುಚ್ಚಿದ ಸೈಟ್‌ಗಳು ಡೇಟಾ ಕಳುಹಿಸುವುದನ್ನು ಮತ್ತು ಸ್ವೀಕರಿಸುವುದನ್ನು ಪೂರ್ಣಗೊಳಿಸಬಹುದು. ಆಫ್ ಆಗಿರುವಾಗ, ಇತ್ತೀಚೆಗೆ ಮುಚ್ಚಿದ ಸೈಟ್‌ಗಳಿಗೆ ಡೇಟಾ ಕಳುಹಿಸುವುದನ್ನು ಅಥವಾ ಸ್ವೀಕರಿಸುವುದನ್ನು ಪೂರ್ಣಗೊಳಿಸಲು ಸಾಧ್ಯವಾಗುವುದಿಲ್ಲ.</translation>
 <translation id="2822354292072154809">ನೀವು <ph name="CHOSEN_OBJECT_NAME" /> ಗಾಗಿ ಎಲ್ಲಾ ಸೈಟ್ ಅನುಮತಿಗಳನ್ನು ಖಚಿತವಾಗಿಯೂ ಮರುಹೊಂದಿಸಲು ಬಯಸುತ್ತೀರಾ?</translation>
-<translation id="2836978798613876756"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> <ph name="HOST_NAME" /></translation>
 <translation id="2850913818900871965">ಮೊಬೈಲ್ ವೀಕ್ಷಣೆಯನ್ನು ವಿನಂತಿಸಿ</translation>
 <translation id="2870560284913253234">ಸೈಟ್</translation>
 <translation id="2874939134665556319">ಹಿಂದಿನ ಟ್ರ್ಯಾಕ್</translation>
@@ -120,7 +120,6 @@
 <translation id="2968755619301702150">ಪ್ರಮಾಣಪತ್ರ ವೀಕ್ಷಕ</translation>
 <translation id="2979365474350987274">ಥರ್ಡ್-ಪಾರ್ಟಿ ಕುಕೀಗಳು ಸೀಮಿತವಾಗಿವೆ</translation>
 <translation id="3008272652534848354">ಅನುಮತಿಗಳನ್ನು ಮರುಹೊಂದಿಸಿ</translation>
-<translation id="3013291976881901233">MIDI ಸಾಧನಗಳು</translation>
 <translation id="301521992641321250">ಸ್ವಯಂಚಾಲಿತವಾಗಿ ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ</translation>
 <translation id="3069226013421428034">ನಿರ್ದಿಷ್ಟ ಸೈಟ್‌ಗಾಗಿ ಥರ್ಡ್-ಪಾರ್ಟಿ ಸೈನ್ ಇನ್ ಅನ್ನು ಅನುಮತಿಸಿ.</translation>
 <translation id="3082992102194421695">{COUNT,plural, =1{ನಾಳೆ ಅವಧಿ ಮುಕ್ತಾಯಗೊಳ್ಳುತ್ತದೆ}one{# ದಿನಗಳಲ್ಲಿ ಅವಧಿ ಮುಕ್ತಾಯಗೊಳ್ಳುತ್ತದೆ}other{# ದಿನಗಳಲ್ಲಿ ಅವಧಿ ಮುಕ್ತಾಯಗೊಳ್ಳುತ್ತದೆ}}</translation>
@@ -191,7 +190,6 @@
 <translation id="4169549551965910670">USB ಸಾಧನವೊಂದಕ್ಕೆ ಕನೆಕ್ಟ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="4194328954146351878">NFC ಸಾಧನಗಳಲ್ಲಿ ಮಾಹಿತಿಯನ್ನು ನೋಡಲು ಮತ್ತು ಬದಲಾಯಿಸಲು ಸೈಟ್‌ಗಳಿಗೆ ಅನುಮತಿಸುವ ಮೊದಲು ಕೇಳಿ (ಶಿಫಾರಸು ಮಾಡಲಾಗಿದೆ)</translation>
 <translation id="4200726100658658164">ಸ್ಥಳ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ತೆರೆಯಿರಿ</translation>
-<translation id="4212246570487010370">ಬ್ರೌಸಿಂಗ್ ಮುಂದುವರಿಸಿ</translation>
 <translation id="4226663524361240545">ಪ್ರಕಟಣೆಗಳು ಸಾಧನವನ್ನು ವೈಬ್ರೇಟ್ ಮಾಡಬಹುದು</translation>
 <translation id="4259722352634471385">ನ್ಯಾವಿಗೇಶನ್‌ ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ: <ph name="URL" /></translation>
 <translation id="4278390842282768270">ಅನುಮತಿಸಲಾಗಿದೆ</translation>
@@ -349,7 +347,6 @@
 <translation id="6746124502594467657">ಕೆಳಗೆ ಸರಿಸಿ</translation>
 <translation id="6749077623962119521">ಅನುಮತಿಗಳನ್ನು ರೀಸೆಟ್ ಮಾಡಬೇಕೆ?</translation>
 <translation id="6766622839693428701">ಮುಚ್ಚಲು ಕೆಳಕ್ಕೆ ಸ್ವೈಪ್ ಮಾಡಿ.</translation>
-<translation id="6785959295338971061"><ph name="FROM_DEVICE" /> ನಿಂದ <ph name="SEPARATOR" /> <ph name="ACCESS_TIME" /></translation>
 <translation id="6787751205395685251"><ph name="SITE_NAME" /> ಗಾಗಿ ಒಂದು ಆಯ್ಕೆಯನ್ನು ಆರಿಸಿ</translation>
 <translation id="6790428901817661496">ಪ್ಲೇ ಮಾಡು</translation>
 <translation id="6818926723028410516">ಐಟಂಗಳನ್ನು ಆಯ್ಕೆಮಾಡಿ</translation>

@@ -149,6 +149,7 @@
 <translation id="1757699834933698436">{count,plural, =1{ມີລະຫັດຜ່ານງ່າຍ {count} ລາຍການ}other{ມີລະຫັດຜ່ານງ່າຍ {count} ລາຍການ}}</translation>
 <translation id="1767766085187034454">Google ແປພາສາ</translation>
 <translation id="1769106850515800431">ເນື້ອຫາແບບປັບແຕ່ງສ່ວນຕົວ</translation>
+<translation id="1780152987505130652">ປິດກຸ່ມ</translation>
 <translation id="1789803444939621101">ຍິນດີຕ້ອນຮັບກັບມາ, <ph name="USER_NAME" /></translation>
 <translation id="1803264062614276815">ຊື່ຜູ້ຖືບັດ</translation>
 <translation id="1809939268435598390">ລຶບ​ໂຟລເດີ</translation>
@@ -214,7 +215,6 @@
 <translation id="2080769225927880590">ເຂົ້າສູ່ລະບົບດ້ວຍບັນຊີທີ່ຖືກຕ້ອງ</translation>
 <translation id="2103075008456228677">ເປີດ history.google.com</translation>
 <translation id="21133533946938348">ປັກໝຸດແຖບ</translation>
-<translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> ລາຍ​ການ​ຖືກ​ຍ້າຍ​ໄປ​ແລ້ວ</translation>
 <translation id="2122754583996902531">ມີການຈັດການໂປຣແກຣມທ່ອງເວັບຂອງທ່ານ. <ph name="BEGIN_LINK" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LINK" /></translation>
 <translation id="2139502497535990641">ເປີດການແຈ້ງເຕືອນລາຄາບໍ?</translation>
 <translation id="2139867232736819575">ຊອກຫາຂໍ້ຄວາມທີ່ທ່ານສຳເນົາ</translation>
@@ -566,6 +566,7 @@
 <translation id="3929457972718048006">ທີ່ຢູ່</translation>
 <translation id="3948600256434252210">ທ່ານສາມາດປັດຂວາເພື່ອທ່ອງເວັບໃນໂໝດບໍ່ເປີດເຜີຍຕົວຕົນ.</translation>
 <translation id="3955822496205734389">ທ່ານມີລະຫັດຜ່ານງ່າຍ.</translation>
+<translation id="3958312024468322930">ລາກມັນໄປໃສ່ຈຸດຈອດຢູ່ລຸ່ມສຸດຂອງໂຮມສະກຣີນຂອງທ່ານ</translation>
 <translation id="3959736869653157332">ເມນູ → ແຖບ​ບໍ່ເປີດເຜີຍຕົວຕົນໃໝ່</translation>
 <translation id="3962326069546168954">ບັນທຶກ</translation>
 <translation id="3967822245660637423">ດາວ​ໂຫຼດ​ສຳ​ເລັດ</translation>
@@ -647,6 +648,7 @@
 <translation id="4431224949908513835">ເລືອກວິທີການຈ່າຍເງິນທີ່ຈະຕື່ມ.</translation>
 <translation id="4442550905108052454">ເປີດ <ph name="BEGIN_BOLD" />ການຕັ້ງຄ່າ<ph name="END_BOLD" /></translation>
 <translation id="4454246407045105932">ເພີ່ມພາສາ</translation>
+<translation id="4460014764210899310">ຍົກເລີກການຈັດກຸ່ມ</translation>
 <translation id="4461286950227634995">ສະເໜີໃຫ້ບັນທຶກລະຫັດຜ່ານ</translation>
 <translation id="4462491365653392320">ຕິດຕາມລາຄາຢູ່ແຖບຕ່າງໆ</translation>
 <translation id="4469324811108161144">ບັນທຶກສາມາດຈັດເກັບໄດ້ສູງສຸດ <ph name="CHARACTER_LIMIT" /> ຕົວອັກສອນ.</translation>
@@ -929,7 +931,6 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="5857770089550859117">ຈຳເປັນຕ້ອງມີວະລີຜ່ານເພື່ອເລີ່ມການຊິ້ງຂໍ້ມູນ.</translation>
 <translation id="5859715514067755465">ໄປໜ້າ</translation>
 <translation id="5860033963881614850">ປິດ</translation>
-<translation id="5871497086027727873">1 ລາຍ​ການ​ຖືກ​ຍ້າຍ​ໄປ​ແລ້ວ</translation>
 <translation id="5896576662943111387">ສ້າງມາສຳລັບ iOS</translation>
 <translation id="5897749768294722429">ເພື່ອກັບໄປຫາເວັບໄຊທີ່ທ່ານເຄີຍເຂົ້າໄດ້ຢ່າງວ່ອງໄວ, ໃຫ້ຊິ້ງຂໍ້ມູນແຖບ ແລະ ປະຫວັດຂອງທ່ານ.</translation>
 <translation id="5897956970858271241">ເຂົ້າເບິ່ງລິ້ງທີ່ສຳເນົາ</translation>
@@ -1405,6 +1406,7 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="8273982424131314219">ທ່ານຈະຕື່ມຂໍ້ມູນໃສ່ໃນ <ph name="URL" /></translation>
 <translation id="8281781826761538115">ຄ່າເລີ່ມຕົ້ນ - <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">ຂ້າມ</translation>
+<translation id="828291969289324795">{count,plural, =1{ເພີ່ມແຖບໃສ່ກຸ່ມໃໝ່}other{ເພີ່ມແຖບໃສ່ກຸ່ມໃໝ່}}</translation>
 <translation id="8283172974887967105">ຕັ້ງ…</translation>
 <translation id="8286036467436129157">ເຂົ້າສູ່ລະບົບ</translation>
 <translation id="8299417921174340354">ເພື່ອໃຊ້ລະຫັດຜ່ານ, ທ່ານຕ້ອງຕັ້ງລະຫັດຜ່ານໃນອຸປະກອນຂອງທ່ານກ່ອນ.</translation>
@@ -1466,6 +1468,7 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="8620640915598389714">ແກ້ໄຂ</translation>
 <translation id="8624447588354561276">ໝາຍເລກພັດສະດຸ</translation>
 <translation id="8624753446837753970">ກຳນົດຕຳແໜ່ງ</translation>
+<translation id="8625706492572042370">ແກ້ໄຂໂຮມສະກຣີນ</translation>
 <translation id="8626393685701737946">ທ່ານສາມາດປ່ຽນມຸມມອງເວັບໄຊເລີ່ມຕົ້ນໄປເປັນເດັສທັອບໄດ້ໃນການຕັ້ງຄ່າ &gt; ການຕັ້ງຄ່າເນື້ອຫາ</translation>
 <translation id="8636825310635137004">ເພື່ອໂຫຼດແຖບຂອງທ່ານຈາກອຸປະກອນອື່ນ, ໃຫ້ເປີດການຊິ້ງຂໍ້ມູນກ່ອນ.</translation>
 <translation id="8637431369725868556">ຮັບການປົກປ້ອງຈາກເວັບໄຊທີ່ເປັນອັນຕະລາຍ.</translation>
@@ -1497,6 +1500,7 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="8766790350274092814">ລະຫັດຜ່ານສຳລັບ <ph name="WEBSITE" /> ແລະ <ph name="SECOND_WEBSITE" /> ຈະບໍ່ຖືກລຶບ. ບັນຊີຂອງທ່ານຈະບໍ່ຖືກລຶບ.</translation>
 <translation id="8775144690796719618">URL ໃຊ້ບໍ່ໄດ້</translation>
 <translation id="8780076847684176174">{count,plural, =1{ກວດສອບແຖບ...}other{ກວດສອບແຖບທັງໝົດ...}}</translation>
+<translation id="8781834595282316166">ແຖບໃໝ່ໃນກຸ່ມ</translation>
 <translation id="8782570580170191813">ຕິດຕາມແພັກ​ເກດສະເໝີ</translation>
 <translation id="8787968206789828143">ຊອກຫາຢູ່ເວັບ</translation>
 <translation id="8792626944327216835">ໄມໂຄຣໂຟນ</translation>

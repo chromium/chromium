@@ -2901,7 +2901,6 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3188465121994729530">Hareketli Ortalama</translation>
 <translation id="3189187154924005138">Büyük imleç</translation>
 <translation id="3190558889382726167">Şifre kaydedildi</translation>
-<translation id="3191625924275846436">{NUM_SITES,plural, =1{Yakın zamanda ziyaret etmediğiniz sitenin izinleri, verilerinizi korumak için kaldırıldı}other{Yakın zamanda ziyaret etmediğiniz sitelerin izinleri, verilerinizi korumak için kaldırıldı}}</translation>
 <translation id="3192586965067888278">Sorunu ayrıntılı bir şekilde açıklayın. Uzman incelemesi için Google'a gönderilen geri bildirimler, Google ürün ve hizmetlerinin iyileştirilmesi ya da geliştirilmesi için kullanılabilir.</translation>
 <translation id="3192947282887913208">Ses Dosyaları</translation>
 <translation id="3193695589337931419">Sistem Sinyalleri Yardımcı Programları</translation>
@@ -4059,7 +4058,6 @@ Yüklü yazılımlar, dosyalar, tarayıcınız ve cihazın işletim sistemi hakk
 <translation id="4078903002989614318">Sıralama ve liste seçenekleri</translation>
 <translation id="4079140982534148664">Gelişmiş Yazım Denetimini Kullan</translation>
 <translation id="4082333918978320301">Hiçbir web sitesinin mikrofonunuzu kullanmasına izin verilmiyor</translation>
-<translation id="4084582735848141214">{COUNT,plural, =1{1 siteye izin veriliyor}other{# siteye izin veriliyor}}</translation>
 <translation id="4084682180776658562">Yer İşareti</translation>
 <translation id="4084835346725913160"><ph name="TAB_NAME" /> sekmesini kapat</translation>
 <translation id="4085298594534903246">Bu sayfadaki JavaScript engellendi.</translation>
@@ -8057,7 +8055,6 @@ Güvenliği ihlal edilmiş # şifreniz daha var. Google Şifre Yöneticisi bu ş
 <translation id="7260186537988033909">Kiosk ve tabela cihaz kaydı tamamlandı</translation>
 <translation id="7261612856573623172">Sistem Metin Okuma sesi</translation>
 <translation id="7262004276116528033">Bu oturum açma hizmeti, <ph name="SAML_DOMAIN" /> tarafından barındırılıyor.</translation>
-<translation id="7263162347647986485">{NUM_SITES,plural, =1{1 sitenin izinleri kaldırıldı}other{{NUM_SITES} sitenin izinleri kaldırıldı}}</translation>
 <translation id="7264695323040866038">Desteklenen web bağlantılarını açmak için her zaman <ph name="APP" /> uygulaması kullanılsın mı?</translation>
 <translation id="7267044199012331848">Sanal makine yüklenemedi. Lütfen tekrar deneyin veya yöneticinizle iletişime geçin. Hata kodu: <ph name="ERROR_CODE" />.</translation>
 <translation id="7267875682732693301">Parmak izinizin tüm farklı noktalarını eklemek için parmağınızı kaldırıp dokundurmaya devam edin</translation>
@@ -9803,7 +9800,6 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
 <translation id="859246725979739260">Bu sitenin, konumunuza erişimi engellenmiştir.</translation>
 <translation id="8593121833493516339">Kullanım ve teşhis verilerini gönder. Teşhis, cihaz ve uygulama kullanımı verilerini otomatik olarak Google'a göndererek çocuğunuzun Android deneyiminin iyileştirilmesine yardımcı olun. Bu veriler, çocuğunuzun kimliğini tespit etmek için kullanılmaz; sistem ve uygulama kararlılığı ile diğer özellikleri iyileştirmeye yardımcı olur. Bazı birleştirilmiş veriler, Google uygulamalarına ve iş ortaklarına da (ör. Android geliştiricileri) yardımcı olur. Çocuğunuz için ek Web ve Uygulama Etkinliği açıksa bu veriler çocuğunuzun Google hesabına kaydedilebilir. <ph name="BEGIN_LINK1" />Daha Fazla Bilgi<ph name="END_LINK1" /></translation>
 <translation id="8593450223647418235">Kurulum tamamlanana kadar dosyaları Microsoft 365'te açamazsınız.</translation>
-<translation id="8594585498253980290">{COUNT,plural, =1{1 site engellendi}other{# site engellendi}}</translation>
 <translation id="8596540852772265699">Özel Dosyalar</translation>
 <translation id="8597462463725156723">Bildirimler ekranda görünmez. Ekranınızın sağ alt tarafındaki Rahatsız Etmeyin simgesini tıklayarak bildirimleri görmeye devam edebilirsiniz.</translation>
 <translation id="8597845839771543242">Özellik biçimi:</translation>

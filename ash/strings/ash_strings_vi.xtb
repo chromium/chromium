@@ -607,9 +607,11 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="3526440770046466733">Mở đường liên kết trong thẻ mới và tiếp tục sử dụng thẻ hiện tại</translation>
 <translation id="353086728817903341">Đã kết nối với <ph name="NUM_DEVICES" /> thiết bị</translation>
 <translation id="3533126039236445965">Ứng dụng trong kệ</translation>
+<translation id="3537350467437346467">Bạn mới xem</translation>
 <translation id="3539957339480430241">Điểm phát sóng <ph name="DEVICE_NAME" /></translation>
 <translation id="3540893133818942399">Loại bỏ việc thiết lập tính năng xem nội dung nghe nhìn và ảnh gần đây có trên điện thoại</translation>
 <translation id="3542066395059568317">Bạn sẽ thấy các đề xuất để có thể tiếp tục từ nơi mình chưa xong. Bạn có thể nhấp chuột phải để xoá đề xuất.</translation>
+<translation id="3547318469722231257">Bạn mới sửa đổi</translation>
 <translation id="3552189655002856821">Wi-Fi đang tắt</translation>
 <translation id="3554215588514239132">Hiển thị hoặc ẩn bảng Công cụ cho nhà phát triển</translation>
 <translation id="3554637740840164787">Đã ghim <ph name="ITEM_TITLE" /></translation>
@@ -701,6 +703,7 @@ Hãy sạc thiết bị.</translation>
 <translation id="385300504083504382">Phần đầu</translation>
 <translation id="3859364108019690">Không thể truyền trực tuyến các ứng dụng</translation>
 <translation id="3861651314799684201">Nhấn phím Enter để ghi toàn màn hình</translation>
+<translation id="3882323608730650973">Mới có người sửa đổi</translation>
 <translation id="3886872229787704059">Mở hôm nay</translation>
 <translation id="3891340733213178823">Nhấn Ctrl+Shift+Q hai lần để đăng xuất.</translation>
 <translation id="3893630138897523026">ChromeVox (phản hồi bằng giọng nói)</translation>
@@ -894,6 +897,7 @@ Một số tính năng bị hạn chế nhằm tăng thời lượng pin.</trans
 <translation id="4582666543382004902">Đã tắt điểm phát sóng để sử dụng Wi-Fi. Để sử dụng điểm phát sóng, hãy tắt Wi-Fi.</translation>
 <translation id="4585337515783392668">Dừng truyền trên bộ thu không xác định</translation>
 <translation id="4596144739579517758">Giao diện tối đang tắt</translation>
+<translation id="4596442969149038771"><ph name="USER" /> mới chia sẻ</translation>
 <translation id="4611292653554630842">Đăng nhập</translation>
 <translation id="462160925400706389">Đã kết nối <ph name="NAME" /></translation>
 <translation id="4623167406982293031">Xác minh tài khoản</translation>
@@ -1337,6 +1341,7 @@ Một số tính năng bị hạn chế nhằm tăng thời lượng pin.</trans
 <translation id="6298183524022479114">Tuỳ chỉnh thiết bị này trong ứng dụng</translation>
 <translation id="6309219492973062892">Nhấp hoặc nhấn vào các biểu tượng từ 1 – 8 trên kệ</translation>
 <translation id="6315170314923504164">Thoại</translation>
+<translation id="6319058840130157106">Di chuyển lùi giữa góc dưới cùng bên phải, Trình chạy, thanh địa chỉ, thanh dấu trang, trang web đang mở và tệp đã tải xuống</translation>
 <translation id="6324916366299863871">Chỉnh sửa phím tắt</translation>
 <translation id="6330012934079202188">Đang hiển thị các cửa sổ của mọi không gian làm việc, hãy nhấn phím Mũi tên lên để hiển thị các cửa sổ của không gian làm việc hiện tại</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> là phiên do <ph name="MANAGER" /> quản lý</translation>
@@ -1815,6 +1820,7 @@ Mới cài đặt</translation>
 <translation id="8314772463905284467">Đang bật Caps Lock</translation>
 <translation id="8315514906653279104">Đang bật...</translation>
 <translation id="8331351032546853669">Đang chờ tải xuống</translation>
+<translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
 <translation id="8345019317483336363">Đã chọn cửa sổ <ph name="WINDOW_TITLE" /></translation>
 <translation id="8349826889576450703">trình khởi chạy</translation>
@@ -1921,6 +1927,7 @@ Mới cài đặt</translation>
 <translation id="878215960996152260"><ph name="APP_NAME" />, ứng dụng đã được cài đặt nhưng đã bị chặn</translation>
 <translation id="8785070478575117577">Kết nối với <ph name="NETWORK_NAME" /></translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
+<translation id="8790632710469941716">Di chuyển tiến giữa góc dưới cùng bên phải, Trình chạy, thanh địa chỉ, thanh dấu trang, trang web đang mở và tệp đã tải xuống</translation>
 <translation id="8792626944327216835">micrô</translation>
 <translation id="8801802992492329306">5G</translation>
 <translation id="8806053966018712535">Thư mục <ph name="FOLDER_NAME" /></translation>
@@ -2034,6 +2041,7 @@ Mới cài đặt</translation>
 <translation id="953431725143473984">Tắt thiết bị?</translation>
 <translation id="954052413789300507">Không đủ dung lượng cho <ph name="FILENAME" />. Giải phóng dung lượng.</translation>
 <translation id="954520015070501466">30 phút</translation>
+<translation id="954786879461589145"><ph name="USER" /> mới sửa đổi</translation>
 <translation id="974545358917229949">Đang hiển thị <ph name="RESULT_COUNT" /> kết quả cho <ph name="QUERY" /></translation>
 <translation id="981011780479609956">Không có ngày đến hạn</translation>
 <translation id="98120814841227350">Chuyển đến cuối tài liệu</translation>

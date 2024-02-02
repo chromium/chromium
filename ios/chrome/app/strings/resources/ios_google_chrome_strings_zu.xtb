@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="zu">
+<translation id="1021782183249308751">Cindezela futhi ubambe isithonjana se-Chrome bese uchofoza okuthi "Hlela Isikrini Sasekhaya"</translation>
 <translation id="1066101356081285416">I-Chrome izobona izinombolo zokulandelela kumasayithi owavakashelayo futhi ikubonise izibuyekezo zephakheji ekhasini Lethebhu Entsha. Inombolo yokulandelela iphakheji negama lewebhusayithi kuzothunyelwa ku-Google ukuze kunikezwe lesi sakhi futhi kuthuthukiswe izakhi zokuthenga ze-Google zawo wonke umuntu. Ungabuyekeza lokhu noma nini kokuthi <ph name="BEGIN_LINK" />Amasethingi Okulandelela Iphakheji<ph name="END_LINK" />.</translation>
 <translation id="1085696779717592361">Sebenzisa i-Chrome Ngokuzenzakalela</translation>
 <translation id="1105362920864247682">Sula Idatha Yokubhrawuza ku-Chrome.</translation>
@@ -96,6 +97,7 @@ Kuphela othile onomushwana wokungena ongafunda idatha yakho ebethelwe. Umshwana 
 <translation id="3345341804167540816">Sebenzisa i-Chrome Noma Kuphi</translation>
 <translation id="3360031466389132716">{THRESHOLD,plural, =1{Lokhu kwenzeka lapho i-Chrome ingasetshenziswa umzuzu ongu-{THRESHOLD}}one{Lokhu kwenzeka lapho i-Chrome ingasetshenziswa imizuzu engu-{THRESHOLD}}other{Lokhu kwenzeka lapho i-Chrome ingasetshenziswa imizuzu engu-{THRESHOLD}}}</translation>
 <translation id="3399930248910934354">Vula Amasethingi e-Chrome</translation>
+<translation id="344736123700721678">Finyelela ku-Chrome ngokushesha ukusuka kudokhu yakho yesikrini sasekhaya</translation>
 <translation id="3472587960215700950">I-Chrome isebenzisa i-Google Maps ukuze ikunikeze izikhombisi-ndlela nolwazi lwasendaweni kumakheli atholiwe.</translation>
 <translation id="3503014945441706099">Thola Ukubhrawuza Okuphephile Okuthuthukisiwe kwale phrofayela ye-Chrome, futhi</translation>
 <translation id="3522659714780527202">Ukuze ubone amathebhu wakho noma kuphi lapho usebenzisa i-Chrome, vula ukuvumelanisa</translation>

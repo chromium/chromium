@@ -109,7 +109,6 @@
 <translation id="2750481671343847896">Сайтууд таниулбарын үйлчилгээнүүдийн нэвтрэх сануулгыг харуулах боломжтой.</translation>
 <translation id="2790501146643349491">Асаалттай үед саяхан хаасан сайтууд өгөгдөл илгээх болон хүлээн авахыг дуусгах боломжтой. Унтраалттай үед саяхан хаасан сайтууд өгөгдөл илгээх эсвэл хүлээн авахыг дуусгах боломжгүй.</translation>
 <translation id="2822354292072154809">Та <ph name="CHOSEN_OBJECT_NAME" />-н бүх сайтын зөвшөөрлийг шинэчлэх үү?</translation>
-<translation id="2836978798613876756"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> <ph name="HOST_NAME" /></translation>
 <translation id="2850913818900871965">Гар утсан дээр харагдах байдлыг хүсэх</translation>
 <translation id="2870560284913253234">Ажлын талбар</translation>
 <translation id="2874939134665556319">Өмнөх бичлэг</translation>
@@ -121,7 +120,6 @@
 <translation id="2968755619301702150">Сертификат харагч</translation>
 <translation id="2979365474350987274">Гуравдагч талын күүкинүүдийг хязгаарласан</translation>
 <translation id="3008272652534848354">Зөвшөөрлийг шинэчлэх</translation>
-<translation id="3013291976881901233">MIDI төхөөрөмж</translation>
 <translation id="301521992641321250">Автоматаар блок хийсэн</translation>
 <translation id="3069226013421428034">Тодорхой сайтын гуравдагч талын нэвтрэлтийг зөвшөөрнө үү.</translation>
 <translation id="3082992102194421695">{COUNT,plural, =1{Маргааш хугацаа нь дуусна}other{# хоногийн дараа хугацаа нь дуусна}}</translation>
@@ -192,7 +190,6 @@
 <translation id="4169549551965910670">USB төхөөрөмжтэй холбогдлоо</translation>
 <translation id="4194328954146351878">Сайтуудыг NFC төхөөрөмжүүд дээрх мэдээллийг харах болон өөрчлөхийг зөвшөөрөхөөс өмнө асуух (зөвлөсөн)</translation>
 <translation id="4200726100658658164">Байршлын тохиргоог нээх</translation>
-<translation id="4212246570487010370">Тасралтгүй үзэх</translation>
 <translation id="4226663524361240545">Мэдэгдэл ирэхэд төхөөрөмж чичрэнэ</translation>
 <translation id="4259722352634471385">Навигацыг хориглосон байна: <ph name="URL" /></translation>
 <translation id="4278390842282768270">Зөвшөөрөгдсөн</translation>
@@ -282,7 +279,6 @@
 <translation id="5706552988683188916">Энэ нь <ph name="WEBSITE" />-н күүки болон сайтын бусад өгөгдлийг устгана</translation>
 <translation id="5723967018671998714">Гуравдагч талын күүкиг нууцлалтай горимд блоклодог</translation>
 <translation id="5740126560802162366">Сайтууд таны төхөөрөмж дээр өгөгдөл хадгалах боломжтой</translation>
-<translation id="5749158352074143502">Энэ табаар үргэлжлүүлэх</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" />-г блоклосон</translation>
 <translation id="5804241973901381774">Зөвшөөрлүүд</translation>
 <translation id="5844448279347999754">Асаалттай үед сайтууд таны түр санах ойд хадгалсан текст болон зургуудыг харахыг хүсэх боломжтой. Унтраалттай үед сайтууд таны түр санах ойд хадгалсан текст эсвэл зургуудыг харах боломжгүй.</translation>
@@ -351,7 +347,6 @@
 <translation id="6746124502594467657">Доош зөөх</translation>
 <translation id="6749077623962119521">Зөвшөөрлүүдийг шинэчлэх үү?</translation>
 <translation id="6766622839693428701">Хаахын тулд доош шударна уу.</translation>
-<translation id="6785959295338971061"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> <ph name="FROM_DEVICE" />-с</translation>
 <translation id="6787751205395685251"><ph name="SITE_NAME" />-н сонголтыг сонгоно уу</translation>
 <translation id="6790428901817661496">Тоглуулах</translation>
 <translation id="6818926723028410516">Зүйл сонгох</translation>
@@ -423,7 +418,6 @@
 <translation id="7990211076305263060">Асаалттай үед сайтууд таны микрофоныг ашиглахыг хүсэх боломжтой. Унтраалттай үед сайтууд таны микрофоныг ашиглах боломжгүй.</translation>
 <translation id="8007176423574883786">Энэ төхөөрөмж дээр унтраастай байна</translation>
 <translation id="802154636333426148">Татаж чадсангүй</translation>
-<translation id="8024161440284949905">Эдгээр табаар үргэлжлүүлэх</translation>
 <translation id="8042586301629853791">Дараахаар эрэмбэлэх:</translation>
 <translation id="8067883171444229417">Видео тоглуулах</translation>
 <translation id="8068648041423924542">Сертификат сонгох боломжгүй.</translation>

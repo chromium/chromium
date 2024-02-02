@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="id">
+<translation id="1021782183249308751">Tekan dan tahan ikon Chrome, lalu klik "Edit Home Screen"</translation>
 <translation id="1066101356081285416">Chrome akan mendeteksi nomor pelacakan di situs yang Anda buka dan menampilkan info terbaru terkait paket di halaman Tab Baru. Nomor pelacakan paket dan nama situs akan dikirim ke Google untuk menyediakan fitur ini dan meningkatkan kualitas fitur belanja Google bagi semua orang. Anda dapat memperbaruinya kapan saja di <ph name="BEGIN_LINK" />Setelan Pelacakan Paket<ph name="END_LINK" />.</translation>
 <translation id="1085696779717592361">Gunakan Chrome secara Default</translation>
 <translation id="1105362920864247682">Menghapus Data Penjelajahan di Chrome.</translation>
@@ -96,6 +97,7 @@ Hanya orang yang memiliki frasa sandi Anda yang dapat membaca data terenkripsi A
 <translation id="3345341804167540816">Gunakan Chrome di Mana Saja</translation>
 <translation id="3360031466389132716">{THRESHOLD,plural, =1{Hal ini terjadi jika Chrome tidak digunakan selama {THRESHOLD} menit}other{Hal ini terjadi jika Chrome tidak digunakan selama {THRESHOLD} menit}}</translation>
 <translation id="3399930248910934354">Buka Setelan Chrome</translation>
+<translation id="344736123700721678">Akses Chrome lebih cepat dari Dock Layar Utama Anda</translation>
 <translation id="3472587960215700950">Chrome menggunakan Google Maps untuk memberikan rute dan info lokal di alamat yang terdeteksi.</translation>
 <translation id="3503014945441706099">Dapatkan juga Safe Browsing yang Disempurnakan untuk profil Chrome ini</translation>
 <translation id="3522659714780527202">Untuk melihat tab Chrome Anda dari perangkat lain, aktifkan sinkronisasi</translation>

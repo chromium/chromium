@@ -66,6 +66,7 @@
 <translation id="2228071138934252756">Ak chcete povoliť aplikácii <ph name="APP_NAME" /> používať váš fotoaparát, zapnite ho aj v <ph name="BEGIN_LINK" />nastaveniach Androidu<ph name="END_LINK" />.</translation>
 <translation id="2235344399760031203">Súbory cookie tretích strán sú blokované</translation>
 <translation id="2238944249568001759">Navrhované vyhľadávania na základe vašej poslednej karty</translation>
+<translation id="2241587408274973373">Karty na stránke na novej karte</translation>
 <translation id="2241634353105152135">Iba raz</translation>
 <translation id="2253414712144136228">Odobrať osobu alebo odstrániť položku <ph name="NAME_OF_LIST_ITEM" /></translation>
 <translation id="2253989982043948086">{NUM_SELECTED,plural, =1{1 blokovaný web}few{# blokované weby}many{# sites blocked}other{# blokovaných webov}}</translation>
@@ -108,7 +109,6 @@
 <translation id="2750481671343847896">Weby môžu zobrazovať výzvy na prihlásenie od služieb identity.</translation>
 <translation id="2790501146643349491">Keď je táto možnosť zapnutá, nedávno zavreté weby môžu dokončiť odosielanie a prijímanie údajov. Keď je táto možnosť vypnutá, nedávno zavreté weby nemôžu dokončiť odosielanie ani prijímanie údajov.</translation>
 <translation id="2822354292072154809">Naozaj chcete resetovať všetky povolenia webu pre <ph name="CHOSEN_OBJECT_NAME" />?</translation>
-<translation id="2836978798613876756"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> <ph name="HOST_NAME" /></translation>
 <translation id="2850913818900871965">Požadovať zobrazenie v mobile</translation>
 <translation id="2870560284913253234">Web</translation>
 <translation id="2874939134665556319">Predchádzajúca skladba</translation>
@@ -120,7 +120,6 @@
 <translation id="2968755619301702150">Zobrazovač certifikátov</translation>
 <translation id="2979365474350987274">Súbory cookie tretích strán sú obmedzené</translation>
 <translation id="3008272652534848354">Obnoviť povolenia</translation>
-<translation id="3013291976881901233">Zariadenia MIDI</translation>
 <translation id="301521992641321250">Automaticky blokované</translation>
 <translation id="3069226013421428034">Na konkrétnom webe môžete povoliť prihlasovanie tretími stranami.</translation>
 <translation id="3082992102194421695">{COUNT,plural, =1{Vyprší zajtra}few{Vyprší o # dni}many{Vyprší o # dňa}other{Vyprší o # dní}}</translation>
@@ -191,7 +190,6 @@
 <translation id="4169549551965910670">Pripojené k zariadeniu USB</translation>
 <translation id="4194328954146351878">Pýtať sa, či chcete povoliť webom zobrazovať a meniť informácie v zariadeniach s rozhraním NFC (odprúčané)</translation>
 <translation id="4200726100658658164">Otvoriť nastavenia polohy</translation>
-<translation id="4212246570487010370">Pokračovať v prehliadaní</translation>
 <translation id="4226663524361240545">Upozornenia môžu pri prijatí na zariadení spustiť vibrovanie</translation>
 <translation id="4259722352634471385">Navigácia je zablokovaná: <ph name="URL" /></translation>
 <translation id="4278390842282768270">Povolené</translation>
@@ -349,7 +347,6 @@
 <translation id="6746124502594467657">Presunúť nadol</translation>
 <translation id="6749077623962119521">Chcete resetovať povolenia?</translation>
 <translation id="6766622839693428701">Zatvorte potiahnutím dole.</translation>
-<translation id="6785959295338971061"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> zo zariadenia <ph name="FROM_DEVICE" /></translation>
 <translation id="6787751205395685251">Vybrať možnosť pre web <ph name="SITE_NAME" /></translation>
 <translation id="6790428901817661496">Prehrať</translation>
 <translation id="6818926723028410516">Vyberte položky</translation>

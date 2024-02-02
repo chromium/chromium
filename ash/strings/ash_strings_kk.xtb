@@ -607,9 +607,11 @@
 <translation id="3526440770046466733">Сілтемені жаңа қойындыда ашу және ағымдағы қойындыда қалу</translation>
 <translation id="353086728817903341"><ph name="NUM_DEVICES" /> құрылғыға қосылды.</translation>
 <translation id="3533126039236445965">Сөредегі қолданбалар</translation>
+<translation id="3537350467437346467">Сіз көрдіңіз</translation>
 <translation id="3539957339480430241"><ph name="DEVICE_NAME" /> хотспоты</translation>
 <translation id="3540893133818942399">Телефондағы соңғы фотосуреттерді және медиафайлдарды көру мүмкіндігін реттеуден бас тарту</translation>
 <translation id="3542066395059568317">Көретін ұсыныстардың арқасында тоқтаған жеріңізден жалғастыра аласыз. Ұсыныстарды өшіру үшін тінтуірдің оң жақ түймесін басыңыз.</translation>
+<translation id="3547318469722231257">Сіз өзгерттіңіз</translation>
 <translation id="3552189655002856821">Wi-Fi өшірулі.</translation>
 <translation id="3554215588514239132">"Әзірлеуші құралдары" панелін көрсету немесе жасыру</translation>
 <translation id="3554637740840164787"><ph name="ITEM_TITLE" /> бекітілді</translation>
@@ -701,6 +703,7 @@
 <translation id="385300504083504382">Басына өту</translation>
 <translation id="3859364108019690">Қолданбаларды трансляциялау мүмкін емес</translation>
 <translation id="3861651314799684201">Толық экранды жазу үшін "Enter" пернесін басыңыз</translation>
+<translation id="3882323608730650973">Өзгертілді</translation>
 <translation id="3886872229787704059">Бүгін ашылды.</translation>
 <translation id="3891340733213178823">Шығу үшін Ctrl+Shift+Q тіркесімін екі рет басыңыз.</translation>
 <translation id="3893630138897523026">ChromeVox (дауыстық көмек)</translation>
@@ -894,6 +897,7 @@
 <translation id="4582666543382004902">Wi-Fi функциясын пайдалану үшін хотспот өшірілді. Хотспотты пайдалану үшін Wi-Fi функциясын өшіріңіз.</translation>
 <translation id="4585337515783392668">Белгісіз қабылдағышқа трансляциялауды тоқтату</translation>
 <translation id="4596144739579517758">Қараңғы режим өшірулі.</translation>
+<translation id="4596442969149038771"><ph name="USER" /> бөлісті</translation>
 <translation id="4611292653554630842">Жүйеге кіру</translation>
 <translation id="462160925400706389"><ph name="NAME" /> жалғанды</translation>
 <translation id="4623167406982293031">Аккаунтты растау</translation>
@@ -1816,6 +1820,7 @@
 <translation id="8314772463905284467">Caps Lock қосулы</translation>
 <translation id="8315514906653279104">Қосылып жатыр…</translation>
 <translation id="8331351032546853669">Жүктеп алу басталмады</translation>
+<translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
 <translation id="8345019317483336363"><ph name="WINDOW_TITLE" /> терезесі таңдалды</translation>
 <translation id="8349826889576450703">қосқыш</translation>
@@ -2036,6 +2041,7 @@
 <translation id="953431725143473984">Құрылғыны өшіру керек пе?</translation>
 <translation id="954052413789300507"><ph name="FILENAME" /> файлын сақтауға орын жеткіліксіз. Орын босатыңыз.</translation>
 <translation id="954520015070501466">30 мин</translation>
+<translation id="954786879461589145"><ph name="USER" /> өзгертті</translation>
 <translation id="974545358917229949"><ph name="QUERY" /> бойынша <ph name="RESULT_COUNT" /> нәтиже көрсетілуде</translation>
 <translation id="981011780479609956">Орындалу мерзімі жоқ</translation>
 <translation id="98120814841227350">Құжаттың соңына өту</translation>

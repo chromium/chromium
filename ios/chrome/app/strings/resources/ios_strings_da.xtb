@@ -149,6 +149,7 @@
 <translation id="1757699834933698436">{count,plural, =1{{count} svag adgangskode}one{{count} svag adgangskode}other{{count} svage adgangskoder}}</translation>
 <translation id="1767766085187034454">Google Oversæt</translation>
 <translation id="1769106850515800431">Personligt tilpasset indhold</translation>
+<translation id="1780152987505130652">Luk gruppe</translation>
 <translation id="1789803444939621101">Velkommen tilbage, <ph name="USER_NAME" /></translation>
 <translation id="1803264062614276815">Kortindehaverens navn</translation>
 <translation id="1809939268435598390">Slet mappe</translation>
@@ -214,7 +215,6 @@
 <translation id="2080769225927880590">Log ind med en gyldig konto</translation>
 <translation id="2103075008456228677">Åbn history.google.com</translation>
 <translation id="21133533946938348">Fastgør fane</translation>
-<translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> bogmærker blev flyttet</translation>
 <translation id="2122754583996902531">Din browser administreres. <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>
 <translation id="2139502497535990641">Vil du aktivere prisunderretninger?</translation>
 <translation id="2139867232736819575">Søg efter tekst, du har kopieret</translation>
@@ -566,6 +566,7 @@ Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis de
 <translation id="3929457972718048006">Adresser</translation>
 <translation id="3948600256434252210">Du kan stryge til højre for at browse i inkognitotilstand.</translation>
 <translation id="3955822496205734389">Du har svage adgangskoder.</translation>
+<translation id="3958312024468322930">Træk det til Dock nederst på hjemmeskærmen</translation>
 <translation id="3959736869653157332">Menu → Ny inkognitofane</translation>
 <translation id="3962326069546168954">Gem</translation>
 <translation id="3967822245660637423">Download fuldført</translation>
@@ -647,6 +648,7 @@ Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis de
 <translation id="4431224949908513835">Vælg en betalingsmetode, der skal udfyldes.</translation>
 <translation id="4442550905108052454">Åbn <ph name="BEGIN_BOLD" />Indstillinger<ph name="END_BOLD" /></translation>
 <translation id="4454246407045105932">Tilføj sprog</translation>
+<translation id="4460014764210899310">Ophæv gruppering</translation>
 <translation id="4461286950227634995">Få tilbudt at gemme adgangskoder</translation>
 <translation id="4462491365653392320">Følg prisudvikling på faner</translation>
 <translation id="4469324811108161144">Noter kan indeholde op til <ph name="CHARACTER_LIMIT" /> tegn</translation>
@@ -929,7 +931,6 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="5857770089550859117">Angiv adgangssætningen for at påbegynde synkroniseringen.</translation>
 <translation id="5859715514067755465">Frem</translation>
 <translation id="5860033963881614850">Fra</translation>
-<translation id="5871497086027727873">1 bogmærke blev flyttet</translation>
 <translation id="5896576662943111387">Designet til iOS</translation>
 <translation id="5897749768294722429">Synkroniser dine faner og din historik for hurtigt at vende tilbage til de websites, du har besøgt.</translation>
 <translation id="5897956970858271241">Gå til kopieret link</translation>
@@ -1466,6 +1467,7 @@ Websites kan bruge cookies til at se din browseraktivitet på forskellige websit
 <translation id="8620640915598389714">Rediger</translation>
 <translation id="8624447588354561276">Pakkenummer</translation>
 <translation id="8624753446837753970">Vælg placering</translation>
+<translation id="8625706492572042370">Rediger hjemmeskærm</translation>
 <translation id="8626393685701737946">Du kan også ændre websitets standardvisning på en computer under Indstillinger &gt; Indstillinger for indhold</translation>
 <translation id="8636825310635137004">Aktivér synkronisering for at få adgang til dine faner på dine andre enheder.</translation>
 <translation id="8637431369725868556">Bliv beskyttet mod farlige websites.</translation>
@@ -1497,6 +1499,7 @@ Websites kan bruge cookies til at se din browseraktivitet på forskellige websit
 <translation id="8766790350274092814">Adgangskoderne til <ph name="WEBSITE" /> og <ph name="SECOND_WEBSITE" /> slettes. Dine konti slettes ikke.</translation>
 <translation id="8775144690796719618">Ugyldig webadresse</translation>
 <translation id="8780076847684176174">{count,plural, =1{Se fanen…}one{Se alle faner…}other{Se alle faner…}}</translation>
+<translation id="8781834595282316166">Ny fane i gruppe</translation>
 <translation id="8782570580170191813">Spor altid pakker</translation>
 <translation id="8787968206789828143">Søg på nettet</translation>
 <translation id="8792626944327216835">mikrofon</translation>

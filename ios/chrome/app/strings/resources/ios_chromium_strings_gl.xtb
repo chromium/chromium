@@ -44,6 +44,7 @@
 <translation id="2168108852149185974">Algúns complementos fan que Chromium falle. Desinstala:</translation>
 <translation id="2178608107313874732">Chromium non pode usar a cámara neste momento</translation>
 <translation id="2195025571279539885">Queres que a próxima vez Chromium che ofreza a posibilidade de traducir as páxinas en <ph name="LANGUAGE_NAME" /> deste sitio?</translation>
+<translation id="2216344354848599203">Mantén premida a icona de Chromium e fai clic en Editar a pantalla de inicio</translation>
 <translation id="2218146227246548550">A túa organización require que inicies sesión para usar Chromium. <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
 <translation id="22313767259766852">Este enderezo está gardado en Chromium. Para usalo nos diferentes produtos de Google, gárdao na túa Conta de Google (<ph name="USER_EMAIL" />).</translation>
 <translation id="2236584955986023187">En consecuencia, Chromium sempre solicitará abrir o sitio para ordenadores.</translation>
@@ -197,6 +198,7 @@ Cuestións que debes ter en conta:
 <translation id="632825460376924298">Permitir inicio de sesión en Chromium</translation>
 <translation id="6337530241089703714">Indicar se queres borrar ou conservar os teus datos de Chromium neste dispositivo</translation>
 <translation id="6348483005826990855">3. Selecciona Chromium</translation>
+<translation id="6383607155624074112">Accede a Chromium máis rápido desde a barra de aplicacións da pantalla de inicio</translation>
 <translation id="6407399265324739055">Os enderezos e os métodos de pago non se encriptarán. Tampouco se sincronizará o historial de navegación de Chromium.
 
 Só poderá ler os teus datos encriptados quen teña a túa frase de acceso (Google non a recibirá nin a almacenará). Se esqueces a frase de acceso ou queres cambiar esta opción de configuración, <ph name="BEGIN_LINK" />borra os datos de Chromium da túa conta<ph name="END_LINK" />.</translation>

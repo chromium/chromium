@@ -41,9 +41,11 @@
 <translation id="2054703085270098503">Chromium ilə təhlükəsiz qalın</translation>
 <translation id="2098023844024447022">Chromium-da son tabı açın.</translation>
 <translation id="2109439615198500433">Chromium ipucusu</translation>
+<translation id="2147210759439165826">Məzmun və faydalı Chromium məsləhətləri barədə məlumatlı qalın.</translation>
 <translation id="2168108852149185974">Bəzi addonlar Chromium'da xətaya səbəb olur. Lütfən, sistemdən silin:</translation>
 <translation id="2178608107313874732">Chromium hazırda kameranızı istifadə edə bilməz</translation>
 <translation id="2195025571279539885">Növbəti dəfə Chromium'un bu saytdakı <ph name="LANGUAGE_NAME" /> səhifələrini tərcümə etməyini istəyirsiniz?</translation>
+<translation id="2216344354848599203">Chromium ikonasına basıb saxlayın və "Ana ekranı redaktə edin" üzərinə klikləyin</translation>
 <translation id="2218146227246548550">Təşkilatınız Chromium'dan istifadə etmək üçün daxil olmağınızı tələb edir. <ph name="BEGIN_LINK" />Ətraflı Məlumat<ph name="END_LINK" /></translation>
 <translation id="22313767259766852">Bu ünvan Chromium-da yadda saxlanır. Onu Google məhsullarında istifadə etmək üçün Google Hesabında (<ph name="USER_EMAIL" />) yadda saxlayın.</translation>
 <translation id="2236584955986023187">Yəni, Chromium hər dəfə masaüstü saytını tələb edəcək.</translation>
@@ -197,6 +199,7 @@ Nəzərə alın ki:
 <translation id="632825460376924298">Chromium girişinə icazə verin</translation>
 <translation id="6337530241089703714">Chromium datanızınız bu cihazdan silinməsi və ya saxlanmasını seçin</translation>
 <translation id="6348483005826990855">3. Chromium seçin</translation>
+<translation id="6383607155624074112">Ana ekran dokundan Chromium-a daha tez giriş edin</translation>
 <translation id="6407399265324739055">Ödəniş metodu və ünvanlar şifrələnməyəcək. Chromium-dan baxış tarixçəsi sinxronlaşdırılmayacaq.
 
 Yalnız parol ifadəsini bilən şəxs şifrələnmiş datanı oxuya bilər. Google parol ifadəsini əldə etmir və ya saxlamır. Parol ifadəsini unutsanız, yaxud bu ayarı dəyişmək istəsəniz, <ph name="BEGIN_LINK" />hesabda Chromium datasını silin<ph name="END_LINK" />.</translation>

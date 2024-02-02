@@ -398,6 +398,7 @@
 <translation id="1711528724596764268">મશીન શિક્ષણ અને આર્ટિફિશિયલ ઇન્ટેલિજન્સ</translation>
 <translation id="1712552549805331520"><ph name="URL" /> તમારા સ્થાનિક કમ્પ્યુટર પર કાયમી ધોરણે ડેટા સ્ટોર કરવા માગે છે</translation>
 <translation id="1713628304598226412">ટ્રે 2</translation>
+<translation id="1713819065634160212">તમારા Google એકાઉન્ટમાંના ઍડ્રેસનો ઉપયોગ કરો અને તેને સાચવો</translation>
 <translation id="1714807406136741351">બ્રાઉઝ મોડ, ગ્રાફ પર કિંમતમાં થયેલા ફેરફારોનો રિવ્યૂ કરવા ડાબા/જમણા ઍરોનો ઉપયોગ કરવા માટે તમે મોડને ફોર્મ મોડ પર બદલી શકો છો</translation>
 <translation id="1717218214683051432">મોશન સેન્સર</translation>
 <translation id="1717494416764505390">મેઇલબૉક્સ 3</translation>
@@ -1087,6 +1088,7 @@
 <translation id="3120807611504813890">એન્વલપ (વજનમાં હળવું)</translation>
 <translation id="3121994479408824897"><ph name="DOMAIN" /> પર જાઓ</translation>
 <translation id="3126023634486644099">લેબલ (કાયમી)</translation>
+<translation id="3133565499688974786"><ph name="SEARCH_ENGINE_NAME" /> હવે તમારું ડિફૉલ્ટ શોધ એન્જિન છે</translation>
 <translation id="3140646734028448730">વ્યવસાય સેવાઓ</translation>
 <translation id="3141093262818886744">તેમ છતાં ખોલો</translation>
 <translation id="3141641372357166056">સંમતિ સંબંધિત કોઈ નિર્ણય લેવાયો નથી</translation>
@@ -1507,6 +1509,7 @@
 <translation id="3943857333388298514">પેસ્ટ કરો</translation>
 <translation id="3946209740501886391">આ સાઇટ પર હંમેશાં પૂછો</translation>
 <translation id="3948588869002647271">ઍપ્લિકેશન ખૂટે છે અથવા નુકસાન થયેલી છે</translation>
+<translation id="3949297482798028668">તમારા ઍડમિનિસ્ટ્રેટરે અહીં કન્ટેન્ટ પેસ્ટ કરવાની સુવિધા બ્લૉક કરી છે.</translation>
 <translation id="3949571496842715403">આ સર્વર સાબિત કરી શક્યું નથી કે તે <ph name="DOMAIN" /> છે; તેનું સુરક્ષા પ્રમાણપત્ર વિષય વૈકલ્પિક નામનો ઉલ્લેખ કરતું નથી. આ કોઈ ખોટી ગોઠવણીને કારણે અથવા કોઈ હુમલાખોર તમારા કનેક્શનને અટકાવતો હોવાને કારણે બન્યું હોઈ શકે.</translation>
 <translation id="3949601375789751990">તમારો બ્રાઉઝિંગ ઇતિહાસ અહીં દેખાય છે</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
@@ -1922,6 +1925,7 @@
 <translation id="4764680219299728632">ભઠ્ઠીચૂલા, કૂકટૉપ અને અવન</translation>
 <translation id="4764776831041365478"><ph name="URL" /> પરનાં વેબપેજ અસ્થાયી ધોરણે બંધ હોઈ શકે છે અથવા તે કાયમ માટે નવા વેબ ઍડ્રેસ પર ખસેડવામાં આવ્યા હોઈ શકે છે.</translation>
 <translation id="4766713847338118463">નીચે બે સ્ટેપલ લગાવો</translation>
+<translation id="4768864802656530630">વિગતવાર સિસ્ટમ લૉગ. <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>
 <translation id="4771973620359291008">કોઈ અજ્ઞાત ભૂલ આવી.</translation>
 <translation id="4774055414220872623">કલા અને હસ્તકલાના પુરવઠા</translation>
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{પૉપ-અપ બ્લૉક કર્યુંં છે}one{# પૉપ-અપ બ્લૉક કર્યુંં છે}other{# પૉપ-અપ બ્લૉક કર્યુંં છે}}</translation>
@@ -2226,6 +2230,7 @@
 <translation id="5377026284221673050">"તમારી ઘડિયાળ પાછળ છે" અથવા "તમારી ઘડિયાળ આગળ છે" અથવા "&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;"</translation>
 <translation id="5383478552402031184">ફ્લોરિંગ</translation>
 <translation id="5385857628869214740">વિનોદ</translation>
+<translation id="5385966243497224160">HTTPS વિનાના URLનો પ્રીવ્યૂ કરી શકાતો નથી</translation>
 <translation id="5386426401304769735">આ સાઇટ માટેની પ્રમાણપત્ર શ્રૃંખલા SHA-1 નો ઉપયોગ કરીને સહી કરેલ પ્રમાણપત્ર ધરાવે છે.</translation>
 <translation id="5392506727170022660">ધાતુ (સેમી-ગ્લોસ)</translation>
 <translation id="5396631636586785122">જમણી બાજુએ કિનારી જોડો</translation>
@@ -2448,6 +2453,8 @@
 <translation id="5838732667866024867">કિંમતમાં થયેલા ફેરફારોનો રિવ્યૂ કરવા માટે તમે ગ્રાફ પર, ડાબી/જમણી ઍરો કીનો ઉપયોગ કરી શકો છો</translation>
 <translation id="5840318881868981258">તમારા Google એકાઉન્ટમાં, <ph name="ACCOUNT" /></translation>
 <translation id="5841338463993781099">એકાઉન્ટમાં સાચવીએ?</translation>
+<translation id="5843987376989109187">હજુ પણ આ ભાષાને સપોર્ટ કરવામાં આવતો નથી.
+    <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>
 <translation id="5847181246682413476">પાવર સપ્લાય</translation>
 <translation id="5851548754964597211">ટેબ સૂચિ</translation>
 <translation id="5852909432155870672">RA4</translation>
@@ -2781,7 +2788,6 @@
 <translation id="6480864723214312258">ઘર માટે બૅટરી</translation>
 <translation id="6486200200930923183">દસ્તાવેજી મૂવી</translation>
 <translation id="6489534406876378309">ક્રેશ અપલોડ કરવાનું શરૂ કરો</translation>
-<translation id="6491663123807473970"><ph name="URL" /> તમારા MIDI ડિવાઇસનો ઉપયોગ કરવા માગે છે</translation>
 <translation id="6493924760403974580">આ ઍપ માત્ર આ કદને સપોર્ટ કરે છે.</translation>
 <translation id="6494750904506170417">પૉપ-અપ અને રીડાયરેક્ટ</translation>
 <translation id="6495664197699704593">આ પાસવર્ડને માત્ર આ ડિવાઇસ પર સાચવેલો છે. તમારા અન્ય ડિવાઇસ પર તેનો ઉપયોગ કરવા માટે, <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
@@ -3658,6 +3664,7 @@
 <translation id="8194797478851900357">&amp;ખસેડવું પૂર્વવત્‌ કરો</translation>
 <translation id="8194956568907463262">શૂટર ગેમ</translation>
 <translation id="8199437620497683918">ઓપ્ટિકલ ડિસ્ક (ગ્લોસી)</translation>
+<translation id="8199730148066603000">HTTPS વિનાના URLનો પ્રીવ્યૂ કરવાની મંજૂરી આપવામાં આવતી નથી.</translation>
 <translation id="8200772114523450471">રિઝ્યુમે</translation>
 <translation id="8202097416529803614">ઓર્ડરનો સારાંશ</translation>
 <translation id="8202370299023114387">વિરોધ</translation>
@@ -4094,6 +4101,8 @@
 <translation id="9049981332609050619">તમે <ph name="DOMAIN" /> સુધી પહોંચવાનો પ્રયાસ કર્યો, પરંતુ સર્વરે અમાન્ય પ્રમાણપત્ર પ્રસ્તુત કર્યું. </translation>
 <translation id="9050666287014529139">પાસફ્રેઝ</translation>
 <translation id="9051072642122229460">કૉફી અને એસ્પ્રેસો મેકર</translation>
+<translation id="9051260467258969162"><ph name="BEGIN_LINK" />સાઇન ઇન કરો<ph name="END_LINK" /> 
+    ફરી એક વાર અને તે પછી લેખન સંબંધિત સહાય મેળવવા માટે આ ટૅબ પર પાછા આવો</translation>
 <translation id="9053840549256861041">અમે જાહેરાતની માપણી નામક નવી જાહેરાત સંબંધિત પ્રાઇવસી સુવિધા લૉન્ચ કરી રહ્યાં છીએ. Chrome સાઇટ વચ્ચે માત્ર ખૂબ જ મર્યાદિત માહિતી શેર કરે છે, જેમ કે જાહેરાતના પર્ફોર્મન્સની માપણી કરવામાં સાઇટની સહાય કરવા માટે જ્યારે તમને કોઈ જાહેરાત બતાવવામાં આવી હોય.</translation>
 <translation id="9056953843249698117">Store</translation>
 <translation id="9062620674789239642">તેને ખસેડવામાં આવી હોય, તેમાં ફેરફાર કરવામાં આવ્યો હોય કે તેને ડિલીટ કરવામાં આવી હોય તેવું બની શકે છે.</translation>

@@ -407,6 +407,7 @@ Cette règle remplace la règle <ph name="DEFAULT_WINDOW_PLACEMENT_SETTING_POLIC
 <translation id="131353325527891113">Afficher les noms d'utilisateur sur l'écran de connexion</translation>
 <translation id="1317658068839330898">Ne pas autoriser l'utilisation de l'<ph name="ASSISTANT_PRODUCT_NAME" /> sur le Web</translation>
 <translation id="1318233005302276244">Permet aux utilisateurs de suivre leurs colis sur Chrome.</translation>
+<translation id="1323501563951768821">Les paramètres F12 utilisent le raccourci qui contient la touche de modification Maj</translation>
 <translation id="1325547947664414578">Lorsqu'un utilisateur passe d'un appareil <ph name="PRODUCT_OS_NAME" /> à un autre, le service <ph name="PRODUCT_NAME" /> rétablit sur le nouvel appareil les fenêtres de navigateurs et d'applications qui étaient ouvertes sur l'appareil précédent.
 Si cette règle est activée, les fenêtres de navigateurs et d'applications qui étaient ouvertes sur l'appareil <ph name="PRODUCT_OS_NAME" /> auquel l'utilisateur était connecté en dernier sont automatiquement rétablies lorsqu'il se connecte.
 Si cette règle est désactivée ou n'est pas configurée, les paramètres de restauration complète déterminent ce qui doit être lancé à la connexion.</translation>
@@ -1149,6 +1150,7 @@ Si cette règle est désactivée, <ph name="PRODUCT_NAME" /> ferme l'onglet apr�
 
       Si cette règle n'est pas configurée, la méthode d'authentification <ph name="HTTP_NEGOTIATE" /> est désactivée sous Android.</translation>
 <translation id="1923704782248889851">Activer la dictée</translation>
+<translation id="1924085079572112898">Les paramètres F11 sont désactivés</translation>
 <translation id="1925529914257504750">P2P activé pour les mises à jour auto</translation>
 <translation id="1928355425032308464">Activer l'entrée vidéo</translation>
 <translation id="1930094135927166199">Désactiver le partage d'alimentation USB</translation>
@@ -1311,6 +1313,7 @@ Cette règle n'a aucune incidence lorsque la règle <ph name="DEVICE_SCREENSAVER
       Si cette règle n'est pas configurée ou qu'aucun mode de déverrouillage rapide ne figure dans la liste, aucun de ces modes n'est disponible pour les appareils gérés.
 
       Cette règle étant obsolète, veuillez utiliser à la place la règle <ph name="QUICK_UNLOCK_MODE_ALLOW_LIST_POLICY_NAME" /></translation>
+<translation id="2033200857253268661">Les paramètres F12 sont désactivés</translation>
 <translation id="2035995535603698706">Si cette règle est activée, les images tierces d'une page sont autorisées à afficher une commande d'authentification.
 
 Si cette règle est désactivée ou n'est pas configurée, les images tierces ne sont pas autorisées à afficher une commande d'authentification.
@@ -1497,6 +1500,7 @@ Si cette règle n'est pas configurée : pour les utilisateurs standards, c'est 
       Pour en savoir plus sur la navigation sécurisée, rendez-vous sur https://support.google.com/chrome?p=safe_browsing_preferences.</translation>
 <translation id="2177696016354404697">Toujours désactiver l'écran de confidentialité</translation>
 <translation id="2178899310296064282">Appliquer au moins le mode restreint modéré sur YouTube</translation>
+<translation id="2180795125410219364">Les paramètres Origine/Fin sont désactivés</translation>
 <translation id="2180958780733364832">Contrôler l'utilisation du mode headless</translation>
 <translation id="2182291258410176649">L'utilisateur décide d'activer ou non le service de sauvegarde et de restauration</translation>
 <translation id="2183338188392346527">Ne pas signaler les compteurs d'exécution de l'appareil</translation>
@@ -1743,6 +1747,7 @@ Si la règle est désactivée, elle empêche les utilisateurs ou les variantes d
 
 Si cette règle est activée ou n'est pas définie, l'utilisateur peut définir comme fond d'écran une image issue de Google Photos.</translation>
 <translation id="2393862222659066027">Ouvrir une liste d'URL et restaurer la dernière session</translation>
+<translation id="239416486107542256">Les paramètres F11 utilisent le raccourci qui contient les touches de modification Ctrl et Maj</translation>
 <translation id="2394429297128584919">Ne pas autoriser les pages à envoyer des requêtes XHR synchrones pendant leur fermeture</translation>
 <translation id="2399987589969059485">Permet de définir quelles variantes peuvent être appliquées dans <ph name="PRODUCT_NAME" />.
 
@@ -2224,6 +2229,7 @@ Si cette règle n'est pas configurée, la règle <ph name="BLOCK_POPUPS_POLICY_N
       Si cette règle est désactivée, aucune invite ne s'affiche à ce sujet, et la capture audio n'est possible que si l'URL concernée figure dans la liste AudioCaptureAllowedUrls.
 
       Remarque : Cette règle concerne toutes les entrées audio (pas seulement le micro intégré).</translation>
+<translation id="2823164704578322622">Les paramètres Origine/Fin utilisent le raccourci qui contient la touche de modification Alt</translation>
 <translation id="2823870601012066791">Emplacement du registre Windows pour les clients <ph name="PRODUCT_OS_NAME" /> :</translation>
 <translation id="2824715612115726353">Activer le mode navigation privée</translation>
 <translation id="282870810415075521">Autoriser JavaScript à utiliser le JIT sur ces sites</translation>
@@ -2234,6 +2240,7 @@ Si cette règle n'est pas configurée, la règle <ph name="BLOCK_POPUPS_POLICY_N
 <translation id="2839294585867804686">Paramètres de la fonctionnalité Partages de fichiers en réseau</translation>
 <translation id="2841911109921764691">Le bouton de droite est le bouton principal sur l'écran de connexion</translation>
 <translation id="284288632677954003">URL d'un fichier XML qui contient des URL qui ne doivent jamais déclencher un changement de navigateur.</translation>
+<translation id="2845590342236201916">Les paramètres F12 utilisent le raccourci qui contient la touche de modification Alt</translation>
 <translation id="28458742190197992">Cette règle permet de contrôler la création de rapports cloud <ph name="PRODUCT_NAME" /> pour un profil géré donné.
 
 Si cette règle n'est pas configurée ou si elle est désactivée, aucune donnée n'est collectée ni importée.
@@ -2439,6 +2446,18 @@ La règle <ph name="FLOATING_SSO_DOMAIN_BLOCKLIST_EXCEPTIONS_POLICY_NAME" /> est
         Cette règle n'a aucune incidence sur les règles déjà publiées.</translation>
 <translation id="3002067315837777719">Ne pas autoriser l'activation des notifications Phone Hub</translation>
 <translation id="3003490107503207900">Forcer le téléchargement des documents Office (.docx, par exemple) au lieu de les ouvrir dans <ph name="BASIC_EDITOR_NAME" /></translation>
+<translation id="300673820739371513">Cette règle détermine si des entités de texte brut sont détectées sur les pages Web, ce qui permet aux utilisateurs de déclencher des actions contextuelles en interagissant avec elles.
+La règle comporte une propriété distincte pour chaque type d'entité.
+Les types d'entités sont <ph name="DEFAULT_ENUM_VALUE" />, <ph name="ADDRESS_ENUM_VALUE" />…
+
+Si la valeur d'une entité n'est pas définie, le comportement de l'entité <ph name="DEFAULT_ENUM_VALUE" /> est appliqué.
+Le comportement par défaut de <ph name="DEFAULT_ENUM_VALUE" /> est <ph name="ENABLED_ENUM_VALUE" />.
+
+Les valeurs de chaque type d'entité sont <ph name="DEFAULT_ENUM_VALUE" />, <ph name="ENABLED_ENUM_VALUE" />, <ph name="DISABLED_ENUM_VALUE" /> ou <ph name="LONGPRESSONLY_ENUM_VALUE" />.
+Si la valeur est définie sur <ph name="DEFAULT_ENUM_VALUE" />, le comportement de l'entité <ph name="DEFAULT_ENUM_VALUE" /> est appliqué.
+Si la valeur est définie sur <ph name="ENABLED_ENUM_VALUE" />, les entités sont détectées, soulignées et déclenchées par un appui simple ou prolongé.
+Si la valeur est définie sur <ph name="DISABLED_ENUM_VALUE" />, les entités ne sont ni détectées ni exploitables.
+Si la valeur est définie sur <ph name="LONGPRESSONLY_ENUM_VALUE" />, les entités sont détectées et exploitables uniquement par un appui prolongé.</translation>
 <translation id="3010907817113180883">Fréquence de collecte de la pulsation d'activité de l'appareil en millisecondes.</translation>
 <translation id="3017578958356048910">La visionneuse de PDF peut annoter les PDF</translation>
 <translation id="3020623128585817424">Désactiver le contrôle du navigateur par défaut au démarrage</translation>
@@ -2655,6 +2674,7 @@ Si cette règle est désactivée, l'utilisateur ne verra pas la promo.</translat
 <translation id="3180671894201217988">Si cette règle est activée ou si elle n'est pas configurée, les logiciels tiers ne peuvent pas injecter de code exécutable dans les processus de <ph name="PRODUCT_NAME" />.
 
       Si cette règle est désactivée, le logiciel peut injecter un tel code dans les processus de <ph name="PRODUCT_NAME" />.</translation>
+<translation id="3181114468897395940">Les paramètres Page précédente/Page suivante utilisent le raccourci qui contient la touche de modification Alt</translation>
 <translation id="3182503302060513467">La page "Nouvel onglet" affichera l'annonce d'espace intermédiaire si elle est disponible</translation>
 <translation id="3184161739683646075">Contrôle le mode DNS-over-HTTPS</translation>
 <translation id="3184309751910415763">Liste d'autorisation qui contrôle les rapports sur l'activité de sites Web pour les utilisateurs affiliés.
@@ -2783,6 +2803,7 @@ Si cette règle n'est pas configurée, le nouveau comportement sera utilisé tou
       Utilisez le caractère générique "*" pour remplacer des caractères arbitraires (zéro ou plus). Le caractère d'échappement est "\". Pour représenter les caractères "*", ou "\" proprement dits, le caractère d'échappement "\" doit les précéder.
 
       Si cette règle n'est pas configurée, tous les comptes Google présents sur l'appareil seront visibles dans <ph name="PRODUCT_NAME" />.</translation>
+<translation id="3246606090306814894">Contrôle le raccourci utilisé pour déclencher F12</translation>
 <translation id="3248019773260441802">Autoriser une page à afficher des pop-up pendant son déchargement</translation>
 <translation id="3251500716404598358">Configurer les règles pour passer d'un navigateur à l'autre.
 
@@ -2912,6 +2933,7 @@ Si elle est désactivée, la fonctionnalité d'écriture prédictive est désact
 <translation id="3389088527709746815">Activer l'authentification gnubby pour l'hôte d'accès à distance</translation>
 <translation id="3397883909301547525">Ne pas afficher de recommandations d'applis dans le lanceur de <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="3398051852031115795">Comportement système par défaut (varie en fonction de la taille d'écran)</translation>
+<translation id="33993310248354034">Autoriser la détection d'entités en texte brut dans les pages Web.</translation>
 <translation id="3399859571630358395">Forcer la désactivation de l'Association express (association Bluetooth rapide).</translation>
 <translation id="3404681701763345449">Activer l'intégration de <ph name="GOOGLE_CALENDAR_NAME" />.</translation>
 <translation id="3405361833556012520">Cette règle ne s'applique qu'au trafic du navigateur. Le trafic Play Store, la navigation Web des applications Android et les autres types de trafic de l'utilisateur (comme le trafic des VM Linux ou les tâches d'impression) respectent toujours les restrictions imposées par le VPN permanent. Cette règle n'est appliquée que lorsque le VPN n'est pas connecté et uniquement pour le trafic du navigateur de l'utilisateur. Lorsque cette règle est appliquée, le trafic système peut également contourner le VPN permanent pour effectuer des tâches comme des récupérations de règles et la synchronisation de l'horloge système.
@@ -3534,6 +3556,7 @@ Cette règle est une mesure temporaire et sera supprimée dans une future versio
 <translation id="3897860452756794695">Le nouveau comportement offsetParent sera utilisé.</translation>
 <translation id="3898345958122666461">Désactiver NTLMv2</translation>
 <translation id="3898795800259311780">Autoriser ou interdire la capture d'écran</translation>
+<translation id="390296766888987595">Le clavier à l'écran n'est affiché que si l'utilisateur ou l'application le demande.</translation>
 <translation id="3903313632842363082">Désactiver les rapports sur les utilisateurs de l'appareil</translation>
 <translation id="3904304709151553598">Désactiver les rapports sur les ventilateurs de l'appareil</translation>
 <translation id="3905883021371603181">Activer l'annulation de l'écho audio du système</translation>
@@ -3753,6 +3776,7 @@ Pour en savoir plus sur les formats <ph name="URL_LABEL" /> valides, veuillez co
 <translation id="410068710490553233">Autoriser la connexion à d'autres comptes Google</translation>
 <translation id="4101222634611892813">L'utilisateur peut utiliser la fonctionnalité de synchronisation des fichiers <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="4101282687722389021">Horodatage UTC de la dernière mise à jour de cette entrée. Il est envoyé sous forme de chaîne, car il ne tiendrait pas dans un entier.</translation>
+<translation id="4101826711886952606">Les paramètres Origine/Fin utilisent le raccourci qui contient la touche de modification de recherche</translation>
 <translation id="4102347680024644994">Signaler les événements de détection et réponse étendues (XDR)</translation>
 <translation id="4105989332710272578">Désactiver l'application des règles de transparence des certificats pour une liste d'URL</translation>
 <translation id="410740968939768919">Contrôle si les extensions Manifest V2 peuvent être utilisées sur l'écran de connexion <ph name="PRODUCT_OS_NAME" />.
@@ -3967,6 +3991,7 @@ Si cette règle est désactivée, un message d'erreur s'affiche à la place.</tr
       Elle est ignorée et la notification est toujours affichée si l'appareil n'est pas géré ou s'il n'y a qu'un seul utilisateur.
 
       Si plusieurs comptes utilisateur sont configurés sur un appareil géré, la notification ne s'affiche que lorsque cette règle est activée.</translation>
+<translation id="4294886370621883282">Autoriser l'affichage du clavier à l'écran dans les circonstances appropriées.</translation>
 <translation id="4297483555396496700">Les utilisateurs ne sont autorisés à modifier la version de l'appareil que si cette règle est définie sur "True". Si elle est définie sur "False" ou si elle n'est pas configurée, les utilisateurs peuvent modifier la version.
 
 La configuration de la règle <ph name="CHROME_OS_RELEASE_CHANNEL_POLICY_NAME" /> n'est effective que si la règle <ph name="CHROME_OS_RELEASE_CHANNEL_DELEGATED_POLICY_NAME" /> est définie sur "False".</translation>
@@ -4359,6 +4384,7 @@ Si cette règle n'est pas configurée, toutes les origines nécessitent un geste
       Si cette règle n'est pas configurée, aucune sélection automatique n'est effectuée pour aucun site.</translation>
 <translation id="4611983465824842867">Ne pas afficher d'avertissements ni désactiver la saisie automatique sur les formulaires non sécurisés</translation>
 <translation id="4615003180013429835">Mode d'analyse de la liste des sites</translation>
+<translation id="4615892138881859957">Contrôle le raccourci utilisé pour déclencher la touche Insérer du groupe de six touches</translation>
 <translation id="4617338332148204752">Ignorer la vérification des balises Meta dans <ph name="PRODUCT_FRAME_NAME" /></translation>
 <translation id="461901491675418689">Fonctionnalité NewBaseUrlInheritanceBehavior disponible</translation>
 <translation id="4624006912948309924">Permet de définir quels identifiants d'appli <ph name="PRODUCT_OS_NAME" /> affiche en tant qu'applis épinglées dans la barre du Lanceur d'applis. Notez que les utilisateurs ne peuvent pas les modifier.
@@ -4492,6 +4518,21 @@ Cette règle n'a aucune incidence lorsque la règle <ph name="DEVICE_SCREENSAVER
 <translation id="4726228171190098009">Ne pas autoriser l'appareil à lancer Powerwash</translation>
 <translation id="4726895359147376813">Mappage avec les configurations de VM à partir des ID persistants</translation>
 <translation id="4733471537137819387">Stratégies liées à l'authentification HTTP intégrée</translation>
+<translation id="4736591493257545761">Modèle URI du résolveur DNS-over-HTTPS souhaité. Pour définir plusieurs résolveurs DNS-over-HTTPS, vous devez séparer les modèles URI correspondants à l'aide d'espaces. Cette règle est très semblable à <ph name="DOH_TEMPLATES_POLICY_NAME" /> et l'ignore lorsqu'elle est spécifiée.
+Contrairement à <ph name="DOH_TEMPLATES_POLICY_NAME" />, cette règle permet de spécifier des informations d'identification.
+Les identifiants sont spécifiés à l'aide d'espaces réservés servant de variables et remplacés par des informations sur l'utilisateur ou l'appareil dans <ph name="PRODUCT_NAME" />. Les identifiants ne sont pas envoyés au serveur DNS en texte brut. Ils sont hachés avec l'algorithme <ph name="SHA256" /> et encodés en hexadécimal avec majuscules.
+
+Les identifiants sont spécifiés entre accolades, précédés du signe dollar. Pour identifier l'utilisateur, utilisez les espaces réservés <ph name="USER_EMAIL" />, <ph name="USER_EMAIL_DOMAIN" /> et <ph name="USER_EMAIL_NAME" />. Pour identifier l'appareil, utilisez les espaces réservés <ph name="DEVICE_DIRECTORY_ID" />, <ph name="DEVICE_SERIAL_NUMBER" />, <ph name="DEVICE_ASSET_ID" /> et <ph name="DEVICE_ANNOTATED_LOCATION" />.
+
+Avant la version 122, les identifiants d'appareil n'étaient pas remplacés pour les utilisateurs non affiliés. À partir de la version 122, les espaces réservés liés à l'appareil sont remplacés par la valeur <ph name="DEVICE_NOT_MANAGED" />, qui est hachée et encodée en hexadécimal.
+
+Si <ph name="DOH_MODE_POLICY_NAME" /> est défini sur <ph name="SECURE_DNS_MODE_SECURE" />, cette règle (ou la règle <ph name="DOH_TEMPLATES_POLICY_NAME" />) doit être définie. Elle ne peut pas rester vide.
+
+Si vous avez configuré cette règle et défini <ph name="DOH_MODE_POLICY_NAME" /> sur <ph name="SECURE_DNS_MODE_AUTOMATIC" />, les modèles URI spécifiés sont appliqués. Si vous n'avez pas configuré cette règle, des correspondances codées en dur sont appliquées pour tenter de passer du résolveur DNS actuel de l'utilisateur à un résolveur DoH géré par le même fournisseur.
+
+Si le modèle URI contient une variable <ph name="HTTP_VARIABLE_DNS" />, les requêtes envoyées au résolveur utilisent la méthode <ph name="HTTP_METHOD_GET" />. Sinon, elles utilisent la méthode <ph name="HTTP_METHOD_POST" />.
+
+À partir de la version 114, <ph name="DOH_SALT_POLICY_NAME" /> est facultative si cette règle est configurée.</translation>
 <translation id="473673197014866318">Cette règle permet de contrôler les paramètres de gestion des extensions pour <ph name="PRODUCT_NAME" />, y compris ceux contrôlés par des règles existantes liées aux extensions. Elle remplace toutes les anciennes règles susceptibles d'être configurées.
 
 Elle fait correspondre un ID d'extension ou une URL de mise à jour uniquement avec sa configuration spécifique. Une configuration par défaut peut être définie pour l'ID spécial <ph name="DEFAULT_SCOPE" />, lequel s'applique à toutes les extensions pour lesquelles aucune configuration personnalisée n'est définie dans cette règle. Avec une URL de mise à jour, la configuration s'applique aux extensions avec l'URL de mise à jour telle qu'elle est indiquée dans le fichier manifeste de ces extensions (pour en savoir plus, consultez la page http://support.google.com/chrome/a?p=Configure_ExtensionSettings_policy). Si l'indicateur "override_update_url" est défini sur "True", l'extension est installée et mise à jour à l'aide de l'URL spécifiée dans la règle "<ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" />" ou dans le champ "update_url" de cette règle. L'indicateur "override_update_url" est ignoré si le champ "update_url" contient une URL du Chrome Web Store.
@@ -4784,6 +4825,7 @@ Cette règle n'est appliquée que si l'ordinateur est enregistré avec la règle
 <translation id="5033070732967197381">Autoriser les requêtes API WebAuthn sur les sites avec des certificats TLS non fonctionnels.</translation>
 <translation id="5034504101537897433">Activer les rapports d'erreur de l'appareil</translation>
 <translation id="5036013147560568855">Version du protocole de provisionnement de certificat. La valeur par défaut est 1. 1 correspond au protocole "statique". 2 correspond au protocole "dynamique".</translation>
+<translation id="5037749623252479780">Les paramètres Page précédente/Page suivante sont désactivés</translation>
 <translation id="5039110755072335605">Prise en charge des en-têtes de requêtes CORS sans caractères génériques</translation>
 <translation id="504116558738617678">N'afficher des avertissements de type "espace disque insuffisant" que si l'appareil n'est pas géré ou s'il n'a qu'un seul utilisateur</translation>
 <translation id="5041315457555330432">Autoriser <ph name="PRODUCT_NAME" /> à ne se connecter qu'aux appareils avec une adresse IP privée, sauf si la fonctionnalité CastAllowAllIPs est activée.</translation>
@@ -5206,6 +5248,7 @@ Si cette règle n'est pas configurée, aucune exception à <ph name="URL_BLOCKLI
 
       Pour en savoir plus sur les formats <ph name="URL_LABEL" /> valides, veuillez consulter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. La valeur "<ph name="WILDCARD_VALUE" />" n'est pas acceptée pour cette règle.</translation>
 <translation id="5393009997533871906">Seules les imprimantes figurant dans la liste d'autorisation sont proposées aux utilisateurs</translation>
+<translation id="5395778184390568113">Contrôle le raccourci utilisé pour déclencher les touches Origine et Fin du groupe de six touches</translation>
 <translation id="5396322417222266779">Autoriser l'utilisateur à personnaliser les raccourcis système</translation>
 <translation id="5398387276166014955">Autoriser l'injection de code tiers dans Chrome</translation>
 <translation id="5401696449591951427">Activer <ph name="CHROME_DEVICES_LINK" /></translation>
@@ -5217,6 +5260,8 @@ Si cette règle n'est pas configurée, aucune exception à <ph name="URL_BLOCKLI
 <translation id="5413051574966911176">Désactiver l'interface utilisateur liée à la connexion sur le bureau de l'hôte à distance lorsqu'une connexion est active</translation>
 <translation id="5415713057512333739">URL des données à télécharger.</translation>
 <translation id="5416263061774624216">Ne pas utiliser la règle SiteList d'Internet Explorer comme source des règles</translation>
+<translation id="5416663929864223914">Contrôle le raccourci utilisé pour déclencher la touche Supprimer du groupe de six touches</translation>
+<translation id="5417857116982992260">Cette règle détermine le comportement par défaut du remappage de la touche Insérer dans la sous-page de remappage des touches. Cette sous-page permet aux utilisateurs de personnaliser les touches du clavier. Si cette règle est activée, elle empêche les utilisateurs de personnaliser ces remappages spécifiques. Si cette règle n'est pas configurée, les raccourcis de recherche sont utilisés par défaut.</translation>
 <translation id="5417906792459853336">Transmet des informations concernant l'inventaire et l'utilisation des applications d'un appareil.
 
       Si la règle est définie sur "False" ou n'est pas configurée, ces informations ne sont pas transmises.
@@ -5774,6 +5819,7 @@ Si cette règle est désactivée ou n'est pas configurée, l'état d'authentific
 Vous pouvez configurer les domaines de services Web dont la restauration est bloquée à l'aide de la règle <ph name="FLOATING_SSO_DOMAIN_BLOCKLIST_POLICY_NAME" />, et les exceptions à cette règle peuvent être configurées à l'aide de la règle <ph name="FLOATING_SSO_DOMAIN_BLOCKLIST_EXCEPTIONS_POLICY_NAME" />.
 Si ces deux règles ne sont pas configurées, toutes les authentifications des services Web, à l'exception des authentifications Google, seront déplacées.</translation>
 <translation id="5871786561822073630">Ne pas autoriser l'utilisation de la fonctionnalité de transport de compression par dictionnaire</translation>
+<translation id="5872327206018094848">Cette règle contrôle l'option de raccourci sélectionnée pour remapper les événements avec F11 dans la sous-page de remappage des touches. Ces paramètres ne s'appliquent qu'aux claviers <ph name="PRODUCT_OS_NAME" /> et sont désactivés par défaut lorsque la règle n'est pas configurée. Si vous la configurez, les utilisateurs ne peuvent pas la modifier ni l'ignorer.</translation>
 <translation id="587242272905978723">Autoriser <ph name="PLUGIN_VM_NAME" /> à collecter les données d'utilisation de <ph name="PLUGIN_VM_NAME" />.
 
       Si la règle est définie sur "false" ou n'est pas configurée, <ph name="PLUGIN_VM_NAME" /> n'est pas autorisé à collecter les données.
@@ -5903,7 +5949,9 @@ Si ces deux règles ne sont pas configurées, toutes les authentifications des s
 <translation id="5975765799383881158">Si cette règle est activée ou qu'elle n'est pas configurée, les utilisateurs peuvent envoyer des commentaires à Google en sélectionnant Menu &gt; Aide &gt; Signaler un problème, ou via un raccourci clavier.
 
       Si elle est désactivée, les utilisateurs ne peuvent pas envoyer de commentaires à Google.</translation>
+<translation id="5976636832661103220">Les paramètres F11 utilisent le raccourci qui contient la touche de modification Maj</translation>
 <translation id="5979376378555121803">Application hébergée</translation>
+<translation id="5983274643567559194">La définition d'un raccourci pour l'action "Supprimer" est désactivée.</translation>
 <translation id="5984099692320899605">Ne pas utiliser l'authentification NTLM</translation>
 <translation id="5984237109586500246">Accepter les contenus Web diffusés via Signed HTTP Exchange</translation>
 <translation id="5987654816293745077">Signaler les compteurs d'exécution de l'appareil</translation>
@@ -5941,6 +5989,7 @@ Si ces deux règles ne sont pas configurées, toutes les authentifications des s
 
       Cette règle n'est appliquée que si l'ordinateur est enregistré avec la règle <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" /> pour <ph name="PRODUCT_NAME" />.
       Elle est toujours appliquée pour <ph name="PRODUCT_OS_NAME" />.</translation>
+<translation id="6016304107003486747">Cette règle détermine le comportement du remappage de la touche Supprimer dans la sous-page de remappage des touches. Cette sous-page permet aux utilisateurs de personnaliser les touches du clavier. Si cette règle est activée, elle empêche les utilisateurs de personnaliser ces remappages spécifiques. Si cette règle n'est pas configurée, les raccourcis de recherche sont utilisés par défaut et les utilisateurs peuvent configurer les raccourcis.</translation>
 <translation id="6019162469732742754">Utiliser le mode Auto</translation>
 <translation id="6019606564278029236">Activer les interactions des utilisateurs distants avec des fenêtres élevées dans les sessions d'assistance à distance</translation>
 <translation id="602038990586229155">Cette règle contrôle les demandes d'installation d'extension de <ph name="PRODUCT_NAME" /> et permet aux utilisateurs d'envoyer les demandes à la console d'administration Google pour approbation.
@@ -6386,6 +6435,7 @@ AVERTISSEMENT : Faites attention quand vous modifiez ce paramètre, car cela po
       Si cette règle est désactivée, l'optimisation WPAD l'est également, et le temps de réponse des serveurs WPAD basés sur le DNS est alors plus long dans <ph name="PRODUCT_NAME" />.
 
       Que cette règle soit configurée ou non, les utilisateurs ne peuvent pas modifier le paramètre d'optimisation WPAD.</translation>
+<translation id="6363485842496031347">Le paramètre de raccourci "Supprimer" utilise le raccourci qui contient la touche de modification Alt</translation>
 <translation id="6366574325767783825">Si cette règle est définie sur "True" ou si elle n'est pas configurée, <ph name="PRODUCT_NAME" /> accepte la diffusion de contenus Web en tant que Signed HTTP Exchanges.
 
       Si cette règle est définie sur "False", les Signed HTTP Exchanges ne peuvent pas être chargés.</translation>
@@ -6720,6 +6770,7 @@ Remarque : Le cache est vidé à la suite d'un redémarrage et d'une déconnexi
 
           Elle n'a aucun effet si elle est activée, laissée vide ou n'est pas définie.</translation>
 <translation id="6583249367505445969">Désactiver la barre de favoris</translation>
+<translation id="6584122839583172231">Les paramètres F12 utilisent le raccourci qui contient les touches de modification Ctrl et Maj</translation>
 <translation id="6584541828182430328">Désactiver l'affichage de l'alerte plein écran</translation>
 <translation id="6588634282328239769">Afficher l'URL complète</translation>
 <translation id="6589049539706330510">Activer la prise en charge</translation>
@@ -6943,6 +6994,7 @@ Cette règle est toujours appliquée pour <ph name="PRODUCT_OS_NAME" />.</transl
 <translation id="6752711782954612641">Si la règle <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> est activée, la règle <ph name="DEFAULT_SEARCH_PROVIDER_SEARCH_URL_POST_PARAMS_POLICY_NAME" /> vous permet de définir les paramètres d'une recherche d'URL à l'aide de la méthode POST. Il s'agit de paires de noms et de valeurs séparées par une virgule. Si une valeur correspond à un paramètre modèle, comme <ph name="SEARCH_TERM_MARKER" />, elle est remplacée par des termes de recherches réels.
 
       Si la règle <ph name="DEFAULT_SEARCH_PROVIDER_SEARCH_URL_POST_PARAMS_POLICY_NAME" /> n'est pas configurée, les requêtes de recherche sont envoyées à l'aide de la méthode GET.</translation>
+<translation id="6757413365906304125">Cette règle détermine le comportement du remappage des touches Page précédente/Page suivante dans la sous-page de remappage des touches. Cette sous-page permet aux utilisateurs de personnaliser les touches du clavier. Si cette règle est activée, elle empêche les utilisateurs de personnaliser ces remappages spécifiques. Si cette règle n'est pas configurée, les raccourcis de recherche sont utilisés par défaut et les utilisateurs peuvent configurer les raccourcis.</translation>
 <translation id="6757613329154374267">Service de sauvegarde et de restauration activé</translation>
 <translation id="6758659208493449452">Cette règle détermine si les utilisateurs inscrits au Programme Protection Avancée bénéficient de protections supplémentaires. Ces fonctionnalités peuvent impliquer le partage de données avec Google (par exemple, les utilisateurs du programme Protection Avancée peuvent envoyer leurs téléchargements à Google pour les faire analyser afin de détecter d'éventuels logiciels malveillants). Si cette règle est définie sur "True" ou si elle n'est pas configurée, les utilisateurs inscrits bénéficieront de protections supplémentaires. Si elle est définie sur "False", les utilisateurs du programme Protection Avancée ne bénéficieront que des fonctionnalités grand public standards.</translation>
 <translation id="6763023079133439068">Autoriser les certificats sans extension subjectAlternativeName lorsqu'ils sont émis par des ancres de confiance locales</translation>
@@ -6950,9 +7002,11 @@ Cette règle est toujours appliquée pour <ph name="PRODUCT_OS_NAME" />.</transl
 <translation id="6770454900105963262">Envoyer des rapports sur les sessions Kiosque actives</translation>
 <translation id="6774132787348495175">Ne pas autoriser les utilisateurs à se servir des machines virtuelles nécessaires pour faire fonctionner les applis Linux</translation>
 <translation id="6782331708811245959">Activer les rapports sur le mode de démarrage de l'appareil</translation>
+<translation id="6785201942412171878">Contrôle le raccourci utilisé pour déclencher les touches Page précédente et Page suivante du groupe de six touches</translation>
 <translation id="6786666051053129545">Activer la procédure Voice Match pour l'Assistant Google</translation>
 <translation id="6786747875388722282">Extensions</translation>
 <translation id="6786967369487349613">Définir le répertoire des profils itinérants</translation>
+<translation id="6787638035953731324">Le paramètre de raccourci "Insérer" utilise le raccourci qui contient la touche de modification de recherche</translation>
 <translation id="6788500377069760677">Activer le partage des données de diagnostic avec Plugin VM</translation>
 <translation id="6789319144568227749">Permet de configurer la prise en charge des en-têtes de requêtes CORS sans caractères génériques.
 
@@ -7017,6 +7071,7 @@ REMARQUE : Seuls les nouveaux processus du moteur de rendu refléteront les mod
       Si cette règle n'est pas définie, le mode Contraste élevé est désactivé sur l'écran de connexion, mais les utilisateurs peuvent l'activer à tout moment. Dans ce cas, il reste activé d'un utilisateur à l'autre.
 
           Remarque : <ph name="DEVICE_LOGIN_SCREEN_HIGH_CONTRAST_ENABLED_POLICY_NAME" /> remplace cette règle si l'ancienne est définie.</translation>
+<translation id="6833465247597603843">Le paramètre de raccourci "Supprimer" utilise le raccourci qui contient la touche de modification de recherche</translation>
 <translation id="6833988859168635883">Démarrage, page d'accueil et page Nouvel onglet</translation>
 <translation id="6835254082476223414">Activer la sauvegarde et la restauration des machines virtuelles Linux</translation>
 <translation id="6835883744948188639">Afficher une invite récurrente indiquant qu'un redémarrage est recommandé</translation>
@@ -8119,6 +8174,7 @@ Si cette règle n'est pas configurée, le moteur de rendu des PDF est sélection
 <translation id="7758378441185523981">Activer l'authentification ambiante en fonction du type de profil.</translation>
 <translation id="776110834126722255">Obsolète</translation>
 <translation id="7763614521440615342">Afficher des recommandations de contenus sur la page "Nouvel onglet"</translation>
+<translation id="7763650553214838209">La définition d'un raccourci pour l'action "Insérer" est désactivée.</translation>
 <translation id="776465643636059256">Désactiver la fonctionnalité d'ensembles de sites Web associés</translation>
 <translation id="7765879851993224640">Autorise la connexion avec Smart Lock.</translation>
 <translation id="7767066506143083523">Si cette règle est configurée, vous pouvez lister les formats d'URL qui peuvent utiliser la capture d'onglet.
@@ -8782,6 +8838,7 @@ Pour en savoir plus sur les anciennes technologies, consultez https://chromestat
 <translation id="8316940611391250886">Interdire les certificats sans extension subjectAlternativeName</translation>
 <translation id="8319678975002906774">Définit des valeurs de configuration gérée pour des sites Web aux origines spécifiques.</translation>
 <translation id="8320149248919453401">Mode de recharge de la batterie</translation>
+<translation id="8320576119308783142">Le clavier à l'écran s'affiche dans les circonstances appropriées.</translation>
 <translation id="8327651196906278510">Autoriser la capture d'onglet selon ces origines</translation>
 <translation id="8329434144708110">Déclencher les flux d'authentification pour synchroniser les mots de passe avec les fournisseurs SSO</translation>
 <translation id="8329984337216493753">Cette règle n'est active qu'en mode Point de vente.
@@ -8887,6 +8944,7 @@ Si cette règle n'est pas configurée ou qu'elle est définie sur 0, l'URL sél
       Pour en savoir plus, consultez la page https://support.google.com/chrome/a/answer/9301891?ref_topic=9301744.</translation>
 <translation id="8424255554404582727">Définir la rotation de l'écran par défaut (réappliquée à chaque redémarrage)</translation>
 <translation id="8426231401662877819">Faire pivoter l'écran vers la droite de 90 degrés</translation>
+<translation id="8426326725481825773">Cette règle détermine le comportement du remappage des touches Origine/Fin dans la sous-page de remappage des touches. Cette sous-page permet aux utilisateurs de personnaliser les touches du clavier. Si cette règle est activée, elle empêche les utilisateurs de personnaliser ces remappages spécifiques. Si cette règle n'est pas configurée, les raccourcis de recherche sont utilisés par défaut et les utilisateurs peuvent configurer les raccourcis.</translation>
 <translation id="8427466947904008809">Autoriser CRD à exécuter les requêtes API WebAuthn envoyées par un proxy à partir d'un hôte à distance.</translation>
 <translation id="8428295225823548121">Activer les rapports sur la mémoire de l'appareil</translation>
 <translation id="8428635849021776523">Désactiver la création de rapports Android</translation>
@@ -8915,6 +8973,15 @@ Si cette règle n'est pas configurée ou qu'elle est définie sur 0, l'URL sél
 
 Si elle est désactivée, les certificats TLS ajoutés par l'utilisateur depuis les magasins de confiance de la plate-forme ne seront pas utilisés pour la création de chemins pour l'authentification du serveur TLS.</translation>
 <translation id="8470317291588703478">N'appliquez pas l'utilisation du mode restreint sur YouTube</translation>
+<translation id="8471117881949952479">Cette règle est obsolète et sera à terme remplacée par DataControlsRules.
+
+Cette règle permet de bloquer ou non la copie de données dans le presse-papiers sur des URL précises.
+
+Les listes de formats d'URL <ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" /> et <ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> déterminent quels sites sont autorisés ou non à écrire dans le presse-papiers. L'écriture dans le presse-papiers est bloquée si le format d'URL concerné figure dans la liste "enable" et pas dans la liste "disable". La copie n'est pas bloquée si le format d'URL n'est dans aucune liste.
+
+Les formats correspondant à l'origine dans la liste sont semblables à ceux de la règle <ph name="URL_BLOCKLIST_POLICY_NAME" /> décrite sur https://support.google.com/chrome/a?p=url_blocklist_filter_format.
+
+Le champ <ph name="ENTERPRISE_CONNECTOR_MINIMUM_DATA_SIZE" /> indique la quantité minimale de données en octets à partir de laquelle le format est vérifié. Autrement dit, l'écriture dans le presse-papiers sur une URL bloquée serait autorisée si la taille des données copiées est inférieure à la valeur indiquée dans ce champ. Si ce champ n'est pas renseigné, la valeur par défaut est de 100 octets.</translation>
 <translation id="8473107305327396242">Importer les certificats de serveur TLS ajoutés par l'utilisateur depuis les magasins de confiance de la plate-forme.</translation>
 <translation id="8477885780684655676">TLS 1.0</translation>
 <translation id="8479032202539686055">WebRTC utilisera toutes les interfaces disponibles pour rechercher le meilleur chemin.</translation>
@@ -9039,6 +9106,7 @@ Si elle est activée ou qu'elle n'est pas configurée, vos utilisateurs pourront
 
 Si vous définissez cette règle, vous devez désactiver la règle <ph name="PRIVACY_SANDBOX_PROMPT_ENABLED_POLICY_NAME" />.</translation>
 <translation id="8559221882677768248">Désactiver Sélectionner pour écouter sur l'écran de connexion</translation>
+<translation id="8561512522781085002">Les paramètres Page précédente/Page suivante utilisent le raccourci qui contient la touche de modification de recherche</translation>
 <translation id="8566842294717252664">Masquer le Chrome Web Store sur la page Nouvel onglet et dans le lanceur d'applications</translation>
 <translation id="8571314270766672278">Effectuer un rollback et réinitialiser l'appareil lors du retour à une version antérieure, en conservant l'enregistrement si possible</translation>
 <translation id="8571871284943706125">Signale les événements de sessions CRD sur les appareils enregistrés pour les utilisateurs affiliés.
@@ -9231,6 +9299,7 @@ Si cette règle n'est pas configurée, aucun mot de passe enregistré n'est impo
       Pour en savoir plus sur les formats <ph name="URL_LABEL" /> valides, veuillez consulter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. La valeur "<ph name="WILDCARD_VALUE" />" n'est pas acceptée pour cette règle.</translation>
 <translation id="8703488928438047864">Envoyer des rapports sur l'état du matériel</translation>
 <translation id="8704831857353097849">Liste des plug-ins désactivés</translation>
+<translation id="8705317513271779649">Cette règle contrôle l'option de raccourci sélectionnée pour remapper les événements avec F12 dans la sous-page de remappage des touches. Ces paramètres ne s'appliquent qu'aux claviers <ph name="PRODUCT_OS_NAME" /> et sont désactivés par défaut lorsque la règle n'est pas configurée. Si vous la configurez, les utilisateurs ne peuvent pas la modifier ni l'ignorer.</translation>
 <translation id="8705895771006864851">Si cette règle est définie sur "True", vous pouvez proposer une fonctionnalité de traduction aux utilisateurs, le cas échéant. Une barre d'outils intégrée de traduction s'affiche alors dans <ph name="PRODUCT_NAME" />, ainsi qu'une option de traduction disponible dans le menu contextuel que l'utilisateur peut afficher en effectuant un clic droit. Si cette règle est définie sur "False", toutes les fonctionnalités de traduction intégrées sont fermées.
 
       Si cette règle est configurée, les utilisateurs ne peuvent pas modifier la fonctionnalité. Si elle n'est pas configurée, les utilisateurs peuvent modifier le paramètre.</translation>
@@ -9325,6 +9394,13 @@ Si cette règle n'est pas configurée, aucun mot de passe enregistré n'est impo
 
       Les utilisateurs peuvent ouvrir une boîte de dialogue d'importation. La case correspondant à l'historique de navigation sera ou ne sera pas cochée, suivant la configuration de cette règle.</translation>
 <translation id="8825154502356129120">Désactiver l'authentification gnubby pour l'hôte d'accès à distance</translation>
+<translation id="8825261718850860999">Si cette règle est définie sur "True" ou n'est pas configurée, le clavier à l'écran peut s'afficher lorsqu'il prédit que l'utilisateur est sur le point de l'utiliser.
+
+Si cette règle est définie sur "False", le clavier à l'écran ne s'affiche que si l'utilisateur appuie explicitement sur un champ de saisie ou si une application le demande.
+
+Par exemple, supposons que l'utilisateur utilise le clavier virtuel pour saisir son nom d'utilisateur dans un écran de connexion en deux étapes. Lorsque l'écran de connexion passe à l'étape du mot de passe, si la règle est définie sur "True", le clavier virtuel peut rester visible, même si l'utilisateur n'a pas appuyé sur le champ de saisie du mot de passe. Si la règle est définie sur "False", le clavier virtuel disparaît.
+
+Cette règle ne s'applique pas si le clavier virtuel est désactivé (par exemple, si vous utilisez la règle <ph name="TOUCH_VIRTUAL_KEYBOARD_ENABLED_POLICY_NAME" /> ou si l'appareil est connecté à un clavier physique).</translation>
 <translation id="8825782996899863372">L'avertissement de protection par mot de passe est déclenché en cas de réutilisation du mot de passe sur une page d'hameçonnage</translation>
 <translation id="8827275450034266143">La chaîne user-agent figera la version principale sur la version 99 et indiquera la version majeure du navigateur en seconde position.</translation>
 <translation id="8827366480126575426">Protocole du gestionnaire de protocoles.</translation>
@@ -9502,6 +9578,7 @@ Si elle est désactivée, l'ancien comportement sera utilisé.
 Si cette règle n'est pas configurée, le nouveau comportement sera utilisé tout comme le reste des utilisateurs de Chromium.</translation>
 <translation id="8955719471735800169">Haut de page</translation>
 <translation id="8956312248048980644">Autorise par défaut le clustering d'agents selon l'origine.</translation>
+<translation id="8963464192296208229">Les paramètres F11 utilisent le raccourci qui contient la touche de modification Alt</translation>
 <translation id="8970205333161758602">Supprimer l'invite de fermeture de <ph name="PRODUCT_FRAME_NAME" /></translation>
 <translation id="8973579598359969188">Choisissez si l'invite <ph name="PRIVACY_SANDBOX_NAME" /> peut être présentée à vos utilisateurs</translation>
 <translation id="8974457039656761249">Contrôler la fonctionnalité d'écriture prédictive pour le clavier physique</translation>
@@ -9763,6 +9840,7 @@ Pour que cette règle soit effective, la règle <ph name="FULL_RESTORE_ENABLED_N
 <translation id="9135095804754272364">Afficher une notification lorsqu'un périphérique USB est détecté</translation>
 <translation id="9136212796239682721">Désactiver l'interface utilisateur de la bulle de téléchargement</translation>
 <translation id="9136399279941091445">Intervalles pendant lesquels les règles spécifiées pour les appareils sont disponibles (lorsque l'appareil est éteint)</translation>
+<translation id="9139775903828905867">Contrôle le raccourci utilisé pour déclencher F11</translation>
 <translation id="9140064482233876338">Cette règle a été abandonnée dans la version M69. Veuillez utiliser la règle OverrideSecurityRestrictionsOnInsecureOrigin à la place.
 
 Cette règle liste les origines (URL) ou les modèles de nom d'hôte (par exemple, "*.example.com") non soumis aux restrictions de sécurité applicables aux origines non sécurisées.

@@ -66,6 +66,7 @@
 <translation id="2228071138934252756">Pour autoriser <ph name="APP_NAME" /> à accéder à votre appareil photo, activez aussi celui-ci dans les <ph name="BEGIN_LINK" />paramètres d'Android<ph name="END_LINK" />.</translation>
 <translation id="2235344399760031203">Les témoins tiers sont bloqués</translation>
 <translation id="2238944249568001759">Recherches suggérées en fonction de votre dernier onglet</translation>
+<translation id="2241587408274973373">Cartes de la page Nouvel onglet</translation>
 <translation id="2241634353105152135">Une fois</translation>
 <translation id="2253414712144136228">Retirer l'élément suivant : <ph name="NAME_OF_LIST_ITEM" /></translation>
 <translation id="2253989982043948086">{NUM_SELECTED,plural, =1{1 site bloqué}one{# site bloqué}other{# sites bloqués}}</translation>
@@ -108,7 +109,6 @@
 <translation id="2750481671343847896">Les sites peuvent afficher des invites de connexion provenant de services de vérification d'identité.</translation>
 <translation id="2790501146643349491">Lorsque cette option est activée, les sites récemment fermés peuvent terminer l'envoi et la réception de données. Lorsqu'elle est désactivée, les sites récemment fermés ne peuvent pas terminer l'envoi ni la réception de données.</translation>
 <translation id="2822354292072154809">Voulez-vous vraiment réinitialiser toutes les autorisations de site pour <ph name="CHOSEN_OBJECT_NAME" />?</translation>
-<translation id="2836978798613876756"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> <ph name="HOST_NAME" /></translation>
 <translation id="2850913818900871965">Demander l'affichage sur un appareil mobile</translation>
 <translation id="2870560284913253234">Site</translation>
 <translation id="2874939134665556319">Chanson précédente</translation>
@@ -120,7 +120,6 @@
 <translation id="2968755619301702150">Lecteur de certificats</translation>
 <translation id="2979365474350987274">Les témoins tiers sont limités</translation>
 <translation id="3008272652534848354">Réinitialiser les autorisations</translation>
-<translation id="3013291976881901233">Appareils MIDI</translation>
 <translation id="301521992641321250">Bloquée automatiquement</translation>
 <translation id="3069226013421428034">Autorisez la connexion de tiers pour un site particulier.</translation>
 <translation id="3082992102194421695">{COUNT,plural, =1{Expire demain}one{Expire dans # jour}other{Expire dans # jours}}</translation>
@@ -191,7 +190,6 @@
 <translation id="4169549551965910670">Connecté à un appareil USB</translation>
 <translation id="4194328954146351878">Demander l'autorisation avant de permettre aux sites de consulter et de modifier les données stockées sur les appareils CCP (recommandé)</translation>
 <translation id="4200726100658658164">Ouvrir les paramètres de localisation</translation>
-<translation id="4212246570487010370">Continuer la navigation</translation>
 <translation id="4226663524361240545">Les notifications peuvent faire vibrer l'appareil</translation>
 <translation id="4259722352634471385">Navigation bloquée : <ph name="URL" /></translation>
 <translation id="4278390842282768270">Autorisé</translation>
@@ -349,7 +347,6 @@
 <translation id="6746124502594467657">Déplacer vers le bas</translation>
 <translation id="6749077623962119521">Réinitialiser les autorisations?</translation>
 <translation id="6766622839693428701">Glissez le doigt vers le bas pour fermer.</translation>
-<translation id="6785959295338971061"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> à partir de <ph name="FROM_DEVICE" /></translation>
 <translation id="6787751205395685251">Sélectionner une option pour <ph name="SITE_NAME" /></translation>
 <translation id="6790428901817661496">Jouer</translation>
 <translation id="6818926723028410516">Sélectionner des éléments</translation>

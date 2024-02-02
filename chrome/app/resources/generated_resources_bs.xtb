@@ -2919,7 +2919,6 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="3188465121994729530">Prosjek premještanja</translation>
 <translation id="3189187154924005138">Veliki kursor</translation>
 <translation id="3190558889382726167">Lozinka je sačuvana</translation>
-<translation id="3191625924275846436">{NUM_SITES,plural, =1{Radi zaštite vaših podataka uklonjena su odobrenja s web lokacije koju u posljednje vrijeme niste posjetili}one{Radi zaštite vaših podataka uklonjena su odobrenja s web lokacija koje u posljednje vrijeme niste posjetili}few{Radi zaštite vaših podataka uklonjena su odobrenja s web lokacija koje u posljednje vrijeme niste posjetili}other{Radi zaštite vaših podataka uklonjena su odobrenja s web lokacija koje u posljednje vrijeme niste posjetili}}</translation>
 <translation id="3192586965067888278">Detaljno opišite problem. Povratne informacije će se poslati Googleu za ručni pregled i mogu se koristiti za poboljšanje ili razvoj Googleovih proizvoda i usluga.</translation>
 <translation id="3192947282887913208">Audio fajlovi</translation>
 <translation id="3193695589337931419">Uslužni programi za signalizaciju sistema</translation>
@@ -4077,7 +4076,6 @@ One mogu uključivati informacije o instaliranom softveru, fajlovima, preglednik
 <translation id="4078903002989614318">Sortiranje i izlistavanje opcija</translation>
 <translation id="4079140982534148664">Koristi naprednu provjeru pravopisa</translation>
 <translation id="4082333918978320301">Nijednoj web lokaciji nije dozvoljeno da koristi mikrofon</translation>
-<translation id="4084582735848141214">{COUNT,plural, =1{Dozvoljena je 1 web lokacija}one{Dozvoljena je # web lokacija}few{Dozvoljene su # web lokacije}other{Dozvoljeno je # web lokacija}}</translation>
 <translation id="4084682180776658562">Oznaka</translation>
 <translation id="4084835346725913160">Zatvori <ph name="TAB_NAME" /></translation>
 <translation id="4085298594534903246">JavaScript je blokiran na ovoj stranici.</translation>
@@ -8083,7 +8081,6 @@ Imate još # ugroženih lozinki. Googleov Upravitelj lozinki preporučuje da odm
 <translation id="7260186537988033909">Prijava uređaja za kiosk i potpisivanje je završena</translation>
 <translation id="7261612856573623172">Sistemski glas za pretvaranje teksta u govor</translation>
 <translation id="7262004276116528033">Ovu uslugu prijavljivanja hostira <ph name="SAML_DOMAIN" /></translation>
-<translation id="7263162347647986485">{NUM_SITES,plural, =1{Uklonjena su odobrenja za 1 web lokaciju}one{Uklonjena su odobrenja za {NUM_SITES} web lokaciju}few{Uklonjena su odobrenja za {NUM_SITES} web lokacije}other{Uklonjena su odobrenja za {NUM_SITES} web lokacija}}</translation>
 <translation id="7264695323040866038">Uvijek koristiti aplikaciju <ph name="APP" /> za otvaranje podržanih web linkova?</translation>
 <translation id="7267044199012331848">Instaliranje virtuelnog računara nije uspjelo. Pokušajte ponovo ili kontaktirajte administratora. Kȏd greške: <ph name="ERROR_CODE" />.</translation>
 <translation id="7267875682732693301">Nastavite podizati prst da dodate različite dijelove otiska prsta</translation>
@@ -9831,7 +9828,6 @@ Fajl ključa: <ph name="KEY_FILE" />
 <translation id="859246725979739260">Ovoj web lokaciji je blokiran pristup vašoj lokaciji.</translation>
 <translation id="8593121833493516339">Šaljite podatke o korištenju i dijagnostici. Poboljšajte iskustvo korištenja Androida svog djeteta automatskim slanjem podataka o dijagnostici, uređaju i korištenju aplikacija Googleu. Ovo se neće koristiti za identifikaciju vašeg djeteta, a pomoći će stabilnosti sistema i aplikacija, kao i drugim poboljšanjima. Neki zbirni podaci će također pomoći Googleovim aplikacijama i partnerima, kao što su programeri za Android. Ako je za vaše dijete uključena dodatna Aktivnost na webu i u aplikacijama, ti podaci mogu biti sačuvani na njegovom Google računu. <ph name="BEGIN_LINK1" />Saznajte više<ph name="END_LINK1" /></translation>
 <translation id="8593450223647418235">Nećete moći otvoriti fajlove u softveru Microsoft 365 dok se ne završi postavljanje.</translation>
-<translation id="8594585498253980290">{COUNT,plural, =1{Blokirana je 1 web lokacija}one{Blokirana je # web lokacija}few{Blokirane su # web lokacije}other{Blokirano je # web lokacija}}</translation>
 <translation id="8596540852772265699">Prilagođeni fajlovi</translation>
 <translation id="8597462463725156723">Obavještenja se neće prikazivati u skočnom prozoru ekrana. I dalje možete vidjeti obavještenja klikom na ikonu Ne ometaj u donjem dijelu ekrana.</translation>
 <translation id="8597845839771543242">Format atributa:</translation>

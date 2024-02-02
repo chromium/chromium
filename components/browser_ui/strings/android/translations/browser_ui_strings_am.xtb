@@ -109,7 +109,6 @@
 <translation id="2750481671343847896">ጣቢያዎች ከማንነት አገልግሎቶች የመግቢያ ጥያቄዎችን ማሳየት ይችላሉ።</translation>
 <translation id="2790501146643349491">ሲበራ፣ በቅርቡ የተዘጉ ጣቢያዎች ውሂብ መላክ እና መቀበልን ማጠናቀቅ ይችላሉ። ሲጠፋ፣ በቅርቡ የተዘጉ ጣቢያዎች ውሂብ መላክን ወይም መቀበልን ማጠናቀቅ አይችሉም።</translation>
 <translation id="2822354292072154809">እርግጠኛ ነዎት ሁሉንም የ<ph name="CHOSEN_OBJECT_NAME" /> ጣቢያ ፈቃዶችን ዳግም ማስጀመር ይፈልጋሉ?</translation>
-<translation id="2836978798613876756"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> <ph name="HOST_NAME" /></translation>
 <translation id="2850913818900871965">የሞባይል ዕይታ ይጠይቁ</translation>
 <translation id="2870560284913253234">ጣቢያ</translation>
 <translation id="2874939134665556319">ቀዳሚ ትራክ</translation>
@@ -121,7 +120,6 @@
 <translation id="2968755619301702150">የእውቅና ማረጋገጫ መመልከቻ</translation>
 <translation id="2979365474350987274">የሦስተኛ ወገን ኩኪዎች የተገደቡ ናቸው</translation>
 <translation id="3008272652534848354">ፈቃዶችን ዳግም ያቀናብሩ</translation>
-<translation id="3013291976881901233">የMIDI መሣሪያዎች</translation>
 <translation id="301521992641321250">በራስ-ሰር ታግዷል</translation>
 <translation id="3069226013421428034">ለአንድ የተወሰነ ጣቢያ የሦስተኛ ወገን መግባትን ይፍቀዱ።</translation>
 <translation id="3082992102194421695">{COUNT,plural, =1{ነገ ጊዜው ያበቃል}one{በ# ቀን ውስጥ ጊዜው ያበቃል}other{በ# ቀናት ውስጥ ጊዜው ያበቃል}}</translation>
@@ -192,7 +190,6 @@
 <translation id="4169549551965910670">ከዩኤስቢ መሣሪያ ጋር ተገናኝቷል</translation>
 <translation id="4194328954146351878">ጣቢያዎች በኤንኤፍሲ መሣሪያዎች ላይ መረጃ እንዲያዩ እና እንዲቀይሩ ከመፈቀዱ በፊት ይጠይቅ (የሚመከር)</translation>
 <translation id="4200726100658658164">የአካባቢ ቅንብሮችን ክፈት</translation>
-<translation id="4212246570487010370">ማሰሱን ይቀጥሉ</translation>
 <translation id="4226663524361240545">ማሳወቂያዎች መሣሪያውን እንዲነዝር ሊያደርጉት ይችላሉ</translation>
 <translation id="4259722352634471385">ዳሰሳ ታግዷል፦ <ph name="URL" /></translation>
 <translation id="4278390842282768270">ተፈቅዷል</translation>
@@ -282,7 +279,6 @@
 <translation id="5706552988683188916">ይህ ለ<ph name="WEBSITE" /> ኩኪዎችን እና ሌላ የጣቢያ ውሂብን ይሰርዛል</translation>
 <translation id="5723967018671998714">ማንነት በማያሳውቅ ሁነታ ላይ የሦስተኛ ወገን ኩኪዎች ይታገዳሉ</translation>
 <translation id="5740126560802162366">ጣቢያዎች በመሣሪያዎ ላይ ውሂብ ማስቀመጥ ይችላሉ</translation>
-<translation id="5749158352074143502">በዚህ ትር ላይ ይቀጥሉ</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" /> ታግዷል</translation>
 <translation id="5804241973901381774">ፍቃዶች</translation>
 <translation id="5844448279347999754">ሲበራ፣ ጣቢያዎች ወደ ቅንጥብ ሰሌዳዎ የተቀመጡ ጽሑፎችን እና ምስሎችን ለማየት መጠየቅ ይችላሉ። ሲጠፋ፣ ጣቢያዎች ወደ ቅንጥብ ሰሌዳዎ የተቀመጡ ጽሑፎችን ወይም ምስሎችን ማየት አይችሉም።</translation>
@@ -351,7 +347,6 @@
 <translation id="6746124502594467657">ወደታች አውርድ</translation>
 <translation id="6749077623962119521">ፈቃዶችን ዳግም ይጀመሩ?</translation>
 <translation id="6766622839693428701">ለመዝጋት ወደታች ያንሸራትቱ።</translation>
-<translation id="6785959295338971061"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> ከ<ph name="FROM_DEVICE" /></translation>
 <translation id="6787751205395685251">ለ<ph name="SITE_NAME" /> አንድ አማራጭ ይምረጡ</translation>
 <translation id="6790428901817661496">አጫውት</translation>
 <translation id="6818926723028410516">ንጥሎችን ይምረጡ</translation>
@@ -423,7 +418,6 @@
 <translation id="7990211076305263060">ሲበራ፣ ጣቢያዎች ማይክሮፎንዎን ለመጠቀም ሊጠይቁ ይችላሉ። ሲጠፋ፣ ጣቢያዎች ማይክሮፎንዎን መጠቀም አይችሉም።</translation>
 <translation id="8007176423574883786">ለዚህ መሣሪያ ጠፍቷል</translation>
 <translation id="802154636333426148">ማውረድ አልተሳካም</translation>
-<translation id="8024161440284949905">በእነዚህ ትሮች ላይ ይቀጥሉ</translation>
 <translation id="8042586301629853791">ደርድር በ፦</translation>
 <translation id="8067883171444229417">ቪዲዮ አጫውት</translation>
 <translation id="8068648041423924542">የዕውቅና ማረጋገጫን መምረጥ አልተቻለም።</translation>

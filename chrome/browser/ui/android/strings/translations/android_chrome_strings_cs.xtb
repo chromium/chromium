@@ -334,6 +334,7 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="2870560284913253234">Stránky</translation>
 <translation id="2871733351037274014">Předběžně načítat stránky</translation>
 <translation id="2876136027428473467"><ph name="CHILD_NAME" /> chce, abyste schválili tento web:</translation>
+<translation id="2876194821763651818">Hesla uložená v účtu <ph name="USERNAME" />.</translation>
 <translation id="2876628302275096482"><ph name="BEGIN_LINK" />Další informace o tom, jak Chrome uchovává vaše data v soukromí<ph name="END_LINK" /></translation>
 <translation id="2888126860611144412">O aplikaci Chrome</translation>
 <translation id="2891154217021530873">Zastavit načítání stránky</translation>
@@ -672,6 +673,7 @@ Na stránce <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> moh
 <translation id="4699172675775169585">Obrázky a soubory v mezipaměti</translation>
 <translation id="4710167854527459075">Seřadit od nejnovějších</translation>
 <translation id="4719927025381752090">Nabízet překlad</translation>
+<translation id="4720556299488643018">Odhlásit odběr</translation>
 <translation id="4732120983431207637">Rozbalovač zásobníku</translation>
 <translation id="4736934858538408121">Virtuální karta</translation>
 <translation id="473775607612524610">Aktualizovat</translation>
@@ -1194,6 +1196,7 @@ Některé weby mohou například na tento požadavek reagovat tak, že vám zobr
 <translation id="7313188324932846546">Klepnutím nastavíte synchronizaci</translation>
 <translation id="7324354302972299151">Odesílat požadavek Do Not Track</translation>
 <translation id="7332075081379534664">Přihlášení proběhlo úspěšně</translation>
+<translation id="7333041109965360609">Odběr oznámení byl odhlášen</translation>
 <translation id="7333232495927792353">Pokud chcete získat nejrelevantnější obsah z Googlu, zapněte synchronizaci</translation>
 <translation id="7339898014177206373">Nové okno</translation>
 <translation id="7340958967809483333">Možnosti funkce Objevit</translation>
@@ -1452,6 +1455,7 @@ Některé weby mohou například na tento požadavek reagovat tak, že vám zobr
 <translation id="8503813439785031346">Uživatelské jméno</translation>
 <translation id="8505766168025405649">Stav stahování naleznete v oznámení</translation>
 <translation id="8506357771923193001">Zde najdete své stažené soubory</translation>
+<translation id="8512053371384421952">Už nebudete dostávat oznámení z webu <ph name="DOMAIN" />.</translation>
 <translation id="8514477925623180633">Exportovat hesla uložená v Chromu</translation>
 <translation id="8516012719330875537">Editor obrázků</translation>
 <translation id="8523928698583292556">Vymazat uložené heslo</translation>

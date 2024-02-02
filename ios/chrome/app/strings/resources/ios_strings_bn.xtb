@@ -148,6 +148,7 @@
 <translation id="1753905327828125965">সর্বাধিক দেখা</translation>
 <translation id="1757699834933698436">{count,plural, =1{{count}টি দুর্বল পাসওয়ার্ড}one{{count}টি দুর্বল পাসওয়ার্ড}other{{count}টি দুর্বল পাসওয়ার্ড}}</translation>
 <translation id="1767766085187034454">Google Translate</translation>
+<translation id="1780152987505130652">গ্রুপ বন্ধ করুন</translation>
 <translation id="1789803444939621101"><ph name="USER_NAME" />, আপনাকে আবার স্বাগত জানাই</translation>
 <translation id="1803264062614276815">কার্ড হোল্ডারের নাম</translation>
 <translation id="1809939268435598390">ফোল্ডার মুছুন</translation>
@@ -213,7 +214,6 @@
 <translation id="2080769225927880590">সঠিক অ্যাকাউন্ট ব্যবহার করে সাইন-ইন করুন</translation>
 <translation id="2103075008456228677">history.google.com খুলুন</translation>
 <translation id="21133533946938348">ট্যাব পিন করুন</translation>
-<translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" />টি আইটেম সরানো হয়েছে</translation>
 <translation id="2122754583996902531">আপনার ব্রাউজার ম্যানেজ করা হয়। <ph name="BEGIN_LINK" />আরও জানুন<ph name="END_LINK" /></translation>
 <translation id="2139502497535990641">ভাড়া বিষয়ক সতর্কতা চালু করবেন?</translation>
 <translation id="2139867232736819575">আপনার কপি করা টেক্সট সার্চ করুন</translation>
@@ -565,6 +565,7 @@
 <translation id="3929457972718048006">ঠিকানা</translation>
 <translation id="3948600256434252210">আপনি 'ছদ্মবেশী' মোডে ব্রাউজ করার জন্য ডানদিকে সোয়াইপ করুন।</translation>
 <translation id="3955822496205734389">আপনার দুর্বল পাসওয়ার্ড আছে।</translation>
+<translation id="3958312024468322930">আপনার হোম স্ক্রিনের নিচে ডকে এটি টেনে নিয়ে আসুন</translation>
 <translation id="3959736869653157332">মেনু → নতুন ছদ্মবেশী ট্যাব</translation>
 <translation id="3962326069546168954">সেভ করুন</translation>
 <translation id="3967822245660637423">ডাউনলোড সম্পূর্ণ</translation>
@@ -646,6 +647,7 @@
 <translation id="4431224949908513835">সম্পূর্ণ করার জন্য পেমেন্ট পদ্ধতি বেছে নিন।</translation>
 <translation id="4442550905108052454"><ph name="BEGIN_BOLD" />সেটিংস<ph name="END_BOLD" /> খুলুন</translation>
 <translation id="4454246407045105932">ভাষা যোগ করার সেটিংস</translation>
+<translation id="4460014764210899310">আলাদা করুন</translation>
 <translation id="4461286950227634995">পাসওয়ার্ড সেভ করার প্রস্তাব</translation>
 <translation id="4462491365653392320">ট্যাবে দাম ট্র্যাক করুন</translation>
 <translation id="4469324811108161144">নোট সর্বাধিক <ph name="CHARACTER_LIMIT" />টি অক্ষর সেভ করতে পারে।</translation>
@@ -926,7 +928,6 @@
 <translation id="5857770089550859117">সিঙ্ক শুরু করতে পাসফ্রেজ প্রয়োজন।</translation>
 <translation id="5859715514067755465">ফরওয়ার্ড করা</translation>
 <translation id="5860033963881614850">বন্ধ করুন</translation>
-<translation id="5871497086027727873">১টি আইটেম সরানো হয়েছে</translation>
 <translation id="5896576662943111387">iOS-এর জন্য তৈরি করা হয়েছে</translation>
 <translation id="5897749768294722429">আপনার দেখা সাইটে ঝটপট ফিরে যেতে, ট্যাব ও ইতিহাস সিঙ্ক করুন।</translation>
 <translation id="5897956970858271241">কপি করা লিঙ্কে যান</translation>
@@ -1462,6 +1463,7 @@
 <translation id="8620640915598389714">সম্পাদনা করুন</translation>
 <translation id="8624447588354561276">প্যাকেজ নম্বর</translation>
 <translation id="8624753446837753970">পজিশন সেট করুন</translation>
+<translation id="8625706492572042370">হোম স্ক্রিন এডিট করুন</translation>
 <translation id="8626393685701737946">সেটিংস &gt; কন্টেন্ট সেটিংস বিকল্প থেকে ডেস্কটপে ডিফল্ট সাইট ভিউ পরিবর্তন করতে পারবেন</translation>
 <translation id="8636825310635137004">আপনার অন্য ডিভাইসগুলি থেকে আপনার ট্যাবগুলি পেতে, সিঙ্ক চালু করুন।</translation>
 <translation id="8637431369725868556">বিপজ্জনক সাইট থেকে সুরক্ষা পান।</translation>
@@ -1493,6 +1495,7 @@
 <translation id="8766790350274092814"><ph name="WEBSITE" /> এবং <ph name="SECOND_WEBSITE" />-এর পাসওয়ার্ড মুছে ফেলা হবে। আপনার অ্যাকাউন্ট মুছে ফেলা হবে না।</translation>
 <translation id="8775144690796719618">ভুল ইউআরএল</translation>
 <translation id="8780076847684176174">{count,plural, =1{ট্যাব পর্যালোচনা করুন...}one{সবকটি ট্যাব পর্যালোচনা করুন...}other{সবকটি ট্যাব পর্যালোচনা করুন...}}</translation>
+<translation id="8781834595282316166">গ্রুপে নতুন ট্যাব যোগ করুন</translation>
 <translation id="8782570580170191813">সব সময় প্যাকেজ ট্র্যাক করুন</translation>
 <translation id="8787968206789828143">ওয়েবে সার্চ করুন</translation>
 <translation id="8792626944327216835">মাইক্রোফোন</translation>

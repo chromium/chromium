@@ -2919,7 +2919,6 @@ I-<ph name="DOMAIN" /> idinga ukuba ugcine ikhadi lakho elimsathi lifakiwe.</tra
 <translation id="3188465121994729530">Ihambisa okumaphakathi</translation>
 <translation id="3189187154924005138">I-cursor enkulu</translation>
 <translation id="3190558889382726167">Iphasiwedi igciniwe</translation>
-<translation id="3191625924275846436">{NUM_SITES,plural, =1{Ukuze kuvikelwe idatha yakho, izimvume zisusiwe kusayithi ongakaze ulivakashele kamuva nje}one{Ukuze kuvikelwe idatha yakho, izimvume zisusiwe kumasayithi ongazange uwavakashele kamuva nje}other{Ukuze kuvikelwe idatha yakho, izimvume zisusiwe kumasayithi ongazange uwavakashele kamuva nje}}</translation>
 <translation id="3192586965067888278">Chaza inkinga ngokuningiliziwe. Impendulo izothunyelwa ku-Google ukuze ibuyekezwe abantu futhi ingase isetshenziswe ukuze kuthuthukiswe noma kwakhiwe imikhiqizo namasevisi e-Google.</translation>
 <translation id="3192947282887913208">Amafayela womsindo</translation>
 <translation id="3193695589337931419">Amasignali Asetshenziswayo Wesistimu</translation>
@@ -4076,7 +4075,6 @@ Lokhu kungafaka ulwazi mayelana nesofthiwe efakiwe, amafayela, ibhrawuza yakho, 
 <translation id="4078903002989614318">Ukuhlunga kanye nokukhethwa kukho kohlu</translation>
 <translation id="4079140982534148664">Sebenzisa Ukuhlola Kwesipele Okuthuthukisiwe</translation>
 <translation id="4082333918978320301">Awekho amawebhusayithi avumelekile ukusebenzisa imakrofoni yakho</translation>
-<translation id="4084582735848141214">{COUNT,plural, =1{Isayithi eli-1 livunyelwe}one{Amasayithi angu-# avunyelwe}other{Amasayithi angu-# avunyelwe}}</translation>
 <translation id="4084682180776658562">Ibhukhimakhi</translation>
 <translation id="4084835346725913160">Vala <ph name="TAB_NAME" /></translation>
 <translation id="4085298594534903246">I-JavaScript ivinjiwe kuleli khasi.</translation>
@@ -8076,7 +8074,6 @@ Unamaphasiwedi onakalisiwe angu-# ngokwengeziwe. Umphathi Wephasiwedi Ye-Google 
 <translation id="7260186537988033909">Ikhiyoski nokubhaliswa kudivayisi yezimpawu kuqedile</translation>
 <translation id="7261612856573623172">Izwi lesistimu lokuguqula umbhalo ube inkulumo</translation>
 <translation id="7262004276116528033">Le sevisi yokungena ngemvume isingathwa yi-<ph name="SAML_DOMAIN" /></translation>
-<translation id="7263162347647986485">{NUM_SITES,plural, =1{Izimvume zikhishiwe kusayithi eli-1}one{Izimvume zikhishiwe kumasayithi angu-{NUM_SITES}}other{Izimvume zikhishiwe kumasayithi angu-{NUM_SITES}}}</translation>
 <translation id="7264695323040866038">Hlala usebenzisa i-app ye-<ph name="APP" /> ukuvula amalinki wewebhu asekelwe?</translation>
 <translation id="7267044199012331848">Ayikwazanga ukufaka umshini ngokubuka Sicela uzame futhi, noma xhumana nomlawuli wakho. Ikhodi yephutha: <ph name="ERROR_CODE" />.</translation>
 <translation id="7267875682732693301">Qhubeka nokuphakamisa umunwe wakho ukuze ungeze izingxenye ezahlukahlukene zezigxiviso zeminwe zakho</translation>
@@ -9821,7 +9818,6 @@ Gcina ifayela lakho elingukhiye endaweni evikelekile. Uzolidinga ukuze udale izi
 <translation id="859246725979739260">Leli sayithi livinjiwe ekufinyeleleni indawo yakho.</translation>
 <translation id="8593121833493516339">Thumela idatha yokusetshenziswa neyokuxilonga. Siza ukuthuthukisa umuzwa we-Android wengane yakho ngokuthumela ngokuzenzakalela idatha yokuxilonga, yedivayisi, neyokusetshenziswa kohlelo lokusebenza ku-Google. Lokhu ngeke kusetshenziselwe ukukhomba ingane yakho futhi kuzosiza ukuzinza kwesistimu nokohlelo lokusebenza nokunye ukuthuthukiswa. Enye idatha izophinda isize izinhlelo zokusebenza ze-Google nozakwethu, abafana nonjiniyela be-Android. Uma umsebenzi ongeziwe wewebhu nowohlelo lokusebenza uvulelwe ingane yakho, le datha ingalondolozwa ku-akhawunti yakhe ye-Google. <ph name="BEGIN_LINK1" />Funda kabanzi<ph name="END_LINK1" /></translation>
 <translation id="8593450223647418235">Ngeke ukwazi ukuvula amafayela ku-Microsoft 365 kuze kuphele ukusethwa.</translation>
-<translation id="8594585498253980290">{COUNT,plural, =1{Isayithi eli-1 livinjiwe}one{Amasayithi angu-# avinjiwe}other{Amasayithi angu-# avinjiwe}}</translation>
 <translation id="8596540852772265699">Amafayela wangokwezifiso</translation>
 <translation id="8597462463725156723">Izaziso ngeke zizivelele esikrinini. Usengabona izaziso ngokuchofoza isithonjana esithi Ungaphazamisi ezansi kwesokudla sesikrini sakho.</translation>
 <translation id="8597845839771543242">Ifomethi yendawo:</translation>

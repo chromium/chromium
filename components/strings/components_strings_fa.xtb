@@ -430,6 +430,7 @@
 <translation id="1752021286346845558">صندوق پست ۸</translation>
 <translation id="1753068535428855445">دوستیابی و شخصیت</translation>
 <translation id="1753706481035618306">شماره صفحه</translation>
+<translation id="1755203724116202818">برای سنجش عملکرد آگهی، انواع محدودی از داده‌ها بین سایت‌ها هم‌رسانی می‌شود؛ مثلاً آیا پس‌از بازدید از سایت خریدی انجام داده‌اید یا نه.</translation>
 <translation id="1755621011177747277">به فرزندی پذیرفتن</translation>
 <translation id="1756026472674246267">باز کردن پیوند در برگه جدید</translation>
 <translation id="175656076281618225">تردستی</translation>
@@ -884,6 +885,7 @@
 <translation id="2674804415323431591">پنهان کردن پیشنهادها</translation>
 <translation id="2677696497921480781">تاریخ تولد و روز نام‌گذاری</translation>
 <translation id="2677748264148917807">خروج</translation>
+<translation id="2683195745483370038">نتایج دیگری پیدا شد</translation>
 <translation id="2686919536310834199">درباره «کمک به نوشتن» بازخورد ارسال کنید.</translation>
 <translation id="2687555958734450033">بهترین اندازه</translation>
 <translation id="2688186765492306706">۷۶۰ × ۵۰۰ میلی‌متر</translation>
@@ -1265,6 +1267,7 @@
 <translation id="3462200631372590220">پنهان کردن پیشرفته</translation>
 <translation id="3465972433695735758">‏این فایل PDF غیرقابل‌دسترس است. نوشتار، با بهره‌گیری از هوش مصنوعی Google، استخراج شد</translation>
 <translation id="346601286295919445">شیمی</translation>
+<translation id="3467081767799433066">با سنجش آگهی، انواع محدودی از داده‌ها بین سایت‌ها هم‌رسانی می‌شود تا سایت‌ها بتوانند عملکرد آگهی‌هایشان را بسنجند؛ مثلاً آیا پس‌از بازدید از سایت خریدی انجام داده‌اید یا نه.</translation>
 <translation id="3468054117417088249">‏<ph name="TAB_SWITCH_SUFFIX" />، اکنون باز است، برای جابه‌جا شدن به برگه باز، ابتدا دکمه Tab سپس Enter را فشار دهید</translation>
 <translation id="3470563864795286535"><ph name="CLOSE_INCOGNITO_WINDOWS_FOCUSED_FRIENDLY_MATCH_TEXT" />؛ برای بستن همه پنجره‌های ناشناسی که درحال‌حاضر باز هستند، کلید «جهش» و سپس «ورود» را فشار دهید</translation>
 <translation id="3474392552865647225">‏دکمه «سفارشی‌سازی قلم‌ها در Chrome»؛ برای سفارشی‌سازی اندازه قلم‌ها و طرح حروف در Chrome، آن را فعال کنید</translation>
@@ -2788,7 +2791,6 @@
 <translation id="6480864723214312258">باتری‌های خانگی</translation>
 <translation id="6486200200930923183">فیلم مستند</translation>
 <translation id="6489534406876378309">شروع بارگذاری کردن خرابی‌ها</translation>
-<translation id="6491663123807473970">‏<ph name="URL" /> می‌خواهد از دستگاه‌های MIDI شما استفاده کند</translation>
 <translation id="6493924760403974580">این برنامه فقط از این اندازه پشتیبانی می‌کند.</translation>
 <translation id="6494750904506170417">بالاپرها و هدایت‌ها</translation>
 <translation id="6495664197699704593">این گذرواژه فقط در این دستگاه ذخیره می‌شود. برای استفاده از آن در دستگاه‌های دیگر، <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
@@ -4080,6 +4082,7 @@
 <translation id="9005998258318286617">‏سند PDF بارگیری نشد.</translation>
 <translation id="9008178007718859630">دکوراسیون داخلی و خانه</translation>
 <translation id="9008201768610948239">نادیده گرفتن</translation>
+<translation id="9014705027639070815">‏سایت‌هایی که بازدید می‌کنید می‌توانند برای کمک به سنجش عملکرد آگهی‌هایشان، اطلاعاتی از Chrome درخواست کنند. ‫Chrome به سایت‌ها اجازه می‌دهد انواع محدودی از داده را جمع‌آوری کنند؛ مثلاً آیا پس‌از بازدید از سایت خریدی انجام داده‌اید یا نه.</translation>
 <translation id="9018120810758822233">کد امنیتی خود را برای <ph name="CREDIT_CARD" /> وارد کنید</translation>
 <translation id="901834265349196618">ایمیل</translation>
 <translation id="9020542370529661692">این صفحه به <ph name="TARGET_LANGUAGE" /> ترجمه شده است</translation>

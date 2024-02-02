@@ -2919,7 +2919,6 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.</t
 <translation id="3188465121994729530">Cyfartaledd Symudol</translation>
 <translation id="3189187154924005138">Cyrchwr mawr</translation>
 <translation id="3190558889382726167">Mae'r cyfrinair wedi'i gadw</translation>
-<translation id="3191625924275846436">{NUM_SITES,plural, =1{I amddiffyn eich data, tynnwyd caniatadau o wefan nad ydych wedi ymweld â hi yn ddiweddar}zero{I amddiffyn eich data, tynnwyd caniatadau o wefannau nad ydych wedi ymweld â nhw yn ddiweddar}two{I amddiffyn eich data, tynnwyd caniatadau o wefannau nad ydych wedi ymweld â nhw yn ddiweddar}few{I amddiffyn eich data, tynnwyd caniatadau o wefannau nad ydych wedi ymweld â nhw yn ddiweddar}many{I amddiffyn eich data, tynnwyd caniatadau o wefannau nad ydych wedi ymweld â nhw yn ddiweddar}other{I amddiffyn eich data, tynnwyd caniatadau o wefannau nad ydych wedi ymweld â nhw yn ddiweddar}}</translation>
 <translation id="3192586965067888278">Disgrifiwch y broblem yn fanwl. Bydd adborth yn cael ei anfon at Google i'w adolygu gan bobl a gellir ei ddefnyddio i wella neu ddatblygu cynhyrchion a gwasanaethau Google.</translation>
 <translation id="3192947282887913208">Ffeiliau Sain</translation>
 <translation id="3193695589337931419">Cyfleustodau Signalau System</translation>
@@ -4076,7 +4075,6 @@ Gall hyn gynnwys gwybodaeth am feddalwedd sydd wedi'i gosod, ffeiliau, eich porw
 <translation id="4078903002989614318">Dewisiadau trefnu a rhestru</translation>
 <translation id="4079140982534148664">Defnyddio Gwell Gwirio Sillafu</translation>
 <translation id="4082333918978320301">Ni chaniateir i unrhyw wefannau ddefnyddio'ch meicroffon</translation>
-<translation id="4084582735848141214">{COUNT,plural, =1{Caniateir 1 wefan}zero{Caniateir # gwefan}two{Caniateir # wefan}few{Caniateir # gwefan}many{Caniateir # gwefan}other{Caniateir # gwefan}}</translation>
 <translation id="4084682180776658562">Nod tudalen</translation>
 <translation id="4084835346725913160">Cau <ph name="TAB_NAME" /></translation>
 <translation id="4085298594534903246">Cafodd JavaScript ei rwystro ar y dudalen hon.</translation>
@@ -8072,7 +8070,6 @@ Mae gennych # cyfrinair arall sydd wedi'u darganfod. Mae Rheolwr Cyfrineiriau Go
 <translation id="7260186537988033909">Wedi cwblhau cofrestru dyfais ciosg neu arwyddion</translation>
 <translation id="7261612856573623172">Llais Testun i Lefarydd System</translation>
 <translation id="7262004276116528033">Mae'r gwasanaeth mewngofnodi hwn yn cael ei westeio gan <ph name="SAML_DOMAIN" /></translation>
-<translation id="7263162347647986485">{NUM_SITES,plural, =1{Caniatâd wedi'i dynnu ar gyfer 1 gwefan}zero{Caniatâd wedi'i dynnu ar gyfer {NUM_SITES} gwefan}two{Caniatâd wedi'i dynnu ar gyfer {NUM_SITES} wefan}few{Caniatâd wedi'i dynnu ar gyfer {NUM_SITES} gwefan}many{Caniatâd wedi'i dynnu ar gyfer {NUM_SITES} gwefan}other{Caniatâd wedi'i dynnu ar gyfer {NUM_SITES} gwefan}}</translation>
 <translation id="7264695323040866038">Defnyddio'r ap <ph name="APP" /> bob amser i agor dolenni gwe a gefnogir?</translation>
 <translation id="7267044199012331848">Methu â gosod y peiriant rhithwir. Rhowch gynnig arall arni, neu cysylltwch â'ch gweinyddwr. Cod gwall: <ph name="ERROR_CODE" />.</translation>
 <translation id="7267875682732693301">Parhewch i godi'ch bys i ychwanegu gwahanol rannau eich olion bysedd</translation>
@@ -9816,7 +9813,6 @@ Cadwch eich ffeil allwedd mewn man diogel. Bydd ei hangen arnoch i greu fersiyna
 <translation id="859246725979739260">Mae'r wefan hon wedi'i rhwystro rhag cael mynediad at eich lleoliad.</translation>
 <translation id="8593121833493516339">Anfon data defnydd a diagnostig. Helpwch i wella profiad Android eich plentyn drwy anfon data diagnostig, dyfais ac ap yn awtomatig at Google. Ni ddefnyddir hwn i adnabod eich plentyn a bydd yn helpu sefydlogrwydd system ac ap a gwelliannau eraill. Bydd rhywfaint o ddata cyfanredol hefyd yn helpu apiau a phartneriaid Google, megis datblygwyr Android. Os yw Gweithgarwch ar y We ac Apiau ychwanegol wedi'i droi ymlaen ar gyfer eich plentyn, gellir cadw'r data hyn i'w gyfrif Google. <ph name="BEGIN_LINK1" />Dysgu rhagor<ph name="END_LINK1" /></translation>
 <translation id="8593450223647418235">Ni fyddwch yn gallu agor ffeiliau yn Microsoft 365 nes bod y gosodiad wedi'i gwblhau.</translation>
-<translation id="8594585498253980290">{COUNT,plural, =1{1 wefan wedi'i rhwystro}zero{# gwefan wedi'u rhwystro}two{# wefan wedi'u rhwystro}few{# gwefan wedi'u rhwystro}many{# gwefan wedi'u rhwystro}other{# gwefan wedi'u rhwystro}}</translation>
 <translation id="8596540852772265699">Ffeiliau Personol</translation>
 <translation id="8597462463725156723">Ni fydd hysbysiadau yn neidio ar y sgrîn. Gallwch barhau i weld hysbysiadau drwy glicio ar yr eicon Peidiwch ag Aflonyddu ar waelod dde eich sgrîn.</translation>
 <translation id="8597845839771543242">Fformat priodwedd:</translation>

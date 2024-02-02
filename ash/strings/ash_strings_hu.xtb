@@ -1342,6 +1342,7 @@ Az akkumulátor-élettartam növelése érdekében egyes funkciók korlátozotta
 <translation id="6298183524022479114">Eszköz személyre szabása az alkalmazásban</translation>
 <translation id="6309219492973062892">Kattintson vagy koppintson a polcon lévő ikonokra (1–8)</translation>
 <translation id="6315170314923504164">Hang</translation>
+<translation id="6319058840130157106">Mozgás visszafelé a jobb alsó sarok, az Indító, a címsáv, a könyvjelzősáv, a megnyitott webhely és a letöltések között</translation>
 <translation id="6324916366299863871">Billentyűparancs szerkesztése</translation>
 <translation id="6330012934079202188">Most az összes asztal ablakait mutatja; az aktuális asztal ablakainak megjelenítéséhez nyomja meg a felfelé nyilat</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> – <ph name="MANAGER" /> által kezelt munkamenet</translation>
@@ -1927,6 +1928,7 @@ Az eszköz leállításához tartsa ismét nyomva az eszköz bekapcsológombját
 <translation id="878215960996152260"><ph name="APP_NAME" />, telepített alkalmazás, letiltva</translation>
 <translation id="8785070478575117577">Csatlakozás a következőhöz: <ph name="NETWORK_NAME" /></translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
+<translation id="8790632710469941716">Mozgás előre a jobb alsó sarok, az Indító, a címsáv, a könyvjelzősáv, a megnyitott webhely és a letöltések között</translation>
 <translation id="8792626944327216835">mikrofon</translation>
 <translation id="8801802992492329306">5G</translation>
 <translation id="8806053966018712535"><ph name="FOLDER_NAME" /> mappa</translation>

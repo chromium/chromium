@@ -139,6 +139,7 @@ Zure pasaesaldia dakitenek soilik irakur ditzakete zure datu enkriptatuak. Googl
 <translation id="1749561566933687563">Sinkronizatu laster-markak</translation>
 <translation id="1750259112639922169">Fitxa taldea (<ph name="TAB_COUNT" /> fitxa)</translation>
 <translation id="17513872634828108">Fitxa irekiak</translation>
+<translation id="1755203724116202818">Iragarki baten errendimendua neurtzeko, datu mota jakin batzuk soilik partekatzen dituzte webguneek elkarren artean; adibidez, webgune bat bisitatu ondoren erosketa bat egin duzun.</translation>
 <translation id="1757620656501361327">Google-ren Pasahitz-kudeatzailea zerbitzuari buruzko informazio eguneratua</translation>
 <translation id="1760873718737761808">{FILE_COUNT,plural, =1{Orriak, 1 orri zerrendan}other{Orriak, # orri zerrendan}}</translation>
 <translation id="1778457539567749232">Markatu irakurri gabeko gisa</translation>
@@ -334,6 +335,7 @@ Zure pasaesaldia dakitenek soilik irakur ditzakete zure datu enkriptatuak. Googl
 <translation id="2870560284913253234">Webgunea</translation>
 <translation id="2871733351037274014">Kargatu orriak aurrez</translation>
 <translation id="2876136027428473467"><ph name="CHILD_NAME" /> erabiltzaileak zure onarpena eskatu du webgune hau atzitzeko:</translation>
+<translation id="2876194821763651818">Gorde dira pasahitzak <ph name="USERNAME" /> kontuan.</translation>
 <translation id="2876628302275096482">Lortu <ph name="BEGIN_LINK" />Chrome-k zure datuen pribatutasuna babesteko duen moduari<ph name="END_LINK" /> buruzko informazio gehiago</translation>
 <translation id="2888126860611144412">Chrome-ri buruz</translation>
 <translation id="2891154217021530873">Utzi orriak kargatzeari</translation>
@@ -451,6 +453,7 @@ Zure pasaesaldia dakitenek soilik irakur ditzakete zure datu enkriptatuak. Googl
 <translation id="3443221991560634068">Kargatu berriro oraingo orria</translation>
 <translation id="3444179773590444986">Webguneetarako gai ilunari buruzko iritzia partekatu nahi duzu?</translation>
 <translation id="3452832259067974318">Zure pribatutasuna babesteko, Chrome-k ez du idatziko automatikoki pasahitza eremu honetan.</translation>
+<translation id="3467081767799433066">Iragarkien neurketarekin, datu mota jakin batzuk soilik partekatzen dituzte webguneek elkarren artean iragarkien errendimendua neurtzeko; adibidez, webgune bat bisitatu ondoren erosketa bat egin duzun.</translation>
 <translation id="3474624961160222204">Erabili <ph name="NAME" /></translation>
 <translation id="3478363558367712427">Bilatzailea aukera dezakezu</translation>
 <translation id="3479552764303398839">Orain ez</translation>
@@ -631,6 +634,7 @@ Zure pasaesaldia dakitenek soilik irakur ditzakete zure datu enkriptatuak. Googl
 <translation id="4494806687727322324">Administratzaileak aktibatu egin du pasahitzak gordetzeko eginbidea</translation>
 <translation id="4508528996305412043">Jarioko txartelaren menua irekita dago</translation>
 <translation id="4509501256689523862">Arakatzen duzunean, hainbat faktorek zehazten dute ikusten dituzun iragarkiak pertsonalizatuta dauden ala ez: ezarpen hau, <ph name="BEGIN_LINK_1" />Iragarkien gaiak<ph name="END_LINK_1" /> ezarpena, <ph name="BEGIN_LINK_2" />cookieen ezarpenak<ph name="END_LINK_2" /> eta ikusten dituzun webguneek iragarkiak pertsonalizatzen dituzten ala ez</translation>
+<translation id="4509741852167209430">Iragarkien errendimendua neurtzeko, datu mota jakin batzuk soilik partekatzen dituzte webguneek elkarren artean; adibidez, webgune bat bisitatu ondoren erosketa bat egin duzun.</translation>
 <translation id="4513387527876475750">{DAYS,plural, =1{Duela # egun}other{Duela # egun}}</translation>
 <translation id="451872707440238414">Bilatu laster-marketan</translation>
 <translation id="4521489764227272523">Kendu dira hautatutako datuak Chrome-tik eta sinkronizatutako gailuetatik.
@@ -672,6 +676,7 @@ Baliteke Google-ko kontuak arakatze-historiako bestelako datu batzuk (adibidez, 
 <translation id="4699172675775169585">Cachean gordetako irudiak eta fitxategiak</translation>
 <translation id="4710167854527459075">Ordenatu berrienetik hasita</translation>
 <translation id="4719927025381752090">Eskaini itzultzea</translation>
+<translation id="4720556299488643018">Kendu harpidetza</translation>
 <translation id="4732120983431207637">Pila-ezabatzailea</translation>
 <translation id="4736934858538408121">Txartel birtuala</translation>
 <translation id="473775607612524610">Eguneratu</translation>
@@ -1194,6 +1199,7 @@ Esaterako, bisitatu dituzun webguneetan oinarritzen ez diren iragarkiak bidalita
 <translation id="7313188324932846546">Sakatu hau sinkronizazioa konfiguratzeko</translation>
 <translation id="7324354302972299151">Bidali Do Not Track eskaera bat</translation>
 <translation id="7332075081379534664">Hasi da saioa</translation>
+<translation id="7333041109965360609">Kendu da jakinarazpenetako harpidetza</translation>
 <translation id="7333232495927792353">Sinkronizatu datuak Google-k edukirik egokiena eskain diezazun</translation>
 <translation id="7339898014177206373">Leiho berria</translation>
 <translation id="7340958967809483333">Discover-en aukerak</translation>
@@ -1452,6 +1458,7 @@ Esaterako, bisitatu dituzun webguneetan oinarritzen ez diren iragarkiak bidalita
 <translation id="8503813439785031346">Erabiltzaile-izena</translation>
 <translation id="8505766168025405649">Ikusi deskarga-egoerari buruzko jakinarazpena</translation>
 <translation id="8506357771923193001">Deskargak aurkituko dituzu hemen</translation>
+<translation id="8512053371384421952">Aurrerantzean, ez duzu jasoko <ph name="DOMAIN" /> domeinuaren jakinarazpenik.</translation>
 <translation id="8514477925623180633">Esportatu Chrome-rekin gordetako pasahitzak</translation>
 <translation id="8516012719330875537">Irudi-editorea</translation>
 <translation id="8523928698583292556">Ezabatu gordetako pasahitza</translation>

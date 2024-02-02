@@ -109,7 +109,6 @@
 <translation id="2750481671343847896">Os sites podem mostrar pedidos de início de sessão de serviços de identidade.</translation>
 <translation id="2790501146643349491">Quando esta opção está ativada, os sites fechados recentemente podem concluir o envio e a receção de dados. Quando esta opção está desativada, os sites fechados recentemente não podem concluir o envio nem a receção de dados.</translation>
 <translation id="2822354292072154809">Tem a certeza de que quer repor todas as autorizações do site para <ph name="CHOSEN_OBJECT_NAME" />?</translation>
-<translation id="2836978798613876756"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> <ph name="HOST_NAME" /></translation>
 <translation id="2850913818900871965">Peça a vista de dispositivo móvel</translation>
 <translation id="2870560284913253234">Site</translation>
 <translation id="2874939134665556319">Faixa anterior</translation>
@@ -121,7 +120,6 @@
 <translation id="2968755619301702150">Visualizador de certificados</translation>
 <translation id="2979365474350987274">Os cookies de terceiros são limitados</translation>
 <translation id="3008272652534848354">Repor autorizações</translation>
-<translation id="3013291976881901233">Dispositivos MIDI</translation>
 <translation id="301521992641321250">Bloqueada automaticamente</translation>
 <translation id="3069226013421428034">Permita o início de sessão de terceiros num site específico.</translation>
 <translation id="3082992102194421695">{COUNT,plural, =1{Expira amanhã}other{Expira dentro de # dias}}</translation>
@@ -192,7 +190,6 @@
 <translation id="4169549551965910670">Ligado a um dispositivo USB</translation>
 <translation id="4194328954146351878">Perguntar antes de permitir que os sites vejam e alterem informações em dispositivos NFC (recomendado)</translation>
 <translation id="4200726100658658164">Abrir definições de localização</translation>
-<translation id="4212246570487010370">Continue a navegar</translation>
 <translation id="4226663524361240545">As notificações podem fazer com que o dispositivo vibre</translation>
 <translation id="4259722352634471385">A navegação está bloqueada: <ph name="URL" /></translation>
 <translation id="4278390842282768270">Permitido</translation>
@@ -282,7 +279,6 @@
 <translation id="5706552988683188916">Esta ação elimina os cookies e outros dados de sites de <ph name="WEBSITE" /></translation>
 <translation id="5723967018671998714">Os cookies de terceiros estão bloqueados no Modo de navegação anónima</translation>
 <translation id="5740126560802162366">Os sites podem guardar dados no seu dispositivo</translation>
-<translation id="5749158352074143502">Continue com este separador</translation>
 <translation id="5771720122942595109">Bloqueio de <ph name="PERMISSION_1" />.</translation>
 <translation id="5804241973901381774">Permissões</translation>
 <translation id="5844448279347999754">Quando esta opção está ativada, os sites podem pedir para ver o texto e as imagens guardados na área de transferência. Quando esta opção está desativada, os sites não podem ver o texto nem as imagens guardados na área de transferência.</translation>
@@ -351,7 +347,6 @@
 <translation id="6746124502594467657">Mover para baixo</translation>
 <translation id="6749077623962119521">Quer repor as autorizações?</translation>
 <translation id="6766622839693428701">Deslize rapidamente para baixo para fechar.</translation>
-<translation id="6785959295338971061"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> De <ph name="FROM_DEVICE" /></translation>
 <translation id="6787751205395685251">Selecione uma opção para <ph name="SITE_NAME" /></translation>
 <translation id="6790428901817661496">Reproduzir</translation>
 <translation id="6818926723028410516">Selecionar itens</translation>
@@ -423,7 +418,6 @@
 <translation id="7990211076305263060">Quando esta opção está ativada, os sites podem pedir para usar o microfone. Quando esta opção está desativada, os sites não podem usar o microfone.</translation>
 <translation id="8007176423574883786">Desativada para este dispositivo</translation>
 <translation id="802154636333426148">Falha ao transferir</translation>
-<translation id="8024161440284949905">Continue com estes separadores</translation>
 <translation id="8042586301629853791">Ordenar por:</translation>
 <translation id="8067883171444229417">Ver vídeo</translation>
 <translation id="8068648041423924542">Não é possível selecionar o certificado.</translation>

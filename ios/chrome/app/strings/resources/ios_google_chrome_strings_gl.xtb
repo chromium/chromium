@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="gl">
+<translation id="1021782183249308751">Mantén premida a icona de Chrome e fai clic en Editar a pantalla de inicio</translation>
 <translation id="1066101356081285416">Chrome detectará os números de seguimento nos sitios que visites e mostrarache a información actualizada dos paquetes na páxina Nova pestana. O número de seguimento do paquete e o nome do sitio web enviaranse a Google co fin de fornecer este servizo e mellorar as funcións relacionadas coas compras de Google para todo o mundo. Podes modificar esta opción cando queiras na <ph name="BEGIN_LINK" />configuración de seguimento de paquetes<ph name="END_LINK" />.</translation>
 <translation id="1085696779717592361">Utilizar Chrome de forma predeterminada</translation>
 <translation id="1105362920864247682">Borra os datos de navegación en Chrome.</translation>
@@ -96,6 +97,7 @@ Só poderá ler os teus datos encriptados quen teña a túa frase de acceso (Goo
 <translation id="3345341804167540816">Usar Chrome en todas partes</translation>
 <translation id="3360031466389132716">{THRESHOLD,plural, =1{Isto ocorre cando Chrome non se utiliza durante {THRESHOLD} minuto}other{Isto ocorre cando Chrome non se utiliza durante {THRESHOLD} minutos}}</translation>
 <translation id="3399930248910934354">Abrir configuración de Chrome</translation>
+<translation id="344736123700721678">Accede a Chrome máis rápido desde a barra de aplicacións da pantalla de inicio</translation>
 <translation id="3472587960215700950">Chrome usa Google Maps para darche indicacións e información local sobre os enderezos detectados.</translation>
 <translation id="3503014945441706099">Activa tamén neste perfil de Chrome a función Navegación segura mellorada</translation>
 <translation id="3522659714780527202">Para ver as túas pestanas desde calquera dispositivo no que utilices Chrome, activa a sincronización</translation>

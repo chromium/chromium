@@ -109,7 +109,6 @@
 <translation id="2750481671343847896">사이트에서 ID 서비스의 로그인 메시지를 표시할 수 있습니다.</translation>
 <translation id="2790501146643349491">사용 설정하면 최근에 닫은 사이트에서 데이터 전송 및 수신을 완료할 수 있습니다. 사용 중지하면 최근에 닫은 사이트에서 데이터 전송 또는 수신을 완료할 수 없습니다.</translation>
 <translation id="2822354292072154809"><ph name="CHOSEN_OBJECT_NAME" />의 모든 사이트 권한을 재설정하시겠습니까?</translation>
-<translation id="2836978798613876756"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> <ph name="HOST_NAME" /></translation>
 <translation id="2850913818900871965">모바일 뷰 요청</translation>
 <translation id="2870560284913253234">사이트</translation>
 <translation id="2874939134665556319">이전 트랙</translation>
@@ -121,7 +120,6 @@
 <translation id="2968755619301702150">인증서 뷰어</translation>
 <translation id="2979365474350987274">서드 파티 쿠키 제한됨</translation>
 <translation id="3008272652534848354">권한 재설정</translation>
-<translation id="3013291976881901233">MIDI 기기</translation>
 <translation id="301521992641321250">자동으로 차단됨</translation>
 <translation id="3069226013421428034">특정 사이트에 대해 서드 파티 로그인을 허용합니다.</translation>
 <translation id="3082992102194421695">{COUNT,plural, =1{내일 만료됨}other{#일 후에 만료됨}}</translation>
@@ -192,7 +190,6 @@
 <translation id="4169549551965910670">USB 기기에 연결되었습니다.</translation>
 <translation id="4194328954146351878">사이트에서 NFC 기기의 정보를 보고 변경하도록 허용하기 전에 확인(권장)</translation>
 <translation id="4200726100658658164">위치 설정 열기</translation>
-<translation id="4212246570487010370">계속 탐색</translation>
 <translation id="4226663524361240545">알림이 있으면 진동이 울릴 수도 있습니다.</translation>
 <translation id="4259722352634471385">탐색이 차단됨: <ph name="URL" /></translation>
 <translation id="4278390842282768270">허용됨</translation>
@@ -282,7 +279,6 @@
 <translation id="5706552988683188916"><ph name="WEBSITE" />의 쿠키 및 기타 사이트 데이터가 삭제됩니다.</translation>
 <translation id="5723967018671998714">시크릿 모드에서는 타사 쿠키가 차단됨</translation>
 <translation id="5740126560802162366">사이트에서 기기에 데이터를 저장할 수 있습니다.</translation>
-<translation id="5749158352074143502">이 탭으로 계속</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" /> 차단됨</translation>
 <translation id="5804241973901381774">권한</translation>
 <translation id="5844448279347999754">사용 설정하면 사이트에서 클립보드에 저장된 텍스트 및 이미지 확인을 요청할 수 있습니다. 사용 중지하면 사이트에서 클립보드에 저장된 텍스트나 이미지를 확인할 수 없습니다.</translation>
@@ -351,7 +347,6 @@
 <translation id="6746124502594467657">아래로 이동</translation>
 <translation id="6749077623962119521">권한을 재설정하시겠습니까?</translation>
 <translation id="6766622839693428701">닫으려면 아래로 스와이프하세요.</translation>
-<translation id="6785959295338971061"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> 출처: <ph name="FROM_DEVICE" /></translation>
 <translation id="6787751205395685251"><ph name="SITE_NAME" />에 적용할 옵션 선택</translation>
 <translation id="6790428901817661496">재생</translation>
 <translation id="6818926723028410516">항목 선택</translation>
@@ -423,7 +418,6 @@
 <translation id="7990211076305263060">사용 설정하면 사이트에서 마이크 사용을 요청할 수 있습니다. 사용 중지하면 사이트에서 마이크를 사용할 수 없습니다.</translation>
 <translation id="8007176423574883786">기기에 대해 사용 중지됨</translation>
 <translation id="802154636333426148">다운로드 실패</translation>
-<translation id="8024161440284949905">이 탭으로 계속</translation>
 <translation id="8042586301629853791">정렬 기준:</translation>
 <translation id="8067883171444229417">동영상 재생</translation>
 <translation id="8068648041423924542">인증서를 선택할 수 없습니다.</translation>

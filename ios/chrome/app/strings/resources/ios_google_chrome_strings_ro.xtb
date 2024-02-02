@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ro">
+<translation id="1021782183249308751">Apasă lung pictograma Chrome și dă clic pe Editează ecranul de pornire</translation>
 <translation id="1066101356081285416">Chrome va detecta numerele de urmărire pe site-urile pe care le accesezi și va afișa noutăți despre colete în pagina Filă nouă. Numărul de urmărire a coletului și numele site-ului se vor trimite la Google pentru a oferi această funcție și a îmbunătăți funcțiile Cumpărături Google pentru toată lumea. Poți actualiza oricând opțiunea în <ph name="BEGIN_LINK" />Setările pentru urmărirea coletelor<ph name="END_LINK" />.</translation>
 <translation id="1085696779717592361">Folosește Chrome în mod prestabilit</translation>
 <translation id="1105362920864247682">Șterge datele de navigare din Chrome.</translation>
@@ -96,6 +97,7 @@ Numai un utilizator care deține expresia ta de acces îți poate citi datele cr
 <translation id="3345341804167540816">Folosește Chrome oriunde</translation>
 <translation id="3360031466389132716">{THRESHOLD,plural, =1{Acest lucru se întâmplă când Chrome nu este folosit timp de {THRESHOLD} minut}few{Acest lucru se întâmplă când Chrome nu este folosit timp de {THRESHOLD} minute}other{Acest lucru se întâmplă când Chrome nu este folosit timp de {THRESHOLD} de minute}}</translation>
 <translation id="3399930248910934354">Deschide setările Chrome</translation>
+<translation id="344736123700721678">Accesează Chrome mai rapid din bara de andocare de pe ecranul de pornire</translation>
 <translation id="3472587960215700950">Chrome folosește Google Maps pentru a-ți oferi indicații de orientare și informații locale despre adresele detectate.</translation>
 <translation id="3503014945441706099">Obține și Navigare sigură îmbunătățită pentru acest profil Chrome</translation>
 <translation id="3522659714780527202">Activează sincronizarea ca să vezi toate filele tale deschise în Chrome</translation>

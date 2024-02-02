@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="pt-BR">
+<translation id="1021782183249308751">Toque no ícone do Chrome, pressione e clique em "Editar Tela de Início"</translation>
 <translation id="1066101356081285416">O Chrome vai detectar números de rastreamento nos sites que você visitar e mostrar atualizações de pacotes na página "Nova guia". O número de rastreamento do pacote e o nome do site serão enviados ao Google para fornecer esse recurso e melhorar os recursos de compras para todos. É possível atualizar essa opção a qualquer momento nas <ph name="BEGIN_LINK" />Configurações de rastreamento de pacote<ph name="END_LINK" />.</translation>
 <translation id="1085696779717592361">Usar o Chrome por padrão</translation>
 <translation id="1105362920864247682">Limpar dados de navegação no Chrome.</translation>
@@ -96,6 +97,7 @@ Só uma pessoa com sua senha longa poderá ler os dados criptografados. Essa sen
 <translation id="3345341804167540816">Usar o Chrome em qualquer lugar</translation>
 <translation id="3360031466389132716">{THRESHOLD,plural, =1{Isso acontece quando o Chrome não é usado por {THRESHOLD} minuto}one{Isso acontece quando o Chrome não é usado por {THRESHOLD} minuto}other{Isso acontece quando o Chrome não é usado por {THRESHOLD} minutos}}</translation>
 <translation id="3399930248910934354">Abrir configurações do Chrome</translation>
+<translation id="344736123700721678">Acesse o Chrome com mais rapidez no Dock da tela de início</translation>
 <translation id="3472587960215700950">O Chrome usa o Google Maps para fornecer rotas e informações locais sobre endereços detectados.</translation>
 <translation id="3503014945441706099">Use também o recurso Navegação segura com maior proteção neste perfil do Chrome</translation>
 <translation id="3522659714780527202">Para acessar suas guias em qualquer lugar onde você usar o Chrome, ative a sincronização</translation>

@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="sl">
+<translation id="1021782183249308751">Pridržite ikono Chroma in kliknite »Uredi začetni zaslon«</translation>
 <translation id="1066101356081285416">Chrome zazna številke za sledenje na spletnih mestih, ki jih obiščete, in vam na novem zavihku s povezavami prikaže obvestila o paketu. Številka za sledenje paketu in ime spletnega mesta se pošljeta Googlu zaradi zagotavljanja te funkcije in izboljšanja funkcij nakupovanja v Googlu za vse. To lahko kadar koli posodobite v <ph name="BEGIN_LINK" />nastavitvah sledenja paketu<ph name="END_LINK" />.</translation>
 <translation id="1085696779717592361">Privzeto uporabljajte Chrome</translation>
 <translation id="1105362920864247682">Brisanje podatkov brskanja v Chromu.</translation>
@@ -96,6 +97,7 @@ Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni pos
 <translation id="3345341804167540816">Use Chrome Everywhere</translation>
 <translation id="3360031466389132716">{THRESHOLD,plural, =1{To se zgodi, če Chroma ne uporabljate {THRESHOLD} minuto}one{To se zgodi, če Chroma ne uporabljate {THRESHOLD} minuto}two{To se zgodi, če Chroma ne uporabljate {THRESHOLD} minuti}few{To se zgodi, če Chroma ne uporabljate {THRESHOLD} minute}other{To se zgodi, če Chroma ne uporabljate {THRESHOLD} minut}}</translation>
 <translation id="3399930248910934354">Odpri nastavitve Chroma</translation>
+<translation id="344736123700721678">Hitrejši dostop do Chroma iz vrstice Dock na začetnem zaslonu</translation>
 <translation id="3472587960215700950">Chrome z uporabo Google Zemljevidov prikazuje navodila za pot in lokalne podatke o zaznanih naslovih.</translation>
 <translation id="3503014945441706099">Zagotovite si izboljšano varno brskanje tudi za ta profil v Chromu.</translation>
 <translation id="3522659714780527202">Če si želite ogledati zavihke iz naprav, v katerih uporabljate Chrome, vklopite sinhronizacijo</translation>
@@ -220,6 +222,7 @@ Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni pos
 <translation id="7175129790242719365">Nasvet za Chrome: Prijavite se v Chrome</translation>
 <translation id="7187993566681480880">Skrbi za vašo varnost v Chromu in ga je mogoče uporabiti za okrepitev varnosti v drugih Googlovih aplikacijah, ko ste prijavljeni.</translation>
 <translation id="7200524487407690471">Chrome vsak dan samodejno zažene varnostno preverjanje, da vas varuje pred podatkovnimi kršitvami, spletnimi mesti, ki niso varna, in drugim. Več o varnostnem preverjanju lahko preberete v nastavitvah.</translation>
+<translation id="7203324561587388418">Bodite na tekočem z vsebino in koristnimi nasveti za Chrome.</translation>
 <translation id="72119412072970160">Gesla, ki ste jih shranili v Googlovem upravitelju gesel, lahko uporabite v drugih aplikacijah v iPadu.</translation>
 <translation id="723787869754590019">Uporaba Chroma za samodejno izpolnjevanje</translation>
 <translation id="7254380941803999489">Nastavi Chrome kot privzeti brskalnik</translation>

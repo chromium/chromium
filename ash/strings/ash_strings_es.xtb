@@ -607,9 +607,11 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="3526440770046466733">Abrir el enlace en una pestaña nueva y permanecer en la pestaña actual</translation>
 <translation id="353086728817903341">Conectado a <ph name="NUM_DEVICES" /> dispositivos</translation>
 <translation id="3533126039236445965">Aplicaciones en la estantería</translation>
+<translation id="3537350467437346467">Lo has visto</translation>
 <translation id="3539957339480430241">Punto de acceso de <ph name="DEVICE_NAME" /></translation>
 <translation id="3540893133818942399">Cierra la configuración de la visualización de las fotos y el contenido multimedia recientes de tu teléfono</translation>
 <translation id="3542066395059568317">Aparecerán recomendaciones para que puedas seguir donde lo dejaste. Puedes hacer clic con el botón derecho para quitar las recomendaciones.</translation>
+<translation id="3547318469722231257">Lo has modificado</translation>
 <translation id="3552189655002856821">La conexión Wi‑Fi está desactivada</translation>
 <translation id="3554215588514239132">Mostrar u ocultar el panel de herramientas de desarrollo</translation>
 <translation id="3554637740840164787">Se ha fijado <ph name="ITEM_TITLE" /></translation>
@@ -702,6 +704,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="385300504083504382">Principio</translation>
 <translation id="3859364108019690">No se pueden emitir aplicaciones</translation>
 <translation id="3861651314799684201">Pulsa Intro para grabar toda la pantalla</translation>
+<translation id="3882323608730650973">Modificado</translation>
 <translation id="3886872229787704059">Abierto hoy</translation>
 <translation id="3891340733213178823">Pulsa Ctrl+Mayús+Q dos veces para cerrar sesión.</translation>
 <translation id="3893630138897523026">ChromeVox (mensajes de voz)</translation>
@@ -895,6 +898,7 @@ Algunas funciones están limitadas para aumentar la duración de la batería.</t
 <translation id="4582666543382004902">El punto de acceso se ha desactivado para usar la conexión Wi-Fi. Para usar el punto de acceso, desactiva la conexión Wi‐Fi.</translation>
 <translation id="4585337515783392668">Dejar de enviar contenido a un receptor desconocido</translation>
 <translation id="4596144739579517758">Tema oscuro está desactivado</translation>
+<translation id="4596442969149038771"><ph name="USER" /> lo ha compartido</translation>
 <translation id="4611292653554630842">Iniciar sesión</translation>
 <translation id="462160925400706389"><ph name="NAME" /> conectado</translation>
 <translation id="4623167406982293031">Verificar cuenta</translation>
@@ -1816,6 +1820,7 @@ Para apagarlo, mantén pulsado de nuevo el botón de encendido del dispositivo.<
 <translation id="8314772463905284467">Bloqueo de mayúsculas activado</translation>
 <translation id="8315514906653279104">Activando...</translation>
 <translation id="8331351032546853669">Descarga pendiente</translation>
+<translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
 <translation id="8345019317483336363">Ventana <ph name="WINDOW_TITLE" /> seleccionada</translation>
 <translation id="8349826889576450703">menú de aplicaciones</translation>
@@ -2035,6 +2040,7 @@ Para apagarlo, mantén pulsado de nuevo el botón de encendido del dispositivo.<
 <translation id="953431725143473984">¿Apagar el dispositivo?</translation>
 <translation id="954052413789300507">No hay suficiente espacio para <ph name="FILENAME" />. Libera espacio.</translation>
 <translation id="954520015070501466">30 min</translation>
+<translation id="954786879461589145"><ph name="USER" /> lo ha modificado</translation>
 <translation id="974545358917229949">Se muestran <ph name="RESULT_COUNT" /> resultados de <ph name="QUERY" /></translation>
 <translation id="981011780479609956">Sin fecha de entrega</translation>
 <translation id="98120814841227350">Ir al final del documento</translation>

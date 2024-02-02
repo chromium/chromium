@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="eu">
+<translation id="1021782183249308751">Eduki sakatuta Chrome-ren ikonoa eta sakatu "Editatu hasierako pantaila"</translation>
 <translation id="1066101356081285416">Chrome-k jarraipen-zenbakiak hautemango ditu bisitatzen dituzun webguneetan, eta paketeei buruzko informazio eguneratua erakutsiko dizu Fitxa berria orrian. Paketearen jarraipen-zenbakia eta webgunearen izena Google-ri bidaliko zaizkio eginbide hau eskaintzeko eta Google-ren erosketa-eginbideak denentzat hobetzeko. Hori aldatzeko, joan <ph name="BEGIN_LINK" />paketeen jarraipenaren ezarpenetara<ph name="END_LINK" />.</translation>
 <translation id="1085696779717592361">Erabili Chrome modu lehenetsian</translation>
 <translation id="1105362920864247682">Garbitu arakatze-datuak Chrome-n.</translation>
@@ -96,6 +97,7 @@ Zure pasaesaldia dakitenek soilik irakur ditzakete zure datu enkriptatuak. Googl
 <translation id="3345341804167540816">Erabili Chrome edonon</translation>
 <translation id="3360031466389132716">{THRESHOLD,plural, =1{Chrome {THRESHOLD} minutuz erabiltzen ez denean gertatzen da hori}other{Chrome {THRESHOLD} minutuz erabiltzen ez denean gertatzen da hori}}</translation>
 <translation id="3399930248910934354">Ireki Chrome-ren ezarpenak</translation>
+<translation id="344736123700721678">Sartu Chrome-n bizkorrago hasierako pantailako zintaren bidez</translation>
 <translation id="3472587960215700950">Chrome-k Google Maps erabiltzen du hautemandako helbideetarako jarraibideak eta haiei buruzko tokiko informazioa eskaintzeko.</translation>
 <translation id="3503014945441706099">Lortu Arakatze seguru hobetua Chrome-ko profil honetan ere</translation>
 <translation id="3522659714780527202">Chrome erabiltzen duzun gailu guztietan zure fitxak eskura izateko, aktibatu sinkronizazioa</translation>
@@ -177,12 +179,15 @@ Zure pasaesaldia dakitenek soilik irakur ditzakete zure datu enkriptatuak. Googl
 <translation id="6054613632208573261">Erabili Chrome modu lehenetsian</translation>
 <translation id="6063091872902370735">Eman Chrome-n saioa hasteko baimena</translation>
 <translation id="6110625574506755980">Chrome-ren eginbide batzuk eskaintzeari utziko diogu.</translation>
+<translation id="6132149203299792222">Hasi saioa Google-ko kontuan eta sinkronizatu pasahitzak, laster-markak eta beste.</translation>
 <translation id="6177442314419606057">Bilatu Chrome-n</translation>
 <translation id="6181930887571472871">Aldatu Chrome-ra</translation>
 <translation id="6238746320622508509">Utzi Chrome-ri ezkutuko moduko fitxak blokeatzen.</translation>
 <translation id="6247557882553405851">Google-ren Pasahitz-kudeatzailea</translation>
+<translation id="6272822675004864999">Chrome-ren jakinarazpenak jasotzeko, aktibatu jakinarazpenak iOS-en ezarpenetan.</translation>
 <translation id="630693926528731525">Ez da partekatu pasahitza. Egiaztatu Internetera konektatuta zaudela eta ziurtatu Chrome-n saioa hasi duzula. Ondoren, saiatu berriro.</translation>
 <translation id="6348855835728304880">Erabili Chrome-ko pasahitzak eta gainerako informazioa gailu honetako beste aplikazioetan.</translation>
+<translation id="6389317667633680932">Arakatu Chrome-ri etekinik handiena ateratzen laguntzen dizuten eginbide berriak.</translation>
 <translation id="6412673304250309937">URLak Chrome-n gordetako webgune ez-seguruen zerrendan dauden ala ez egiaztatzen du. Webguneren bat pasahitza lapurtzen saiatzen bada, edo fitxategi kaltegarriren bat deskargatzen baduzu, baliteke Chrome-k URLak ere bidaltzea (orriko edukiaren zati batzuk barne) Arakatze segurua eginbideari.</translation>
 <translation id="6427126399757991875">Zure erakundea Chrome konfiguratzen ari da…</translation>
 <translation id="6484712497741564393"><ph name="EMAIL" /> gisa hasi duzu saioa.
@@ -214,8 +219,10 @@ Chrome-ren erabilera hobetzeko datuak erabiltzen dituzten ezarpen gehiago ikuste
 <translation id="7124339256045485976">Mantendu Chrome eguneratuta</translation>
 <translation id="7161390184744336561">Google Chrome zaharkituta dago</translation>
 <translation id="7165736900384873061">Hasi Google Chrome QR eskanerra erabiltzen</translation>
+<translation id="7175129790242719365">Chrome-ri buruzko aholkua: hasi saioa Chrome-n</translation>
 <translation id="7187993566681480880">Babestuta mantentzen zaitu Chrome-n, eta segurtasuna hobetzeko erabil daiteke Google-ren beste aplikazio batzuetan saioa hasita daukazunean.</translation>
 <translation id="7200524487407690471">Egunero, Chrome-k segurtasun-egiaztapena exekutatzen du automatikoki, datuen isilpekotasunaren urratzeen, seguruak ez diren webguneen eta abarren aurka babestuta egon zaitezen. Segurtasun-egiaztapenari buruzko informazio gehiago lortzeko, joan ezarpenetara.</translation>
+<translation id="7203324561587388418">Egin edukien eta Chrome-ri buruzko aholku lagungarrien jarraipena.</translation>
 <translation id="72119412072970160">iPad-eko beste aplikazio batzuk erabiltzen ari zinela Google-ren Pasahitz-kudeatzailea zerbitzuan gorde zenituen pasahitzak erabil ditzakezu.</translation>
 <translation id="723787869754590019">Erabili Chrome betetze automatikorako</translation>
 <translation id="7254380941803999489">Ezarri Chrome arakatzaile lehenetsi gisa</translation>
@@ -244,6 +251,8 @@ Chrome-ren erabilera hobetzeko datuak erabiltzen dituzten ezarpen gehiago ikuste
 <translation id="7897703007638178753">Ikusi Chrome-ren azken fitxak</translation>
 <translation id="7925119591961387184">Hautatu "Chrome".</translation>
 <translation id="7933491483529363150">Ireki nire azken fitxa Chrome-n.</translation>
+<translation id="7948283758957877064">Chrome-ren berritasunak</translation>
+<translation id="8006014511203279255">Erabili Chrome mezuetako edo beste aplikazioetako estekak sakatzen dituzunean.</translation>
 <translation id="8022947259858476807">Erabili Chrome modu lehenetsian estekak irekitzeko, widgetetatik bilaketak egiteko eta beste aplikazio batzuetako pasahitzak automatikoki betetzeko</translation>
 <translation id="804638182476029347">Prezio-jaitsierei buruzko alertak jasotzeko, eman jakinarazpenak bidaltzeko baimena Chrome-ri</translation>
 <translation id="8065292699993359127">Ireki URLak Chrome-ren ezkutuko moduan</translation>
@@ -280,6 +289,7 @@ Datuak pasaesaldiarekin enkriptatu ziren data honetan: <ph name="TIME" />. Chrom
 <translation id="8765470054473112089">Helbide-barran edo bilaketa-koadroan zerbait idazten duzunean, Chrome-k bilatzaile lehenetsira bidaltzen du, iradokizun hobeak lortzeko. Ezkutuko moduan, aukera hori desaktibatuta dago.</translation>
 <translation id="8772179140489533211">Chrome-n saioa hasteko onarpen-mezuak erakusten ditu.</translation>
 <translation id="8788269841521769222">Ez duzu pasahitza gogoratu beharko. <ph name="EMAIL" /> kontuko Google-ren Pasahitz-kudeatzailea zerbitzuan gordeko da.</translation>
+<translation id="878917453316810648">Chrome-ri buruzko aholkua: erabili Chrome modu lehenetsian</translation>
 <translation id="8808828119384186784">Chrome-ren ezarpenak</translation>
 <translation id="8855781063981781621">Chrome-n blokeo modua desgaitzeko, desaktiba ezazu iPad-ean.</translation>
 <translation id="8856877214925961642">Pasaesaldi bidezko enkriptatzearen kanpoan utzi dira ordainketa-metodoak eta helbideak.

@@ -334,6 +334,7 @@ Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifr
 <translation id="2870560284913253234">Sitio</translation>
 <translation id="2871733351037274014">Precargar páginas</translation>
 <translation id="2876136027428473467"><ph name="CHILD_NAME" /> quiere que apruebes este sitio web:</translation>
+<translation id="2876194821763651818">Contraseñas guardadas en <ph name="USERNAME" />.</translation>
 <translation id="2876628302275096482">Más información sobre <ph name="BEGIN_LINK" />cómo protege Chrome la privacidad de tus datos<ph name="END_LINK" /></translation>
 <translation id="2888126860611144412">Información de Chrome</translation>
 <translation id="2891154217021530873">Detener la carga de la página</translation>
@@ -504,7 +505,7 @@ Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifr
 <translation id="3771290962915251154">Este ajuste está inhabilitado porque el control parental está activado</translation>
 <translation id="3771694256347217732">Términos del Servicio de Google</translation>
 <translation id="3775705724665058594">Enviar a tus dispositivos</translation>
-<translation id="3777796259512476958">Cierra tu sesión en la mayoría de los sitios</translation>
+<translation id="3777796259512476958">Cierra tu sesión en la mayoría de los sitios.</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 pestaña}other{# pestañas}}</translation>
 <translation id="3795154175078851242">Copiar imagen con enlace</translation>
 <translation id="3810838688059735925">Vídeo</translation>
@@ -672,6 +673,7 @@ Es posible que tu cuenta de Google tenga otros tipos de historial de navegación
 <translation id="4699172675775169585">Archivos e imágenes en caché</translation>
 <translation id="4710167854527459075">Ordenar por más reciente</translation>
 <translation id="4719927025381752090">Ofrecer la traducción</translation>
+<translation id="4720556299488643018">Dar de baja</translation>
 <translation id="4732120983431207637">Desenrollado de pila</translation>
 <translation id="4736934858538408121">Tarjeta virtual</translation>
 <translation id="473775607612524610">Actualizar</translation>
@@ -1194,6 +1196,7 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mostrándote anu
 <translation id="7313188324932846546">Toca para configurar la sincronización</translation>
 <translation id="7324354302972299151">Enviar una solicitud "Do Not Track"</translation>
 <translation id="7332075081379534664">Se ha iniciado sesión correctamente</translation>
+<translation id="7333041109965360609">Has anulado tu suscripción a las notificaciones</translation>
 <translation id="7333232495927792353">Activa la sincronización para recibir el contenido más relevante de Google</translation>
 <translation id="7339898014177206373">Nueva ventana</translation>
 <translation id="7340958967809483333">Opciones de Discover</translation>
@@ -1452,6 +1455,7 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mostrándote anu
 <translation id="8503813439785031346">Nombre de usuario</translation>
 <translation id="8505766168025405649">Consulta el estado de la descarga en la notificación</translation>
 <translation id="8506357771923193001">Aquí se mostrarán tus descargas</translation>
+<translation id="8512053371384421952">Dejarás de recibir notificaciones de <ph name="DOMAIN" />.</translation>
 <translation id="8514477925623180633">Exportar contraseñas almacenadas en Chrome</translation>
 <translation id="8516012719330875537">Editor de imágenes</translation>
 <translation id="8523928698583292556">Eliminar contraseña guardada</translation>

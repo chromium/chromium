@@ -149,6 +149,7 @@
 <translation id="1757699834933698436">{count,plural, =1{{count} slaba lozinka}one{{count} slaba lozinka}few{{count} slabe lozinke}other{{count} slabih lozinki}}</translation>
 <translation id="1767766085187034454">Google Prevodilac</translation>
 <translation id="1769106850515800431">Personalizirani sadržaj</translation>
+<translation id="1780152987505130652">Zatvori grupu</translation>
 <translation id="1789803444939621101">Dobro došli nazad, <ph name="USER_NAME" /></translation>
 <translation id="1803264062614276815">Ime vlasnika kartice</translation>
 <translation id="1809939268435598390">Izbriši folder</translation>
@@ -215,7 +216,6 @@
 <translation id="2080769225927880590">Prijavite se pomoću važećeg računa</translation>
 <translation id="2103075008456228677">Otvori history.google.com</translation>
 <translation id="21133533946938348">Zakači karticu</translation>
-<translation id="2116625576999540962">Broj premještenih stavki: <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /></translation>
 <translation id="2122754583996902531">Vašim preglednikom se upravlja. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="2139502497535990641">Uključiti obavještenja o cijenama?</translation>
 <translation id="2139867232736819575">Pretraži kopirani tekst</translation>
@@ -653,6 +653,7 @@ Ako je primjenjivo, pogledajte uputstva pretraživača da saznate kako izbrisati
 <translation id="4442550905108052454">Otvorite <ph name="BEGIN_BOLD" />Postavke<ph name="END_BOLD" /></translation>
 <translation id="4454246407045105932">Dodavanje jezika</translation>
 <translation id="4455710003856931944">Možete prijeći prstom po rubu da biste se vratili ili nastavili.</translation>
+<translation id="4460014764210899310">Razgrupiši</translation>
 <translation id="4461286950227634995">Ponudi pohranjivanje lozinki</translation>
 <translation id="4462491365653392320">Pratite cijene na karticama</translation>
 <translation id="4469324811108161144">Broj znakova koji možete uštedjeti u napomenama je <ph name="CHARACTER_LIMIT" />.</translation>
@@ -935,7 +936,6 @@ Također, Handoff mora biti omogućen u odjeljku Opće u Postavkama, a vaši ure
 <translation id="5857770089550859117">Potreban je pristupni izraz za pokretanje sinhronizacije.</translation>
 <translation id="5859715514067755465">Naprijed</translation>
 <translation id="5860033963881614850">Isklj.</translation>
-<translation id="5871497086027727873">Premještena je jedna stavka</translation>
 <translation id="5896576662943111387">Kreirano za iOS</translation>
 <translation id="5897749768294722429">Da se brzo vratite na web lokacije koje ste posjetili, sinhronizirajte kartice i historiju.</translation>
 <translation id="5897956970858271241">Posjeti kopirani link</translation>
@@ -1505,6 +1505,7 @@ Web lokacije mogu koristiti kolačiće da vide vašu aktivnost pregledanja na ra
 <translation id="8766790350274092814">Lozinke za <ph name="WEBSITE" /> i <ph name="SECOND_WEBSITE" /> će se izbrisati. Vaši računi se neće izbrisati.</translation>
 <translation id="8775144690796719618">Nevažeći URL</translation>
 <translation id="8780076847684176174">{count,plural, =1{Pregledaj karticu…}one{Pregledaj sve kartice…}few{Pregledaj sve kartice…}other{Pregledaj sve kartice…}}</translation>
+<translation id="8781834595282316166">Nova kartica u grupi</translation>
 <translation id="8782570580170191813">Uvijek prati pakete</translation>
 <translation id="8787968206789828143">Pretražite na webu</translation>
 <translation id="8792626944327216835">mikrofon</translation>

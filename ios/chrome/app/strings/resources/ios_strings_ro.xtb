@@ -149,6 +149,7 @@
 <translation id="1757699834933698436">{count,plural, =1{{count} parolă slabă}few{{count} parole slabe}other{{count} de parole slabe}}</translation>
 <translation id="1767766085187034454">Google Traducere</translation>
 <translation id="1769106850515800431">Conținut personalizat</translation>
+<translation id="1780152987505130652">Închide grupul</translation>
 <translation id="1789803444939621101">Bine ai revenit, <ph name="USER_NAME" /></translation>
 <translation id="1803264062614276815">Numele titularului cardului</translation>
 <translation id="1809939268435598390">Șterge dosarul</translation>
@@ -214,7 +215,6 @@
 <translation id="2080769225927880590">Conectează-te cu un cont valid</translation>
 <translation id="2103075008456228677">Deschide history.google.com</translation>
 <translation id="21133533946938348">Fixează fila</translation>
-<translation id="2116625576999540962">Elemente mutate: <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /></translation>
 <translation id="2122754583996902531">Browserul tău este gestionat. <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /></translation>
 <translation id="2139502497535990641">Activezi alertele de prețuri?</translation>
 <translation id="2139867232736819575">Caută textul pe care l-ai copiat</translation>
@@ -566,6 +566,7 @@ Vezi instrucțiunile motorului de căutare pentru ștergerea istoricului căută
 <translation id="3929457972718048006">Adrese</translation>
 <translation id="3948600256434252210">Poți glisa spre dreapta pentru a naviga în modul incognito.</translation>
 <translation id="3955822496205734389">Ai parole slabe.</translation>
+<translation id="3958312024468322930">Trage-o în bara de andocare din partea de jos a ecranului de pornire</translation>
 <translation id="3959736869653157332">Meniu → Filă incognito nouă</translation>
 <translation id="3962326069546168954">Salvează</translation>
 <translation id="3967822245660637423">Descărcare finalizată</translation>
@@ -647,6 +648,7 @@ Vezi instrucțiunile motorului de căutare pentru ștergerea istoricului căută
 <translation id="4431224949908513835">Selectează o metodă de plată de completat.</translation>
 <translation id="4442550905108052454">Deschide <ph name="BEGIN_BOLD" />Setările<ph name="END_BOLD" /></translation>
 <translation id="4454246407045105932">Adaugă o limbă</translation>
+<translation id="4460014764210899310">Anulați gruparea</translation>
 <translation id="4461286950227634995">Oferă salvarea parolelor</translation>
 <translation id="4462491365653392320">Urmărește prețurile din file</translation>
 <translation id="4469324811108161144">Notele pot conține până la <ph name="CHARACTER_LIMIT" /> caractere.</translation>
@@ -929,7 +931,6 @@ Trebuie să activezi Handoff în secțiunea General din Setări, iar dispozitive
 <translation id="5857770089550859117">Pentru a începe sincronizarea este necesară expresia de acces.</translation>
 <translation id="5859715514067755465">Înainte</translation>
 <translation id="5860033963881614850">Dezactivat</translation>
-<translation id="5871497086027727873">Un element mutat</translation>
 <translation id="5896576662943111387">Creat pentru iOS</translation>
 <translation id="5897749768294722429">Pentru a reveni rapid la site-urile pe care le-ai accesat, sincronizează filele și istoricul.</translation>
 <translation id="5897956970858271241">Accesează linkul copiat</translation>
@@ -1466,6 +1467,7 @@ Site-urile pot folosi cookie-uri pentru a vedea activitatea ta de navigare de pe
 <translation id="8620640915598389714">Editează</translation>
 <translation id="8624447588354561276">Numărul coletului</translation>
 <translation id="8624753446837753970">Setează poziția</translation>
+<translation id="8625706492572042370">Editează ecranul de pornire</translation>
 <translation id="8626393685701737946">Poți să modifici vizualizarea prestabilită a site-urilor la computer în Setări &gt; Setări privind conținutul</translation>
 <translation id="8636825310635137004">Pentru a accesa filele de pe alte dispozitive, activează sincronizarea.</translation>
 <translation id="8637431369725868556">Protejează-te împotriva site-urilor periculoase.</translation>
@@ -1497,6 +1499,7 @@ Site-urile pot folosi cookie-uri pentru a vedea activitatea ta de navigare de pe
 <translation id="8766790350274092814">Parolele pentru <ph name="WEBSITE" /> și <ph name="SECOND_WEBSITE" /> se vor șterge. Conturile tale nu se vor șterge.</translation>
 <translation id="8775144690796719618">Adresă URL nevalidă</translation>
 <translation id="8780076847684176174">{count,plural, =1{Examinează fila...}few{Examinează toate filele...}other{Examinează toate filele...}}</translation>
+<translation id="8781834595282316166">Filă nouă în grup</translation>
 <translation id="8782570580170191813">Urmărește întotdeauna coletele</translation>
 <translation id="8787968206789828143">Caută pe web</translation>
 <translation id="8792626944327216835">Microfon</translation>

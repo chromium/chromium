@@ -1,7 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="zh-HK">
-<translation id="1021782183249308751">按住 Chrome 圖示，然後點選「編輯主畫面」</translation>
+<translation id="1021782183249308751">按住 Chrome 圖示，然後按一下 [編輯主畫面]</translation>
 <translation id="1066101356081285416">當你瀏覽網站時，Chrome 會在網站上偵測是否有追蹤號碼，並在「新分頁」顯示包裹最新消息。為提供此功能，系統會將包裹追蹤編號和網站名稱傳送給 Google，為所有人改善購物功能。你可隨時在「<ph name="BEGIN_LINK" />包裹追蹤設定<ph name="END_LINK" />」進行更新。</translation>
 <translation id="1085696779717592361">預設為使用 Chrome</translation>
 <translation id="1105362920864247682">清除 Chrome 中的瀏覽資料。</translation>
@@ -222,6 +222,7 @@
 <translation id="7175129790242719365">Chrome 提示：登入 Chrome</translation>
 <translation id="7187993566681480880">確保您登入使用 Chrome 的安全，並可提升您在其他 Google 應用程式的安全性。</translation>
 <translation id="7200524487407690471">Chrome 每日會自動執行「安全檢查」功能，避免資料外洩或不安全網站等。你可在「設定」中進一步瞭解「安全檢查」功能。</translation>
+<translation id="7203324561587388418">隨時掌握重要內容和 Chrome 實用提示。</translation>
 <translation id="72119412072970160">您可在 iPad 上的其他應用程式使用您儲存到「Google 密碼管理工具」的密碼。</translation>
 <translation id="723787869754590019">使用 Chrome 自動填入功能</translation>
 <translation id="7254380941803999489">將 Chrome 設定為預設瀏覽器</translation>

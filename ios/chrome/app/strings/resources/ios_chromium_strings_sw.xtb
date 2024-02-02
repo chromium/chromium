@@ -44,6 +44,7 @@
 <translation id="2168108852149185974">Baadhi ya programu jalizi husababisha Chromium iache kufanya kazi. Tafadhali ondoa:</translation>
 <translation id="2178608107313874732">Chromium haiwezi kutumia kamera yako hivi sasa</translation>
 <translation id="2195025571279539885">Je, ungependa Chromium ijitolee kutafsiri kurasa za <ph name="LANGUAGE_NAME" /> kwenye tovuti hii wakati ujao?</translation>
+<translation id="2216344354848599203">Bonyeza na ushikilie aikoni ya Chromium kisha ubofye "Badilisha Skrini ya Kwanza"</translation>
 <translation id="2218146227246548550">Shirika lako linahitaji uingie katika akaunti ili uweze kutumia Chromium. <ph name="BEGIN_LINK" />Pata Maelezo Zaidi<ph name="END_LINK" /></translation>
 <translation id="22313767259766852">Anwani hii kwa sasa imehifadhiwa kwenye Chromium. Ili uitumie kwenye bidhaa mbalimbali za Google, ihifadhi kwenye Akaunti yako ya Google, <ph name="USER_EMAIL" />.</translation>
 <translation id="2236584955986023187">Hii inamaanisha kwamba Chromium itahitaji tovuti ya kompyuta kila wakati.</translation>
@@ -197,6 +198,7 @@ Mambo ya kuzingatia:
 <translation id="632825460376924298">Ruhusu vidokezo vya kuingia katika akaunti kwenye Chromium</translation>
 <translation id="6337530241089703714">Chagua iwapo ungependa kufuta data yako ya Chromium kwenye kifaa hiki au kuihifadhi</translation>
 <translation id="6348483005826990855">3. Chagua Chromium</translation>
+<translation id="6383607155624074112">Fikia Chromium kwa haraka katika Sehemu Iliyopachikwa kwenye Skrini ya Kwanza</translation>
 <translation id="6407399265324739055">Njia za kulipa na anwani hazitasimbwa kwa njia fiche. Historia ya kuvinjari kwenye Chromium haitasawazishwa.
 
 Mtu aliye na kauli yako ya siri pekee ndiye anaweza kusoma data yako iliyosimbwa kwa njia fiche. Kauli ya siri haitumwi kwa au kuhifadhiwa na Google. Ukisahau kauli yako ya siri au ukitaka kubadilisha mipangilio hii, <ph name="BEGIN_LINK" />futa data ya Chromium kwenye akaunti yako<ph name="END_LINK" />.</translation>

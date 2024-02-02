@@ -41,9 +41,11 @@
 <translation id="2054703085270098503">Gondoskodjon biztonságáról a Chromiummal</translation>
 <translation id="2098023844024447022">A legutóbbi lap megnyitása a Chromiumban.</translation>
 <translation id="2109439615198500433">Chromium-tipp</translation>
+<translation id="2147210759439165826">Kövesse nyomon a tartalmakat és a hasznos Chromium-tippeket.</translation>
 <translation id="2168108852149185974">Bizonyos bővítmények a Chromium összeomlását eredményezik. Távolítsa el a következőket:</translation>
 <translation id="2178608107313874732">A Chromium jelenleg nem tudja használni a kamerát</translation>
 <translation id="2195025571279539885">Szeretné, hogy a Chromium a jövőben felajánlja e webhely <ph name="LANGUAGE_NAME" /> nyelvű oldalainak fordítását?</translation>
+<translation id="2216344354848599203">Tartsa nyomva a Chromium ikont, majd kattintson a „Főképernyő szerkesztése” lehetőségre.</translation>
 <translation id="2218146227246548550">Szervezete megköveteli a bejelentkezést a Chromium használatához. <ph name="BEGIN_LINK" />További információ<ph name="END_LINK" /></translation>
 <translation id="22313767259766852">Ezt a címet jelenleg a Chromiumba menti a rendszer. Ha szeretné más Google-termékekben is használni, mentse saját Google-fiókjába (<ph name="USER_EMAIL" />).</translation>
 <translation id="2236584955986023187">Ez azt jelenti, hogy a Chromium mindig az asztali webhelyet kéri majd.</translation>
@@ -197,6 +199,7 @@ Megjegyzések:
 <translation id="632825460376924298">Chromium-bejelentkezés engedélyezése</translation>
 <translation id="6337530241089703714">Döntse el, hogy törli-e a Chromium adatait erről az eszközről, vagy megtartja őket</translation>
 <translation id="6348483005826990855">3. Válassza ki a Chromium böngészőt.</translation>
+<translation id="6383607155624074112">Gyorsabb hozzáférés a Chromiumhoz a Főképernyő Dockjáról</translation>
 <translation id="6407399265324739055">A fizetési módok és a címek nem lesznek titkosítva. A Chromium böngészési előzményei nem lesznek szinkronizálva.
 
 Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titkosított adatait. Az összetett jelszót nem kapja meg, és nem is tárolja a Google. Ha elfelejti az összetett jelszavát, vagy módosítani szeretné ezt a beállítást, <ph name="BEGIN_LINK" />törölje a fiókjában lévő Chromium-adatokat<ph name="END_LINK" />.</translation>

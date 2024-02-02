@@ -149,6 +149,7 @@
 <translation id="1757699834933698436">{count,plural, =1{{count} lélegt aðgangsorð}one{{count} lélegt aðgangsorð}other{{count} léleg aðgangsorð}}</translation>
 <translation id="1767766085187034454">Google Translate</translation>
 <translation id="1769106850515800431">Sérsniðið efni</translation>
+<translation id="1780152987505130652">Loka hópi</translation>
 <translation id="1789803444939621101">Velkomin(n) aftur, <ph name="USER_NAME" /></translation>
 <translation id="1803264062614276815">Nafn korthafa</translation>
 <translation id="1809939268435598390">Eyða möppu</translation>
@@ -214,7 +215,6 @@
 <translation id="2080769225927880590">Skráðu þig inn með gildum reikningi</translation>
 <translation id="2103075008456228677">Opna history.google.com</translation>
 <translation id="21133533946938348">Festa flipa</translation>
-<translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> atriði færð</translation>
 <translation id="2122754583996902531">Vafranum þínum er stjórnað. <ph name="BEGIN_LINK" />Nánar<ph name="END_LINK" /></translation>
 <translation id="2139502497535990641">Kveikja á verðtilkynningum?</translation>
 <translation id="2139867232736819575">Leita að texta sem þú afritaðir</translation>
@@ -648,6 +648,7 @@ Skoðaðu leiðbeiningar leitarvélarinnar um að eyða leitarferlinum ef það 
 <translation id="4431224949908513835">Veldu greiðslumáta til að fylla inn.</translation>
 <translation id="4442550905108052454">Opnaðu <ph name="BEGIN_BOLD" />stillingar<ph name="END_BOLD" /></translation>
 <translation id="4454246407045105932">Bæta við tungumáli</translation>
+<translation id="4460014764210899310">Sundra hópi</translation>
 <translation id="4461286950227634995">Bjóðast til að vista aðgangsorð</translation>
 <translation id="4462491365653392320">Fylgjast með verði á flipum</translation>
 <translation id="4469324811108161144">Glósur geta verið allt að <ph name="CHARACTER_LIMIT" /> stafir að lengd.</translation>
@@ -930,7 +931,6 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="5857770089550859117">Aðgangsorð er nauðsynlegt til að hefja samstillingu.</translation>
 <translation id="5859715514067755465">Áfram</translation>
 <translation id="5860033963881614850">Slökkt</translation>
-<translation id="5871497086027727873">Eitt atriði fært</translation>
 <translation id="5896576662943111387">Sniðinn fyrir iOS</translation>
 <translation id="5897749768294722429">Samstilltu flipa og feril til að opna vefsvæði sem þú hefur skoðað áður á skjótan hátt.</translation>
 <translation id="5897956970858271241">Opna afritaðan tengil</translation>
@@ -1499,6 +1499,7 @@ Vefsvæði geta notað fótspor til að sjá vafranotkun þína á mismunandi ve
 <translation id="8766790350274092814">Aðgangsorðum fyrir <ph name="WEBSITE" /> og<ph name="SECOND_WEBSITE" /> verður eytt. Reikningunum þínum verður ekki eytt.</translation>
 <translation id="8775144690796719618">Ógild vefslóð</translation>
 <translation id="8780076847684176174">{count,plural, =1{Yfirfara flipa...}one{Yfirfara alla flipa...}other{Yfirfara alla flipa...}}</translation>
+<translation id="8781834595282316166">Nýr flipi í hópi</translation>
 <translation id="8782570580170191813">Alltaf rekja pakka</translation>
 <translation id="8787968206789828143">Leita á netinu</translation>
 <translation id="8792626944327216835">hljóðnema</translation>

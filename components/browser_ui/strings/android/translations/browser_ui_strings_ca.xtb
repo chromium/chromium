@@ -109,7 +109,6 @@
 <translation id="2750481671343847896">Els llocs web poden mostrar sol·licituds d'inici de sessió procedents de serveis d'identitat.</translation>
 <translation id="2790501146643349491">Quan aquesta opció està activada, els llocs web tancats recentment poden acabar d'enviar i de rebre dades. Quan aquesta opció està desactivada, els llocs web tancats recentment no poden acabar d'enviar ni de rebre dades.</translation>
 <translation id="2822354292072154809">Confirmes que vols restablir tots els permisos del lloc web concedits a <ph name="CHOSEN_OBJECT_NAME" />?</translation>
-<translation id="2836978798613876756"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> <ph name="HOST_NAME" /></translation>
 <translation id="2850913818900871965">Sol·licita la visualització per a mòbils</translation>
 <translation id="2870560284913253234">Lloc web</translation>
 <translation id="2874939134665556319">Pista anterior</translation>
@@ -121,7 +120,6 @@
 <translation id="2968755619301702150">Lector de certificats</translation>
 <translation id="2979365474350987274">Les galetes de tercers estan limitades</translation>
 <translation id="3008272652534848354">Restableix els permisos</translation>
-<translation id="3013291976881901233">Dispositius MIDI</translation>
 <translation id="301521992641321250">Bloquejada automàticament</translation>
 <translation id="3069226013421428034">Permet l'inici de sessió de tercers en un lloc web concret.</translation>
 <translation id="3082992102194421695">{COUNT,plural, =1{Caduca demà}other{Caduca d'aquí a # dies}}</translation>
@@ -192,7 +190,6 @@
 <translation id="4169549551965910670">Connectat a un dispositiu USB</translation>
 <translation id="4194328954146351878">Pregunta abans de permetre que els llocs web vegin i canviïn la informació que hi ha als dispositius amb NFC (opció recomanada)</translation>
 <translation id="4200726100658658164">Obre la configuració d'ubicació</translation>
-<translation id="4212246570487010370">Continua navegant</translation>
 <translation id="4226663524361240545">És possible que les notificacions facin vibrar el dispositiu</translation>
 <translation id="4259722352634471385">S'ha bloquejat la navegació: <ph name="URL" /></translation>
 <translation id="4278390842282768270">Permès</translation>
@@ -282,7 +279,6 @@
 <translation id="5706552988683188916">Aquesta acció suprimeix les galetes i altres dades de llocs web per a <ph name="WEBSITE" /></translation>
 <translation id="5723967018671998714">Les galetes de tercers estan bloquejades en mode d'incògnit</translation>
 <translation id="5740126560802162366">Els llocs web poden desar dades al teu dispositiu</translation>
-<translation id="5749158352074143502">Continua amb aquesta pestanya</translation>
 <translation id="5771720122942595109">S'ha bloquejat <ph name="PERMISSION_1" /></translation>
 <translation id="5804241973901381774">Permisos</translation>
 <translation id="5844448279347999754">Quan aquesta opció està activada, els llocs web poden demanar permís per veure el text i les imatges desats al porta-retalls. Quan aquesta opció està desactivada, els llocs web no poden veure el text ni les imatges desats al porta-retalls.</translation>
@@ -351,7 +347,6 @@
 <translation id="6746124502594467657">Mou avall</translation>
 <translation id="6749077623962119521">Vols restablir els permisos?</translation>
 <translation id="6766622839693428701">Llisca cap avall per tancar el full.</translation>
-<translation id="6785959295338971061"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> De <ph name="FROM_DEVICE" /></translation>
 <translation id="6787751205395685251">Selecciona una opció per a <ph name="SITE_NAME" /></translation>
 <translation id="6790428901817661496">Reprodueix</translation>
 <translation id="6818926723028410516">Selecciona elements</translation>
@@ -423,7 +418,6 @@
 <translation id="7990211076305263060">Quan aquesta opció està activada, els llocs web poden demanar permís per utilitzar el micròfon. Quan aquesta opció està desactivada, els llocs web no poden utilitzar el micròfon.</translation>
 <translation id="8007176423574883786">Aquesta ubicació està desactivada per a aquest dispositiu</translation>
 <translation id="802154636333426148">Error de baixada</translation>
-<translation id="8024161440284949905">Continua amb aquestes pestanyes</translation>
 <translation id="8042586301629853791">Ordena per:</translation>
 <translation id="8067883171444229417">Reprodueix el vídeo</translation>
 <translation id="8068648041423924542">No es pot seleccionar el certificat.</translation>

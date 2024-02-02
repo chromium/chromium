@@ -109,7 +109,6 @@
 <translation id="2750481671343847896">سایت‌ها می‌توانند پیام‌واره‌های ورود به سیستم سرویس‌های تعیین هویت را نشان دهند.</translation>
 <translation id="2790501146643349491">هرگاه روشن باشد، سایت‌های اخیراً بسته‌شده می‌توانند ارسال و دریافت داده را تکمیل کنند. هرگاه خاموش باشد، سایت‌های اخیراً بسته‌شده نمی‌توانند ارسال یا دریافت داده را تکمیل کنند.</translation>
 <translation id="2822354292072154809">مطمئن‌اید می‌خواهید همه مجوزهای سایت مربوط به <ph name="CHOSEN_OBJECT_NAME" /> را بازنشانی کنید؟</translation>
-<translation id="2836978798613876756"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> <ph name="HOST_NAME" /></translation>
 <translation id="2850913818900871965">درخواست نمای تلفن همراه</translation>
 <translation id="2870560284913253234">سایت</translation>
 <translation id="2874939134665556319">آهنگ قبلی</translation>
@@ -121,7 +120,6 @@
 <translation id="2968755619301702150">بیننده گواهی</translation>
 <translation id="2979365474350987274">کوکی‌های شخص ثالث محدود شده است</translation>
 <translation id="3008272652534848354">بازنشانی اجازه‌ها</translation>
-<translation id="3013291976881901233">‏دستگاه‌های MIDI</translation>
 <translation id="301521992641321250">به‌طور خودکار مسدود‌شده</translation>
 <translation id="3069226013421428034">ورود به سیستم شخص ثالث برای سایت خاصی مجاز می‌شود.</translation>
 <translation id="3082992102194421695">{COUNT,plural, =1{فردا منقضی می‌شود}one{‫# روز دیگر منقضی می‌شود}other{‫# روز دیگر منقضی می‌شود}}</translation>
@@ -192,7 +190,6 @@
 <translation id="4169549551965910670">‏به دستگاه USB متصل است</translation>
 <translation id="4194328954146351878">‏قبل‌از اینکه به سایت‌ها اجازه داده شود اطلاعات دستگاه‌های NFC را ببینند و تغییر دهند سؤال شود (توصیه می‌شود)</translation>
 <translation id="4200726100658658164">باز کردن «تنظیمات مکان»</translation>
-<translation id="4212246570487010370">ادامه مرور</translation>
 <translation id="4226663524361240545">اعلان‌ها ممکن است دستگاه را بلرزانند</translation>
 <translation id="4259722352634471385">پیمایش مسدود شده است: <ph name="URL" /></translation>
 <translation id="4278390842282768270">مجاز است</translation>
@@ -282,7 +279,6 @@
 <translation id="5706552988683188916">با این کار کوکی‌ها و دیگر داده‌های سایت برای <ph name="WEBSITE" /> حذف می‌شود</translation>
 <translation id="5723967018671998714">کوکی‌های شخص ثالث در «حالت ناشناس» مسدود شده‌اند</translation>
 <translation id="5740126560802162366">سایت‌ها می‌توانند در دستگاه داده ذخیره کنند</translation>
-<translation id="5749158352074143502">ادامه کار با این برگه</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" /> مسدود شد</translation>
 <translation id="5804241973901381774">اجازه‌ها</translation>
 <translation id="5844448279347999754">هرگاه روشن باشد، سایت‌ها می‌توانند از شما بخواهند نوشتار و تصاویر ذخیره‌شده در بریده‌دان شما را ببینند. هرگاه روشن باشد، سایت‌ها نمی‌توانند نوشتار و تصاویر ذخیره‌شده در بریده‌دان شما را ببینند.</translation>
@@ -351,7 +347,6 @@
 <translation id="6746124502594467657">انتقال به پایین</translation>
 <translation id="6749077623962119521">اجازه‌ها بازنشانی شوند؟</translation>
 <translation id="6766622839693428701">برای بستن، تند به‌پایین بکشید.</translation>
-<translation id="6785959295338971061"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> از <ph name="FROM_DEVICE" /></translation>
 <translation id="6787751205395685251">گزینه‌ای برای <ph name="SITE_NAME" /> انتخاب کنید</translation>
 <translation id="6790428901817661496">پخش</translation>
 <translation id="6818926723028410516">انتخاب موارد</translation>
@@ -423,7 +418,6 @@
 <translation id="7990211076305263060">هرگاه روشن باشد، سایت‌ها می‌توانند استفاده از میکروفون را درخواست کنند. هرگاه خاموش باشد، سایت‌ها نمی‌توانند از میکروفون استفاده کنند.</translation>
 <translation id="8007176423574883786">برای این دستگاه غیرفعال شد</translation>
 <translation id="802154636333426148">بارگیری نشد</translation>
-<translation id="8024161440284949905">ادامه کار با این برگه‌ها</translation>
 <translation id="8042586301629853791">مرتب‌سازی براساس:</translation>
 <translation id="8067883171444229417">پخش ویدیو</translation>
 <translation id="8068648041423924542">انتخاب گواهی ممکن نیست.</translation>

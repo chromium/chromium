@@ -149,6 +149,7 @@
 <translation id="1757699834933698436">{count,plural, =1{Сул {count} нууц үг}other{Сул {count} нууц үг}}</translation>
 <translation id="1767766085187034454">Google Орчуулагч</translation>
 <translation id="1769106850515800431">Хувийн болгосон контент</translation>
+<translation id="1780152987505130652">Бүлгийг хаах</translation>
 <translation id="1789803444939621101">Дахин тавтай морилно уу, <ph name="USER_NAME" /></translation>
 <translation id="1803264062614276815">Карт эзэмшигчийн нэр</translation>
 <translation id="1809939268435598390">Хавтсыг устга</translation>
@@ -214,7 +215,6 @@
 <translation id="2080769225927880590">Хүчинтэй бүртгэлээр нэвтрэх</translation>
 <translation id="2103075008456228677">History.google.com-г нээх</translation>
 <translation id="21133533946938348">Цонхыг урд талд гаргах</translation>
-<translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> зүйлүүдийг зөөсөн байна</translation>
 <translation id="2122754583996902531">Таны хөтчийг удирдаж байна. <ph name="BEGIN_LINK" />Нэмэлт мэдээлэл авах<ph name="END_LINK" /></translation>
 <translation id="2139502497535990641">Үнийн дохиог асаах уу?</translation>
 <translation id="2139867232736819575">Хуулсан текстээ хайх</translation>
@@ -648,6 +648,7 @@
 <translation id="4431224949908513835">Бөглөх төлбөрийн хэрэгслийг сонгоно уу.</translation>
 <translation id="4442550905108052454"><ph name="BEGIN_BOLD" />Тохиргоо<ph name="END_BOLD" />-г нээнэ үү</translation>
 <translation id="4454246407045105932">Хэл нэмэх</translation>
+<translation id="4460014764210899310">Бүлгийг болих</translation>
 <translation id="4461286950227634995">Нууц үг хадгалахыг санал болгох</translation>
 <translation id="4462491365653392320">Табууд дээрх үнийг хянах</translation>
 <translation id="4469324811108161144">Тэмдэглэл нь <ph name="CHARACTER_LIMIT" /> хүртэлх тэмдэгт хадгалах боломжтой.</translation>
@@ -930,7 +931,6 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="5857770089550859117">Синкийг эхлүүлэхийн тулд нэвтрэх үг оруулах шаардлагатай.</translation>
 <translation id="5859715514067755465">Урагшлуулах</translation>
 <translation id="5860033963881614850">Идэвхгүй байна</translation>
-<translation id="5871497086027727873">1 зүйлийг зөөсөн байна</translation>
 <translation id="5896576662943111387">iOS-д зориулан бүтээсэн</translation>
 <translation id="5897749768294722429">Зочилсон сайтууддаа шуурхай буцаж очихын тулд табууд болон түүхээ синк хийгээрэй.</translation>
 <translation id="5897956970858271241">Хуулсан холбоосонд зочлох</translation>
@@ -1499,6 +1499,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="8766790350274092814"><ph name="WEBSITE" /> болон <ph name="SECOND_WEBSITE" />-н нууц үгийг устгана. Таны бүртгэлүүдийг устгахгүй.</translation>
 <translation id="8775144690796719618">Хүчингүй URL</translation>
 <translation id="8780076847684176174">{count,plural, =1{Табыг шалгах...}other{Бүх табыг шалгах...}}</translation>
+<translation id="8781834595282316166">Бүлэг доторх шинэ таб</translation>
 <translation id="8782570580170191813">Илгээмжийг үргэлж хянах</translation>
 <translation id="8787968206789828143">Веб дээр хайх</translation>
 <translation id="8792626944327216835">микрофон</translation>

@@ -430,6 +430,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="1752021286346845558">Caixa de correio 8</translation>
 <translation id="1753068535428855445">Encontros e anúncios pessoais</translation>
 <translation id="1753706481035618306">Número de página</translation>
+<translation id="1755203724116202818">Para medir o desempenho de um anúncio, são partilhados tipos de dados limitados entre sites, por exemplo, se fez uma compra depois de visitar um site.</translation>
 <translation id="1755621011177747277">Adoção</translation>
 <translation id="1756026472674246267">Abrir link num novo separador</translation>
 <translation id="175656076281618225">Magia</translation>
@@ -884,6 +885,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="2674804415323431591">Oculte as sugestões</translation>
 <translation id="2677696497921480781">Aniversários e dias onomásticos</translation>
 <translation id="2677748264148917807">Sair</translation>
+<translation id="2683195745483370038">Outros resultados encontrados</translation>
 <translation id="2686919536310834199">Envie feedback sobre a funcionalidade Ajuda-me a escrever.</translation>
 <translation id="2687555958734450033">Tamanho otimizado</translation>
 <translation id="2688186765492306706">500 x 760 mm</translation>
@@ -1265,6 +1267,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="3462200631372590220">Ocultar avançadas</translation>
 <translation id="3465972433695735758">Este PDF está inacessível. Texto extraído com tecnologia de IA da Google</translation>
 <translation id="346601286295919445">Química</translation>
+<translation id="3467081767799433066">Com a medição de anúncios, são partilhados tipos de dados limitados entre sites para medir o desempenho dos respetivos anúncios, por exemplo, se fez uma compra depois de visitar um site.</translation>
 <translation id="3468054117417088249"><ph name="TAB_SWITCH_SUFFIX" />, atualmente aberto, prima Tab e, em seguida, Enter para mudar para o separador aberto.</translation>
 <translation id="3470563864795286535"><ph name="CLOSE_INCOGNITO_WINDOWS_FOCUSED_FRIENDLY_MATCH_TEXT" />, prima Tab e, em seguida, Enter para fechar todas as janelas de navegação anónima atualmente abertas</translation>
 <translation id="3474392552865647225">Botão Personalizar tipos de letra no Chrome; ative para personalizar os tipos de letra e os respetivos tamanhos no Chrome</translation>
@@ -2788,7 +2791,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="6480864723214312258">Pilhas de uso doméstico</translation>
 <translation id="6486200200930923183">Documentários</translation>
 <translation id="6489534406876378309">Começar a carregar falhas</translation>
-<translation id="6491663123807473970"><ph name="URL" /> quer usar os seus dispositivos MIDI</translation>
 <translation id="6493924760403974580">Esta app apenas suporta este tamanho.</translation>
 <translation id="6494750904506170417">pop-ups e redirecionamentos</translation>
 <translation id="6495664197699704593">Esta palavra-passe está guardada apenas neste dispositivo. Para usá-la nos seus outros dispositivos, <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
@@ -4080,6 +4082,7 @@ Detalhes adicionais:
 <translation id="9005998258318286617">Falha ao carregar o documento PDF.</translation>
 <translation id="9008178007718859630">Decoração de interiores</translation>
 <translation id="9008201768610948239">Ignorar</translation>
+<translation id="9014705027639070815">Os sites que visitar podem pedir ao Chrome informações para os ajudar a medir o desempenho dos respetivos anúncios. O Chrome permite que os sites recolham tipos de dados limitados, por exemplo, se fez uma compra depois de visitar um site.</translation>
 <translation id="9018120810758822233">Introduza o código de segurança do cartão <ph name="CREDIT_CARD" /></translation>
 <translation id="901834265349196618">email</translation>
 <translation id="9020542370529661692">Esta página foi traduzida para <ph name="TARGET_LANGUAGE" /></translation>

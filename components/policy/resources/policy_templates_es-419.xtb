@@ -419,6 +419,7 @@ Esto reemplaza la política <ph name="DEFAULT_WINDOW_PLACEMENT_SETTING_POLICY_NA
 <translation id="131353325527891113">Mostrar los nombres de usuario en la pantalla de inicio de sesión</translation>
 <translation id="1317658068839330898">No permitir el uso de <ph name="ASSISTANT_PRODUCT_NAME" /> en la Web</translation>
 <translation id="1318233005302276244">Permite a los usuarios realizar un seguimiento de sus paquetes en Chrome.</translation>
+<translation id="1323501563951768821">La configuración de F12 usa la combinación de teclas que contiene la tecla modificadora mayúsculas</translation>
 <translation id="1325547947664414578">Cuando un usuario alterna entre dispositivos con <ph name="PRODUCT_OS_NAME" />, el servicio de <ph name="PRODUCT_NAME" /> abrirá las ventanas del navegador y de las apps del dispositivo anterior en el nuevo dispositivo.
 Si habilitas la política, se abrirán automáticamente las ventanas del navegador y de las apps del último dispositivo con <ph name="PRODUCT_OS_NAME" /> que utilizó el usuario actual al acceder.
 Si la inhabilitas o no la estableces, el restablecimiento completo de la configuración determinará qué se abrirá al acceder.</translation>
@@ -1185,6 +1186,7 @@ Si la inhabilitas, <ph name="PRODUCT_NAME" /> cerrará la pestaña y, luego, cam
 
       Si no estableces la política, se desactivará la autenticación <ph name="HTTP_NEGOTIATE" /> en Android.</translation>
 <translation id="1923704782248889851">Habilitar el dictado</translation>
+<translation id="1924085079572112898">Inhabilitar la configuración de F11</translation>
 <translation id="1925529914257504750">Se habilitó la actualización automática de la conexión P2P</translation>
 <translation id="1928355425032308464">Habilitar la entrada de video</translation>
 <translation id="1930094135927166199">Inhabilitar el uso compartido de energía por USB</translation>
@@ -1347,6 +1349,7 @@ Esta política no tendrá ningún efecto si estableces la política <ph name="DE
       Si no estableces la política o estableces una lista vacía, no habrá modos de desbloqueo rápido disponibles para los dispositivos administrados.
 
       Esta política dejó de estar disponible; usa <ph name="QUICK_UNLOCK_MODE_ALLOW_LIST_POLICY_NAME" /> en su lugar.</translation>
+<translation id="2033200857253268661">Inhabilitar la configuración de F12</translation>
 <translation id="2035995535603698706">Si habilitas la política, las imágenes de terceros de una página podrán mostrar una solicitud de autenticación.
 
 Si inhabilitas la política o no la estableces, las imágenes de terceros no podrán mostrar una solicitud de autenticación.
@@ -1535,6 +1538,7 @@ Si no estableces la política para los usuarios generales, equivale a habilitarl
       Para obtener más información sobre la Navegación segura, consulta https://support.google.com/chrome?p=safe_browsing_preferences.</translation>
 <translation id="2177696016354404697">Inhabilitar siempre la pantalla de privacidad</translation>
 <translation id="2178899310296064282">Aplicar al menos el modo restringido moderado en YouTube</translation>
+<translation id="2180795125410219364">Inhabilitar la configuración de Inicio/Fin</translation>
 <translation id="2180958780733364832">Controlar el uso del modo sin interfaz gráfica</translation>
 <translation id="2182291258410176649">El usuario decide si habilita la copia de seguridad y el restablecimiento</translation>
 <translation id="2183338188392346527">No informar los contadores de tiempo de ejecución del dispositivo</translation>
@@ -1793,6 +1797,7 @@ la política BruschettaVMConfiguration o, si esto falla, un nombre genérico.</t
 
 Si habilitas esta política o no la estableces, el usuario podrá elegir una imagen de Google Fotos como fondo de pantalla.</translation>
 <translation id="2393862222659066027">Abrir una lista de URLs y restablecer la última sesión</translation>
+<translation id="239416486107542256">La configuración de F11 usa la combinación de teclas que contiene las teclas modificadoras ctrl y mayúsculas</translation>
 <translation id="2394429297128584919">No permitir que las páginas envíen solicitudes XHR síncronas cuando el usuario las abandona</translation>
 <translation id="2399987589969059485">Si se configura esta política, es posible especificar qué variaciones pueden aplicarse respecto de <ph name="PRODUCT_NAME" />.
 
@@ -2297,6 +2302,7 @@ Si no la estableces, se aplicará la política <ph name="BLOCK_POPUPS_POLICY_NAM
       Si inhabilitas la política, se desactivarán los mensajes, y la captura de audio solo estará disponible para las URL que se establezcan en la lista AudioCaptureAllowedUrls.
 
       Nota: La política afecta a todas las entradas de audio (no solo al micrófono integrado).</translation>
+<translation id="2823164704578322622">La configuración de Inicio/Fin usa la combinación de teclas que contiene la tecla modificadora alt</translation>
 <translation id="2823870601012066791">Ubicación del registro de Windows para los clientes de <ph name="PRODUCT_OS_NAME" />:</translation>
 <translation id="2824715612115726353">Activar el modo de incógnito</translation>
 <translation id="282870810415075521">Permitir que JavaScript utilice JIT en estos sitios</translation>
@@ -2307,6 +2313,7 @@ Si no la estableces, se aplicará la política <ph name="BLOCK_POPUPS_POLICY_NAM
 <translation id="2839294585867804686">Configuración de "Network File Shares"</translation>
 <translation id="2841911109921764691">El botón principal en la pantalla de acceso es el derecho</translation>
 <translation id="284288632677954003">URL de un archivo XML que contiene URL que nunca deben abrirse en otro navegador</translation>
+<translation id="2845590342236201916">La configuración de F12 usa la combinación de teclas que contiene la tecla modificadora alt</translation>
 <translation id="28458742190197992">Esta política controla los informes en la nube de <ph name="PRODUCT_NAME" /> para un perfil administrado en particular.
 
 Si no estableces esta política o la inhabilitas, no se recopilarán ni subirán datos.
@@ -2517,6 +2524,19 @@ La política <ph name="FLOATING_SSO_DOMAIN_BLOCKLIST_EXCEPTIONS_POLICY_NAME" /> 
         Esta política no prevalecerá sobre las políticas ya publicadas.</translation>
 <translation id="3002067315837777719">No permitir que se habiliten las notificaciones de Phone Hub</translation>
 <translation id="3003490107503207900">Forzar la descarga de documentos de Office (p. ej., .docx) en lugar de abrirlos en <ph name="BASIC_EDITOR_NAME" /></translation>
+<translation id="300673820739371513">Esta política decide si se detectan entidades de texto sin formato en las páginas web, lo que permite a los usuarios interactuar con ellas para activar acciones contextuales.
+La política tiene varias propiedades, una para cada tipo de entidad.
+Los tipos de entidades son <ph name="DEFAULT_ENUM_VALUE" />, <ph name="ADDRESS_ENUM_VALUE" />, etcétera.
+
+Si no se establece el valor para una entidad, se aplica el comportamiento de la entidad <ph name="DEFAULT_ENUM_VALUE" />.
+El comportamiento predeterminado de <ph name="DEFAULT_ENUM_VALUE" /> es <ph name="ENABLED_ENUM_VALUE" />.
+
+Los valores para cada tipo de entidad son <ph name="DEFAULT_ENUM_VALUE" />, <ph name="ENABLED_ENUM_VALUE" />,
+<ph name="DISABLED_ENUM_VALUE" /> o <ph name="LONGPRESSONLY_ENUM_VALUE" />.
+Si el valor se establece en <ph name="DEFAULT_ENUM_VALUE" />, se aplica el comportamiento de la entidad <ph name="DEFAULT_ENUM_VALUE" />.
+Si el valor se establece en <ph name="ENABLED_ENUM_VALUE" />, las entidades se detectan, se subrayan y se activan si presionas una vez o mantienes presionado.
+Si el valor se establece como <ph name="DISABLED_ENUM_VALUE" />, las entidades no se detectan y no se pueden realizar acciones.
+Si el valor se establece como <ph name="LONGPRESSONLY_ENUM_VALUE" />, se detectan las entidades y solo se puede realizar una acción si se mantiene presionado.</translation>
 <translation id="3010907817113180883">Tasa de recopilación de la señal de monitoreo de funcionamiento de la actividad del dispositivo en milisegundos.</translation>
 <translation id="3017578958356048910">El visor de PDF puede agregar anotaciones en archivos PDF</translation>
 <translation id="3020623128585817424">Inhabilitar la verificación de navegador predeterminado en el inicio</translation>
@@ -2733,6 +2753,7 @@ Si inhabilitas la política, no se mostrará al usuario la promoción para calif
 <translation id="3180671894201217988">Si habilitas la política o no la estableces, el software de terceros no podrá insertar código ejecutable en los procesos de <ph name="PRODUCT_NAME" />.
 
       Si inhabilitas la política, este software podrá insertar el código mencionado en los procesos de <ph name="PRODUCT_NAME" />.</translation>
+<translation id="3181114468897395940">La configuración de RePág/AvPág usa la combinación de teclas que contiene la tecla modificadora alt</translation>
 <translation id="3182503302060513467">La página Nueva pestaña mostrará la notificación del espacio del medio (si está disponible)</translation>
 <translation id="3184161739683646075">Controla el modo de DNS sobre HTTPS</translation>
 <translation id="3184309751910415763">Lista de entidades permitidas que controla los informes de actividad de sitios web para los usuarios afiliados.
@@ -2862,6 +2883,7 @@ Si no se establece, se usará el comportamiento nuevo al igual que en el resto d
       Usa el carácter comodín "*" para buscar coincidencias con cero o más caracteres arbitrarios. El carácter de escape es "\", de modo que para que coincida con los caracteres "*" o "\" reales, debes colocar una "\" delante de ellos.
 
       Si no se establece esta política, en <ph name="PRODUCT_NAME" /> estarán visibles todas las Cuentas de Google del dispositivo.</translation>
+<translation id="3246606090306814894">Controlar la combinación de teclas utilizada para activar F12</translation>
 <translation id="3248019773260441802">Permitir que una página muestre ventanas emergentes durante su descarga</translation>
 <translation id="3251500716404598358">Permite configurar políticas para cambiar de navegador.
 
@@ -2995,6 +3017,7 @@ Si la inhabilitas, no se permitirá la escritura predictiva en el teclado físic
 <translation id="3389088527709746815">Habilitar la autenticación gnubby para el host de acceso remoto</translation>
 <translation id="3397883909301547525">No mostrar recomendaciones de apps en el selector de <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="3398051852031115795">Comportamiento predeterminado del sistema (según el tamaño de la pantalla)</translation>
+<translation id="33993310248354034">Permitir la detección de entidades de texto sin formato en páginas web</translation>
 <translation id="3399859571630358395">Inhabilitar de manera automática la Vinculación rápida (vinculación rápida por Bluetooth)</translation>
 <translation id="3404681701763345449">Habilitar la integración de <ph name="GOOGLE_CALENDAR_NAME" /></translation>
 <translation id="3405361833556012520">Esta política solo se aplica al tráfico de navegadores. Play Store, la navegación web de apps para Android y otro tráfico de usuarios, como los trabajos de impresión y el tráfico de VM de Linux, respetan las restricciones impuestas por la VPN siempre activada. Esta política solo se aplicará de manera forzosa cuando la VPN no esté conectada y solo para el tráfico del navegador del usuario. Mientras se aplique esta política, el tráfico del sistema también puede omitir la VPN siempre activada para realizar tareas como la recuperación de políticas y la sincronización del reloj del sistema.
@@ -3639,6 +3662,7 @@ Esta política es una solución temporal y se quitará en algunos momentos impor
 <translation id="3897860452756794695">Usar el comportamiento nuevo de offsetParent</translation>
 <translation id="3898345958122666461">Desactivar NTLMv2</translation>
 <translation id="3898795800259311780">Permite o rechaza la captura de pantalla</translation>
+<translation id="390296766888987595">Mostrar el teclado en pantalla solo si el usuario o la aplicación lo solicita</translation>
 <translation id="3903313632842363082">Inhabilitar los informes de los usuarios del dispositivo</translation>
 <translation id="3904304709151553598">Inhabilitar los informes de los ventiladores del dispositivo</translation>
 <translation id="3905883021371603181">Habilitar la cancelación del eco de audio del sistema</translation>
@@ -3865,6 +3889,7 @@ Para obtener información detallada sobre los patrones válidos de <ph name="URL
 <translation id="410068710490553233">Permite acceder en más Cuentas de Google</translation>
 <translation id="4101222634611892813">El usuario puede utilizar la función de sincronización de archivos de <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="4101282687722389021">Una marca de tiempo (UTC) que indica la última vez que se actualizó esta entrada. Se envía como un string ya que la marca de tiempo no entra en un valor entero.</translation>
+<translation id="4101826711886952606">La configuración de Inicio/Fin usa la combinación de teclas que contiene la tecla modificadora de búsqueda</translation>
 <translation id="4102347680024644994">Informar eventos de detección y respuesta extendidas (XDR)</translation>
 <translation id="4105989332710272578">Inhabilitar la aplicación del Certificado de transparencia para una lista de URL</translation>
 <translation id="410740968939768919">Controla si se pueden usar extensiones de Manifest V2 en la pantalla de acceso de <ph name="PRODUCT_OS_NAME" />.
@@ -4102,6 +4127,7 @@ Si inhabilitas la política, se mostrará un mensaje de error en lugar de la sol
       Se ignorará esta política y se mostrará la notificación siempre si el dispositivo no está administrado o hay solo un usuario.
 
       Si hay múltiples cuentas de usuario en un dispositivo administrado, se mostrará la notificación solo cuando esté habilitada la política.</translation>
+<translation id="4294886370621883282">Permitir que aparezca el teclado en pantalla cuando corresponda.</translation>
 <translation id="4297483555396496700">Los usuarios solo podrán cambiar el canal de versiones del dispositivo si estableces esta política como verdadera. Si la estableces como falsa o no la estableces, los usuarios no podrán cambiar el canal.
 
 <ph name="CHROME_OS_RELEASE_CHANNEL_POLICY_NAME" /> solo tiene efecto si estableces <ph name="CHROME_OS_RELEASE_CHANNEL_DELEGATED_POLICY_NAME" /> como falsa.</translation>
@@ -4519,6 +4545,7 @@ a estas APIs.</translation>
       Si no estableces la política, no se implementará la selección automática para ningún sitio.</translation>
 <translation id="4611983465824842867">No mostrar advertencias ni inhabilitar la opción Autocompletar en los formularios poco seguros</translation>
 <translation id="4615003180013429835">Modo de análisis de la lista de sitios</translation>
+<translation id="4615892138881859957">Controlar la combinación de teclas utilizada para activar la tecla Insertar del "paquete de seis"</translation>
 <translation id="4617338332148204752">Omitir la comprobación de metaetiquetas en <ph name="PRODUCT_FRAME_NAME" /></translation>
 <translation id="461901491675418689">Hacer que la función NewBaseUrlInheritanceBehavior esté disponible</translation>
 <translation id="4624006912948309924">Si estableces la política, se determinarán los identificadores de aplicación que <ph name="PRODUCT_OS_NAME" /> mostrará como apps fijas en la barra del selector; los usuarios no podrán cambiarlos.
@@ -4655,6 +4682,21 @@ Esta política no tendrá ningún efecto si estableces la política <ph name="DE
 <translation id="4726228171190098009">No permitir que el dispositivo solicite usar powerwash</translation>
 <translation id="4726895359147376813">Asigna desde IDs persistentes hasta opciones de configuración de VM</translation>
 <translation id="4733471537137819387">Políticas relacionadas con la autenticación de HTTP integrada</translation>
+<translation id="4736591493257545761">La plantilla de URI del agente de resolución de DNS-over-HTTPS deseado. Si quieres especificar varios agentes de resolución de DNS-over-HTTPS, separa las plantillas de URI correspondientes con espacios. Esta política es muy similar a <ph name="DOH_TEMPLATES_POLICY_NAME" /> y, si la especificas, se anulará.
+A diferencia de la política <ph name="DOH_TEMPLATES_POLICY_NAME" />, esta política permite especificar la información de identidad.
+Los identificadores se especifican con marcadores de posición de variables que se reemplazan por la información del usuario o del dispositivo en <ph name="PRODUCT_NAME" />. Los identificadores no se envían al servidor DNS en texto sin formato. En su lugar, se les genera un hash con el algoritmo <ph name="SHA256" /> y se codifican con el formato hexadecimal en mayúsculas.
+
+Los identificadores se especifican entre llaves, precedidos por el signo de dólar. Para la identificación del usuario, usa los siguientes marcadores de posición <ph name="USER_EMAIL" />, <ph name="USER_EMAIL_DOMAIN" /> y <ph name="USER_EMAIL_NAME" />. Para identificar dispositivos, usa los siguientes marcadores de posición <ph name="DEVICE_DIRECTORY_ID" />, <ph name="DEVICE_SERIAL_NUMBER" />, <ph name="DEVICE_ASSET_ID" /> y <ph name="DEVICE_ANNOTATED_LOCATION" />.
+
+Antes de la versión 122, los identificadores de dispositivos no se reemplazaban para los usuarios no afiliados. A partir de la versión 122, los marcadores de posición del dispositivo se reemplazan por el valor <ph name="DEVICE_NOT_MANAGED" />, que tiene un hash y codificación hexadecimal.
+
+Si la estableces <ph name="DOH_MODE_POLICY_NAME" /> como <ph name="SECURE_DNS_MODE_SECURE" />, se debe establecer esta política o <ph name="DOH_TEMPLATES_POLICY_NAME" />, y no debe estar vacía.
+
+Si se configura <ph name="DOH_MODE_POLICY_NAME" /> como <ph name="SECURE_DNS_MODE_AUTOMATIC" /> y se establece esta política, se usarán las plantillas de URI especificadas. Si no se establece, se usarán las asignaciones codificadas para intentar actualizar el agente de resolución de DNS actual del usuario a un agente de resolución de DoH que opere el mismo proveedor.
+
+Si la plantilla de URI contiene una variable <ph name="HTTP_VARIABLE_DNS" />, las solicitudes al agente de resolución usarán <ph name="HTTP_METHOD_GET" />; de lo contrario, las solicitudes usarán <ph name="HTTP_METHOD_POST" />.
+
+En la versión 114 y en versiones posteriores, <ph name="DOH_SALT_POLICY_NAME" /> es opcional si se establece esta política.</translation>
 <translation id="473673197014866318">Si estableces esta política, se controlará la configuración de la administración de extensiones para <ph name="PRODUCT_NAME" />, incluido cualquier parámetro de configuración controlado por políticas existentes relacionadas con extensiones. Esta política sustituye a cualquier política heredada que se haya establecido.
 
 Esta política asigna un ID de extensión o una URL de actualización solo a su configuración específica. Se puede establecer una configuración predeterminada para el ID especial <ph name="DEFAULT_SCOPE" />, que se aplicará a todas las extensiones que no tengan una configuración personalizada en esta política. Con una URL de actualización, la configuración se aplica a todas las extensiones con la URL de actualización exacta establecida en el manifiesto de la extensión (http://support.google.com/chrome/a?p=Configure_ExtensionSettings_policy). Si estableces la función experimental "override_update_url" como verdadera, se instalará la extensión y se actualizará mediante la URL "update" especificada en la política <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" /> o en el campo "update_url" de esta política. Se ignorará la función experimental "override_update_url" si "update_url" es una URL de Chrome Web Store.
@@ -4953,6 +4995,7 @@ Esta política solo será válida si la máquina está inscrita en <ph name="CLO
 <translation id="5033070732967197381">Permitir solicitudes a la API de WebAuthn en sitios con certificados TLS rotos</translation>
 <translation id="5034504101537897433">Habilitar los informes de fallos del dispositivo</translation>
 <translation id="5036013147560568855">Versión del protocolo de provisión de certificados. La configuración predeterminada es 1. 1 es el protocolo "estático". 2 es el protocolo "dinámico".</translation>
+<translation id="5037749623252479780">Inhabilitar la configuración de RePág/AvPág</translation>
 <translation id="5039110755072335605">Admisión de encabezados de solicitudes sin comodín CORS</translation>
 <translation id="504116558738617678">Solo mostrar advertencias de poco espacio en el disco si el dispositivo no está administrado o si solo hay 1 solo usuario</translation>
 <translation id="5041315457555330432">Permitir que <ph name="PRODUCT_NAME" /> solo se conecte a dispositivos con direcciones IP privadas, a menos que la función CastAllowAllIPs esté activada</translation>
@@ -5389,6 +5432,7 @@ A partir de la versión 92 de <ph name="PRODUCT_NAME" />, esta política tambié
 
       Para obtener información detallada sobre los patrones de <ph name="URL_LABEL" /> válidos, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> no es un valor aceptado para esta política.</translation>
 <translation id="5393009997533871906">Los usuarios solo ven las impresoras que se encuentran en la lista de elementos permitidos</translation>
+<translation id="5395778184390568113">Controlar la combinación de teclas utilizada para activar las teclas Inicio/Fin del "paquete de seis"</translation>
 <translation id="5396322417222266779">Permitir que el usuario personalice las combinaciones de teclas del sistema</translation>
 <translation id="5398387276166014955">Permitir que se inserte código de terceros en Chrome</translation>
 <translation id="5401696449591951427">Habilita <ph name="CHROME_DEVICES_LINK" /></translation>
@@ -5400,6 +5444,12 @@ A partir de la versión 92 de <ph name="PRODUCT_NAME" />, esta política tambié
 <translation id="5413051574966911176">Inhabilitar la IU relacionada con la conexión en el escritorio del host remoto cuando una conexión está activa</translation>
 <translation id="5415713057512333739">URL de los datos que se descargarán.</translation>
 <translation id="5416263061774624216">No usar la política SiteList de Internet Explorer como fuente de reglas</translation>
+<translation id="5416663929864223914">Controlar la combinación de teclas utilizada para activar la tecla Borrar del "paquete de seis"</translation>
+<translation id="5417857116982992260">Esta política determina el comportamiento predeterminado para volver a asignar la tecla Insertar
+dentro de la subpágina "teclas de reasignación". La subpágina "teclas de reasignación" permite a los usuarios
+personalizar las teclas del teclado. Si la habilitas, esta política evita que los usuarios
+personalicen estas reasignaciones específicas. Si no se establece la política,
+los accesos directos basados en la búsqueda funcionarán de forma predeterminada.</translation>
 <translation id="5417906792459853336">Envía información sobre el uso de un dispositivo y su inventario de aplicaciones.
 
       Si se establece la política como falsa o no se establece, no se enviará la información.
@@ -5955,6 +6005,11 @@ Si inhabilitas la política o no la estableces, no se restablecerá el estado de
 Los dominios de servicio web que no se pueden restablecer se pueden configurar con la política <ph name="FLOATING_SSO_DOMAIN_BLOCKLIST_POLICY_NAME" />, mientras que las excepciones a esa política se pueden configurar con la política <ph name="FLOATING_SSO_DOMAIN_BLOCKLIST_EXCEPTIONS_POLICY_NAME" />.
 Si no estableces estas dos políticas, se transferirán todas las autenticaciones de los servicios web, excepto las de Google.</translation>
 <translation id="5871786561822073630">No permitir el uso de la función Compression Dictionary Transport</translation>
+<translation id="5872327206018094848">Esta política controla la opción de combinación de teclas seleccionada para volver a asignar eventos a
+F11 en la subpágina de las teclas de reasignación. Esta configuración solo se aplica a los
+teclados de <ph name="PRODUCT_OS_NAME" />
+y está inhabilitada de forma predeterminada si no estableces la política. Si estableces esta política,
+los usuarios no podrán cambiarla ni anularla.</translation>
 <translation id="587242272905978723">Permite que <ph name="PLUGIN_VM_NAME" /> recopile datos de uso de <ph name="PLUGIN_VM_NAME" />.
 
       Si estableces la política como falsa o no la estableces, no se permitirá que <ph name="PLUGIN_VM_NAME" /> recopile datos.
@@ -6084,7 +6139,9 @@ Si ninguna de las entradas tiene un valor de <ph name="CHROMEOS_VERSION_PROPERTY
 <translation id="5975765799383881158">Si habilitas la política o no la estableces, los usuarios podrán enviar comentarios a Google desde Menú &gt; Ayuda &gt; Informar un problema o la combinación de teclas correspondiente.
 
       Si inhabilitas la política, los usuarios no podrán enviar los comentarios a Google.</translation>
+<translation id="5976636832661103220">La configuración de F11 usa la combinación de teclas que contiene la tecla modificadora mayúsculas</translation>
 <translation id="5979376378555121803">App alojada</translation>
+<translation id="5983274643567559194">Inhabilitar la configuración de un acceso directo para la acción "Borrar"</translation>
 <translation id="5984099692320899605">No usar la autenticación de NTLM</translation>
 <translation id="5984237109586500246">Aceptar contenidos web que se presenten como intercambios HTTP firmados</translation>
 <translation id="5987654816293745077">Informar los contadores de tiempo de ejecución del dispositivo</translation>
@@ -6122,6 +6179,12 @@ Si ninguna de las entradas tiene un valor de <ph name="CHROMEOS_VERSION_PROPERTY
 
       Esta política solo será válida si la máquina está inscrita en <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" /> para <ph name="PRODUCT_NAME" />.
       Esta política siempre será válida para <ph name="PRODUCT_OS_NAME" />.</translation>
+<translation id="6016304107003486747">Esta política determina el comportamiento para volver a asignar la tecla Borrar en
+la subpágina "teclas de reasignación". La subpágina "teclas de reasignación" permite a los usuarios
+personalizar las teclas del teclado. Si la habilitas, esta política evita que los usuarios
+personalicen estas reasignaciones específicas. Si no estableces la política,
+las combinaciones de teclas basadas en búsquedas funcionarán como las predeterminadas y permitirán que los usuarios
+las configuren.</translation>
 <translation id="6019162469732742754">Usar el Modo automático</translation>
 <translation id="6019606564278029236">Permitir que los usuarios remotos interactúen con las ventanas con permisos elevados en sesiones de asistencia remota</translation>
 <translation id="602038990586229155">Esta política controla las solicitudes de instalación de extensiones de <ph name="PRODUCT_NAME" />, lo que permite que los usuarios envíen las solicitudes a la Consola del administrador de Google para obtener su aprobación.
@@ -6618,6 +6681,7 @@ en la pantalla de <ph name="LOG_IN" />.</translation>
       Si la habilitas, se desactivará la optimización de WPAD. Esto hará que <ph name="PRODUCT_NAME" /> espere más tiempo en los servidores de WPAD basados en DNS.
 
       Más allá de que establezcas o no esta política, los usuarios no podrán cambiar la configuración de la optimización de WPAD.</translation>
+<translation id="6363485842496031347">La configuración de la combinación de teclas Borrar usa la combinación de teclas que contiene la tecla modificadora alt</translation>
 <translation id="6366574325767783825">Si estableces la política como verdadera o no la estableces, <ph name="PRODUCT_NAME" /> aceptará contenidos web que se presenten como intercambios HTTP firmados.
 
       Si estableces la política como falsa, no se cargarán los intercambios HTTP firmados.</translation>
@@ -6962,6 +7026,7 @@ Nota: Si reinicias el dispositivo y sales de la cuenta, se borrará la caché.</
 
           Por último, no tiene efecto si la habilitas, la dejas vacía o no la configuras.</translation>
 <translation id="6583249367505445969">Inhabilitar la barra de favoritos</translation>
+<translation id="6584122839583172231">La configuración de F12 usa la combinación de teclas que contiene las teclas modificadoras ctrl y mayúsculas</translation>
 <translation id="6584541828182430328">Inhabilita la alerta de pantalla completa</translation>
 <translation id="6588634282328239769">Mostrar la URL completa</translation>
 <translation id="6589049539706330510">Habilitar la compatibilidad</translation>
@@ -7185,6 +7250,12 @@ Esta política siempre será válida para <ph name="PRODUCT_OS_NAME" />.</transl
 <translation id="6752711782954612641">Si activas <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" />, establecer <ph name="DEFAULT_SEARCH_PROVIDER_SEARCH_URL_POST_PARAMS_POLICY_NAME" /> especificará los parámetros para la búsqueda de una URL con POST. Se compone de pares de nombre y valor separados por comas. Si un valor es un parámetro de plantilla, como <ph name="SEARCH_TERM_MARKER" />, se reemplazará por datos de términos de búsqueda reales.
 
       Si no estableces <ph name="DEFAULT_SEARCH_PROVIDER_SEARCH_URL_POST_PARAMS_POLICY_NAME" />, se enviarán solicitudes de búsqueda con el método GET.</translation>
+<translation id="6757413365906304125">Esta política determina el comportamiento para volver a asignar las teclas RePág/AvPág en
+la subpágina "teclas de reasignación". La subpágina "teclas de reasignación" permite a los usuarios
+personalizar las teclas del teclado. Si la habilitas, esta política evita que los usuarios
+personalicen estas reasignaciones específicas. Si no estableces la política,
+las combinaciones de teclas basadas en búsquedas funcionarán como las predeterminadas y permitirán que los usuarios
+las configuren.</translation>
 <translation id="6757613329154374267">Se habilitó la funcionalidad de copia de seguridad y restablecimiento</translation>
 <translation id="6758659208493449452">Esta política controla si los usuarios inscritos en el Programa de Protección Avanzada reciben protección adicional. Es posible que algunas de estas funciones compartan datos con Google (por ejemplo, los usuarios de la Protección avanzada podrán enviar sus descargas a Google para comprobar que no incluyan software malicioso). Si se establece como verdadera o no se establece, los usuarios inscritos recibirán protección adicional. Si se establece como falsa, los usuarios de la Protección avanzada solo recibirán las funciones estándar para el consumidor.</translation>
 <translation id="6763023079133439068">Permitir los certificados que carezcan de una extensión subjectAlternativeName cuando son emitidos por anclas de confianza locales</translation>
@@ -7192,9 +7263,11 @@ Esta política siempre será válida para <ph name="PRODUCT_OS_NAME" />.</transl
 <translation id="6770454900105963262">Informar datos sobre las sesiones de kiosco activas</translation>
 <translation id="6774132787348495175">No permitir que los usuarios usen las máquinas virtuales necesarias para admitir apps de Linux</translation>
 <translation id="6782331708811245959">Habilitar los informes del modo de inicio del dispositivo</translation>
+<translation id="6785201942412171878">Controlar la combinación de teclas utilizada para activar las teclas RePág/AvPág del "paquete de seis"</translation>
 <translation id="6786666051053129545">Habilitar el flujo de Voice Match de Asistente de Google</translation>
 <translation id="6786747875388722282">Extensiones</translation>
 <translation id="6786967369487349613">Establecer el directorio del perfil de itinerancia</translation>
+<translation id="6787638035953731324">La configuración de la combinación de teclas Insertar usa la combinación de teclas que contiene la tecla modificadora de búsqueda</translation>
 <translation id="6788500377069760677">Habilitar el uso compartido de datos de diagnóstico con PluginVm</translation>
 <translation id="6789319144568227749">Determina si se admiten encabezados de solicitudes sin comodín CORS.
 
@@ -7267,6 +7340,7 @@ política mientras se esté ejecutando el navegador.</translation>
       Si no la estableces, se desactivará el modo de contraste alto en la pantalla de acceso. Los usuarios podrán activarlo en cualquier momento y su estado para la pantalla de acceso se mantendrá entre los diferentes usuarios.
 
           Nota: Si se especifica <ph name="DEVICE_LOGIN_SCREEN_HIGH_CONTRAST_ENABLED_POLICY_NAME" />, anulará esta política.</translation>
+<translation id="6833465247597603843">La configuración de la combinación de teclas Borrar usa la combinación de teclas que contiene la tecla modificadora de búsqueda</translation>
 <translation id="6833988859168635883">Página de inicio, página principal y página Nueva pestaña</translation>
 <translation id="6835254082476223414">Habilitar la copia de seguridad y el restablecimiento para las máquinas virtuales con Linux</translation>
 <translation id="6835883744948188639">Mostrar un mensaje recurrente al usuario para indicarle que se recomienda llevar a cabo el reinicio</translation>
@@ -8386,6 +8460,7 @@ Si no estableces esta política, el navegador elegirá el renderizador de PDF.</
 <translation id="7758378441185523981">Permite la autenticación ambiental para tipos de perfiles.</translation>
 <translation id="776110834126722255">Obsoleto</translation>
 <translation id="7763614521440615342">Mostrar sugerencias de contenido en la página Nueva pestaña</translation>
+<translation id="7763650553214838209">Inhabilitar la configuración de un acceso directo para la acción "Insertar"</translation>
 <translation id="776465643636059256">Inhabilitar Conjuntos de sitios web relacionados</translation>
 <translation id="7765879851993224640">Permitir el acceso mediante Smart Lock</translation>
 <translation id="7767066506143083523">Si estableces la política, podrás especificar una lista de patrones de URL que pueden usar la captura de pestaña.
@@ -9076,6 +9151,7 @@ Para obtener más información sobre las tecnologías heredadas, visita https://
 <translation id="8316940611391250886">No permitir certificados que carezcan de una extensión subjectAlternativeName</translation>
 <translation id="8319678975002906774">Establece los valores de la configuración administrada como los sitios web de orígenes específicos</translation>
 <translation id="8320149248919453401">Modo de carga de la batería</translation>
+<translation id="8320576119308783142">Mostrar el teclado en pantalla cuando corresponda.</translation>
 <translation id="8327651196906278510">Permitir que estos orígenes capturen pestañas</translation>
 <translation id="8329434144708110">Activar flujos de autenticación para sincronizar contraseñas con proveedores de SSO</translation>
 <translation id="8329984337216493753">Esta política solo se encuentra activa en el modo de venta.
@@ -9183,6 +9259,12 @@ Si no estableces la política o la estableces con el valor "0", la navegación a
       Para obtener más información, consulta https://support.google.com/chrome/a/answer/9301891?ref_topic=9301744.</translation>
 <translation id="8424255554404582727">Establecer la rotación predeterminada de la pantalla que se volverá a aplicar en cada reinicio</translation>
 <translation id="8426231401662877819">Rotar la pantalla hacia la derecha 90 grados</translation>
+<translation id="8426326725481825773">Esta política determina el comportamiento para volver a asignar las teclas Inicio/Fin
+dentro de la subpágina "teclas de reasignación". La subpágina "teclas de reasignación" permite a los usuarios
+personalizar las teclas del teclado. Si la habilitas, esta política evita que los usuarios
+personalicen estas reasignaciones específicas. Si no estableces la política,
+las combinaciones de teclas basadas en búsquedas funcionarán como las predeterminadas y permitirán que los usuarios
+las configuren.</translation>
 <translation id="8427466947904008809">Permitir que CRD realice solicitudes a la API de WebAuthn que se envíen al proxy a través de un host remoto</translation>
 <translation id="8428295225823548121">Habilitar los informes de la memoria del dispositivo</translation>
 <translation id="8428635849021776523">Inhabilitar los informes de Android</translation>
@@ -9211,6 +9293,15 @@ Si no estableces la política o la estableces con el valor "0", la navegación a
 
 Si se inhabilita, no se usarán los certificados TLS agregados por el usuario desde los almacenes de confianza de la plataforma en la generación de rutas de acceso para la autenticación del servidor TLS.</translation>
 <translation id="8470317291588703478">No aplicar de manera forzosa el modo restringido de YouTube</translation>
+<translation id="8471117881949952479">Esta política dejó de estar disponible y, con el tiempo, se reemplazará por DataControlsRules.
+
+Esta política bloquea la copia de datos al portapapeles en URLs específicas.
+
+Las listas de URLs <ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" /> y <ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> controlan los sitios que pueden escribir en el portapapeles. Si la URL coincide con un patrón del campo "enable" y no coincide con ningún patrón del campo "disable", se bloqueará una escritura en el portapapeles. Si la URL no coincide con ningún patrón, no se bloqueará la copia.
+
+Los patrones de coincidencia de orígenes usan un formato similar a los de la política "<ph name="URL_BLOCKLIST_POLICY_NAME" />", que se documentan en https://support.google.com/chrome/a?p=url_blocklist_filter_format.
+
+El valor <ph name="ENTERPRISE_CONNECTOR_MINIMUM_DATA_SIZE" /> indica la cantidad mínima de datos (expresada en bytes) que activa la revisión de patrones. Esto significa que se permitiría una escritura en el portapapeles de parte de una URL bloqueada si el tamaño de los datos copiados es menor al valor especificado en este campo. Si no estableces el campo, el valor predeterminado es 100 bytes.</translation>
 <translation id="8473107305327396242">Importar certificados de servidor TLS agregados por el usuario desde almacenes de confianza de la plataforma.</translation>
 <translation id="8477885780684655676">TLS 1.0</translation>
 <translation id="8479032202539686055">WebRTC utilizará todas las interfaces disponibles al momento de buscar la mejor ruta.</translation>
@@ -9347,6 +9438,7 @@ Si habilitas esta política o no la estableces, los usuarios podrán activar o d
 
 Para establecer esta política, se debe inhabilitar la política <ph name="PRIVACY_SANDBOX_PROMPT_ENABLED_POLICY_NAME" />.</translation>
 <translation id="8559221882677768248">Inhabilitar la función Seleccionar para pronunciar en la pantalla de acceso</translation>
+<translation id="8561512522781085002">La configuración de RePág/AvPág usa la combinación de teclas que contiene la tecla modificadora de búsqueda</translation>
 <translation id="8566842294717252664">Ocultar ícono de Web Store en la página Nueva pestaña y el Selector de aplicaciones</translation>
 <translation id="8571314270766672278">Revierte y restablece el dispositivo en el cambio a una versión inferior del canal (intenta preservar la inscripción)</translation>
 <translation id="8571871284943706125">Informa los eventos de sesiones de CRD en los dispositivos inscriptos para los usuarios afiliados.
@@ -9544,6 +9636,11 @@ Si no estableces la política, no se importará ninguna contraseña guardada en 
       Para obtener información detallada sobre los patrones de <ph name="URL_LABEL" /> válidos, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> no es un valor aceptado para esta política.</translation>
 <translation id="8703488928438047864">Informar el estado de la placa</translation>
 <translation id="8704831857353097849">Lista de complementos inhabilitados</translation>
+<translation id="8705317513271779649">Esta política controla la opción de combinación de teclas seleccionada para volver a asignar eventos a
+F12 en la subpágina de las teclas de reasignación. Esta configuración solo se aplica a los
+teclados de <ph name="PRODUCT_OS_NAME" />
+y está inhabilitada de forma predeterminada si no estableces la política. Si estableces esta política,
+los usuarios no podrán cambiarla ni anularla.</translation>
 <translation id="8705895771006864851">Si estableces la política como verdadera, los usuarios podrán utilizar la funcionalidad de traducción cuando corresponda. Verán una barra de herramientas de traducción integrada en <ph name="PRODUCT_NAME" /> y se agregará una opción de traducción al menú contextual que aparece al hacer clic con el botón derecho. Si estableces la política como falsa, se desactivarán todas las funciones de traducción integradas.
 
       Si estableces la política, los usuarios no podrán cambiar esta función. Si no la estableces, los usuarios podrán cambiar la configuración.</translation>
@@ -9641,6 +9738,13 @@ de forma predeterminada a partir de M119.
 
       Los usuarios podrán activar un diálogo de importación; la casilla de verificación correspondiente al historial de navegación estará marcada o desmarcada en función del valor de esta política.</translation>
 <translation id="8825154502356129120">Inhabilitar la autenticación gnubby para el host de acceso remoto</translation>
+<translation id="8825261718850860999">Si estableces la política como verdadera o no la estableces, el teclado en pantalla podrá aparecer cuando predice que el usuario está a punto de usarlo.
+
+Si la estableces como falsa, el teclado en pantalla solo aparecerá si el usuario presiona explícitamente un campo de entrada o si una aplicación lo solicita.
+
+Por ejemplo, supongamos que el usuario utiliza el teclado virtual para escribir su nombre de usuario en una pantalla de acceso en dos etapas. Cuando la pantalla de acceso pasa a la etapa de contraseña, si la política es verdadera, el teclado virtual puede permanecer visible aunque el usuario no haya presionado el campo de entrada de la contraseña. Si la estableces como falsa, desaparecerá el teclado virtual.
+
+Esta política no se aplica si el teclado virtual está inhabilitado (p. ej., mediante la política <ph name="TOUCH_VIRTUAL_KEYBOARD_ENABLED_POLICY_NAME" /> o si el dispositivo está conectado a un teclado físico).</translation>
 <translation id="8825782996899863372">La advertencia de la protección de la contraseña se activa cuando se vuelve a usar la contraseña en una página de phishing</translation>
 <translation id="8827275450034266143">El string usuario-agente bloqueará la versión principal en 99. Además, incluirá la versión principal del navegador en la posición de la versión secundaria.</translation>
 <translation id="8827366480126575426">El protocolo para el controlador de protocolos.</translation>
@@ -9833,6 +9937,7 @@ Si se inhabilita, se utilizará el comportamiento anterior.
 Si no se establece, se usará el comportamiento nuevo al igual que en el resto de los usuarios de Chromium.</translation>
 <translation id="8955719471735800169">Volver al principio</translation>
 <translation id="8956312248048980644">Permitir el agrupamiento en clústeres de agentes con clave de origen de forma predeterminada</translation>
+<translation id="8963464192296208229">La configuración de F11 usa la combinación de teclas que contiene la tecla modificadora alt</translation>
 <translation id="8970205333161758602">Elimina el mensaje de desactivación de <ph name="PRODUCT_FRAME_NAME" />.</translation>
 <translation id="8973579598359969188">Elegir si se puede mostrar el mensaje de <ph name="PRIVACY_SANDBOX_NAME" /> a los usuarios</translation>
 <translation id="8974457039656761249">Controlar la función de escritura predictiva en el teclado físico</translation>
@@ -10099,6 +10204,7 @@ Esta política solo tendrá efecto si estableces la política <ph name="FULL_RES
 <translation id="9135095804754272364">Mostrar una notificación cuando se detecte un dispositivo USB</translation>
 <translation id="9136212796239682721">Inhabilitar la IU del cuadro de descarga</translation>
 <translation id="9136399279941091445">Intervalos de horas inactivas cuando se ejecutan las políticas de dispositivo especificadas</translation>
+<translation id="9139775903828905867">Controlar la combinación de teclas utilizada para activar F11</translation>
 <translation id="9140064482233876338">Dejó de estar disponible en M69. En su lugar, usa OverrideSecurityRestrictionsOnInsecureOrigin.
 
 La política especifica una lista de orígenes (URLs) o patrones de nombres de host (como "*.example.com") para los cuales no se aplicarán restricciones de seguridad en orígenes no seguros.

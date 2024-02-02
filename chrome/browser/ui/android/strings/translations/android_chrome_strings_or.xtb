@@ -334,6 +334,7 @@
 <translation id="2870560284913253234">ସାଇଟ୍</translation>
 <translation id="2871733351037274014">ପୃଷ୍ଠାଗୁଡ଼ିକୁ ପ୍ରିଲୋଡ କରନ୍ତୁ</translation>
 <translation id="2876136027428473467">ଏହି ୱେବସାଇଟ ଆପଣ ଅନୁମୋଦନ କରନ୍ତୁ ବୋଲି <ph name="CHILD_NAME" /> ଚାହୁଁଛି:</translation>
+<translation id="2876194821763651818"><ph name="USERNAME" />ରେ ସେଭ କରାଯାଇଥିବା ପାସୱାର୍ଡଗୁଡ଼ିକ।</translation>
 <translation id="2876628302275096482"><ph name="BEGIN_LINK" />Chrome ଆପଣଙ୍କ ଡାଟାକୁ କିପରି ପ୍ରାଇଭେଟ ରଖେ<ph name="END_LINK" /> ସେ ବିଷୟରେ ଅଧିକ ଜାଣନ୍ତୁ</translation>
 <translation id="2888126860611144412">Chrome ବିଷୟରେ</translation>
 <translation id="2891154217021530873">ପୃଷ୍ଠା ଲୋଡ୍ କରିବା ବନ୍ଦ କରନ୍ତୁ</translation>
@@ -672,6 +673,7 @@
 <translation id="4699172675775169585">କେଚ୍‍ ଛବି ଏବଂ ଫାଇଲ୍‌</translation>
 <translation id="4710167854527459075">ସବୁଠୁ ନୂଆ ଅନୁସାରେ ସର୍ଟ କର</translation>
 <translation id="4719927025381752090">ଅନୁବାଦ କରିବାକୁ ପ୍ରସ୍ତାବ ଦିଅନ୍ତୁ</translation>
+<translation id="4720556299488643018">ସଦସ୍ୟତା ତ୍ୟାଗ କରନ୍ତୁ</translation>
 <translation id="4732120983431207637">ଷ୍ଟାକ୍ ଅନ୍‌ୱାଇଣ୍ଡର୍</translation>
 <translation id="4736934858538408121">ଭର୍ଚୁଆଲ୍ କାର୍ଡ</translation>
 <translation id="473775607612524610">ଅପ୍‍‍ଡେଟ୍</translation>
@@ -1194,6 +1196,7 @@
 <translation id="7313188324932846546">ସିଙ୍କ୍ ସେଟ୍ ଅପ୍ କରିବାକୁ ଟାପ୍ କରନ୍ତୁ</translation>
 <translation id="7324354302972299151">ଏକ “Do Not Track” ଅନୁରୋଧ ପଠାନ୍ତୁ</translation>
 <translation id="7332075081379534664">ସାଇନ୍-ଇନ୍ କରିବା ସଫଳ ହୋଇଛି</translation>
+<translation id="7333041109965360609">ବିଜ୍ଞପ୍ତିଗୁଡ଼ିକର ସଦସ୍ୟତା ତ୍ୟାଗ କରାଯାଇଛି</translation>
 <translation id="7333232495927792353">Googleରୁ ଅଧିକ ପ୍ରାସଙ୍ଗିକ ବିଷୟବସ୍ତୁ ପାଇବାକୁ ସିଙ୍କ କରନ୍ତୁ</translation>
 <translation id="7339898014177206373">ନୂଆ ୱିଣ୍ଡୋ</translation>
 <translation id="7340958967809483333">Discover ପାଇଁ ବିକଳ୍ପଗୁଡ଼ିକ</translation>
@@ -1452,6 +1455,7 @@
 <translation id="8503813439785031346">ଉପଯୋଗକର୍ତ୍ତାନାମ</translation>
 <translation id="8505766168025405649">ଡାଉନଲୋଡ୍ ସ୍ଥିତି ପାଇଁ ବିଜ୍ଞପ୍ତି ଦେଖନ୍ତୁ</translation>
 <translation id="8506357771923193001">ଆପଣ ଏଠାରେ ଆପଣଙ୍କ ଡାଉନଲୋଡଗୁଡ଼ିକ ପାଇବେ</translation>
+<translation id="8512053371384421952">ଆପଣ <ph name="DOMAIN" />ରୁ ବିଜ୍ଞପ୍ତିଗୁଡ଼ିକ ଆଉ ପାଇବେ ନାହିଁ।</translation>
 <translation id="8514477925623180633">Chromeରେ ଷ୍ଟୋର୍‌ ଥିବା ପାସ୍‌ୱର୍ଡଗୁଡ଼ିକ ଏକ୍ସପୋର୍ଟ କରନ୍ତୁ</translation>
 <translation id="8516012719330875537">ଇମେଜ୍ ଏଡିଟର୍</translation>
 <translation id="8523928698583292556">ଷ୍ଟୋର୍‌ ହୋ‍ଇଥିବା ପାସ୍‌ୱର୍ଡ ଡିଲିଟ୍‌ କରନ୍ତୁ</translation>

@@ -398,6 +398,7 @@
 <translation id="1711528724596764268">แมชชีนเลิร์นนิงและปัญญาประดิษฐ์ (AI)</translation>
 <translation id="1712552549805331520"><ph name="URL" /> ต้องการจัดเก็บข้อมูลถาวรในเครื่องคอมพิวเตอร์ของคุณ</translation>
 <translation id="1713628304598226412">ถาด 2</translation>
+<translation id="1713819065634160212">ใช้และบันทึกที่อยู่จากบัญชี Google</translation>
 <translation id="1714807406136741351">โหมดเรียกดู คุณสามารถเปลี่ยนเป็นโหมดแบบฟอร์มเพื่อใช้ลูกศรซ้าย/ขวาในการตรวจสอบการเปลี่ยนแปลงราคาในกราฟ</translation>
 <translation id="1717218214683051432">เซ็นเซอร์ตรวจจับการเคลื่อนไหว</translation>
 <translation id="1717494416764505390">กล่องจดหมาย 3</translation>
@@ -429,6 +430,7 @@
 <translation id="1752021286346845558">กล่องจดหมาย 8</translation>
 <translation id="1753068535428855445">หาคู่และโฆษณาหาเพื่อน</translation>
 <translation id="1753706481035618306">เลขหน้า</translation>
+<translation id="1755203724116202818">ระบบจะแชร์เฉพาะข้อมูลบางประเภทระหว่างเว็บไซต์เพื่อวัดประสิทธิภาพของโฆษณา เช่น คุณซื้อสินค้าหลังจากเข้าชมเว็บไซต์หรือไม่</translation>
 <translation id="1755621011177747277">การรับเลี้ยงบุตรบุญธรรม</translation>
 <translation id="1756026472674246267">เปิดลิงก์ในแท็บใหม่</translation>
 <translation id="175656076281618225">มายากล</translation>
@@ -705,7 +707,7 @@
 <translation id="2312234273148520048">เครื่องปรุงรสและน้ำสลัด</translation>
 <translation id="2316087952091171402">ไม่ถึง <ph name="UPPER_ESTIMATE" /> บางเว็บไซต์อาจโหลดช้ากว่าเดิมเมื่อคุณเข้าชมครั้งถัดไป</translation>
 <translation id="2316159751672436664">ปรับเปลี่ยนเครื่องมือช่วยเหลือพิเศษในแบบของคุณที่การตั้งค่า Chrome OS</translation>
-<translation id="2316887270356262533">หากเพิ่มพื้นที่ว่างไม่ถึง 1 MB ไซต์บางแห่งอาจโหลดช้าลงเมื่อคุณเข้าชมครั้งถัดไป</translation>
+<translation id="2316887270356262533">เพิ่มพื้นที่ว่างไม่ถึง 1 MB เว็บไซต์บางแห่งอาจโหลดช้าลงเมื่อคุณเข้าชมครั้งถัดไป</translation>
 <translation id="2317259163369394535"><ph name="DOMAIN" /> ต้องใช้ชื่อผู้ใช้และรหัสผ่าน</translation>
 <translation id="2318594867107319532">การประทับเวลาล่าสุดของนโยบาย:</translation>
 <translation id="2320564945062300737">ผลิตภัณฑ์ดูแลผิวหน้า</translation>
@@ -883,6 +885,7 @@
 <translation id="2674804415323431591">ซ่อนคำแนะนำ</translation>
 <translation id="2677696497921480781">วันเกิดและวันตั้งชื่อ</translation>
 <translation id="2677748264148917807">ออก</translation>
+<translation id="2683195745483370038">พบผลการค้นหาอื่นๆ</translation>
 <translation id="2686919536310834199">ส่งความคิดเห็นเกี่ยวกับฟีเจอร์ "ช่วยฉันเขียน"</translation>
 <translation id="2687555958734450033">ปรับพอดี</translation>
 <translation id="2688186765492306706">500 x 760 มม.</translation>
@@ -1087,6 +1090,7 @@
 <translation id="3120807611504813890">ซอง (น้ำหนักเบา)</translation>
 <translation id="3121994479408824897">ไปที่ <ph name="DOMAIN" /></translation>
 <translation id="3126023634486644099">ป้าย (ถาวร)</translation>
+<translation id="3133565499688974786"><ph name="SEARCH_ENGINE_NAME" /> เป็นเครื่องมือค้นหาเริ่มต้นของคุณแล้วตอนนี้</translation>
 <translation id="3140646734028448730">บริการทางธุรกิจ</translation>
 <translation id="3141093262818886744">เปิดต่อไป</translation>
 <translation id="3141641372357166056">ไม่มีการตัดสินใจให้ความยินยอม</translation>
@@ -1263,6 +1267,7 @@
 <translation id="3462200631372590220">ซ่อนข้อมูลขั้นสูง</translation>
 <translation id="3465972433695735758">ไม่สามารถเข้าถึง PDF นี้ ดึงข้อความแล้ว ทำงานด้วยระบบ AI ของ Google</translation>
 <translation id="346601286295919445">เคมี</translation>
+<translation id="3467081767799433066">เมื่อเปิดใช้การวัดผลโฆษณา ระบบจะแชร์เฉพาะข้อมูลบางประเภทระหว่างเว็บไซต์เพื่อวัดประสิทธิภาพของโฆษณา เช่น คุณซื้อสินค้าหลังจากเข้าชมเว็บไซต์หรือไม่</translation>
 <translation id="3468054117417088249"><ph name="TAB_SWITCH_SUFFIX" /> เปิดอยู่ กด Tab จากนั้นกด Enter เพื่อเปลี่ยนไปยังแท็บที่เปิดอยู่</translation>
 <translation id="3470563864795286535"><ph name="CLOSE_INCOGNITO_WINDOWS_FOCUSED_FRIENDLY_MATCH_TEXT" /> กด Tab ตามด้วย Enter เพื่อปิดหน้าต่างที่ไม่ระบุตัวตนทั้งหมดที่เปิดอยู่</translation>
 <translation id="3474392552865647225">ปุ่มปรับแต่งแบบอักษรใน Chrome เปิดใช้งานเพื่อปรับแต่งขนาดแบบอักษรและลักษณะแบบอักษรใน Chrome</translation>
@@ -1506,6 +1511,7 @@
 <translation id="3943857333388298514">วาง</translation>
 <translation id="3946209740501886391">ถามทุกครั้งบนเว็บไซต์นี้</translation>
 <translation id="3948588869002647271">แอปพลิเคชันนี้หายไปหรือได้รับความเสียหาย</translation>
+<translation id="3949297482798028668">ผู้ดูแลระบบบล็อกการวางเนื้อหานี้ที่นี่</translation>
 <translation id="3949571496842715403">เซิร์ฟเวอร์นี้ไม่สามารถพิสูจน์ได้ว่าเป็น <ph name="DOMAIN" /> เพราะใบรับรองความปลอดภัยไม่ได้ระบุชื่อสำรองของหัวเรื่อง โดยอาจเกิดจากการกำหนดค่าผิดหรือผู้โจมตีที่ขัดขวางการเชื่อมต่อของคุณ</translation>
 <translation id="3949601375789751990">ประวัติการท่องเว็บของคุณจะปรากฏที่นี่</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
@@ -1921,6 +1927,7 @@
 <translation id="4764680219299728632">เตาแก๊ส เตาหุงต้ม และเตาอบ</translation>
 <translation id="4764776831041365478">หน้าเว็บใน <ph name="URL" /> อาจหยุดให้บริการชั่วคราวหรืออาจถูกย้ายไปยังที่อยู่เว็บใหม่อย่างถาวร</translation>
 <translation id="4766713847338118463">เย็บด้วยลวดเย็บกระดาษด้านล่าง 2 ครั้ง</translation>
+<translation id="4768864802656530630">บันทึกของระบบโดยละเอียด <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /></translation>
 <translation id="4771973620359291008">มีข้อผิดพลาดที่ไม่ทราบเกิดขึ้น</translation>
 <translation id="4774055414220872623">อุปกรณ์สำหรับงานศิลปะและหัตถกรรม</translation>
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{ป๊อปอัปถูกบล็อก}other{# ป๊อปอัปถูกบล็อก}}</translation>
@@ -2225,6 +2232,7 @@
 <translation id="5377026284221673050">"นาฬิกาของคุณช้ากว่าปัจจุบัน" หรือ "นาฬิกาของคุณเร็วกว่าปัจจุบัน" หรือ "&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;"</translation>
 <translation id="5383478552402031184">การปูพื้น</translation>
 <translation id="5385857628869214740">อารมณ์ขัน</translation>
+<translation id="5385966243497224160">แสดงตัวอย่าง URL ที่ไม่ใช่ HTTPS ไม่ได้</translation>
 <translation id="5386426401304769735">กลุ่มใบรับรองสำหรับเว็บไซต์นี้มีใบรับรองที่ลงนามโดยใช้ SHA-1</translation>
 <translation id="5392506727170022660">โลหะ (กึ่งเงา)</translation>
 <translation id="5396631636586785122">เย็บขอบด้านขวา</translation>
@@ -2447,6 +2455,8 @@
 <translation id="5838732667866024867">คุณใช้ลูกศรซ้าย/ขวาเพื่อตรวจสอบการเปลี่ยนแปลงราคาบนกราฟได้</translation>
 <translation id="5840318881868981258">ในบัญชี Google <ph name="ACCOUNT" /></translation>
 <translation id="5841338463993781099">บันทึกในบัญชีไหม</translation>
+<translation id="5843987376989109187">ยังไม่รองรับภาษานี้
+    <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /></translation>
 <translation id="5847181246682413476">แหล่งจ่ายไฟ</translation>
 <translation id="5851548754964597211">รายการแท็บ</translation>
 <translation id="5852909432155870672">RA4</translation>
@@ -2780,7 +2790,6 @@
 <translation id="6480864723214312258">แบตเตอรี่ในครัวเรือน</translation>
 <translation id="6486200200930923183">ภาพยนตร์สารคดี</translation>
 <translation id="6489534406876378309">เริ่มอัปโหลดข้อขัดข้อง</translation>
-<translation id="6491663123807473970"><ph name="URL" /> ต้องการใช้อุปกรณ์ MIDI ของคุณ</translation>
 <translation id="6493924760403974580">แอปนี้รองรับเฉพาะขนาดนี้เท่านั้น</translation>
 <translation id="6494750904506170417">ป๊อปอัปและการเปลี่ยนเส้นทาง</translation>
 <translation id="6495664197699704593">รหัสผ่านข้างต้นจะบันทึกไว้ในอุปกรณ์นี้เท่านั้น หากต้องการใช้งานในอุปกรณ์อื่น ให้<ph name="GOOGLE_PASSWORD_MANAGER" /></translation>
@@ -3657,6 +3666,7 @@
 <translation id="8194797478851900357">&amp;เลิกทำการย้าย</translation>
 <translation id="8194956568907463262">เกมยิง</translation>
 <translation id="8199437620497683918">แผ่นออปติคัลดิสก์ (เงา)</translation>
+<translation id="8199730148066603000">ไม่อนุญาตให้แสดงตัวอย่าง URL ที่ไม่ใช่ HTTPS</translation>
 <translation id="8200772114523450471">ทำต่อ</translation>
 <translation id="8202097416529803614">ข้อมูลสรุปคำสั่งซื้อ</translation>
 <translation id="8202370299023114387">ความขัดแย้ง</translation>
@@ -4072,6 +4082,7 @@
 <translation id="9005998258318286617">ไม่สามารถโหลดเอกสาร PDF</translation>
 <translation id="9008178007718859630">การจัดบ้านและตกแต่งภายใน</translation>
 <translation id="9008201768610948239">ไม่สนใจ</translation>
+<translation id="9014705027639070815">เว็บไซต์ที่คุณเข้าชมสามารถขอข้อมูลจาก Chrome เพื่อช่วยวัดประสิทธิภาพของโฆษณา Chrome ช่วยให้เว็บไซต์รวบรวมข้อมูลบางประเภทได้ เช่น คุณซื้อสินค้าหลังจากเข้าชมเว็บไซต์หรือไม่</translation>
 <translation id="9018120810758822233">ป้อนรหัสความปลอดภัยสำหรับ <ph name="CREDIT_CARD" /></translation>
 <translation id="901834265349196618">อีเมล</translation>
 <translation id="9020542370529661692">หน้านี้ได้รับการแปลเป็น <ph name="TARGET_LANGUAGE" /> แล้ว</translation>
@@ -4094,6 +4105,7 @@
 <translation id="9049981332609050619">คุณพยายามเข้าถึง <ph name="DOMAIN" /> แต่เซิร์ฟเวอร์แสดงใบรับรองที่ไม่ถูกต้อง</translation>
 <translation id="9050666287014529139">ข้อความรหัสผ่าน</translation>
 <translation id="9051072642122229460">เครื่องชงกาแฟ</translation>
+<translation id="9051260467258969162"><ph name="BEGIN_LINK" />ลงชื่อเข้าใช้<ph name="END_LINK" />อีกครั้งแล้วกลับมาที่แท็บนี้เพื่อรับความช่วยเหลือในการเขียน</translation>
 <translation id="9053840549256861041">เรากำลังเปิดตัวฟีเจอร์ใหม่ด้านความเป็นส่วนตัวเกี่ยวกับโฆษณาที่เรียกว่าการวัดผลโฆษณา Chrome จะแชร์แค่ข้อมูลจำนวนน้อยมากระหว่างเว็บไซต์ต่างๆ เช่น ข้อมูลเวลาที่แสดงโฆษณาแก่คุณ เพื่อช่วยให้เว็บไซต์วัดประสิทธิภาพโฆษณาได้</translation>
 <translation id="9056953843249698117">ร้านค้า</translation>
 <translation id="9062620674789239642">ไฟล์อาจถูกย้าย แก้ไข หรือลบไปแล้ว</translation>

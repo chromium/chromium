@@ -109,7 +109,6 @@
 <translation id="2750481671343847896">Laman boleh menunjukkan gesaan log masuk daripada perkhidmatan identiti.</translation>
 <translation id="2790501146643349491">Apabila dihidupkan, laman yang ditutup baru-baru ini dapat menyelesaikan penghantaran dan penerimaan data. Apabila dimatikan, laman yang ditutup baru-baru ini tidak dapat menyelesaikan penghantaran atau penerimaan data.</translation>
 <translation id="2822354292072154809">Adakah anda pasti mahu menetapkan semula semua kebenaran tapak untuk <ph name="CHOSEN_OBJECT_NAME" />?</translation>
-<translation id="2836978798613876756"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> <ph name="HOST_NAME" /></translation>
 <translation id="2850913818900871965">Minta paparan mudah alih</translation>
 <translation id="2870560284913253234">Tapak</translation>
 <translation id="2874939134665556319">Lagu sebelumnya</translation>
@@ -121,7 +120,6 @@
 <translation id="2968755619301702150">Pemapar sijil</translation>
 <translation id="2979365474350987274">Kuki pihak ketiga adalah terhad</translation>
 <translation id="3008272652534848354">Tetapkan semula kebenaran</translation>
-<translation id="3013291976881901233">Peranti MIDI</translation>
 <translation id="301521992641321250">Disekat secara automatik</translation>
 <translation id="3069226013421428034">Benarkan log masuk pihak ketiga untuk laman tertentu.</translation>
 <translation id="3082992102194421695">{COUNT,plural, =1{Tamat tempoh esok}other{Tamat tempoh dalam masa # hari}}</translation>
@@ -192,7 +190,6 @@
 <translation id="4169549551965910670">Disambungkan kepada peranti USB</translation>
 <translation id="4194328954146351878">Tanya sebelum membenarkan laman melihat dan menukar maklumat pada peranti NFC (disyorkan)</translation>
 <translation id="4200726100658658164">Buka Tetapan Lokasi</translation>
-<translation id="4212246570487010370">Teruskan penyemakan imbas</translation>
 <translation id="4226663524361240545">Pemberitahuan boleh menggetarkan peranti</translation>
 <translation id="4259722352634471385">Navigasi disekat: <ph name="URL" /></translation>
 <translation id="4278390842282768270">Dibenarkan</translation>
@@ -282,7 +279,6 @@
 <translation id="5706552988683188916">Tindakan ini memadamkan kuki dan data laman lain untuk <ph name="WEBSITE" /></translation>
 <translation id="5723967018671998714">Kuki pihak ketiga disekat dalam mod Inkognito</translation>
 <translation id="5740126560802162366">Laman boleh menyimpan data pada peranti anda</translation>
-<translation id="5749158352074143502">Teruskan dengan tab ini</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" /> disekat</translation>
 <translation id="5804241973901381774">Kebenaran</translation>
 <translation id="5844448279347999754">Apabila dihidupkan, laman dapat meminta untuk melihat teks dan imej yang disimpan pada papan keratan anda. Apabila dimatikan, laman tidak dapat melihat teks atau imej pada papan keratan anda.</translation>
@@ -351,7 +347,6 @@
 <translation id="6746124502594467657">Alihkan ke bawah</translation>
 <translation id="6749077623962119521">Tetapkan semula kebenaran?</translation>
 <translation id="6766622839693428701">Leret ke bawah untuk tutup.</translation>
-<translation id="6785959295338971061"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> Daripada <ph name="FROM_DEVICE" /></translation>
 <translation id="6787751205395685251">Pilih pilihan untuk <ph name="SITE_NAME" /></translation>
 <translation id="6790428901817661496">Mainkan</translation>
 <translation id="6818926723028410516">Pilih item</translation>
@@ -423,7 +418,6 @@
 <translation id="7990211076305263060">Apabila dihidupkan, laman dapat meminta untuk menggunakan mikrofon anda. Apabila dimatikan, laman tidak dapat menggunakan mikrofon anda.</translation>
 <translation id="8007176423574883786">Dimatikan untuk peranti ini</translation>
 <translation id="802154636333426148">Muat turun gagal</translation>
-<translation id="8024161440284949905">Teruskan dengan tab ini</translation>
 <translation id="8042586301629853791">Isih mengikut:</translation>
 <translation id="8067883171444229417">Mainkan video</translation>
 <translation id="8068648041423924542">Tidak dapat memilih sijil.</translation>

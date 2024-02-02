@@ -607,9 +607,11 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="3526440770046466733">Maak skakel in nuwe oortjie oop en bly in huidige oortjie</translation>
 <translation id="353086728817903341">Gekoppel aan <ph name="NUM_DEVICES" /> toestelle</translation>
 <translation id="3533126039236445965">Apps op rak</translation>
+<translation id="3537350467437346467">Onlangs bekyk</translation>
 <translation id="3539957339480430241"><ph name="DEVICE_NAME" />-warmkol</translation>
 <translation id="3540893133818942399">Maak die opstelling toe vir die bekyk van jou foon se onlangse foto’s en media</translation>
 <translation id="3542066395059568317">Jy sal aanbevelings sien sodat jy kan aangaan waar jy opgehou het. Jy kan regsklik om aanbevelings te verwyder.</translation>
+<translation id="3547318469722231257">Jy het dit verander</translation>
 <translation id="3552189655002856821">Wi-fi is afgeskakel</translation>
 <translation id="3554215588514239132">Wys of versteek ontwikkelaarnutsgoedpaneel</translation>
 <translation id="3554637740840164787"><ph name="ITEM_TITLE" /> is vasgespeld</translation>
@@ -702,6 +704,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="385300504083504382">Begin</translation>
 <translation id="3859364108019690">Kan nie apps stroom nie</translation>
 <translation id="3861651314799684201">Druk Enter om volskerm op te neem</translation>
+<translation id="3882323608730650973">Verander</translation>
 <translation id="3886872229787704059">Vandag oopgemaak</translation>
 <translation id="3891340733213178823">Druk Ctrl+Shift+Q twee keer om af te meld.</translation>
 <translation id="3893630138897523026">ChromeVox (gesproke terugvoer)</translation>
@@ -895,6 +898,7 @@ Sommige kenmerke is beperk om die batterylewe te verleng.</translation>
 <translation id="4582666543382004902">Warmkol is afgeskakel sodat wi-fi gebruik kan word. Skakel warmkol af as jy die wi-fi wil gebruik.</translation>
 <translation id="4585337515783392668">Hou op om op 'n onbekende ontvanger uit te saai</translation>
 <translation id="4596144739579517758">Donkertema is af</translation>
+<translation id="4596442969149038771"><ph name="USER" /> het gedeel</translation>
 <translation id="4611292653554630842">Meld aan</translation>
 <translation id="462160925400706389"><ph name="NAME" /> is gekoppel</translation>
 <translation id="4623167406982293031">Verifieer rekening</translation>
@@ -1338,6 +1342,7 @@ Sommige kenmerke is beperk om die batterylewe te verleng.</translation>
 <translation id="6298183524022479114">Pasmaak hierdie toestel in app</translation>
 <translation id="6309219492973062892">Klik of tik op rakikone 1-8</translation>
 <translation id="6315170314923504164">Stem</translation>
+<translation id="6319058840130157106">Beweeg agtertoe tussen regter onderste hoek, Lanseerder, adresbalk, boekmerkbalk, webwerf wat oop is en aflaaie</translation>
 <translation id="6324916366299863871">Wysig kortpad</translation>
 <translation id="6330012934079202188">Vensters van alle lessenaars word tans gewys; druk die oppylsleutel om vensters van die huidige lessenaar te wys</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> is 'n bestuurde sessie wat deur <ph name="MANAGER" /> bestuur word</translation>
@@ -1816,6 +1821,7 @@ Druk en hou weer die aan/af-skakelaar op die toestel om dit af te skakel.</trans
 <translation id="8314772463905284467">Hoofletterslot is aan</translation>
 <translation id="8315514906653279104">Skakel tans aan …</translation>
 <translation id="8331351032546853669">Aflaai hangende</translation>
+<translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
 <translation id="8345019317483336363"><ph name="WINDOW_TITLE" />-venster gekies</translation>
 <translation id="8349826889576450703">lanseerder</translation>
@@ -1922,6 +1928,7 @@ Druk en hou weer die aan/af-skakelaar op die toestel om dit af te skakel.</trans
 <translation id="878215960996152260"><ph name="APP_NAME" />; geïnstalleerde program; geblokkeer</translation>
 <translation id="8785070478575117577">Koppel aan <ph name="NETWORK_NAME" /></translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
+<translation id="8790632710469941716">Beweeg vorentoe tussen regter onderste hoek, Lanseerder, adresbalk, boekmerkbalk, webwerf wat oop is en aflaaie</translation>
 <translation id="8792626944327216835">mikrofoon</translation>
 <translation id="8801802992492329306">5G</translation>
 <translation id="8806053966018712535">Vouer <ph name="FOLDER_NAME" /></translation>
@@ -2035,6 +2042,7 @@ Druk en hou weer die aan/af-skakelaar op die toestel om dit af te skakel.</trans
 <translation id="953431725143473984">Skakel die toestel af?</translation>
 <translation id="954052413789300507">Nie genoeg spasie vir <ph name="FILENAME" /> nie. Maak spasie beskikbaar.</translation>
 <translation id="954520015070501466">30 minute</translation>
+<translation id="954786879461589145">Verander deur <ph name="USER" /></translation>
 <translation id="974545358917229949">Wys tans <ph name="RESULT_COUNT" /> resultate vir <ph name="QUERY" /></translation>
 <translation id="981011780479609956">Geen sperdatum nie</translation>
 <translation id="98120814841227350">Gaan na einde van dokument</translation>

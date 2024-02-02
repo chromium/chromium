@@ -2915,7 +2915,6 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="3188465121994729530">Wastani Unaosonga</translation>
 <translation id="3189187154924005138">Kiteuzi kikubwa</translation>
 <translation id="3190558889382726167">Nenosiri limehifadhiwa</translation>
-<translation id="3191625924275846436">{NUM_SITES,plural, =1{Ili kulinda data yako, ruhusa zimeondolewa kwenye tovuti ambayo hujaitembelea hivi karibuni}other{Ili kulinda data yako, ruhusa zimeondolewa kwenye tovuti ambazo hujazitembelea hivi karibuni}}</translation>
 <translation id="3192586965067888278">Eleza tatizo kwa kina. Maoni yatatumwa kwa Google ili yafanyiwe uhakiki na binadamu na yanaweza kutumiwa kuboresha au kubuni bidhaa na huduma za Google.</translation>
 <translation id="3192947282887913208">Faili za Sauti</translation>
 <translation id="3193695589337931419">Programu Saidizi ya Mawimbi ya Mfumo</translation>
@@ -4073,7 +4072,6 @@ Hii inaweza kujumuisha maelezo kuhusu programu zilizosakinishwa, faili, kivinjar
 <translation id="4078903002989614318">Chaguo za kupanga na kuorodhesha</translation>
 <translation id="4079140982534148664">Tumia Kikagua Maendelezo Kilichoboreshwa</translation>
 <translation id="4082333918978320301">Hakuna tovuti zilizo na ruhusa ya kutumia maikrofoni yako</translation>
-<translation id="4084582735848141214">{COUNT,plural, =1{Tovuti 1 imeruhusiwa}other{Tovuti # zimeruhusiwa}}</translation>
 <translation id="4084682180776658562">Alamisho</translation>
 <translation id="4084835346725913160">Funga <ph name="TAB_NAME" /></translation>
 <translation id="4085298594534903246">JavaScript ilizuiwa kwenye ukurasa huu.</translation>
@@ -8069,7 +8067,6 @@ Una manenosiri # zaidi yaliyoathiriwa. Kidhibiti cha Manenosiri cha Google kinap
 <translation id="7260186537988033909">Uandikishaji wa kifaa cha skrini ya kuonyesha matangazo na mabango ya dijitali umekamilika</translation>
 <translation id="7261612856573623172">Sauti ya mfumo wa Ubadilishaji wa Maandishi kwenda Usemi</translation>
 <translation id="7262004276116528033">Huduma hii ya kuingia katika akaunti inatolewa na <ph name="SAML_DOMAIN" /></translation>
-<translation id="7263162347647986485">{NUM_SITES,plural, =1{Ruhusa zimeondolewa katika tovuti 1}other{Ruhusa zimeondolewa katika tovuti {NUM_SITES}}}</translation>
 <translation id="7264695323040866038">Je, ungependa kutumia programu ya <ph name="APP" /> kila wakati kufungua viungo vya wavuti vinavyotumika?</translation>
 <translation id="7267044199012331848">Imeshindwa kusakinisha mashine pepe. Tafadhali jaribu tena au uwasiliane na msimamizi wako. Msimbo wa hitilafu: <ph name="ERROR_CODE" />.</translation>
 <translation id="7267875682732693301">Endelea kuinua kidole chako ili uweke sehemu tofauti za alama ya kidole chako</translation>
@@ -9817,7 +9814,6 @@ Weka faili yako ya funguo mahali salama. Utaihitaji kuunda matoleo mapya ya kien
 <translation id="859246725979739260">Tovuti hii imezuiwa isifikie maelezo ya mahali ulipo.</translation>
 <translation id="8593121833493516339">Tuma data ya matumizi na uchunguzi. Tusaidie kuboresha jinsi mtoto wako anavyotumia Android kwa kutuma kiotomatiki data ya uchunguzi na matumizi ya kifaa na programu kwa Google. Hatutatumia data hii kumtambulisha mtoto wako na itatusaidia kuboresha uthabiti wa programu na mfumo na maboresho mengine. Baadhi ya maelezo yaliyojumlishwa pia yatasaidia programu za Google na washirika kama vile wasanidi programu za Android. Ikiwa umewasha mipangilio ya historia ya Shughuli za ziada kwenye Wavuti na Programu kwa ajili ya mtoto wako, data hii inaweza kuhifadhiwa kwenye akaunti yake ya Google. <ph name="BEGIN_LINK1" />Pata maelezo zaidi<ph name="END_LINK1" /></translation>
 <translation id="8593450223647418235">Hutaweza kufungua faili kwenye Microsoft 365 hadi mchakato wa kuweka mipangilio ukamilike.</translation>
-<translation id="8594585498253980290">{COUNT,plural, =1{Tovuti 1 imezuiwa}other{Tovuti # zimezuiwa}}</translation>
 <translation id="8596540852772265699">Faili Maalum</translation>
 <translation id="8597462463725156723">Arifa hazitaibuka kwenye skrini. Bado unaweza kuona arifa kwa kubofya aikoni ya Usisumbue iliyo upande wa chini kulia mwa skrini yako.</translation>
 <translation id="8597845839771543242">Muundo wa sifa:</translation>

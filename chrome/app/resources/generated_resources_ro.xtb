@@ -2904,7 +2904,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3188465121994729530">Medie mobilă</translation>
 <translation id="3189187154924005138">Cursor mare</translation>
 <translation id="3190558889382726167">Parola a fost salvată</translation>
-<translation id="3191625924275846436">{NUM_SITES,plural, =1{Pentru a-ți proteja datele, s-au eliminat permisiunile de pe un site pe care nu l-ai accesat recent}few{Pentru a-ți proteja datele, s-au eliminat permisiunile de pe site-urile pe care nu le-ai accesat recent}other{Pentru a-ți proteja datele, s-au eliminat permisiunile de pe site-urile pe care nu le-ai accesat recent}}</translation>
 <translation id="3192586965067888278">Descrie problema detaliat. Feedbackul va fi trimis la Google pentru examinare manuală și poate fi folosit pentru a îmbunătăți sau a dezvolta produse și servicii Google.</translation>
 <translation id="3192947282887913208">Fișiere audio</translation>
 <translation id="3193695589337931419">Utilitare pentru semnalele de sistem</translation>
@@ -4062,7 +4061,6 @@ Aici pot fi incluse informații despre software-ul instalat, fișiere, browser �
 <translation id="4078903002989614318">Opțiuni de sortare și listă</translation>
 <translation id="4079140982534148664">Folosește verificarea îmbunătățită a ortografiei</translation>
 <translation id="4082333918978320301">Niciun site nu are permisiunea de a folosi microfonul</translation>
-<translation id="4084582735848141214">{COUNT,plural, =1{Un site permis}few{# site-uri permise}other{# de site-uri permise}}</translation>
 <translation id="4084682180776658562">Marcaj</translation>
 <translation id="4084835346725913160">Închide <ph name="TAB_NAME" /></translation>
 <translation id="4085298594534903246">Scripturile JavaScript au fost blocate pe această pagină.</translation>
@@ -8061,7 +8059,6 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="7260186537988033909">Înregistrarea dispozitivului chioșc și pentru semne s-a finalizat</translation>
 <translation id="7261612856573623172">Vocea sistemului de redare vocală a textului</translation>
 <translation id="7262004276116528033">Acest serviciu de conectare este găzduit de <ph name="SAML_DOMAIN" /></translation>
-<translation id="7263162347647986485">{NUM_SITES,plural, =1{Permisiunile au fost eliminate pentru un site}few{Permisiunile au fost eliminate pentru {NUM_SITES} site-uri}other{Permisiunile au fost eliminate pentru {NUM_SITES} de site-uri}}</translation>
 <translation id="7264695323040866038">Folosești întotdeauna aplicația <ph name="APP" /> ca să deschizi linkurile web acceptate?</translation>
 <translation id="7267044199012331848">Nu s-a putut instala mașina virtuală. Încearcă din nou sau contactează administratorul. Cod de eroare: <ph name="ERROR_CODE" />.</translation>
 <translation id="7267875682732693301">Ridică degetul și atinge din nou pentru a adăuga toate părțile amprentei</translation>
@@ -9808,7 +9805,6 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="859246725979739260">Acest site nu are permisiunea de a accesa locația.</translation>
 <translation id="8593121833493516339">Trimite date de utilizare și diagnosticare. Contribuie la îmbunătățirea experienței Android a copilului trimițând automat la Google date de diagnosticare și utilizare a dispozitivului și a aplicațiilor. Acestea nu vor fi folosite la identificarea copilului și vor ajuta la stabilitatea sistemului, a aplicațiilor și altele. Unele date cumulate vor ajuta aplicațiile și partenerii Google, cum ar fi dezvoltatorii Android. Dacă ai activat setarea Activitatea suplimentară de pe web și din aplicații pentru copilul tău, aceste date pot fi salvate în Contul său Google. <ph name="BEGIN_LINK1" />Află mai multe<ph name="END_LINK1" /></translation>
 <translation id="8593450223647418235">Nu vei putea deschide fișiere în Microsoft 365 până când nu se finalizează configurarea.</translation>
-<translation id="8594585498253980290">{COUNT,plural, =1{Un site blocat}few{# site-uri blocate}other{# de site-uri blocate}}</translation>
 <translation id="8596540852772265699">Fișiere personalizate</translation>
 <translation id="8597462463725156723">Notificările nu se vor afișa pe ecran. Poți să vezi în continuare notificările dacă dai clic pe pictograma Nu deranja din partea dreaptă jos a ecranului.</translation>
 <translation id="8597845839771543242">Formatul proprietății:</translation>

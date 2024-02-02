@@ -139,6 +139,7 @@ Tik jūsų slaptafrazę turintis asmuo galės perskaityti šifruotus duomenis. S
 <translation id="1749561566933687563">Sinchronizuokite žymes</translation>
 <translation id="1750259112639922169">Skirtukų grupė – <ph name="TAB_COUNT" /> skirtuk.</translation>
 <translation id="17513872634828108">Atidaryti skirtukai</translation>
+<translation id="1755203724116202818">Siekiant įvertinti skelbimo našumą, tarp svetainių bendrinami tam tikrų tipų duomenys, pvz., ar apsilankę svetainėje įsigijote pirkinį.</translation>
 <translation id="1757620656501361327">„Google“ slaptažodžių tvarkyklės naujinys</translation>
 <translation id="1760873718737761808">{FILE_COUNT,plural, =1{Puslapiai, vienas puslapis sąraše}one{Puslapiai, # puslapis sąraše}few{Puslapiai, # puslapiai sąraše}many{Puslapiai, # puslapio sąraše}other{Puslapiai, # puslapių sąraše}}</translation>
 <translation id="1778457539567749232">Pažymėti kaip neskaitytą</translation>
@@ -452,6 +453,7 @@ Tik jūsų slaptafrazę turintis asmuo galės perskaityti šifruotus duomenis. S
 <translation id="3443221991560634068">Iš naujo įkelti dabartinį puslapį</translation>
 <translation id="3444179773590444986">Bendrinti atsiliepimą apie tamsiąją temą, skirtą svetainėms?</translation>
 <translation id="3452832259067974318">Siekiant apsaugoti jūsų privatumą, „Chrome“ šio lauko automatiškai nepildys jūsų slaptažodžiu.</translation>
+<translation id="3467081767799433066">Naudojant skelbimų vertinimo funkciją tarp svetainių bendrinami tam tikrų tipų duomenys, siekiant įvertinti jų skelbimų našumą, pvz., ar apsilankę svetainėje įsigijote pirkinį.</translation>
 <translation id="3474624961160222204">Tęsti kaip <ph name="NAME" /></translation>
 <translation id="3478363558367712427">Galite pasirinkti paieškos variklį</translation>
 <translation id="3479552764303398839">Ne dabar</translation>
@@ -632,6 +634,7 @@ Tik jūsų slaptafrazę turintis asmuo galės perskaityti šifruotus duomenis. S
 <translation id="4494806687727322324">Administratorius įjungė slaptažodžių išsaugojimo funkciją</translation>
 <translation id="4508528996305412043">Sklaidos kanalo kortelės meniu atidarytas</translation>
 <translation id="4509501256689523862">Tai, ar naršant rodomi suasmeninti skelbimai, priklauso nuo šio nustatymo, <ph name="BEGIN_LINK_1" />skelbimų temų<ph name="END_LINK_1" />, <ph name="BEGIN_LINK_2" />slapukų nustatymų<ph name="END_LINK_2" /> ir nuo to, ar svetainė, kurioje lankotės, teikia suasmenintus skelbimus</translation>
+<translation id="4509741852167209430">Tarp svetainių bendrinami tam tikrų tipų duomenys, siekiant įvertinti skelbimų našumą, pvz., ar apsilankę svetainėje įsigijote pirkinį</translation>
 <translation id="4513387527876475750">{DAYS,plural, =1{Prieš # dieną}one{Prieš # dieną}few{Prieš # dienas}many{Prieš # dienos}other{Prieš # dienų}}</translation>
 <translation id="451872707440238414">Ieškoti žymėse</translation>
 <translation id="4521489764227272523">Pasirinkti duomenys pašalinti iš „Chrome“ ir sinchronizuojamų įrenginių.

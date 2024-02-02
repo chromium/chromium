@@ -2920,7 +2920,6 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="3188465121994729530">Purata Pergerakan</translation>
 <translation id="3189187154924005138">Kursor besar</translation>
 <translation id="3190558889382726167">Kata laluan yang disimpan</translation>
-<translation id="3191625924275846436">{NUM_SITES,plural, =1{Untuk melindungi data anda, kebenaran telah dialih keluar daripada laman yang tidak anda lawati baru-baru ini}other{Untuk melindungi data anda, kebenaran telah dialih keluar daripada laman yang tidak anda lawati baru-baru ini}}</translation>
 <translation id="3192586965067888278">Terangkan masalah secara terperinci. Maklum balas akan dihantar kepada Google untuk semakan manual oleh jurusemak dan mungkin digunakan untuk meningkatkan atau membangunkan produk dan perkhidmatan Google.</translation>
 <translation id="3192947282887913208">Fail Audio</translation>
 <translation id="3193695589337931419">Utiliti Isyarat Sistem</translation>
@@ -4078,7 +4077,6 @@ Maklumat ini termasuk maklumat tentang perisian yang dipasang, fail, penyemak im
 <translation id="4078903002989614318">Pilihan pengisihan dan senarai</translation>
 <translation id="4079140982534148664">Gunakan Semak Ejaan yang Dipertingkatkan</translation>
 <translation id="4082333918978320301">Tiada laman web yang dibenarkan untuk menggunakan mikrofon anda</translation>
-<translation id="4084582735848141214">{COUNT,plural, =1{1 laman dibenarkan}other{# laman dibenarkan}}</translation>
 <translation id="4084682180776658562">Penanda halaman</translation>
 <translation id="4084835346725913160">Tutup <ph name="TAB_NAME" /></translation>
 <translation id="4085298594534903246">JavaScript disekat pada halaman ini.</translation>
@@ -8080,7 +8078,6 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 <translation id="7260186537988033909">Pendaftaran peranti Kios dan papan tanda selesai</translation>
 <translation id="7261612856573623172">Suara Teks ke Pertuturan Sistem</translation>
 <translation id="7262004276116528033">Perkhidmatan log masuk ini dihoskan oleh <ph name="SAML_DOMAIN" /></translation>
-<translation id="7263162347647986485">{NUM_SITES,plural, =1{Kebenaran dialih keluar untuk 1 laman}other{Kebenaran dialih keluar untuk {NUM_SITES} laman}}</translation>
 <translation id="7264695323040866038">Gunakan apl <ph name="APP" /> pada bila-bila masa untuk membuka pautan web yang disokong?</translation>
 <translation id="7267044199012331848">Tidak dapat memasang mesin maya. Sila cuba lagi atau hubungi pentadbir anda. Kod ralat: <ph name="ERROR_CODE" />.</translation>
 <translation id="7267875682732693301">Angkat jari berulang kali untuk menambahkan beberapa bahagian cap jari anda</translation>
@@ -9829,7 +9826,6 @@ perubahan ini berlaku, anda mungkin tidak mahukannya.</translation>
 <translation id="859246725979739260">Tapak ini telah disekat daripada mengakses lokasi anda.</translation>
 <translation id="8593121833493516339">Hantar data penggunaan dan diagnostik. Bantu kami meningkatkan pengalaman Android anak anda dengan menghantar data diagnostik dan penggunaan peranti serta apl kepada Google secara automatik. Data ini tidak akan digunakan untuk mengenal pasti anak anda dan akan membantu peningkatan kestabilan sistem dan apl serta pelbagai lagi. Sesetengah data agregat juga akan membantu apl dan rakan kongsi Google, seperti pembangun Android. Jika Aktiviti Web &amp; Apl tambahan dihidupkan untuk anak anda, data ini mungkin disimpan ke akaun Googlenya. <ph name="BEGIN_LINK1" />Ketahui Lebih Lanjut<ph name="END_LINK1" /></translation>
 <translation id="8593450223647418235">Anda tidak akan dapat membuka fail dalam Microsoft 365 sehingga persediaan selesai.</translation>
-<translation id="8594585498253980290">{COUNT,plural, =1{1 laman disekat}other{# laman disekat}}</translation>
 <translation id="8596540852772265699">Fail Tersuai</translation>
 <translation id="8597462463725156723">Pemberitahuan tidak akan timbul pada skrin. Anda masih dapat melihat pemberitahuan dengan mengklik ikon Jangan ganggu pada bahagian bawah sebelah kanan skrin anda.</translation>
 <translation id="8597845839771543242">Format sifat:</translation>

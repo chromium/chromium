@@ -2921,7 +2921,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="3188465121994729530">Average ng Paglipat</translation>
 <translation id="3189187154924005138">Malaking cursor</translation>
 <translation id="3190558889382726167">Nai-save ang password</translation>
-<translation id="3191625924275846436">{NUM_SITES,plural, =1{Para maprotektahan ang iyong data, inalis ang mga pahintulot sa isang site na hindi mo nabisita kamakailan}one{Para maprotektahan ang iyong data, inalis ang mga pahintulot sa mga site na hindi mo nabisita kamakailan}other{Para maprotektahan ang iyong data, inalis ang mga pahintulot sa mga site na hindi mo nabisita kamakailan}}</translation>
 <translation id="3192586965067888278">Ilarawan nang detalyado ang isyu. Ipapadala ang feedback sa Google para sa pagsusuri ng tao at posibleng gamitin ito para sa pagpapahusay o pag-develop ng mga produkto at serbisyo ng Google.</translation>
 <translation id="3192947282887913208">Mga Audio File</translation>
 <translation id="3193695589337931419">Mga Utility ng Mga Signal ng System</translation>
@@ -4079,7 +4078,6 @@ Puwedeng kasama rito ang impormasyon tungkol sa naka-install na software, mga fi
 <translation id="4078903002989614318">Mga opsyon sa pagbubukod-bukod at listahan</translation>
 <translation id="4079140982534148664">Gumamit ng Pinahusay na Pang-check ng Pagbabaybay</translation>
 <translation id="4082333918978320301">Walang website na pinapayagang gumamit ng iyong mikropono</translation>
-<translation id="4084582735848141214">{COUNT,plural, =1{1 site ang pinapayagan}one{# site ang pinapayagan}other{# na site ang pinapayagan}}</translation>
 <translation id="4084682180776658562">Bookmark</translation>
 <translation id="4084835346725913160">Isara ang <ph name="TAB_NAME" /></translation>
 <translation id="4085298594534903246">Ang JavaScript ay hinarang sa pahinang ito.</translation>
@@ -8083,7 +8081,6 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="7260186537988033909">Tapos na ang pag-enroll ng kiosk at signage device</translation>
 <translation id="7261612856573623172">Text-to-Speech voice ng system</translation>
 <translation id="7262004276116528033">Hino-host ng <ph name="SAML_DOMAIN" /> ang serbisyo sa pag-sign in</translation>
-<translation id="7263162347647986485">{NUM_SITES,plural, =1{Inalis ang mga pahintulot para sa 1 site}one{Inalis ang mga pahintulot para sa {NUM_SITES} site}other{Inalis ang mga pahintulot para sa {NUM_SITES} na site}}</translation>
 <translation id="7264695323040866038">Palaging gamitin ang <ph name="APP" /> app para buksan ang mga sinusuportahang link ng web?</translation>
 <translation id="7267044199012331848">Hindi ma-install ang virtual machine. Pakisubukan ulit, o makipag-ugnayan sa iyong administrator. Code ng error: <ph name="ERROR_CODE" />.</translation>
 <translation id="7267875682732693301">Iangat nang iangat ang iyong daliri para idagdag ang iba't ibang bahagi ng fingerprint mo</translation>
@@ -9832,7 +9829,6 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="859246725979739260">Na-block ang site na ito sa pag-access sa iyong lokasyon.</translation>
 <translation id="8593121833493516339">Magpadala ng data ng paggamit at diagnostic na data. Tumulong sa pagpapaganda ng karanasan ng iyong anak sa Android sa pamamagitan ng awtomatikong pagpapadala ng diagnostic na data, data ng device, at data ng paggamit sa app sa Google. Hindi ito gagamitin para tukuyin ang pagkakakilanlan ng iyong anak, at makakatulong ito sa stability ng system at ng app, at sa iba pang pagpapahusay. Makakatulong din ang ilang pinagsama-samang data sa mga app at partner ng Google, gaya ng mga developer ng Android. Kung naka-on ang karagdagang Aktibidad sa Web at App para sa iyong anak, maaaring ma-save ang data na ito sa kanyang Google account. <ph name="BEGIN_LINK1" />Matuto Pa<ph name="END_LINK1" /></translation>
 <translation id="8593450223647418235">Hindi mo mabubuksan ang mga file sa Microsoft 365 hanggang sa matapos ang pag-set up.</translation>
-<translation id="8594585498253980290">{COUNT,plural, =1{1 site ang na-block}one{# site ang na-block}other{# na site ang na-block}}</translation>
 <translation id="8596540852772265699">Mga Custom na File</translation>
 <translation id="8597462463725156723">Hindi lalabas ang mga notification sa screen. Makakakita ka pa rin ng mga notification sa pamamagitan ng pag-click sa icon na Huwag istorbohin sa kanang bahagi sa ibaba ng iyong screen.</translation>
 <translation id="8597845839771543242">Format ng property:</translation>

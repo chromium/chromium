@@ -607,9 +607,11 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="3526440770046466733">Ireki esteka beste fitxa batean eta geratu oraingo fitxan</translation>
 <translation id="353086728817903341">Konektatu da <ph name="NUM_DEVICES" /> gailutara</translation>
 <translation id="3533126039236445965">Apaleko aplikazioak</translation>
+<translation id="3537350467437346467">Ikusi duzu</translation>
 <translation id="3539957339480430241"><ph name="DEVICE_NAME" /> wifi-gunea</translation>
 <translation id="3540893133818942399">Baztertu telefonoko azken argazkiak eta multimedia-elementuak ikusteko aukera konfiguratzeko prozesua</translation>
 <translation id="3542066395059568317">Gomendioak ikusiko dituzu utzi zenuen tokitik jarraitu ahal izateko. Haiek kentzeko, egin klik haietan eskuineko botoiarekin.</translation>
+<translation id="3547318469722231257">Zuk aldatua</translation>
 <translation id="3552189655002856821">Desaktibatuta dago wifi-konexioa</translation>
 <translation id="3554215588514239132">Erakutsi edo ezkutatu garatzaileentzako tresnen panela</translation>
 <translation id="3554637740840164787">Ainguratu da <ph name="ITEM_TITLE" /></translation>
@@ -702,6 +704,7 @@ Aurrera egiteko, erabiltzaile guztiek saioa amaitu behar dute.</translation>
 <translation id="385300504083504382">Hasiera</translation>
 <translation id="3859364108019690">Ezin da igorri zuzenean aplikaziorik</translation>
 <translation id="3861651314799684201">Pantaila osoa grabatzeko, sakatu Sartu</translation>
+<translation id="3882323608730650973">Aldatua</translation>
 <translation id="3886872229787704059">Gaur ireki da</translation>
 <translation id="3891340733213178823">Saioa amaitzeko, sakatu Ktrl + Maius + Q bi aldiz.</translation>
 <translation id="3893630138897523026">ChromeVox (ahozko argibideak)</translation>
@@ -895,6 +898,7 @@ Bateriaren iraupena luzatzeko, eginbide batzuk mugatu dira.</translation>
 <translation id="4582666543382004902">Wifi-gunea desaktibatu da wifia erabiltzeko. Wifi-gunea erabiltzeko, desaktibatu wifia.</translation>
 <translation id="4585337515783392668">Utzi hargailu ezezagun batera igortzeari</translation>
 <translation id="4596144739579517758">Desaktibatuta dago gai iluna.</translation>
+<translation id="4596442969149038771"><ph name="USER" /> erabiltzaileak partekatua</translation>
 <translation id="4611292653554630842">Hasi saioa</translation>
 <translation id="462160925400706389"><ph name="NAME" /> konektatuta</translation>
 <translation id="4623167406982293031">Egiaztatu kontua</translation>
@@ -1338,6 +1342,7 @@ Bateriaren iraupena luzatzeko, eginbide batzuk mugatu dira.</translation>
 <translation id="6298183524022479114">Pertsonalizatu gailu hau aplikazioan</translation>
 <translation id="6309219492973062892">Sakatu apaleko 1-8 ikonoak</translation>
 <translation id="6315170314923504164">Ahotsa</translation>
+<translation id="6319058840130157106">Mugitu atzerantz beheko eskuinaldeko izkinaren, Exekutatzeko tresnaren, helbide-barraren, laster-marken barraren, irekitako webgunearen eta deskargen artean</translation>
 <translation id="6324916366299863871">Editatu lasterbidea</translation>
 <translation id="6330012934079202188">Lan-eremu guztietako leihoak daude ikusgai. Une honetako lan-eremuko leihoak egon daitezen ikusgai, sakatu gora egiteko gezi-tekla.</translation>
 <translation id="6338485349199627913"><ph name="MANAGER" /> domeinuak kudeatutako saio kudeatua da <ph name="DISPLAY_NAME" /></translation>
@@ -1816,6 +1821,7 @@ Itzaltzeko, eduki sakatuta berriro gailuaren etengailua.</translation>
 <translation id="8314772463905284467">Maiuskulen blokeoa aktibatuta dago</translation>
 <translation id="8315514906653279104">Aktibatzen…</translation>
 <translation id="8331351032546853669">Deskarga zain</translation>
+<translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
 <translation id="8345019317483336363"><ph name="WINDOW_TITLE" /> leihoa dago hautatuta</translation>
 <translation id="8349826889576450703">abiarazlea</translation>
@@ -1922,6 +1928,7 @@ Itzaltzeko, eduki sakatuta berriro gailuaren etengailua.</translation>
 <translation id="878215960996152260"><ph name="APP_NAME" />, instalatutako aplikazioa, blokeatuta</translation>
 <translation id="8785070478575117577">Konektatu <ph name="NETWORK_NAME" /> sarera</translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
+<translation id="8790632710469941716">Mugitu aurrerantz beheko eskuinaldeko izkinaren, Exekutatzeko tresnaren, helbide-barraren, laster-marken barraren, irekitako webgunearen eta deskargen artean</translation>
 <translation id="8792626944327216835">mikrofonoa</translation>
 <translation id="8801802992492329306">5G</translation>
 <translation id="8806053966018712535"><ph name="FOLDER_NAME" /> karpeta</translation>
@@ -2035,6 +2042,7 @@ Itzaltzeko, eduki sakatuta berriro gailuaren etengailua.</translation>
 <translation id="953431725143473984">Gailua itzali nahi duzu?</translation>
 <translation id="954052413789300507">Ez dago behar adina toki <ph name="FILENAME" /> deskargatzeko. Egin tokia.</translation>
 <translation id="954520015070501466">30 min</translation>
+<translation id="954786879461589145"><ph name="USER" /> erabiltzaileak aldatua</translation>
 <translation id="974545358917229949">"<ph name="QUERY" />" bilaketaren <ph name="RESULT_COUNT" /> emaitza daude ikusgai</translation>
 <translation id="981011780479609956">Epemugarik gabekoak</translation>
 <translation id="98120814841227350">Joan dokumentuaren amaierara</translation>

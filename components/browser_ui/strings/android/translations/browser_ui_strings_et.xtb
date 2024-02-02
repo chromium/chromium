@@ -66,6 +66,7 @@
 <translation id="2228071138934252756">Selleks et anda rakendusele <ph name="APP_NAME" /> juurdepääs teie kaamerale, lülitage kaamera sisse ka <ph name="BEGIN_LINK" />Androidi seadetes<ph name="END_LINK" />.</translation>
 <translation id="2235344399760031203">Kolmanda osapoole küpsisefailid on blokeeritud</translation>
 <translation id="2238944249568001759">Soovitatud otsingud teie viimase vahelehe põhjal</translation>
+<translation id="2241587408274973373">Uued vahekaardi lehekaardid</translation>
 <translation id="2241634353105152135">Ainult ühe korra</translation>
 <translation id="2253414712144136228"><ph name="NAME_OF_LIST_ITEM" /> Eemalda</translation>
 <translation id="2253989982043948086">{NUM_SELECTED,plural, =1{1 sait on blokeeritud}other{# saiti on blokeeritud}}</translation>
@@ -108,7 +109,6 @@
 <translation id="2750481671343847896">Saidid saavad teile kuvada sisselogimisviipasid isikut tuvastavatest teenusest.</translation>
 <translation id="2790501146643349491">Kui see on sisse lülitatud, saavad hiljuti suletud saidid andmete saatmise ja vastuvõtmise lõpetada. Kui see on välja lülitatud, ei saa hiljuti suletud saidid andmete saatmist ega vastuvõtmist lõpetada.</translation>
 <translation id="2822354292072154809">Kas soovite objekti <ph name="CHOSEN_OBJECT_NAME" /> jaoks kindlasti lähtestada kõik saidi load?</translation>
-<translation id="2836978798613876756"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> <ph name="HOST_NAME" /></translation>
 <translation id="2850913818900871965">Mobiilivaate taotlemine</translation>
 <translation id="2870560284913253234">Sait</translation>
 <translation id="2874939134665556319">Eelmine lugu</translation>
@@ -120,7 +120,6 @@
 <translation id="2968755619301702150">Sertifikaadikuvaja</translation>
 <translation id="2979365474350987274">Kolmanda osapoole küpsisefailid on piiratud</translation>
 <translation id="3008272652534848354">Lähtesta load</translation>
-<translation id="3013291976881901233">MIDI-seadmed</translation>
 <translation id="301521992641321250">Automaatselt blokeeritud</translation>
 <translation id="3069226013421428034">Konkreetse saidi jaoks kolmanda osapoole sisselogimise lubamine.</translation>
 <translation id="3082992102194421695">{COUNT,plural, =1{Aegub homme}other{Aegub # päeva pärast}}</translation>
@@ -191,7 +190,6 @@
 <translation id="4169549551965910670">Ühendatud USB-seadmega</translation>
 <translation id="4194328954146351878">Teilt küsitakse luba, kui saidid üritavad NFC-seadmetes teavet vaadata ja muuta (soovitatav)</translation>
 <translation id="4200726100658658164">Ava asukohaseaded</translation>
-<translation id="4212246570487010370">Jätka sirvimist</translation>
 <translation id="4226663524361240545">Seade võib märguannete korral vibreerida</translation>
 <translation id="4259722352634471385">Navigeerimine on blokeeritud: <ph name="URL" /></translation>
 <translation id="4278390842282768270">Lubatud</translation>
@@ -349,7 +347,6 @@
 <translation id="6746124502594467657">Liiguta alla</translation>
 <translation id="6749077623962119521">Kas lähtestada load?</translation>
 <translation id="6766622839693428701">Sulgemiseks pühkige alla.</translation>
-<translation id="6785959295338971061"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> Seadmest <ph name="FROM_DEVICE" /></translation>
 <translation id="6787751205395685251">Tehke saidi <ph name="SITE_NAME" /> puhul valik</translation>
 <translation id="6790428901817661496">Esita</translation>
 <translation id="6818926723028410516">Valige üksused</translation>

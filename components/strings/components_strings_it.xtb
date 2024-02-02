@@ -2784,7 +2784,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="6480864723214312258">Batterie per uso domestico</translation>
 <translation id="6486200200930923183">Documentari</translation>
 <translation id="6489534406876378309">Avvia caricamento arresti anomali</translation>
-<translation id="6491663123807473970"><ph name="URL" /> vuole usare i tuoi dispositivi MIDI</translation>
 <translation id="6493924760403974580">Questa app supporta solo questa dimensione.</translation>
 <translation id="6494750904506170417">popup e reindirizzamenti</translation>
 <translation id="6495664197699704593">La password viene salvata solo su questo dispositivo. Per usarla su altri dispositivi, <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
@@ -3138,7 +3137,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="718872491229180389">Cheerleading</translation>
 <translation id="7188840756966467339">Riavvia e applica criteri</translation>
 <translation id="7192188280913829296">È necessario specificare anche l'attributo "vendor_id".</translation>
-<translation id="7192203810768312527">Consente di liberare <ph name="SIZE" />. Alcuni siti potrebbero caricarsi più lentamente alla prossima visita.</translation>
+<translation id="7192203810768312527">Libera <ph name="SIZE" />. Alcuni siti potrebbero caricarsi più lentamente alla prossima visita.</translation>
 <translation id="7192537357091279678">Unità e dispositivi di archiviazione per computer</translation>
 <translation id="7193661028827781021">Consultazione</translation>
 <translation id="719464814642662924">Visa</translation>

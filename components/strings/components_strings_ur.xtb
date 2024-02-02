@@ -430,6 +430,7 @@
 <translation id="1752021286346845558">میل باکس 8</translation>
 <translation id="1753068535428855445">ڈیٹنگ اور ذاتیات</translation>
 <translation id="1753706481035618306">صفحہ نمبر</translation>
+<translation id="1755203724116202818">کسی اشتہار کی کارکردگی کی پیمائش کرنے کے لیے، سائٹس کے درمیان ڈیٹا کی محدود اقسام کا اشتراک کیا جاتا ہے، جیسے کہ آیا آپ نے کسی سائٹ پر جانے کے بعد کوئی خریداری کی ہے</translation>
 <translation id="1755621011177747277">گود لینا</translation>
 <translation id="1756026472674246267">لنک کو نئے ٹیب میں کھولیں</translation>
 <translation id="175656076281618225">جادو</translation>
@@ -884,6 +885,7 @@
 <translation id="2674804415323431591">تجاویز چھپائیں</translation>
 <translation id="2677696497921480781">سالگرہیں اور ناموں سے منسوب دن</translation>
 <translation id="2677748264148917807">چھوڑیں</translation>
+<translation id="2683195745483370038">دوسرے نتائج ملے</translation>
 <translation id="2686919536310834199">لکھنے میں میری مدد کریں کے لیے تاثرات بھیجیں۔</translation>
 <translation id="2687555958734450033">بہترین فٹ</translation>
 <translation id="2688186765492306706">‏‎500 x 760 ملی میٹر</translation>
@@ -1265,6 +1267,7 @@
 <translation id="3462200631372590220">جدید ترین کو چھپائیں</translation>
 <translation id="3465972433695735758">‏یہ PDF ناقابل رسائی ہے۔ ٹیکسٹ Google AI کی مدد سے نکالا گيا</translation>
 <translation id="346601286295919445">کیمیا</translation>
+<translation id="3467081767799433066">اشتہار کی پیمائش کے ساتھ، سائٹس کے درمیان ان کے اشتہارات کی کارکردگی کی پیمائش کرنے کے لیے ڈیٹا کی محدود اقسام کا اشتراک کیا جاتا ہے، جیسے کہ آیا آپ نے کسی سائٹ پر جانے کے بعد کوئی خریداری کی ہے</translation>
 <translation id="3468054117417088249">‏<ph name="TAB_SWITCH_SUFFIX" />، فی الحال کھلا ہوا ہے، کھلے ہوئے ٹیب پر سوئچ کرنے کے لیے Tab پھر Enter دبائیں</translation>
 <translation id="3470563864795286535">‏<ph name="CLOSE_INCOGNITO_WINDOWS_FOCUSED_FRIENDLY_MATCH_TEXT" />، فی الحال کھلی ہوئی تمام پوشیدگی ونڈوز کو بند کرنے کیلئے ٹیب پھر Enter دبائیں</translation>
 <translation id="3474392552865647225">‏Chrome میں فونٹس کو حسب ضرورت بنائیں بٹن، Chrome میں فونٹ کے سائز کو اور ٹائپ فیسز کو حسب ضرورت بنانے کے لیے فعال کریں</translation>
@@ -2784,7 +2787,6 @@
 <translation id="6480864723214312258">گھریلو بیٹریاں</translation>
 <translation id="6486200200930923183">دستاویزی فلمیں</translation>
 <translation id="6489534406876378309">کریشز اپ لوڈ کرنا شروع کریں</translation>
-<translation id="6491663123807473970">‏<ph name="URL" /> آپ کے MIDI آلات استعمال کرنا چاہتا ہے</translation>
 <translation id="6493924760403974580">یہ ایپ صرف اس سائز کو سپورٹ کرتی ہے۔</translation>
 <translation id="6494750904506170417">پوپ اپس اور ری ڈائریکٹس</translation>
 <translation id="6495664197699704593">یہ پاس ورڈ صرف اس آلے میں محفوظ ہے۔ اسے اپنے دوسرے آلات پر استعمال کرنے کے لیے، <ph name="GOOGLE_PASSWORD_MANAGER" />۔</translation>
@@ -4075,6 +4077,7 @@
 <translation id="9005998258318286617">‏PDF دستاویز لوڈ نہیں ہو سکی۔</translation>
 <translation id="9008178007718859630">گھر اور داخلی سجاوٹ</translation>
 <translation id="9008201768610948239">نظر انداز کریں</translation>
+<translation id="9014705027639070815">‏آپ کی ملاحظہ کی جانے والی سائٹس اپنے اشتہارات کی کارکردگی کی پیمائش میں مدد کے لیے Chrome سے معلومات طلب کر سکتی ہیں۔ Chrome سائٹس کو ڈیٹا کی محدود اقسام جمع کرنے کی اجازت دیتا ہے، جیسے کہ آیا آپ نے کسی سائٹ پر جانے کے بعد کوئی خریداری کی ہے۔</translation>
 <translation id="9018120810758822233"><ph name="CREDIT_CARD" /> کے لئے اپنا سیکیورٹی کوڈ درج کریں</translation>
 <translation id="901834265349196618">ای میل</translation>
 <translation id="9020542370529661692">اس صفحہ کا <ph name="TARGET_LANGUAGE" /> میں ترجمہ کر دیا گیا ہے</translation>

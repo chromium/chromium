@@ -44,6 +44,7 @@
 <translation id="2168108852149185974">Alguns complementos causam falhas no Chromium. Desinstale-os:</translation>
 <translation id="2178608107313874732">O Chromium não pode usar a câmera agora</translation>
 <translation id="2195025571279539885">Quer que na próxima vez o Chromium ofereça a tradução de páginas em <ph name="LANGUAGE_NAME" /> deste site?</translation>
+<translation id="2216344354848599203">Toque no ícone do Chromium, pressione e clique em "Editar Tela de Início"</translation>
 <translation id="2218146227246548550">Sua organização exige que você faça login para usar o Chromium. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="22313767259766852">Este endereço está salvo no Chromium. Para usá-lo nos produtos do Google, salve-o na sua conta, <ph name="USER_EMAIL" />.</translation>
 <translation id="2236584955986023187">Isso significa que o Chromium vai solicitar sempre o site para computador.</translation>
@@ -197,6 +198,7 @@ Considerações:
 <translation id="632825460376924298">Permitir login no Chromium</translation>
 <translation id="6337530241089703714">Você quer apagar ou manter os dados do Chromium neste dispositivo?</translation>
 <translation id="6348483005826990855">3. Selecione o Chromium</translation>
+<translation id="6383607155624074112">Acesse o Chromium com mais rapidez no Dock da tela de início</translation>
 <translation id="6407399265324739055">Formas de pagamento e endereços não serão criptografados. O histórico de navegação do Chromium não será sincronizado.
 
 Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senha longa não é enviada ao Google nem armazenada por ele. Se você esquecer a senha longa ou quiser mudar essa configuração, <ph name="BEGIN_LINK" />limpe os dados do Chromium na sua conta<ph name="END_LINK" />.</translation>

@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="bn">
+<translation id="1021782183249308751">Chrome আইকনে প্রেস করে ধরে রাখুন ও "হোম স্ক্রিন এডিট করুন" বিকল্পে ক্লিক করুন</translation>
 <translation id="1066101356081285416">Chrome আপনার ভিজিট করা সাইটে ট্র্যাকিং নম্বর শনাক্ত করবে এবং 'নতুন ট্যাব' পৃষ্ঠায় প্যাকেজ সংক্রান্ত আপডেট দেবে। সকলের জন্য এই ফিচার দিতে ও Google 'শপিং' ফিচারের উন্নতি করতে প্যাকেজ ট্র্যাকিং নম্বর ও ওয়েবসাইটের নাম Google-এ পাঠানো হবে। আপনি যেকোনও সময় <ph name="BEGIN_LINK" />প্যাকেজ ট্র্যাকিং সেটিংস<ph name="END_LINK" /> থেকে এটি আপডেট করতে পারবেন।</translation>
 <translation id="1085696779717592361">ডিফল্ট হিসেবে Chrome ব্যবহার করুন</translation>
 <translation id="1105362920864247682">Chrome-এ ব্রাউজ করা ডেটা মুছুন।</translation>
@@ -96,6 +97,7 @@
 <translation id="3345341804167540816">Chrome সব জায়গায় ব্যবহার করুন</translation>
 <translation id="3360031466389132716">{THRESHOLD,plural, =1{Chrome {THRESHOLD} মিনিট ধরে ব্যবহার না করা হলে এমনটি হয়}one{Chrome {THRESHOLD} মিনিট ধরে ব্যবহার না করা হলে এমনটি হয়}other{Chrome {THRESHOLD} মিনিট ধরে ব্যবহার না করা হলে এমনটি হয়}}</translation>
 <translation id="3399930248910934354">Chrome সেটিংস খুলুন</translation>
+<translation id="344736123700721678">আপনার হোম স্ক্রিনের ডক থেকে আরও দ্রুত Chrome অ্যাক্সেস করুন</translation>
 <translation id="3472587960215700950">Chrome আপনাকে দিকনির্দেশ এবং শনাক্ত করা ঠিকানায় স্থানীয় তথ্য যাতে দেওয়া যায় তার জন্য Google Maps ব্যবহার করে।</translation>
 <translation id="3503014945441706099">এছাড়াও, এই Chrome প্রোফাইলের জন্য উন্নত Safe Browsing-এর সুবিধা পান</translation>
 <translation id="3522659714780527202">সিঙ্ক চালু করে রাখুন, যাতে আপনি যেখান থেকেই Chrome ব্যবহার করুন না কেন, সেখানেই আপনি নিজের ট্যাবগুলি দেখতে পারেন</translation>

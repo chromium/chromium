@@ -430,6 +430,7 @@
 <translation id="1752021286346845558">মেইলবক্স ৮</translation>
 <translation id="1753068535428855445">ডেটিং আৰু ব্যক্তিগত সেৱা</translation>
 <translation id="1753706481035618306">পৃষ্ঠাৰ সংখ্যা</translation>
+<translation id="1755203724116202818">কোনো বিজ্ঞাপনৰ পাৰদৰ্শিতাৰ জোখ-মাখ কৰিবলৈ, ছাইটসমূহৰ মাজত সীমিত ধৰণৰ ডেটা শ্বেয়াৰ কৰা হয়, যেনে- আপুনি এটা ছাইট চোৱাৰ পাছত ক্ৰয় কৰিছে নে নাই।</translation>
 <translation id="1755621011177747277">শিশু তুলি লোৱা</translation>
 <translation id="1756026472674246267">লিংকটো নতুন টেবত খোলক</translation>
 <translation id="175656076281618225">যাদু</translation>
@@ -884,6 +885,7 @@
 <translation id="2674804415323431591">পৰামৰ্শসমূহ লুকুৱাওক</translation>
 <translation id="2677696497921480781">জন্মদিন আৰু নাম দিয়াৰ দিন</translation>
 <translation id="2677748264148917807">ত্যাগ কৰক</translation>
+<translation id="2683195745483370038">অন্য ফলাফল পোৱা গৈছে</translation>
 <translation id="2686919536310834199">হেল্প মী ৰাইটৰ বাবে মতামত পঠিয়াওক</translation>
 <translation id="2687555958734450033">উত্তম মিল</translation>
 <translation id="2688186765492306706">৫০০ x ৭৬০ মি.মি.</translation>
@@ -1263,6 +1265,7 @@
 <translation id="3462200631372590220">এডভাঞ্চখিনি লুকুৱাওক</translation>
 <translation id="3465972433695735758">এই PDFটো এক্সেছ কৰিব নোৱাৰি। পাঠখিনি আহৰণ কৰা হ’ল, Google AIএ সঞ্চালন কৰা</translation>
 <translation id="346601286295919445">ৰসায়ন বিজ্ঞান</translation>
+<translation id="3467081767799433066">বিজ্ঞাপনৰ জোখ-মাখৰ ক্ষেত্ৰত, ছাইটসমূহৰ মাজত সেইবিলাকে দেখুওৱা বিজ্ঞাপনৰ পাৰদৰ্শিতা জোখ-মাখ কৰিবলৈ সীমিত ধৰণৰ ডেটা শ্বেয়াৰ কৰা হয়, যেনে- আপুনি এটা ছাইট চোৱাৰ পাছত ক্ৰয় কৰিছে নে নাই।</translation>
 <translation id="3468054117417088249"><ph name="TAB_SWITCH_SUFFIX" />, বৰ্তমান খোলা আছে, খোলা থকা টেবটোলৈ যাবলৈ টেব আৰু তাৰ পাছত এণ্টাৰ দবাওক</translation>
 <translation id="3470563864795286535"><ph name="CLOSE_INCOGNITO_WINDOWS_FOCUSED_FRIENDLY_MATCH_TEXT" />, বৰ্তমান খোল খাই থকা আটাইবোৰ ইনক’গনিট’ ৱিণ্ড’ বন্ধ কৰিবলৈ টেব টিপক আৰু তাৰ পাছত এণ্টাৰ টিপক</translation>
 <translation id="3474392552865647225">Chromeত ফণ্ট কাষ্টমাইজ কৰাৰ বুটাম, Chromeত ফণ্টৰ আকাৰ আৰু টাইপফেচ কাষ্টমাইজ কৰিবলৈ সক্ৰিয় কৰক</translation>
@@ -2783,7 +2786,6 @@
 <translation id="6480864723214312258">ঘৰত ব্যৱহৃত বেটাৰী</translation>
 <translation id="6486200200930923183">তথ্যচিত্ৰ সম্বন্ধীয় চলচ্চিত্ৰ</translation>
 <translation id="6489534406876378309">ক্ৰেশ্ব আপল’ড কৰা আৰম্ভ কৰক</translation>
-<translation id="6491663123807473970"><ph name="URL" />এ আপোনাৰ MIDI ডিভাইচ ব্যৱহাৰ কৰিবলৈ বিচাৰে</translation>
 <translation id="6493924760403974580">এই এপ্‌টোৱে কেৱল এইটো আকাৰ সমৰ্থন কৰে।</translation>
 <translation id="6494750904506170417">পপ-আপ আৰু পুনৰ নির্দেশ</translation>
 <translation id="6495664197699704593">এই পাছৱৰ্ডটো কেৱল এই ডিভাইচটোত ছেভ কৰা হয়। আপোনাৰ আন ডিভাইচসমূহত এইটো ব্যৱহাৰ কৰিবলৈ, <ph name="GOOGLE_PASSWORD_MANAGER" />।</translation>
@@ -4075,6 +4077,7 @@
 <translation id="9005998258318286617">PDF নথি ল’ড কৰিব নোৱাৰিলে।</translation>
 <translation id="9008178007718859630">ঘৰ আৰু ভিতৰৰ অংশ সজ্জা</translation>
 <translation id="9008201768610948239">উপেক্ষা কৰক</translation>
+<translation id="9014705027639070815">আপুনি চোৱা ছাইটসমূহে সেইবিলাকে দেখুওৱা বিজ্ঞাপনৰ পাৰদৰ্শিতা জোখ-মাখ কৰাত সেইবিলাকক সহায় কৰিবলৈ Chromeৰ পৰা তথ্য বিচাৰিব পাৰে। Chromeএ ছাইটসমূহক সীমিত ধৰণৰ ডেটা সংগ্ৰহ কৰিবলৈ দিয়ে, যেনে- আপুনি এটা ছাইট চোৱাৰ পাছত ক্ৰয় কৰিছে নে নাই।</translation>
 <translation id="9018120810758822233"><ph name="CREDIT_CARD" />ৰ বাবে থকা আপোনাৰ সুৰক্ষা ক’ডটো দিয়ক</translation>
 <translation id="901834265349196618">ইমেইল</translation>
 <translation id="9020542370529661692">এই পৃষ্ঠাটো <ph name="TARGET_LANGUAGE" />লৈ অনুবাদ কৰা হৈছে</translation>

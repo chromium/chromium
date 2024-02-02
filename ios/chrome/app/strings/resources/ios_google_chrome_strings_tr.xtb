@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="tr">
+<translation id="1021782183249308751">Chrome simgesini basılı tutup "Ana Ekranı Düzenle"yi tıklayın</translation>
 <translation id="1066101356081285416">Chrome, ziyaret ettiğiniz sitelerdeki takip numaralarını algılar ve kargoyla ilgili güncellemeleri Yeni Sekme sayfasında gösterir. Kargo takip numarası ve web sitesinin adı, bu özelliğin sunulması ve Google Alışveriş özelliklerinin herkes için iyileştirilmesi amacıyla Google'a gönderilir. Bunu istediğiniz zaman <ph name="BEGIN_LINK" />Kargo Takibi Ayarları<ph name="END_LINK" />'ndan güncelleyebilirsiniz.</translation>
 <translation id="1085696779717592361">Chrome'u Varsayılan Olarak Kullanın</translation>
 <translation id="1105362920864247682">Chrome'da Tarama Verilerini Temizleyin.</translation>
@@ -96,6 +97,7 @@ Sadece parolanıza sahip olan kişiler şifrelenmiş verilerinizi okuyabilir. Pa
 <translation id="3345341804167540816">Chrome'u Her Yerde Kullanın</translation>
 <translation id="3360031466389132716">{THRESHOLD,plural, =1{Bu işlem, Chrome {THRESHOLD} dakika boyunca kullanılmadığında gerçekleşir}other{Bu işlem, Chrome {THRESHOLD} dakika boyunca kullanılmadığında gerçekleşir}}</translation>
 <translation id="3399930248910934354">Chrome Ayarlarını Aç</translation>
+<translation id="344736123700721678">Ana ekran yuvanızdan Chrome'a daha hızlı erişin</translation>
 <translation id="3472587960215700950">Chrome, algılanan adreslerle ilgili yol tarifleri ve yerel bilgiler sağlamak için Google Haritalar'ı kullanır.</translation>
 <translation id="3503014945441706099">Bu Chrome profilinde Gelişmiş Güvenli Tarama'yı da edinin</translation>
 <translation id="3522659714780527202">Chrome kullandığınız her yerde sekmelerinizi görmek için senkronizasyonu açın</translation>

@@ -109,7 +109,6 @@
 <translation id="2750481671343847896">網站可顯示來自身分服務的登入提示。</translation>
 <translation id="2790501146643349491">開咗之後，最近閂咗嘅網站可以完成傳送同接收資料。閂咗之後，最近閂咗嘅網站唔可以完成傳送同接收資料。</translation>
 <translation id="2822354292072154809">確定要重設「<ph name="CHOSEN_OBJECT_NAME" />」的所有網站權限嗎？</translation>
-<translation id="2836978798613876756"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> <ph name="HOST_NAME" /></translation>
 <translation id="2850913818900871965">要求使用流動裝置檢視模式</translation>
 <translation id="2870560284913253234">網站</translation>
 <translation id="2874939134665556319">上一首曲目</translation>
@@ -121,7 +120,6 @@
 <translation id="2968755619301702150">憑證檢視器</translation>
 <translation id="2979365474350987274">限制使用第三方 Cookie</translation>
 <translation id="3008272652534848354">重設權限</translation>
-<translation id="3013291976881901233">MIDI 裝置</translation>
 <translation id="301521992641321250">已自動封鎖</translation>
 <translation id="3069226013421428034">允許特定網站使用第三方登入功能。</translation>
 <translation id="3082992102194421695">{COUNT,plural, =1{明天到期}other{# 天後到期}}</translation>
@@ -192,7 +190,6 @@
 <translation id="4169549551965910670">已連線至 USB 裝置</translation>
 <translation id="4194328954146351878">在允許網站查看和變更 NFC 裝置上的資料前先詢問您 (建議)</translation>
 <translation id="4200726100658658164">開啟位置設定</translation>
-<translation id="4212246570487010370">繼續瀏覽</translation>
 <translation id="4226663524361240545">裝置會在收到通知時震動</translation>
 <translation id="4259722352634471385">瀏覽網址被封鎖：<ph name="URL" /></translation>
 <translation id="4278390842282768270">已允許</translation>
@@ -282,7 +279,6 @@
 <translation id="5706552988683188916">此操作會刪除 <ph name="WEBSITE" /> 的 Cookie 和其他網站資料</translation>
 <translation id="5723967018671998714">已封鎖無痕模式中的第三方 Cookie</translation>
 <translation id="5740126560802162366">網站可在裝置上儲存資料</translation>
-<translation id="5749158352074143502">繼續使用這個分頁</translation>
 <translation id="5771720122942595109">已封鎖「<ph name="PERMISSION_1" />」</translation>
 <translation id="5804241973901381774">權限</translation>
 <translation id="5844448279347999754">開咗之後，網站可以要求睇儲存喺剪貼簿嘅文字同圖片。閂咗之後，網站唔可以睇儲存喺剪貼簿嘅文字同圖片。</translation>
@@ -351,7 +347,6 @@
 <translation id="6746124502594467657">向下移</translation>
 <translation id="6749077623962119521">要重設權限嗎？</translation>
 <translation id="6766622839693428701">向下掃就可以閂咗佢。</translation>
-<translation id="6785959295338971061"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" />來自「<ph name="FROM_DEVICE" />」</translation>
 <translation id="6787751205395685251">取用於 <ph name="SITE_NAME" /> 的選項</translation>
 <translation id="6790428901817661496">播放</translation>
 <translation id="6818926723028410516">選取項目</translation>
@@ -423,7 +418,6 @@
 <translation id="7990211076305263060">開咗之後，網站可以要求使用麥克風。閂咗之後，網站唔可以使用麥克風。</translation>
 <translation id="8007176423574883786">已為這部裝置關閉</translation>
 <translation id="802154636333426148">下載失敗</translation>
-<translation id="8024161440284949905">繼續使用這些分頁</translation>
 <translation id="8042586301629853791">排序方式：</translation>
 <translation id="8067883171444229417">播放影片</translation>
 <translation id="8068648041423924542">無法選擇憑證。</translation>

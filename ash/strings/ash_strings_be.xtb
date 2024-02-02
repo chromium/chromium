@@ -607,9 +607,11 @@
 <translation id="3526440770046466733">Адкрыць спасылку ў новай укладцы, але заставацца на бягучай</translation>
 <translation id="353086728817903341">Устаноўлена падключэнне да некалькіх (<ph name="NUM_DEVICES" />) прылад</translation>
 <translation id="3533126039236445965">Праграмы на панэлі доступу</translation>
+<translation id="3537350467437346467">Вы праглядалі файл</translation>
 <translation id="3539957339480430241">Хот-спот "<ph name="DEVICE_NAME" />"</translation>
 <translation id="3540893133818942399">Не наладжваць прагляд нядаўніх фота і медыяфайлаў з тэлефона</translation>
 <translation id="3542066395059568317">Выкарыстоўвайце рэкамендацыі, каб працягваць работу з таго месца, на якім вы спыніліся. Каб выдаліць рэкамендацыю, націсніце на яе правай кнопкай мышы.</translation>
+<translation id="3547318469722231257">Вы змянілі файл</translation>
 <translation id="3552189655002856821">Wi-Fi выключаны</translation>
 <translation id="3554215588514239132">Паказаць або схаваць панэль інструментаў распрацоўшчыка</translation>
 <translation id="3554637740840164787">Элемент "<ph name="ITEM_TITLE" />" замацаваны</translation>
@@ -701,6 +703,7 @@
 <translation id="385300504083504382">У пачатак</translation>
 <translation id="3859364108019690">Не ўдаецца перадаць праграмы плынню</translation>
 <translation id="3861651314799684201">Каб запісаць увесь экран, націсніце Увод</translation>
+<translation id="3882323608730650973">Файл быў зменены</translation>
 <translation id="3886872229787704059">Адкрывалася сёння</translation>
 <translation id="3891340733213178823">Каб выйсці з уліковага запісу, двойчы націсніце "Ctrl+Shift+Q".</translation>
 <translation id="3893630138897523026">ChromeVox (галасавая зваротная сувязь)</translation>
@@ -894,6 +897,7 @@
 <translation id="4582666543382004902">Хот-спот выключаны, бо выкарыстоўваецца Wi-Fi. Каб выкарыстоўваць хот-спот, выключыце Wi-Fi.</translation>
 <translation id="4585337515783392668">Спыніць трансляцыю невядомаму атрымальніку</translation>
 <translation id="4596144739579517758">Цёмная тэма выключана</translation>
+<translation id="4596442969149038771">Карыстальнік <ph name="USER" /> абагуліў файл</translation>
 <translation id="4611292653554630842">Увайсці</translation>
 <translation id="462160925400706389"><ph name="NAME" />: падключана</translation>
 <translation id="4623167406982293031">Пацвердзіць уліковы запіс</translation>
@@ -1815,6 +1819,7 @@
 <translation id="8314772463905284467">CAPS LOCK уключаны</translation>
 <translation id="8315514906653279104">Ідзе ўключэнне…</translation>
 <translation id="8331351032546853669">Чакаецца спампоўванне</translation>
+<translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
 <translation id="8345019317483336363">Выбрана акно "<ph name="WINDOW_TITLE" />"</translation>
 <translation id="8349826889576450703">праграма запуску</translation>
@@ -2034,6 +2039,7 @@
 <translation id="953431725143473984">Завяршыць працу прылады?</translation>
 <translation id="954052413789300507">Файл "<ph name="FILENAME" />" не змяшчаецца ў сховішчы. Вызваліце месца.</translation>
 <translation id="954520015070501466">30 хв</translation>
+<translation id="954786879461589145">Карыстальнік <ph name="USER" /> змяніў файл</translation>
 <translation id="974545358917229949">Паказваюцца вынікі (<ph name="RESULT_COUNT" />) па запыце "<ph name="QUERY" />"</translation>
 <translation id="981011780479609956">Тэрмін выканання адсутнічае</translation>
 <translation id="98120814841227350">Перайсці ў канец дакумента</translation>

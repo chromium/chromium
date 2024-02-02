@@ -148,6 +148,8 @@
 <translation id="1753905327828125965">Часто відвідувані</translation>
 <translation id="1757699834933698436">{count,plural, =1{{count} ненадійний пароль}one{{count} ненадійний пароль}few{{count} ненадійні паролі}many{{count} ненадійних паролів}other{{count} ненадійного пароля}}</translation>
 <translation id="1767766085187034454">Google Перекладач</translation>
+<translation id="1769106850515800431">Персоналізований контент</translation>
+<translation id="1780152987505130652">Закрити групу</translation>
 <translation id="1789803444939621101">З поверненням, <ph name="USER_NAME" />!</translation>
 <translation id="1803264062614276815">Ім’я і прізвище власника картки</translation>
 <translation id="1809939268435598390">Видалити папку</translation>
@@ -213,7 +215,6 @@
 <translation id="2080769225927880590">Увійдіть у дійсний обліковий запис</translation>
 <translation id="2103075008456228677">Відкрити history.google.com</translation>
 <translation id="21133533946938348">Закріпити вкладку</translation>
-<translation id="2116625576999540962">Переміщено елементів: <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /></translation>
 <translation id="2122754583996902531">Вашим веб-переглядачем керує адміністратор. <ph name="BEGIN_LINK" />Докладніше<ph name="END_LINK" /></translation>
 <translation id="2139502497535990641">Увімкнути сповіщення про змінення цін?</translation>
 <translation id="2139867232736819575">Шукати скопійований текст</translation>
@@ -565,6 +566,7 @@
 <translation id="3929457972718048006">Адреси</translation>
 <translation id="3948600256434252210">Щоб переглядати веб-сторінки в анонімному режимі, проведіть пальцем праворуч по екрану.</translation>
 <translation id="3955822496205734389">У вас є ненадійні паролі.</translation>
+<translation id="3958312024468322930">Перетягніть його на нижню панель головного екрана</translation>
 <translation id="3959736869653157332">Меню → Нова анонімна вкладка</translation>
 <translation id="3962326069546168954">Зберегти</translation>
 <translation id="3967822245660637423">Завантажено</translation>
@@ -646,6 +648,7 @@
 <translation id="4431224949908513835">Виберіть спосіб оплати.</translation>
 <translation id="4442550905108052454">Відкрийте <ph name="BEGIN_BOLD" />Налаштування<ph name="END_BOLD" /></translation>
 <translation id="4454246407045105932">Додати мову</translation>
+<translation id="4460014764210899310">Розгрупувати</translation>
 <translation id="4461286950227634995">Пропонувати зберігати паролі</translation>
 <translation id="4462491365653392320">Відстежувати ціни на вкладках</translation>
 <translation id="4469324811108161144">Нотатки можуть містити щонайбільше стільки символів: <ph name="CHARACTER_LIMIT" />.</translation>
@@ -828,6 +831,7 @@
 <translation id="5327753393331509826">Отримуйте сповіщення про контент</translation>
 <translation id="5329451663851195956">Щоб оновити сторінку, проведіть пальцем униз по екрану.</translation>
 <translation id="5339316356165661760">Увімкнути синхронізацію</translation>
+<translation id="5343472494710226394">Новини, спортивні події і контент на основі ваших інтересів.</translation>
 <translation id="5345660046352249607">{COUNT,plural, =1{Відстежувати це відправлення?}one{Відстежувати {COUNT} відправлення?}few{Відстежувати {COUNT} відправлення?}many{Відстежувати {COUNT} відправлень?}other{Відстежувати {COUNT} відправлення?}}</translation>
 <translation id="536067926684072644">Показати закладки</translation>
 <translation id="5360976571138293719">Інші налаштування конфіденційності, безпеки та збору даних доступні в розділі <ph name="BEGIN_LINK" />Сервіси Google<ph name="END_LINK" />.</translation>
@@ -898,6 +902,7 @@
 <translation id="5737974891429562743">Дані для входу в обліковий запис застаріли. Оновіть їх, щоб почати синхронізацію.</translation>
 <translation id="5738385766833540397">Укажіть, як ви хочете отримувати сповіщення про зниження цін на товари, які відстежуєте</translation>
 <translation id="5738887413654608789">Ви зможете знаходити відповідні веб-сторінки на основі об’єктів поблизу.</translation>
+<translation id="5744274077973758795">Сповіщення "<ph name="FEATURE_NAME" />" увімкнено</translation>
 <translation id="5745916533876677730">Перейти на попередню вкладку</translation>
 <translation id="574762237186762643">Події</translation>
 <translation id="5748177854685749242">Дата доставки: <ph name="DATE" /></translation>
@@ -922,10 +927,10 @@
 <translation id="5850913622988109693">Параметри відстеження замовлень</translation>
 <translation id="5854790677617711513">Понад 30 днів тому</translation>
 <translation id="5857090052475505287">Нова папка</translation>
+<translation id="5857361196621230935">Додати вкладку в групу</translation>
 <translation id="5857770089550859117">Введіть парольну фразу, щоб почати синхронізацію.</translation>
 <translation id="5859715514067755465">Уперед</translation>
 <translation id="5860033963881614850">Вимк.</translation>
-<translation id="5871497086027727873">Переміщено 1 елемент</translation>
 <translation id="5896576662943111387">Створено для iOS</translation>
 <translation id="5897749768294722429">Щоб швидко відкривати відвідані сайти, увімкніть синхронізацію вкладок і історії.</translation>
 <translation id="5897956970858271241">Перейти за скопійованим посиланням</translation>
@@ -1274,6 +1279,7 @@
 <translation id="7649070708921625228">Довідка</translation>
 <translation id="7658239707568436148">Скасувати</translation>
 <translation id="7666861622396822790">Ви можете змінити цей параметр у <ph name="BEGIN_LINK" />налаштуваннях контенту<ph name="END_LINK" />.</translation>
+<translation id="7669493687462784703">Продовжити завантаження профілю конфігурації з веб-сайту <ph name="WEBSITE" />?</translation>
 <translation id="7671141431838911305">INSTALL</translation>
 <translation id="7673346542062368520">Щоб переглядати веб-сторінки в анонімному режимі, проведіть пальцем ліворуч по екрану.</translation>
 <translation id="7679915578945954324">Адреси сайтів скопійовано</translation>
@@ -1461,6 +1467,7 @@
 <translation id="8620640915598389714">Редагувати</translation>
 <translation id="8624447588354561276">Номер відправлення</translation>
 <translation id="8624753446837753970">Вибрати</translation>
+<translation id="8625706492572042370">Редагувати головний екран</translation>
 <translation id="8626393685701737946">Ви можете змінити режим перегляду сайту за умовчанням у меню "Налаштування" &gt; "Веб-контент"</translation>
 <translation id="8636825310635137004">Щоб мати доступ до вкладок з інших пристроїв, увімкніть синхронізацію.</translation>
 <translation id="8637431369725868556">Захистіть себе від небезпечних сайтів.</translation>
@@ -1492,6 +1499,7 @@
 <translation id="8766790350274092814">Паролі для веб-сайтів <ph name="WEBSITE" /> і <ph name="SECOND_WEBSITE" /> буде видалено. Ваші облікові записи не буде видалено.</translation>
 <translation id="8775144690796719618">Недійсна URL-адреса</translation>
 <translation id="8780076847684176174">{count,plural, =1{Переглянути вкладку…}one{Переглянути всі вкладки…}few{Переглянути всі вкладки…}many{Переглянути всі вкладки…}other{Переглянути всі вкладки…}}</translation>
+<translation id="8781834595282316166">Нова вкладка в групі</translation>
 <translation id="8782570580170191813">Завжди відстежувати відправлення</translation>
 <translation id="8787968206789828143">Шукати в Інтернеті</translation>
 <translation id="8792626944327216835">мікрофон</translation>
@@ -1522,6 +1530,7 @@
 <translation id="891282356902782456">Цей пароль зберігається лише на поточному пристрої. Щоб використовувати пароль на інших пристроях, збережіть його у своєму обліковому записі Google (<ph name="EMAIL" />).</translation>
 <translation id="8917490105272468696">Так</translation>
 <translation id="8928133177108699615">Режим робочого столу</translation>
+<translation id="8937676484307616731">Увімкнути сповіщення "<ph name="FEATURE_NAME" />"</translation>
 <translation id="894191600409472540">Створіть надійні паролі</translation>
 <translation id="8952559610785099500">Додати пароль</translation>
 <translation id="8953046091948372197">Тут відображатимуться ваші паролі</translation>

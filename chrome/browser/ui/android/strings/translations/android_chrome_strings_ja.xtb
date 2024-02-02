@@ -140,6 +140,7 @@
 <translation id="1749561566933687563">ブックマークの同期</translation>
 <translation id="1750259112639922169">タブグループ - <ph name="TAB_COUNT" /> 個のタブ</translation>
 <translation id="17513872634828108">開いているタブ</translation>
+<translation id="1755203724116202818">広告のパフォーマンスを測定するため、サイトにアクセスした後に購入したかどうかなど、限定的な種類のデータがサイト間で共有されます。</translation>
 <translation id="1757620656501361327">Google パスワード マネージャーのお知らせ</translation>
 <translation id="1760873718737761808">{FILE_COUNT,plural, =1{ページ、リストの 1 件のページ}other{ページ、リストの # 件のページ}}</translation>
 <translation id="1778457539567749232">未読にする</translation>
@@ -453,6 +454,7 @@
 <translation id="3443221991560634068">現在のページを再読み込みする</translation>
 <translation id="3444179773590444986">サイトのダークモードに関するフィードバックを共有しますか？</translation>
 <translation id="3452832259067974318">プライバシー保護のため、Chrome ではこの欄のパスワードの自動入力は行われません。</translation>
+<translation id="3467081767799433066">広告の測定では、広告のパフォーマンスを測定するため、サイトにアクセスした後に購入したかどうかなど、限定的な種類のデータがサイト間で共有されます。</translation>
 <translation id="3474624961160222204"><ph name="NAME" /> として続行</translation>
 <translation id="3478363558367712427">検索エンジンを選択できます</translation>
 <translation id="3479552764303398839">後で</translation>
@@ -633,6 +635,7 @@
 <translation id="4494806687727322324">パスワードの保存は管理者によって有効にされています</translation>
 <translation id="4508528996305412043">フィードカード メニューが開いています</translation>
 <translation id="4509501256689523862">ウェブサイト閲覧中に表示される広告がパーソナライズされるかどうかは、こちらの設定、<ph name="BEGIN_LINK_1" />広告のトピック<ph name="END_LINK_1" />、<ph name="BEGIN_LINK_2" />Cookie の設定状況<ph name="END_LINK_2" />、閲覧しているウェブサイトが広告をパーソナライズしているかどうかによって決まります。</translation>
+<translation id="4509741852167209430">広告のパフォーマンスを測定するため、サイトにアクセスした後に購入したかどうかなど、限定的な種類のデータがサイト間で共有されます</translation>
 <translation id="4513387527876475750">{DAYS,plural, =1{# 日前}other{# 日前}}</translation>
 <translation id="451872707440238414">ブックマークを検索</translation>
 <translation id="4521489764227272523">選択したデータが Chrome から削除され、同期デバイスからも削除されました。

@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="et">
+<translation id="1021782183249308751">Hoidke Chrome'i ikooni all ja klõpsake valikul „Muuda avakuva”</translation>
 <translation id="1066101356081285416">Chrome tuvastab teie külastatud saitidel jälgimiskoodid. Kui avate uue vahelehe, kuvatakse saadetise uusim olek. Selle funktsiooni pakkumiseks ja Google'i ostufunktsioonide kõigi jaoks paremaks muutmiseks edastatakse paki jälgimiskood ja veebisaidi nimi Google'ile. Saate seda muuta <ph name="BEGIN_LINK" />pakkide jälgimise seadetes<ph name="END_LINK" />.</translation>
 <translation id="1085696779717592361">Vaikimisi Chrome'i kasutamine</translation>
 <translation id="1105362920864247682">Tühjendage Chrome'i sirvimisandmed.</translation>
@@ -96,6 +97,7 @@ Teie krüpteeritud andmeid saab lugeda ainult isik, kes teab teie parooli. Paroo
 <translation id="3345341804167540816">Chrome'i kasutamine kõikjal</translation>
 <translation id="3360031466389132716">{THRESHOLD,plural, =1{See juhtub siis, kui Chrome'i ei kasutata {THRESHOLD} minuti jooksul}other{See juhtub siis, kui Chrome'i ei kasutata {THRESHOLD} minuti jooksul}}</translation>
 <translation id="3399930248910934354">Avage Chrome'i seaded.</translation>
+<translation id="344736123700721678">Avage Chrome kiiremini oma avakuva dokist</translation>
 <translation id="3472587960215700950">Chrome kasutab Google Mapsi, et anda teile tuvastatud aadresside kohta juhiseid ja kohalikku teavet.</translation>
 <translation id="3503014945441706099">Hankige ka sellele Chrome'i profiilile täiustatud ohutu sirvimise funktsioon</translation>
 <translation id="3522659714780527202">Selleks et näha vahelehti kõikjalt, kus Chrome'i kasutate, lülitage sisse sünkroonimine</translation>

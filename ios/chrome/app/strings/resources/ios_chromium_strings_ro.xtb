@@ -44,6 +44,7 @@
 <translation id="2168108852149185974">Unele suplimente blochează Chromium. Dezinstalează:</translation>
 <translation id="2178608107313874732">Momentan, Chromium nu poate folosi camera foto</translation>
 <translation id="2195025571279539885">Dorești ca data viitoare Chromium să propună traducerea paginilor în limba <ph name="LANGUAGE_NAME" /> de pe acest site?</translation>
+<translation id="2216344354848599203">Apasă lung pictograma Chromium și dă clic pe Editează ecranul de pornire</translation>
 <translation id="2218146227246548550">Organizația îți solicită să te conectezi pentru a folosi Chromium. <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /></translation>
 <translation id="22313767259766852">Această adresă se salvează momentan în Chromium. Pentru a o folosi în toate produsele Google, salveaz-o în Contul Google, <ph name="USER_EMAIL" />.</translation>
 <translation id="2236584955986023187">Aceasta înseamnă că Chromium va solicita de fiecare dată versiunea pentru desktop a site-urilor.</translation>
@@ -197,6 +198,7 @@ De reținut:
 <translation id="632825460376924298">Permite conectarea la Chromium</translation>
 <translation id="6337530241089703714">Alege dacă ștergi datele Chromium de pe dispozitiv sau le păstrezi</translation>
 <translation id="6348483005826990855">3. Selectează Chromium</translation>
+<translation id="6383607155624074112">Accesează Chromium mai rapid din bara de andocare de pe ecranul de pornire</translation>
 <translation id="6407399265324739055">Metodele de plată și adresele nu vor fi criptate. Istoricul de navigare din Chromium nu se va sincroniza.
 
 Numai un utilizator care deține expresia ta de acces îți poate citi datele criptate. Expresia de acces nu este trimisă la sau stocată de Google. Dacă uiți expresia de acces sau dorești să modifici această setare, <ph name="BEGIN_LINK" />șterge datele Chromium din cont<ph name="END_LINK" />.</translation>

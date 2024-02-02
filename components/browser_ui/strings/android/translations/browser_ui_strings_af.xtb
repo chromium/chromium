@@ -66,6 +66,7 @@
 <translation id="2228071138934252756">Om <ph name="APP_NAME" /> toegang tot jou kamera te gee, moet jy kamera ook in <ph name="BEGIN_LINK" />Android-instellings<ph name="END_LINK" /> aanskakel.</translation>
 <translation id="2235344399760031203">Derdepartywebkoekies word geblokkeer</translation>
 <translation id="2238944249568001759">Voorgestelde soektogte op grond van jou jongste oortjie</translation>
+<translation id="2241587408274973373">Nuwe oortjiebladsykaarte</translation>
 <translation id="2241634353105152135">Net een keer</translation>
 <translation id="2253414712144136228"><ph name="NAME_OF_LIST_ITEM" /> Verwyder</translation>
 <translation id="2253989982043948086">{NUM_SELECTED,plural, =1{1 werf word geblokkeer}other{# werwe word geblokkeer}}</translation>
@@ -108,7 +109,6 @@
 <translation id="2750481671343847896">Werwe kan vir jou aanmeldporboodskappe van identiteitsdienste af wys.</translation>
 <translation id="2790501146643349491">Wanneer dit aan is, kan werwe wat onlangs toegemaak is data klaar stuur en ontvang. Wanneer dit af is, kan werwe wat onlangs toegemaak is nie data klaar stuur en ontvang nie.</translation>
 <translation id="2822354292072154809">Is jy seker jy wil alle werftoestemmings vir <ph name="CHOSEN_OBJECT_NAME" /> terugstel?</translation>
-<translation id="2836978798613876756"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> <ph name="HOST_NAME" /></translation>
 <translation id="2850913818900871965">Versoek mobiele aansig</translation>
 <translation id="2870560284913253234">Werf</translation>
 <translation id="2874939134665556319">Vorige snit</translation>
@@ -120,7 +120,6 @@
 <translation id="2968755619301702150">Sertifikaatbekyker</translation>
 <translation id="2979365474350987274">Derdepartywebkoekies is beperk</translation>
 <translation id="3008272652534848354">Stel toestemmings terug</translation>
-<translation id="3013291976881901233">MIDI-toestelle</translation>
 <translation id="301521992641321250">Outomaties geblokkeer</translation>
 <translation id="3069226013421428034">Laat aanmelding deur derde partye vir ’n spesifieke werf toe.</translation>
 <translation id="3082992102194421695">{COUNT,plural, =1{Verval môre}other{Verval oor # dae}}</translation>
@@ -191,7 +190,6 @@
 <translation id="4169549551965910670">Aan ’n USB-toestel gekoppel</translation>
 <translation id="4194328954146351878">Vra voor werwe toegelaat word om inligting op NFC-toestelle te sien en te verander (aanbeveel)</translation>
 <translation id="4200726100658658164">Maak ligginginstellings oop</translation>
-<translation id="4212246570487010370">Hou aan blaai</translation>
 <translation id="4226663524361240545">Kennisgewings kan die toestel laat vibreer</translation>
 <translation id="4259722352634471385">Navigasie is geblokkeer: <ph name="URL" /></translation>
 <translation id="4278390842282768270">Toegelaat</translation>
@@ -349,7 +347,6 @@
 <translation id="6746124502594467657">Skuif af</translation>
 <translation id="6749077623962119521">Stel toestemmings terug?</translation>
 <translation id="6766622839693428701">Swiep ondertoe om toe te maak</translation>
-<translation id="6785959295338971061"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> Vanaf <ph name="FROM_DEVICE" /></translation>
 <translation id="6787751205395685251">Kies ’n opsie vir <ph name="SITE_NAME" /></translation>
 <translation id="6790428901817661496">Speel</translation>
 <translation id="6818926723028410516">Kies items</translation>

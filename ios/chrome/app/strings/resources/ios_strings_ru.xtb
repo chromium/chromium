@@ -148,6 +148,7 @@
 <translation id="1753905327828125965">Наиболее посещаемые</translation>
 <translation id="1757699834933698436">{count,plural, =1{{count} простой пароль}one{{count} простой пароль}few{{count} простых пароля}many{{count} простых паролей}other{{count} простого пароля}}</translation>
 <translation id="1767766085187034454">Google Переводчик</translation>
+<translation id="1780152987505130652">Закрыть группу</translation>
 <translation id="1789803444939621101">С возвращением, <ph name="USER_NAME" />!</translation>
 <translation id="1803264062614276815">Владелец карты</translation>
 <translation id="1809939268435598390">Удалить папку</translation>
@@ -174,6 +175,7 @@
 <translation id="189531189292803889">Устройство iPad было недавно восстановлено, поэтому браузер по умолчанию мог измениться.</translation>
 <translation id="1904580727789512086">URL посещаемых сайтов сохраняются в аккаунте Google.</translation>
 <translation id="1911619930368729126">Загрузить на Google Диск</translation>
+<translation id="1919752845298942932">Подключение не защищено</translation>
 <translation id="1923342640370224680">Последний час</translation>
 <translation id="1930989359703290198">Согласно правилам, установленным организацией, выполнить вход можно только с одобренным аккаунтом. Запрещенные аккаунты скрываются. <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
 <translation id="1941314575388338491">Чтобы копировать, нажмите дважды.</translation>
@@ -213,7 +215,6 @@
 <translation id="2080769225927880590">Войдите с действительным аккаунтом</translation>
 <translation id="2103075008456228677">Открыть history.google.com</translation>
 <translation id="21133533946938348">Закрепить вкладку</translation>
-<translation id="2116625576999540962">Перемещено закладок: <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /></translation>
 <translation id="2122754583996902531">Этот браузер управляется администратором. <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
 <translation id="2139502497535990641">Включить оповещения об изменении цен?</translation>
 <translation id="2139867232736819575">Поиск скопированного текста</translation>
@@ -417,6 +418,7 @@
 <translation id="3130863904455712965">История и другие данные</translation>
 <translation id="3131206671572504478">Блокировать все</translation>
 <translation id="313283613037595347">Создать вкладку инкогнито.</translation>
+<translation id="314837624430314508">Будьте в курсе новостей, отслеживайте цены и не только.</translation>
 <translation id="3148946345238989659">Некоторые функции больше не доступны.</translation>
 <translation id="3153862085237805241">Сохранить подсказку</translation>
 <translation id="3157387275655328056">Добавить в список для чтения</translation>
@@ -461,6 +463,7 @@
 <translation id="3371831930909698441">Доступен перевод. Параметры указаны в нижней части экрана.</translation>
 <translation id="3377063233124932127">Теперь ваши сохраненные закладки, пароли и другие данные будут отображаться наверху.</translation>
 <translation id="3393920035788932672">Вспл. окна разрешены</translation>
+<translation id="3398509000872871492">Подключение защищено</translation>
 <translation id="3404232721752787413">Сохранить в Google Фото</translation>
 <translation id="3404744938087714423">Синхронизация будет отключена.</translation>
 <translation id="3409785640040772790">Карты</translation>
@@ -565,6 +568,7 @@
 <translation id="3929457972718048006">Адреса</translation>
 <translation id="3948600256434252210">Чтобы перейти в режим инкогнито, проведите по экрану вправо.</translation>
 <translation id="3955822496205734389">У вас есть простые пароли.</translation>
+<translation id="3958312024468322930">Перетащите значок на панель Dock внизу экрана</translation>
 <translation id="3959736869653157332">Меню → Новая вкладка инкогнито</translation>
 <translation id="3962326069546168954">Сохранить</translation>
 <translation id="3967822245660637423">Скачивание завершено.</translation>
@@ -582,6 +586,7 @@
 <translation id="4045648459118332842">Вводите сохраненные пароли в любом приложении одним нажатием</translation>
 <translation id="4049507953662678203">Проверьте подключение к Интернету и повторите попытку.</translation>
 <translation id="4054572406751135230">Следите за новостями и обновлениями другого контента.</translation>
+<translation id="4057531989585132525">Безопасность подключения</translation>
 <translation id="4066639687323968621">Чтобы синхронизировать закладки, историю и другие данные, достаточно войти в аккаунт Google.</translation>
 <translation id="4092655288299341041">Справочная информация</translation>
 <translation id="4105841739161771091">{count,plural, =1{Удалить адрес}one{Удалить адреса}few{Удалить адреса}many{Удалить адреса}other{Удалить адреса}}</translation>
@@ -646,6 +651,8 @@
 <translation id="4431224949908513835">Выберите, какой способ оплаты использовать.</translation>
 <translation id="4442550905108052454">Откройте приложение <ph name="BEGIN_BOLD" />Настройки<ph name="END_BOLD" />.</translation>
 <translation id="4454246407045105932">Добавление языка</translation>
+<translation id="4455710003856931944">Чтобы перейти вперед или назад, проведите пальцем по краю экрана.</translation>
+<translation id="4460014764210899310">Отменить создание группы</translation>
 <translation id="4461286950227634995">Предлагать сохранять пароли</translation>
 <translation id="4462491365653392320">Отслеживать цены на вкладках</translation>
 <translation id="4469324811108161144">Максимальное количество символов в примечании: <ph name="CHARACTER_LIMIT" />.</translation>
@@ -925,7 +932,6 @@
 <translation id="5857770089550859117">Чтобы начать синхронизацию, введите кодовую фразу.</translation>
 <translation id="5859715514067755465">Вперед</translation>
 <translation id="5860033963881614850">ВЫКЛ</translation>
-<translation id="5871497086027727873">Перемещено закладок: 1</translation>
 <translation id="5896576662943111387">Специально для iOS</translation>
 <translation id="5897749768294722429">Чтобы быстро возвращаться к просмотренным сайтам, включите синхронизацию вкладок и истории.</translation>
 <translation id="5897956970858271241">Открыть скопированную ссылку</translation>
@@ -1209,6 +1215,7 @@
 <translation id="7291368939935408496">Подготовка паролей…</translation>
 <translation id="7302503784943202842">Использование паролей на всех устройствах</translation>
 <translation id="7313347584264171202">Здесь вы найдете свои вкладки инкогнито</translation>
+<translation id="7335132237885014335">Включите уведомления</translation>
 <translation id="7336264872878993241">Скачивается: <ph name="PERCENT" />%</translation>
 <translation id="7340958967809483333">Параметры рекомендаций</translation>
 <translation id="7346909386216857016">ОК</translation>
@@ -1461,6 +1468,7 @@
 <translation id="8620640915598389714">Изменить</translation>
 <translation id="8624447588354561276">Номер заказа</translation>
 <translation id="8624753446837753970">Выбрать</translation>
+<translation id="8625706492572042370">Измените экран "Домой"</translation>
 <translation id="8626393685701737946">Вы можете изменить режим просмотра сайтов по умолчанию в меню "Настройки &gt; Настройки контента"</translation>
 <translation id="8636825310635137004">Чтобы получить доступ к вкладкам на всех ваших устройствах, включите синхронизацию.</translation>
 <translation id="8637431369725868556">Защитите себя от опасных сайтов.</translation>
@@ -1492,6 +1500,7 @@
 <translation id="8766790350274092814">Пароли для <ph name="WEBSITE" /> и <ph name="SECOND_WEBSITE" /> будут удалены. При этом сохранятся другие данные аккаунтов для этих сайтов.</translation>
 <translation id="8775144690796719618">Недействительный URL</translation>
 <translation id="8780076847684176174">{count,plural, =1{Посмотреть вкладку}one{Посмотреть все вкладки}few{Посмотреть все вкладки}many{Посмотреть все вкладки}other{Посмотреть все вкладки}}</translation>
+<translation id="8781834595282316166">Добавить новую вкладку в группу</translation>
 <translation id="8782570580170191813">Всегда отслеживать посылки</translation>
 <translation id="8787968206789828143">Найти в интернете</translation>
 <translation id="8792626944327216835">микрофон</translation>

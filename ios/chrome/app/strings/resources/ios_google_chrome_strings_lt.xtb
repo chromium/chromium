@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="lt">
+<translation id="1021782183249308751">Paspauskite ir palaikykite „Chrome“ piktogramą ir spustelėkite „Redaguoti pagrindinį ekraną“</translation>
 <translation id="1066101356081285416">„Chrome“ aptiks stebėjimo numerius svetainėse, kuriose lankotės, ir rodys siuntinių atnaujinimus naujo skirtuko puslapyje. Siuntinio stebėjimo numeris ir svetainės pavadinimas bus siunčiami „Google“, kad būtų galima teikti šią funkciją ir tobulinti „Google“ apsipirkimo funkcijas visiems žmonėms. Tai galite bet kada atnaujinti <ph name="BEGIN_LINK" />siuntinio stebėjimo nustatymuose<ph name="END_LINK" />.</translation>
 <translation id="1085696779717592361">„Chrome“ naudojimas pagal numatytuosius nustatymus</translation>
 <translation id="1105362920864247682">Išvalyti naršymo duomenis naršyklėje „Chrome“.</translation>
@@ -96,6 +97,7 @@ Tik jūsų slaptafrazę turintis asmuo galės perskaityti šifruotus duomenis. S
 <translation id="3345341804167540816">Naudokite „Chrome“ visur</translation>
 <translation id="3360031466389132716">{THRESHOLD,plural, =1{Taip nutinka, kai „Chrome“ nenaudojama {THRESHOLD} minutę}one{Taip nutinka, kai „Chrome“ nenaudojama {THRESHOLD} minutę}few{Taip nutinka, kai „Chrome“ nenaudojama {THRESHOLD} minutes}many{Taip nutinka, kai „Chrome“ nenaudojama {THRESHOLD} minutės}other{Taip nutinka, kai „Chrome“ nenaudojama {THRESHOLD} minučių}}</translation>
 <translation id="3399930248910934354">Atidarykite „Chrome“ nustatymus</translation>
+<translation id="344736123700721678">Greičiau pasiekite „Chrome“ naudodami pagrindinio ekrano doką</translation>
 <translation id="3472587960215700950">„Chrome“ naudoja „Google“ žemėlapius, kad pateiktų jums nuorodų ir vietinės informacijos apie aptiktus adresus.</translation>
 <translation id="3503014945441706099">Taip pat naudokite Sustiprintą saugų naršymą šiame „Chrome“ profilyje</translation>
 <translation id="3522659714780527202">Kad matytumėte skirtukus iš visų įrenginių, kuriuose naudojate „Chrome“, įjunkite sinchronizavimą</translation>
@@ -220,6 +222,7 @@ Jei reikia daugiau nustatymų, pagal kuriuos duomenys naudojami „Chrome“ fun
 <translation id="7175129790242719365">„Chrome“ patarimas: prisijunkite prie „Chrome“</translation>
 <translation id="7187993566681480880">Apsaugo jus naršyklėje „Chrome“ ir gali būti naudojama apsaugai kitose „Google“ programose pagerinti, kai esate prisijungę.</translation>
 <translation id="7200524487407690471">„Chrome“ kasdien automatiškai vykdo saugos patikrą, kad būtumėte apsaugoti nuo duomenų saugos pažeidimų, nesaugių svetainių ir kt. Daugiau apie saugos patikrą rasite skiltyje „Nustatymai“.</translation>
+<translation id="7203324561587388418">Nepraleiskite turinio ir naudingų „Chrome“ patarimų.</translation>
 <translation id="72119412072970160">Galite naudoti „Google“ slaptažodžių tvarkytuvėje išsaugotus slaptažodžius kitose „iPad“ programose.</translation>
 <translation id="723787869754590019">„Chrome“ naudojimas automatinio pildymo funkcijai</translation>
 <translation id="7254380941803999489">Nustatyti „Chrome“ kaip numatytąją naršyklę</translation>

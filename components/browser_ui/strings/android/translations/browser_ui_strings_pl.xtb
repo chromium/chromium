@@ -109,7 +109,6 @@
 <translation id="2750481671343847896">Witryny mogą wyświetlać prośby o zalogowanie się pochodzące od usług tożsamości.</translation>
 <translation id="2790501146643349491">Gdy ta opcja jest włączona, ostatnio zamknięte strony internetowe mogą dokończyć wysyłanie i odbieranie danych. Gdy jest wyłączona, nie mogą tego zrobić.</translation>
 <translation id="2822354292072154809">Czy na pewno chcesz zresetować wszystkie uprawnienia witryny dla obiektu <ph name="CHOSEN_OBJECT_NAME" />?</translation>
-<translation id="2836978798613876756"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> <ph name="HOST_NAME" /></translation>
 <translation id="2850913818900871965">Żądaj wersji na urządzenia mobilne</translation>
 <translation id="2870560284913253234">Witryna</translation>
 <translation id="2874939134665556319">Poprzedni utwór</translation>
@@ -121,7 +120,6 @@
 <translation id="2968755619301702150">Przeglądarka certyfikatów</translation>
 <translation id="2979365474350987274">Pliki cookie innych firm są ograniczone</translation>
 <translation id="3008272652534848354">Zresetuj uprawnienia</translation>
-<translation id="3013291976881901233">Urządzenia MIDI</translation>
 <translation id="301521992641321250">Automatycznie zablokowane</translation>
 <translation id="3069226013421428034">Zezwalanie na logowanie przez usługę zewnętrzną w określonej witrynie.</translation>
 <translation id="3082992102194421695">{COUNT,plural, =1{Wygasa jutro}few{Wygasa za # dni}many{Wygasa za # dni}other{Wygasa za # dnia}}</translation>
@@ -192,7 +190,6 @@
 <translation id="4169549551965910670">Połączona z urządzeniem USB</translation>
 <translation id="4194328954146351878">Pytaj, zanim zezwolisz stronom na odczytywanie i zmienianie informacji na urządzeniach z funkcją NFC (zalecane)</translation>
 <translation id="4200726100658658164">Otwórz ustawienia lokalizacji</translation>
-<translation id="4212246570487010370">Przeglądaj dalej</translation>
 <translation id="4226663524361240545">Powiadomienia będą sygnalizowane wibracjami</translation>
 <translation id="4259722352634471385">Adres zablokowany: <ph name="URL" /></translation>
 <translation id="4278390842282768270">Dozwolone</translation>
@@ -282,7 +279,6 @@
 <translation id="5706552988683188916">Spowoduje to usunięcie plików cookie i innych danych witryny <ph name="WEBSITE" /></translation>
 <translation id="5723967018671998714">Pliki cookie innych firm są blokowane w trybie incognito</translation>
 <translation id="5740126560802162366">Witryny mogą zapisywać dane na Twoim urządzeniu</translation>
-<translation id="5749158352074143502">Kontynuuj na tej karcie</translation>
 <translation id="5771720122942595109">Zablokowane: <ph name="PERMISSION_1" /></translation>
 <translation id="5804241973901381774">Uprawnienia</translation>
 <translation id="5844448279347999754">Gdy ta opcja jest włączona, strony internetowe mogą prosić o dostęp do tekstu i obrazów zapisanych w schowku. Gdy jest wyłączona, strony nie mają dostępu do tekstu ani obrazów zapisanych w schowku.</translation>
@@ -351,7 +347,6 @@
 <translation id="6746124502594467657">W dół</translation>
 <translation id="6749077623962119521">Zresetować uprawnienia?</translation>
 <translation id="6766622839693428701">Przesuń w dół, by zamknąć.</translation>
-<translation id="6785959295338971061"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> Z urządzenia <ph name="FROM_DEVICE" /></translation>
 <translation id="6787751205395685251">Wybierz opcję dla <ph name="SITE_NAME" /></translation>
 <translation id="6790428901817661496">Odtwórz</translation>
 <translation id="6818926723028410516">Wybierz elementy</translation>
@@ -423,7 +418,6 @@
 <translation id="7990211076305263060">Gdy ta opcja jest włączona, strony internetowe mogą prosić o dostęp do mikrofonu. Gdy jest wyłączona, strony nie mogą go używać.</translation>
 <translation id="8007176423574883786">Wyłączona na tym urządzeniu</translation>
 <translation id="802154636333426148">Nie udało się pobrać</translation>
-<translation id="8024161440284949905">Kontynuuj, używając tych kart</translation>
 <translation id="8042586301629853791">Sortuj według:</translation>
 <translation id="8067883171444229417">Odtwórz film</translation>
 <translation id="8068648041423924542">Nie można wybrać certyfikatu.</translation>

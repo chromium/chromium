@@ -2919,7 +2919,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3188465121994729530">Glidende gennemsnit</translation>
 <translation id="3189187154924005138">Stor markør</translation>
 <translation id="3190558889382726167">Adgangskoden er blevet gemt</translation>
-<translation id="3191625924275846436">{NUM_SITES,plural, =1{Tilladelserne blev fjernet fra et website, du ikke har besøgt for nylig, for at beskytte dine data}one{Tilladelserne blev fjernet fra et website, du ikke har besøgt for nylig, for at beskytte dine data}other{Tilladelserne blev fjernet fra websites, du ikke har besøgt for nylig, for at beskytte dine data}}</translation>
 <translation id="3192586965067888278">Beskriv problemet i detaljer. Feedbacken sendes til Google med henblik på menneskelig gennemgang og kan anvendes til at forbedre eller udvikle Googles produkter og tjenester.</translation>
 <translation id="3192947282887913208">Lydfiler</translation>
 <translation id="3193695589337931419">Værktøjer til indsamling af systemsignaler</translation>
@@ -4077,7 +4076,6 @@ Dette kan omfatte oplysninger om installeret software, filer, din browser og enh
 <translation id="4078903002989614318">Valgmuligheder for sortering og liste</translation>
 <translation id="4079140982534148664">Brug forbedret stavekontrol</translation>
 <translation id="4082333918978320301">Ingen websites har tilladelse til at bruge din mikrofon</translation>
-<translation id="4084582735848141214">{COUNT,plural, =1{1 website er tilladt}one{# website er tilladt}other{# websites er tilladt}}</translation>
 <translation id="4084682180776658562">Bogmærke</translation>
 <translation id="4084835346725913160">Luk <ph name="TAB_NAME" /></translation>
 <translation id="4085298594534903246">JavaScript blev blokeret på denne side.</translation>
@@ -8077,7 +8075,6 @@ Du har # andre kompromitterede adgangskoder. Google Adgangskodeadministrator anb
 <translation id="7260186537988033909">Terminal- og signeringsenheden er tilmeldt</translation>
 <translation id="7261612856573623172">Systemstemme for oplæsning</translation>
 <translation id="7262004276116528033">Denne logintjeneste hostes af <ph name="SAML_DOMAIN" />.</translation>
-<translation id="7263162347647986485">{NUM_SITES,plural, =1{Tilladelserne blev fjernet for 1 website}one{Tilladelserne blev fjernet for {NUM_SITES} website}other{Tilladelserne blev fjernet for {NUM_SITES} websites}}</translation>
 <translation id="7264695323040866038">Vil du altid bruge appen <ph name="APP" /> til at åbne understøttede weblinks?</translation>
 <translation id="7267044199012331848">Den virtuelle maskine kunne ikke installeres. Prøv igen, eller kontakt din administrator Fejlkode: <ph name="ERROR_CODE" />.</translation>
 <translation id="7267875682732693301">Bliv ved med at løfte fingeren for at få hele fingeraftrykket med</translation>
@@ -9823,7 +9820,6 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="859246725979739260">Dette website er blevet blokeret, så det ikke kan få adgang til din lokation.</translation>
 <translation id="8593121833493516339">Send brugs- og diagnosticeringsdata. Hjælp med at forbedre dit barns Android-oplevelse ved automatisk at sende diagnosticerings- og enhedsdata samt data om brug af apps til Google. Disse data bruges ikke til at identificere dit barn. De bruges kun til forbedring af bl.a. systemets og appens stabilitet. Visse aggregerede data hjælper også Google-apps og -partnere, f.eks. Android-udviklere. Hvis indstillingen til yderligere web- og appaktivitet er aktiveret for dit barn, gemmes disse data muligvis på barnets Google-konto. <ph name="BEGIN_LINK1" />Få flere oplysninger<ph name="END_LINK1" /></translation>
 <translation id="8593450223647418235">Du kan ikke åbne filer i Microsoft 365, før konfigurationen er fuldført.</translation>
-<translation id="8594585498253980290">{COUNT,plural, =1{1 website er blokeret}one{# website er blokeret}other{# websites er blokeret}}</translation>
 <translation id="8596540852772265699">Tilpassede filer</translation>
 <translation id="8597462463725156723">Notifikationer vises ikke på skærmen. Du kan stadig se notifikationer ved at klikke på ikonet for Forstyr ikke nederst til højre på skærmen.</translation>
 <translation id="8597845839771543242">Ejendomsformat:</translation>

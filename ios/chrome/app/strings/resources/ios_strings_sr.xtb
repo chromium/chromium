@@ -149,6 +149,7 @@
 <translation id="1757699834933698436">{count,plural, =1{{count} слаба лозинка}one{{count} слаба лозинка}few{{count} слабе лозинке}other{{count} слабих лозинки}}</translation>
 <translation id="1767766085187034454">Google преводилац</translation>
 <translation id="1769106850515800431">Персонализовани садржај</translation>
+<translation id="1780152987505130652">Затвори групу</translation>
 <translation id="1789803444939621101">Добро дошли назад, <ph name="USER_NAME" /></translation>
 <translation id="1803264062614276815">Име власника картице</translation>
 <translation id="1809939268435598390">Избриши фолдер</translation>
@@ -215,7 +216,6 @@
 <translation id="2080769225927880590">Пријавите се помоћу важећег налога</translation>
 <translation id="2103075008456228677">Отвори history.google.com</translation>
 <translation id="21133533946938348">Закачи картицу</translation>
-<translation id="2116625576999540962">Број премештених ставки је <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /></translation>
 <translation id="2122754583996902531">Прегледачем се управља. <ph name="BEGIN_LINK" />Сазнајте више<ph name="END_LINK" /></translation>
 <translation id="2139502497535990641">Желите да укључите обавештења о цени?</translation>
 <translation id="2139867232736819575">Потражите текст који сте копирали</translation>
@@ -653,6 +653,7 @@
 <translation id="4442550905108052454">Отворите <ph name="BEGIN_BOLD" />Подешавања<ph name="END_BOLD" /></translation>
 <translation id="4454246407045105932">Додајте језик</translation>
 <translation id="4455710003856931944">Можете да превучете ивицу да бисте ишли назад или напред.</translation>
+<translation id="4460014764210899310">Раздвоји</translation>
 <translation id="4461286950227634995">Понуди чување лозинки</translation>
 <translation id="4462491365653392320">Пратите цене на картицама</translation>
 <translation id="4469324811108161144">Белешке могу да сачувају највише <ph name="CHARACTER_LIMIT" /> знакова.</translation>
@@ -935,7 +936,6 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="5857770089550859117">За почетак синхронизације потребна је приступна фраза.</translation>
 <translation id="5859715514067755465">Напред</translation>
 <translation id="5860033963881614850">Искључено</translation>
-<translation id="5871497086027727873">1 ставка је премештена</translation>
 <translation id="5896576662943111387">Направљено за iOS</translation>
 <translation id="5897749768294722429">Да бисте се брзо вратили на сајтове које сте посетили, синхронизујте картице и историју.</translation>
 <translation id="5897956970858271241">Иди на копирани линк</translation>
@@ -1505,6 +1505,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="8766790350274092814">Лозинке за <ph name="WEBSITE" /> и <ph name="SECOND_WEBSITE" /> ће бити избрисане. Ваши налози неће бити избрисани.</translation>
 <translation id="8775144690796719618">Неважећи URL</translation>
 <translation id="8780076847684176174">{count,plural, =1{Прегледај картицу…}one{Прегледај све картице…}few{Прегледај све картице…}other{Прегледај све картице…}}</translation>
+<translation id="8781834595282316166">Нова картица у групи</translation>
 <translation id="8782570580170191813">Увек прати пакете</translation>
 <translation id="8787968206789828143">Претражите на вебу</translation>
 <translation id="8792626944327216835">микрофон</translation>

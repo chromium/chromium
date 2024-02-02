@@ -109,7 +109,6 @@
 <translation id="2750481671343847896">අඩවිවලට අනන්‍යතා සේවාවලින් පිරීමේ ප්‍රේරක පෙන්විය හැකිය.</translation>
 <translation id="2790501146643349491">සක්‍රීය වූ විට, මෑතදී වසන ලද අඩවිවලට දත්ත යැවීම සහ ලැබීම අවසන් කළ හැක. අක්‍රිය වූ විට, මෑතදී වසන ලද අඩවිවලට දත්ත යැවීම හෝ ලැබීම අවසන් කළ නොහැක.</translation>
 <translation id="2822354292072154809">ඔබට <ph name="CHOSEN_OBJECT_NAME" /> සඳහා සියලුම වෙබ් අඩවි අවසර යළි සැකසිය යුතු බව ඔබට තහවුරුද?</translation>
-<translation id="2836978798613876756"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> <ph name="HOST_NAME" /></translation>
 <translation id="2850913818900871965">ජංගම දසුන ඉල්ලන්න</translation>
 <translation id="2870560284913253234">අඩවිය</translation>
 <translation id="2874939134665556319">පෙර ඛණ්ඩය</translation>
@@ -121,7 +120,6 @@
 <translation id="2968755619301702150">සහතික දක්වනය</translation>
 <translation id="2979365474350987274">තුන් වන පාර්ශ්ව කුකී සීමිතයි</translation>
 <translation id="3008272652534848354">අවසර යළි සකසන්න</translation>
-<translation id="3013291976881901233">MIDI උපාංග</translation>
 <translation id="301521992641321250">ස්වයංක්‍රියව අවහිර කර ඇත</translation>
 <translation id="3069226013421428034">නිශ්චිත අඩවියක් සඳහා තෙවන පාර්ශ්ව පිරීම ඉඩ දෙන්න.</translation>
 <translation id="3082992102194421695">{COUNT,plural, =1{හෙට කල් ඉකුත් වෙයි}one{දින #කින් කල් ඉකුත් වෙයි}other{දින #කින් කල් ඉකුත් වෙයි}}</translation>
@@ -192,7 +190,6 @@
 <translation id="4169549551965910670">USB උපාංගයකට සම්බන්ධ කර ඇත</translation>
 <translation id="4194328954146351878">NFC උපාංගවල තොරතුරු බැලීමට සහ වෙනස් කිරීමට අඩවිවලට ඉඩ දීමට පෙර අසන්න (නිර්දේශිතයි)</translation>
 <translation id="4200726100658658164">ස්ථාන සැකසීම් විවෘත කරන්න</translation>
-<translation id="4212246570487010370">දිගටම බ්‍රවුස් කරන්න</translation>
 <translation id="4226663524361240545">දැනුම්දීම් උපාංගය කම්පනය කළ හැක</translation>
 <translation id="4259722352634471385">සංචාලනය අවහිර කර ඇත: <ph name="URL" /></translation>
 <translation id="4278390842282768270">ඉඩ දුන්</translation>
@@ -282,7 +279,6 @@
 <translation id="5706552988683188916">මෙය <ph name="WEBSITE" /> සඳහා වන කුකී සහ අනෙකුත් අඩවි දත්ත මකයි</translation>
 <translation id="5723967018671998714">අප්‍රසිද්ධ ප්‍රකාරය තුළ තෙවන පාර්ශ්ව කුකී අවහිර කෙරේ</translation>
 <translation id="5740126560802162366">අඩවිවලට ඔබේ උපාංගයෙහි දත්ත සුරැකිය හැක</translation>
-<translation id="5749158352074143502">මෙම පටිත්ත සමග ඉදිරියට යන්න</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" /> අවහිර කරන ලදී</translation>
 <translation id="5804241973901381774">අවසර</translation>
 <translation id="5844448279347999754">සක්‍රීය වූ විට, අඩවිවලට ඔබේ පසුරුපුවරුවට සුරකින ලද පාඨ සහ රූප බැලීමට ඉල්ලිය හැක. අක්‍රිය වූ විට, අඩවිවලට ඔබේ පසුරුපුවරුවට සුරකින ලද පාඨ සහ රූප බැලිය නොහැක.</translation>
@@ -351,7 +347,6 @@
 <translation id="6746124502594467657">පහළට ගෙන යන්න</translation>
 <translation id="6749077623962119521">අවසර යළි සකසන්නද?</translation>
 <translation id="6766622839693428701">වැසීමට පහළට ස්වයිප් කරන්න.</translation>
-<translation id="6785959295338971061"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> <ph name="FROM_DEVICE" /> සිට</translation>
 <translation id="6787751205395685251"><ph name="SITE_NAME" /> සඳහා විකල්පයක් තෝරන්න</translation>
 <translation id="6790428901817661496">වාදනය කරන්න</translation>
 <translation id="6818926723028410516">අයිතම තෝරන්න</translation>
@@ -423,7 +418,6 @@
 <translation id="7990211076305263060">සක්‍රීය වූ විට, අඩවිවලට ඔබේ මයික්‍රොෆෝනය භාවිත කිරීමට ඉල්ලිය හැක. අක්‍රිය වූ විට, අඩවිවලට ඔබේ මයික්‍රොෆෝනය භාවිත කළ නොහැක.</translation>
 <translation id="8007176423574883786">මෙම උපාංගය සඳහා ක්‍රියාවිරහිත කරන ලදී.</translation>
 <translation id="802154636333426148">බාගැනීම අසමත් විය</translation>
-<translation id="8024161440284949905">මෙම පටිති සමග ඉදිරියට යන්න</translation>
 <translation id="8042586301629853791">අනුපිළිවෙළට සකසන්න:</translation>
 <translation id="8067883171444229417">වීඩියෝව ධාවන කරන්න</translation>
 <translation id="8068648041423924542">සහතිකය තේරීමට නොහැකිය.</translation>

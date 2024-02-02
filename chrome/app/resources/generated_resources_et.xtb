@@ -2909,7 +2909,6 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="3188465121994729530">Liikuv keskmine</translation>
 <translation id="3189187154924005138">Suur kursor</translation>
 <translation id="3190558889382726167">Parool salvestati</translation>
-<translation id="3191625924275846436">{NUM_SITES,plural, =1{Teie andmete kaitsmiseks eemaldati load saidilt, mida te pole hiljuti külastanud}other{Teie andmete kaitsmiseks eemaldati load saitidelt, mida te pole hiljuti külastanud}}</translation>
 <translation id="3192586965067888278">Kirjeldage probleemi üksikasjalikult. Tagasiside saadetakse Google'ile inimülevaatuseks ning seda võidakse Google'i toodete ja teenuste täiustamiseks kasutada.</translation>
 <translation id="3192947282887913208">Helifailid</translation>
 <translation id="3193695589337931419">Süsteemi signaalide utiliidid</translation>
@@ -4067,7 +4066,6 @@ See võib hõlmata teavet installitud tarkvara, failide, teie brauseri ja seadme
 <translation id="4078903002989614318">Sortimis- ja loendivalikud</translation>
 <translation id="4079140982534148664">Kasuta täiustatud õigekirjakontrolli</translation>
 <translation id="4082333918978320301">Ühelgi veebisaidil pole õigust kasutada teie mikrofoni</translation>
-<translation id="4084582735848141214">{COUNT,plural, =1{Üks sait on lubatud}other{# saiti on lubatud}}</translation>
 <translation id="4084682180776658562">Järjehoidja</translation>
 <translation id="4084835346725913160">Sule <ph name="TAB_NAME" /></translation>
 <translation id="4085298594534903246">JavaScript blokeeriti sellel lehel.</translation>
@@ -8064,7 +8062,6 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="7260186537988033909">Kioski- ja teabeseadmete registreerimine viidi lõpule</translation>
 <translation id="7261612856573623172">Süsteemi kõnesünteesi hääl</translation>
 <translation id="7262004276116528033">Sisselogimisteenust hostib <ph name="SAML_DOMAIN" /></translation>
-<translation id="7263162347647986485">{NUM_SITES,plural, =1{1 saidi load eemaldati}other{{NUM_SITES} saidi load eemaldati}}</translation>
 <translation id="7264695323040866038">Kas kasutada toetatud veebilinkide avamiseks alati rakendust <ph name="APP" />?</translation>
 <translation id="7267044199012331848">Virtuaalmasinat ei õnnestunud installida. Proovige uuesti või võtke ühendust administraatoriga. Veakood: <ph name="ERROR_CODE" />.</translation>
 <translation id="7267875682732693301">Tõstke sõrme, et lisada sõrmejälje eri osad</translation>
@@ -9811,7 +9808,6 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="859246725979739260">Juurdepääs teie asukohale on selle saidi jaoks blokeeritud.</translation>
 <translation id="8593121833493516339">Saada kasutus- ja diagnostikaandmeid. Aidake täiustada oma lapse Androidi kasutuskogemust, saates Google'ile automaatselt seadme teavet ning rakenduse kasutus- ja  diagnostikaandmeid. Neid andmeid ei kasutata teie lapse isiku tuvastamiseks ning need aitavad parandada süsteemi ja rakenduse stabiilsust ning muud. Teatud koondandmed on abiks ka Google'i rakendustele ja partneritele, näiteks Androidi arendajatele. Kui täiendavad veebi- ja rakendustegevused on teie lapse jaoks sisse lülitatud, võidakse need andmed salvestada tema Google'i kontole. <ph name="BEGIN_LINK1" />Lisateave<ph name="END_LINK1" /></translation>
 <translation id="8593450223647418235">Te ei saa teenuses Microsoft 365 faile enne avada, kui seadistamine on lõpetatud.</translation>
-<translation id="8594585498253980290">{COUNT,plural, =1{1 sait on blokeeritud}other{# saiti on blokeeritud}}</translation>
 <translation id="8596540852772265699">Kohandatud failid</translation>
 <translation id="8597462463725156723">Märguandeid ei kuvata hüpikutena. Saate neid siiski vaadata, kui klõpsate ekraanikuva paremas alanurgas ikoonil Mitte segada.</translation>
 <translation id="8597845839771543242">Vara vorming:</translation>

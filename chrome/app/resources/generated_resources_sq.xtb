@@ -2899,7 +2899,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3188465121994729530">Mesatarja e lëvizshme</translation>
 <translation id="3189187154924005138">Kursori i madh</translation>
 <translation id="3190558889382726167">Fjalëkalimi u ruajt</translation>
-<translation id="3191625924275846436">{NUM_SITES,plural, =1{Për të mbrojtur të dhënat e tua, lejet u hoqën nga një sajt që nuk e ke vizituar së fundi}other{Për të mbrojtur të dhënat e tua, lejet u hoqën nga sajtet që nuk i ke vizituar së fundi}}</translation>
 <translation id="3192586965067888278">Përshkruaj problemin në detaje. Komentet do të dërgohen te Google për shqyrtim njerëzor dhe mund të përdoren për të përmirësuar ose për të zhvilluar produktet dhe shërbimet e Google.</translation>
 <translation id="3192947282887913208">Skedarët audio</translation>
 <translation id="3193695589337931419">Shërbimet utilitare të sinjalizimeve të sistemit</translation>
@@ -4056,7 +4055,6 @@ Kjo mund të përfshijë informacione për softuerët e instaluar, skedarët, sh
 <translation id="4078903002989614318">Opsionet për renditjen dhe listat</translation>
 <translation id="4079140982534148664">Përdor kontrolluesin drejtshkrimor të përmirësuar</translation>
 <translation id="4082333918978320301">Nuk lejohet asnjë uebsajt që të përdorë mikrofonin</translation>
-<translation id="4084582735848141214">{COUNT,plural, =1{Lejohet 1 sajt}other{Lejohen # sajte}}</translation>
 <translation id="4084682180776658562">Faqeshënuesi</translation>
 <translation id="4084835346725913160">Mbyll <ph name="TAB_NAME" /></translation>
 <translation id="4085298594534903246">JavaScript u bllokua në këtë faqe.</translation>
@@ -8044,7 +8042,6 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="7260186537988033909">Regjistrimi i kioskës dhe i pajisjes sinjalizuese përfundoi</translation>
 <translation id="7261612856573623172">Zëri i sistemit për "Tekstin në ligjërim"</translation>
 <translation id="7262004276116528033">Ky shërbim identifikimi strehohet nga <ph name="SAML_DOMAIN" /></translation>
-<translation id="7263162347647986485">{NUM_SITES,plural, =1{Lejet u hoqën për 1 sajt}other{Lejet u hoqën për {NUM_SITES} sajte}}</translation>
 <translation id="7264695323040866038">Të përdoret gjithmonë aplikacioni <ph name="APP" /> për të hapur lidhjet e mbështetura të uebit?</translation>
 <translation id="7267044199012331848">Pajisja virtuale nuk mund të instalohej. Provo përsëri ose kontakto me administratorin. Kodi i gabimit: <ph name="ERROR_CODE" />.</translation>
 <translation id="7267875682732693301">Vazhdo ta ngresh gishtin për të shtuar pjesë të ndryshme të gjurmës së gishtit</translation>
@@ -9787,7 +9784,6 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="859246725979739260">Ky sajt është bllokuar që të mos ketë qasje te vendndodhja jote.</translation>
 <translation id="8593121833493516339">Dërgo të dhënat e përdorimit dhe të diagnostikimit. Ndihmo në përmirësimin e përvojës së fëmijës tënd me Android duke dërguar automatikisht te Google të dhënat e diagnostikimit dhe të përdorimit të pajisjes dhe aplikacioneve. Këto nuk do të përdoren për të identifikuar fëmijën tënd dhe do të ndihmojnë për qëndrueshmërinë e sistemit dhe të aplikacioneve dhe për përmirësime të tjera. Disa të dhëna të përmbledhura do të ndihmojnë po ashtu aplikacionet dhe partnerët e Google, si p.sh. zhvilluesit e Android. Nëse "Aktiviteti shtesë i uebit dhe i aplikacioneve" është i aktivizuar për fëmijën tënd, këto të dhëna mund të ruhen në "Llogarinë e Google" të fëmijës. <ph name="BEGIN_LINK1" />Mëso më shumë<ph name="END_LINK1" /></translation>
 <translation id="8593450223647418235">Nuk do të mund t'i hapësh skedarët në Microsoft 365 derisa të përfundojë konfigurimi.</translation>
-<translation id="8594585498253980290">{COUNT,plural, =1{1 sajti i bllokuar}other{# sajte të bllokuara}}</translation>
 <translation id="8596540852772265699">Skedarë të personalizuar</translation>
 <translation id="8597462463725156723">Njoftimet nuk do të shfaqen në ekran. Mund t'i shikosh përsëri njoftimet duke klikuar tek ikona "Mos shqetëso" në pjesën e poshtme djathtas në ekran.</translation>
 <translation id="8597845839771543242">Formati i vetisë:</translation>

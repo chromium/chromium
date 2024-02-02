@@ -2919,7 +2919,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3188465121994729530">Hlaupandi meðaltal</translation>
 <translation id="3189187154924005138">Stór bendill</translation>
 <translation id="3190558889382726167">Aðgangsorð vistað</translation>
-<translation id="3191625924275846436">{NUM_SITES,plural, =1{Til að vernda gögnin þín voru heimildir fjarlægðar fyrir vefsvæði sem þú hefur ekki opnað nýlega}one{Til að vernda gögnin þín voru heimildir fjarlægðar fyrir vefsvæði sem þú hefur ekki opnað nýlega}other{Til að vernda gögnin þín voru heimildir fjarlægðar fyrir vefsvæði sem þú hefur ekki opnað nýlega}}</translation>
 <translation id="3192586965067888278">Lýstu vandamálinu í smáatriðum. Ábending verður send til Google til yfirferðar hjá mennskum aðilum og verður mögulega notuð til að bæta eða þróa vörur og þjónustu Google.</translation>
 <translation id="3192947282887913208">Hljóðskrár</translation>
 <translation id="3193695589337931419">Hjálparforrit kerfismerkja</translation>
@@ -4077,7 +4076,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="4078903002989614318">Valkostir fyrir röðun og lista</translation>
 <translation id="4079140982534148664">Nota endurbætta ritvilluleit</translation>
 <translation id="4082333918978320301">Engin vefsvæði eru með aðgang að hljóðnemanum</translation>
-<translation id="4084582735848141214">{COUNT,plural, =1{1 vefsvæði leyft}one{# vefsvæði leyft}other{# vefsvæði leyfð}}</translation>
 <translation id="4084682180776658562">Bókamerki</translation>
 <translation id="4084835346725913160">Loka <ph name="TAB_NAME" /></translation>
 <translation id="4085298594534903246">JavaScript var lokað á þessari síðu.</translation>
@@ -8076,7 +8074,6 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="7260186537988033909">Skráningu tækis í sjálfsala- og merkingastillingu lokið</translation>
 <translation id="7261612856573623172">Rödd talgervils kerfis</translation>
 <translation id="7262004276116528033">Þessi innskráningarþjónusta er hýst af <ph name="SAML_DOMAIN" /></translation>
-<translation id="7263162347647986485">{NUM_SITES,plural, =1{Heimildir fjarlægðar fyrir 1 vefsvæði}one{Heimildir fjarlægðar fyrir {NUM_SITES} vefsvæði}other{Heimildir fjarlægðar fyrir {NUM_SITES} vefsvæði}}</translation>
 <translation id="7264695323040866038">Alltaf nota <ph name="APP" /> forritið til að opna studda veftengla?</translation>
 <translation id="7267044199012331848">Ekki tókst að setja upp sýndarvélina. Reyndu aftur eða hafðu samband við kerfisstjórann þinn. Villukóði: <ph name="ERROR_CODE" />.</translation>
 <translation id="7267875682732693301">Lyftu fingrinum endurtekið til að bæta við mismunandi hlutum fingrafarsins</translation>
@@ -9822,7 +9819,6 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="859246725979739260">Lokað hefur verið á aðgang þessa vefsvæðis að staðsetningunni þinni.</translation>
 <translation id="8593121833493516339">Senda notkunar- og greiningargögn. Hjálpaðu okkur að bæta Android fyrir barnið þitt með því að senda sjálfkrafa greiningargögn, tækisgögn og upplýsingar um forritanotkun til Google. Þetta verður ekki notað til að bera kennsl á barnið þitt og mun stuðla að því að bæta stöðugleika kerfa og forrita auk annarra endurbóta. Sum uppsöfnuð gögn munu einnig gagnast forritum og samstarfsaðilum Google, til dæmis þróunaraðilum Android. Ef kveikt er á ítarlegri vef- og forritavirkni fyrir barnið geta þessi gögn verið vistuð á Google reikningi barnsins. <ph name="BEGIN_LINK1" />Frekari upplýsingar<ph name="END_LINK1" /></translation>
 <translation id="8593450223647418235">Þú getur ekki opnað skrár í Microsoft 365 fyrr en uppsetningu lýkur.</translation>
-<translation id="8594585498253980290">{COUNT,plural, =1{Lokað á 1 vefsvæði}one{Lokað á # vefsvæði}other{Lokað á # vefsvæði}}</translation>
 <translation id="8596540852772265699">Sérsniðnar skrár</translation>
 <translation id="8597462463725156723">Tilkynningar munu ekki poppa upp á skjánum. Þú getur áfram séð tilkynningar með því að smella á táknið „Ónáðið ekki“ neðst til hægri á skjánum.</translation>
 <translation id="8597845839771543242">Snið eigindar:</translation>

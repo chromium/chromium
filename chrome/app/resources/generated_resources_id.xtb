@@ -2918,7 +2918,6 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3188465121994729530">Rata-rata Perpindahan</translation>
 <translation id="3189187154924005138">Kursor besar</translation>
 <translation id="3190558889382726167">Sandi tersimpan</translation>
-<translation id="3191625924275846436">{NUM_SITES,plural, =1{Untuk melindungi data Anda, izin telah dihapus dari situs yang tidak Anda buka baru-baru ini}other{Untuk melindungi data Anda, izin telah dihapus dari situs yang tidak Anda buka baru-baru ini}}</translation>
 <translation id="3192586965067888278">Jelaskan masalahnya secara mendetail. Masukan akan dikirim ke Google untuk peninjauan manual dan dapat digunakan untuk meningkatkan kualitas atau mengembangkan produk dan layanan Google.</translation>
 <translation id="3192947282887913208">File Audio</translation>
 <translation id="3193695589337931419">Utilitas Sinyal Sistem</translation>
@@ -4076,7 +4075,6 @@ Informasi ini dapat mencakup informasi tentang software yang diinstal, file, bro
 <translation id="4078903002989614318">Opsi pengurutan dan daftar</translation>
 <translation id="4079140982534148664">Gunakan fitur Periksa Ejaan yang Disempurnakan</translation>
 <translation id="4082333918978320301">Tidak ada situs yang diizinkan untuk menggunakan mikrofon Anda</translation>
-<translation id="4084582735848141214">{COUNT,plural, =1{1 situs diizinkan}other{# situs diizinkan}}</translation>
 <translation id="4084682180776658562">Bookmark</translation>
 <translation id="4084835346725913160">Tutup <ph name="TAB_NAME" /></translation>
 <translation id="4085298594534903246">JavaScript diblokir di halaman ini.</translation>
@@ -8074,7 +8072,6 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="7260186537988033909">Pendaftaran perangkat kios dan reklame selesai</translation>
 <translation id="7261612856573623172">Suara Text-to-Speech sistem</translation>
 <translation id="7262004276116528033">Layanan masuk ini dihosting oleh <ph name="SAML_DOMAIN" /></translation>
-<translation id="7263162347647986485">{NUM_SITES,plural, =1{Izin dihapus untuk 1 situs}other{Izin dihapus untuk {NUM_SITES} situs}}</translation>
 <translation id="7264695323040866038">Selalu gunakan aplikasi <ph name="APP" /> untuk membuka link web yang didukung?</translation>
 <translation id="7267044199012331848">Tidak dapat menginstal mesin virtual. Coba lagi atau hubungi administrator Anda. Kode error: <ph name="ERROR_CODE" />.</translation>
 <translation id="7267875682732693301">Angkat dan sentuhkan jari secara berulang untuk menambahkan bagian lain dari sidik jari Anda</translation>
@@ -9820,7 +9817,6 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="859246725979739260">Situs ini telah diblokir agar tidak dapat mengakses lokasi Anda.</translation>
 <translation id="8593121833493516339">Kirim data penggunaan dan diagnostik. Bantu sempurnakan pengalaman Android Anak Anda dengan otomatis mengirim data diagnostik, perangkat, dan penggunaan aplikasi ke Google. Data ini tidak akan digunakan untuk mengidentifikasi anak Anda serta akan membantu sistem dan stabilitas aplikasi serta penyempurnaan lainnya. Beberapa data gabungan juga akan membantu aplikasi dan partner Google, seperti developer Android. Jika Aktivitas Web &amp; Aplikasi tambahan diaktifkan untuk anak Anda, data ini mungkin akan disimpan ke akun Google miliknya. <ph name="BEGIN_LINK1" />Pelajari Lebih Lanjut<ph name="END_LINK1" /></translation>
 <translation id="8593450223647418235">Anda tidak akan dapat membuka file di Microsoft 365 sampai penyiapan selesai.</translation>
-<translation id="8594585498253980290">{COUNT,plural, =1{1 situs diblokir}other{# situs diblokir}}</translation>
 <translation id="8596540852772265699">File Khusus</translation>
 <translation id="8597462463725156723">Notifikasi tidak akan muncul di layar. Anda tetap dapat melihat notifikasi dengan mengklik ikon Jangan ganggu di kanan bawah layar.</translation>
 <translation id="8597845839771543242">Format properti:</translation>

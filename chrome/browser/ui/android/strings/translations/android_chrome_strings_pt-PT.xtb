@@ -139,6 +139,7 @@ Só alguém com a sua frase de acesso pode ler os dados encriptados. A Google n�
 <translation id="1749561566933687563">Sincronizar os marcadores</translation>
 <translation id="1750259112639922169">Grupo de separadores – <ph name="TAB_COUNT" /> separadores</translation>
 <translation id="17513872634828108">Separadores abertos</translation>
+<translation id="1755203724116202818">Para medir o desempenho de um anúncio, são partilhados tipos de dados limitados entre sites, por exemplo, se fez uma compra depois de visitar um site.</translation>
 <translation id="1757620656501361327">Atualização do Gestor de Palavras-passe da Google</translation>
 <translation id="1760873718737761808">{FILE_COUNT,plural, =1{Páginas, 1 página na lista}other{Páginas, # páginas na lista}}</translation>
 <translation id="1778457539567749232">Marcar como não lida</translation>
@@ -452,6 +453,7 @@ Só alguém com a sua frase de acesso pode ler os dados encriptados. A Google n�
 <translation id="3443221991560634068">Atualizar a página atual</translation>
 <translation id="3444179773590444986">Quer partilhar feedback sobre o tema escuro para os sites?</translation>
 <translation id="3452832259067974318">Para proteger a sua privacidade, o Chrome não irá preencher automaticamente a palavra-passe neste campo.</translation>
+<translation id="3467081767799433066">Com a medição de anúncios, são partilhados tipos de dados limitados entre sites para medir o desempenho dos respetivos anúncios, por exemplo, se fez uma compra depois de visitar um site.</translation>
 <translation id="3474624961160222204">Continuar como <ph name="NAME" /></translation>
 <translation id="3478363558367712427">Pode escolher o seu motor de pesquisa.</translation>
 <translation id="3479552764303398839">Agora não</translation>
@@ -632,6 +634,7 @@ Só alguém com a sua frase de acesso pode ler os dados encriptados. A Google n�
 <translation id="4494806687727322324">O seu administrador ativou a gravação de palavras-passe</translation>
 <translation id="4508528996305412043">O menu do cartão do feed está aberto.</translation>
 <translation id="4509501256689523862">À medida que navega, a personalização de um anúncio que lhe é mostrado depende da definição <ph name="BEGIN_LINK_1" />Tópicos do anúncio<ph name="END_LINK_1" />, das <ph name="BEGIN_LINK_2" />definições de cookies<ph name="END_LINK_2" /> e se o site que está a ver personaliza anúncios</translation>
+<translation id="4509741852167209430">São partilhados tipos de dados limitados entre sites para medir o desempenho dos respetivos anúncios, por exemplo, se fez uma compra depois de visitar um site</translation>
 <translation id="4513387527876475750">{DAYS,plural, =1{Há # dia}other{Há # dias}}</translation>
 <translation id="451872707440238414">Pesquisar os marcadores</translation>
 <translation id="4521489764227272523">Os dados selecionados foram removidos do Chrome e dos dispositivos sincronizados.

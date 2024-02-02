@@ -1341,6 +1341,7 @@
 <translation id="6298183524022479114">앱에서 이 기기 맞춤설정</translation>
 <translation id="6309219492973062892">앱 표시줄 아이콘 1-8 클릭 또는 탭</translation>
 <translation id="6315170314923504164">음성</translation>
+<translation id="6319058840130157106">오른쪽 하단, 런처, 주소 표시줄, 북마크바, 열려 있는 웹사이트, 다운로드 항목 간에 뒤로 이동</translation>
 <translation id="6324916366299863871">바로가기 수정</translation>
 <translation id="6330012934079202188">모든 데스크의 창을 표시합니다. 현재 데스크의 창을 표시하려면 위쪽 화살표 키를 누르세요</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> 세션은 <ph name="MANAGER" />에서 관리합니다.</translation>
@@ -1926,6 +1927,7 @@
 <translation id="878215960996152260"><ph name="APP_NAME" />, 설치된 앱, 차단됨</translation>
 <translation id="8785070478575117577"><ph name="NETWORK_NAME" />에 연결</translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
+<translation id="8790632710469941716">오른쪽 하단, 런처, 주소 표시줄, 북마크바, 열려 있는 웹사이트, 다운로드 항목 간에 앞으로 이동</translation>
 <translation id="8792626944327216835">마이크</translation>
 <translation id="8801802992492329306">5G</translation>
 <translation id="8806053966018712535"><ph name="FOLDER_NAME" /> 폴더</translation>

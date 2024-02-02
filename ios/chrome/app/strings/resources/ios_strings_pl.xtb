@@ -148,6 +148,8 @@
 <translation id="1753905327828125965">Najczęstsze</translation>
 <translation id="1757699834933698436">{count,plural, =1{{count} słabe hasło}few{{count} słabe hasła}many{{count} słabych haseł}other{{count} słabego hasła}}</translation>
 <translation id="1767766085187034454">Tłumacz Google</translation>
+<translation id="1769106850515800431">Spersonalizowana treść</translation>
+<translation id="1780152987505130652">Zamknij grupę</translation>
 <translation id="1789803444939621101">Witamy z powrotem, <ph name="USER_NAME" /></translation>
 <translation id="1803264062614276815">Imię i nazwisko posiadacza karty</translation>
 <translation id="1809939268435598390">Usuń folder</translation>
@@ -174,6 +176,7 @@
 <translation id="189531189292803889">Twój iPad został ostatnio przywrócony, co mogło spowodować zmianę przeglądarki domyślnej.</translation>
 <translation id="1904580727789512086">Odwiedzane adresy URL są zapisywane na Twoim koncie Google</translation>
 <translation id="1911619930368729126">Prześlij na Dysk Google</translation>
+<translation id="1919752845298942932">Połączenie nie jest bezpieczne</translation>
 <translation id="1923342640370224680">Ostatnia godzina</translation>
 <translation id="1930989359703290198">Twoja organizacja pozwala logować się tylko na określone konta. Niedozwolone konta zostały ukryte. <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
 <translation id="1941314575388338491">Kliknij dwukrotnie, by skopiować.</translation>
@@ -213,7 +216,6 @@
 <translation id="2080769225927880590">Zaloguj się na prawidłowe konto</translation>
 <translation id="2103075008456228677">Otwórz history.google.com</translation>
 <translation id="21133533946938348">Przypnij kartę</translation>
-<translation id="2116625576999540962">Przeniesione elementy: <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /></translation>
 <translation id="2122754583996902531">Twoja przeglądarka jest zarządzana. <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
 <translation id="2139502497535990641">Włączyć powiadomienia o cenie?</translation>
 <translation id="2139867232736819575">Wyszukaj skopiowany tekst</translation>
@@ -417,6 +419,7 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="3130863904455712965">Historia i inne elementy</translation>
 <translation id="3131206671572504478">Blokuj wszystkie</translation>
 <translation id="313283613037595347">Utwórz nową kartę incognito.</translation>
+<translation id="314837624430314508">Bądź na bieżąco, otrzymując najnowsze wiadomości, powiadomienia z funkcji śledzenia cen i inne informacje.</translation>
 <translation id="3148946345238989659">Niektóre funkcje nie są już dostępne</translation>
 <translation id="3153862085237805241">Zapisz kartę</translation>
 <translation id="3157387275655328056">Dodaj do listy Do przeczytania</translation>
@@ -461,6 +464,7 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="3371831930909698441">Dostępne jest tłumaczenie. Opcje znajdują się u dołu ekranu.</translation>
 <translation id="3377063233124932127">Zapisane zakładki, hasła i inne elementy będą widoczne u góry.</translation>
 <translation id="3393920035788932672">Pop-upy akceptowane</translation>
+<translation id="3398509000872871492">Połączenie jest bezpieczne</translation>
 <translation id="3404232721752787413">Zapisz w Zdjęciach Google</translation>
 <translation id="3404744938087714423">Wylogowanie spowoduje wyłączenie synchronizacji.</translation>
 <translation id="3409785640040772790">Mapy</translation>
@@ -583,6 +587,7 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="4045648459118332842">Uzyskaj dostęp do zapisanych haseł w dowolnej aplikacji jednym kliknięciem</translation>
 <translation id="4049507953662678203">Upewnij się, że masz połączenie z siecią, i spróbuj ponownie.</translation>
 <translation id="4054572406751135230">Śledź na bieżąco wiadomości, sport i inne treści.</translation>
+<translation id="4057531989585132525">Bezpieczeństwo połączenia</translation>
 <translation id="4066639687323968621">Zaloguj się na konto Google, aby synchronizować swoje hasła, historię i inne dane.</translation>
 <translation id="4092655288299341041">Pokaż pomoc</translation>
 <translation id="4105841739161771091">{count,plural, =1{Usuń adres}few{Usuń adresy}many{Usuń adresy}other{Usuń adresy}}</translation>
@@ -647,6 +652,8 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="4431224949908513835">Wybierz formę płatności, której dane chcesz podać.</translation>
 <translation id="4442550905108052454">Otwórz <ph name="BEGIN_BOLD" />Ustawienia<ph name="END_BOLD" /></translation>
 <translation id="4454246407045105932">Dodaj język</translation>
+<translation id="4455710003856931944">Aby przejść wstecz lub do przodu, możesz przesunąć palcem po krawędzi.</translation>
+<translation id="4460014764210899310">Rozgrupuj</translation>
 <translation id="4461286950227634995">Proponuj zapisywanie haseł</translation>
 <translation id="4462491365653392320">Sprawdzaj ceny na kartach</translation>
 <translation id="4469324811108161144">Limit znaków w notatce wynosi <ph name="CHARACTER_LIMIT" />.</translation>
@@ -829,6 +836,7 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="5327753393331509826">Otrzymuj powiadomienia o treściach</translation>
 <translation id="5329451663851195956">Przeciągnij palcem w dół, aby odświeżyć widok.</translation>
 <translation id="5339316356165661760">Włącz synchronizację</translation>
+<translation id="5343472494710226394">Wiadomości, aktualności sportowe i inne treści wybrane na podstawie Twoich zainteresowań.</translation>
 <translation id="5345660046352249607">{COUNT,plural, =1{Śledzić tę przesyłkę?}few{Śledzić {COUNT} przesyłki?}many{Śledzić {COUNT} przesyłek?}other{Śledzić {COUNT} przesyłki?}}</translation>
 <translation id="536067926684072644">Pokaż zakładki</translation>
 <translation id="5360976571138293719">Więcej ustawień związanych z prywatnością, bezpieczeństwem i zbieraniem danych znajdziesz w sekcji <ph name="BEGIN_LINK" />Usługi Google<ph name="END_LINK" />.</translation>
@@ -899,6 +907,7 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="5737974891429562743">Dane logowania na konto są nieaktualne. Zaktualizuj je, by rozpocząć synchronizację.</translation>
 <translation id="5738385766833540397">Zarządzaj sposobami otrzymywania alertów o obniżkach cen produktów, które śledzisz</translation>
 <translation id="5738887413654608789">Pozwoli Ci to odkrywać strony internetowe dotyczące rzeczy z Twojego otoczenia.</translation>
+<translation id="5744274077973758795"><ph name="FEATURE_NAME" /> – powiadomienia włączone</translation>
 <translation id="5745916533876677730">Przejdź do poprzedniej karty</translation>
 <translation id="574762237186762643">Wydarzenia</translation>
 <translation id="5748177854685749242">Dostawa: <ph name="DATE" /></translation>
@@ -923,10 +932,10 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="5850913622988109693">Opcje śledzenia przesyłek</translation>
 <translation id="5854790677617711513">Sprzed ponad 30 dni</translation>
 <translation id="5857090052475505287">Nowy folder</translation>
+<translation id="5857361196621230935">Dodaj kartę do grupy</translation>
 <translation id="5857770089550859117">Wpisz hasło wielowyrazowe, by rozpocząć synchronizację.</translation>
 <translation id="5859715514067755465">Dalej</translation>
 <translation id="5860033963881614850">Wyłączone</translation>
-<translation id="5871497086027727873">Przeniosłeś 1 element</translation>
 <translation id="5896576662943111387">Stworzona dla iOS</translation>
 <translation id="5897749768294722429">Aby szybko wracać do odwiedzonych stron, włącz synchronizację kart i historii.</translation>
 <translation id="5897956970858271241">Otwórz skopiowany link</translation>
@@ -1210,6 +1219,7 @@ W trybie incognito witryny nie mogą używać plików cookie do śledzenia Twoj
 <translation id="7291368939935408496">Przygotowuję hasła…</translation>
 <translation id="7302503784943202842">Używaj haseł na wszystkich swoich urządzeniach</translation>
 <translation id="7313347584264171202">Tu znajdziesz swoje karty incognito</translation>
+<translation id="7335132237885014335">Otrzymuj powiadomienia</translation>
 <translation id="7336264872878993241">Pobrano <ph name="PERCENT" /> procent</translation>
 <translation id="7340958967809483333">Opcje kart Discover</translation>
 <translation id="7346909386216857016">Rozumiem</translation>
@@ -1275,6 +1285,7 @@ W trybie incognito witryny nie mogą używać plików cookie do śledzenia Twoj
 <translation id="7649070708921625228">Pomoc</translation>
 <translation id="7658239707568436148">Anuluj</translation>
 <translation id="7666861622396822790">Możesz to zmienić w <ph name="BEGIN_LINK" />Ustawieniach treści<ph name="END_LINK" />.</translation>
+<translation id="7669493687462784703">Kontynuować pobieranie profilu konfiguracji ze strony <ph name="WEBSITE" />?</translation>
 <translation id="7671141431838911305">ZAINSTALUJ</translation>
 <translation id="7673346542062368520">Aby przeglądać treści w trybie incognito, możesz przesunąć palcem w lewo.</translation>
 <translation id="7679915578945954324">Adresy witryn zostały skopiowane</translation>
@@ -1494,6 +1505,7 @@ Witryny mogą używać plików cookie do śledzenia Twojej aktywności związane
 <translation id="8766790350274092814">Hasła do stron <ph name="WEBSITE" /> i <ph name="SECOND_WEBSITE" /> zostaną usunięte. Twoje konta nie zostaną usunięte.</translation>
 <translation id="8775144690796719618">Nieprawidłowy URL</translation>
 <translation id="8780076847684176174">{count,plural, =1{Sprawdź kartę…}few{Sprawdź wszystkie karty…}many{Sprawdź wszystkie karty…}other{Sprawdź wszystkie karty…}}</translation>
+<translation id="8781834595282316166">Nowa karta w grupie</translation>
 <translation id="8782570580170191813">Zawsze śledź przesyłki</translation>
 <translation id="8787968206789828143">Wyszukaj w internecie</translation>
 <translation id="8792626944327216835">mikrofon</translation>
@@ -1524,6 +1536,7 @@ Witryny mogą używać plików cookie do śledzenia Twojej aktywności związane
 <translation id="891282356902782456">To hasło zostało zapisane tylko na tym urządzeniu. Aby używać go na innych urządzeniach, zapisz je na swoim koncie Google <ph name="EMAIL" />.</translation>
 <translation id="8917490105272468696">Tak, zgadzam się</translation>
 <translation id="8928133177108699615">Komputerowy</translation>
+<translation id="8937676484307616731"><ph name="FEATURE_NAME" /> – włącz powiadomienia</translation>
 <translation id="894191600409472540">Utwórz silne hasła</translation>
 <translation id="8952559610785099500">Dodaj hasło</translation>
 <translation id="8953046091948372197">Tu znajdziesz swoje zakładki</translation>

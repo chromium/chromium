@@ -41,9 +41,11 @@
 <translation id="2054703085270098503">Ostanite varni s Chromiumom</translation>
 <translation id="2098023844024447022">Odpiranje zadnjega zavihka v Chromiumu.</translation>
 <translation id="2109439615198500433">Nasvet za Chromium</translation>
+<translation id="2147210759439165826">Bodite na tekočem z vsebino in koristnimi nasveti za Chromium.</translation>
 <translation id="2168108852149185974">Nekateri dodatki povzročajo zrušitve Chromiuma. Odstranite jih:</translation>
 <translation id="2178608107313874732">Chromium trenutno ne more uporabljati fotoaparata</translation>
 <translation id="2195025571279539885">Želite, da Chromium naslednjič ponudi prevod strani v jeziku <ph name="LANGUAGE_NAME" /> s tega spletnega mesta?</translation>
+<translation id="2216344354848599203">Pridržite ikono Chromiuma in kliknite »Uredi začetni zaslon«</translation>
 <translation id="2218146227246548550">Vaša organizacija zahteva, da se za uporabo Chromiuma prijavite. <ph name="BEGIN_LINK" />Več o tem<ph name="END_LINK" /></translation>
 <translation id="22313767259766852">Ta naslov je trenutno shranjen v Chromiumu. Če ga želite uporabiti v Googlovih izdelkih, ga shranite v računu Google (<ph name="USER_EMAIL" />).</translation>
 <translation id="2236584955986023187">To pomeni, da bo Chromium vsakič zahteval spletno mesto za namizne naprave.</translation>
@@ -197,6 +199,7 @@ Kaj je treba upoštevati:
 <translation id="632825460376924298">Omogočanje prijave v Chromium</translation>
 <translation id="6337530241089703714">Izberite, ali želite izbrisati podatke v Chromiumu iz te naprave ali jih obdržati.</translation>
 <translation id="6348483005826990855">3. Izberite Chromium</translation>
+<translation id="6383607155624074112">Hitrejši dostop do Chromiuma iz vrstice Dock na začetnem zaslonu</translation>
 <translation id="6407399265324739055">Plačilna sredstva in naslovi ne bodo šifrirani. Zgodovina brskanja v Chromiumu se ne bo sinhronizirala.
 
 Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni poslano Googlu in ga Google ne hrani. Če pozabite geslo ali želite to nastavitev spremeniti, <ph name="BEGIN_LINK" />izbrišite podatke iz Chromiuma v računu<ph name="END_LINK" />.</translation>

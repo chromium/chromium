@@ -2903,7 +2903,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3188465121994729530">Media spostamento</translation>
 <translation id="3189187154924005138">Puntatore grande</translation>
 <translation id="3190558889382726167">Password salvata</translation>
-<translation id="3191625924275846436">{NUM_SITES,plural, =1{Per proteggere i tuoi dati, sono state rimosse le autorizzazioni di un sito che non hai visitato di recente}other{Per proteggere i tuoi dati, sono state rimosse le autorizzazioni di siti che non hai visitato di recente}}</translation>
 <translation id="3192586965067888278">Descrivi il problema in modo dettagliato. Il feedback verrà inviato a Google per la revisione umana e potrebbe essere utilizzato per migliorare o sviluppare i prodotti e i servizi Google.</translation>
 <translation id="3192947282887913208">File audio</translation>
 <translation id="3193695589337931419">System Signals Utilities</translation>
@@ -3658,7 +3657,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3776508619697147021">I siti possono chiedere di scaricare automaticamente più file</translation>
 <translation id="3776796446459804932">Questa estensione vìola le norme del Chrome Web Store.</translation>
 <translation id="3777483481409781352">Impossibile attivare il dispositivo cellulare</translation>
-<translation id="3777796259512476958">Uscirai dalla maggior parte dei siti.</translation>
+<translation id="3777796259512476958">Ti disconnette dalla maggior parte dei siti.</translation>
 <translation id="3778208826288864398">Il token di sicurezza è stato bloccato perché è stato inserito troppe volte il PIN errato. Dovrai reimpostare il token di sicurezza.</translation>
 <translation id="3778740492972734840">&amp;Strumenti per sviluppatori</translation>
 <translation id="3778868487658107119">Chiedigli tutto quello che vuoi e fatti aiutare nelle tue attività. Google è personalizzato per te ed è sempre al tuo fianco.</translation>
@@ -4061,7 +4060,6 @@ Potrebbero essere incluse informazioni su software installati, file, browser e s
 <translation id="4078903002989614318">Opzioni per ordinamento ed elenchi</translation>
 <translation id="4079140982534148664">Usa il controllo ortografico avanzato</translation>
 <translation id="4082333918978320301">Nessun sito web autorizzato a utilizzare il microfono</translation>
-<translation id="4084582735848141214">{COUNT,plural, =1{1 sito autorizzato}other{# siti autorizzati}}</translation>
 <translation id="4084682180776658562">Aggiungi ai Preferiti</translation>
 <translation id="4084835346725913160">Chiudi <ph name="TAB_NAME" /></translation>
 <translation id="4085298594534903246">JavaScript è stato bloccato in questa pagina.</translation>
@@ -5930,7 +5928,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="5565735124758917034">Attivo</translation>
 <translation id="5568069709869097550">Non riesco a effettuare l'accesso</translation>
 <translation id="5568525251731145240">Vuoi eliminare le autorizzazioni e i dati del sito <ph name="SITE_NAME" />, di tutti i relativi siti secondari e le app installate?</translation>
-<translation id="5568602038816065197">I siti possono utilizzare le funzionalità avanzate di qualsiasi stampante accessibile sul dispositivo, senza dover passare attraverso il messaggio di stampa standard</translation>
+<translation id="5568602038816065197">I siti possono utilizzare le funzionalità avanzate di qualsiasi stampante accessibile sul dispositivo, senza visualizzare il messaggio di stampa standard</translation>
 <translation id="5571066253365925590">Bluetooth attivo</translation>
 <translation id="5571092938913434726">Global Media Controls</translation>
 <translation id="5571832155627049070">Personalizza il tuo profilo</translation>
@@ -6204,7 +6202,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="5794700615121138172">Cartelle condivise di Linux</translation>
 <translation id="5794786537412027208">Chiudi tutte le app di Chrome</translation>
 <translation id="5796485699458186843">Nuova scheda di navigazione in incognito</translation>
-<translation id="5797521893972859201">Viene cancellata la cronologia, anche nella casella di ricerca</translation>
+<translation id="5797521893972859201">Cancella la cronologia, anche nella casella di ricerca</translation>
 <translation id="5797934230382081317">Scopri come iniziare su &lt;a target='_blank' href='<ph name="LINK_ANDROID" />'&gt;Android&lt;/a&gt; e &lt;a target='_blank' href='<ph name="LINK_IOS" />'&gt;iOS&lt;/a&gt;</translation>
 <translation id="5798079537501238810">I siti possono installare gestori dei pagamenti</translation>
 <translation id="5798086737841799234">Inserisci il codice di conferma</translation>
@@ -8055,7 +8053,6 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7260186537988033909">Registrazione dei dispositivi kiosk e segnaletica completata</translation>
 <translation id="7261612856573623172">Voce del sistema per la sintesi vocale</translation>
 <translation id="7262004276116528033">Questo servizio di accesso è in hosting su <ph name="SAML_DOMAIN" /></translation>
-<translation id="7263162347647986485">{NUM_SITES,plural, =1{Autorizzazioni rimosse per 1 sito}other{Autorizzazioni rimosse per {NUM_SITES} siti}}</translation>
 <translation id="7264695323040866038">Vuoi sempre usare l'app <ph name="APP" /> per aprire i link web supportati?</translation>
 <translation id="7267044199012331848">Impossibile installare la macchina virtuale. Riprova o contatta l'amministratore. Codice di errore: <ph name="ERROR_CODE" />.</translation>
 <translation id="7267875682732693301">Solleva ripetutamente il dito per aggiungere le varie parti dell'impronta</translation>
@@ -9802,7 +9799,6 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="859246725979739260">A questo sito è stato impedito l'accesso alla tua posizione.</translation>
 <translation id="8593121833493516339">Invia dati diagnostici e sull'utilizzo. Contribuisci a migliorare l'esperienza Android di tuo figlio tramite l'invio automatico a Google di dati diagnostici e sull'utilizzo delle app e del dispositivo. Non verranno utilizzati per identificare tuo figlio e contribuiranno alla stabilità di app e sistema, nonché ad altri miglioramenti. Alcuni dati aggregati saranno utili anche alle app e ai partner di Google, ad esempio agli sviluppatori Android. Se l'impostazione Attività web e app aggiuntiva è attiva per tuo figlio, queste informazioni potrebbero essere salvate nel suo Account Google. <ph name="BEGIN_LINK1" />Ulteriori informazioni<ph name="END_LINK1" /></translation>
 <translation id="8593450223647418235">Non potrai aprire i file in Microsoft 365 finché la configurazione non sarà stata completata.</translation>
-<translation id="8594585498253980290">{COUNT,plural, =1{1 sito bloccato}other{# siti bloccati}}</translation>
 <translation id="8596540852772265699">File personalizzati</translation>
 <translation id="8597462463725156723">Le notifiche non vengono visualizzate sullo schermo. Puoi comunque visualizzare le notifiche facendo clic sull'icona Non disturbare in basso a destra dello schermo.</translation>
 <translation id="8597845839771543242">Formato proprietà:</translation>

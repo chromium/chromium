@@ -334,6 +334,7 @@
 <translation id="2870560284913253234">સાઇટ</translation>
 <translation id="2871733351037274014">પહેલેથી લોડ કરેલા પેજ</translation>
 <translation id="2876136027428473467"><ph name="CHILD_NAME" /> ઇચ્છે છે કે તમે આ વેબસાઇટ માટે મંજૂરી આપો:</translation>
+<translation id="2876194821763651818">પાસવર્ડને <ph name="USERNAME" /> પર સાચવેલા છે.</translation>
 <translation id="2876628302275096482"><ph name="BEGIN_LINK" />Chrome તમારા ડેટાને કેવી રીતે ખાનગી રાખે છે<ph name="END_LINK" /> તે વિશે વધુ જાણો</translation>
 <translation id="2888126860611144412">Chrome વિશે</translation>
 <translation id="2891154217021530873">પેજ લોડ કરવાનું રોકો</translation>
@@ -672,6 +673,7 @@
 <translation id="4699172675775169585">કૅશ કરેલી છબીઓ અને ફાઇલો</translation>
 <translation id="4710167854527459075">નવું પહેલા મુજબ સૉર્ટ</translation>
 <translation id="4719927025381752090">અનુવાદ કરવાનું ઑફર કરો</translation>
+<translation id="4720556299488643018">અનસબ્સ્ક્રાઇબ</translation>
 <translation id="4732120983431207637">સ્ટૅક અનવાઇન્ડર</translation>
 <translation id="4736934858538408121">વર્ચ્યુઅલ કાર્ડ</translation>
 <translation id="473775607612524610">અપડેટ કરો</translation>
@@ -1194,6 +1196,7 @@
 <translation id="7313188324932846546">સિંકની સુવિધા સેટઅપ કરવાનો પ્રયાસ કરો</translation>
 <translation id="7324354302972299151">“Do Not Track"ની વિનંતી મોકલો</translation>
 <translation id="7332075081379534664">સાઇન-ઇન કરવામાં સફળ રહ્યાં</translation>
+<translation id="7333041109965360609">નોટિફિકેશનમાંથી અનસબ્સ્ક્રાઇબ કર્યું</translation>
 <translation id="7333232495927792353">Googleનું સૌથી વધુ સંબંધિત કન્ટેન્ટ મેળવવા માટે સિંક કરો</translation>
 <translation id="7339898014177206373">નવી વિંડો</translation>
 <translation id="7340958967809483333">Discover માટેના વિકલ્પો</translation>
@@ -1452,6 +1455,7 @@
 <translation id="8503813439785031346">વપરાશકર્તાનામ</translation>
 <translation id="8505766168025405649">ડાઉનલોડ સ્ટેટસ માટે નોટિફિકેશન જુઓ</translation>
 <translation id="8506357771923193001">તમને તમારા ડાઉનલોડ અહીં જોવા મળશે</translation>
+<translation id="8512053371384421952">તમને હવે <ph name="DOMAIN" /> તરફથી નોટિફિકેશન મળશે નહીં.</translation>
 <translation id="8514477925623180633">Chromeમાં સંગ્રહિત કરેલા પાસવર્ડની નિકાસ કરો</translation>
 <translation id="8516012719330875537">ઇમેજ એડિટર</translation>
 <translation id="8523928698583292556">સંગ્રહિત કરેલ પાસવર્ડ ડિલીટ કરો</translation>

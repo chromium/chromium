@@ -109,7 +109,6 @@
 <translation id="2750481671343847896">Сајтови могу да приказују упите за пријављивање из услуга за идентитет.</translation>
 <translation id="2790501146643349491">Када је укључено, недавно затворени сајтови могу да заврше слање и пријем података. Када је искључено, недавно затворени сајтови не могу да заврше слање нити пријем података.</translation>
 <translation id="2822354292072154809">Желите ли стварно да ресетујете све дозволе за сајт за <ph name="CHOSEN_OBJECT_NAME" />?</translation>
-<translation id="2836978798613876756"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> <ph name="HOST_NAME" /></translation>
 <translation id="2850913818900871965">Захтевај приказ за мобилне уређаје</translation>
 <translation id="2870560284913253234">Сајт</translation>
 <translation id="2874939134665556319">Претходна песма</translation>
@@ -121,7 +120,6 @@
 <translation id="2968755619301702150">Приказивач сертификата</translation>
 <translation id="2979365474350987274">Колачићи треће стране су ограничени</translation>
 <translation id="3008272652534848354">Ресетуј дозволе</translation>
-<translation id="3013291976881901233">MIDI уређаји</translation>
 <translation id="301521992641321250">Аутоматски је блокирано</translation>
 <translation id="3069226013421428034">Дозволите пријављивање трећих страна за одређени сајт.</translation>
 <translation id="3082992102194421695">{COUNT,plural, =1{Истиче сутра}one{Истиче за # дан}few{Истиче за # дана}other{Истиче за # дана}}</translation>
@@ -192,7 +190,6 @@
 <translation id="4169549551965910670">Повезано са USB уређајем</translation>
 <translation id="4194328954146351878">Пре него што дозволите сајтовима да виде и мењају информације на NFC уређајима приказује се упит (препоручено)</translation>
 <translation id="4200726100658658164">Отворите подешавања локације</translation>
-<translation id="4212246570487010370">Наставите са прегледањем</translation>
 <translation id="4226663524361240545">Уређај ће вибрирати када примате обавештења</translation>
 <translation id="4259722352634471385">Навигација је блокирана: <ph name="URL" /></translation>
 <translation id="4278390842282768270">Дозвољено</translation>
@@ -282,7 +279,6 @@
 <translation id="5706552988683188916">Овим се бришу колачићи и други подаци о сајту за <ph name="WEBSITE" /></translation>
 <translation id="5723967018671998714">Колачићи треће стране су блокирани у режиму без архивирања</translation>
 <translation id="5740126560802162366">Сајтови могу да чувају податке на уређају</translation>
-<translation id="5749158352074143502">Наставите са овом картицом</translation>
 <translation id="5771720122942595109">Дозвола <ph name="PERMISSION_1" /> је блокирана</translation>
 <translation id="5804241973901381774">Дозволе</translation>
 <translation id="5844448279347999754">Када је укључено, сајтови могу да траже да виде текст и слике сачуване у привременој меморији. Када је искључено, сајтови не могу да виде текст или слике сачуване у привременој меморији.</translation>
@@ -351,7 +347,6 @@
 <translation id="6746124502594467657">Премести надоле</translation>
 <translation id="6749077623962119521">Желите да ресетујете дозволе?</translation>
 <translation id="6766622839693428701">Превуците надоле да бисте затворили.</translation>
-<translation id="6785959295338971061"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> Са уређаја <ph name="FROM_DEVICE" /></translation>
 <translation id="6787751205395685251">Изаберите опцију за <ph name="SITE_NAME" /></translation>
 <translation id="6790428901817661496">Пусти</translation>
 <translation id="6818926723028410516">Изаберите ставке</translation>
@@ -423,7 +418,6 @@
 <translation id="7990211076305263060">Када је укључено, сајтови могу да траже да користе микрофон. Кад је искључено, сајтови не могу да користе микрофон.</translation>
 <translation id="8007176423574883786">Искључено је за овај уређај</translation>
 <translation id="802154636333426148">Преузимање није успело</translation>
-<translation id="8024161440284949905">Наставите са овим картицама</translation>
 <translation id="8042586301629853791">Сортирај према:</translation>
 <translation id="8067883171444229417">Пусти видео</translation>
 <translation id="8068648041423924542">Није могуће изабрати сертификат.</translation>

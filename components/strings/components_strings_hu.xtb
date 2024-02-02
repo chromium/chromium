@@ -430,6 +430,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="1752021286346845558">8. postaláda</translation>
 <translation id="1753068535428855445">Párkeresés és ismerkedés</translation>
 <translation id="1753706481035618306">Oldalszám</translation>
+<translation id="1755203724116202818">A hirdetések teljesítményének méréséhez a webhelyek korlátozott adattípusokat osztanak meg egymás között (például hogy Ön vásárolt-e egy adott webhely felkeresése után).</translation>
 <translation id="1755621011177747277">Örökbefogadás</translation>
 <translation id="1756026472674246267">Link megnyitása új lapon</translation>
 <translation id="175656076281618225">Bűvészet</translation>
@@ -884,6 +885,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="2674804415323431591">Javaslatok elrejtése</translation>
 <translation id="2677696497921480781">Születésnapok és névnapok</translation>
 <translation id="2677748264148917807">Lap elhagyása</translation>
+<translation id="2683195745483370038">További találatok vannak</translation>
 <translation id="2686919536310834199">Visszajelzés küldése a Segítség az íráshoz funkcióval kapcsolatban.</translation>
 <translation id="2687555958734450033">Legjobb illeszkedés</translation>
 <translation id="2688186765492306706">500 × 760 mm</translation>
@@ -1263,6 +1265,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="3462200631372590220">Speciális beállítások elrejtése</translation>
 <translation id="3465972433695735758">A PDF nem áll rendelkezésre. Szöveg kinyerve; a Google AI által.</translation>
 <translation id="346601286295919445">Vegyészet</translation>
+<translation id="3467081767799433066">A hirdetésméréssel korlátozott adattípusokat osztanak meg egymással a webhelyek a hirdetéseik teljesítményének mérése érdekében (például hogy Ön vásárolt-e egy adott webhely felkeresése után).</translation>
 <translation id="3468054117417088249"><ph name="TAB_SWITCH_SUFFIX" />, jelenleg meg van nyitva, a Tab, majd az Enter billentyűk lenyomásával válthat a megnyitott lapra</translation>
 <translation id="3470563864795286535"><ph name="CLOSE_INCOGNITO_WINDOWS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Nyomja le a Tab, majd az Enter billentyűt az összes jelenleg megnyitott inkognitó ablak bezárásához.</translation>
 <translation id="3474392552865647225">Betűtípusok személyre szabása a Chrome-ban gomb. A gombot megnyomva személyre szabhatja a Chrome-ban megjelenő betűméreteket és betűképeket.</translation>
@@ -2786,7 +2789,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="6480864723214312258">Háztartási elemek és akkumulátorok</translation>
 <translation id="6486200200930923183">Dokumentumfilmek</translation>
 <translation id="6489534406876378309">Feltöltési összeomlások indítása</translation>
-<translation id="6491663123807473970">A(z) <ph name="URL" /> használni szeretné az Ön MIDI-eszközeit</translation>
 <translation id="6493924760403974580">Ez az alkalmazás csak ezt a méretet támogatja.</translation>
 <translation id="6494750904506170417">előugró ablakok és átirányítások</translation>
 <translation id="6495664197699704593">Ezt a jelszót csak erre az eszközre menti a rendszer. Ha más eszközökön is szeretné használni: <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
@@ -4079,6 +4081,7 @@ További részletek:
 <translation id="9005998258318286617">A PDF-dokumentum betöltése sikertelen.</translation>
 <translation id="9008178007718859630">Lakásdekoráció és belsőépítészet</translation>
 <translation id="9008201768610948239">Mellőzés</translation>
+<translation id="9014705027639070815">Az Ön által felkeresett webhelyek olyan információkat kérhetnek a Chrome-tól, amelyek segítségével mérhetik a hirdetések teljesítményét. A Chrome lehetővé teszi a webhelyek számára, hogy korlátozott adattípusokat gyűjtsenek (például hogy Ön vásárolt-e egy adott webhely felkeresése után).</translation>
 <translation id="9018120810758822233">Adja meg a(z) <ph name="CREDIT_CARD" /> biztonsági kódját</translation>
 <translation id="901834265349196618">e-mail</translation>
 <translation id="9020542370529661692">Az oldalt lefordítottuk <ph name="TARGET_LANGUAGE" /> nyelvre.</translation>

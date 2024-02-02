@@ -109,7 +109,6 @@
 <translation id="2750481671343847896">Nettsteder kan vise påloggingsforespørsler fra identitetstjenester.</translation>
 <translation id="2790501146643349491">Når dette er på, kan nylig lukkede nettsteder fullføre sending og mottak av data. Når dette er av, kan ikke nylig lukkede nettsteder fullføre sending eller mottak av data.</translation>
 <translation id="2822354292072154809">Er du sikker på at du vil tilbakestille alle nettstedstillatelser for <ph name="CHOSEN_OBJECT_NAME" />?</translation>
-<translation id="2836978798613876756"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> <ph name="HOST_NAME" /></translation>
 <translation id="2850913818900871965">Be om mobilvisning</translation>
 <translation id="2870560284913253234">Nettsted</translation>
 <translation id="2874939134665556319">Forrige spor</translation>
@@ -121,7 +120,6 @@
 <translation id="2968755619301702150">Visningsprogram for sertifikater</translation>
 <translation id="2979365474350987274">Informasjonskapsler fra tredjeparter er begrenset</translation>
 <translation id="3008272652534848354">Tilbakestill tillatelser</translation>
-<translation id="3013291976881901233">MIDI-enheter</translation>
 <translation id="301521992641321250">Automatisk blokkert</translation>
 <translation id="3069226013421428034">Tillat tredjepartspålogging for et bestemt nettsted.</translation>
 <translation id="3082992102194421695">{COUNT,plural, =1{Utløper i morgen}other{Utløper om # dager}}</translation>
@@ -192,7 +190,6 @@
 <translation id="4169549551965910670">Koblet til en USB-enhet</translation>
 <translation id="4194328954146351878">Spør før nettsteder får lov til å se og endre informasjon på NFC-enheter (anbefales)</translation>
 <translation id="4200726100658658164">Åpne posisjonsinnstillingene</translation>
-<translation id="4212246570487010370">Fortsett å surfe</translation>
 <translation id="4226663524361240545">Varsler kan gjøre at enheten vibrerer</translation>
 <translation id="4259722352634471385">Nettadressen er blokkert: <ph name="URL" /></translation>
 <translation id="4278390842282768270">Tillatt</translation>
@@ -282,7 +279,6 @@
 <translation id="5706552988683188916">Dette medfører sletting av informasjonskapsler og andre nettstedsdata for <ph name="WEBSITE" /></translation>
 <translation id="5723967018671998714">Informasjonskapsler fra tredjeparter er blokkert i inkognitomodus</translation>
 <translation id="5740126560802162366">Nettsteder kan lagre data på enheten din</translation>
-<translation id="5749158352074143502">Fortsett med denne fanen</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" /> er blokkert</translation>
 <translation id="5804241973901381774">Tillatelser</translation>
 <translation id="5844448279347999754">Når dette er på, kan nettsteder be om å få se tekst og bilder som er lagret på utklippstavlen. Når dette er av, kan ikke nettsteder se tekst eller bilder som er lagret på utklippstavlen.</translation>
@@ -351,7 +347,6 @@
 <translation id="6746124502594467657">Flytt ned</translation>
 <translation id="6749077623962119521">Vil du tilbakestille tillatelser?</translation>
 <translation id="6766622839693428701">Sveip ned for å lukke.</translation>
-<translation id="6785959295338971061"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> fra <ph name="FROM_DEVICE" /></translation>
 <translation id="6787751205395685251">Velg et alternativ for <ph name="SITE_NAME" /></translation>
 <translation id="6790428901817661496">Spill av</translation>
 <translation id="6818926723028410516">Velg elementer</translation>
@@ -423,7 +418,6 @@
 <translation id="7990211076305263060">Når dette er på, kan nettsteder be om å få bruke mikrofonen din. Når dette er av, kan ikke nettsteder bruke mikrofonen din.</translation>
 <translation id="8007176423574883786">Slått av for denne enheten</translation>
 <translation id="802154636333426148">Nedlastingen mislyktes</translation>
-<translation id="8024161440284949905">Fortsett med disse fanene</translation>
 <translation id="8042586301629853791">Sorter etter:</translation>
 <translation id="8067883171444229417">Spill av videoen</translation>
 <translation id="8068648041423924542">Kan ikke velge sertifikat.</translation>

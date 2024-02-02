@@ -607,9 +607,11 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="3526440770046466733">Otwórz link na nowej karcie, pozostając na bieżącej</translation>
 <translation id="353086728817903341">Połączono z <ph name="NUM_DEVICES" /> urządzeniami</translation>
 <translation id="3533126039236445965">Aplikacje na półce</translation>
+<translation id="3537350467437346467">Wyświetlony przez Ciebie</translation>
 <translation id="3539957339480430241"><ph name="DEVICE_NAME" /> – hotspot</translation>
 <translation id="3540893133818942399">Zamknij konfigurację wyświetlania najnowszych zdjęć i plików multimedialnych z telefonu</translation>
 <translation id="3542066395059568317">Zobaczysz rekomendacje, dzięki którym możesz kontynuować od ostatniego miejsca. Możesz je usunąć kliknięciem prawym przyciskiem.</translation>
+<translation id="3547318469722231257">Zmodyfikowany przez Ciebie</translation>
 <translation id="3552189655002856821">Wi-Fi jest wyłączone</translation>
 <translation id="3554215588514239132">Pokaż lub ukryj panel Narzędzi dla programistów</translation>
 <translation id="3554637740840164787">Element <ph name="ITEM_TITLE" /> został przypięty</translation>
@@ -701,6 +703,7 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="385300504083504382">Początek</translation>
 <translation id="3859364108019690">Nie można przesyłać strumieniowo aplikacji</translation>
 <translation id="3861651314799684201">Aby nagrać pełny ekran, naciśnij Enter</translation>
+<translation id="3882323608730650973">Zmodyfikowany</translation>
 <translation id="3886872229787704059">Otwierane dzisiaj</translation>
 <translation id="3891340733213178823">Naciśnij dwukrotnie Ctrl+Shift+Q, by się wylogować.</translation>
 <translation id="3893630138897523026">ChromeVox (komunikaty głosowe)</translation>
@@ -894,6 +897,7 @@ W celu wydłużenia czasu pracy na baterii niektóre funkcje zostały ograniczo
 <translation id="4582666543382004902">Hotspot został wyłączony, żeby można było korzystać z Wi-Fi. Aby korzystać z hotspota, wyłącz Wi-Fi.</translation>
 <translation id="4585337515783392668">Zakończ przesyłanie do nieznanego odbiornika</translation>
 <translation id="4596144739579517758">Ciemny motyw jest wyłączony</translation>
+<translation id="4596442969149038771">Udostępniony przez: <ph name="USER" /></translation>
 <translation id="4611292653554630842">Zaloguj się</translation>
 <translation id="462160925400706389">Połączono: <ph name="NAME" /></translation>
 <translation id="4623167406982293031">Zweryfikuj konto</translation>
@@ -1337,6 +1341,7 @@ W celu wydłużenia czasu pracy na baterii niektóre funkcje zostały ograniczo
 <translation id="6298183524022479114">Dostosuj to urządzenie w aplikacji</translation>
 <translation id="6309219492973062892">Kliknij ikony 1–8 na półce</translation>
 <translation id="6315170314923504164">Głos</translation>
+<translation id="6319058840130157106">Przejdź wstecz między prawym dolnym rogiem, Menu z aplikacjami, paskiem adresu, paskiem zakładek, otwartą stroną internetową i pobranymi plikami</translation>
 <translation id="6324916366299863871">Edytuj skrót</translation>
 <translation id="6330012934079202188">Pokazuję okna ze wszystkich biurek, naciśnij klawisz strzałki w górę, aby wyświetlić okna z aktualnego biurka</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> jest sesją zarządzaną, którą zarządza <ph name="MANAGER" /></translation>
@@ -1814,6 +1819,7 @@ Aby wyłączyć urządzenie, ponownie naciśnij i przytrzymaj na nim przycisk z
 <translation id="8314772463905284467">Caps Lock jest włączony.</translation>
 <translation id="8315514906653279104">Włączam…</translation>
 <translation id="8331351032546853669">Pobieranie oczekuje</translation>
+<translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" /> <ph name="GET_STARTED" /></translation>
 <translation id="8345019317483336363">Wybrano okno <ph name="WINDOW_TITLE" /></translation>
 <translation id="8349826889576450703">program uruchamiający</translation>
@@ -1920,6 +1926,7 @@ Aby wyłączyć urządzenie, ponownie naciśnij i przytrzymaj na nim przycisk z
 <translation id="878215960996152260"><ph name="APP_NAME" />, zainstalowana aplikacja, zablokowana</translation>
 <translation id="8785070478575117577">Połącz z <ph name="NETWORK_NAME" /></translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
+<translation id="8790632710469941716">Przejdź do przodu między prawym dolnym rogiem, Menu z aplikacjami, paskiem adresu, paskiem zakładek, otwartą stroną internetową i pobranymi plikami</translation>
 <translation id="8792626944327216835">mikrofon</translation>
 <translation id="8801802992492329306">5G</translation>
 <translation id="8806053966018712535">Folder <ph name="FOLDER_NAME" /></translation>
@@ -2033,6 +2040,7 @@ Aby wyłączyć urządzenie, ponownie naciśnij i przytrzymaj na nim przycisk z
 <translation id="953431725143473984">Wyłączyć urządzenie?</translation>
 <translation id="954052413789300507">Za mało miejsca na plik <ph name="FILENAME" />. Zwolnij miejsce.</translation>
 <translation id="954520015070501466">30 min</translation>
+<translation id="954786879461589145">Zmodyfikowany przez: <ph name="USER" /></translation>
 <translation id="974545358917229949">Wyświetlam wyniki (<ph name="RESULT_COUNT" />) dla zapytania <ph name="QUERY" /></translation>
 <translation id="981011780479609956">Brak terminu</translation>
 <translation id="98120814841227350">Przejdź na koniec dokumentu</translation>

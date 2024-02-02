@@ -1341,6 +1341,7 @@ Joidenkin ominaisuuksien käyttöä on rajoitettu akunkeston pidentämiseksi.</t
 <translation id="6298183524022479114">Muokkaa laitetta sovelluksessa</translation>
 <translation id="6309219492973062892">Klikkaa tai napauta hyllyn kuvakkeita 1–8</translation>
 <translation id="6315170314923504164">Ääni</translation>
+<translation id="6319058840130157106">Siirry taaksepäin oikean alakulman, käynnistysohjelman, osoitepalkin, kirjanmerkkipalkin, avoimen verkkosivuston ja latausten välillä</translation>
 <translation id="6324916366299863871">Muokkaa pikanäppäintä</translation>
 <translation id="6330012934079202188">Näytetään kaikkien työpöytien ikkunat, näytä nykyisen työpöydän ikkunat painamalla ylänuolta</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> on ylläpidetty käyttökerta, jota ylläpitää <ph name="MANAGER" /></translation>
@@ -1925,6 +1926,7 @@ Sammuta laite painamalla sen virtapainiketta pitkään uudelleen.</translation>
 <translation id="878215960996152260"><ph name="APP_NAME" />, asennettu sovellus, estetty</translation>
 <translation id="8785070478575117577">Yhdistä: <ph name="NETWORK_NAME" /></translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
+<translation id="8790632710469941716">Siirry eteenpäin oikean alakulman, käynnistysohjelman, osoitepalkin, kirjanmerkkipalkin, avoimen verkkosivuston ja latausten välillä</translation>
 <translation id="8792626944327216835">mikrofoni</translation>
 <translation id="8801802992492329306">5G</translation>
 <translation id="8806053966018712535">Kansio <ph name="FOLDER_NAME" /></translation>

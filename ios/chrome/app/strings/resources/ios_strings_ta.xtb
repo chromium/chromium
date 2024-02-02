@@ -149,6 +149,7 @@
 <translation id="1757699834933698436">{count,plural, =1{வலுவற்ற கடவுச்சொல்: {count}}other{வலுவற்ற கடவுச்சொற்கள்: {count}}}</translation>
 <translation id="1767766085187034454">Google Translate</translation>
 <translation id="1769106850515800431">பிரத்தியேக உள்ளடக்கம்</translation>
+<translation id="1780152987505130652">குழுவை மூடுக</translation>
 <translation id="1789803444939621101">மீண்டும் வரவேற்கிறோம், <ph name="USER_NAME" /></translation>
 <translation id="1803264062614276815">கார்டு உரிமையாளரின் பெயர்</translation>
 <translation id="1809939268435598390">ஃபோல்டரை நீக்கு</translation>
@@ -214,7 +215,6 @@
 <translation id="2080769225927880590">சரியான கணக்கு மூலம் உள்நுழையுங்கள்</translation>
 <translation id="2103075008456228677">history.google.comஐத் திற</translation>
 <translation id="21133533946938348">தாவலைப் பொருத்து</translation>
-<translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> உருப்படிகள் நகர்த்தப்பட்டன</translation>
 <translation id="2122754583996902531">உங்கள் உலாவி நிர்வகிக்கப்படுகிறது. <ph name="BEGIN_LINK" />மேலும் அறிக<ph name="END_LINK" /></translation>
 <translation id="2139502497535990641">விலை குறித்த அறிவிப்புகளை இயக்கவா?</translation>
 <translation id="2139867232736819575">நீங்கள் நகலெடுத்த உரையைத் தேடவும்</translation>
@@ -566,6 +566,7 @@
 <translation id="3929457972718048006">முகவரிகள்</translation>
 <translation id="3948600256434252210">மறைநிலையில் உலாவ வலதுபுறம் ஸ்வைப் செய்யலாம்.</translation>
 <translation id="3955822496205734389">வலுவற்ற கடவுச்சொற்கள் உள்ளன.</translation>
+<translation id="3958312024468322930">முகப்புத் திரையின் கீழ்ப்பகுதியில் உள்ள டாக்கிற்கு அதை இழுங்கள்</translation>
 <translation id="3959736869653157332">மெனு → புதிய மறைநிலைப் பக்கம்</translation>
 <translation id="3962326069546168954">சேமி</translation>
 <translation id="3967822245660637423">பதிவிறக்கம் முடிந்தது</translation>
@@ -647,6 +648,7 @@
 <translation id="4431224949908513835">நிரப்புவதற்கு ஒரு பேமெண்ட் முறையைத் தேர்ந்தெடுக்கவும்.</translation>
 <translation id="4442550905108052454"><ph name="BEGIN_BOLD" />அமைப்புகளைத்<ph name="END_BOLD" /> திறக்கவும்</translation>
 <translation id="4454246407045105932">மொழியைச் சேர்த்தல்</translation>
+<translation id="4460014764210899310">குழுவைப் பிரி</translation>
 <translation id="4461286950227634995">கடவுச்சொற்களைச் சேமிப்பதற்குக் கேள்</translation>
 <translation id="4462491365653392320">உலாவிப் பக்கங்களில் விலைகளைக் கண்காணித்தல்</translation>
 <translation id="4469324811108161144">குறிப்புகளில் அதிகபட்சம் <ph name="CHARACTER_LIMIT" /> எழுத்துகள் இருக்கலாம்.</translation>
@@ -929,7 +931,6 @@
 <translation id="5857770089550859117">ஒத்திசைவைத் தொடங்க, கடவுச்சொற்றொடர் தேவை.</translation>
 <translation id="5859715514067755465">முன்செல்லும்</translation>
 <translation id="5860033963881614850">ஆஃப்</translation>
-<translation id="5871497086027727873">1 உருப்படி நகர்த்தப்பட்டது</translation>
 <translation id="5896576662943111387">iOSஸுக்காக உருவாக்கப்பட்டது</translation>
 <translation id="5897749768294722429">நீங்கள் பார்த்த தளங்களுக்கு விரைவாகச் செல்ல, பக்கங்களையும் பதிவையும் ஒத்திசையுங்கள்.</translation>
 <translation id="5897956970858271241">நகலெடுத்த இணைப்பிற்குச் செல்</translation>
@@ -1466,6 +1467,7 @@
 <translation id="8620640915598389714">மாற்று</translation>
 <translation id="8624447588354561276">பேக்கேஜ் எண்</translation>
 <translation id="8624753446837753970">அமை</translation>
+<translation id="8625706492572042370">முகப்புத் திரையில் மாற்றுங்கள்</translation>
 <translation id="8626393685701737946">அமைப்புகள் &gt; உள்ளடக்க அமைப்புகள் என்பதில் இயல்புத் தளக் காட்சியை ‘டெக்ஸ்டாப்’ என மாற்றலாம்</translation>
 <translation id="8636825310635137004">உங்கள் பிற சாதனங்களிலிருந்து தாவல்களைப் பெற, ஒத்திசைவை இயக்கவும்.</translation>
 <translation id="8637431369725868556">ஆபத்தான தளங்களில் இருந்து பாதுகாப்பாக இருங்கள்.</translation>
@@ -1497,6 +1499,7 @@
 <translation id="8766790350274092814"><ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> ஆகியவற்றுக்கான கடவுச்சொற்கள் நீக்கப்படும். உங்கள் கணக்குகள் நீக்கப்படாது.</translation>
 <translation id="8775144690796719618">தவறான URL</translation>
 <translation id="8780076847684176174">{count,plural, =1{பக்கத்தைக் காட்டு...}other{அனைத்து பக்கங்களையும் காட்டு...}}</translation>
+<translation id="8781834595282316166">குழுவில் புதிய தாவல்</translation>
 <translation id="8782570580170191813">பேக்கேஜ்களை எப்போதும் கண்காணி</translation>
 <translation id="8787968206789828143">இணையத்தில் தேடுக</translation>
 <translation id="8792626944327216835">மைக்ரோஃபோன்</translation>

@@ -429,6 +429,7 @@
 <translation id="1752021286346845558">出紙槽 8</translation>
 <translation id="1753068535428855445">約會交友</translation>
 <translation id="1753706481035618306">頁碼</translation>
+<translation id="1755203724116202818">為評估廣告成效，網站間會分享某些特定資料，例如使用者是否在造訪網站後購物。</translation>
 <translation id="1755621011177747277">領養</translation>
 <translation id="1756026472674246267">在新分頁中開啟連結</translation>
 <translation id="175656076281618225">魔術</translation>
@@ -883,6 +884,7 @@
 <translation id="2674804415323431591">隱藏建議項目</translation>
 <translation id="2677696497921480781">生日與命名日</translation>
 <translation id="2677748264148917807">離開</translation>
+<translation id="2683195745483370038">找到其他結果</translation>
 <translation id="2686919536310834199">提供你對「幫我寫」功能的意見。</translation>
 <translation id="2687555958734450033">最適配置</translation>
 <translation id="2688186765492306706">500 x 760 公釐</translation>
@@ -1263,6 +1265,7 @@
 <translation id="3462200631372590220">隱藏詳細資料</translation>
 <translation id="3465972433695735758">這份 PDF 無法存取。系統已運用 Google AI 技術擷取文字</translation>
 <translation id="346601286295919445">化學</translation>
+<translation id="3467081767799433066">藉由廣告評估機制，網站間可分享某些特定資料，以便評估廣告成效，例如使用者是否在造訪網站後購物。</translation>
 <translation id="3468054117417088249"><ph name="TAB_SWITCH_SUFFIX" />，目前已開啟，依序按下 Tab 鍵和 Enter 鍵即可切換至開啟的分頁</translation>
 <translation id="3470563864795286535"><ph name="CLOSE_INCOGNITO_WINDOWS_FOCUSED_FRIENDLY_MATCH_TEXT" />；按下 Tab 鍵再按下 Enter 鍵即可關閉目前開啟的所有無痕視窗</translation>
 <translation id="3474392552865647225">「自訂 Chrome 中的字型」按鈕，啟動後即可自訂 Chrome 中的字型大小和字體</translation>
@@ -2786,7 +2789,6 @@
 <translation id="6480864723214312258">家用電池</translation>
 <translation id="6486200200930923183">紀錄片</translation>
 <translation id="6489534406876378309">開始上傳當機報告</translation>
-<translation id="6491663123807473970">「<ph name="URL" />」想要使用你的 MIDI 裝置</translation>
 <translation id="6493924760403974580">這個應用程式僅支援此大小。</translation>
 <translation id="6494750904506170417">彈出式視窗與重新導向</translation>
 <translation id="6495664197699704593">這個密碼只會儲存到這部裝置。如要在其他裝置上使用，請<ph name="GOOGLE_PASSWORD_MANAGER" />。</translation>
@@ -4078,6 +4080,7 @@
 <translation id="9005998258318286617">無法載入 PDF 文件。</translation>
 <translation id="9008178007718859630">居家佈置與室內裝潢</translation>
 <translation id="9008201768610948239">略過</translation>
+<translation id="9014705027639070815">使用者造訪的網站可以要求 Chrome 提供資訊，以便評估廣告成效。Chrome 允許網站收集某些特定資料，例如使用者是否在造訪網站後購物。</translation>
 <translation id="9018120810758822233">請輸入 <ph name="CREDIT_CARD" /> 的安全碼</translation>
 <translation id="901834265349196618">電子郵件</translation>
 <translation id="9020542370529661692">此網頁內容已翻譯成<ph name="TARGET_LANGUAGE" /></translation>

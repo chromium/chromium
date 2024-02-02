@@ -607,9 +607,11 @@
 <translation id="3526440770046466733">ନୂଆ ଟାବରେ ଲିଙ୍କ ଖୋଲି ବର୍ତ୍ତମାନର ଟାବରେ ରୁହନ୍ତୁ</translation>
 <translation id="353086728817903341"><ph name="NUM_DEVICES" />ଟି ଡିଭାଇସ୍ ସହ ସଂଯୋଗ କରାଯାଇଛି</translation>
 <translation id="3533126039236445965">ସେଲ୍ଫରେ ଆପ୍ସ</translation>
+<translation id="3537350467437346467">ଆପଣ ଭ୍ୟୁ କରିଛନ୍ତି</translation>
 <translation id="3539957339480430241"><ph name="DEVICE_NAME" /> ହଟସ୍ପଟ</translation>
 <translation id="3540893133818942399">ଆପଣଙ୍କ ଫୋନରେ ଥିବା ବର୍ତ୍ତମାନର ଫଟୋ ଏବଂ ମିଡିଆକୁ ଭ୍ୟୁ କରିବାକୁ ସେଟ ଅପ କରିବା ଖାରଜ କରନ୍ତୁ</translation>
 <translation id="3542066395059568317">ଆପଣ ଯେଉଁଠାରେ ଛାଡ଼ିଥିଲେ ସେଠାରୁ ଜାରି ରଖିବା ପାଇଁ ସୁପାରିଶଗୁଡ଼ିକ ଦେଖିବେ। ଆପଣ ସୁପାରିଶଗୁଡ଼ିକୁ କାଢ଼ି ଦେବା ପାଇଁ ଡାହାଣ-କ୍ଲିକ କରିପାରିବେ।</translation>
+<translation id="3547318469722231257">ଆପଣ ପରିବର୍ତ୍ତନ କରିଛନ୍ତି</translation>
 <translation id="3552189655002856821">ୱାଇ-ଫାଇ ବନ୍ଦ ଅଛି</translation>
 <translation id="3554215588514239132">ଡେଭେଲପର ଟୁଲଗୁଡ଼ିକର ପେନେଲକୁ ଦେଖାନ୍ତୁ କିମ୍ବା ଲୁଚାନ୍ତୁ</translation>
 <translation id="3554637740840164787"><ph name="ITEM_TITLE" /> ପିନ୍ କରାଯାଇଥିଲା</translation>
@@ -701,6 +703,7 @@
 <translation id="385300504083504382">ଆରମ୍ଭ</translation>
 <translation id="3859364108019690">ଆପ୍ସକୁ ଷ୍ଟ୍ରିମ କରାଯାଇପାରିବ ନାହିଁ</translation>
 <translation id="3861651314799684201">ପୂର୍ଣ୍ଣ ସ୍କ୍ରିନକୁ ରେକର୍ଡ କରିବା ପାଇଁ Enter ଦବାନ୍ତୁ</translation>
+<translation id="3882323608730650973">ଗତଥର ସଂଶୋଧିତ</translation>
 <translation id="3886872229787704059">ଆଜି ଖୋଲାଯାଇଛି</translation>
 <translation id="3891340733213178823">ସାଇନ୍‍ ଆଉଟ୍‍ ହେବାକୁ ଦୁଇଥର Ctrl+Shift+Q ଦବାନ୍ତୁ।</translation>
 <translation id="3893630138897523026">ChromeVox (କଥିତ ମତାମତ)</translation>
@@ -894,6 +897,7 @@
 <translation id="4582666543382004902">ୱାଇଫାଇ ବ୍ୟବହାର କରିବା ପାଇଁ ହଟସ୍ପଟକୁ ବନ୍ଦ କରାଯାଇଛି। ହଟସ୍ପଟ ବ୍ୟବହାର କରିବା ପାଇଁ ୱାଇଫାଇକୁ ବନ୍ଦ କରନ୍ତୁ।</translation>
 <translation id="4585337515783392668">ଏକ ଅଜଣା ରିସିଭର୍‌ରେ କାଷ୍ଟିଂ କରିବା ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="4596144739579517758">ଗାଢ଼ ଥିମ୍ ବନ୍ଦ ଅଛି</translation>
+<translation id="4596442969149038771"><ph name="USER" /> ସେୟାର କରିଛନ୍ତି</translation>
 <translation id="4611292653554630842">ଲଗ୍ ଇନ୍ କରନ୍ତୁ</translation>
 <translation id="462160925400706389"><ph name="NAME" /> କନେକ୍ଟ କରାଯାଇଛି</translation>
 <translation id="4623167406982293031">ଆକାଉଣ୍ଟ ଯାଞ୍ଚ କରନ୍ତୁ</translation>
@@ -1814,6 +1818,7 @@
 <translation id="8314772463905284467">Caps Lock ଚାଲୁ ଅଛି</translation>
 <translation id="8315514906653279104">ଚାଲୁ କରାଯାଉଛି...</translation>
 <translation id="8331351032546853669">ଡାଉନଲୋଡ ବାକି ଅଛି</translation>
+<translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
 <translation id="8345019317483336363"><ph name="WINDOW_TITLE" /> ୱିଣ୍ଡୋକୁ ଚୟନ କରାଯାଇଛି</translation>
 <translation id="8349826889576450703">ଲଞ୍ଚର</translation>
@@ -2033,6 +2038,7 @@
 <translation id="953431725143473984">ଡିଭାଇସକୁ ବନ୍ଦ କରିବେ?</translation>
 <translation id="954052413789300507"><ph name="FILENAME" /> ପାଇଁ ଯଥେଷ୍ଟ ସ୍ପେସ ନାହିଁ। ସ୍ପେସ ଖାଲି କରନ୍ତୁ।</translation>
 <translation id="954520015070501466">30 ମିନିଟ</translation>
+<translation id="954786879461589145"><ph name="USER" /> ପରିବର୍ତ୍ତନ କରିଛନ୍ତି</translation>
 <translation id="974545358917229949"><ph name="QUERY" /> ପାଇଁ <ph name="RESULT_COUNT" />ଟି ଫଳାଫଳ ଡିସ୍‌ପ୍ଲେ ହେଉଛି</translation>
 <translation id="981011780479609956">କୌଣସି ଧାର୍ଯ୍ୟ ତାରିଖ ନାହିଁ</translation>
 <translation id="98120814841227350">ଡକ୍ୟୁମେଣ୍ଟର ଶେଷକୁ ଯାଆନ୍ତୁ</translation>

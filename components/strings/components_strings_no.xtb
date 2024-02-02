@@ -430,6 +430,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="1752021286346845558">Postkasse 8</translation>
 <translation id="1753068535428855445">Stevnemøter og kontaktannonser</translation>
 <translation id="1753706481035618306">Sidenummer</translation>
+<translation id="1755203724116202818">For å måle annonseresultatene sine deler nettsteder begrensede typer data mellom seg, for eksempel om du har kjøpt noe etter å ha besøkt et nettsted.</translation>
 <translation id="1755621011177747277">Adopsjon</translation>
 <translation id="1756026472674246267">Åpne linken på en ny fane</translation>
 <translation id="175656076281618225">Magi</translation>
@@ -884,6 +885,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="2674804415323431591">Skjul forslag</translation>
 <translation id="2677696497921480781">Bursdager og navnedager</translation>
 <translation id="2677748264148917807">Gå ut</translation>
+<translation id="2683195745483370038">Fant andre resultater</translation>
 <translation id="2686919536310834199">Send tilbakemelding om Hjelp meg å skrive.</translation>
 <translation id="2687555958734450033">Beste tilpassing</translation>
 <translation id="2688186765492306706">500 x 760 mm</translation>
@@ -1265,6 +1267,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="3462200631372590220">Skjul detaljer</translation>
 <translation id="3465972433695735758">Denne PDF-en er ikke tilgjengelig. Teksten er hentet ut – drevet av Google AI</translation>
 <translation id="346601286295919445">Kjemi</translation>
+<translation id="3467081767799433066">Med annonsemålinger deler nettsteder begrensede typer data mellom seg for å måle annonseresultatene sine, for eksempel om du har kjøpt noe etter å ha besøkt et nettsted.</translation>
 <translation id="3468054117417088249"><ph name="TAB_SWITCH_SUFFIX" /> – for øyeblikket åpen. Trykk på Tab og deretter Enter for å bytte til den åpne fanen</translation>
 <translation id="3470563864795286535"><ph name="CLOSE_INCOGNITO_WINDOWS_FOCUSED_FRIENDLY_MATCH_TEXT" /> – trykk på Tab og deretter på Enter for å lukke alle åpne inkognitovinduer</translation>
 <translation id="3474392552865647225">Knappen «Tilpass skrifttyper i Chrome» – aktiver for å tilpasse skriftstørrelser og -typer i Chrome</translation>
@@ -2788,7 +2791,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="6480864723214312258">Husholdningsbatterier</translation>
 <translation id="6486200200930923183">Dokumentarfilmer</translation>
 <translation id="6489534406876378309">Start opplastingen av krasj</translation>
-<translation id="6491663123807473970"><ph name="URL" /> vil bruke MIDI-enhetene dine</translation>
 <translation id="6493924760403974580">Denne appen støtter kun denne størrelsen.</translation>
 <translation id="6494750904506170417">forgrunnsvinduer og viderekoblinger</translation>
 <translation id="6495664197699704593">Dette passordet er bare lagret på denne enheten. For å bruke det på andre enheter, <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
@@ -4079,6 +4081,7 @@ Mer informasjon:
 <translation id="9005998258318286617">Kunne ikke laste inn PDF-dokumentet.</translation>
 <translation id="9008178007718859630">Hjemme- og interiørdekor</translation>
 <translation id="9008201768610948239">Ignorer</translation>
+<translation id="9014705027639070815">Nettsteder du besøker, kan be Chrome om informasjon, slik at de lettere kan måle annonseresultatene sine. Chrome gir nettsteder tillatelse til å samle inn begrensede typer data, for eksempel om du har kjøpt noe etter å ha besøkt et nettsted.</translation>
 <translation id="9018120810758822233">Skriv inn sikkerhetskoden for <ph name="CREDIT_CARD" /></translation>
 <translation id="901834265349196618">e-post</translation>
 <translation id="9020542370529661692">Denne siden har blitt oversatt til <ph name="TARGET_LANGUAGE" /></translation>

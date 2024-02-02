@@ -149,6 +149,7 @@
 <translation id="1757699834933698436">{count,plural, =1{{count} ненадеждна парола}other{{count} ненадеждни пароли}}</translation>
 <translation id="1767766085187034454">Google Преводач</translation>
 <translation id="1769106850515800431">Персонализирано съдържание</translation>
+<translation id="1780152987505130652">Затваряне на групата</translation>
 <translation id="1789803444939621101">Добре дошли отново, <ph name="USER_NAME" /></translation>
 <translation id="1803264062614276815">Име на титуляря на картата</translation>
 <translation id="1809939268435598390">Изтриване на папката</translation>
@@ -214,7 +215,6 @@
 <translation id="2080769225927880590">Влезте с валиден профил</translation>
 <translation id="2103075008456228677">Към history.google.com</translation>
 <translation id="21133533946938348">Фиксиране на раздела</translation>
-<translation id="2116625576999540962">Преместихте <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> елемента</translation>
 <translation id="2122754583996902531">Браузърът ви е управляван. <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
 <translation id="2139502497535990641">Да се включат ли известията за цени?</translation>
 <translation id="2139867232736819575">Търсене на копирания текст</translation>
@@ -648,6 +648,7 @@
 <translation id="4431224949908513835">Изберете начин на плащане, който да се попълни.</translation>
 <translation id="4442550905108052454">Отворете <ph name="BEGIN_BOLD" />настройките<ph name="END_BOLD" /></translation>
 <translation id="4454246407045105932">Добавяне на език</translation>
+<translation id="4460014764210899310">Разгрупиране</translation>
 <translation id="4461286950227634995">Показване на предложение за запазване на паролите</translation>
 <translation id="4462491365653392320">Проследяване на цените в разделите</translation>
 <translation id="4469324811108161144">Бележките могат да съдържат най-много <ph name="CHARACTER_LIMIT" /> знака.</translation>
@@ -930,7 +931,6 @@
 <translation id="5857770089550859117">За старт на синхронизирането е необходим пропуск.</translation>
 <translation id="5859715514067755465">Напред</translation>
 <translation id="5860033963881614850">Изключено</translation>
-<translation id="5871497086027727873">Преместихте 1 елемент</translation>
 <translation id="5896576662943111387">Браузър, създаден за iOS</translation>
 <translation id="5897749768294722429">За да се връщате бързо към посетените от вас сайтове, синхронизирайте разделите и историята си.</translation>
 <translation id="5897956970858271241">Отваряне на копираната връзка</translation>
@@ -1499,6 +1499,7 @@
 <translation id="8766790350274092814">Паролите за <ph name="WEBSITE" /> и <ph name="SECOND_WEBSITE" /> ще бъдат изтрити. Профилите ви няма да бъдат изтрити.</translation>
 <translation id="8775144690796719618">Невалиден URL адрес</translation>
 <translation id="8780076847684176174">{count,plural, =1{Преглед на раздела...}other{Преглед на всички раздели...}}</translation>
+<translation id="8781834595282316166">Нов раздел в групата</translation>
 <translation id="8782570580170191813">Пратките да се проследяват винаги</translation>
 <translation id="8787968206789828143">Търсене в мрежата</translation>
 <translation id="8792626944327216835">микрофон</translation>

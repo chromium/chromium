@@ -66,6 +66,7 @@
 <translation id="2228071138934252756">Каб праграма "<ph name="APP_NAME" />" атрымала доступ да камеры, уключыце камеру таксама ў <ph name="BEGIN_LINK" />Наладах Android<ph name="END_LINK" />.</translation>
 <translation id="2235344399760031203">Староннія файлы cookie заблакіраваны</translation>
 <translation id="2238944249568001759">Пошукавыя запыты, прапанаваныя на падставе змесціва апошняй укладкі</translation>
+<translation id="2241587408274973373">Карткі старонкі новай укладкі</translation>
 <translation id="2241634353105152135">Толькі адзін раз</translation>
 <translation id="2253414712144136228">Выдаліць: <ph name="NAME_OF_LIST_ITEM" /></translation>
 <translation id="2253989982043948086">{NUM_SELECTED,plural, =1{Файлы cookie заблакіраваны на 1 сайце}one{Файлы cookie заблакіраваны на # сайце}few{Файлы cookie заблакіраваны на # сайтах}many{Файлы cookie заблакіраваны на # сайтах}other{Файлы cookie заблакіраваны на # сайта}}</translation>
@@ -108,7 +109,6 @@
 <translation id="2750481671343847896">Сайты могуць паказваць запыты на ўваход ад сэрвісаў ідэнтыфікацыі.</translation>
 <translation id="2790501146643349491">Калі гэты параметр уключаны, нядаўна закрытыя сайты могуць завяршаць адпраўку і атрыманне даных. Калі параметр выключаны, нядаўна закрытыя сайты не могуць завяршаць вышэйназваныя дзеянні.</translation>
 <translation id="2822354292072154809">Сапраўды скінуць усе дазволы сайта для <ph name="CHOSEN_OBJECT_NAME" />?</translation>
-<translation id="2836978798613876756"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> <ph name="HOST_NAME" /></translation>
 <translation id="2850913818900871965">Запытваць версію для мабільных прылад</translation>
 <translation id="2870560284913253234">Сайт</translation>
 <translation id="2874939134665556319">Папярэдні трэк</translation>
@@ -120,7 +120,6 @@
 <translation id="2968755619301702150">Звесткі пра сертыфікат</translation>
 <translation id="2979365474350987274">Выкарыстанне старонніх файлаў cookie абмежавана</translation>
 <translation id="3008272652534848354">Скінуць дазволы</translation>
-<translation id="3013291976881901233">Прылады MIDI</translation>
 <translation id="301521992641321250">Заблакіравана аўтаматычна</translation>
 <translation id="3069226013421428034">Дазволіць уваход праз староннія сэрвісы для канкрэтнага сайта.</translation>
 <translation id="3082992102194421695">{COUNT,plural, =1{Тэрмін дзеяння заканчваецца заўтра}one{Тэрмін дзеяння заканчваецца праз # дзень}few{Тэрмін дзеяння заканчваецца праз # дні}many{Тэрмін дзеяння заканчваецца праз # дзён}other{Тэрмін дзеяння заканчваецца праз # дня}}</translation>
@@ -191,7 +190,6 @@
 <translation id="4169549551965910670">Выканана падключэнне да прылады USB</translation>
 <translation id="4194328954146351878">Пытацца, перш чым дазваляць сайтам праглядаць і змяняць інфармацыю на прыладах NFC (рэкамендуецца)</translation>
 <translation id="4200726100658658164">Адкрыць налады месцазнаходжання</translation>
-<translation id="4212246570487010370">Працягвайце прагляд</translation>
 <translation id="4226663524361240545">Апавяшчэнні могуць уключаць вібрацыю прылады</translation>
 <translation id="4259722352634471385">Пераход па наступным адрасе заблакіраваны: <ph name="URL" /></translation>
 <translation id="4278390842282768270">Дазволена</translation>
@@ -349,7 +347,6 @@
 <translation id="6746124502594467657">Перамясціць ніжэй</translation>
 <translation id="6749077623962119521">Скінуць дазволы?</translation>
 <translation id="6766622839693428701">Правядзіце пальцам уніз, каб закрыць.</translation>
-<translation id="6785959295338971061"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> Прылада: <ph name="FROM_DEVICE" /></translation>
 <translation id="6787751205395685251">Выберыце адзін з варыянтаў для сайта <ph name="SITE_NAME" /></translation>
 <translation id="6790428901817661496">Прайграць</translation>
 <translation id="6818926723028410516">Выберыце элементы</translation>

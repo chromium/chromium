@@ -139,6 +139,7 @@
 <translation id="1749561566933687563">북마크 동기화</translation>
 <translation id="1750259112639922169">탭 그룹 - 탭 <ph name="TAB_COUNT" />개</translation>
 <translation id="17513872634828108">열린 탭</translation>
+<translation id="1755203724116202818">광고 실적을 측정하기 위해 제한된 유형의 데이터(예: 사이트 방문 후 구매했는지)가 사이트 간에 공유됩니다.</translation>
 <translation id="1757620656501361327">Google 비밀번호 관리자 업데이트</translation>
 <translation id="1760873718737761808">{FILE_COUNT,plural, =1{페이지, 목록에 있는 페이지 1개}other{페이지, 목록에 있는 페이지 #개}}</translation>
 <translation id="1778457539567749232">읽지 않은 상태로 표시</translation>
@@ -452,6 +453,7 @@
 <translation id="3443221991560634068">현재 페이지 새로고침</translation>
 <translation id="3444179773590444986">사이트의 어두운 테마에 관한 의견을 공유할까요?</translation>
 <translation id="3452832259067974318">Chrome에서는 개인 정보 보호를 위해 이 입력란의 비밀번호를 자동 완성하지 않습니다.</translation>
+<translation id="3467081767799433066">광고 측정을 사용하면 광고 실적을 측정하기 위해 제한된 유형의 데이터(예: 사이트 방문 후 구매했는지)가 사이트 간에 공유됩니다.</translation>
 <translation id="3474624961160222204"><ph name="NAME" />(으)로 계속</translation>
 <translation id="3478363558367712427">검색엔진을 선택할 수 있습니다.</translation>
 <translation id="3479552764303398839">나중에</translation>
@@ -632,6 +634,7 @@
 <translation id="4494806687727322324">관리자가 비밀번호 저장을 사용 설정했습니다</translation>
 <translation id="4508528996305412043">피드 카드 메뉴가 열림</translation>
 <translation id="4509501256689523862">인터넷을 탐색할 때 이 설정, <ph name="BEGIN_LINK_1" />광고 주제<ph name="END_LINK_1" />, 나의 <ph name="BEGIN_LINK_2" />쿠키 설정<ph name="END_LINK_2" />, 시청 중인 사이트에서 광고를 맞춤설정하는지 여부에 따라 나에게 표시되는 광고의 맞춤설정 여부가 달라집니다.</translation>
+<translation id="4509741852167209430">광고 실적을 측정하기 위해 제한된 유형의 데이터(예: 사이트 방문 후 구매했는지)가 사이트 간에 공유됩니다.</translation>
 <translation id="4513387527876475750">{DAYS,plural, =1{#일 전}other{#일 전}}</translation>
 <translation id="451872707440238414">북마크 검색</translation>
 <translation id="4521489764227272523">선택한 데이터가 Chrome 및 동기화된 기기에서 삭제되었습니다.

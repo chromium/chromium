@@ -1340,6 +1340,7 @@
 <translation id="6298183524022479114">在應用程式中自訂此裝置</translation>
 <translation id="6309219492973062892">點擊或輕按捷徑列圖示 1-8</translation>
 <translation id="6315170314923504164">語音</translation>
+<translation id="6319058840130157106">在以下位置間以反方向移動：右下角、啟動器、網址列、書籤列、開啟的網站和下載內容</translation>
 <translation id="6324916366299863871">編輯捷徑</translation>
 <translation id="6330012934079202188">顯示緊來自所有桌面嘅視窗，㩒向上箭咀掣就可以顯示來自目前桌面嘅視窗</translation>
 <translation id="6338485349199627913">「<ph name="DISPLAY_NAME" />」是由 <ph name="MANAGER" /> 管理的工作階段</translation>
@@ -1924,6 +1925,7 @@
 <translation id="878215960996152260"><ph name="APP_NAME" />，已經安裝嘅應用程式，已經封鎖</translation>
 <translation id="8785070478575117577">連接去<ph name="NETWORK_NAME" /></translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />。<ph name="ENTERPRISE_TEXT" /></translation>
+<translation id="8790632710469941716">在以下位置間以反方向移動：右下角、啟動器、網址列、書籤列、開啟的網站和下載內容</translation>
 <translation id="8792626944327216835">麥克風</translation>
 <translation id="8801802992492329306">5G</translation>
 <translation id="8806053966018712535"><ph name="FOLDER_NAME" />資料夾</translation>

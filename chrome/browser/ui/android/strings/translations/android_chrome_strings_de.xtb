@@ -139,6 +139,7 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="1749561566933687563">Lesezeichen synchronisieren</translation>
 <translation id="1750259112639922169">Tabgruppe – <ph name="TAB_COUNT" /> Tabs</translation>
 <translation id="17513872634828108">Geöffnete Tabs</translation>
+<translation id="1755203724116202818">Um die Leistung einer Werbeanzeige zu messen, werden nur manche Datentypen zwischen Websites geteilt, wie z. B. ob du nach dem Besuch einer Website etwas gekauft hast</translation>
 <translation id="1757620656501361327">Hinweis zum Google Passwortmanager</translation>
 <translation id="1760873718737761808">{FILE_COUNT,plural, =1{Seiten, 1 Seite in der Liste}other{Seiten, # Seiten in der Liste}}</translation>
 <translation id="1778457539567749232">Als ungelesen markieren</translation>
@@ -334,6 +335,7 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="2870560284913253234">Website</translation>
 <translation id="2871733351037274014">Seiten vorab laden</translation>
 <translation id="2876136027428473467"><ph name="CHILD_NAME" /> möchte, dass du diese Website genehmigst:</translation>
+<translation id="2876194821763651818">In <ph name="USERNAME" /> gespeicherte Passwörter.</translation>
 <translation id="2876628302275096482"><ph name="BEGIN_LINK" />Weitere Informationen zum Datenschutz bei Chrome<ph name="END_LINK" /></translation>
 <translation id="2888126860611144412">Über Google Chrome</translation>
 <translation id="2891154217021530873">Laden der Seite anhalten</translation>
@@ -451,6 +453,7 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="3443221991560634068">Aktuelle Seite neu laden</translation>
 <translation id="3444179773590444986">Feedback zu dunklem Design für Websites teilen?</translation>
 <translation id="3452832259067974318">Um deine Daten zu schützen, füllt Chrome dieses Feld nicht automatisch mit deinem Passwort aus.</translation>
+<translation id="3467081767799433066">Bei der Erfolgsmessung von Anzeigen werden nur manche Datentypen zwischen Websites geteilt, um die Leistung ihrer Werbeanzeigen zu messen, wie z. B. ob du nach dem Besuch einer Website etwas gekauft hast</translation>
 <translation id="3474624961160222204">Als „<ph name="NAME" />“ fortfahren</translation>
 <translation id="3478363558367712427">Du kannst deine Suchmaschine auswählen</translation>
 <translation id="3479552764303398839">Jetzt nicht</translation>
@@ -631,6 +634,7 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="4494806687727322324">Das Speichern von Passwörtern wurde von deinem Administrator aktiviert</translation>
 <translation id="4508528996305412043">Feedkartenmenü ist geöffnet</translation>
 <translation id="4509501256689523862">Ob du beim Surfen personalisierte Werbung siehst, hängt von dieser Einstellung, <ph name="BEGIN_LINK_1" />den Werbethemen<ph name="END_LINK_1" />, <ph name="BEGIN_LINK_2" />deinen Cookie-Einstellungen<ph name="END_LINK_2" /> und davon ab, ob die besuchte Website Werbung personalisiert</translation>
+<translation id="4509741852167209430">Nur manche Datentypen werden zwischen Websites geteilt, um die Leistung ihrer Werbeanzeigen zu messen, wie z. B. ob du nach dem Besuch einer Website etwas gekauft hast</translation>
 <translation id="4513387527876475750">{DAYS,plural, =1{Vor # Tag}other{Vor # Tagen}}</translation>
 <translation id="451872707440238414">Lesezeichen durchsuchen</translation>
 <translation id="4521489764227272523">Die ausgewählten Daten wurden aus Chrome und von allen deinen synchronisierten Geräten entfernt.
@@ -672,6 +676,7 @@ Eventuell findest du unter <ph name="BEGIN_LINK" />history.google.com<ph name="E
 <translation id="4699172675775169585">Bilder und Dateien im Cache</translation>
 <translation id="4710167854527459075">Nach neuestem sortieren</translation>
 <translation id="4719927025381752090">Übersetzung anbieten</translation>
+<translation id="4720556299488643018">Ausschalten</translation>
 <translation id="4732120983431207637">Stack Unwinder</translation>
 <translation id="4736934858538408121">Virtuelle Karte</translation>
 <translation id="473775607612524610">Aktualisieren</translation>
@@ -1194,6 +1199,7 @@ Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht dara
 <translation id="7313188324932846546">Zum Einrichten der Synchronisierung tippen</translation>
 <translation id="7324354302972299151">„Do Not Track“-Anfrage senden</translation>
 <translation id="7332075081379534664">Angemeldet</translation>
+<translation id="7333041109965360609">Du erhältst keine Benachrichtigungen mehr</translation>
 <translation id="7333232495927792353">Mit der Synchronisierung erhältst du die relevantesten Inhalte von Google</translation>
 <translation id="7339898014177206373">Neues Fenster</translation>
 <translation id="7340958967809483333">Optionen für Discover</translation>
@@ -1452,6 +1458,7 @@ Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht dara
 <translation id="8503813439785031346">Nutzername</translation>
 <translation id="8505766168025405649">Den Downloadstatus findest du in der Benachrichtigung</translation>
 <translation id="8506357771923193001">Hier findest du deine Downloads</translation>
+<translation id="8512053371384421952">Du erhältst keine Benachrichtigungen mehr von <ph name="DOMAIN" />.</translation>
 <translation id="8514477925623180633">In Chrome gespeicherte Passwörter exportieren</translation>
 <translation id="8516012719330875537">Bildeditor</translation>
 <translation id="8523928698583292556">Gespeichertes Passwort löschen</translation>

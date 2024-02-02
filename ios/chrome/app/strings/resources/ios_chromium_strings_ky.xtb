@@ -41,9 +41,11 @@
 <translation id="2054703085270098503">Chromium менен коопсуз болуңуз</translation>
 <translation id="2098023844024447022">Chromium'да акыркы өтмөгүмдү ачуу.</translation>
 <translation id="2109439615198500433">Chromium кеңеши</translation>
+<translation id="2147210759439165826">Контентти жана Chromium'дун пайдалуу кеңештерин алып туруңуз.</translation>
 <translation id="2168108852149185974">Айрым көмөкчү жөндөөлөрдөн улам Chromium бузулуп калды. Төмөндөгүлөрдү өчүрүү керек:</translation>
 <translation id="2178608107313874732">Учурда Chromium камераны иштете албайт</translation>
 <translation id="2195025571279539885">Кийинки жолу Chromium ушул сайттагы <ph name="LANGUAGE_NAME" /> тилиндеги барактарды которууну сунуштасынбы?</translation>
+<translation id="2216344354848599203">Chromium сүрөтчөсүн коё бербей басып туруп, "Башкы экранды түзөтүүнү" чыкылдатыңыз</translation>
 <translation id="2218146227246548550">Уюмуңуз Chromium'ду колдонуу үчүн аккаунтуңузга кирүүнү талап кылат. <ph name="BEGIN_LINK" />Кеңири маалымат<ph name="END_LINK" /></translation>
 <translation id="22313767259766852">Учурда бул дарек Chromium'га сакталды. Аны Google кызматтарында колдонуу үчүн Google аккаунтуңузга (<ph name="USER_EMAIL" />) сактаңыз.</translation>
 <translation id="2236584955986023187">Chromium'ду ар дайым компьютерде ачуу керек болот.</translation>
@@ -197,6 +199,7 @@ Chromium'дун ишин жакшыртуу үчүн маалыматтарды 
 <translation id="632825460376924298">Chromium'га кирүүгө уруксат берүү</translation>
 <translation id="6337530241089703714">Chromium'дагы дайын-даректер ушул түзмөктөн өчүрүлсүнбү же сакталсынбы?</translation>
 <translation id="6348483005826990855">3. Chromium'ду тандаңыз</translation>
+<translation id="6383607155624074112">Chromium'га Башкы экрандагы доктон тез өтүңүз</translation>
 <translation id="6407399265324739055">Даректер жана төлөм ыкмалары шифрленбейт. Chromium'да көрүлгөн вебсайттар шайкештирилбейт.
 
 Сыр сүйлөмүңүздү билген адам гана шифрленген маалыматыңызды окуй алат. Сыр сүйлөм Google'га жөнөтүлбөйт же анда сакталбайт. Эгер сыр сүйлөмүңүздү унутуп калсаңыз же бул параметрди өзгөрткүңүз келсе, <ph name="BEGIN_LINK" />аккаунтуңуздагы Chromium маалыматын өчүрүңүз<ph name="END_LINK" />.</translation>

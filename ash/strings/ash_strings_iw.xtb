@@ -607,9 +607,11 @@
 <translation id="3526440770046466733">פתיחת הקישור בכרטיסייה חדשה והמשך הגלישה בכרטיסייה הנוכחית</translation>
 <translation id="353086728817903341"><ph name="NUM_DEVICES" /> מכשירים מחוברים</translation>
 <translation id="3533126039236445965">אפליקציות במדף</translation>
+<translation id="3537350467437346467">נפתח על ידך</translation>
 <translation id="3539957339480430241">הנקודה לשיתוף אינטרנט של <ph name="DEVICE_NAME" /></translation>
 <translation id="3540893133818942399">ביטול ההגדרה של הצגת התמונות והמדיה שבטלפון מהזמן האחרון</translation>
 <translation id="3542066395059568317">יוצגו לך המלצות כדי שתהיה לך אפשרות להמשיך מאיפה שהפסקת. ניתן להסיר את ההמלצות בלחיצה ימנית.</translation>
+<translation id="3547318469722231257">שונה על ידך</translation>
 <translation id="3552189655002856821">‏Wi-Fi כבוי</translation>
 <translation id="3554215588514239132">הצגה או הסתרה של חלונית הכלים למפתחים</translation>
 <translation id="3554637740840164787">הפריט <ph name="ITEM_TITLE" /> הוצמד</translation>
@@ -701,6 +703,7 @@
 <translation id="385300504083504382">התחלה</translation>
 <translation id="3859364108019690">לא ניתן לשדר אפליקציות</translation>
 <translation id="3861651314799684201">‏כדי להקליט את המסך המלא, מקישים על Enter</translation>
+<translation id="3882323608730650973">עבר שינוי</translation>
 <translation id="3886872229787704059">נפתח היום</translation>
 <translation id="3891340733213178823">‏יש להקיש פעמיים על Ctrl+Shift+Q כדי לצאת.</translation>
 <translation id="3893630138897523026">‏ChromeVox (משוב קולי)</translation>
@@ -894,6 +897,7 @@
 <translation id="4582666543382004902">‏הנקודה לשיתוף אינטרנט (Hotspot) הושבתה כדי לאפשר שימוש ב-Wi-Fi. כדי להשתמש בנקודה לשיתוף אינטרנט, צריך לכבות את ה-Wi-Fi.</translation>
 <translation id="4585337515783392668">הפסקת העברה במכשיר לא מוכר</translation>
 <translation id="4596144739579517758">עיצוב כהה כבוי.</translation>
+<translation id="4596442969149038771">שותף על ידי <ph name="USER" /></translation>
 <translation id="4611292653554630842">התחבר</translation>
 <translation id="462160925400706389"><ph name="NAME" /> מחובר</translation>
 <translation id="4623167406982293031">יש לאמת את החשבון</translation>
@@ -1817,6 +1821,7 @@
 <translation id="8314772463905284467">‏Caps Lock מופעל</translation>
 <translation id="8315514906653279104">מתבצעת הפעלה…</translation>
 <translation id="8331351032546853669">ההורדה בהמתנה</translation>
+<translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
 <translation id="8345019317483336363">נבחר החלון <ph name="WINDOW_TITLE" /></translation>
 <translation id="8349826889576450703">מרכז האפליקציות</translation>
@@ -2038,6 +2043,7 @@
 <translation id="953431725143473984">לכבות את המכשיר?</translation>
 <translation id="954052413789300507">אין מספיק נפח אחסון פנוי בשביל <ph name="FILENAME" />. עליך לפנות מקום.</translation>
 <translation id="954520015070501466">30 דקות</translation>
+<translation id="954786879461589145">שונה על ידי <ph name="USER" /></translation>
 <translation id="974545358917229949">מוצגות <ph name="RESULT_COUNT" /> תוצאות עבור השאילתה: <ph name="QUERY" /></translation>
 <translation id="981011780479609956">אין מועד הגשה</translation>
 <translation id="98120814841227350">מעבר אל סוף המסמך</translation>

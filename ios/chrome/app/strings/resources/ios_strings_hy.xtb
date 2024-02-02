@@ -149,6 +149,7 @@
 <translation id="1757699834933698436">{count,plural, =1{{count} թույլ գաղտնաբառ}one{{count} թույլ գաղտնաբառ}other{{count} թույլ գաղտնաբառ}}</translation>
 <translation id="1767766085187034454">Google Translate</translation>
 <translation id="1769106850515800431">Անհատականացված բովանդակություն</translation>
+<translation id="1780152987505130652">Փակել խումբը</translation>
 <translation id="1789803444939621101">Բարի վերադարձ, <ph name="USER_NAME" /></translation>
 <translation id="1803264062614276815">Քարտատիրոջ անունը</translation>
 <translation id="1809939268435598390">Ջնջել պանակը</translation>
@@ -214,7 +215,6 @@
 <translation id="2080769225927880590">Մուտք գործեք վավեր հաշվի միջոցով</translation>
 <translation id="2103075008456228677">Բացել history.google.com էջը</translation>
 <translation id="21133533946938348">Ամրացնել ներդիրը</translation>
-<translation id="2116625576999540962">Տեղափոխվել է <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> տարր</translation>
 <translation id="2122754583996902531">Այս դիտարկիչը կառավարվում է ադմինիստրատորի կողմից։ <ph name="BEGIN_LINK" />Իմանալ ավելին<ph name="END_LINK" /></translation>
 <translation id="2139502497535990641">Միացնե՞լ գների փոփոխության մասին ծանուցումները</translation>
 <translation id="2139867232736819575">Որոնեք ձեր պատճենած տեքստը</translation>
@@ -566,6 +566,7 @@
 <translation id="3929457972718048006">Հասցեներ</translation>
 <translation id="3948600256434252210">Կարող եք մատը սահեցնել աջ՝ ինկոգնիտո ռեժիմում դիտարկելու համար։</translation>
 <translation id="3955822496205734389">Դուք ունեք թույլ գաղտնաբառեր։</translation>
+<translation id="3958312024468322930">Քաշեք պատկերակը Dock վահանակի վրա՝ հիմնական էկրանի ներքևում</translation>
 <translation id="3959736869653157332">Ընտրացանկ → Նոր ինկոգնիտո ներդիր</translation>
 <translation id="3962326069546168954">Պահել</translation>
 <translation id="3967822245660637423">Ներբեռնումն ավարտվեց</translation>
@@ -647,6 +648,7 @@
 <translation id="4431224949908513835">Ընտրեք, թե վճարման որ եղանակն օգտագործել։</translation>
 <translation id="4442550905108052454">Բացեք <ph name="BEGIN_BOLD" />Կարգավորումները<ph name="END_BOLD" />։</translation>
 <translation id="4454246407045105932">Ավելացնել լեզու</translation>
+<translation id="4460014764210899310">Ապախմբավորել</translation>
 <translation id="4461286950227634995">Առաջարկել պահել գաղտնաբառերը</translation>
 <translation id="4462491365653392320">Հետագծել գները ներդիրներում</translation>
 <translation id="4469324811108161144">Նշումները կարող են պարունակել առավելագույնը <ph name="CHARACTER_LIMIT" /> նիշ։</translation>
@@ -929,7 +931,6 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="5857770089550859117">Համաժամացումը սկսելու համար անհրաժեշտ է անցաբառ:</translation>
 <translation id="5859715514067755465">Առաջ</translation>
 <translation id="5860033963881614850">Անջատ.</translation>
-<translation id="5871497086027727873">Տեղափոխվել է 1 տարր</translation>
 <translation id="5896576662943111387">Հատուկ iOS-ի համար</translation>
 <translation id="5897749768294722429">Համաժամացրեք ձեր ներդիրները և պատմությունը, որպեսզի արագ վերադառնաք ձեր այցելած կայքեր։</translation>
 <translation id="5897956970858271241">Անցնել պատճենված հղումով</translation>
@@ -1466,6 +1467,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="8620640915598389714">Փոփոխել</translation>
 <translation id="8624447588354561276">Առաքանու համարը</translation>
 <translation id="8624753446837753970">Ընտրել դիրքը</translation>
+<translation id="8625706492572042370">Փոփոխել հիմնական էկրանը</translation>
 <translation id="8626393685701737946">Կայքերի ցուցադրման կանխադրված ռեժիմը համակարգչային տարբերակի փոխելու համար անցեք Կարգավորումներ &gt; Բովանդակության կարգավորումներ</translation>
 <translation id="8636825310635137004">Ձեր մյուս սարքերում եղած ներդիրներն օգտագործելու համար միացրեք համաժամացումը:</translation>
 <translation id="8637431369725868556">Պաշտպանեք ձեզ վտանգավոր կայքերից։</translation>
@@ -1497,6 +1499,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="8766790350274092814">Կջնջվեն <ph name="WEBSITE" /> և <ph name="SECOND_WEBSITE" /> հաշիվների գաղտնաբառերը։ Ձեր հաշիվները չեն ջնջվի։</translation>
 <translation id="8775144690796719618">URL-ն անվավեր է</translation>
 <translation id="8780076847684176174">{count,plural, =1{Դիտել ներդիրը...}one{Դիտել ներդիրը...}other{Դիտել բոլոր ներդիրները...}}</translation>
+<translation id="8781834595282316166">Նոր ներդիր խմբում</translation>
 <translation id="8782570580170191813">Միշտ հետագծել առաքանիները</translation>
 <translation id="8787968206789828143">Որոնում համացանցում</translation>
 <translation id="8792626944327216835">խոսափող</translation>

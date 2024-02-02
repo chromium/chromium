@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="hi">
+<translation id="1021782183249308751">Chrome आइकॉन को दबाकर रखें और "होम स्क्रीन में बदलाव करें" पर क्लिक करें</translation>
 <translation id="1066101356081285416">Chrome, उन साइटों पर ट्रैकिंग नंबरों का पता लगाएगा जिन पर आपने विज़िट किया है और आपको 'नया टैब' पेज पर पैकेज के अपडेट दिखाएगा. यह सुविधा उपलब्ध कराने के लिए, पैकेज ट्रैकिंग नंबर और वेबसाइट का नाम Google को भेजा जाएगा. इससे, Google Shopping से जुड़ी सुविधाओं को सभी के लिए बेहतर बनाया जा सकेगा. <ph name="BEGIN_LINK" />पैकेज ट्रैकिंग से जुड़ी सेटिंग<ph name="END_LINK" /> में जाकर, इसे कभी भी अपडेट किया जा सकता है.</translation>
 <translation id="1085696779717592361">Chrome को अपना डिफ़ॉल्ट ब्राउज़र बनाएं</translation>
 <translation id="1105362920864247682">Chrome में ब्राउज़िंग डेटा मिटाएं.</translation>
@@ -96,6 +97,7 @@
 <translation id="3345341804167540816">Chrome का सभी जगह उपयोग करना</translation>
 <translation id="3360031466389132716">{THRESHOLD,plural, =1{ऐसा तब होता है, जब Chrome का इस्तेमाल {THRESHOLD} मिनट तक नहीं किया जाता}one{ऐसा तब होता है, जब Chrome का इस्तेमाल {THRESHOLD} मिनट तक नहीं किया जाता}other{ऐसा तब होता है, जब Chrome का इस्तेमाल {THRESHOLD} मिनट तक नहीं किया जाता}}</translation>
 <translation id="3399930248910934354">Chrome की 'सेटिंग' खाेलें</translation>
+<translation id="344736123700721678">अपने होम स्क्रीन डॉक से Chrome को तेज़ी से ऐक्सेस करें</translation>
 <translation id="3472587960215700950">Chrome, खोजे गए पतों का रास्ता बताने और जगह की जानकारी देने के लिए Google Maps का इस्तेमाल करता है.</translation>
 <translation id="3503014945441706099">इस Chrome प्रोफ़ाइल के लिए भी, बेहतर सुरक्षित ब्राउज़िंग की सुविधा पाएं</translation>
 <translation id="3522659714780527202">जिन डिवाइसों पर Chrome का इस्तेमाल किया जाता है उन सभी पर खोले गए टैब देखने के लिए, सिंक करने की सुविधा चालू करें</translation>

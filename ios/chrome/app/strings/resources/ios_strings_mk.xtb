@@ -149,6 +149,7 @@
 <translation id="1757699834933698436">{count,plural, =1{{count} слаба лозинка}one{{count} слаба лозинка}other{{count} слаби лозинки}}</translation>
 <translation id="1767766085187034454">Преведи на Google</translation>
 <translation id="1769106850515800431">Персонализирани содржини</translation>
+<translation id="1780152987505130652">Затвори ја групата</translation>
 <translation id="1789803444939621101">Добре дојдовте назад, <ph name="USER_NAME" /></translation>
 <translation id="1803264062614276815">Име на сопственикот на картичката</translation>
 <translation id="1809939268435598390">Избриши папка</translation>
@@ -214,7 +215,6 @@
 <translation id="2080769225927880590">Најавете се со важечка сметка</translation>
 <translation id="2103075008456228677">Отвори ја history.google.com</translation>
 <translation id="21133533946938348">Прикачи картичка</translation>
-<translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> ставки се преместени</translation>
 <translation id="2122754583996902531">Прелистувачот е управуван. <ph name="BEGIN_LINK" />Дознајте повеќе<ph name="END_LINK" /></translation>
 <translation id="2139502497535990641">Дали да се вклучат известувања за цени?</translation>
 <translation id="2139867232736819575">Пребарувајте го текстот што го копиравте</translation>
@@ -648,6 +648,7 @@
 <translation id="4431224949908513835">Изберете начин на плаќање за пополнување.</translation>
 <translation id="4442550905108052454">Отворете <ph name="BEGIN_BOLD" />Поставки<ph name="END_BOLD" /></translation>
 <translation id="4454246407045105932">Додајте јазик</translation>
+<translation id="4460014764210899310">Одгрупирајте</translation>
 <translation id="4461286950227634995">Понудувај зачувување лозинки</translation>
 <translation id="4462491365653392320">Следете ги цените на картичките</translation>
 <translation id="4469324811108161144">Белешките може да заштедат до <ph name="CHARACTER_LIMIT" /> знаци.</translation>
@@ -930,7 +931,6 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="5857770089550859117">Потребна е лозинка за да започне синхронизацијата.</translation>
 <translation id="5859715514067755465">Премотај напред</translation>
 <translation id="5860033963881614850">Исклучено</translation>
-<translation id="5871497086027727873">1 ставка е преместена</translation>
 <translation id="5896576662943111387">Создаден за iOS</translation>
 <translation id="5897749768294722429">За да се вратите брзо на отворените сајтови, синхронизирајте ги вашите картички и историја.</translation>
 <translation id="5897956970858271241">Посетете го копираниот линк</translation>
@@ -1499,6 +1499,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="8766790350274092814">Лозинките за <ph name="WEBSITE" /> и <ph name="SECOND_WEBSITE" /> ќе се избришат. Сметките нема да се избришат.</translation>
 <translation id="8775144690796719618">Неважечка URL-адреса</translation>
 <translation id="8780076847684176174">{count,plural, =1{Прегледајте ја картичката…}one{Прегледајте ги сите картички…}other{Прегледајте ги сите картички…}}</translation>
+<translation id="8781834595282316166">Нова картичка во групата</translation>
 <translation id="8782570580170191813">Секогаш следи пакети</translation>
 <translation id="8787968206789828143">Пребарувајте на интернет</translation>
 <translation id="8792626944327216835">микрофон</translation>

@@ -66,6 +66,7 @@
 <translation id="2228071138934252756"><ph name="APP_NAME" />ক আপোনাৰ কেমেৰা এক্সেছ কৰিবলৈ দিবলৈ <ph name="BEGIN_LINK" />Android ছেটিংসমূহ<ph name="END_LINK" />তো কেমেৰা অন কৰক।</translation>
 <translation id="2235344399760031203">তৃতীয় পক্ষৰ কুকিসমূহ অৱৰোধ কৰা হৈছে</translation>
 <translation id="2238944249568001759">আপোনাৰ অন্তিম টেবটোৰ আধাৰত পৰামৰ্শিত সন্ধানসমূহ</translation>
+<translation id="2241587408274973373">নতুন টেবৰ পৃষ্ঠাৰ কার্ড</translation>
 <translation id="2241634353105152135">মাত্ৰ এবাৰ</translation>
 <translation id="2253414712144136228"><ph name="NAME_OF_LIST_ITEM" /> আঁতৰাওক</translation>
 <translation id="2253989982043948086">{NUM_SELECTED,plural, =1{১ টা ছাইট অৱৰোধ কৰা হৈছে}one{# টা ছাইট অৱৰোধ কৰা হৈছে}other{# টা ছাইট অৱৰোধ কৰা হৈছে}}</translation>
@@ -108,7 +109,6 @@
 <translation id="2750481671343847896">ছাইটবিলাকে পৰিচয় সেৱাসমূহৰ পৰা ছাইন-ইনৰ প্ৰম্প্‌ট দেখুৱাব পাৰে।</translation>
 <translation id="2790501146643349491">অন কৰা থাকিলে, শেহতীয়াকৈ বন্ধ কৰা ছাইটসমূহে ডেটা পঠিওৱা আৰু গ্ৰহণ কৰা কাৰ্যটো সম্পূৰ্ণ কৰিব পাৰে। অফ কৰা থাকিলে, শেহতীয়াকৈ বন্ধ কৰা ছাইটসমূহে ডেটা পঠিওৱা আৰু গ্ৰহণ কৰা কাৰ্যটো সম্পূৰ্ণ কৰিব নোৱাৰে।</translation>
 <translation id="2822354292072154809">আপুনি <ph name="CHOSEN_OBJECT_NAME" />ৰ বাবে ছাইটৰ সকলো অনুমতি ৰিছেট কৰিবলৈ বিচাৰে বুলি নিশ্চিতনে?</translation>
-<translation id="2836978798613876756"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> <ph name="HOST_NAME" /></translation>
 <translation id="2850913818900871965">ম’বাইল ভিউৰ বাবে অনুৰোধ জনাওক</translation>
 <translation id="2870560284913253234">ছাইট</translation>
 <translation id="2874939134665556319">পূৰ্বৱৰ্তী ট্ৰেক</translation>
@@ -120,7 +120,6 @@
 <translation id="2968755619301702150">প্ৰমাণপত্ৰ ভিউৱাৰ</translation>
 <translation id="2979365474350987274">তৃতীয় পক্ষৰ কুকি সীমিত কৰা হৈছে</translation>
 <translation id="3008272652534848354">অনুমতি ৰিছেট কৰক</translation>
-<translation id="3013291976881901233">MIDI ডিভাইচবোৰ</translation>
 <translation id="301521992641321250">স্বয়ংক্ৰিয়ভাৱে অৱৰোধ কৰা হৈছে</translation>
 <translation id="3069226013421428034">নিৰ্দিষ্ট কোনো ছাইটৰ বাবে তৃতীয় পক্ষৰ ছাইন ইনৰ অনুমতি দিয়ক।</translation>
 <translation id="3082992102194421695">{COUNT,plural, =1{কাইলৈ ম্যাদ উকলিব}one{# দিনত ম্যাদ উকলিব}other{# দিনত ম্যাদ উকলিব}}</translation>
@@ -191,7 +190,6 @@
 <translation id="4169549551965910670">এটা ইউএছবি ডিভাইচৰ সৈতে সংযোগ কৰা হৈছে</translation>
 <translation id="4194328954146351878">ছাইটসমূহক NFC ডিভাইচত তথ্য চোৱা আৰু সলনি কৰাৰ অনুমতি দিয়াৰ পূৰ্বে সোধক (চুপাৰিছ কৰা হয়)</translation>
 <translation id="4200726100658658164">অৱস্থানৰ ছেটিংসমূহ খোলক</translation>
-<translation id="4212246570487010370">ব্ৰাউজ কৰা অব্যাহত ৰাখক</translation>
 <translation id="4226663524361240545">জাননীয়ে ডিভাইচটো কম্পন কৰিব পাৰে</translation>
 <translation id="4259722352634471385">নেভিগে’শ্বন অৱৰোধ কৰা আছে: <ph name="URL" /></translation>
 <translation id="4278390842282768270">অনুমতি দিয়া হৈছে</translation>
@@ -349,7 +347,6 @@
 <translation id="6746124502594467657">তললৈ নিয়ক</translation>
 <translation id="6749077623962119521">অনুমতি ৰিছেট কৰিবনে?</translation>
 <translation id="6766622839693428701">বন্ধ কৰিবলৈ তললৈ ছোৱাইপ কৰক।</translation>
-<translation id="6785959295338971061"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> <ph name="FROM_DEVICE" />ৰ পৰা</translation>
 <translation id="6787751205395685251"><ph name="SITE_NAME" />ৰ বাবে এটা বিকল্প বাছনি কৰক</translation>
 <translation id="6790428901817661496">প্লে’ কৰক</translation>
 <translation id="6818926723028410516">বস্তু বাছনি কৰক</translation>

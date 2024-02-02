@@ -607,9 +607,11 @@
 <translation id="3526440770046466733">લિંકને નવા ટૅબમાં ખોલો અને વર્તમાન ટૅબમાં રહો</translation>
 <translation id="353086728817903341"><ph name="NUM_DEVICES" /> ડિવાઇસ સાથે કનેક્ટેડ</translation>
 <translation id="3533126039236445965">શેલ્ફમાં ઉપલબ્ધ ઍપ</translation>
+<translation id="3537350467437346467">તમે આ પ્રદાતાને જોયા</translation>
 <translation id="3539957339480430241"><ph name="DEVICE_NAME" /> હૉટસ્પૉટ</translation>
 <translation id="3540893133818942399">તમારા ફોનના તાજેતરના ફોટા અને મીડિયા જોવાની સુવિધા સેટઅપ કરવાની પ્રક્રિયા છોડી દો</translation>
 <translation id="3542066395059568317">તમને સુઝાવો દેખાશે જેથી તમે જ્યાંથી છોડી દીધું હતું, ત્યાંથી તમે ચાલુ કરી શકો. તમે સુઝાવોને કાઢી નાખવા માટે, રાઇટ ક્લિક કરી શકો છો.</translation>
+<translation id="3547318469722231257">તમે ફેરફાર કર્યો</translation>
 <translation id="3552189655002856821">વાઇ-ફાઇ બંધ છે</translation>
 <translation id="3554215588514239132">ડેવલપર ટૂલ પૅનલ બતાવો અથવા છુપાવો</translation>
 <translation id="3554637740840164787"><ph name="ITEM_TITLE" /> પિન કરી હતી</translation>
@@ -701,6 +703,7 @@
 <translation id="385300504083504382">શરૂઆત</translation>
 <translation id="3859364108019690">ઍપ સ્ટ્રીમ કરી શકતા નથી</translation>
 <translation id="3861651314799684201">પૂર્ણ સ્ક્રીન રેકોર્ડ કરવા માટે Enter કી દબાવો</translation>
+<translation id="3882323608730650973">ફેરફાર કર્યો</translation>
 <translation id="3886872229787704059">આજે ખોલેલી</translation>
 <translation id="3891340733213178823">સાઇન આઉટ કરવા માટે બે વાર Ctrl+Shift+Q દબાવો.</translation>
 <translation id="3893630138897523026">ChromeVox (બોલાયેલો પ્રતિસાદ)</translation>
@@ -894,6 +897,7 @@
 <translation id="4582666543382004902">વાઇ-ફાઇનો ઉપયોગ કરવા માટે હૉટસ્પૉટ બંધ કરવામાં આવ્યું છે. હૉટસ્પૉટનો ઉપયોગ કરવા માટે, વાઇ-ફાઇ બંધ કરો.</translation>
 <translation id="4585337515783392668">અજાણ્યા પ્રાપ્તકર્તા પર કાસ્ટ કરવાનું રોકો</translation>
 <translation id="4596144739579517758">ઘેરી થીમ બંધ છે</translation>
+<translation id="4596442969149038771"><ph name="USER" /> દ્વારા શેર કરાઈ</translation>
 <translation id="4611292653554630842">લૉગ ઇન કરો</translation>
 <translation id="462160925400706389"><ph name="NAME" /> કનેક્ટ થયા</translation>
 <translation id="4623167406982293031">એકાઉન્ટ ચકાસો</translation>
@@ -1815,6 +1819,7 @@
 <translation id="8314772463905284467">Caps Lock ચાલુ છે</translation>
 <translation id="8315514906653279104">ચાલુ કરી રહ્યાં છીએ…</translation>
 <translation id="8331351032546853669">ડાઉનલોડ બાકી</translation>
+<translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
 <translation id="8345019317483336363"><ph name="WINDOW_TITLE" /> વિન્ડો પસંદ કરી</translation>
 <translation id="8349826889576450703">લૉન્ચર</translation>
@@ -2034,6 +2039,7 @@
 <translation id="953431725143473984">ડિવાઇસ શટ ડાઉન કરીએ?</translation>
 <translation id="954052413789300507"><ph name="FILENAME" /> માટે પર્યાપ્ત સ્પેસ નથી. સ્પેસ ખાલી કરો.</translation>
 <translation id="954520015070501466">30 મિનિટ</translation>
+<translation id="954786879461589145"><ph name="USER" /> દ્વારા ફેરફાર કરાયો</translation>
 <translation id="974545358917229949"><ph name="QUERY" /> માટે <ph name="RESULT_COUNT" /> પરિણામ બતાવી રહ્યાં છીએ</translation>
 <translation id="981011780479609956">નિયત તારીખ વગરના</translation>
 <translation id="98120814841227350">દસ્તાવેજના અંતે જાઓ</translation>

@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="da">
+<translation id="1021782183249308751">Hold Chrome-ikonet nede, og klik på "Rediger hjemmeskærm"</translation>
 <translation id="1066101356081285416">Chrome registrerer sporingsnumre på de websites, du besøger, og viser dig pakkeopdateringer på siden Ny fane. Pakkesporingsnummeret og websitets navn sendes til Google for at levere denne funktion og forbedre Googles shoppingfunktioner for alle. Du kan til enhver tid opdatere dette i <ph name="BEGIN_LINK" />indstillingerne for pakkesporing<ph name="END_LINK" />.</translation>
 <translation id="1085696779717592361">Brug Chrome som standard</translation>
 <translation id="1105362920864247682">Ryd browserdata i Chrome.</translation>
@@ -96,6 +97,7 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="3345341804167540816">Brug Chrome overalt</translation>
 <translation id="3360031466389132716">{THRESHOLD,plural, =1{Dette sker, når Chrome ikke bruges i {THRESHOLD} minut}one{Dette sker, når Chrome ikke bruges i {THRESHOLD} minut}other{Dette sker, når Chrome ikke bruges i {THRESHOLD} minutter}}</translation>
 <translation id="3399930248910934354">Åbn indstillingerne for Chrome</translation>
+<translation id="344736123700721678">Få hurtigere adgang til Chrome via Dock på din hjemmeskærm</translation>
 <translation id="3472587960215700950">Chrome bruger Google Maps til at give dig rutevejledninger og lokale oplysninger om registrerede adresser.</translation>
 <translation id="3503014945441706099">Få også Udvidet beskyttet browsing til denne Chrome-profil</translation>
 <translation id="3522659714780527202">Aktivér synkronisering for at se dine faner på alle de enheder, hvor du bruger Chrome</translation>

@@ -2914,7 +2914,6 @@
 <translation id="3188465121994729530">አማካኝ በመውሰድ ላይ</translation>
 <translation id="3189187154924005138">ትልቅ ጠቋሚ</translation>
 <translation id="3190558889382726167">የይለፍ ቃል ተቀምጧል</translation>
-<translation id="3191625924275846436">{NUM_SITES,plural, =1{ውሂብዎን ለመጠበቅ፣ ፈቃዶች በቅርቡ ካልተጎበኘ ጣቢያ ያስወግዱ}one{ውሂብዎን ለመጠበቅ፣ ፈቃዶች በቅርቡ ካልተጎበኘ ጣቢያ ያስወግዱ}other{ውሂብዎን ለመጠበቅ፣ ፈቃዶች በቅርቡ ካልተጎበኙ ጣቢያዎች ያስወግዱ}}</translation>
 <translation id="3192586965067888278">ችግሩን በዝርዝር ይግለጹ። ግብረመልስ ለሰው ግምገማ ወደ Google ይላካል እና የጉግል ምርቶችን እና አገልግሎቶችን ለማሻሻል ወይም ለመገንባት ጥቅም ላይ ሊውል ይችላል።</translation>
 <translation id="3192947282887913208">የድምጽ ፋይሎች</translation>
 <translation id="3193695589337931419">የስርአት ምልክቶች መገልገያዎች</translation>
@@ -4072,7 +4071,6 @@
 <translation id="4078903002989614318">የመደርደር እና የዝርዝር አማራጮች</translation>
 <translation id="4079140982534148664">የበለጸገ ፊደል አራሚን ተጠቀም</translation>
 <translation id="4082333918978320301">ምንም ድር ጣቢያዎች ማይክሮፎንዎን እንዲጠቀሙ አልተፈቀደላቸውም</translation>
-<translation id="4084582735848141214">{COUNT,plural, =1{1 ጣቢያ ተፈቅዷል}one{# ጣቢያ ተፈቅዷል}other{# ጣቢያዎች ተፈቅደዋል}}</translation>
 <translation id="4084682180776658562">ዕልባት</translation>
 <translation id="4084835346725913160">ዝጋ <ph name="TAB_NAME" /></translation>
 <translation id="4085298594534903246">በዚህ ገፅ ላይ ጃቫስክሪፕት ታግዷል።</translation>
@@ -8073,7 +8071,6 @@
 <translation id="7260186537988033909">የኪዮስክ እና የምልክት ቋንቋ መሣሪያ ምዝገባ ተጠናቅቋል</translation>
 <translation id="7261612856573623172">የስርዓት ጽሁፍ-ወደ-ንግግር ድምፅ</translation>
 <translation id="7262004276116528033">ይህ የመለያ መግቢያ አገልግሎት በ<ph name="SAML_DOMAIN" /> የሚስተናገድ ነው</translation>
-<translation id="7263162347647986485">{NUM_SITES,plural, =1{የ1 ጣቢያ ፈቃዶች ተወግደዋል}one{የ{NUM_SITES} ጣቢያ ፈቃዶች ተወግደዋል}other{የ{NUM_SITES} ጣቢያዎች ፈቃዶች ተወግደዋል}}</translation>
 <translation id="7264695323040866038">የሚደገፉ የድር አገናኞችን ለመክፈት ሁልጊዜ የ<ph name="APP" /> መተግበሪያውን ይጠቀሙ?</translation>
 <translation id="7267044199012331848">ምናባዊ ማሽኑን መጫን አልተቻለም። እባክዎ እንደገና ይሞክሩ፣ ወይም የእርስዎን አስተዳዳሪ ያነጋግሩ። የስሕተት ኮድ፦ <ph name="ERROR_CODE" />።</translation>
 <translation id="7267875682732693301">የተለያዩ የጣት አሻራዎን ክፍሎች ለማከል ጣትዎን ማንሳትቱና ማስቀመጥዎን ይቀጥሉ</translation>
@@ -9826,7 +9823,6 @@ nil</translation>
 <translation id="859246725979739260">ይህ ጣቢያ የእርስዎ አካባቢ እንዳይደርስ ታግዷል።</translation>
 <translation id="8593121833493516339">የአጠቃቀም እና የምርመራ ውሂብ ይላኩ። የምርመራ፣ የመሣሪያ እና የመተግበሪያ አጠቃቀም ውሂብ በራስ-ሰር ወደ Google በመላክ የልጅዎን የAndroid ተሞክሮ እንዲሻሻል ያግዙ። ይህ ልጅዎን ለመለየት ሥራ ላይ አይውልም፣ እና የስርዓት እና የመተግበሪያ እርጋታን እና ሌሎች ማሻሻያዎችን ያግዛል። አንዳንድ ውሑድ ውሂብ እንዲሁም የGoogle መተግበሪያዎችን እና እንደ የAndroid ገንቢዎች ያሉ አጋሮችን ያግዛሉ። የተጨማሪ ድር እና መተግበሪያ እንቅስቃሴ ለልጅዎ በርቶ ከሆነ ይህ ውሂብ አሁን በGoogle መለያቸው ላይ ሊቀመጥ ይችላል። <ph name="BEGIN_LINK1" />የበለጠ ለመረዳት<ph name="END_LINK1" /></translation>
 <translation id="8593450223647418235">ውቅረት እስኪጠናቀቅ ድረስ ፋይሎችን በMicrosoft 365 ውስጥ መክፈት አይችሉም።</translation>
-<translation id="8594585498253980290">{COUNT,plural, =1{1 ጣቢያ ታግዷል}one{# ጣቢያ ታግዷል}other{# ጣቢያዎች ታግደዋል}}</translation>
 <translation id="8596540852772265699">ብጁ ፋይሎች</translation>
 <translation id="8597462463725156723">ማሳወቂያዎች በማያ ገጹ ላይ ብቅ አይሉም። የማያ ገጽ የታችኛው ቀኝ ላይ አትረብሽ አዶውን ጠቅ በማድረግ ማሳወቂያዎችን አሁንም ማየት ይችላሉ።</translation>
 <translation id="8597845839771543242">የባህሪ ቅርጸት፦</translation>

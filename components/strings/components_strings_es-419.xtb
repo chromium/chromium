@@ -398,6 +398,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="1711528724596764268">Inteligencia artificial y aprendizaje automático</translation>
 <translation id="1712552549805331520"><ph name="URL" /> desea almacenar de forma permanente los datos en tu computadora local</translation>
 <translation id="1713628304598226412">Bandeja 2</translation>
+<translation id="1713819065634160212">Usar y guardar direcciones de tu Cuenta de Google</translation>
 <translation id="1714807406136741351">Modo de navegación, puedes cambiar al modo de Formularios para usar la flecha hacia la izquierda o derecha para revisar los cambios de precio en el gráfico</translation>
 <translation id="1717218214683051432">Sensores de movimiento</translation>
 <translation id="1717494416764505390">Buzón 3</translation>
@@ -1087,6 +1088,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="3120807611504813890">Sobre (bajo gramaje)</translation>
 <translation id="3121994479408824897">Ir a <ph name="DOMAIN" /></translation>
 <translation id="3126023634486644099">Etiquetas (permanentes)</translation>
+<translation id="3133565499688974786"><ph name="SEARCH_ENGINE_NAME" /> ahora es tu motor de búsqueda predeterminado</translation>
 <translation id="3140646734028448730">Servicios empresariales</translation>
 <translation id="3141093262818886744">Abrir de todos modos</translation>
 <translation id="3141641372357166056">Sin decisión sobre el consentimiento</translation>
@@ -1508,6 +1510,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="3943857333388298514">Pegar</translation>
 <translation id="3946209740501886391">Preguntar siempre en este sitio</translation>
 <translation id="3948588869002647271">Esta aplicación está dañada o no está instalada</translation>
+<translation id="3949297482798028668">Tu administrador no permite pegar este contenido aquí.</translation>
 <translation id="3949571496842715403">Este servidor no pudo probar que su dominio es <ph name="DOMAIN" />; su certificado de seguridad no especifica la extensión Nombres alternativos del asunto. Es posible que se deba a un error en la configuración o a que haya un atacante que está interceptando tu conexión.</translation>
 <translation id="3949601375789751990">Tu historial de navegación aparece aquí</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
@@ -1923,6 +1926,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="4764680219299728632">Cocinas, cocinas encimeras y hornos</translation>
 <translation id="4764776831041365478">Es posible que la página web en <ph name="URL" /> no funcione temporalmente o se haya trasladado de manera permanente a una nueva dirección web.</translation>
 <translation id="4766713847338118463">Grapas dobles en la parte inferior</translation>
+<translation id="4768864802656530630">Registros detallados del sistema. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="4771973620359291008">Se ha producido un error desconocido.</translation>
 <translation id="4774055414220872623">Suministros para actividades artísticas y manualidades</translation>
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{Se bloqueó una ventana emergente}other{Se bloquearon # vent. emergentes}}</translation>
@@ -2227,6 +2231,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="5377026284221673050">"El reloj está atrasado", "El reloj está adelantado" o "&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;"</translation>
 <translation id="5383478552402031184">Revestimiento para pisos</translation>
 <translation id="5385857628869214740">Humor</translation>
+<translation id="5385966243497224160">No se puede obtener una vista previa de URLs que no sean HTTPS</translation>
 <translation id="5386426401304769735">La cadena del certificado de este sitio web contiene un certificado que se firmó con SHA-1.</translation>
 <translation id="5392506727170022660">Metal (semibrillante)</translation>
 <translation id="5396631636586785122">Costura de borde a la derecha</translation>
@@ -2449,6 +2454,8 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="5838732667866024867">Puedes usar la flecha hacia la izquierda o la derecha para revisar los cambios de precio en el gráfico</translation>
 <translation id="5840318881868981258">En tu Cuenta de Google, <ph name="ACCOUNT" /></translation>
 <translation id="5841338463993781099">¿Quieres guardarla en la cuenta?</translation>
+<translation id="5843987376989109187">Aún no se admite este idioma.
+    <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="5847181246682413476">Fuentes de alimentación</translation>
 <translation id="5851548754964597211">Lista de pestañas</translation>
 <translation id="5852909432155870672">RA4</translation>
@@ -2782,7 +2789,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="6480864723214312258">Baterías para el hogar</translation>
 <translation id="6486200200930923183">Documentales</translation>
 <translation id="6489534406876378309">Comenzar a cargar fallos</translation>
-<translation id="6491663123807473970"><ph name="URL" /> quiere usar tus dispositivos MIDI</translation>
 <translation id="6493924760403974580">No se permite cambiar el tamaño de esta app.</translation>
 <translation id="6494750904506170417">ventanas emergentes y redireccionamientos</translation>
 <translation id="6495664197699704593">Esta contraseña solo se guarda en este dispositivo. Para usarla en tus otros dispositivos, <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
@@ -3659,6 +3665,7 @@ Detalles adicionales:
 <translation id="8194797478851900357">&amp;Deshacer Mover</translation>
 <translation id="8194956568907463262">Juegos de disparos</translation>
 <translation id="8199437620497683918">Disco óptico (brillante)</translation>
+<translation id="8199730148066603000">No se permite obtener una vista previa de URLs que no sean HTTPS.</translation>
 <translation id="8200772114523450471">Reanudar</translation>
 <translation id="8202097416529803614">Resumen del pedido</translation>
 <translation id="8202370299023114387">Conflicto</translation>
@@ -4096,6 +4103,8 @@ Detalles adicionales:
 <translation id="9049981332609050619">Has intentado acceder a <ph name="DOMAIN" />, pero el servidor presentó un certificado no válido.</translation>
 <translation id="9050666287014529139">Frase de contraseña</translation>
 <translation id="9051072642122229460">Cafeteras de filtro y espresso</translation>
+<translation id="9051260467258969162"><ph name="BEGIN_LINK" />Accede<ph name="END_LINK" /> 
+    de nuevo y, luego, regresa a esta pestaña para obtener ayuda con la escritura</translation>
 <translation id="9053840549256861041">Lanzamos una nueva función de privacidad en los anuncios llamada medición de anuncios. Chrome solo comparte información muy limitada entre los sitios, como cuándo se te mostró un anuncio, para ayudar a los sitios a medir el rendimiento de los anuncios.</translation>
 <translation id="9056953843249698117">Chrome Web Store</translation>
 <translation id="9062620674789239642">Es posible que se haya movido, editado o borrado.</translation>

@@ -139,6 +139,7 @@ Twoje zaszyfrowane dane może odczytać tylko osoba znająca Twoje hasło wielow
 <translation id="1749561566933687563">Synchronizuj swoje zakładki</translation>
 <translation id="1750259112639922169">Grupa <ph name="TAB_COUNT" /> kart</translation>
 <translation id="17513872634828108">Otwarte karty</translation>
+<translation id="1755203724116202818">Na potrzeby pomiaru skuteczności wyświetlanej reklamy między witrynami są udostępniane niektóre dane, np. informacje o tym, czy po wizycie na stronie dokonałeś(-aś) zakupu.</translation>
 <translation id="1757620656501361327">Aktualizacja Menedżera haseł Google</translation>
 <translation id="1760873718737761808">{FILE_COUNT,plural, =1{Strony, 1 strona na liście}few{Strony, # strony na liście}many{Strony, # stron na liście}other{Strony, # strony na liście}}</translation>
 <translation id="1778457539567749232">Oznacz jako nieprzeczytane</translation>
@@ -334,6 +335,7 @@ Twoje zaszyfrowane dane może odczytać tylko osoba znająca Twoje hasło wielow
 <translation id="2870560284913253234">Witryna</translation>
 <translation id="2871733351037274014">Wstępnie wczytuj strony</translation>
 <translation id="2876136027428473467"><ph name="CHILD_NAME" /> chce, abyś zatwierdził(a) stronę:</translation>
+<translation id="2876194821763651818">Hasła zapisane na koncie <ph name="USERNAME" />.</translation>
 <translation id="2876628302275096482">Dowiedz się więcej o tym, <ph name="BEGIN_LINK" />jak Chrome dba o prywatność Twoich danych<ph name="END_LINK" />.</translation>
 <translation id="2888126860611144412">Chrome – informacje</translation>
 <translation id="2891154217021530873">Zatrzymaj wczytywanie strony</translation>
@@ -451,6 +453,7 @@ Twoje zaszyfrowane dane może odczytać tylko osoba znająca Twoje hasło wielow
 <translation id="3443221991560634068">Ponownie załaduj bieżącą stronę</translation>
 <translation id="3444179773590444986">Co sądzisz o ciemnym motywie witryn?</translation>
 <translation id="3452832259067974318">Aby chronić Twoją prywatność, Chrome nie będzie autouzupełniać hasła w tym polu.</translation>
+<translation id="3467081767799433066">Na potrzeby pomiaru skuteczności reklam między witrynami są udostępniane niektóre dane, np. informacje o tym, czy po wizycie na stronie dokonałeś(-aś) zakupu.</translation>
 <translation id="3474624961160222204">Kontynuuj jako <ph name="NAME" /></translation>
 <translation id="3478363558367712427">Możesz wybrać wyszukiwarkę</translation>
 <translation id="3479552764303398839">Nie teraz</translation>
@@ -631,6 +634,7 @@ Twoje zaszyfrowane dane może odczytać tylko osoba znająca Twoje hasło wielow
 <translation id="4494806687727322324">Zapisywanie haseł zostało włączone przez administratora</translation>
 <translation id="4508528996305412043">Menu karty kanału jest otwarte</translation>
 <translation id="4509501256689523862">Personalizacja reklam wyświetlanych podczas przeglądania internetu zależy od tego ustawienia, od opcji <ph name="BEGIN_LINK_1" />Tematy reklam<ph name="END_LINK_1" />, od <ph name="BEGIN_LINK_2" />ustawień plików cookie<ph name="END_LINK_2" /> oraz od tego, czy odwiedzana witryna wyświetla reklamy spersonalizowane</translation>
+<translation id="4509741852167209430">Na potrzeby pomiaru skuteczności wyświetlanych reklam między witrynami są udostępniane niektóre dane, np. informacje o tym, czy po wizycie na stronie dokonałeś(-aś) zakupu.</translation>
 <translation id="4513387527876475750">{DAYS,plural, =1{# dzień temu}few{# dni temu}many{# dni temu}other{# dnia temu}}</translation>
 <translation id="451872707440238414">Szukaj zakładek</translation>
 <translation id="4521489764227272523">Wybrane dane zostały usunięte z Chrome i ze zsynchronizowanych urządzeń.
@@ -672,6 +676,7 @@ Na stronie <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> n
 <translation id="4699172675775169585">Obrazy i pliki zapisane w pamięci podręcznej</translation>
 <translation id="4710167854527459075">Sortuj od najnowszego</translation>
 <translation id="4719927025381752090">Proponuj tłumaczenie</translation>
+<translation id="4720556299488643018">Zrezygnuj</translation>
 <translation id="4732120983431207637">Moduł rozwijania stosu</translation>
 <translation id="4736934858538408121">Karta wirtualna</translation>
 <translation id="473775607612524610">Aktualizuj</translation>
@@ -1194,6 +1199,7 @@ Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy b
 <translation id="7313188324932846546">Kliknij, by skonfigurować synchronizację</translation>
 <translation id="7324354302972299151">Wysyłaj żądanie „Do Not Track”</translation>
 <translation id="7332075081379534664">Zalogowano</translation>
+<translation id="7333041109965360609">Zrezygnowano z otrzymywania powiadomień</translation>
 <translation id="7333232495927792353">Aby zobaczyć najtrafniejsze treści z Google, włącz synchronizację</translation>
 <translation id="7339898014177206373">Nowe okno</translation>
 <translation id="7340958967809483333">Opcje kart Discover</translation>
@@ -1452,6 +1458,7 @@ Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy b
 <translation id="8503813439785031346">Nazwa użytkownika</translation>
 <translation id="8505766168025405649">Stan pobierania możesz sprawdzić w powiadomieniu</translation>
 <translation id="8506357771923193001">Tutaj znajdziesz pobrane pliki</translation>
+<translation id="8512053371384421952">Nie będziesz już otrzymywać powiadomień ze strony <ph name="DOMAIN" />.</translation>
 <translation id="8514477925623180633">Eksportuj hasła zapisane w Chrome</translation>
 <translation id="8516012719330875537">Edytor obrazów</translation>
 <translation id="8523928698583292556">Usuń zapisane hasło</translation>

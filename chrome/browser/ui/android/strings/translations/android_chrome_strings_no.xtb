@@ -139,6 +139,7 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="1749561566933687563">Synkroniser bokmerkene dine</translation>
 <translation id="1750259112639922169">Fanegruppe – <ph name="TAB_COUNT" /> faner</translation>
 <translation id="17513872634828108">Åpne faner</translation>
+<translation id="1755203724116202818">For å måle annonseresultatene sine deler nettsteder begrensede typer data mellom seg, for eksempel om du har kjøpt noe etter å ha besøkt et nettsted.</translation>
 <translation id="1757620656501361327">Oppdatering om Google Passordlagring</translation>
 <translation id="1760873718737761808">{FILE_COUNT,plural, =1{Sider, 1 side på listen}other{Sider, # sider på listen}}</translation>
 <translation id="1778457539567749232">Merk som ulest</translation>
@@ -452,6 +453,7 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="3443221991560634068">Last inn den aktive siden på nytt</translation>
 <translation id="3444179773590444986">Vil du dele tilbakemeldinger om mørkt tema for nettsteder?</translation>
 <translation id="3452832259067974318">For å beskytte personvernet ditt autofyller ikke Chrome passordet ditt i dette feltet.</translation>
+<translation id="3467081767799433066">Med annonsemålinger deler nettsteder begrensede typer data mellom seg for å måle annonseresultatene sine, for eksempel om du har kjøpt noe etter å ha besøkt et nettsted.</translation>
 <translation id="3474624961160222204">Fortsett som <ph name="NAME" /></translation>
 <translation id="3478363558367712427">Du kan velge søkemotor</translation>
 <translation id="3479552764303398839">Ikke nå</translation>
@@ -632,6 +634,7 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="4494806687727322324">Administratoren din har slått på lagring av passord</translation>
 <translation id="4508528996305412043">Feedkortmenyen er åpnet</translation>
 <translation id="4509501256689523862">Om en annonse du ser har et personlig preg avhenger av denne innstillingen, <ph name="BEGIN_LINK_1" />Annonseemner<ph name="END_LINK_1" />, <ph name="BEGIN_LINK_2" />innstillingene for informasjonskapsler<ph name="END_LINK_2" /> og om nettstedet du ser på, viser personlig tilpassede annonser</translation>
+<translation id="4509741852167209430">Nettsteder deler begrensede typer data mellom seg for å måle annonseresultatene sine, for eksempel om du har kjøpt noe etter å ha besøkt et nettsted</translation>
 <translation id="4513387527876475750">{DAYS,plural, =1{for # dag siden}other{for # dager siden}}</translation>
 <translation id="451872707440238414">Søk i bokmerkene dine</translation>
 <translation id="4521489764227272523">De valgte dataene er er fjernet fra Chrome og de synkroniserte enhetene dine.

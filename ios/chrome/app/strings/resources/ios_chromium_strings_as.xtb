@@ -41,9 +41,11 @@
 <translation id="2054703085270098503">Chromiumৰ সৈতে সুৰক্ষিত হৈ থাকক</translation>
 <translation id="2098023844024447022">Chromiumত মোৰ শেহতীয়া টেব খোলক।</translation>
 <translation id="2109439615198500433">Chromium ব্যৱহাৰ সম্পৰ্কীয় কিটিপ</translation>
+<translation id="2147210759439165826">সমল আৰু Chromiumৰ সহায়ক পৰামর্শ লাভ কৰি থাকক।</translation>
 <translation id="2168108852149185974">কিছুমান এড-অনৰ কাৰণে Chrome ক্ৰেশ্ব হয়। অনুগ্ৰহ কৰি ইয়াক আনইনষ্টল কৰক:</translation>
 <translation id="2178608107313874732">এই মুহূৰ্তত Chromiumএ আপোনাৰ কেমেৰা ব্যৱহাৰ কৰিব নোৱাৰে</translation>
 <translation id="2195025571279539885">আপুনি এই ছাইটবোৰৰ <ph name="LANGUAGE_NAME" /> পৃষ্ঠাবোৰ Chromiumএ অনুবাদ কৰি দিয়াটো বিচাৰিবনে?</translation>
+<translation id="2216344354848599203">Chromiumৰ চিহ্নটো টিপি হেঁচি ৰাখক আৰু "গৃহ স্ক্ৰীন সম্পাদনা কৰক"ত ক্লিক কৰক</translation>
 <translation id="2218146227246548550">Chromium ব্যৱহাৰ কৰিবলৈ আপোনাৰ প্ৰতিষ্ঠানৰ বাবে আপুনি ছাইন ইন কৰাৰ আৱশ্যক। <ph name="BEGIN_LINK" />অধিক জানক<ph name="END_LINK" /></translation>
 <translation id="22313767259766852">এই ঠিকনাটো বৰ্তমান Chromiumত ছেভ কৰা আছে। এইটো সমগ্ৰ Google প্ৰ’ডাক্টসমূহত ব্যৱহাৰ কৰিবলৈ, ইয়াক আপোনাৰ Google একাউণ্ট <ph name="USER_EMAIL" />ত ছেভ কৰক।</translation>
 <translation id="2236584955986023187">ইয়াৰ অৰ্থ হৈছে Chromiumএ প্ৰত্যেকবাৰ ডেস্কটপ ছাইটৰ অনুৰোধ কৰিব।</translation>
@@ -197,6 +199,7 @@
 <translation id="632825460376924298">Chromiumত ছাইন ইন কৰাৰ অনুমতি দিয়ক</translation>
 <translation id="6337530241089703714">এই ডিভাইচটোৰ পৰা আপোনাৰ Chromiumৰ ডেটা মচিবনে ৰাখিব সেয়া বাছনি কৰক</translation>
 <translation id="6348483005826990855">৩) Chromium বাছনি কৰক</translation>
+<translation id="6383607155624074112">আপোনাৰ গৃহ স্ক্ৰীনৰ ড’কৰ পৰা অধিক ক্ষিপ্ৰভাৱে Chromium এক্সেছ কৰক</translation>
 <translation id="6407399265324739055">পৰিশোধ পদ্ধতি আৰু ঠিকনা এনক্ৰিপ্ট কৰা নহ'ব। Chromiumৰ পৰা ব্ৰাউজিঙৰ ইতিহাস ছিংক কৰা নহ’ব।
 
 আপোনাৰ পাছফ্ৰে’জ থকা লোকেহে আপোনাৰ এনক্ৰিপ্ট কৰা ডেটা পঢ়িব পাৰে। পাছফ্ৰে’জটো Googleলৈ পঠিওৱা নহয় অথবা Googleএ সেয়া ষ্ট’ৰ নকৰে। আপুনি যদি নিজৰ পাছফ্ৰে’জটো পাহৰে অথবা এই ছেটিংটো সলাব বিচাৰে, <ph name="BEGIN_LINK" />আপোনাৰ একাউণ্টৰ Chromiumৰ ডেটা মচক<ph name="END_LINK" />।</translation>

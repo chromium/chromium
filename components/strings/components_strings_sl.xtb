@@ -430,6 +430,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="1752021286346845558">Nabiralnik 8</translation>
 <translation id="1753068535428855445">Zmenki in zasebni stiki</translation>
 <translation id="1753706481035618306">Številka strani</translation>
+<translation id="1755203724116202818">Zaradi merjenja uspešnosti oglasa se s spletnimi mesti delijo omejene vrste podatkov, na primer ali ste opravili nakup po obisku spletnega mesta.</translation>
 <translation id="1755621011177747277">Posvojitev</translation>
 <translation id="1756026472674246267">Odpri povezavo na novem zavihku</translation>
 <translation id="175656076281618225">Čarovnija</translation>
@@ -884,6 +885,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="2674804415323431591">Skrivanje predlogov</translation>
 <translation id="2677696497921480781">Rojstni dnevi in godovi</translation>
 <translation id="2677748264148917807">Zapusti</translation>
+<translation id="2683195745483370038">Najdeni so bili drugi rezultati</translation>
 <translation id="2686919536310834199">Pošlji povratne informacije za funkcijo »Pomoč pri pisanju«.</translation>
 <translation id="2687555958734450033">Najustreznejše</translation>
 <translation id="2688186765492306706">500 x 760 mm</translation>
@@ -1265,6 +1267,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="3462200631372590220">Skrij podrobnosti</translation>
 <translation id="3465972433695735758">Ta datoteka PDF ni dostopna. Besedilo pridobljeno, uporablja tehnologijo Googlove umetne inteligence</translation>
 <translation id="346601286295919445">Kemija</translation>
+<translation id="3467081767799433066">Pri merjenju oglasov se s spletnimi mesti zaradi merjenja uspešnosti oglasov delijo omejene vrste podatkov, na primer ura v dnevu, na primer ali ste opravili nakup po obisku spletnega mesta.</translation>
 <translation id="3468054117417088249"><ph name="TAB_SWITCH_SUFFIX" />, trenutno odprto, pritisnite tabulatorko, nato Enter, če želite preklopiti na odprti zavihek</translation>
 <translation id="3470563864795286535"><ph name="CLOSE_INCOGNITO_WINDOWS_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite tabulatorko, nato Enter, če želite zapreti vsa trenutno odprta anonimna okna.</translation>
 <translation id="3474392552865647225">Gumb za prilagajanje pisav v Chromu, aktivirajte, če želite prilagoditi velikosti pisav in tipografije v Chromu</translation>
@@ -2788,7 +2791,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="6480864723214312258">Baterije za gospodinjstvo</translation>
 <translation id="6486200200930923183">Dokumentarni filmi</translation>
 <translation id="6489534406876378309">Začetek prenašanja zrušitev v storitev</translation>
-<translation id="6491663123807473970"><ph name="URL" /> želi uporabljati vaše naprave MIDI</translation>
 <translation id="6493924760403974580">Ta aplikacija podpira samo to velikost.</translation>
 <translation id="6494750904506170417">pojavna okna in preusmeritve</translation>
 <translation id="6495664197699704593">To geslo je shranjeno samo v tej napravi. Če ga želite uporabiti v drugih napravah, <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
@@ -4080,6 +4082,7 @@ Dodatne podrobnosti:
 <translation id="9005998258318286617">Dokumenta PDF ni bilo mogoče naložiti.</translation>
 <translation id="9008178007718859630">Oprema za dom in notranja oprema</translation>
 <translation id="9008201768610948239">Prezri</translation>
+<translation id="9014705027639070815">Spletna mesta, ki jih obiščete, lahko od Chroma zahtevajo podatke zaradi merjenja uspešnosti oglasov. Chrome omogoča spletnim mestom zbiranje omejenih vrst podatkov, na primer o tem, ali ste opravili nakup po obisku spletnega mesta.</translation>
 <translation id="9018120810758822233">Vnesite varnostno kodo za kartico <ph name="CREDIT_CARD" /></translation>
 <translation id="901834265349196618">e-pošta</translation>
 <translation id="9020542370529661692">Ta stran je prevedena v jezik <ph name="TARGET_LANGUAGE" /></translation>

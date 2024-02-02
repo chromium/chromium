@@ -430,6 +430,7 @@
 <translation id="1752021286346845558">메일박스 8</translation>
 <translation id="1753068535428855445">데이트 및 결혼 정보</translation>
 <translation id="1753706481035618306">페이지 번호</translation>
+<translation id="1755203724116202818">광고 실적을 측정하기 위해 제한된 유형의 데이터(예: 사이트 방문 후 구매했는지)가 사이트 간에 공유됩니다.</translation>
 <translation id="1755621011177747277">입양</translation>
 <translation id="1756026472674246267">새 탭에서 링크 열기</translation>
 <translation id="175656076281618225">마술</translation>
@@ -884,6 +885,7 @@
 <translation id="2674804415323431591">추천 숨기기</translation>
 <translation id="2677696497921480781">생일 및 영명 축일</translation>
 <translation id="2677748264148917807">나가기</translation>
+<translation id="2683195745483370038">다른 검색 결과가 표시됨</translation>
 <translation id="2686919536310834199">작성 지원 기능에 관한 의견을 보냅니다.</translation>
 <translation id="2687555958734450033">자동 맞춤</translation>
 <translation id="2688186765492306706">500x760mm</translation>
@@ -1265,6 +1267,7 @@
 <translation id="3462200631372590220">세부정보 숨기기</translation>
 <translation id="3465972433695735758">이 PDF에 액세스할 수 없습니다. Google AI를 통해 텍스트가 추출되었습니다</translation>
 <translation id="346601286295919445">화학</translation>
+<translation id="3467081767799433066">광고 측정을 사용하면 광고 실적을 측정하기 위해 제한된 유형의 데이터(예: 사이트 방문 후 구매했는지)가 사이트 간에 공유됩니다.</translation>
 <translation id="3468054117417088249"><ph name="TAB_SWITCH_SUFFIX" />, 현재 열려 있음, Tab을 누른 다음 Enter를 눌러 열린 탭으로 전환</translation>
 <translation id="3470563864795286535"><ph name="CLOSE_INCOGNITO_WINDOWS_FOCUSED_FRIENDLY_MATCH_TEXT" />, 현재 열려 있는 시크릿 창을 모두 닫으려면 Tab과 Enter를 차례로 누르세요</translation>
 <translation id="3474392552865647225">Chrome의 글꼴 맞춤설정 버튼, Chrome 글꼴 크기와 서체를 맞춤설정하려면 활성화하세요.</translation>
@@ -2788,7 +2791,6 @@
 <translation id="6480864723214312258">가정용 배터리</translation>
 <translation id="6486200200930923183">다큐멘터리 영화</translation>
 <translation id="6489534406876378309">비정상 종료 업로드 시작하기</translation>
-<translation id="6491663123807473970"><ph name="URL" />에서 MIDI 기기를 사용하려고 합니다</translation>
 <translation id="6493924760403974580">이 앱은 현재 크기만 지원합니다.</translation>
 <translation id="6494750904506170417">팝업 및 리디렉션</translation>
 <translation id="6495664197699704593">비밀번호는 이 기기에만 저장됩니다. 다른 기기에서 사용하려면 <ph name="GOOGLE_PASSWORD_MANAGER" />하세요.</translation>
@@ -4079,6 +4081,7 @@
 <translation id="9005998258318286617">PDF 문서를 로드하지 못했습니다.</translation>
 <translation id="9008178007718859630">홈데코 및 인테리어</translation>
 <translation id="9008201768610948239">무시</translation>
+<translation id="9014705027639070815">방문하는 사이트에서는 광고 실적을 측정하는 데 도움이 되는 정보를 Chrome에 요청할 수 있습니다. Chrome에서는 사이트가 제한된 유형의 데이터(예: 사이트 방문 후 구매했는지)를 수집하도록 허용합니다.</translation>
 <translation id="9018120810758822233"><ph name="CREDIT_CARD" />의 보안 코드 입력</translation>
 <translation id="901834265349196618">이메일</translation>
 <translation id="9020542370529661692">이 페이지는 <ph name="TARGET_LANGUAGE" />로 번역되었습니다.</translation>

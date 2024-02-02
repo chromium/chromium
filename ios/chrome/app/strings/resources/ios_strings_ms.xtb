@@ -149,6 +149,7 @@
 <translation id="1757699834933698436">{count,plural, =1{{count} Kata Laluan Lemah}other{{count} Kata Laluan Lemah}}</translation>
 <translation id="1767766085187034454">Google Translate</translation>
 <translation id="1769106850515800431">Kandungan Diperibadikan</translation>
+<translation id="1780152987505130652">Tutup Kumpulan</translation>
 <translation id="1789803444939621101">Selamat kembali, <ph name="USER_NAME" /></translation>
 <translation id="1803264062614276815">Nama Pemegang Kad</translation>
 <translation id="1809939268435598390">Padam Folder</translation>
@@ -215,7 +216,6 @@
 <translation id="2080769225927880590">Log masuk dengan Akaun yang Sah</translation>
 <translation id="2103075008456228677">Buka history.google.com</translation>
 <translation id="21133533946938348">Pin Tab</translation>
-<translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> item dialihkan</translation>
 <translation id="2122754583996902531">Penyemak imbas anda diurus. <ph name="BEGIN_LINK" />Ketahui Lebih Lanjut<ph name="END_LINK" /></translation>
 <translation id="2139502497535990641">Hidupkan Makluman Harga?</translation>
 <translation id="2139867232736819575">Cari Teks yang Anda Salin</translation>
@@ -653,6 +653,7 @@ Lihat arahan enjin carian anda untuk memadamkan sejarah carian anda, jika berken
 <translation id="4442550905108052454">Buka <ph name="BEGIN_BOLD" />Tetapan<ph name="END_BOLD" /></translation>
 <translation id="4454246407045105932">Tambahkan Bahasa</translation>
 <translation id="4455710003856931944">Anda boleh meleret bahagian tepi untuk kembali atau maju.</translation>
+<translation id="4460014764210899310">Nyahkumpulan</translation>
 <translation id="4461286950227634995">Tawarkan untuk Simpan Kata Laluan</translation>
 <translation id="4462491365653392320">Jejaki Harga pada Tab</translation>
 <translation id="4469324811108161144">Nota boleh menyimpan hingga <ph name="CHARACTER_LIMIT" /> aksara.</translation>
@@ -935,7 +936,6 @@ Serah mestilah turut didayakan dalam bahagian Umum pada Tetapan dan peranti anda
 <translation id="5857770089550859117">Ungkapan laluan diperlukan untuk memulakan penyegerakan.</translation>
 <translation id="5859715514067755465">Mundar</translation>
 <translation id="5860033963881614850">Dimatikan</translation>
-<translation id="5871497086027727873">1 item dialihkan</translation>
 <translation id="5896576662943111387">Dibina untuk iOS</translation>
 <translation id="5897749768294722429">Untuk segera kembali kepada laman yang telah anda lawati, segerakkan tab dan sejarah anda.</translation>
 <translation id="5897956970858271241">Lawati Pautan Disalin</translation>
@@ -1505,6 +1505,7 @@ Tapak boleh menggunakan kuki untuk melihat aktiviti penyemakan imbas anda merent
 <translation id="8766790350274092814">Kata laluan untuk <ph name="WEBSITE" /> dan <ph name="SECOND_WEBSITE" /> akan dipadamkan. Akaun anda tidak akan dipadamkan.</translation>
 <translation id="8775144690796719618">URL tidak sah</translation>
 <translation id="8780076847684176174">{count,plural, =1{Semak tab...}other{Semak semua tab...}}</translation>
+<translation id="8781834595282316166">Tab Baharu dalam Kumpulan</translation>
 <translation id="8782570580170191813">Sentiasa Jejaki Bungkusan</translation>
 <translation id="8787968206789828143">Cari di Web</translation>
 <translation id="8792626944327216835">mikrofon</translation>

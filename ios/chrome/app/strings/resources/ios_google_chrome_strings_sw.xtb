@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="sw">
+<translation id="1021782183249308751">Bonyeza na ushikilie aikoni ya Chrome kisha ubofye "Badilisha Skrini ya Kwanza"</translation>
 <translation id="1066101356081285416">Chrome itagundua namba za ufuatiliaji kwenye tovuti unazotembelea na kukuonyesha taarifa za kifurushi kwenye ukurasa wa Kichupo Kipya. Namba ya ufuatiliaji wa kifurushi na jina la tovuti zitatumwa kwenye Google ili kutoa kipengele hiki na kuboresha vipengele vya ununuzi vya Google kwa kila mtu. Unaweza kusasisha mchakato huu wakati wowote katika <ph name="BEGIN_LINK" />Mipangilio ya Ufuatiliaji wa Kifurushi<ph name="END_LINK" />.</translation>
 <translation id="1085696779717592361">Tumia Chrome Kwa Chaguomsingi</translation>
 <translation id="1105362920864247682">Futa Data ya Kuvinjari kwenye Chrome.</translation>
@@ -96,6 +97,7 @@ Mtu aliye na kauli yako ya siri pekee ndiye anaweza kusoma data yako iliyosimbwa
 <translation id="3345341804167540816">Tumia Chrome Kila Mahali</translation>
 <translation id="3360031466389132716">{THRESHOLD,plural, =1{Hali hii hutokea wakati hujatumia Chrome kwa dakika {THRESHOLD}}other{Hali hii hutokea wakati hujatumia Chrome kwa dakika {THRESHOLD}}}</translation>
 <translation id="3399930248910934354">Fungua Mipangilio ya Chrome</translation>
+<translation id="344736123700721678">Fikia Chrome kwa haraka katika Sehemu Iliyopachikwa kwenye Skrini ya Kwanza</translation>
 <translation id="3472587960215700950">Chrome hutumia Ramani za Google kukupatia maelekezo na maelezo ya eneo husika kwenye anwani zilizotambuliwa.</translation>
 <translation id="3503014945441706099">Pia, pata Kipengele cha Kuvinjari Salama Kilichoboreshwa kwenye wasifu huu wa Chrome</translation>
 <translation id="3522659714780527202">Ili uone vichupo vyako kwenye kifaa chochote unakotumia Chrome, washa kipengele cha kusawazisha</translation>

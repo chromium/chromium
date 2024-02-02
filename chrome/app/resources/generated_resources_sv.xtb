@@ -2918,7 +2918,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3188465121994729530">Glidande medelvärde</translation>
 <translation id="3189187154924005138">Stor markör</translation>
 <translation id="3190558889382726167">Lösenordet sparades</translation>
-<translation id="3191625924275846436">{NUM_SITES,plural, =1{För att skydda din data har behörigheter tagits bort från en webbplats som du inte har besökt nyligen}other{För att skydda din data har behörigheter tagits bort från webbplatser som du inte har besökt nyligen}}</translation>
 <translation id="3192586965067888278">Beskriv problemet utförligt. Din feedback skickas till Google för mänsklig granskning och kan användas för att förbättra eller utveckla Googles produkter och tjänster.</translation>
 <translation id="3192947282887913208">Ljudfiler</translation>
 <translation id="3193695589337931419">Verktyg för systemsignaler</translation>
@@ -4076,7 +4075,6 @@ Detta kan omfatta information om installerad programvara, filer, webbläsaren oc
 <translation id="4078903002989614318">Sorterings- och listalternativ</translation>
 <translation id="4079140982534148664">Använd förbättrad stavningskontroll</translation>
 <translation id="4082333918978320301">Inga webbplatser tillåts använda mikrofonen</translation>
-<translation id="4084582735848141214">{COUNT,plural, =1{En webbplats har tillåtits}other{# webbplatser har tillåtits}}</translation>
 <translation id="4084682180776658562">Lägg till bokmärke</translation>
 <translation id="4084835346725913160">Stäng <ph name="TAB_NAME" /></translation>
 <translation id="4085298594534903246">JavaScript är blockerat på den här sidan.</translation>
@@ -8074,7 +8072,6 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="7260186537988033909">Kiosk- och skyltningsenheten har registrerats</translation>
 <translation id="7261612856573623172">Systemets röst för text till tal</translation>
 <translation id="7262004276116528033">Inloggningstjänsten tillhandahålls av <ph name="SAML_DOMAIN" />.</translation>
-<translation id="7263162347647986485">{NUM_SITES,plural, =1{Behörigheter har tagits bort för 1 webbplats}other{Behörigheter har tagits bort för {NUM_SITES} webbplatser}}</translation>
 <translation id="7264695323040866038">Vill du att webblänkar som stöds alltid ska öppnas i <ph name="APP" />-appen?</translation>
 <translation id="7267044199012331848">Det gick inte att installera den virtuella maskinen. Försök igen eller kontakta administratören. Felkod: <ph name="ERROR_CODE" />.</translation>
 <translation id="7267875682732693301">Lyft fingret flera gånger för att lägga till hela fingeravtrycket</translation>
@@ -9821,7 +9818,6 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="859246725979739260">Åtkomst till din plats har blockerats för den här webbplatsen</translation>
 <translation id="8593121833493516339">Skicka diagnostik- och användningsdata. Hjälp till att göra Android bättre för ditt barn genom att skicka diagnostikdata, enhetsdata och data om appanvändning till Google automatiskt. Denna data används till att förbättra systemets och apparnas stabilitet med mera och inte till att identifiera ditt barn. Viss samlad data används även till att förbättra appar från Google och partner, till exempel Android-utvecklare. Om ytterligare webb- och appaktivitet har aktiverats för ditt barn kan denna data sparas i Google-kontot. <ph name="BEGIN_LINK1" />Läs mer<ph name="END_LINK1" /></translation>
 <translation id="8593450223647418235">Du kan inte öppna filer i Microsoft 365 förrän konfigureringen är klar.</translation>
-<translation id="8594585498253980290">{COUNT,plural, =1{En webbplats har blockerats}other{# webbplatser har blockerats}}</translation>
 <translation id="8596540852772265699">Egna filformat</translation>
 <translation id="8597462463725156723">Aviseringar dyker inte upp på skärmen. Du kan fortfarande se aviseringar genom att klicka på Stör ej-ikonen nere till höger på skärmen.</translation>
 <translation id="8597845839771543242">Format på egenskap:</translation>

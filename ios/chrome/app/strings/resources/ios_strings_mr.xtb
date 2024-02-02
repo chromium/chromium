@@ -148,6 +148,7 @@
 <translation id="1753905327828125965">सर्वाधिक भेट दिलेले</translation>
 <translation id="1757699834933698436">{count,plural, =1{{count} कमकुवत पासवर्ड}other{{count} कमकुवत पासवर्ड}}</translation>
 <translation id="1767766085187034454">Google Translate</translation>
+<translation id="1780152987505130652">गट बंद करा</translation>
 <translation id="1789803444939621101"><ph name="USER_NAME" />, तुमचे पुन्हा स्वागत आहे</translation>
 <translation id="1803264062614276815">कार्डधारकाचे नाव</translation>
 <translation id="1809939268435598390">फोल्डर हटवा</translation>
@@ -213,7 +214,6 @@
 <translation id="2080769225927880590">योग्य खाते वापरून साइन इन करा</translation>
 <translation id="2103075008456228677">history.google.com उघडा</translation>
 <translation id="21133533946938348">टॅब पिन करा</translation>
-<translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> आयटम हलविले</translation>
 <translation id="2122754583996902531">तुमचा ब्राउझर व्यवस्थापित केला आहे. <ph name="BEGIN_LINK" />अधिक जाणून घ्या<ph name="END_LINK" /></translation>
 <translation id="2139502497535990641">किमतीविषयी सूचना सुरू करायच्या आहेत का?</translation>
 <translation id="2139867232736819575">तुम्ही कॉपी केलेला मजकूर शोधा</translation>
@@ -565,6 +565,7 @@
 <translation id="3929457972718048006">पत्ते</translation>
 <translation id="3948600256434252210">तुम्ही गुप्त मोड मध्ये ब्राउझ करण्यासाठी उजवीकडे स्‍वाइप करू शकता.</translation>
 <translation id="3955822496205734389">तुमच्याकडे कमकुवत पासवर्ड आहेत.</translation>
+<translation id="3958312024468322930">ते तुमच्या होम स्क्रीन च्या तळाशी डॉक करा वर ड्रॅग करा</translation>
 <translation id="3959736869653157332">मेनू → नवीन गुप्त टॅब</translation>
 <translation id="3962326069546168954">सेव्ह करा</translation>
 <translation id="3967822245660637423">पूर्ण डाउनलोड करा</translation>
@@ -646,6 +647,7 @@
 <translation id="4431224949908513835">भरण्यासाठी पेमेंट पद्धत निवडा.</translation>
 <translation id="4442550905108052454"><ph name="BEGIN_BOLD" />सेटिंग्ज<ph name="END_BOLD" /> उघडा</translation>
 <translation id="4454246407045105932">भाषा जोडा</translation>
+<translation id="4460014764210899310">गटामधून काढून टाका</translation>
 <translation id="4461286950227634995">पासवर्ड सेव्ह करायचे आहेत का हे विचारा</translation>
 <translation id="4462491365653392320">टॅब यावर किमती ट्रॅक करा</translation>
 <translation id="4469324811108161144"><ph name="CHARACTER_LIMIT" /> वर्णांपर्यंतच्या टिपा सेव्ह केल्या जाऊ शकतात.</translation>
@@ -925,7 +927,6 @@
 <translation id="5857770089550859117">सिंक सुरू करण्यासाठी सांकेतिक पासफ्रेझ आवश्यक आहे.</translation>
 <translation id="5859715514067755465">फॉरवर्ड करा</translation>
 <translation id="5860033963881614850">बंद</translation>
-<translation id="5871497086027727873">1 आयटम हलविला</translation>
 <translation id="5896576662943111387">iOS साठी तयार केलेला</translation>
 <translation id="5897749768294722429">तुम्ही भेट दिलेल्या साइटवर झटपट परत जाण्यासाठी, तुमचे टॅब आणि इतिहास सिंक करा.</translation>
 <translation id="5897956970858271241">कॉपी केलेल्या लिंकला भेट द्या</translation>
@@ -1462,6 +1463,7 @@
 <translation id="8620640915598389714">संपादित करा</translation>
 <translation id="8624447588354561276">पॅकेज क्रमांक</translation>
 <translation id="8624753446837753970">स्थान सेट करा</translation>
+<translation id="8625706492572042370">होम स्क्रीन संपादित करा</translation>
 <translation id="8626393685701737946">तुम्ही सेटिंग्ज &gt; आशय सेटिंग्ज मधून डीफॉल्ट साइट दृश्य डेस्कटॉप मोडमध्ये बदलू शकता</translation>
 <translation id="8636825310635137004">आपल्या इतर डिव्हाइसेस मधून तुमचे टॅब प्राप्त करण्यासाठी, सिंक सुरू करा</translation>
 <translation id="8637431369725868556">धोकादायक साइटपासून संरक्षण मिळवा.</translation>
@@ -1493,6 +1495,7 @@
 <translation id="8766790350274092814"><ph name="WEBSITE" /> आणि <ph name="SECOND_WEBSITE" /> चे पासवर्ड हटवले जातील. तुमची खाती हटवली जाणार नाहीत.</translation>
 <translation id="8775144690796719618">चुकीची URL</translation>
 <translation id="8780076847684176174">{count,plural, =1{टॅबचे पुनरावलोकन करा...}other{सर्व टॅबचे पुनरावलोकन करा...}}</translation>
+<translation id="8781834595282316166">गटामधील नवीन टॅब</translation>
 <translation id="8782570580170191813">नेहमी पॅकेज ट्रॅक करा</translation>
 <translation id="8787968206789828143">वेबवर शोधा</translation>
 <translation id="8792626944327216835">मायक्रोफोन</translation>

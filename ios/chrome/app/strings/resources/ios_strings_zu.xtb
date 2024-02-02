@@ -149,6 +149,7 @@
 <translation id="1757699834933698436">{count,plural, =1{Iphasiwedi Engaqinile e-{count}}one{Amaphasiwedi Angaqinile angu-{count}}other{Amaphasiwedi Angaqinile angu-{count}}}</translation>
 <translation id="1767766085187034454">I-Google Translate</translation>
 <translation id="1769106850515800431">Okuqukethwe Okuqondaniswe Nomuntu Siqu</translation>
+<translation id="1780152987505130652">Vala iqembu</translation>
 <translation id="1789803444939621101">Siyakwamukela Futhi, <ph name="USER_NAME" /></translation>
 <translation id="1803264062614276815">Igama lomnikazi wekhadi</translation>
 <translation id="1809939268435598390">Susa ifolda</translation>
@@ -214,7 +215,6 @@
 <translation id="2080769225927880590">Ngena ngemvume ku-akhawunti Evumelekile</translation>
 <translation id="2103075008456228677">Vula ku-history.google.com</translation>
 <translation id="21133533946938348">Phina ithebhu</translation>
-<translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> izinto zihanjisiwe</translation>
 <translation id="2122754583996902531">Isiphequluli sakho siphethwe. <ph name="BEGIN_LINK" />Funda kabanzi<ph name="END_LINK" /></translation>
 <translation id="2139502497535990641">Vula Izixwayiso Zezintengo?</translation>
 <translation id="2139867232736819575">Sesha umbhalo owukopishile</translation>
@@ -566,6 +566,7 @@ Bona imiyalelo yenjini yakho yokusesha yokusula umlando wakho wosesho, uma kuseb
 <translation id="3929457972718048006">Amakheli</translation>
 <translation id="3948600256434252210">Ungaswayipha ngakwesokudla ukuze ubhrawuze ku-Incognito.</translation>
 <translation id="3955822496205734389">Unamaphasiwedi angaqinile.</translation>
+<translation id="3958312024468322930">Yidonsele kudokhu ngaphansi kwesikrini sakho sasekhaya</translation>
 <translation id="3959736869653157332">Imenyu → Ithebhu ye-Incognito Entsha</translation>
 <translation id="3962326069546168954">Londoloza</translation>
 <translation id="3967822245660637423">Ukulanda kuqedile</translation>
@@ -647,6 +648,7 @@ Bona imiyalelo yenjini yakho yokusesha yokusula umlando wakho wosesho, uma kuseb
 <translation id="4431224949908513835">Khetha indlela yokukhokha ukuze ugcwalise.</translation>
 <translation id="4442550905108052454">Vula <ph name="BEGIN_BOLD" />Amasethingi<ph name="END_BOLD" /></translation>
 <translation id="4454246407045105932">Engeza ulimi</translation>
+<translation id="4460014764210899310">Khipha ukubuthana</translation>
 <translation id="4461286950227634995">Nikezela Ukulondoloza Amaphasiwedi</translation>
 <translation id="4462491365653392320">Landelela Izintengo Kumathebhu</translation>
 <translation id="4469324811108161144">Amanothi angalondoloza kuze kufike ezinhlamvini ezingu-<ph name="CHARACTER_LIMIT" />.</translation>
@@ -929,7 +931,6 @@ I-Handoff futhi kufanele inikwe amandla esigabeni sokuvamile zezilungiselelo, fu
 <translation id="5857770089550859117">Umushwana wokungena uyadingeka ukuze kuqalwe ukuvumelanisa.</translation>
 <translation id="5859715514067755465">Phambili</translation>
 <translation id="5860033963881614850">Valiwe</translation>
-<translation id="5871497086027727873">1 into ihanjsiwe</translation>
 <translation id="5896576662943111387">Yakhelwe i-iOS</translation>
 <translation id="5897749768294722429">Ukuze ubuyele ngokushesha kumasayithi owavakashele, vumelanisa amathebhu wakho nomlando.</translation>
 <translation id="5897956970858271241">Vakashela isixhumanisi esikopishiwe</translation>
@@ -1466,6 +1467,7 @@ Amasayithi angasebenzisa amakhukhi ukubona umsebenzi wakho wokuphequlula kumasay
 <translation id="8620640915598389714">Hlela</translation>
 <translation id="8624447588354561276">Inombolo Yephakheji</translation>
 <translation id="8624753446837753970">Setha Isikhundla</translation>
+<translation id="8625706492572042370">Hlela Isikrini Sasekhaya</translation>
 <translation id="8626393685701737946">Ungashintsha ukubuka isayithi yokuzenzakalelayo kube ideskithophu kokuthi Amasethingi &gt; Amasethingi Wokuqukethwe</translation>
 <translation id="8636825310635137004">Ukuze uthole amathebhu akho kusukela kumanye amadivayisi akho, vula ukuvumelanisa.</translation>
 <translation id="8637431369725868556">Thola isivikelo kumasayithi ayingozi.</translation>
@@ -1497,6 +1499,7 @@ Amasayithi angasebenzisa amakhukhi ukubona umsebenzi wakho wokuphequlula kumasay
 <translation id="8766790350274092814">Amaphasiwedi e-<ph name="WEBSITE" />, nawe-<ph name="SECOND_WEBSITE" />, azosulwa. Ama-akhawunti akho ngeke asulwe.</translation>
 <translation id="8775144690796719618">I-URL engavumelekile</translation>
 <translation id="8780076847684176174">{count,plural, =1{Buyekeza ithebhu...}one{Buyekeza wonke amathebhu...}other{Buyekeza wonke amathebhu...}}</translation>
+<translation id="8781834595282316166">Ithebhu entsha kuqembu</translation>
 <translation id="8782570580170191813">Hlale Uwalandelela Amaphakheji</translation>
 <translation id="8787968206789828143">Sesha Kuwebhu</translation>
 <translation id="8792626944327216835">imakrofoni</translation>

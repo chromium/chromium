@@ -109,7 +109,6 @@
 <translation id="2750481671343847896">Sivustot voivat näyttää henkilöllisyyspalveluiden sisäänkirjautumiskehotteita.</translation>
 <translation id="2790501146643349491">Kun tämä on päällä, äskettäin suljetut sivustot voivat viimeistellä datan lähettämistä tai vastaanottamista. Kun tämä ei ole päällä, äskettäin suljetut sivustot eivät voi viimeistellä datan lähettämistä tai vastaanottamista.</translation>
 <translation id="2822354292072154809">Haluatko varmasti nollata kaikki sivuston käyttöoikeudet (<ph name="CHOSEN_OBJECT_NAME" />)?</translation>
-<translation id="2836978798613876756"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> <ph name="HOST_NAME" /></translation>
 <translation id="2850913818900871965">Pyydä mobiilinäkymää</translation>
 <translation id="2870560284913253234">Sivusto</translation>
 <translation id="2874939134665556319">Edellinen kappale</translation>
@@ -121,7 +120,6 @@
 <translation id="2968755619301702150">Varmennetiedot</translation>
 <translation id="2979365474350987274">Kolmannen osapuolen evästeitä on rajoitettu</translation>
 <translation id="3008272652534848354">Nollaa luvat</translation>
-<translation id="3013291976881901233">MIDI-laitteet</translation>
 <translation id="301521992641321250">Estetty automaattisesti</translation>
 <translation id="3069226013421428034">Salli kolmannen osapuolen sisäänkirjautuminen tietylle sivustolle.</translation>
 <translation id="3082992102194421695">{COUNT,plural, =1{Vanhenee huomenna}other{Vanhenee # päivän kuluttua}}</translation>
@@ -192,7 +190,6 @@
 <translation id="4169549551965910670">Yhdistetty USB-laitteeseen</translation>
 <translation id="4194328954146351878">Kysy, saavatko sivustot nähdä ja muuttaa NFC-laitteiden tietoja (suositeltu)</translation>
 <translation id="4200726100658658164">Avaa sijaintiasetukset</translation>
-<translation id="4212246570487010370">Jatka selaamista</translation>
 <translation id="4226663524361240545">Laite voi väristä ilmoitusten yhteydessä.</translation>
 <translation id="4259722352634471385">Kohde on estetty: <ph name="URL" /></translation>
 <translation id="4278390842282768270">Sallittu</translation>
@@ -282,7 +279,6 @@
 <translation id="5706552988683188916">Tämä poistaa evästeet ja muun sivustodatan täällä: <ph name="WEBSITE" /></translation>
 <translation id="5723967018671998714">Kolmannen osapuolen evästeet estetään incognito-tilassa</translation>
 <translation id="5740126560802162366">Sivustot voivat tallentaa dataa laitteellesi</translation>
-<translation id="5749158352074143502">Jatka tällä välilehdellä</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" /> estetty</translation>
 <translation id="5804241973901381774">Luvat</translation>
 <translation id="5844448279347999754">Kun tämä on päällä, sivustot voivat pyytää leikepöydälle tallennettujen tekstien ja kuvien näkemistä. Kun tämä on pois päältä, sivustot eivät näe leikepöydälle tallennettuja tekstejä tai kuvia.</translation>
@@ -351,7 +347,6 @@
 <translation id="6746124502594467657">Siirrä alas</translation>
 <translation id="6749077623962119521">Nollataanko luvat?</translation>
 <translation id="6766622839693428701">Sulje pyyhkäisemällä alas.</translation>
-<translation id="6785959295338971061"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" />, lähde: <ph name="FROM_DEVICE" /></translation>
 <translation id="6787751205395685251">Valitse vaihtoehto sivustolle <ph name="SITE_NAME" /></translation>
 <translation id="6790428901817661496">Toista</translation>
 <translation id="6818926723028410516">Valitse kohteet</translation>
@@ -423,7 +418,6 @@
 <translation id="7990211076305263060">Kun tämä on päällä, sivustot voivat pyytää lupaa mikrofonin käyttöön. Kun tämä on pois päältä, sivustot eivät voi käyttää mikrofonia.</translation>
 <translation id="8007176423574883786">Ei käytössä tällä laitteella</translation>
 <translation id="802154636333426148">Lataus epäonnistui.</translation>
-<translation id="8024161440284949905">Jatka näillä välilehdillä</translation>
 <translation id="8042586301629853791">Lajitteluperuste:</translation>
 <translation id="8067883171444229417">Toista video</translation>
 <translation id="8068648041423924542">Varmenteen valinta epäonnistui</translation>

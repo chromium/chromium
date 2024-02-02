@@ -335,6 +335,7 @@
 <translation id="2870560284913253234">Сайт</translation>
 <translation id="2871733351037274014">Беттерді алдын ала жүктеу</translation>
 <translation id="2876136027428473467"><ph name="CHILD_NAME" /> мына веб-сайтты мақұлдағаныңызды қалайды:</translation>
+<translation id="2876194821763651818">Құпия сөздер <ph name="USERNAME" /> аккаунтына сақталды.</translation>
 <translation id="2876628302275096482"><ph name="BEGIN_LINK" />Chrome-ның деректеріңізді құпия сақтау жолы<ph name="END_LINK" /> туралы толық ақпарат</translation>
 <translation id="2888126860611144412">Chrome туралы</translation>
 <translation id="2891154217021530873">Бет жүктеуді тоқтату</translation>
@@ -675,6 +676,7 @@ Google аккаунтының шолу тарихы басқа Google қызме
 <translation id="4699172675775169585">Кэштелген кескіндер мен файлдар</translation>
 <translation id="4710167854527459075">Ең жаңасы бойынша сұрыптау</translation>
 <translation id="4719927025381752090">Аудармасын ұсыну</translation>
+<translation id="4720556299488643018">Тоқтату</translation>
 <translation id="4732120983431207637">Stack Unwinder</translation>
 <translation id="4736934858538408121">Виртуалдық карта</translation>
 <translation id="473775607612524610">Жаңарту</translation>
@@ -1197,6 +1199,7 @@ Google аккаунтының шолу тарихы басқа Google қызме
 <translation id="7313188324932846546">Синхрондауды реттеу үшін түртіңіз.</translation>
 <translation id="7324354302972299151">"Do Not Track" сұрауын жіберу</translation>
 <translation id="7332075081379534664">Аккаунтқа кірдіңіз.</translation>
+<translation id="7333041109965360609">Хабарландырулар жазылымы тоқтады</translation>
 <translation id="7333232495927792353">Google-дан ең өзекті контентті алу үшін синхрондаңыз.</translation>
 <translation id="7339898014177206373">Жаңа терезе</translation>
 <translation id="7340958967809483333">Discover опциялары</translation>
@@ -1455,6 +1458,7 @@ Google аккаунтының шолу тарихы басқа Google қызме
 <translation id="8503813439785031346">Пайдаланушы аты</translation>
 <translation id="8505766168025405649">Жүктеп алу күйі туралы хабарландыруды қараңыз.</translation>
 <translation id="8506357771923193001">Жүктеп алынғандарды осы жерден таба аласыз</translation>
+<translation id="8512053371384421952">Сізге енді <ph name="DOMAIN" /> веб-сайтынан хабарландырулар келмейді.</translation>
 <translation id="8514477925623180633">Chrome арқылы сақталған құпия сөздерді экспорттау</translation>
 <translation id="8516012719330875537">Сурет редакторы</translation>
 <translation id="8523928698583292556">Сақталған құпия сөзді жою</translation>
