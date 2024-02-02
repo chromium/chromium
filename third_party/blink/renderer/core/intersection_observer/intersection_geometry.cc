@@ -657,14 +657,6 @@ void IntersectionGeometry::ComputeGeometry(const RootGeometry& root_geometry,
     flags_ |= kIsVisible;
   }
 
-  if (flags_ & kShouldConvertToCSSPixels) {
-    AdjustForAbsoluteZoom::AdjustRectMaybeExcludingCSSZoom(target_rect_,
-                                                           *target);
-    AdjustForAbsoluteZoom::AdjustRectMaybeExcludingCSSZoom(intersection_rect_,
-                                                           *target);
-    AdjustForAbsoluteZoom::AdjustRectMaybeExcludingCSSZoom(root_rect_, *root);
-  }
-
   if (cached_rects) {
     cached_rects->min_scroll_delta_to_update = ComputeMinScrollDeltaToUpdate(
         root_and_target, target_to_view_transform,
@@ -684,6 +676,15 @@ void IntersectionGeometry::ComputeGeometry(const RootGeometry& root_geometry,
     cached_rects->relationship = static_cast<int>(root_and_target.relationship);
     cached_rects->root_scrolls_target = root_and_target.root_scrolls_target;
 #endif
+  }
+
+  // This must be the last step after all calculations in zoomed coordinates.
+  if (flags_ & kShouldConvertToCSSPixels) {
+    AdjustForAbsoluteZoom::AdjustRectMaybeExcludingCSSZoom(target_rect_,
+                                                           *target);
+    AdjustForAbsoluteZoom::AdjustRectMaybeExcludingCSSZoom(intersection_rect_,
+                                                           *target);
+    AdjustForAbsoluteZoom::AdjustRectMaybeExcludingCSSZoom(root_rect_, *root);
   }
 }
 
