@@ -454,9 +454,10 @@ void FindBadConstructsConsumer::CheckCtorDtorWeight(
       // find one that tries to be inline.
       for (CXXRecordDecl::ctor_iterator it = record->ctor_begin();
            it != record->ctor_end(); ++it) {
-        // The current check is buggy. An implicit copy constructor does not
-        // have an inline body, so this check never fires for classes with a
-        // user-declared out-of-line constructor.
+        // The current check is buggy in C++20 (but was more correct in C++14).
+        // An implicit copy constructor does not have an inline body, so this
+        // check never fires for classes with a user-declared out-of-line
+        // constructor.
         if (it->hasInlineBody()) {
           if (it->isCopyConstructor() &&
               !record->hasUserDeclaredCopyConstructor()) {

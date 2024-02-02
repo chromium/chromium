@@ -57,7 +57,7 @@ class ClangPluginTest(object):
 
     os.chdir(self._test_base)
 
-    clang_cmd = [self._clang_path, '-c', '-std=c++14']
+    clang_cmd = [self._clang_path, '-c', '-std=c++20']
 
     # Use the traditional diagnostics format (see crbug.com/1450229).
     clang_cmd.extend([
