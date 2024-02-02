@@ -444,6 +444,7 @@ TEST_F(DiceWebSigninInterceptorTest,
   // Primary account is set.
   ASSERT_TRUE(identity_test_env()->identity_manager()->HasPrimaryAccount(
       signin::ConsentLevel::kSignin));
+  ASSERT_TRUE(primary_account_info.IsManaged());
   EXPECT_TRUE(interceptor()->ShouldEnforceEnterpriseProfileSeparation(
       primary_account_info));
 
@@ -1841,19 +1842,18 @@ TEST_F(DiceWebSigninInterceptorTestWithUnoEnabled,
       /*is_new_account=*/true, /*is_sync_signin=*/false);
 
   auto expected_outcome =
-      SigninInterceptionHeuristicOutcome::kAbortAccountInfoNotCompatible;
+      SigninInterceptionHeuristicOutcome::kAbortSingleAccount;
   EXPECT_EQ(interceptor()->GetHeuristicOutcome(/*is_new_account=*/true,
                                                /*is_sync_signin=*/false,
                                                account_info.email),
-            std::nullopt);
+            expected_outcome);
   testing::Mock::VerifyAndClearExpectations(mock_delegate());
   histogram_tester.ExpectUniqueSample("Signin.Intercept.HeuristicOutcome",
                                       expected_outcome, 1);
   histogram_tester.ExpectUniqueTimeSample("Signin.Intercept.HeuristicLatency",
                                           base::Milliseconds(0), 1);
 
-  EXPECT_EQ(interceptor()->is_interception_in_progress(),
-            SigninInterceptionHeuristicOutcomeIsSuccess(expected_outcome));
+  EXPECT_FALSE(interceptor()->is_interception_in_progress());
 
   histogram_tester.ExpectUniqueSample(
       "Signin.Intercept.Heuristic.ShouldShowChromeSigninBubbleWithReason",

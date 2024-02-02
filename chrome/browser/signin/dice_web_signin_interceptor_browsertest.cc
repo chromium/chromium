@@ -1597,7 +1597,7 @@ IN_PROC_BROWSER_TEST_F(
 // syncing profile.
 IN_PROC_BROWSER_TEST_F(
     DiceWebSigninInterceptorBrowserTest,
-    ForcedEnterpriseInterceptionPrimaryACcountReauthSyncEnabledTest) {
+    ForcedEnterpriseInterceptionPrimaryAccountReauthSyncEnabledTest) {
   base::HistogramTester histogram_tester;
   AccountInfo account_info =
       MakeAccountInfoAvailableAndUpdate("alice@example.com");
@@ -1617,13 +1617,7 @@ IN_PROC_BROWSER_TEST_F(
   content::WebContents* web_contents = AddTab(intercepted_url);
   int original_tab_count = browser()->tab_strip_model()->count();
 
-  // Do the signin interception.
   EXPECT_EQ(BrowserList::GetInstance()->size(), 1u);
-  FakeDiceWebSigninInterceptorDelegate* source_interceptor_delegate =
-      GetInterceptorDelegate(GetProfile());
-  source_interceptor_delegate->set_expected_interception_type(
-      WebSigninInterceptor::SigninInterceptionType::kEnterpriseForced);
-
   EXPECT_FALSE(
       chrome::enterprise_util::UserAcceptedAccountManagement(GetProfile()));
   // Start the interception.
@@ -1635,9 +1629,9 @@ IN_PROC_BROWSER_TEST_F(
       /*is_new_account=*/false,
       /*is_sync_signin=*/false);
   base::RunLoop().RunUntilIdle();
-  EXPECT_TRUE(
-      chrome::enterprise_util::UserAcceptedAccountManagement(GetProfile()));
   // Interception bubble was closed.
+  FakeDiceWebSigninInterceptorDelegate* source_interceptor_delegate =
+      GetInterceptorDelegate(GetProfile());
   EXPECT_FALSE(source_interceptor_delegate->intercept_bubble_shown());
   EXPECT_FALSE(source_interceptor_delegate->intercept_bubble_destroyed());
   EXPECT_TRUE(IdentityManagerFactory::GetForProfile(GetProfile())
@@ -1649,8 +1643,9 @@ IN_PROC_BROWSER_TEST_F(
       browser()->tab_strip_model()->GetActiveWebContents()->GetVisibleURL(),
       intercepted_url);
 
-  CheckHistograms(histogram_tester,
-                  SigninInterceptionHeuristicOutcome::kAbortAccountNotNew);
+  CheckHistograms(
+      histogram_tester,
+      SigninInterceptionHeuristicOutcome::kAbortAccountInfoNotCompatible);
 }
 
 // Tests the complete profile switch flow when the profile is not loaded.
