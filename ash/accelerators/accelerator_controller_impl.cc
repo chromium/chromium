@@ -1630,7 +1630,12 @@ void AcceleratorControllerImpl::PerformDebugActionOnDelegateIfEnabled(
     case AcceleratorAction::kDebugPrintLayerHierarchy:
       debug_delegate_->PrintLayerHierarchy();
       break;
-    // TODO(ythjkt): Add PrintWindowHierarchy and PrintViewHierarchy.
+    case AcceleratorAction::kDebugPrintWindowHierarchy:
+      debug_delegate_->PrintWindowHierarchy();
+      break;
+    case AcceleratorAction::kDebugPrintViewHierarchy:
+      debug_delegate_->PrintViewHierarchy();
+      break;
     default:
       break;
   }

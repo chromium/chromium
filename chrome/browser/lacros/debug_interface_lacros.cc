@@ -9,10 +9,13 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chromeos/crosapi/mojom/debug_interface.mojom.h"
 #include "chromeos/lacros/lacros_service.h"
+#include "chromeos/ui/wm/debug_util.h"
 #include "ui/aura/client/screen_position_client.h"
 #include "ui/aura/env.h"
 #include "ui/aura/window.h"
 #include "ui/compositor/debug_utils.h"
+#include "ui/views/debug_utils.h"
+#include "ui/views/widget/widget.h"
 
 namespace crosapi {
 
@@ -31,6 +34,12 @@ void DebugInterfaceLacros::PrintUiHierarchy(mojom::PrintTarget target) {
   switch (target) {
     case mojom::PrintTarget::kLayer:
       PrintLayerHierarchy();
+      break;
+    case mojom::PrintTarget::kWindow:
+      PrintWindowHierarchy();
+      break;
+    case mojom::PrintTarget::kView:
+      PrintViewHierarchy();
       break;
     default:
       NOTREACHED();
@@ -55,6 +64,35 @@ void DebugInterfaceLacros::PrintLayerHierarchy() {
       }
       ui::PrintLayerHierarchy(layer, last_mouse_location, &out);
     }
+  }
+  LOG(ERROR) << out.str();
+}
+
+void DebugInterfaceLacros::PrintWindowHierarchy() {
+  std::ostringstream out;
+  out << "\n";
+
+  aura::Window::Windows windows;
+  for (Browser* browser : *BrowserList::GetInstance()) {
+    aura::Window* window = browser->window()->GetNativeWindow();
+    if (window->GetRootWindow()) {
+      window = window->GetRootWindow();
+    }
+    windows.push_back(window);
+  }
+  chromeos::wm::PrintWindowHierarchy(windows, /*scrub_data=*/false, &out);
+  LOG(ERROR) << out.str();
+}
+
+void DebugInterfaceLacros::PrintViewHierarchy() {
+  std::ostringstream out;
+  out << "\n";
+  for (Browser* browser : *BrowserList::GetInstance()) {
+    aura::Window* window = browser->window()->GetNativeWindow();
+    views::Widget* widget = views::Widget::GetWidgetForNativeView(window);
+    out << "WidgetInfo: ";
+    views::PrintWidgetInformation(*widget, /*detailed*/ true, &out);
+    views::PrintViewHierarchy(widget->GetRootView(), &out);
   }
   LOG(ERROR) << out.str();
 }
