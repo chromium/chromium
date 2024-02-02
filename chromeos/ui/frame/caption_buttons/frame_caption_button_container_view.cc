@@ -398,7 +398,7 @@ void FrameCaptionButtonContainerView::UpdateBorderlessModeEnabled(
   // so similarly to hiding the title bar, also the caption button container
   // containing them will be hidden.
   is_borderless_mode_enabled_ = enabled;
-  SetVisible(enabled);
+  SetVisible(!enabled);
 }
 
 void FrameCaptionButtonContainerView::UpdateCaptionButtonState(bool animate) {
