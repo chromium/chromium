@@ -1124,7 +1124,6 @@ if (is_chromeos && is_chromeos_device) {
 
       data_deps += [
         "//chrome/test/base/chromeos/crosier/helper",
-        "//chrome/test/base/chromeos/crosier/helper:client",
         "//chrome/test/base/chromeos/crosier/helper/fake_chrome",
       ]
     }

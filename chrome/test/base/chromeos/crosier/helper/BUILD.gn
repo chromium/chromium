@@ -30,15 +30,3 @@ source_set("common") {
     "//content/public/browser",
   ]
 }
-
-executable("client") {
-  testonly = true
-  output_name = "test_sudo_helper_client"
-
-  sources = [ "test_sudo_helper_client_main.cc" ]
-
-  deps = [
-    ":common",
-    "//base",
-  ]
-}
