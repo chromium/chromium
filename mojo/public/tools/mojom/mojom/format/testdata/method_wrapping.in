@@ -1,0 +1,46 @@
+module foo.mojom;
+
+interface Foo {
+  [Sync] Unit();
+
+  ShortName(uint32 a, uint32 b, uint32 c, uint32 d, uint32 e, uint32 f);
+
+  LongNameLotsOfParametersThatCanAlsoWrap(uint32 a, uint32 b, uint32 c, uint32 d, uint32 e, uint32 f);
+
+  LongNameWithManyParamsThatDontFitOnASingleLine(handle<platform> the_file_to_send,
+      string unsafe_data, test.mojom.SomeOtherThing object);
+
+  ShorterNameWithLongerArgs(handle<platform> the_file_to_send,
+      string unsafe_data, test.mojom.SomeOtherThing object);
+
+  LongerMethodNameWithSomeArgs(uint32 aaaaaaaaaaa, uint32 b, pending_remote<BufferedReader> long_parameter_name) => (string reply);
+
+  Voidy() => ();
+
+  ShortResponse(uint32 a, uint32 b, uint32 c, uint32 d) => (uint32 r1, uint32 r2);
+
+  ArgHasMap(map<string, array<uint8>> data);
+
+  SetWaylandBufferManagerGpu(
+        pending_associated_remote<WaylandBufferManagerGpu>
+          buffer_manager_gpu_associated);
+
+  ResponseWrapStyleThree() => (pending_receiver<com.foo.LongTypeName> long_type_name, uint8 foo2, string foo3);
+
+    GetAccelerators() =>
+        (map<ash.mojom.AcceleratorSource,
+         map<uint32, array<ash.mojom.AcceleratorInfo>>> config);
+
+  ManyParams(string foo, // Force new line.
+  uint64 trace_id)
+    => (url.mojom.Url? report_url,
+        map<string, url.mojom.Url> ad_beacon_map,
+        map<string, string> ad_macro_map,
+        array<PrivateAggregationRequest> pa_requests,
+        mojo_base.mojom.TimeDelta reporting_latency,
+        array<string> errors);
+
+         GetDebugLogsChangeHandler()
+            => (pending_remote<DebugLogsChangeHandler>? handler,
+                  bool initial_toggle_value);
+};

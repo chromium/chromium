@@ -1,0 +1,36 @@
+module foo;
+
+struct Foobar {
+  handle over_indented;
+  array<foo.bar.mojom.LongNamedType>
+      very_long_name_that_needs_to_wrap_past_this_line;
+  string simple_field;
+  int32 weird_wrap;
+  uint32 x = 24;
+  handle<platform> moo;
+  [MinVersion=1]
+  bool foo;
+
+  mojo_base.mojom.TimeDelta? first_input_delay_after_back_forward_cache_restore;
+
+  map<string, array<foo.bar.mojom.LongNamedType>>
+      very_long_name_that_needs_to_wrap_past_this_line;
+
+  UpdateService.ErrorCategory error_category =
+      UpdateService.ErrorCategory.kNone;
+
+  pending_remote<blink.mojom.BrowserInterfaceBroker>
+      main_frame_interface_broker;
+};
+
+[Native]
+struct Native;
+
+struct Empty {};
+
+struct WithComments {
+  // This has a comment.
+  string foo;
+  bool no_leading_comment_but_gets_one_anwyays;  // Trailing.
+  uint32 another;  // Trailing but gets blank line prior.
+};

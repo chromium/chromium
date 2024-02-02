@@ -1,0 +1,15 @@
+module test;
+
+enum Foo {
+  kValue = 0,
+  kAnotherValue = -3,
+  [MinVersion=1] kExtra = 4,
+};
+
+interface I {
+  [Stable]
+  enum NestedEnum {
+    kTrue,
+    kFalse,
+  };
+};

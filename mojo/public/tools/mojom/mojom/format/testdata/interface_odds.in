@@ -1,0 +1,47 @@
+module test;
+
+[Stable, SandboxType=kSecure, Extensible]
+interface Interface {
+  // First.
+  Mount@0(uint32 uid, int32 mount_id) => (handle? fd);
+
+  // Line Break -----.
+
+  // Second.
+  [MinVersion] DoAThing() => (pending_remote<VeryLongAbstractTypeNameThatDoesNotFit> long_response_type,
+    map<uint32, array<foo.bar.mojom.LongTypeNameThatAlsoMakesForInterestingWrap>> tt);
+
+  // Thrid.
+  Another([MinVersion=2] handle<platform>? param);
+
+  // Fourth.
+  CountFeature(WebFeature feature);
+
+  // Fifth.
+  SendHandle(handle? h) => ();
+
+  ConvulteTypes(map<string, string?>? t1, array<uint32>? t2);
+
+  Method(
+
+    // With params comments like this.
+    string fix,
+
+    // And like this.
+    int32 foo);
+
+
+  AnotherMethod(
+    string foo // With comment here.
+  );
+
+  Method() => (string foo // foo
+  );
+
+  Method() => (int32 x, string bar // bar
+  );
+
+  [Sync]
+  // Foo.
+  Method() => ();
+};
