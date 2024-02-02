@@ -109,7 +109,6 @@ std::unique_ptr<AddressComponent> BuildTreeNode(
     case ADDRESS_HOME_STREET_LOCATION_AND_LOCALITY:
     case ADDRESS_HOME_STREET_LOCATION_AND_LANDMARK:
     case ADDRESS_HOME_DEPENDENT_LOCALITY_AND_LANDMARK:
-    case COMPANY_NAME:
     case DELIVERY_INSTRUCTIONS:
       return std::make_unique<AddressComponent>(type, std::move(children),
                                                 MergeMode::kDefault);
@@ -117,6 +116,7 @@ std::unique_ptr<AddressComponent> BuildTreeNode(
     case UNKNOWN_TYPE:
     case EMPTY_TYPE:
     case EMAIL_ADDRESS:
+    case COMPANY_NAME:
     case NAME_FIRST:
     case NAME_MIDDLE:
     case NAME_LAST:
