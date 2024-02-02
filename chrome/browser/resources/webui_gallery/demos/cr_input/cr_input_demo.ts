@@ -10,7 +10,7 @@ import '//resources/cr_elements/cr_input/cr_input.js';
 import '//resources/cr_elements/cr_textarea/cr_textarea.js';
 import '../demo.css.js';
 
-import {CrInputElement} from '//resources/cr_elements/cr_input/cr_input.js';
+import type {CrInputElement} from '//resources/cr_elements/cr_input/cr_input.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './cr_input_demo.html.js';

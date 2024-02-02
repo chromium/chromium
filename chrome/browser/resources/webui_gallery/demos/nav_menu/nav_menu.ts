@@ -7,7 +7,7 @@ import '//resources/cr_elements/cr_nav_menu_item_style.css.js';
 import '//resources/cr_elements/icons.html.js';
 import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 
-import {CrMenuSelector} from '//resources/cr_elements/cr_menu_selector/cr_menu_selector.js';
+import type {CrMenuSelector} from '//resources/cr_elements/cr_menu_selector/cr_menu_selector.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './nav_menu.html.js';

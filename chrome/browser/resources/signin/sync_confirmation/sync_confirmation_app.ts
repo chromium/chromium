@@ -21,7 +21,8 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './sync_confirmation_app.html.js';
-import {SyncBenefit, SyncConfirmationBrowserProxy, SyncConfirmationBrowserProxyImpl} from './sync_confirmation_browser_proxy.js';
+import type {SyncBenefit, SyncConfirmationBrowserProxy} from './sync_confirmation_browser_proxy.js';
+import {SyncConfirmationBrowserProxyImpl} from './sync_confirmation_browser_proxy.js';
 
 
 interface AccountInfo {

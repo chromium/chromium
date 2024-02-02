@@ -19,7 +19,7 @@ import '//webui-gallery/shared/sp_shared_style.css.js';
 import '//webui-gallery/shared/sp_shared_vars.css.js';
 import '../demo.css.js';
 
-import {CrSliderElement} from '//resources/cr_elements/cr_slider/cr_slider.js';
+import type {CrSliderElement} from '//resources/cr_elements/cr_slider/cr_slider.js';
 import {CrUrlListItemSize} from '//resources/cr_elements/cr_url_list_item/cr_url_list_item.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 

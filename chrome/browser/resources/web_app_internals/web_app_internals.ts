@@ -7,11 +7,12 @@ import './strings.m.js';
 import {assertNotReached} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {getRequiredElement} from 'chrome://resources/js/util.js';
-import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
-import {Origin} from 'chrome://resources/mojo/url/mojom/origin.mojom-webui.js';
-import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
+import type {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
+import type {Origin} from 'chrome://resources/mojo/url/mojom/origin.mojom-webui.js';
+import type {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 
-import {IwaDevModeLocation, WebAppInternalsHandler} from './web_app_internals.mojom-webui.js';
+import type {IwaDevModeLocation} from './web_app_internals.mojom-webui.js';
+import {WebAppInternalsHandler} from './web_app_internals.mojom-webui.js';
 
 const webAppInternalsHandler = WebAppInternalsHandler.getRemote();
 

@@ -12,16 +12,17 @@ import './pii_selection.js';
 import './data_export_done.js';
 import './support_tool_shared.css.js';
 
-import {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
+import type {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {BrowserProxy, BrowserProxyImpl, PiiDataItem, StartDataCollectionResult} from './browser_proxy.js';
-import {DataCollectorsElement} from './data_collectors.js';
-import {DataExportDoneElement} from './data_export_done.js';
-import {IssueDetailsElement} from './issue_details.js';
-import {PiiSelectionElement} from './pii_selection.js';
-import {SpinnerPageElement} from './spinner_page.js';
+import type {BrowserProxy, PiiDataItem, StartDataCollectionResult} from './browser_proxy.js';
+import {BrowserProxyImpl} from './browser_proxy.js';
+import type {DataCollectorsElement} from './data_collectors.js';
+import type {DataExportDoneElement} from './data_export_done.js';
+import type {IssueDetailsElement} from './issue_details.js';
+import type {PiiSelectionElement} from './pii_selection.js';
+import type {SpinnerPageElement} from './spinner_page.js';
 import {getTemplate} from './support_tool.html.js';
 
 export enum SupportToolPageIndex {

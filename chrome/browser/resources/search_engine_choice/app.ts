@@ -16,17 +16,18 @@ import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import 'chrome://resources/cr_elements/cr_expand_button/cr_expand_button.js';
 import './strings.m.js';
 
-import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
-import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
-import {CrRadioGroupElement} from 'chrome://resources/cr_elements/cr_radio_group/cr_radio_group.js';
+import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
+import type {CrRadioGroupElement} from 'chrome://resources/cr_elements/cr_radio_group/cr_radio_group.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {getFaviconForPageURL} from 'chrome://resources/js/icon.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './app.html.js';
-import {SearchEngineChoice, SearchEngineChoiceBrowserProxy} from './browser_proxy.js';
-import {PageHandlerRemote} from './search_engine_choice.mojom-webui.js';
+import type {SearchEngineChoice} from './browser_proxy.js';
+import {SearchEngineChoiceBrowserProxy} from './browser_proxy.js';
+import type {PageHandlerRemote} from './search_engine_choice.mojom-webui.js';
 
 export interface SearchEngineChoiceAppElement {
   $: {
