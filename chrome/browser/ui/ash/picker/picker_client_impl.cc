@@ -9,27 +9,21 @@
 #include <utility>
 
 #include "ash/picker/picker_controller.h"
+#include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/ash_web_view_impl.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/resource_request.h"
-#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
 
 namespace {
-
-scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory() {
-  auto* const active_user = user_manager::UserManager::Get()->GetActiveUser();
-  auto* const profile = Profile::FromBrowserContext(
-      ash::BrowserContextHelper::Get()->GetBrowserContextByUser(active_user));
-  return profile->GetURLLoaderFactory();
-}
 
 void OnGifDownloaded(PickerClientImpl::DownloadGifToStringCallback callback,
                      std::unique_ptr<network::SimpleURLLoader> simple_loader,
@@ -47,9 +41,18 @@ void OnGifDownloaded(PickerClientImpl::DownloadGifToStringCallback callback,
 PickerClientImpl::PickerClientImpl(ash::PickerController* controller)
     : controller_(controller) {
   controller_->SetClient(this);
+
+  auto* user_manager = user_manager::UserManager::Get();
+  // As `PickerClientImpl` is initialised in
+  // `ChromeBrowserMainExtraPartsAsh::PostProfileInit`, the user manager does
+  // not notify us of the first user "change".
+  ActiveUserChanged(user_manager->GetActiveUser());
+  user_manager->AddSessionStateObserver(this);
 }
 
 PickerClientImpl::~PickerClientImpl() {
+  user_manager::UserManager::Get()->RemoveSessionStateObserver(this);
+
   controller_->SetClient(nullptr);
 }
 
@@ -61,6 +64,7 @@ std::unique_ptr<ash::AshWebView> PickerClientImpl::CreateWebView(
 void PickerClientImpl::DownloadGifToString(
     const GURL& url,
     DownloadGifToStringCallback callback) {
+  DCHECK(profile_);
   // For now, only allow gifs from tenor.
   // TODO: b/316936723 - Once we know what gifs the picker might show, consider
   // making the method parameters more specific to allowed gif sources.
@@ -107,7 +111,28 @@ void PickerClientImpl::DownloadGifToString(
                                                  kTrafficAnnotation);
   auto* loader_ptr = loader.get();
   loader_ptr->DownloadToString(
-      GetURLLoaderFactory().get(),
+      profile_->GetURLLoaderFactory().get(),
       base::BindOnce(&OnGifDownloaded, std::move(callback), std::move(loader)),
       network::SimpleURLLoader::kMaxBoundedStringDownloadSize);
+}
+
+void PickerClientImpl::ActiveUserChanged(user_manager::User* active_user) {
+  if (!active_user) {
+    SetProfile(nullptr);
+    return;
+  }
+
+  active_user->AddProfileCreatedObserver(
+      base::BindOnce(&PickerClientImpl::SetProfileByUser,
+                     weak_factory_.GetWeakPtr(), active_user));
+}
+
+void PickerClientImpl::SetProfileByUser(const user_manager::User* user) {
+  Profile* profile = Profile::FromBrowserContext(
+      ash::BrowserContextHelper::Get()->GetBrowserContextByUser(user));
+  SetProfile(profile);
+}
+
+void PickerClientImpl::SetProfile(Profile* profile) {
+  profile_ = profile;
 }
