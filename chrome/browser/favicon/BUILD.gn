@@ -30,6 +30,7 @@ source_set("favicon") {
     "//components/image_fetcher/core",
     "//components/keyed_service/content",
     "//components/password_manager/content/common",
+    "//components/search_engines",
     "//components/sync",
     "//content/public/browser",
     "//ui/gfx",

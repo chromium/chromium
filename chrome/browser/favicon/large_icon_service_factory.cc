@@ -19,6 +19,10 @@
 #include "content/public/browser/storage_partition.h"
 #include "ui/gfx/favicon_size.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "components/search_engines/search_engine_choice_utils.h"
+#endif
+
 namespace {
 
 favicon::LargeIconService* GetLargeIconService(
@@ -30,6 +34,10 @@ favicon::LargeIconService* GetLargeIconService(
 // Seems like on Android `1 dip == 1 px`. The value of `kDipForServerRequests`
 // can be overridden by `features::kLargeFaviconFromGoogle`.
 const int kDipForServerRequests = 24;
+// Matches the size used on iOS, see `kDipForServerRequests` in
+// `//ios/c/b/favicon/model/ios_chrome_large_icon_service_factory.cc`.
+// TODO(b/318824817): Replace the constant above when cleaning up the flag.
+const int kDipForServerRequestsIfSearchEnginesChoiceScreenFlagEnabled = 32;
 const favicon_base::IconType kIconTypeForServerRequests =
     favicon_base::IconType::kTouchIcon;
 const char kGoogleServerClientParam[] = "chrome";
@@ -93,6 +101,14 @@ int LargeIconServiceFactory::desired_size_in_dip_for_server_requests() {
   if (base::FeatureList::IsEnabled(features::kLargeFaviconFromGoogle)) {
     return features::kLargeFaviconFromGoogleSizeInDip.Get();
   }
+
+#if BUILDFLAG(IS_ANDROID)
+  if (search_engines::IsChoiceScreenFlagEnabled(
+          search_engines::ChoicePromo::kAny)) {
+    return kDipForServerRequestsIfSearchEnginesChoiceScreenFlagEnabled;
+  }
+#endif
+
   return kDipForServerRequests;
 }
 
