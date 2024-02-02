@@ -671,12 +671,11 @@ CreateAndValidateSharedImageRepresentations::
   SkAlphaType alpha_type = kPremul_SkAlphaType;
   gpu::SurfaceHandle surface_handle = gpu::kNullSurfaceHandle;
 
-  // SHARED_IMAGE_USAGE_DISPLAY_READ for skia read and
-  // SHARED_IMAGE_USAGE_RASTER_READ | SHARED_IMAGE_USAGE_RASTER_WRITE for skia
-  // write. Tests that use this class also write to the created SharedImage via
+  // SHARED_IMAGE_USAGE_DISPLAY_READ for modeling skia read via the display
+  // compositor and SHARED_IMAGE_USAGE_RASTER_WRITE for modeling skia write via
+  // raster. Tests that use this class also write to the created SharedImage via
   // GL.
   uint32_t usage = SHARED_IMAGE_USAGE_GLES2_WRITE |
-                   SHARED_IMAGE_USAGE_RASTER_READ |
                    SHARED_IMAGE_USAGE_RASTER_WRITE;
   if (!is_thread_safe)
     usage |= SHARED_IMAGE_USAGE_DISPLAY_READ;
