@@ -750,6 +750,12 @@ BASE_FEATURE(kDisplayLocking,
              "DisplayLocking",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Kill switch for not WebGL DrawingBuffer using SharedImage without
+// GpuMemoryBuffer (overlay or low latency canvas).
+BASE_FEATURE(kDrawingBufferWithoutGpuMemoryBuffer,
+             "DrawingBufferWithoutGpuMemoryBuffer",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Drop input events before user sees first paint https://crbug.com/1255485
 BASE_FEATURE(kDropInputEventsBeforeFirstPaint,
              "DropInputEventsBeforeFirstPaint",

@@ -33,6 +33,7 @@
 #include <memory>
 
 #include "base/memory/scoped_refptr.h"
+#include "base/test/scoped_feature_list.h"
 #include "components/viz/common/resources/release_callback.h"
 #include "components/viz/common/resources/transferable_resource.h"
 #include "components/viz/test/test_gpu_memory_buffer_manager.h"
@@ -40,6 +41,7 @@
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/common/sync_token.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_color_params.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/drawing_buffer_test_helpers.h"
@@ -509,6 +511,10 @@ TEST_F(DrawingBufferImageChromiumTest, VerifyResizingReallocatesImages) {
 }
 
 TEST_F(DrawingBufferImageChromiumTest, AllocationFailure) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      features::kDrawingBufferWithoutGpuMemoryBuffer);
+
   GLES2InterfaceForTests* gl_ = drawing_buffer_->ContextGLForTests();
   viz::TestSharedImageInterface* sii =
       drawing_buffer_->SharedImageInterfaceForTests();

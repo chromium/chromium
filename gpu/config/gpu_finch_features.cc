@@ -170,12 +170,6 @@ BASE_FEATURE(kCanvasOopWithoutGpuTileRaster,
 BASE_FEATURE(kEnablePerContextGLTextureCache,
              "EnablePerContextGLTextureCache",
              base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Detect front buffering condition and set buffer usage as such.
-// This is a killswitch to be removed once launched.
-BASE_FEATURE(kOzoneFrontBufferUsage,
-             "OzoneFrontBufferUsage",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_OZONE)
 
 // Enables the use of MSAA in skia on Ice Lake and later intel architectures.
