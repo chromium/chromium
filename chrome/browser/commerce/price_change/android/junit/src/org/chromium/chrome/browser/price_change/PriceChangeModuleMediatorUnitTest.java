@@ -283,15 +283,15 @@ public class PriceChangeModuleMediatorUnitTest {
     public void testPriceAnnotationSettingChange() {
         // Enabling the price annotation won't trigger any change.
         mSharedPreferenceManager.writeBoolean(PriceTrackingUtilities.TRACK_PRICES_ON_TABS, true);
-        verify(mModuleDelegate, never()).removeModule(mMediator.getModuleType());
+        verify(mModuleDelegate, never()).removeModuleAndDisable(mMediator.getModuleType());
 
         // Irrelevant SharedPreferences change won't trigger any change.
         mSharedPreferenceManager.writeBoolean(
                 PriceTrackingUtilities.PRICE_WELCOME_MESSAGE_CARD, false);
-        verify(mModuleDelegate, never()).removeModule(mMediator.getModuleType());
+        verify(mModuleDelegate, never()).removeModuleAndDisable(mMediator.getModuleType());
 
         mSharedPreferenceManager.writeBoolean(PriceTrackingUtilities.TRACK_PRICES_ON_TABS, false);
-        verify(mModuleDelegate).removeModule(mMediator.getModuleType());
+        verify(mModuleDelegate).removeModuleAndDisable(mMediator.getModuleType());
     }
 
     @Test
@@ -300,7 +300,7 @@ public class PriceChangeModuleMediatorUnitTest {
         mMediator.destroy();
 
         mSharedPreferenceManager.writeBoolean(PriceTrackingUtilities.TRACK_PRICES_ON_TABS, false);
-        verify(mModuleDelegate, never()).removeModule(mMediator.getModuleType());
+        verify(mModuleDelegate, never()).removeModuleAndDisable(mMediator.getModuleType());
     }
 
     public void showModuleWithInitializedService() {

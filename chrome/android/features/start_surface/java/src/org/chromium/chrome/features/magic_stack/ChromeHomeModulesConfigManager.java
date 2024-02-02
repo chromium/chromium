@@ -91,7 +91,8 @@ public class ChromeHomeModulesConfigManager implements HomeModulesConfigManager 
      * @param moduleType {@link ModuleType} needed to be notified to the listeners.
      * @param enabled True is the module type is enabled.
      */
-    void setPrefModuleTypeEnabled(@ModuleType int moduleType, boolean enabled) {
+    @Override
+    public void setPrefModuleTypeEnabled(@ModuleType int moduleType, boolean enabled) {
         mSharedPreferencesManager.writeBoolean(getPreferenceKey(moduleType), enabled);
         notifyModuleTypeUpdated(moduleType, enabled);
     }
