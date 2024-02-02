@@ -15984,6 +15984,7 @@ from previous Chrome versions.
 -->
 
 <enum name="LoginCustomFlags">
+  <int value="-2147423273" label="EnableHeatmapPalmDetection:disabled"/>
   <int value="-2146979021" label="OmniboxMaxURLMatches:enabled"/>
   <int value="-2146832142" label="SyncPseudoUSSSearchEngines:enabled"/>
   <int value="-2146729457" label="WebRtcTimerUsesMetronome:disabled"/>
@@ -19356,6 +19357,7 @@ from previous Chrome versions.
   <int value="-609747087" label="CanvasOopRasterization:enabled"/>
   <int value="-609034895" label="QuickActionSearchWidgetAndroid:enabled"/>
   <int value="-608775184" label="PasswordsWeaknessCheck:enabled"/>
+  <int value="-608691289" label="EnableHeatmapPalmDetection:enabled"/>
   <int value="-608564490" label="AutofillUndo:enabled"/>
   <int value="-608065163" label="PermissionChipRequestTypeSensitive:disabled"/>
   <int value="-607970607" label="PostQuantumKyber:enabled"/>

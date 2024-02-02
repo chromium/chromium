@@ -2919,6 +2919,11 @@
     "expiry_milestone": 130
   },
   {
+    "name": "enable-heatmap-palm-detection",
+    "owners": [ "jiwan@chromium.org", "robsc@chromium.org", "hbarnor@chromium.org" ],
+    "expiry_milestone": 140
+  },
+  {
     "name": "enable-heavy-ad-intervention",
     "owners": [ "johnidel@chromium.org", "jkarlin@chromium.org" ],
     "expiry_milestone": 90
