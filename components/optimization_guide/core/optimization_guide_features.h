@@ -479,6 +479,12 @@ COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 std::map<proto::OptimizationTarget, std::set<int64_t>>
 GetPredictionModelVersionsInKillSwitch();
 
+// Returns whether the on-device config should be loaded with higher priority.
+// If true, all tasks for the on-device model execution config interpreter
+// will be run with user visible priority.
+COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
+bool ShouldLoadOnDeviceModelExecutionConfigWithHigherPriority();
+
 // Returns the idle timeout before the on device model service shuts down.
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 base::TimeDelta GetOnDeviceModelIdleTimeout();

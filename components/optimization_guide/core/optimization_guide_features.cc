@@ -902,6 +902,11 @@ GetPredictionModelVersionsInKillSwitch() {
   return killswitch_model_versions;
 }
 
+bool ShouldLoadOnDeviceModelExecutionConfigWithHigherPriority() {
+  return base::GetFieldTrialParamByFeatureAsBool(
+      kOptimizationGuideOnDeviceModel, "ondevice_config_high_priority", true);
+}
+
 base::TimeDelta GetOnDeviceModelIdleTimeout() {
   static const base::FeatureParam<base::TimeDelta>
       kOnDeviceModelServiceIdleTimeout{&kOptimizationGuideOnDeviceModel,
