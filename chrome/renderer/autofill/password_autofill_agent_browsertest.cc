@@ -321,6 +321,28 @@ const char kJavaScriptRemoveForm[] =
     "var form = document.getElementById('LoginTestForm');"
     "form.parentNode.removeChild(form);";
 
+const char kFormTagHostsShadowDomInputs[] =
+    "<script>"
+    "  function addShadowFields() {"
+    "    const un_host = document.getElementById('un_host');"
+    "    const un_shadow = un_host.attachShadow({ mode: 'open'});"
+    "    const un = document.createElement('input');"
+    "    un_shadow.appendChild(un);"
+    "    const pw_host = document.getElementById('pw_host');"
+    "    const pw_shadow = pw_host.attachShadow({ mode: 'open'});"
+    "    const pw = document.createElement('input');"
+    "    pw.type = 'password';"
+    "    pw_shadow.appendChild(pw);"
+    "}"
+    "</script>"
+    "<body onload='addShadowFields();'>"
+    "<form method='POST' action='done.html' id='shadyform'>"
+    "<div id='un_host'></div>"
+    "<div id='pw_host'></div>"
+    "<input type='submit' id='input_submit_button'>"
+    "</form>"
+    "</body>";
+
 // Sets the "readonly" attribute of |element| to the value given by |read_only|.
 void SetElementReadOnly(WebInputElement& element, bool read_only) {
   element.SetAttribute(WebString::FromUTF8("readonly"),
@@ -4493,6 +4515,76 @@ TEST_F(PasswordAutofillAgentTest, ModifyNamelessNonPasswordField) {
 #endif
   EXPECT_CALL(fake_driver_, UserModifiedNonPasswordField).Times(0);
   SimulateUserInputChangeForElement(&username_element_, kAliceUsername);
+}
+
+// Tests that user inputs are propagated to the browser properly when a Shadow
+// DOM tree starts between the <form> and <input> tags.
+TEST_F(PasswordAutofillAgentTest,
+       ProvisionalPasswordSavingWhenFormTagHostsShadowDom) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      password_manager::features::kShadowDomSupport);
+
+  LoadHTML(kFormTagHostsShadowDomInputs);
+
+  // Identify username and password elements.
+  username_element_ =
+      GetElementByID("un_host").ShadowRoot().FirstChild().To<WebInputElement>();
+  ASSERT_FALSE(username_element_.IsNull());
+  password_element_ =
+      GetElementByID("pw_host").ShadowRoot().FirstChild().To<WebInputElement>();
+  ASSERT_FALSE(password_element_.IsNull());
+
+  // Simulate user modifying field values and ensure they are propagated to the
+  // browser.
+  username_element_.SetValue(WebString::FromUTF8(kAliceUsername));
+  password_autofill_agent_->UpdatePasswordStateForTextChange(username_element_);
+  fake_driver_.Flush();
+  EXPECT_EQ(fake_driver_.called_inform_about_user_input_count(), 1);
+
+  password_element_.SetValue(WebString::FromUTF8(kAlicePassword));
+  password_autofill_agent_->UpdatePasswordStateForTextChange(password_element_);
+  fake_driver_.Flush();
+  EXPECT_EQ(fake_driver_.called_inform_about_user_input_count(), 2);
+
+  ASSERT_TRUE(fake_driver_.form_data_maybe_submitted().has_value());
+  FormData submitted_form = fake_driver_.form_data_maybe_submitted().value();
+  EXPECT_EQ(submitted_form.name, u"shadyform");
+  EXPECT_TRUE(FormHasFieldWithValue(submitted_form, kAliceUsername16));
+  EXPECT_TRUE(FormHasFieldWithValue(submitted_form, kAlicePassword16));
+}
+
+// Tests that passwords are filled properly on manual fallback when a Shadow
+// DOM tree starts between the <form> and <input> tags.
+TEST_F(PasswordAutofillAgentTest,
+       PasswordSuggestionFillingWhenFormTagHostsShadowDom) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      password_manager::features::kShadowDomSupport);
+
+  LoadHTML(kFormTagHostsShadowDomInputs);
+
+  // Identify username and password elements.
+  username_element_ =
+      GetElementByID("un_host").ShadowRoot().FirstChild().To<WebInputElement>();
+  ASSERT_FALSE(username_element_.IsNull());
+  password_element_ =
+      GetElementByID("pw_host").ShadowRoot().FirstChild().To<WebInputElement>();
+  ASSERT_FALSE(password_element_.IsNull());
+
+  // Propagate fill data for filling on manual fallback.
+  UpdateRendererIDsInFillData();
+  fill_data_.wait_for_username = true;
+  SimulateOnFillPasswordForm(fill_data_);
+
+  autofill_agent_->FormControlElementClicked(password_element_);
+  // Ensure that field are not filled on page load.
+  CheckTextFieldsDOMState(std::string(), false, std::string(), false);
+
+  // Trigger filling and check filled values.
+  password_autofill_agent_->FillPasswordSuggestion(kAliceUsername16,
+                                                   kAlicePassword16);
+  CheckTextFieldsDOMState(kAliceUsername, true, kAlicePassword, true);
 }
 
 #if BUILDFLAG(IS_ANDROID)

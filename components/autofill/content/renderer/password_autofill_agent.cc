@@ -344,6 +344,14 @@ bool HasPasswordField(const WebLocalFrame& frame) {
          ContainsPasswordField(doc.UnassociatedFormControls());
 }
 
+// Returns the owning form element for a given input.
+WebFormElement GetFormElement(const WebInputElement& element) {
+  return base::FeatureList::IsEnabled(
+             password_manager::features::kShadowDomSupport)
+             ? form_util::GetOwningForm(element)
+             : element.Form();
+}
+
 // Returns the closest visible autocompletable non-password text element
 // preceding the `password_element` either in a form, if it belongs to one, or
 // in the `frame`.
@@ -353,8 +361,8 @@ WebInputElement FindUsernameElementPrecedingPasswordElement(
   DCHECK(!password_element.IsNull());
 
   std::vector<WebFormControlElement> elements =
-      form_util::GetAutofillableFormControlElements(frame->GetDocument(),
-                                                    password_element.Form());
+      form_util::GetAutofillableFormControlElements(
+          frame->GetDocument(), GetFormElement(password_element));
 
   auto iter = base::ranges::find(elements, password_element);
   if (iter == elements.end())
@@ -771,10 +779,7 @@ bool PasswordAutofillAgent::TextDidChangeInTextField(
 
 void PasswordAutofillAgent::UpdatePasswordStateForTextChange(
     const WebInputElement& element) {
-  // TODO(crbug.com/415449): Do this through const WebInputElement.
-  WebInputElement mutable_element = element;  // We need a non-const.
-
-  InformBrowserAboutUserInput(element.Form(), element);
+  InformBrowserAboutUserInput(GetFormElement(element), element);
 
   if (element.IsPasswordFieldForAutofill()) {
     auto iter = password_to_username_.find(element);
@@ -782,6 +787,8 @@ void PasswordAutofillAgent::UpdatePasswordStateForTextChange(
       web_input_to_password_info_[iter->second].password_was_edited_last = true;
       // Note that the suggested value of |mutable_element| was reset when its
       // value changed.
+      // TODO(crbug.com/415449): Do this through const WebInputElement.
+      WebInputElement mutable_element = element;  // We need a non-const.
       mutable_element.SetAutofillState(WebAutofillState::kNotFilled);
     }
     GetPasswordManagerDriver().UserModifiedPasswordField();
@@ -923,7 +930,7 @@ void PasswordAutofillAgent::FillPasswordFieldAndSave(
   DCHECK(password_input);
   DCHECK(password_input->IsPasswordFieldForAutofill());
   FillField(password_input, credential);
-  InformBrowserAboutUserInput(password_input->Form(), *password_input);
+  InformBrowserAboutUserInput(GetFormElement(*password_input), *password_input);
 }
 
 bool PasswordAutofillAgent::PreviewSuggestion(
@@ -1055,9 +1062,10 @@ void PasswordAutofillAgent::MaybeCheckSafeBrowsingReputation(
   checked_safe_browsing_reputation_ = true;
   WebLocalFrame* frame = render_frame()->GetWebFrame();
   GURL frame_url = GURL(frame->GetDocument().Url());
-  GURL action_url = element.Form().IsNull()
+  WebFormElement form_element = GetFormElement(element);
+  GURL action_url = form_element.IsNull()
                         ? GURL()
-                        : form_util::GetCanonicalActionForForm(element.Form());
+                        : form_util::GetCanonicalActionForForm(form_element);
   GetPasswordManagerDriver().CheckSafeBrowsingReputation(action_url, frame_url);
 #endif
 }
@@ -1095,8 +1103,9 @@ bool PasswordAutofillAgent::TryToShowKeyboardReplacingSurface(
       !password_element.IsNull() && IsElementEditable(password_element);
   CHECK(has_amendable_username_element || has_editable_password_element);
 
-  WebFormElement form = !password_element.IsNull() ? password_element.Form()
-                                                   : username_element.Form();
+  WebFormElement form = !password_element.IsNull()
+                            ? GetFormElement(password_element)
+                            : GetFormElement(username_element);
   std::unique_ptr<FormData> form_data =
       form.IsNull() ? GetFormDataFromUnownedInputElements()
                     : GetFormDataFromWebForm(form);
@@ -1608,7 +1617,7 @@ void PasswordAutofillAgent::InformAboutFieldClearing(
     return;
   }
 
-  WebFormElement form = cleared_element.Form();
+  WebFormElement form = GetFormElement(cleared_element);
   if (form.IsNull()) {
     // Process password field clearing for fields outside the <form> tag.
     if (auto unowned_form_data = GetFormDataFromUnownedInputElements())
