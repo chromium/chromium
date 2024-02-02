@@ -381,6 +381,10 @@ inline constexpr char kContextualSearchWasFullyPrivacyEnabled[] =
 // Boolean pref recording whether cookie and data would be used only for
 // essential purposes.
 inline constexpr char kEssentialSearchEnabled[] = "essential_search_enabled";
+// Boolean pref recording the last applied value for kEssentialSearchEnabled
+// prefs.
+inline constexpr char kLastEssentialSearchValue[] =
+    "last_essential_search_value";
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_MAC)

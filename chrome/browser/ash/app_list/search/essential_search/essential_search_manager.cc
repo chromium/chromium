@@ -10,7 +10,9 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
+#include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/session_manager_types.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
@@ -25,11 +27,7 @@
 namespace app_list {
 namespace {
 constexpr base::TimeDelta kOneDay = base::Days(1);
-
-bool IsEssentialSearchEnabled(PrefService* prefs) {
-  return chromeos::features::IsEssentialSearchEnabled() &&
-         prefs->GetBoolean(prefs::kSearchSuggestEnabled);
-}
+const char kCookieName[] = "SOCS";
 }  // namespace
 
 const net::BackoffEntry::Policy
@@ -50,6 +48,20 @@ EssentialSearchManager::EssentialSearchManager(Profile* primary_profile)
   auto* session_controller = ash::SessionController::Get();
   CHECK(session_controller);
   scoped_observation_.Observe(session_controller);
+
+  // Listen to pref changes.
+  pref_change_registrar_ = std::make_unique<PrefChangeRegistrar>();
+  pref_change_registrar_->Init(primary_profile_->GetPrefs());
+  pref_change_registrar_->Add(
+      prefs::kEssentialSearchEnabled,
+      base::BindRepeating(&EssentialSearchManager::MaybeFetchSocsCookie,
+                          weak_ptr_factory_.GetWeakPtr()));
+
+  // Handle the case where EssentialSearchManager is initialized after the
+  // session was started.
+  if (session_manager::SessionManager::Get()->IsSessionStarted()) {
+    MaybeFetchSocsCookie();
+  }
 }
 
 EssentialSearchManager::~EssentialSearchManager() = default;
@@ -66,17 +78,66 @@ void EssentialSearchManager::OnChromeTerminating() {
 
 void EssentialSearchManager::OnSessionStateChanged(
     session_manager::SessionState state) {
-  if (state == session_manager::SessionState::ACTIVE &&
-      IsEssentialSearchEnabled(primary_profile_->GetPrefs())) {
+  // EssentialSearchManager only update SOCS cookie when user sign in/unlock the
+  // device.
+  if (state != session_manager::SessionState::ACTIVE) {
+    return;
+  }
+
+  MaybeFetchSocsCookie();
+}
+
+void EssentialSearchManager::MaybeFetchSocsCookie() {
+  // Check whether the feature flag is enabled.
+  if (!chromeos::features::IsEssentialSearchEnabled()) {
+    return;
+  }
+
+  PrefService* prefs = primary_profile_->GetPrefs();
+  if (prefs->GetBoolean(prefs::kEssentialSearchEnabled)) {
+    // If the policy is enabled, cancel all active requests then fetch SOCS
+    // cookie and Update value of kLastEssentialSearchValue prefs.
     CancelPendingRequests();
-    FetchSocsCookie();
+    socs_cookie_fetcher_ = std::make_unique<SocsCookieFetcher>(
+        primary_profile_->GetURLLoaderFactory(), this);
+    socs_cookie_fetcher_->StartFetching();
+    prefs->SetBoolean(prefs::kLastEssentialSearchValue, true);
+    return;
+  }
+
+  if (prefs->GetBoolean(prefs::kLastEssentialSearchValue)) {
+    // If the policy was disabled, cancel all active request then remove SOCS
+    // cookie from the user's profile.
+    CancelPendingRequests();
+    socs_cookie_fetcher_.reset();
+    RemoveSocsCookie();
+    return;
   }
 }
 
-void EssentialSearchManager::FetchSocsCookie() {
-  socs_cookie_fetcher_ = std::make_unique<SocsCookieFetcher>(
-      primary_profile_->GetURLLoaderFactory(), this);
-  socs_cookie_fetcher_->StartFetching();
+void EssentialSearchManager::RemoveSocsCookie() {
+  network::mojom::CookieDeletionFilterPtr filter =
+      network::mojom::CookieDeletionFilter::New();
+
+  filter->cookie_name = kCookieName;
+  filter->url = GaiaUrls::GetInstance()->secure_google_url();
+
+  primary_profile_->GetDefaultStoragePartition()
+      ->GetCookieManagerForBrowserProcess()
+      ->DeleteCookies(std::move(filter),
+                      base::BindOnce(&EssentialSearchManager::OnCookieDeleted,
+                                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void EssentialSearchManager::OnCookieDeleted(
+    uint32_t number_of_cookies_deleted) {
+  if (number_of_cookies_deleted != 1) {
+    LOG(WARNING) << "Failed to remove SOCS cookie";
+  }
+
+  // Update kLastEssentialSearchValue to avoid deleting SOCS cookie again.
+  primary_profile_->GetPrefs()->SetBoolean(prefs::kLastEssentialSearchValue,
+                                           false);
 }
 
 void EssentialSearchManager::OnCookieFetched(const std::string& cookie_header) {
@@ -109,14 +170,15 @@ void EssentialSearchManager::RefetchAfter(base::TimeDelta delay) {
   // Create new request after given delay
   base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
-      base::BindOnce(&EssentialSearchManager::FetchSocsCookie,
-                     weak_ptr_factory_.GetWeakPtr()),
+      base::BindOnce(&EssentialSearchManager::MaybeFetchSocsCookie,
+                     fetch_requests_weak_factory_.GetWeakPtr()),
       delay);
 }
 
 void EssentialSearchManager::CancelPendingRequests() {
-  weak_ptr_factory_.InvalidateWeakPtrs();
+  fetch_requests_weak_factory_.InvalidateWeakPtrs();
 }
+
 
 void EssentialSearchManager::OnApiCallFailed(SocsCookieFetcher::Status status) {
   // TODO(b/312542928): collect UMA with the error type.
