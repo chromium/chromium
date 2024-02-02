@@ -272,6 +272,11 @@ class AddressComponent {
   // form the root node. Returns true if the completion was successful.
   virtual bool CompleteFullTree();
 
+  // Generates values for the tree's synthesized nodes recursively, starting
+  // from the root. Values for synthesized nodes are generated using formatting
+  // expressions.
+  void GenerateTreeSynthesizedNodes();
+
   // Checks if a tree is completable in the sense that there are no conflicting
   // observed or verified types. This means that there is not more than one
   // observed or verified node on any root-to-leaf path in the tree.

@@ -35,6 +35,8 @@ class AddressTest : public testing::Test {
             features::kAutofillEnableSupportForAddressOverflow,
             features::kAutofillEnableSupportForBetweenStreetsOrLandmark,
             features::kAutofillEnableSupportForAddressOverflowAndLandmark,
+            features::kAutofillUseDEAddressModel,
+            features::kAutofillUseINAddressModel,
             features::kAutofillUseI18nAddressModel,
         },
         {});
@@ -740,6 +742,41 @@ TEST_F(AddressTest, TestUpdateCustomHierarchyToLegacy) {
   EXPECT_EQ(address.GetRawInfo(ADDRESS_HOME_SUBPREMISE), u"Floor 15 Apt 13");
   EXPECT_EQ(address.GetRawInfo(ADDRESS_HOME_FLOOR), u"15");
   EXPECT_EQ(address.GetRawInfo(ADDRESS_HOME_APT_NUM), u"13");
+}
+
+TEST_F(AddressTest, TestSynthesizedNodesGeneration) {
+  Address address1(AddressCountryCode("IN"));
+  address1.SetRawInfoWithVerificationStatus(ADDRESS_HOME_DEPENDENT_LOCALITY,
+                                            u"Kondapur",
+                                            VerificationStatus::kObserved);
+  address1.FinalizeAfterImport();
+  EXPECT_EQ(address1.GetRawInfo(ADDRESS_HOME_DEPENDENT_LOCALITY_AND_LANDMARK),
+            u"Kondapur");
+
+  Address address2(AddressCountryCode("IN"));
+  address2.SetRawInfoWithVerificationStatus(
+      ADDRESS_HOME_STREET_LOCATION, u"12/110, Flat no. 504, Raja Apartments",
+      VerificationStatus::kObserved);
+  address2.SetRawInfoWithVerificationStatus(ADDRESS_HOME_DEPENDENT_LOCALITY,
+                                            u"Kondapur",
+                                            VerificationStatus::kObserved);
+  address2.SetRawInfoWithVerificationStatus(ADDRESS_HOME_LANDMARK,
+                                            u"Opp to Ayyappa Swamy temple",
+                                            VerificationStatus::kObserved);
+  // Finalize after import generates values for synthesized nodes.
+  address2.FinalizeAfterImport();
+  // Check values for synthesized nodes.
+  EXPECT_EQ(address2.GetRawInfo(ADDRESS_HOME_DEPENDENT_LOCALITY_AND_LANDMARK),
+            u"Kondapur, Opp to Ayyappa Swamy temple");
+  EXPECT_EQ(
+      address2.GetRawInfo(ADDRESS_HOME_STREET_LOCATION_AND_LANDMARK),
+      u"12/110, Flat no. 504, Raja Apartments, Opp to Ayyappa Swamy temple");
+  // Check values for internal nodes.
+  EXPECT_EQ(address2.GetRawInfo(ADDRESS_HOME_STREET_LOCATION_AND_LOCALITY),
+            u"12/110, Flat no. 504, Raja Apartments, Kondapur");
+  EXPECT_EQ(address2.GetRawInfo(ADDRESS_HOME_STREET_ADDRESS),
+            u"12/110, Flat no. 504, Raja Apartments, Kondapur, Opp to Ayyappa "
+            u"Swamy temple");
 }
 
 }  // namespace autofill

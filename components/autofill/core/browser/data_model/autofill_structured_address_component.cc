@@ -850,6 +850,16 @@ bool AddressComponent::CompleteFullTree() {
   }
 }
 
+void AddressComponent::GenerateTreeSynthesizedNodes() {
+  for (AddressComponent* subcomponent : subcomponents_) {
+    subcomponent->GenerateTreeSynthesizedNodes();
+  }
+
+  for (AddressComponent* synthesized_component : synthesized_subcomponents_) {
+    synthesized_component->FormatValueFromSubcomponents();
+  }
+}
+
 void AddressComponent::RecursivelyCompleteTree() {
   if (IsAtomic())
     return;
