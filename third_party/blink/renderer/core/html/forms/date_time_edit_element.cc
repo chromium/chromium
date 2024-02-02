@@ -490,6 +490,8 @@ void DateTimeEditBuilder::VisitLiteral(const String& text) {
   auto* element =
       MakeGarbageCollected<HTMLDivElement>(EditElement().GetDocument());
   element->SetShadowPseudoId(text_pseudo_id);
+  element->SetInlineStyleProperty(CSSPropertyID::kUnicodeBidi,
+                                  CSSValueID::kNormal);
   if (parameters_.locale.IsRTL() && text.length()) {
     WTF::unicode::CharDirection dir = WTF::unicode::Direction(text[0]);
     if (dir == WTF::unicode::kSegmentSeparator ||
@@ -545,6 +547,7 @@ DateTimeEditElement::DateTimeEditElement(Document& document,
   SetHasCustomStyleCallbacks();
   SetShadowPseudoId(AtomicString("-webkit-datetime-edit"));
   setAttribute(html_names::kIdAttr, shadow_element_names::kIdDateTimeEdit);
+  SetInlineStyleProperty(CSSPropertyID::kUnicodeBidi, CSSValueID::kNormal);
 }
 
 DateTimeEditElement::~DateTimeEditElement() = default;
@@ -768,6 +771,8 @@ void DateTimeEditElement::GetLayout(const LayoutParameters& layout_parameters,
   if (!HasChildren()) {
     auto* element = MakeGarbageCollected<HTMLDivElement>(GetDocument());
     element->SetShadowPseudoId(fields_wrapper_pseudo_id);
+    element->SetInlineStyleProperty(CSSPropertyID::kUnicodeBidi,
+                                    CSSValueID::kNormal);
     AppendChild(element);
   }
   Element* fields_wrapper = FieldsWrapperElement();

@@ -12,6 +12,7 @@ element.style {
 }
 div {
    display: block
+   unicode-bidi: isolate
 }
 #second {
    font-family: helvetica

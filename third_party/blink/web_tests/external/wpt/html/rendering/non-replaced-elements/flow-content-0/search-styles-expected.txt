@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] <search> - unicode-bidi
-  assert_equals: expected "isolate" but got "normal"
-Harness: the test ran to completion.
-

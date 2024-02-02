@@ -4801,9 +4801,10 @@ TEST_F(StyleEngineTest, ScrollbarPartPseudoDoesNotMatchElement) {
   GetDocument().Lifecycle().AdvanceTo(DocumentLifecycle::kInStyleRecalc);
   GetStyleEngine().RecalcStyle();
 
-  // We have one UA rule for <div> that matches.
-  // None of the ::-webkit-scrollbar-* rules should match.
-  EXPECT_EQ(1u, stats->rules_matched);
+  // We have two UA rule for <div> that match:
+  //  div { display: block; }
+  //  div { unicode-bidi: isolate; }
+  EXPECT_EQ(stats->rules_matched, 2u);
 }
 
 TEST_F(StyleEngineTest, AudioUAStyleNameSpace) {

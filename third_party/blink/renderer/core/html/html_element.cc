@@ -342,6 +342,9 @@ void HTMLElement::CollectStyleForPresentationAttribute(
           style, CSSPropertyID::kWebkitUserDrag, CSSValueID::kNone);
     }
   } else if (name == html_names::kDirAttr) {
+    // This chunk of code interacts with the html.css stylesheet rule labelled
+    // with `rendering.html#bidi-rendering`. Make sure any changes here are
+    // congruent with changes made there.
     if (EqualIgnoringASCIICase(value, "auto")) {
       AddPropertyToPresentationAttributeStyle(
           style, CSSPropertyID::kUnicodeBidi,

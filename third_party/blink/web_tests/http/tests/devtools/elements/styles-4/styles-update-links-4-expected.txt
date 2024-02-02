@@ -15,6 +15,7 @@ element.style { ()
 [expanded] 
 section { (user agent stylesheet)
     display: block;
+    unicode-bidi: isolate;
 
 ======== Pseudo ::before element ========
 [expanded] 

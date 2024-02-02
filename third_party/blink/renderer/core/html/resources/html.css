@@ -1398,7 +1398,15 @@ details[open] > summary:first-of-type {
     list-style-type: disclosure-open;
 }
 
-bdi, output {
+/* https://html.spec.whatwg.org/multipage/rendering.html#bidi-rendering */
+/* This chunk of styles interacts with the `name == html_names::kDirAttr` case
+   in HTMLElement::CollectStyleForPresentationAttribute(). Make sure any changes
+   here are congruent with changes made there. */
+address, blockquote, center, div, figure, figcaption, footer, form, header, hr,
+legend, listing, main, p, plaintext, pre, summary, xmp, article, aside, h1, h2,
+h3, h4, h5, h6, hgroup, nav, section, search, table, caption, colgroup, col,
+thead, tbody, tfoot, tr, td, th, dir, dd, dl, dt, menu, ol, ul, li, bdi,
+output {
     unicode-bidi: isolate;
 }
 
