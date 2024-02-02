@@ -8,6 +8,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/extensions_browser_client.h"
 #include "extensions/browser/warning_service_factory.h"
+#include "extensions/common/extension_id.h"
 #include "extensions/common/extension_set.h"
 
 using content::BrowserThread;
@@ -50,8 +51,9 @@ void WarningService::ClearWarnings(
     NotifyWarningsChanged(affected_extensions);
 }
 
-std::set<Warning::WarningType> WarningService::
-    GetWarningTypesAffectingExtension(const std::string& extension_id) const {
+std::set<Warning::WarningType>
+WarningService::GetWarningTypesAffectingExtension(
+    const ExtensionId& extension_id) const {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   std::set<Warning::WarningType> result;
   for (auto i = warnings_.cbegin(); i != warnings_.cend(); ++i) {
@@ -62,7 +64,7 @@ std::set<Warning::WarningType> WarningService::
 }
 
 std::vector<std::string> WarningService::GetWarningMessagesForExtension(
-    const std::string& extension_id) const {
+    const ExtensionId& extension_id) const {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   std::vector<std::string> result;
 

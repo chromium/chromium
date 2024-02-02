@@ -26,6 +26,7 @@
 #include "extensions/browser/test_extensions_browser_client.h"
 #include "extensions/browser/updater/extension_installer.h"
 #include "extensions/common/extension_builder.h"
+#include "extensions/common/extension_id.h"
 
 using extensions::mojom::ManifestLocation;
 
@@ -91,7 +92,7 @@ class UpdateDataProviderTest : public ExtensionsTest {
            base::WriteFile(full_path, content);
   }
 
-  void AddExtension(const std::string& extension_id,
+  void AddExtension(const ExtensionId& extension_id,
                     const std::string& version,
                     bool enabled,
                     int disable_reasons,
@@ -99,7 +100,7 @@ class UpdateDataProviderTest : public ExtensionsTest {
     AddExtension(extension_id, version, "", enabled, disable_reasons, location);
   }
 
-  void AddExtension(const std::string& extension_id,
+  void AddExtension(const ExtensionId& extension_id,
                     const std::string& version,
                     const std::string& fingerprint,
                     bool enabled,

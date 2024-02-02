@@ -12,6 +12,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension_features.h"
+#include "extensions/common/extension_id.h"
 #include "extensions/common/extensions_client.h"
 #include "net/base/url_util.h"
 #include "url/gurl.h"
@@ -73,7 +74,7 @@ std::string GetWebstoreItemDetailURLPrefix() {
   return GetWebstoreLaunchURL().spec() + "/detail/";
 }
 
-GURL GetWebstoreItemJsonDataURL(const std::string& extension_id) {
+GURL GetWebstoreItemJsonDataURL(const extensions::ExtensionId& extension_id) {
   return GURL(GetWebstoreLaunchURL().spec() + "/inlineinstall/detail/" +
               extension_id);
 }
@@ -89,7 +90,7 @@ GURL GetWebstoreUpdateUrl() {
   return GetDefaultWebstoreUpdateUrl();
 }
 
-GURL GetWebstoreReportAbuseUrl(const std::string& extension_id,
+GURL GetWebstoreReportAbuseUrl(const extensions::ExtensionId& extension_id,
                                const std::string& referrer_id) {
   return GURL(base::StringPrintf("%s/report/%s?utm_source=%s",
                                  GetWebstoreLaunchURL().spec().c_str(),

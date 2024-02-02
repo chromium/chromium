@@ -15,6 +15,7 @@
 #include "base/memory/ref_counted.h"
 #include "extensions/browser/updater/extension_installer.h"
 #include "extensions/browser/updater/extension_update_data.h"
+#include "extensions/common/extension_id.h"
 
 namespace base {
 class FilePath;
@@ -63,13 +64,13 @@ class UpdateDataProvider : public base::RefCounted<UpdateDataProvider> {
   ~UpdateDataProvider();
 
   // This function should be called on the browser UI thread.
-  void RunInstallCallback(const std::string& extension_id,
+  void RunInstallCallback(const ExtensionId& extension_id,
                           const std::string& public_key,
                           const base::FilePath& unpacked_dir,
                           bool install_immediately,
                           UpdateClientCallback update_client_callback);
 
-  void InstallUpdateCallback(const std::string& extension_id,
+  void InstallUpdateCallback(const ExtensionId& extension_id,
                              const std::string& public_key,
                              const base::FilePath& unpacked_dir,
                              bool install_immediately,

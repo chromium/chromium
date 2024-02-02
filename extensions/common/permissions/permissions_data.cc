@@ -15,6 +15,7 @@
 #include "extensions/common/constants.h"
 #include "extensions/common/error_utils.h"
 #include "extensions/common/extension_features.h"
+#include "extensions/common/extension_id.h"
 #include "extensions/common/extension_urls.h"
 #include "extensions/common/extensions_client.h"
 #include "extensions/common/manifest.h"
@@ -168,7 +169,7 @@ bool PermissionsData::IsRestrictedUrl(const GURL& document_url,
 
 // static
 bool PermissionsData::AllUrlsIncludesChromeUrls(
-    const std::string& extension_id) {
+    const ExtensionId& extension_id) {
   return extension_id == extension_misc::kChromeVoxExtensionId;
 }
 

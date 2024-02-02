@@ -31,6 +31,7 @@
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_icon_set.h"
+#include "extensions/common/extension_id.h"
 #include "extensions/common/extension_l10n_util.h"
 #include "extensions/common/extension_set.h"
 #include "extensions/common/image_util.h"
@@ -232,7 +233,7 @@ scoped_refptr<Extension> LoadExtension(const base::FilePath& extension_path,
 }
 
 scoped_refptr<Extension> LoadExtension(const base::FilePath& extension_path,
-                                       const std::string& extension_id,
+                                       const ExtensionId& extension_id,
                                        ManifestLocation location,
                                        int flags,
                                        std::string* error) {
@@ -243,7 +244,7 @@ scoped_refptr<Extension> LoadExtension(const base::FilePath& extension_path,
 scoped_refptr<Extension> LoadExtension(
     const base::FilePath& extension_path,
     const base::FilePath::CharType* manifest_file,
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     ManifestLocation location,
     int flags,
     std::string* error) {

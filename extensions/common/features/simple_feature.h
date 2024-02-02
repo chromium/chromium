@@ -21,6 +21,7 @@
 #include "components/version_info/channel.h"
 #include "extensions/common/context_data.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/extension_id.h"
 #include "extensions/common/features/feature.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/mojom/context_type.mojom-forward.h"
@@ -109,7 +110,7 @@ class SimpleFeature : public Feature {
       DelegatedAvailabilityCheckHandler handler) override;
   bool HasDelegatedAvailabilityCheckHandler() const override;
 
-  static bool IsIdInArray(const std::string& extension_id,
+  static bool IsIdInArray(const ExtensionId& extension_id,
                           const char* const array[],
                           size_t array_length);
 
@@ -259,7 +260,7 @@ class SimpleFeature : public Feature {
       const base::RepeatingCallback<Availability(const Feature*)>& checker)
       const;
 
-  static bool IsValidExtensionId(const std::string& extension_id);
+  static bool IsValidExtensionId(const ExtensionId& extension_id);
   static bool IsValidHashedExtensionId(const HashedExtensionId& hashed_id);
 
   // Returns the availability of the feature with respect to the basic

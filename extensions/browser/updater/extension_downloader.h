@@ -415,7 +415,7 @@ class ExtensionDownloader {
   // If the return value is |kAvailable|, |update_index_out| will store the
   // index of the update in |possible_updates|.
   UpdateAvailability GetUpdateAvailability(
-      const std::string& extension_id,
+      const ExtensionId& extension_id,
       const std::vector<const UpdateManifestResult*>& possible_candidates,
       UpdateManifestResult** update_result_out) const;
 

@@ -12,6 +12,7 @@
 #include "base/files/file_path.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/values.h"
+#include "extensions/common/extension_id.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/message_bundle.h"
 #include "extensions/common/mojom/manifest.mojom-shared.h"
@@ -67,7 +68,7 @@ scoped_refptr<Extension> LoadExtension(const base::FilePath& extension_root,
 
 // The same as LoadExtension except use the provided |extension_id|.
 scoped_refptr<Extension> LoadExtension(const base::FilePath& extension_root,
-                                       const std::string& extension_id,
+                                       const ExtensionId& extension_id,
                                        mojom::ManifestLocation location,
                                        int flags,
                                        std::string* error);
@@ -78,7 +79,7 @@ scoped_refptr<Extension> LoadExtension(const base::FilePath& extension_root,
 scoped_refptr<Extension> LoadExtension(
     const base::FilePath& extension_root,
     const base::FilePath::CharType* manifest_file,
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     mojom::ManifestLocation location,
     int flags,
     std::string* error);
