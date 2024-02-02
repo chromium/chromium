@@ -31,6 +31,7 @@
 #include "components/password_manager/core/browser/password_autofill_manager.h"
 #include "components/password_manager/core/browser/password_manager.h"
 #include "components/password_manager/core/browser/password_requirements_service.h"
+#include "components/password_manager/core/browser/password_store/mock_password_store_interface.h"
 #include "components/password_manager/core/browser/password_store/test_password_store.h"
 #include "components/password_manager/core/browser/stub_password_manager_client.h"
 #include "components/password_manager/core/browser/stub_password_manager_driver.h"
@@ -139,14 +140,12 @@ class MockPasswordManagerClient : public StubPasswordManagerClient {
 
   explicit MockPasswordManagerClient(std::unique_ptr<PrefService> prefs)
       : prefs_(std::move(prefs)),
-        store_(new TestPasswordStore),
+        store_(new MockPasswordStoreInterface),
         driver_(this),
         password_requirements_service_(
-            std::make_unique<FakePasswordRequirementsSpecFetcher>()) {
-    store_->Init(prefs_.get(), /*affiliated_match_helper=*/nullptr);
-  }
+            std::make_unique<FakePasswordRequirementsSpecFetcher>()) {}
 
-  ~MockPasswordManagerClient() override { store_->ShutdownOnUIThread(); }
+  ~MockPasswordManagerClient() override {}
 
   PasswordStoreInterface* GetProfilePasswordStore() const override {
     return store_.get();
@@ -163,11 +162,12 @@ class MockPasswordManagerClient : public StubPasswordManagerClient {
   }
 
   TestPasswordManagerDriver* test_driver() { return &driver_; }
+  MockPasswordStoreInterface* mock_store() { return store_.get(); }
 
  private:
   autofill::test::AutofillUnitTestEnvironment autofill_environment_;
   std::unique_ptr<PrefService> prefs_;
-  scoped_refptr<TestPasswordStore> store_;
+  scoped_refptr<MockPasswordStoreInterface> store_;
   NiceMock<TestPasswordManagerDriver> driver_;
   PasswordRequirementsService password_requirements_service_;
   url::Origin last_committed_origin_;
@@ -205,8 +205,15 @@ class PasswordGenerationFrameHelperTest : public testing::Test {
 };
 
 TEST_F(PasswordGenerationFrameHelperTest, IsGenerationEnabled) {
+  // If password store is not able to save passwords generation is disabled.
+  EXPECT_CALL(*client_->mock_store(), IsAbleToSavePasswords())
+      .WillOnce(testing::Return(false));
+  EXPECT_FALSE(IsGenerationEnabled());
+
   // Enabling the PasswordManager and password sync should cause generation to
   // be enabled, unless the sync is with a custom passphrase.
+  EXPECT_CALL(*client_->mock_store(), IsAbleToSavePasswords())
+      .WillOnce(testing::Return(true));
   EXPECT_CALL(*client_, IsSavingAndFillingEnabled(_))
       .WillRepeatedly(testing::Return(true));
   EXPECT_CALL(*client_->GetPasswordFeatureManager(), IsGenerationEnabled())
@@ -214,12 +221,16 @@ TEST_F(PasswordGenerationFrameHelperTest, IsGenerationEnabled) {
   EXPECT_TRUE(IsGenerationEnabled());
 
   // Disabling password syncing should cause generation to be disabled.
+  EXPECT_CALL(*client_->mock_store(), IsAbleToSavePasswords())
+      .WillOnce(testing::Return(true));
   EXPECT_CALL(*client_->GetPasswordFeatureManager(), IsGenerationEnabled())
       .WillRepeatedly(testing::Return(false));
   EXPECT_FALSE(IsGenerationEnabled());
 
   // Disabling the PasswordManager should cause generation to be disabled even
   // if syncing is enabled.
+  EXPECT_CALL(*client_->mock_store(), IsAbleToSavePasswords())
+      .WillOnce(testing::Return(true));
   EXPECT_CALL(*client_, IsSavingAndFillingEnabled(_))
       .WillRepeatedly(testing::Return(false));
   EXPECT_CALL(*client_->GetPasswordFeatureManager(), IsGenerationEnabled())
@@ -230,6 +241,9 @@ TEST_F(PasswordGenerationFrameHelperTest, IsGenerationEnabled) {
 // Verify that password requirements received from the autofill server are
 // stored and that domain-wide password requirements are fetched as well.
 TEST_F(PasswordGenerationFrameHelperTest, ProcessPasswordRequirements) {
+  EXPECT_CALL(*client_->mock_store(), IsAbleToSavePasswords())
+      .WillRepeatedly(testing::Return(true));
+
   // Setup so that IsGenerationEnabled() returns true.
   EXPECT_CALL(*client_, IsSavingAndFillingEnabled(_))
       .WillRepeatedly(testing::Return(true));
@@ -362,6 +376,9 @@ TEST_F(PasswordGenerationFrameHelperTest, UpdatePasswordSyncStateIncognito) {
 }
 
 TEST_F(PasswordGenerationFrameHelperTest, GenerationDisabledForGoogle) {
+  EXPECT_CALL(*client_->mock_store(), IsAbleToSavePasswords())
+      .WillRepeatedly(testing::Return(true));
+
   EXPECT_CALL(*client_, IsSavingAndFillingEnabled(_))
       .WillRepeatedly(testing::Return(true));
   EXPECT_CALL(*client_->GetPasswordFeatureManager(), IsGenerationEnabled())

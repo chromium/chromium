@@ -9,6 +9,7 @@
 #import "components/autofill/ios/browser/autofill_java_script_feature.h"
 #import "components/password_manager/core/browser/password_manager.h"
 #import "components/password_manager/core/browser/password_manager_client.h"
+#import "components/password_manager/core/browser/password_store/mock_password_store_interface.h"
 #import "components/password_manager/core/browser/stub_password_manager_client.h"
 #import "components/password_manager/ios/ios_password_manager_driver_factory.h"
 #import "components/password_manager/ios/shared_password_controller.h"
@@ -53,6 +54,10 @@ class MockPasswordManagerClient
   MOCK_METHOD(bool,
               IsSavingAndFillingEnabled,
               (const GURL&),
+              (const, override));
+  MOCK_METHOD(password_manager::PasswordStoreInterface*,
+              GetProfilePasswordStore,
+              (),
               (const, override));
 };
 
@@ -138,6 +143,12 @@ TEST_F(IOSPasswordManagerDriverTest, InformNoSavedCredentials) {
 TEST_F(IOSPasswordManagerDriverTest, FormEligibleForGenerationFound) {
   autofill::PasswordFormGenerationData form;
 
+  scoped_refptr<password_manager::MockPasswordStoreInterface> store(
+      new password_manager::MockPasswordStoreInterface);
+  EXPECT_CALL(password_manager_client_, GetProfilePasswordStore)
+      .WillRepeatedly(testing::Return(store.get()));
+
+  EXPECT_CALL(*store, IsAbleToSavePasswords).WillOnce(Return(true));
   EXPECT_CALL(password_manager_client_, IsSavingAndFillingEnabled(GURL()))
       .WillOnce(Return(true));
   EXPECT_CALL(*password_manager_client_.GetPasswordFeatureManager(),

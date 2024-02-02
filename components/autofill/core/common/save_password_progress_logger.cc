@@ -367,6 +367,9 @@ std::string SavePasswordProgressLogger::GetStringFromID(
       return "Password reused from ";
     case SavePasswordProgressLogger::STRING_GENERATION_DISABLED_SAVING_DISABLED:
       return "Generation disabled: saving disabled";
+    case SavePasswordProgressLogger::
+        STRING_GENERATION_DISABLED_NOT_ABLE_TO_SAVE_PASSWORDS:
+      return "Generation disabled: not able to save passwords";
     case SavePasswordProgressLogger::STRING_GENERATION_DISABLED_NO_SYNC:
       return "Generation disabled: no sync";
     case STRING_GENERATION_RENDERER_AUTOMATIC_GENERATION_AVAILABLE:

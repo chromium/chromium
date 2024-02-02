@@ -1311,6 +1311,7 @@ TEST_F(ChromePasswordManagerClientAndroidTest,
       static_cast<MockPasswordStoreInterface*>(
           GetClient()->GetProfilePasswordStore());
   base::WeakPtr<PasswordStoreConsumer> store_consumer;
+  EXPECT_CALL(*mock_store, IsAbleToSavePasswords).WillRepeatedly(Return(true));
   EXPECT_CALL(*mock_store, GetLogins(_, _))
       .WillOnce(SaveArg<1>(&store_consumer));
   driver->GetPasswordManager()->OnPasswordFormsParsed(driver.get(),
