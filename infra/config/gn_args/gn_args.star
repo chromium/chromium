@@ -414,7 +414,6 @@ gn_args.config(
         "enable_websockets": False,
         "include_transport_security_state_preload_list": False,
         "is_cronet_build": True,
-        "use_crash_key_stubs": True,
         "use_platform_icu_alternatives": True,
     },
 )
