@@ -1558,6 +1558,16 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
   </token>
 </histogram>
 
+<histogram name="ChromeOS.Heartd.Action" enum="HeartdActionType"
+    expires_after="2024-07-21">
+  <owner>kerker@google.com</owner>
+  <owner>cros-tdm-tpe-eng@google.com</owner>
+  <summary>
+    Records the action taken by the heartd service. When heartd starts up, we
+    check if we reboot the device before, if yes, we send the metrics.
+  </summary>
+</histogram>
+
 <!-- This histogram was expired for about three weeks from 2023-05-01 to
 2023-05-25. -->
 

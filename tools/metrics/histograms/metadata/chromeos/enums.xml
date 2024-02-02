@@ -952,6 +952,11 @@ chromium-metrics-reviews@google.com.
       label="Multiple YUV streams of different aspect ratio with BLOB"/>
 </enum>
 
+<enum name="HeartdActionType">
+  <int value="0" label="Normal reboot"/>
+  <int value="1" label="Force reboot"/>
+</enum>
+
 <enum name="IntentPickerDialogAction">
   <summary>
     Defines actions taken by the user in the Intent Picker dialog
