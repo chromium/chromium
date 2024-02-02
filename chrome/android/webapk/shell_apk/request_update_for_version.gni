@@ -6,4 +6,4 @@
 # if the WebAPK's ShellAPK version is less than
 # |request_update_for_shell_apk_version|. The version should be incremented
 # after a new ShellAPK has been uploaded to the WebAPK Minting Server.
-request_update_for_shell_apk_version = 146
+request_update_for_shell_apk_version = 166
