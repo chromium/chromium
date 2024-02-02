@@ -10,6 +10,7 @@
 #include "chrome/browser/search_engine_choice/search_engine_choice_service_factory.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
+#include "chrome/test/base/dialog_test_browser_window.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "components/country_codes/country_codes.h"
 #include "components/search_engines/prepopulated_engines.h"
@@ -17,6 +18,36 @@
 #include "components/search_engines/template_url_service.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+namespace {
+
+void SetUserSelectedDefaultSearchProvider(
+    TemplateURLService* template_url_service,
+    bool created_by_policy) {
+  constexpr char kCustomSearchEngineDomain[] = "bar.com";
+  constexpr char16_t kCustomSearchEngineKeyword[] = u"bar.com";
+
+  TemplateURLData data;
+  data.SetShortName(kCustomSearchEngineKeyword);
+  data.SetKeyword(kCustomSearchEngineKeyword);
+  data.SetURL(base::StringPrintf("https://%s/url?bar={searchTerms}",
+                                 kCustomSearchEngineDomain));
+  data.new_tab_url =
+      base::StringPrintf("https://%s/newtab", kCustomSearchEngineDomain);
+  data.alternate_urls.push_back(base::StringPrintf(
+      "https://%s/alt#quux={searchTerms}", kCustomSearchEngineDomain));
+
+  if (created_by_policy) {
+    data.created_by_policy =
+        TemplateURLData::CreatedByPolicy::kDefaultSearchProvider;
+  }
+
+  TemplateURL* template_url =
+      template_url_service->Add(std::make_unique<TemplateURL>(data));
+  template_url_service->SetUserSelectedDefaultSearchProvider(template_url);
+}
+
+}  // namespace
 
 class SearchEngineChoiceServiceTest : public BrowserWithTestWindowTest {
  public:
@@ -44,6 +75,11 @@ class SearchEngineChoiceServiceTest : public BrowserWithTestWindowTest {
         country_codes::CountryCharsToCountryID('B', 'E');
     pref_service->SetInteger(country_codes::kCountryIDAtInstall,
                              kBelgiumCountryId);
+  }
+
+  std::unique_ptr<BrowserWindow> CreateBrowserWindow() override {
+    // Dialog eligibility checks require a `WebContentsModalDialogHost`.
+    return std::make_unique<DialogTestBrowserWindow>();
   }
 
   const base::HistogramTester& histogram_tester() const {
@@ -127,4 +163,26 @@ TEST_F(SearchEngineChoiceServiceTest, NotifyChoiceMade) {
       search_engines::SearchEngineChoiceScreenEvents::
           kProfileCreationDefaultWasSet,
       1);
+}
+
+TEST_F(SearchEngineChoiceServiceTest,
+       DoNotDisplayDialogIfPolicyIsSetDynamically) {
+  SearchEngineChoiceService* search_engine_choice_service =
+      SearchEngineChoiceServiceFactory::GetForProfile(profile());
+  ASSERT_TRUE(search_engine_choice_service);
+
+  SetUserSelectedDefaultSearchProvider(
+      TemplateURLServiceFactory::GetForProfile(profile()),
+      /*created_by_policy=*/true);
+  EXPECT_FALSE(search_engine_choice_service->CanShowDialog(*browser()));
+}
+
+TEST_F(SearchEngineChoiceServiceTest, DoNotCreateServiceIfPolicyIsSet) {
+  SetUserSelectedDefaultSearchProvider(
+      TemplateURLServiceFactory::GetForProfile(profile()),
+      /*created_by_policy=*/true);
+
+  SearchEngineChoiceService* search_engine_choice_service =
+      SearchEngineChoiceServiceFactory::GetForProfile(profile());
+  EXPECT_FALSE(search_engine_choice_service);
 }
