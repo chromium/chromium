@@ -53,11 +53,11 @@
 #include "components/feature_engagement/public/event_constants.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/public/tracker.h"
+#include "content/public/browser/browser_accessibility_state.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_ui.h"
 #include "ui/accessibility/ax_mode.h"
-#include "ui/accessibility/platform/ax_platform_node.h"
 #include "ui/aura/window.h"
 #include "ui/base/clipboard/clipboard_format_type.h"
 #include "ui/base/clipboard/custom_data_helper.h"
@@ -484,8 +484,9 @@ bool WebUITabStripContainerView::UseTouchableTabStrip(const Browser* browser) {
   // TODO(crbug.com/1136185, crbug.com/1136236): We currently do not switch to
   // touchable tabstrip in Screen Reader mode due to the touchable tabstrip
   // being less accessible than the traditional tabstrip.
-  if (ui::AXPlatformNode::GetAccessibilityMode().has_mode(
-          ui::AXMode::kScreenReader)) {
+  if (content::BrowserAccessibilityState::GetInstance()
+          ->GetAccessibilityMode()
+          .has_mode(ui::AXMode::kScreenReader)) {
     return false;
   }
 

@@ -19,11 +19,11 @@
 #include "content/public/browser/browser_accessibility_state.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
+#include "content/public/test/scoped_accessibility_mode_override.h"
 #include "mojo/public/cpp/test_support/fake_message_dispatch_context.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/ax_mode.h"
-#include "ui/accessibility/platform/ax_platform_node.h"
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 #include "chrome/browser/screen_ai/screen_ai_install_state.h"
@@ -105,11 +105,9 @@ TEST_F(AXMediaAppUntrustedHandlerTest, IsAccessibilityEnabled) {
   EXPECT_FALSE(fake_media_app_.IsAccessibilityEnabled());
 
   accessibility_state_utils::OverrideIsScreenReaderEnabledForTesting(true);
-  ui::AXPlatformNode::NotifyAddAXModeFlags(ui::kAXModeComplete);
+  content::ScopedAccessibilityModeOverride scoped_mode(ui::kAXModeComplete);
   EXPECT_TRUE(handler_->IsAccessibilityEnabled());
   EXPECT_TRUE(fake_media_app_.IsAccessibilityEnabled());
-  // Once enabled, accessibility cannot be disabled.
-  ui::AXPlatformNode::SetAXMode(ui::AXMode::kNone);
 }
 
 TEST_F(AXMediaAppUntrustedHandlerTest, PageMetadataDocumentFirstLoad) {

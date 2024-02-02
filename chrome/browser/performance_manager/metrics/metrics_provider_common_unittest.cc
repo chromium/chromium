@@ -14,22 +14,8 @@
 #include "components/performance_manager/public/user_tuning/prefs.h"
 #include "components/prefs/testing_pref_service.h"
 #include "content/public/test/browser_task_environment.h"
+#include "content/public/test/scoped_accessibility_mode_override.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/accessibility/platform/ax_platform_node.h"
-
-class ScopedAXModeSetter {
- public:
-  explicit ScopedAXModeSetter(ui::AXMode new_mode) {
-    previous_mode_ = ui::AXPlatformNode::GetAccessibilityMode();
-    ui::AXPlatformNode::SetAXMode(new_mode);
-  }
-  ~ScopedAXModeSetter() {
-    ui::AXPlatformNode::SetAXMode(previous_mode_.flags());
-  }
-
- private:
-  ui::AXMode previous_mode_;
-};
 
 class PerformanceManagerMetricsProviderCommonTest : public testing::Test {
  protected:
@@ -54,7 +40,8 @@ TEST_F(PerformanceManagerMetricsProviderCommonTest, A11yModeOff) {
 }
 
 TEST_F(PerformanceManagerMetricsProviderCommonTest, A11yModeOn) {
-  ScopedAXModeSetter scoped_setter(ui::AXMode::kWebContents);
+  content::ScopedAccessibilityModeOverride scoped_setter(
+      ui::AXMode::kWebContents);
 
   base::HistogramTester tester;
   provider()->ProvideCurrentSessionData(nullptr);
@@ -66,8 +53,8 @@ TEST_F(PerformanceManagerMetricsProviderCommonTest, A11yModeOn) {
 }
 
 TEST_F(PerformanceManagerMetricsProviderCommonTest, MultipleA11yModeFlags) {
-  ScopedAXModeSetter scoped_setter(ui::AXMode::kWebContents |
-                                   ui::AXMode::kHTML);
+  content::ScopedAccessibilityModeOverride scoped_setter(
+      ui::AXMode::kWebContents | ui::AXMode::kHTML);
 
   base::HistogramTester tester;
   provider()->ProvideCurrentSessionData(nullptr);

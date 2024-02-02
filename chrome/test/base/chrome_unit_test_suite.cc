@@ -24,6 +24,7 @@
 #include "components/component_updater/component_updater_paths.h"
 #include "components/startup_metric_utils/common/startup_metric_utils.h"
 #include "components/update_client/update_query_params.h"
+#include "content/public/browser/browser_accessibility_state.h"
 #include "content/public/browser/webui_config_map.h"
 #include "content/public/common/content_paths.h"
 #include "content/public/test/scoped_web_ui_controller_factory_registration.h"
@@ -31,7 +32,6 @@
 #include "gpu/ipc/service/image_transport_surface.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/ax_mode.h"
-#include "ui/accessibility/platform/ax_platform_node.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/resource/resource_handle.h"
 #include "ui/base/ui_base_paths.h"
@@ -97,16 +97,19 @@ class ChromeUnitTestSuiteInitializer : public testing::EmptyTestEventListener {
 #if BUILDFLAG(IS_WIN)
     // Running tests locally on Windows machines with some degree of
     // accessibility enabled can cause this flag to become implicitly set.
-    constexpr uint32_t kAllowedFlags = ui::AXMode::kNativeAPIs;
+    constexpr ui::AXMode kAllowedFlags(ui::AXMode::kNativeAPIs);
 #else
-    constexpr uint32_t kAllowedFlags = ui::AXMode::kNone;
+    constexpr ui::AXMode kAllowedFlags(ui::AXMode::kNone);
 #endif
-    DCHECK_EQ(
-        kAllowedFlags,
-        ui::AXPlatformNode::GetAccessibilityMode().flags() | kAllowedFlags)
-        << "Please use ScopedAXModeSetter, or add a call to "
-           "AXPlatformNode::SetAXMode(ui::AXMode::kNone) at the end of your "
-           "test.";
+    if (ui::AXMode disallowed =
+            content::BrowserAccessibilityState::GetInstance()
+                ->GetAccessibilityMode() &
+            ~kAllowedFlags;
+        !disallowed.is_mode_off()) {
+      CHECK_EQ(disallowed, ui::AXMode())
+          << "Use content::ScopedAccessibilityModeOverride or otherwise ensure "
+             "that accessibility is disabled at the end of your test.";
+    }
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     arc::ClearArcAllowedCheckForTesting();
     crypto::ResetTokenManagerForTesting();
