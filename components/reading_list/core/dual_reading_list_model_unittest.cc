@@ -1242,6 +1242,29 @@ TEST_F(DualReadingListModelTest, AddAccountEntryFromSync) {
             StorageStateForTesting::kExistsInAccountModelOnly);
 }
 
+TEST_F(DualReadingListModelTest, AddEntryFromLocalModel) {
+  ASSERT_TRUE(ResetStorageAndMimicSignedInSyncDisabled());
+  ASSERT_EQ(dual_model_->GetStorageStateForURLForTesting(kUrl),
+            StorageStateForTesting::kNotFound);
+  ASSERT_THAT(dual_model_->GetEntryByURL(kUrl), IsNull());
+
+  testing::InSequence seq;
+  EXPECT_CALL(observer_,
+              ReadingListWillAddEntry(dual_model_.get(), HasUrl(kUrl)));
+  EXPECT_CALL(observer_,
+              ReadingListDidAddEntry(dual_model_.get(), kUrl,
+                                     reading_list::ADDED_VIA_CURRENT_APP));
+  EXPECT_CALL(observer_, ReadingListDidApplyChanges(dual_model_.get()));
+
+  dual_model_->GetLocalOrSyncableModel()->AddOrReplaceEntry(
+      kUrl, "entry_title", reading_list::ADDED_VIA_CURRENT_APP,
+      /*estimated_read_time=*/base::TimeDelta());
+
+  EXPECT_THAT(dual_model_->GetEntryByURL(kUrl), NotNull());
+  EXPECT_EQ(dual_model_->GetStorageStateForURLForTesting(kUrl),
+            StorageStateForTesting::kExistsInLocalOrSyncableModelOnly);
+}
+
 TEST_F(DualReadingListModelTest, AddLocalExistingEntryFromSync) {
   ASSERT_TRUE(ResetStorageAndMimicSignedInSyncDisabled(
       /*initial_local_entries_builders=*/{
@@ -1259,6 +1282,29 @@ TEST_F(DualReadingListModelTest, AddLocalExistingEntryFromSync) {
   auto token = account_model_ptr_->BeginBatchUpdates();
   account_model_ptr_->AddEntry(TestEntryBuilder(kUrl, clock_.Now()).Build(),
                                reading_list::ADDED_VIA_SYNC);
+
+  EXPECT_THAT(dual_model_->GetEntryByURL(kUrl), NotNull());
+  EXPECT_EQ(dual_model_->GetStorageStateForURLForTesting(kUrl),
+            StorageStateForTesting::kExistsInBothModels);
+}
+
+TEST_F(DualReadingListModelTest, AddExistingEntryFromLocalModel) {
+  ASSERT_TRUE(ResetStorageAndMimicSignedInSyncDisabled(
+      /*initial_local_entries_builders=*/{},
+      /*initial_account_entries_builders=*/{
+          TestEntryBuilder(kUrl, clock_.Now())}));
+  ASSERT_EQ(dual_model_->GetStorageStateForURLForTesting(kUrl),
+            StorageStateForTesting::kExistsInAccountModelOnly);
+  ASSERT_THAT(dual_model_->GetEntryByURL(kUrl), NotNull());
+
+  testing::InSequence seq;
+  EXPECT_CALL(observer_, ReadingListWillUpdateEntry(dual_model_.get(), kUrl));
+  EXPECT_CALL(observer_, ReadingListDidUpdateEntry(dual_model_.get(), kUrl));
+  EXPECT_CALL(observer_, ReadingListDidApplyChanges(dual_model_.get()));
+
+  dual_model_->GetLocalOrSyncableModel()->AddOrReplaceEntry(
+      kUrl, "entry_title", reading_list::ADDED_VIA_CURRENT_APP,
+      /*estimated_read_time=*/base::TimeDelta());
 
   EXPECT_THAT(dual_model_->GetEntryByURL(kUrl), NotNull());
   EXPECT_EQ(dual_model_->GetStorageStateForURLForTesting(kUrl),
