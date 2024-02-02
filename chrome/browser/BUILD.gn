@@ -8321,6 +8321,7 @@ static_library("test_support") {
     "//components/reporting/proto:record_proto",
     "//components/reporting/proto:status_proto",
     "//components/reporting/proto:upload_tracker_proto",
+    "//components/reporting/resources:resource_manager",
     "//components/reporting/storage:storage_uploader_interface",
     "//components/reporting/util:status",
     "//components/reporting/util:status_macros",

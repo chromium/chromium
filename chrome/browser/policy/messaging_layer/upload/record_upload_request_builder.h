@@ -102,6 +102,7 @@ class UploadEncryptedReportingRequestBuilder {
   // encryption settings and that the config_file_version hasn't been set by
   // `RecordHandlerImpl`.
   explicit UploadEncryptedReportingRequestBuilder(
+      bool is_generation_guid_required,
       bool attach_encryption_settings = false,
       int config_file_version = -1);
   ~UploadEncryptedReportingRequestBuilder();
@@ -125,6 +126,7 @@ class UploadEncryptedReportingRequestBuilder {
   static std::string_view GetConfigurationFileVersionPath();
   static std::string_view GetSourcePath();
 
+  const bool is_generation_guid_required_;
   std::optional<base::Value::Dict> result_;
 };
 
@@ -133,7 +135,8 @@ class EncryptedRecordDictionaryBuilder {
  public:
   explicit EncryptedRecordDictionaryBuilder(
       EncryptedRecord record,
-      ScopedReservation& scoped_reservation);
+      ScopedReservation& scoped_reservation,
+      bool is_generation_guid_required);
   ~EncryptedRecordDictionaryBuilder();
 
   std::optional<base::Value::Dict> Build();
@@ -151,7 +154,8 @@ class EncryptedRecordDictionaryBuilder {
 class SequenceInformationDictionaryBuilder {
  public:
   explicit SequenceInformationDictionaryBuilder(
-      const SequenceInformation& sequence_information);
+      const SequenceInformation& sequence_information,
+      bool is_generation_guid_required);
   ~SequenceInformationDictionaryBuilder();
 
   std::optional<base::Value::Dict> Build();
@@ -161,10 +165,6 @@ class SequenceInformationDictionaryBuilder {
   static std::string_view GetPriorityPath();
 #if BUILDFLAG(IS_CHROMEOS)
   static std::string_view GetGenerationGuidPath();
-
-  // Returns true if a generation guid is required for this device or browser.
-  // Returns false otherwise.
-  static bool GenerationGuidIsRequired();
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
  private:

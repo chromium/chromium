@@ -19,6 +19,7 @@
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
+#include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/policy/device_management_service_configuration.h"
 #include "chrome/browser/policy/messaging_layer/upload/record_upload_request_builder.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -26,9 +27,12 @@
 #include "components/policy/core/common/cloud/device_management_service.h"
 #include "components/policy/core/common/cloud/encrypted_reporting_job_configuration.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
+#include "components/policy/core/common/management/scoped_management_service_override_for_testing.h"
 #include "components/reporting/proto/synced/record_constants.pb.h"
+#include "components/reporting/resources/resource_manager.h"
 #include "components/reporting/util/statusor.h"
 #include "components/reporting/util/test_support_callbacks.h"
+#include "content/public/test/browser_task_environment.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -58,6 +62,14 @@ constexpr char kResponseValue[] = "response_value";
 constexpr int kGenerationId = 1;
 constexpr char kEncryptedRecord[] = "encrypted-record";
 
+size_t RecordsSize(const std::vector<EncryptedRecord>& records) {
+  size_t size = 0;
+  for (const auto& record : records) {
+    size += record.ByteSizeLong();
+  }
+  return size;
+}
+
 class FakeDelegate : public EncryptedReportingClient::Delegate {
  public:
   explicit FakeDelegate(
@@ -85,6 +97,9 @@ class EncryptedReportingClientTest : public ::testing::Test {
         ash::system::kSerialNumberKeyForTest, "fake-serial-number");
 #endif
 
+    memory_resource_ =
+        base::MakeRefCounted<ResourceManager>(4uL * 1024uL * 1024uL);
+
     device_management_service_ =
         std::make_unique<policy::DeviceManagementService>(
             std::make_unique<policy::DeviceManagementServiceConfiguration>(
@@ -100,44 +115,41 @@ class EncryptedReportingClientTest : public ::testing::Test {
 
   void TearDown() override {
     policy::EncryptedReportingJobConfiguration::ResetUploadsStateForTest();
+
+    EXPECT_THAT(memory_resource_->GetUsed(), Eq(0uL));
   }
 
   void BuildPayload() {
     context_.SetByDottedPath("browser.userAgent", "agent-test-value");
 
-    base::Value::Dict sequence_information;
-    sequence_information.Set(
-        SequenceInformationDictionaryBuilder::GetGenerationIdPath(),
-        base::NumberToString(kGenerationId));
-    sequence_information.Set(
-        SequenceInformationDictionaryBuilder::GetSequencingIdPath(),
-        base::NumberToString(sequence_id_));
-    sequence_information.Set(
-        SequenceInformationDictionaryBuilder::GetPriorityPath(),
-        Priority::SLOW_BATCH);
+    EncryptedRecord encrypted_record;
+    encrypted_record.set_encrypted_wrapped_record(kEncryptedRecord);
 
-    base::Value::Dict encrypted_wrapped_record;
-    encrypted_wrapped_record.Set(
-        EncryptedRecordDictionaryBuilder::GetEncryptedWrappedRecordPath(),
-        kEncryptedRecord);
-    encrypted_wrapped_record.Set(
-        EncryptedRecordDictionaryBuilder::GetSequenceInformationKeyPath(),
-        std::move(sequence_information));
+    SequenceInformation* const sequence_information =
+        encrypted_record.mutable_sequence_information();
+    sequence_information->set_generation_id(kGenerationId);
+    sequence_information->set_sequencing_id(sequence_id_);
+    sequence_information->set_priority(Priority::SLOW_BATCH);
 
-    base::Value::List record_list;
-    record_list.Append(std::move(encrypted_wrapped_record));
-    merging_payload_.Set(
-        UploadEncryptedReportingRequestBuilder::GetEncryptedRecordListPath(),
-        std::move(record_list));
+    payload_records_.emplace_back(encrypted_record);
   }
 
   void DecrementSequenceId() { --sequence_id_; }
 
-  base::test::SingleThreadTaskEnvironment task_environment_{
+  content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
+  // Set up this device as a managed device.
+  policy::ScopedManagementServiceOverrideForTesting scoped_management_service_ =
+      policy::ScopedManagementServiceOverrideForTesting(
+          policy::ManagementServiceFactory::GetForPlatform(),
+          policy::EnterpriseManagementAuthority::CLOUD_DOMAIN);
+
+  scoped_refptr<ResourceManager> memory_resource_;
   base::Value::Dict context_;
-  base::Value::Dict merging_payload_;
+  bool need_encryption_key_ = false;
+  int config_file_version_ = 0;
+  std::vector<EncryptedRecord> payload_records_;
   int sequence_id_ = 10;
 
   std::unique_ptr<policy::DeviceManagementService> device_management_service_;
@@ -150,15 +162,19 @@ class EncryptedReportingClientTest : public ::testing::Test {
 };
 
 TEST_F(EncryptedReportingClientTest, Default) {
-  EncryptedReportingClient encrypted_reporting_client(
+  auto encrypted_reporting_client = EncryptedReportingClient::Create(
       std::make_unique<FakeDelegate>(device_management_service_.get()));
 
   {
+    ScopedReservation scoped_reservation(RecordsSize(payload_records_),
+                                         memory_resource_);
+    ASSERT_TRUE(scoped_reservation.reserved());
     test::TestEvent<StatusOr<base::Value::Dict>> response_event;
-    encrypted_reporting_client.UploadReport(
-        std::move(merging_payload_), std::move(context_), &cloud_policy_client_,
-        response_event.cb());
-    base::RunLoop().RunUntilIdle();
+    encrypted_reporting_client->UploadReport(
+        need_encryption_key_, config_file_version_, payload_records_,
+        std::move(scoped_reservation), std::move(context_),
+        &cloud_policy_client_, response_event.cb());
+    task_environment_.RunUntilIdle();
 
     ASSERT_THAT(*url_loader_factory_.pending_requests(), SizeIs(1));
 
@@ -197,10 +213,14 @@ TEST_F(EncryptedReportingClientTest, Default) {
   {
     BuildPayload();
 
+    ScopedReservation scoped_reservation(RecordsSize(payload_records_),
+                                         memory_resource_);
+    ASSERT_TRUE(scoped_reservation.reserved());
     test::TestEvent<StatusOr<base::Value::Dict>> response_event;
-    encrypted_reporting_client.UploadReport(
-        std::move(merging_payload_), std::move(context_), &cloud_policy_client_,
-        response_event.cb());
+    encrypted_reporting_client->UploadReport(
+        need_encryption_key_, config_file_version_, payload_records_,
+        std::move(scoped_reservation), std::move(context_),
+        &cloud_policy_client_, response_event.cb());
 
     // Sequence ID decreased, upload is rejected.
     const auto actual_response = response_event.result();
@@ -213,12 +233,16 @@ TEST_F(EncryptedReportingClientTest, Default) {
 }
 
 TEST_F(EncryptedReportingClientTest, ServiceUnavailable) {
-  EncryptedReportingClient encrypted_reporting_client(
-      std::make_unique<FakeDelegate>(nullptr));
+  auto encrypted_reporting_client =
+      EncryptedReportingClient::Create(std::make_unique<FakeDelegate>(nullptr));
 
+  ScopedReservation scoped_reservation(RecordsSize(payload_records_),
+                                       memory_resource_);
+  ASSERT_TRUE(scoped_reservation.reserved());
   test::TestEvent<StatusOr<base::Value::Dict>> response_event;
-  encrypted_reporting_client.UploadReport(
-      std::move(merging_payload_), std::move(context_), &cloud_policy_client_,
+  encrypted_reporting_client->UploadReport(
+      need_encryption_key_, config_file_version_, payload_records_,
+      std::move(scoped_reservation), std::move(context_), &cloud_policy_client_,
       response_event.cb());
   const auto actual_response = response_event.result();
   EXPECT_THAT(
@@ -234,16 +258,19 @@ TEST_F(EncryptedReportingClientTest, ServiceUnavailable) {
 }
 
 TEST_F(EncryptedReportingClientTest, ServiceRejectedByRateLimiting) {
-  EncryptedReportingClient encrypted_reporting_client(
+  auto encrypted_reporting_client = EncryptedReportingClient::Create(
       std::make_unique<FakeDelegate>(device_management_service_.get()));
 
   {
+    ScopedReservation scoped_reservation(RecordsSize(payload_records_),
+                                         memory_resource_);
+    ASSERT_TRUE(scoped_reservation.reserved());
     test::TestEvent<StatusOr<base::Value::Dict>> response_event;
-
-    encrypted_reporting_client.UploadReport(
-        merging_payload_.Clone(), context_.Clone(), &cloud_policy_client_,
+    encrypted_reporting_client->UploadReport(
+        need_encryption_key_, config_file_version_, payload_records_,
+        std::move(scoped_reservation), context_.Clone(), &cloud_policy_client_,
         response_event.cb());
-    base::RunLoop().RunUntilIdle();
+    task_environment_.RunUntilIdle();
 
     ASSERT_THAT(*url_loader_factory_.pending_requests(), SizeIs(1));
 
@@ -277,10 +304,14 @@ TEST_F(EncryptedReportingClientTest, ServiceRejectedByRateLimiting) {
   // Repeat the same upload, get it rejected by rate limiter.
   task_environment_.FastForwardBy(base::Seconds(1));
   {
+    ScopedReservation scoped_reservation(RecordsSize(payload_records_),
+                                         memory_resource_);
+    ASSERT_TRUE(scoped_reservation.reserved());
     test::TestEvent<StatusOr<base::Value::Dict>> response_event;
-    encrypted_reporting_client.UploadReport(
-        std::move(merging_payload_), std::move(context_), &cloud_policy_client_,
-        response_event.cb());
+    encrypted_reporting_client->UploadReport(
+        need_encryption_key_, config_file_version_, payload_records_,
+        std::move(scoped_reservation), std::move(context_),
+        &cloud_policy_client_, response_event.cb());
     const auto actual_response = response_event.result();
     EXPECT_THAT(actual_response,
                 Property(&StatusOr<base::Value::Dict>::error,
@@ -296,12 +327,17 @@ TEST_F(EncryptedReportingClientTest, UploadSucceedsWithoutDeviceInfo) {
   // Set cloud policy client to be nullptr to indicate that device info is
   // not available, i.e. the device dm token should NOT exists in
   // the request headers.
-  EncryptedReportingClient encrypted_reporting_client(
+  auto encrypted_reporting_client = EncryptedReportingClient::Create(
       std::make_unique<FakeDelegate>(device_management_service_.get()));
-  encrypted_reporting_client.UploadReport(std::move(merging_payload_),
-                                          std::move(context_), nullptr,
-                                          base::DoNothing());
-  base::RunLoop().RunUntilIdle();
+  ScopedReservation scoped_reservation(RecordsSize(payload_records_),
+                                       memory_resource_);
+  ASSERT_TRUE(scoped_reservation.reserved());
+  test::TestEvent<StatusOr<base::Value::Dict>> response_event;
+  encrypted_reporting_client->UploadReport(
+      need_encryption_key_, config_file_version_, payload_records_,
+      std::move(scoped_reservation), std::move(context_), nullptr,
+      base::DoNothing());
+  task_environment_.RunUntilIdle();
 
   ASSERT_THAT(*url_loader_factory_.pending_requests(), SizeIs(1));
 
@@ -310,5 +346,4 @@ TEST_F(EncryptedReportingClientTest, UploadSucceedsWithoutDeviceInfo) {
       (*url_loader_factory_.pending_requests())[0].request.headers.ToString(),
       kDmToken));
 }
-
 }  // namespace reporting

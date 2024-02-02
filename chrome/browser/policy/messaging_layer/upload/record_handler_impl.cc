@@ -32,14 +32,13 @@
 #include "base/values.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/policy/messaging_layer/proto/synced/log_upload_event.pb.h"
+#include "chrome/browser/policy/messaging_layer/upload/encrypted_reporting_client.h"
 #include "chrome/browser/policy/messaging_layer/upload/event_upload_size_controller.h"
 #include "chrome/browser/policy/messaging_layer/upload/file_upload_job.h"
 #include "chrome/browser/policy/messaging_layer/upload/record_upload_request_builder.h"
 #include "chrome/browser/policy/messaging_layer/upload/server_uploader.h"
 #include "chrome/browser/policy/messaging_layer/util/reporting_server_connector.h"
 #include "components/reporting/proto/synced/configuration_file.pb.h"
-#include "components/reporting/proto/synced/record.pb.h"
-#include "components/reporting/proto/synced/record_constants.pb.h"
 #include "components/reporting/proto/synced/upload_tracker.pb.h"
 #include "components/reporting/resources/resource_manager.h"
 #include "components/reporting/util/encrypted_reporting_json_keys.h"
@@ -55,7 +54,7 @@ namespace {
 
 // Priority could come back as an int or as a std::string, this function handles
 // both situations.
-static std::optional<Priority> GetPriorityProtoFromSequenceInformationValue(
+std::optional<Priority> GetPriorityProtoFromSequenceInformationValue(
     const base::Value::Dict& sequence_information) {
   const std::optional<int> int_priority_result =
       sequence_information.FindInt(json_keys::kPriority);
@@ -83,8 +82,8 @@ static std::optional<Priority> GetPriorityProtoFromSequenceInformationValue(
 #if BUILDFLAG(IS_CHROMEOS)
 // Returns true if `generation_guid` is required and missing.
 // Returns false otherwise.
-static bool IsMissingGenerationGuid(const std::string* generation_guid) {
-  if (!SequenceInformationDictionaryBuilder::GenerationGuidIsRequired()) {
+bool IsMissingGenerationGuid(const std::string* generation_guid) {
+  if (!EncryptedReportingClient::GenerationGuidIsRequired()) {
     return false;
   }
   return !generation_guid || generation_guid->empty();
@@ -93,11 +92,10 @@ static bool IsMissingGenerationGuid(const std::string* generation_guid) {
 
 // Returns true if any required sequence info is missing. Returns
 // false otherwise.
-static bool IsMissingSequenceInformation(
-    const std::string* sequencing_id,
-    const std::string* generation_id,
-    const std::optional<Priority> priority_result,
-    const std::string* generation_guid) {
+bool IsMissingSequenceInformation(const std::string* sequencing_id,
+                                  const std::string* generation_id,
+                                  const std::optional<Priority> priority_result,
+                                  const std::string* generation_guid) {
   return !sequencing_id || !generation_id || generation_id->empty() ||
 #if BUILDFLAG(IS_CHROMEOS)
          IsMissingGenerationGuid(generation_guid) ||
@@ -110,10 +108,10 @@ static bool IsMissingSequenceInformation(
 // Returns true if `generation_guid` can be parsed as a GUID or if
 // `generation_guid` does not need to be parsed based on the type of device.
 // Returns false otherwise.
-static bool GenerationGuidIsValid(const std::string& generation_guid) {
+bool GenerationGuidIsValid(const std::string& generation_guid) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (generation_guid.empty() &&
-      !SequenceInformationDictionaryBuilder::GenerationGuidIsRequired()) {
+      !EncryptedReportingClient::GenerationGuidIsRequired()) {
     // This is a legacy ChromeOS managed device and is not required to have
     // a `generation_guid`.
     return true;
@@ -394,7 +392,7 @@ class RecordHandlerImpl::ReportUploader
   void StartUpload();
   void LogNumRecordsInUpload(size_t num_records);
   void ResumeUpload(size_t next_record);
-  void BuildAndUploadRequest(size_t next_record);
+  void UploadRequest(size_t next_record);
   void OnUploadComplete(StatusOr<base::Value::Dict> response);
   void HandleFailedUpload(Status status);
   void HandleSuccessfulUpload(base::Value::Dict last_response);
@@ -531,7 +529,7 @@ void RecordHandlerImpl::ReportUploader::ResumeUpload(size_t next_record) {
           if (!processed_status.ok()) {
             // Event not processed, stop before it.
             // Do not add the current event and any later ones.
-            self->BuildAndUploadRequest(next_record);
+            self->UploadRequest(next_record);
             return;
           }
           // Event processed (next upload tracking event posted, if needed),
@@ -547,59 +545,25 @@ void RecordHandlerImpl::ReportUploader::ResumeUpload(size_t next_record) {
     return;  // We will resume on `resume_cb`
   }
 
-  BuildAndUploadRequest(next_record);
+  UploadRequest(next_record);
 }
 
-void RecordHandlerImpl::ReportUploader::BuildAndUploadRequest(
-    size_t next_record) {
+void RecordHandlerImpl::ReportUploader::UploadRequest(size_t next_record) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  auto request_builder =
-      std::make_unique<UploadEncryptedReportingRequestBuilder>(
-          need_encryption_key_, config_file_version_);
-
   CHECK_LE(next_record, records_.size());
-  for (size_t i = 0; i < next_record; ++i) {
-    auto& record = records_.at(i);
-    request_builder->AddRecord(std::move(record), scoped_reservation_);
-  }
-  // Release the rest of the `records_`.
-  records_.clear();
+  // Release records beyond `next_record`.
+  records_.erase(records_.begin() + next_record, records_.end());
 
-  // Assign random UUID as the request id for server side log correlation
-  const auto request_id = base::Token::CreateRandom().ToString();
-  request_builder->SetRequestId(request_id);
-
-  // Perform Build on a thread pool, and upload result on UI.
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, {},
-      base::BindOnce(&UploadEncryptedReportingRequestBuilder::Build,
-                     std::move(request_builder)),
-      base::BindOnce(
-          [](RecordHandlerImpl::ReportUploader* self,
-             ScopedReservation scoped_reservation,
-             std::optional<base::Value::Dict> request_result) {
-            if (!request_result.has_value()) {
-              self->HandleFailedUpload(Status(error::FAILED_PRECONDITION,
-                                              "Failure to build request"));
-              return;
-            }
-            auto response_cb =
-                base::BindPostTaskToCurrentDefault(base::BindOnce(
-                    &RecordHandlerImpl::ReportUploader::OnUploadComplete,
-                    base::Unretained(self)));
-            content::GetUIThreadTaskRunner({})->PostTask(
-                FROM_HERE,
-                base::BindOnce(
-                    [](base::Value::Dict request,
-                       ScopedReservation scoped_reservation,
-                       ReportingServerConnector::ResponseCallback response_cb) {
-                      ReportingServerConnector::UploadEncryptedReport(
-                          std::move(request), std::move(response_cb));
-                    },
-                    std::move(request_result.value()),
-                    std::move(scoped_reservation), std::move(response_cb)));
-          },
-          base::Unretained(this), std::move(scoped_reservation_)));
+  // Upload selected records on UI.
+  auto response_cb = base::BindPostTaskToCurrentDefault(
+      base::BindOnce(&RecordHandlerImpl::ReportUploader::OnUploadComplete,
+                     base::Unretained(this)));
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE,
+      base::BindOnce(&ReportingServerConnector::UploadEncryptedReport,
+                     need_encryption_key_, config_file_version_,
+                     std::move(records_), std::move(scoped_reservation_),
+                     std::move(response_cb)));
 }
 
 void RecordHandlerImpl::ReportUploader::OnUploadComplete(

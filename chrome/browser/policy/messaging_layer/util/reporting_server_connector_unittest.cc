@@ -13,9 +13,13 @@
 #include "base/task/thread_pool.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/policy/messaging_layer/util/reporting_server_connector_test_util.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/encrypted_reporting_job_configuration.h"
+#include "components/policy/core/common/management/scoped_management_service_override_for_testing.h"
+#include "components/reporting/proto/synced/record.pb.h"
+#include "components/reporting/resources/resource_manager.h"
 #include "components/reporting/util/status.h"
 #include "components/reporting/util/statusor.h"
 #include "components/reporting/util/test_support_callbacks.h"
@@ -76,12 +80,15 @@ class ReportingServerConnectorTest : public ::testing::Test {
 
   content::BrowserTaskEnvironment task_environment_;
 
-  ReportingServerConnector::TestEnvironment test_env_;
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   ash::ScopedStubInstallAttributes install_attributes_ =
       ash::ScopedStubInstallAttributes();
 #endif
+
+  ReportingServerConnector::TestEnvironment test_env_;
+
+  scoped_refptr<ResourceManager> memory_resource_ =
+      base::MakeRefCounted<ResourceManager>(4uL * 1024uL * 1024uL);
 };
 
 TEST_F(ReportingServerConnectorTest,
@@ -90,9 +97,13 @@ TEST_F(ReportingServerConnectorTest,
   test::TestEvent<StatusOr<base::Value::Dict>> response_event;
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
-      base::BindOnce(&ReportingServerConnector::UploadEncryptedReport,
-                     /*merging_payload=*/base::Value::Dict(),
-                     response_event.cb()));
+      base::BindOnce(
+          &ReportingServerConnector::UploadEncryptedReport,
+          /*need_encryption_key=*/false,
+          /*config_file_version=*/0,
+          /*records=*/std::vector<EncryptedRecord>(),
+          /*scoped_reservation=*/ScopedReservation(0u, memory_resource_),
+          response_event.cb()));
 
   task_environment_.RunUntilIdle();
   ASSERT_THAT(*test_env_.url_loader_factory()->pending_requests(), SizeIs(1));
@@ -111,9 +122,13 @@ TEST_F(ReportingServerConnectorTest,
   test::TestEvent<StatusOr<base::Value::Dict>> response_event;
   base::ThreadPool::PostTask(
       FROM_HERE,
-      base::BindOnce(&ReportingServerConnector::UploadEncryptedReport,
-                     /*merging_payload=*/base::Value::Dict(),
-                     response_event.cb()));
+      base::BindOnce(
+          &ReportingServerConnector::UploadEncryptedReport,
+          /*need_encryption_key=*/false,
+          /*config_file_version=*/0,
+          /*records=*/std::vector<EncryptedRecord>(),
+          /*scoped_reservation=*/ScopedReservation(0u, memory_resource_),
+          response_event.cb()));
 
   task_environment_.RunUntilIdle();
   ASSERT_THAT(*test_env_.url_loader_factory()->pending_requests(), SizeIs(1));
@@ -151,9 +166,13 @@ TEST_F(ReportingServerConnectorTest, UploadFromUnmanagedDevice) {
   test::TestEvent<StatusOr<base::Value::Dict>> response_event;
   base::ThreadPool::PostTask(
       FROM_HERE,
-      base::BindOnce(&ReportingServerConnector::UploadEncryptedReport,
-                     /*merging_payload=*/base::Value::Dict(),
-                     response_event.cb()));
+      base::BindOnce(
+          &ReportingServerConnector::UploadEncryptedReport,
+          /*need_encryption_key=*/false,
+          /*config_file_version=*/0,
+          /*records=*/std::vector<EncryptedRecord>(),
+          /*scoped_reservation=*/ScopedReservation(0u, memory_resource_),
+          response_event.cb()));
 
   task_environment_.RunUntilIdle();
   ASSERT_THAT(*test_env_.url_loader_factory()->pending_requests(), SizeIs(1));

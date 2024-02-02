@@ -139,14 +139,6 @@ class EncryptedReportingServiceProviderTest : public ::testing::Test {
   // Must be initialized before any other class member.
   content::BrowserTaskEnvironment task_environment_;
 
-  ::reporting::ReportingServerConnector::TestEnvironment test_env_;
-  ::reporting::EncryptedRecord record_;
-
-  base::test::ScopedFeatureList scoped_feature_list_;
-
-  std::unique_ptr<TestEncryptedReportingServiceProvider> service_provider_;
-  ServiceProviderTestHelper test_helper_;
-
   // Set up device as a managed device by default. To set the device as
   // unmanaged, create a new `policy::ScopedManagementServiceOverrideForTesting`
   // inside the test.
@@ -154,6 +146,14 @@ class EncryptedReportingServiceProviderTest : public ::testing::Test {
       policy::ScopedManagementServiceOverrideForTesting(
           policy::ManagementServiceFactory::GetForPlatform(),
           policy::EnterpriseManagementAuthority::CLOUD_DOMAIN);
+
+  ::reporting::ReportingServerConnector::TestEnvironment test_env_;
+  ::reporting::EncryptedRecord record_;
+
+  base::test::ScopedFeatureList scoped_feature_list_;
+
+  std::unique_ptr<TestEncryptedReportingServiceProvider> service_provider_;
+  ServiceProviderTestHelper test_helper_;
 };
 
 TEST_F(EncryptedReportingServiceProviderTest, SuccessfullyUploadsRecord) {

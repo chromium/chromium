@@ -6,16 +6,19 @@
 #define CHROME_BROWSER_POLICY_MESSAGING_LAYER_UTIL_REPORTING_SERVER_CONNECTOR_H_
 
 #include <memory>
+#include <vector>
 
 #include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/singleton.h"
-#include "base/timer/timer.h"
 #include "base/values.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "components/policy/core/common/cloud/cloud_policy_core.h"
 #include "components/policy/core/common/cloud/cloud_policy_manager.h"
+#include "components/reporting/proto/synced/record.pb.h"
+#include "components/reporting/proto/synced/record_constants.pb.h"
+#include "components/reporting/resources/resource_manager.h"
 #include "components/reporting/util/status.h"
 #include "components/reporting/util/statusor.h"
 
@@ -51,54 +54,14 @@ class ReportingServerConnector : public ::policy::CloudPolicyCore::Observer {
   // payload of the job). The client must be in a registered state (otherwise
   // the upload fails). The `callback` will be called when the operation
   // completes or fails.
-  static void UploadEncryptedReport(base::Value::Dict merging_payload,
+  static void UploadEncryptedReport(bool need_encryption_key,
+                                    int config_file_version,
+                                    std::vector<EncryptedRecord> records,
+                                    ScopedReservation scoped_reservation,
                                     ResponseCallback callback);
 
  private:
   friend struct base::DefaultSingletonTraits<ReportingServerConnector>;
-
-  // Manages reporting accumulated payload sizes per hour via UMA.
-  class PayloadSizePerHourUmaReporter {
-   public:
-    PayloadSizePerHourUmaReporter();
-    ~PayloadSizePerHourUmaReporter();
-    PayloadSizePerHourUmaReporter(const PayloadSizePerHourUmaReporter&) =
-        delete;
-    PayloadSizePerHourUmaReporter& operator=(
-        const PayloadSizePerHourUmaReporter&) = delete;
-
-    // Adds request paylaod size to the accumulated request payload size.
-    void RecordRequestPayloadSize(int payload_size);
-
-    // Adds response paylaod size to the accumulated response payload size.
-    void RecordResponsePayloadSize(int payload_size);
-
-    // Gets the weak pointer.
-    base::WeakPtr<PayloadSizePerHourUmaReporter> GetWeakPtr();
-
-   private:
-    // Reporting interval.
-    static constexpr base::TimeDelta kReportingInterval = base::Hours(1);
-
-    // Converts bytes to KiB.
-    static int ConvertBytesToKiB(int bytes);
-
-    // Reports the data to UMA.
-    void Report();
-
-    // Accumulated request payload size since last report.
-    int request_payload_size_ GUARDED_BY_CONTEXT(sequence_checker_) = 0;
-
-    // Accumulated response payload size since last report.
-    int response_payload_size_ GUARDED_BY_CONTEXT(sequence_checker_) = 0;
-
-    // Timer that controls when network usage is reported.
-    base::RepeatingTimer timer_;
-
-    SEQUENCE_CHECKER(sequence_checker_);
-
-    base::WeakPtrFactory<PayloadSizePerHourUmaReporter> weak_factory_{this};
-  };
 
   // Constructor to be used by singleton only.
   ReportingServerConnector();
@@ -121,12 +84,12 @@ class ReportingServerConnector : public ::policy::CloudPolicyCore::Observer {
   void OnCoreDisconnecting(::policy::CloudPolicyCore* core) override;
   void OnCoreDestruction(::policy::CloudPolicyCore* core) override;
 
-  void UploadEncryptedReportInternal(base::Value::Dict merging_payload,
+  void UploadEncryptedReportInternal(bool need_encryption_key,
+                                     int config_file_version,
+                                     std::vector<EncryptedRecord> records,
+                                     ScopedReservation scoped_reservation,
                                      std::optional<base::Value::Dict> context,
                                      ResponseCallback callback);
-
-  // Manages reporting accumulated payload sizes per hour via UMA.
-  PayloadSizePerHourUmaReporter payload_size_per_hour_uma_reporter_;
 
   // Onwed by CloudPolicyManager. Cached here (only on UI task runner).
   raw_ptr<::policy::CloudPolicyCore> core_ = nullptr;
