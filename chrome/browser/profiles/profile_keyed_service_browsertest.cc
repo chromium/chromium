@@ -550,7 +550,6 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceBrowserTest,
     "UserPolicySigninService",
 #if !BUILDFLAG(IS_ANDROID)
     "VisualQuerySuggestionsService",
-    "WallpaperSearchService",
 #endif  // !BUILDFLAG(IS_ANDROID)
     "WarningBadgeService",
     "WarningService",
