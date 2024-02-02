@@ -157,14 +157,15 @@ DenseSet<HtmlFieldType> BelievedHtmlTypes(FieldType heuristic_prediction,
   }
   // We always override unspecified autocomplete attribute.
   believed_html_types.erase(HtmlFieldType::kUnspecified);
-  auto is_precedence_feature_enabled = []() {
-    return base::FeatureList::IsEnabled(
-        features::kAutofillStreetNameOrHouseNumberPrecedenceOverAutocomplete);
+  auto is_street_name_or_house_number_type = [](FieldType field_type) {
+    return field_type == ADDRESS_HOME_STREET_NAME ||
+           field_type == ADDRESS_HOME_HOUSE_NUMBER;
   };
-
-  if ((IsStreetNameOrHouseNumberType(heuristic_prediction) ||
-       IsStreetNameOrHouseNumberType(server_prediction)) &&
-      is_precedence_feature_enabled()) {
+  // When the heuristics or server predict that an address is a street name or a
+  // house number, we prioritize this over "address-line[1|2]" autocomplete
+  // since those signals are usually stronger for this combination.
+  if (is_street_name_or_house_number_type(heuristic_prediction) ||
+      is_street_name_or_house_number_type(server_prediction)) {
     believed_html_types.erase_all(
         {HtmlFieldType::kAddressLine1, HtmlFieldType::kAddressLine2});
   }

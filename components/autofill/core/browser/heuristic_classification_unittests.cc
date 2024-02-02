@@ -534,7 +534,6 @@ TEST_P(HeuristicClassificationTests, EndToEnd) {
       features::kAutofillEnableParsingOfStreetLocation,
       features::kAutofillEnableRationalizationEngineForMX,
       // Allow local heuristics to take precedence.
-      features::kAutofillStreetNameOrHouseNumberPrecedenceOverAutocomplete,
       features::kAutofillLocalHeuristicsOverrides,
       // Other improvements.
       features::kAutofillEnableZipOnlyAddressForms,

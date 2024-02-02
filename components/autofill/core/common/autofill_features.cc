@@ -334,10 +334,6 @@ BASE_FEATURE(kAutofillConvergeToExtremeLengthStreetAddress,
 const base::FeatureParam<bool> kAutofillConvergeToLonger{
     &kAutofillConvergeToExtremeLengthStreetAddress, "converge_to_longer", true};
 
-BASE_FEATURE(kAutofillStreetNameOrHouseNumberPrecedenceOverAutocomplete,
-             "AutofillStreetNameOrHouseNumberPrecedenceOverAutocomplete",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // When enabled, some local heuristic predictions will take precedence over the
 // autocomplete attribute and server predictions, when determining a field's
 // overall type.

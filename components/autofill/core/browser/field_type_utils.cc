@@ -76,10 +76,6 @@ bool TypeOfFieldIsPossibleType(const AutofillField& field) {
   return field.possible_types().contains(field.Type().GetStorableType());
 }
 
-bool IsStreetNameOrHouseNumberType(const FieldType type) {
-  return type == ADDRESS_HOME_STREET_NAME || type == ADDRESS_HOME_HOUSE_NUMBER;
-}
-
 bool IsAddressType(FieldType type) {
   switch (GroupTypeOfFieldType(type)) {
     case FieldTypeGroup::kName:
