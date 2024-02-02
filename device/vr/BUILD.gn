@@ -255,6 +255,8 @@ if (enable_vr) {
           "openxr/android/openxr_scene_understanding_manager_android.h",
           "openxr/android/openxr_stage_bounds_provider_android.cc",
           "openxr/android/openxr_stage_bounds_provider_android.h",
+          "openxr/android/openxr_unbounded_space_provider_android.cc",
+          "openxr/android/openxr_unbounded_space_provider_android.h",
         ]
 
         configs += [ "//third_party/khronos:khronos_headers" ]

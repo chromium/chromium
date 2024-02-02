@@ -21,6 +21,7 @@
 #include "device/vr/openxr/android/openxr_hand_tracker_android.h"
 #include "device/vr/openxr/android/openxr_scene_understanding_manager_android.h"
 #include "device/vr/openxr/android/openxr_stage_bounds_provider_android.h"
+#include "device/vr/openxr/android/openxr_unbounded_space_provider_android.h"
 #endif
 
 namespace device {
@@ -34,6 +35,8 @@ GetExtensionHandlerFactories() {
           new OpenXrHandTrackerAndroidFactory(),
 
           new OpenXrStageBoundsProviderAndroidFactory(),
+
+          new OpenXrUnboundedSpaceProviderAndroidFactory(),
 
           new OpenXrSceneUnderstandingManagerAndroidFactory(),
 
