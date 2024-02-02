@@ -1050,7 +1050,7 @@ BASE_FEATURE(kFastPairDevicesBluetoothSettings,
 // window snapped.
 BASE_FEATURE(kFasterSplitScreenSetup,
              "FasterSplitScreenSetup",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, allows the creation of up to 16 desks (default is 8). This flag
 // is intended to be controlled by the feature management module.
