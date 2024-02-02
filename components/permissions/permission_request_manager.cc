@@ -379,10 +379,12 @@ bool PermissionRequestManager::ValidateRequest(PermissionRequest* request,
   }
 
   if (should_finalize) {
-    request->Cancelled();
-    request->RequestFinished();
+    // |RequestFinished| destroys the request. Erase it from
+    // |validated_requests_set_| before its destruction.
     validated_requests_set_.erase(request);
     request_sources_map_.erase(request);
+    request->Cancelled();
+    request->RequestFinished();
   }
 
   return false;
@@ -689,9 +691,11 @@ void PermissionRequestManager::FinalizeCurrentRequests() {
       requests_iter;
   for (requests_iter = requests_.begin(); requests_iter != requests_.end();
        requests_iter++) {
-    RequestFinishedIncludingDuplicates(*requests_iter);
+    // |RequestFinishedIncludingDuplicates| ends up destroying the
+    // request. Erase it from |validated_requests_set_| before its destruction.
     validated_requests_set_.erase(*requests_iter);
     request_sources_map_.erase(*requests_iter);
+    RequestFinishedIncludingDuplicates(*requests_iter);
   }
 
   // No need to execute the preignore logic as we canceling currently active
@@ -1100,10 +1104,16 @@ void PermissionRequestManager::CleanUpRequests() {
   for (; !pending_permission_requests_.IsEmpty();
        pending_permission_requests_.Pop()) {
     auto* pending_request = pending_permission_requests_.Peek();
-    CancelledIncludingDuplicates(pending_request);
-    RequestFinishedIncludingDuplicates(pending_request);
+    // |RequestFinishedIncludingDuplicates| ends up destroying the pending
+    // request. Make sure to erase |pending_request| from
+    // |validated_requests_set_| before its destruction. This is necessary to
+    // avoid creating a raw_ptr to already freed memory once
+    // |validated_requests_set_| is rewritten into
+    // |std::set<raw_ptr<PermissionRequest>>|.
     validated_requests_set_.erase(pending_request);
     request_sources_map_.erase(pending_request);
+    CancelledIncludingDuplicates(pending_request);
+    RequestFinishedIncludingDuplicates(pending_request);
   }
 
   if (IsRequestInProgress()) {
