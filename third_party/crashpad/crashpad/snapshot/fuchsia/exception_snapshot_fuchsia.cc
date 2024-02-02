@@ -74,7 +74,7 @@ bool ExceptionSnapshotFuchsia::Initialize(
 #if defined(ARCH_CPU_X86_64)
   context_.architecture = kCPUArchitectureX86_64;
   context_.x86_64 = &context_arch_;
-  // TODO(fxbug.dev/5496): Add vector context.
+  // TODO(fxbug.dev/42132536): Add vector context.
   InitializeCPUContextX86_64(
       t->general_registers, t->fp_registers, context_.x86_64);
 #elif defined(ARCH_CPU_ARM64)

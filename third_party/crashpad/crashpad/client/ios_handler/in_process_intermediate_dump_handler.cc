@@ -923,12 +923,12 @@ void InProcessIntermediateDumpHandler::WriteModuleInfo(
 
   uint32_t image_count = image_infos->infoArrayCount;
   const dyld_image_info* image_array = image_infos->infoArray;
-  for (uint32_t image_index = 0; image_index < image_count; ++image_index) {
+  for (int32_t image_index = image_count - 1; image_index >= 0; --image_index) {
     IOSIntermediateDumpWriter::ScopedArrayMap modules(writer);
     ScopedVMRead<dyld_image_info> image;
     if (!image.Read(&image_array[image_index])) {
       CRASHPAD_RAW_LOG("Unable to dyld_image_info");
-      return;
+      continue;
     }
 
     if (image->imageFilePath) {
