@@ -606,7 +606,7 @@ UIImage* DefaultFavicon() {
 // Returns a new close button.
 - (UIButton*)createCloseButton {
   UIImage* closeSymbol =
-      DefaultSymbolWithPointSize(kXMarkCircleFillSymbol, kCloseButtonSize);
+      DefaultSymbolWithPointSize(kXMarkSymbol, kCloseButtonSize);
   UIButton* closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
   closeButton.translatesAutoresizingMaskIntoConstraints = NO;
   [closeButton
