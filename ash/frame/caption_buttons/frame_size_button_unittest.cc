@@ -9,6 +9,7 @@
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/ash_test_util.h"
+#include "ash/wm/overview/overview_utils.h"
 #include "ash/wm/splitview/split_view_constants.h"
 #include "ash/wm/window_positioning_utils.h"
 #include "ash/wm/window_state.h"
@@ -726,6 +727,14 @@ TEST_F(MultitaskMenuTest, HalfButtonRTL) {
   EXPECT_EQ(WindowStateType::kPrimarySnapped, window_state()->GetStateType());
   EXPECT_EQ(gfx::Rect(400, 552), GetWidget()->GetWindowBoundsInScreen());
 
+  // Overview may start due to faster split screen when the window is snapped.
+  // Escape overview if it is active, otherwise the key event will be handled in
+  // `OverviewSession` to exit overview, see `OverviewSession::OnKeyEvent()` for
+  // more details. Pressing the Alt key below won't reverse the multi-task menu.
+  if (IsInOverviewSession()) {
+    PressAndReleaseKey(ui::VKEY_ESCAPE, ui::EF_NONE);
+  }
+
   // Reverse the menu. Test that the left button still snaps to primary.
   ShowMultitaskMenu();
   PressAndReleaseKey(ui::VKEY_MENU, ui::EF_ALT_DOWN);
@@ -1005,6 +1014,15 @@ TEST_F(MultitaskMenuTest, ReversePartialButton) {
   EXPECT_EQ(std::floor(work_area_bounds_in_screen.width() *
                        chromeos::kOneThirdSnapRatio),
             GetWidget()->GetWindowBoundsInScreen().width());
+
+  // Overview may start due to faster split screen when the window is
+  // snapped. Escape overview if it is active, otherwise the key event will be
+  // handled in `OverviewSession` to exit overview, see
+  // `OverviewSession::OnKeyEvent()` for more details. Pressing the Alt key
+  // below won't reverse the multi-task menu.
+  if (IsInOverviewSession()) {
+    PressAndReleaseKey(ui::VKEY_ESCAPE, ui::EF_NONE);
+  }
 
   // Reverse the menu. Test that the right button snaps to 2/3.
   ShowMultitaskMenu();

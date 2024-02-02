@@ -9653,25 +9653,23 @@ TEST_F(SplitViewOverviewSessionInClamshellTest,
   EXPECT_FALSE(GetDropTarget(1));
 }
 
-// Tests that Alt+[ and Alt+] do not start overview.
-TEST_F(SplitViewOverviewSessionInClamshellTest,
-       AltSquareBracketNotStartOverview) {
+// Tests that cycle snap do not start overview.
+TEST_F(SplitViewOverviewSessionInClamshellTest, CycleSnapNotStartOverview) {
   std::unique_ptr<aura::Window> window1 = CreateTestWindow();
   std::unique_ptr<aura::Window> window2 = CreateTestWindow();
   wm::ActivateWindow(window1.get());
   EXPECT_FALSE(split_view_controller()->InSplitViewMode());
   EXPECT_FALSE(InOverviewSession());
-  // Alt+[
-  const WindowSnapWMEvent alt_left_square_bracket(WM_EVENT_CYCLE_SNAP_PRIMARY);
+
+  const WindowSnapWMEvent cycle_snap_primary(WM_EVENT_CYCLE_SNAP_PRIMARY);
   WindowState* window1_state = WindowState::Get(window1.get());
-  window1_state->OnWMEvent(&alt_left_square_bracket);
+  window1_state->OnWMEvent(&cycle_snap_primary);
   EXPECT_EQ(WindowStateType::kPrimarySnapped, window1_state->GetStateType());
   EXPECT_FALSE(split_view_controller()->InSplitViewMode());
   EXPECT_FALSE(InOverviewSession());
-  // Alt+]
-  const WindowSnapWMEvent alt_right_square_bracket(
-      WM_EVENT_CYCLE_SNAP_SECONDARY);
-  window1_state->OnWMEvent(&alt_right_square_bracket);
+
+  const WindowSnapWMEvent cycle_snap_secondary(WM_EVENT_CYCLE_SNAP_SECONDARY);
+  window1_state->OnWMEvent(&cycle_snap_secondary);
   EXPECT_EQ(WindowStateType::kSecondarySnapped, window1_state->GetStateType());
   EXPECT_FALSE(split_view_controller()->InSplitViewMode());
   EXPECT_FALSE(InOverviewSession());

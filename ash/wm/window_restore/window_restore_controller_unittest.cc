@@ -1204,19 +1204,19 @@ TEST_F(WindowRestoreControllerTest, OutOfBoundsWindows) {
   // Add an entry that is partially out-of-bounds, one that is completely
   // out-of-bounds, and one that is completely out-of-bounds and snapped.
   const int64_t primary_id = WindowTreeHostManager::GetPrimaryDisplayId();
-  AddEntryToFakeFile(/*restore_id=*/1, kPartialBounds,
+  AddEntryToFakeFile(/*restore_window_id=*/1, kPartialBounds,
                      chromeos::WindowStateType::kNormal, /*activation_index=*/1,
                      /*display_id=*/primary_id);
-  AddEntryToFakeFile(/*restore_id=*/2, kFullBounds,
+  AddEntryToFakeFile(/*restore_window_id=*/2, kFullBounds,
                      chromeos::WindowStateType::kNormal, /*activation_index=*/2,
                      /*display_id=*/primary_id);
-  AddEntryToFakeFile(/*restore_id=*/3, kFullBounds,
+  AddEntryToFakeFile(/*restore_window_id=*/3, kFullBounds,
                      chromeos::WindowStateType::kPrimarySnapped,
                      /*activation_index=*/3, /*display_id=*/primary_id);
 
   // Restore the first window. The window should have the exact same bounds.
   const gfx::Rect& window_bounds_1 =
-      CreateTestWindowRestoredWidgetFromRestoreId(/*restore_id=*/1)
+      CreateTestWindowRestoredWidgetFromRestoreId(/*restore_window_id=*/1)
           ->GetNativeWindow()
           ->GetBoundsInScreen();
   EXPECT_EQ(kPartialBounds, window_bounds_1);
@@ -1224,7 +1224,7 @@ TEST_F(WindowRestoreControllerTest, OutOfBoundsWindows) {
   // Restore the second window. The window should be moved such that part of it
   // is within the display.
   gfx::Rect window_bounds_2(
-      CreateTestWindowRestoredWidgetFromRestoreId(/*restore_id=*/2)
+      CreateTestWindowRestoredWidgetFromRestoreId(/*restore_window_id=*/2)
           ->GetNativeWindow()
           ->GetBoundsInScreen());
   EXPECT_TRUE(window_bounds_2.Intersects(kScreenBounds));
@@ -1234,7 +1234,7 @@ TEST_F(WindowRestoreControllerTest, OutOfBoundsWindows) {
   // that part of it is within the display.
   const gfx::Rect& window_bounds_3 =
       WindowState::Get(
-          CreateTestWindowRestoredWidgetFromRestoreId(/*restore_id=*/3)
+          CreateTestWindowRestoredWidgetFromRestoreId(/*restore_window_id=*/3)
               ->GetNativeWindow())
           ->GetRestoreBoundsInScreen();
   EXPECT_TRUE(window_bounds_3.Intersects(kScreenBounds));

@@ -1326,25 +1326,26 @@ TEST_F(WorkspaceControllerTest, SwitchFromModal) {
 TEST_F(WorkspaceControllerTest, DragWindowKeepsShelfAutohidden) {
   aura::test::TestWindowDelegate delegate;
   delegate.set_window_component(HTCAPTION);
-  std::unique_ptr<Window> w1(aura::test::CreateTestWindowWithDelegate(
+  std::unique_ptr<Window> window(aura::test::CreateTestWindowWithDelegate(
       &delegate, aura::client::WINDOW_TYPE_NORMAL, gfx::Rect(5, 5, 100, 50),
       nullptr));
-  ParentWindowInPrimaryRootWindow(w1.get());
+  ParentWindowInPrimaryRootWindow(window.get());
 
   Shelf* shelf = GetPrimaryShelf();
   shelf->SetAutoHideBehavior(ShelfAutoHideBehavior::kAlways);
   EXPECT_EQ(SHELF_AUTO_HIDE_HIDDEN, shelf->GetAutoHideState());
+  const auto window_bounds_before_drag = window->GetBoundsInScreen();
 
-  // Drag very little.
-  ui::test::EventGenerator generator(Shell::GetPrimaryRootWindow(),
-                                     gfx::Point());
-  generator.MoveMouseTo(10, 10);
-  generator.PressLeftButton();
-  generator.MoveMouseTo(12, 12);
+  auto* event_generator = GetEventGenerator();
+  event_generator->set_current_screen_location(
+      window_bounds_before_drag.CenterPoint());
+  event_generator->PressLeftButton();
+  event_generator->MoveMouseBy(10, 10);
 
   // Shelf should be hidden during and after the drag.
   EXPECT_EQ(SHELF_AUTO_HIDE_HIDDEN, shelf->GetAutoHideState());
-  generator.ReleaseLeftButton();
+  event_generator->ReleaseLeftButton();
+  EXPECT_NE(window->GetBoundsInScreen(), window_bounds_before_drag);
   EXPECT_EQ(SHELF_AUTO_HIDE_HIDDEN, shelf->GetAutoHideState());
 }
 
