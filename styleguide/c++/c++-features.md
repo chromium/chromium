@@ -1646,8 +1646,14 @@ concepts, then enforcing them on template arguments.
 ```c++
 class S : public T {
   // Non-member equality operator with access to private members.
-  // Compares `T` bases, then `x`, then `y`, short-circuiting.
+  // Compares `T` bases, then `x`, then `y`, short-circuiting when
+  // it finds inequality.
   friend bool operator==(const S&, const S&) = default;
+
+  // Non-member ordering operator with access to private members.
+  // Compares `T` bases, then `x`, then `y`, short-circuiting when
+  // it finds an ordering difference.
+  friend auto operator<=>(const S&, const S&) = default;
 
   int x;
   bool y;
@@ -1665,7 +1671,13 @@ the address of any non-declared operator.
 
 **Notes:**
 *** promo
-[Migration bug](https://crbug.com/1414530)
+Unlike constructors/destructors, our compiler extensions do not require these
+to be written out-of-line in the .cc file. Feel free to write `= default`
+directly in the header, as this is much simpler to write.
+
+- [Migration bug](https://crbug.com/1414530)
+- [Discussion thread](https://groups.google.com/a/chromium.org/g/cxx/c/JVN4E4IIYA0)
+
 ***
 
 ### Designated initializers <sup>[allowed]</sup>
