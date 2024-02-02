@@ -6,13 +6,14 @@
 #include "base/check_op.h"
 #include "content/public/browser/browser_context.h"
 #include "extensions/browser/extension_prefs.h"
+#include "extensions/common/extension_id.h"
 
 namespace extensions {
 
 TestEventRouter::EventObserver::~EventObserver() = default;
 
 void TestEventRouter::EventObserver::OnDispatchEventToExtension(
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     const Event& event) {}
 
 void TestEventRouter::EventObserver::OnBroadcastEvent(const Event& event) {}
@@ -43,7 +44,7 @@ void TestEventRouter::BroadcastEvent(std::unique_ptr<Event> event) {
     observer.OnBroadcastEvent(*event);
 }
 
-void TestEventRouter::DispatchEventToExtension(const std::string& extension_id,
+void TestEventRouter::DispatchEventToExtension(const ExtensionId& extension_id,
                                                std::unique_ptr<Event> event) {
   if (!expected_extension_id_.empty())
     DCHECK_EQ(expected_extension_id_, extension_id);

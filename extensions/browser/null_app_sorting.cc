@@ -5,6 +5,7 @@
 #include "extensions/browser/null_app_sorting.h"
 
 #include "components/sync/model/string_ordinal.h"
+#include "extensions/common/extension_id.h"
 
 namespace {
 
@@ -29,32 +30,29 @@ void NullAppSorting::FixNTPOrdinalCollisions() {
 }
 
 void NullAppSorting::EnsureValidOrdinals(
-    const std::string& extension_id,
-    const syncer::StringOrdinal& suggested_page) {
-}
+    const ExtensionId& extension_id,
+    const syncer::StringOrdinal& suggested_page) {}
 
 bool NullAppSorting::GetDefaultOrdinals(
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     syncer::StringOrdinal* page_ordinal,
     syncer::StringOrdinal* app_launch_ordinal) {
   return false;
 }
 
 void NullAppSorting::OnExtensionMoved(
-    const std::string& moved_extension_id,
-    const std::string& predecessor_extension_id,
-    const std::string& successor_extension_id) {
-}
+    const ExtensionId& moved_extension_id,
+    const ExtensionId& predecessor_extension_id,
+    const ExtensionId& successor_extension_id) {}
 
 syncer::StringOrdinal NullAppSorting::GetAppLaunchOrdinal(
-    const std::string& extension_id) const {
+    const ExtensionId& extension_id) const {
   return syncer::StringOrdinal(kFirstApp);
 }
 
 void NullAppSorting::SetAppLaunchOrdinal(
-    const std::string& extension_id,
-    const syncer::StringOrdinal& new_app_launch_ordinal) {
-}
+    const ExtensionId& extension_id,
+    const syncer::StringOrdinal& new_app_launch_ordinal) {}
 
 syncer::StringOrdinal NullAppSorting::CreateFirstAppLaunchOrdinal(
     const syncer::StringOrdinal& page_ordinal) const {
@@ -75,17 +73,15 @@ syncer::StringOrdinal NullAppSorting::GetNaturalAppPageOrdinal() const {
 }
 
 syncer::StringOrdinal NullAppSorting::GetPageOrdinal(
-    const std::string& extension_id) const {
+    const ExtensionId& extension_id) const {
   return syncer::StringOrdinal(kFirstPage);
 }
 
 void NullAppSorting::SetPageOrdinal(
-    const std::string& extension_id,
-    const syncer::StringOrdinal& new_page_ordinal) {
-}
+    const ExtensionId& extension_id,
+    const syncer::StringOrdinal& new_page_ordinal) {}
 
-void NullAppSorting::ClearOrdinals(const std::string& extension_id) {
-}
+void NullAppSorting::ClearOrdinals(const ExtensionId& extension_id) {}
 
 int NullAppSorting::PageStringOrdinalAsInteger(
     const syncer::StringOrdinal& page_ordinal) const {
@@ -97,8 +93,7 @@ syncer::StringOrdinal NullAppSorting::PageIntegerAsStringOrdinal(
   return syncer::StringOrdinal(kFirstPage);
 }
 
-void NullAppSorting::SetExtensionVisible(const std::string& extension_id,
-                                         bool visible) {
-}
+void NullAppSorting::SetExtensionVisible(const ExtensionId& extension_id,
+                                         bool visible) {}
 
 }  // namespace extensions

@@ -15,6 +15,7 @@
 #include "components/value_store/value_store_frontend.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
+#include "extensions/common/extension_id.h"
 
 namespace content {
 class BrowserContext;
@@ -38,7 +39,7 @@ class StateStore : public ExtensionRegistryObserver {
   class TestObserver {
    public:
     virtual ~TestObserver() {}
-    virtual void WillSetExtensionValue(const std::string& extension_id,
+    virtual void WillSetExtensionValue(const ExtensionId& extension_id,
                                        const std::string& key) = 0;
   };
 
@@ -63,17 +64,17 @@ class StateStore : public ExtensionRegistryObserver {
 
   // Get the value associated with the given extension and key, and pass
   // it to |callback| asynchronously.
-  void GetExtensionValue(const std::string& extension_id,
+  void GetExtensionValue(const ExtensionId& extension_id,
                          const std::string& key,
                          ReadCallback callback);
 
   // Sets a value for a given extension and key.
-  void SetExtensionValue(const std::string& extension_id,
+  void SetExtensionValue(const ExtensionId& extension_id,
                          const std::string& key,
                          base::Value value);
 
   // Removes a value for a given extension and key.
-  void RemoveExtensionValue(const std::string& extension_id,
+  void RemoveExtensionValue(const ExtensionId& extension_id,
                             const std::string& key);
 
   // Return whether or not the StateStore has initialized itself.
@@ -92,7 +93,7 @@ class StateStore : public ExtensionRegistryObserver {
   void Init();
 
   // Removes all keys registered for the given extension.
-  void RemoveKeysForExtension(const std::string& extension_id);
+  void RemoveKeysForExtension(const ExtensionId& extension_id);
 
   // ExtensionRegistryObserver implementation.
   void OnExtensionUninstalled(content::BrowserContext* browser_context,

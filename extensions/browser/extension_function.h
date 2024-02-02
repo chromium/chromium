@@ -29,6 +29,7 @@
 #include "extensions/common/context_data.h"
 #include "extensions/common/error_utils.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/extension_id.h"
 #include "extensions/common/features/feature.h"
 #include "extensions/common/mojom/context_type.mojom.h"
 #include "extensions/common/mojom/extra_response_data.mojom.h"
@@ -293,7 +294,7 @@ class ExtensionFunction : public base::RefCountedThreadSafe<
     extension_ = extension;
   }
   const extensions::Extension* extension() const { return extension_.get(); }
-  const std::string& extension_id() const {
+  const extensions::ExtensionId& extension_id() const {
     DCHECK(extension())
         << "extension_id() called without an Extension. If " << name()
         << " is allowed to be called without any Extension then you should "

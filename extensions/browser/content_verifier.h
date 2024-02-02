@@ -21,6 +21,7 @@
 #include "extensions/browser/content_verify_job.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
+#include "extensions/common/extension_id.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
@@ -84,7 +85,7 @@ class ContentVerifier : public base::RefCountedThreadSafe<ContentVerifier>,
   // content verify job if the specified resource requires content verification,
   // otherwise returns nullptr.
   scoped_refptr<ContentVerifyJob> CreateAndStartJobFor(
-      const std::string& extension_id,
+      const ExtensionId& extension_id,
       const base::FilePath& extension_root,
       const base::FilePath& relative_path);
 
@@ -144,7 +145,7 @@ class ContentVerifier : public base::RefCountedThreadSafe<ContentVerifier>,
       const base::FilePath& path);
 
   bool ShouldVerifyAnyPathsForTesting(
-      const std::string& extension_id,
+      const ExtensionId& extension_id,
       const base::FilePath& extension_root,
       const std::set<base::FilePath>& relative_unix_paths);
 
@@ -190,7 +191,7 @@ class ContentVerifier : public base::RefCountedThreadSafe<ContentVerifier>,
   // process, so we don't want to verify their contents because they are
   // expected not to match).
   bool ShouldVerifyAnyPaths(
-      const std::string& extension_id,
+      const ExtensionId& extension_id,
       const base::FilePath& extension_root,
       const std::set<base::FilePath>& relative_unix_paths);
 

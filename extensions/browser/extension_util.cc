@@ -22,6 +22,7 @@
 #include "extensions/browser/renderer_startup_helper.h"
 #include "extensions/browser/ui_util.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/extension_id.h"
 #include "extensions/common/features/feature.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/manifest_handlers/incognito_info.h"
@@ -357,7 +358,7 @@ bool IsExtensionVisibleToContext(const Extension& extension,
 
 void InitializeFileSchemeAccessForExtension(
     int render_process_id,
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     content::BrowserContext* browser_context) {
   ExtensionPrefs* prefs = ExtensionPrefs::Get(browser_context);
   // TODO(karandeepb): This should probably use
@@ -422,7 +423,7 @@ bool CanRendererHostExtensionOrigin(int render_process_id,
   return policy->CanAccessDataForOrigin(render_process_id, extension_origin);
 }
 
-bool IsChromeApp(const std::string& extension_id,
+bool IsChromeApp(const ExtensionId& extension_id,
                  content::BrowserContext* context) {
   const Extension* extension =
       ExtensionRegistry::Get(context)->enabled_extensions().GetByID(
@@ -430,14 +431,14 @@ bool IsChromeApp(const std::string& extension_id,
   return extension->is_platform_app();
 }
 
-bool IsAppLaunchable(const std::string& extension_id,
+bool IsAppLaunchable(const ExtensionId& extension_id,
                      content::BrowserContext* context) {
   int reason = ExtensionPrefs::Get(context)->GetDisableReasons(extension_id);
   return !((reason & disable_reason::DISABLE_UNSUPPORTED_REQUIREMENT) ||
            (reason & disable_reason::DISABLE_CORRUPTED));
 }
 
-bool IsAppLaunchableWithoutEnabling(const std::string& extension_id,
+bool IsAppLaunchableWithoutEnabling(const ExtensionId& extension_id,
                                     content::BrowserContext* context) {
   return ExtensionRegistry::Get(context)->GetExtensionById(
              extension_id, ExtensionRegistry::ENABLED) != nullptr;

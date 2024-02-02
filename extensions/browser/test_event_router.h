@@ -28,7 +28,7 @@ class TestEventRouter : public EventRouter {
    public:
     // These functions correspond to the ones in EventRouter.
     virtual void OnBroadcastEvent(const Event& event);
-    virtual void OnDispatchEventToExtension(const std::string& extension_id,
+    virtual void OnDispatchEventToExtension(const ExtensionId& extension_id,
                                             const Event& event);
 
    protected:
@@ -55,7 +55,7 @@ class TestEventRouter : public EventRouter {
 
   // EventRouter:
   void BroadcastEvent(std::unique_ptr<Event> event) override;
-  void DispatchEventToExtension(const std::string& extension_id,
+  void DispatchEventToExtension(const ExtensionId& extension_id,
                                 std::unique_ptr<Event> event) override;
 
  private:

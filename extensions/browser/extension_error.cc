@@ -7,6 +7,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "extensions/common/constants.h"
+#include "extensions/common/extension_id.h"
 #include "url/gurl.h"
 
 namespace extensions {
@@ -15,7 +16,7 @@ namespace extensions {
 // ExtensionError
 
 ExtensionError::ExtensionError(Type type,
-                               const std::string& extension_id,
+                               const ExtensionId& extension_id,
                                bool from_incognito,
                                logging::LogSeverity level,
                                const std::u16string& source,
@@ -53,7 +54,7 @@ bool ExtensionError::IsEqual(const ExtensionError* rhs) const {
 ////////////////////////////////////////////////////////////////////////////////
 // ManifestError
 
-ManifestError::ManifestError(const std::string& extension_id,
+ManifestError::ManifestError(const ExtensionId& extension_id,
                              const std::u16string& message,
                              const std::string& manifest_key,
                              const std::u16string& manifest_specific)
@@ -84,7 +85,7 @@ bool ManifestError::IsEqualImpl(const ExtensionError* rhs) const {
 ////////////////////////////////////////////////////////////////////////////////
 // RuntimeError
 
-RuntimeError::RuntimeError(const std::string& extension_id,
+RuntimeError::RuntimeError(const ExtensionId& extension_id,
                            bool from_incognito,
                            const std::u16string& source,
                            const std::u16string& message,
@@ -162,7 +163,7 @@ void RuntimeError::CleanUpInit() {
 ////////////////////////////////////////////////////////////////////////////////
 // InternalError
 
-InternalError::InternalError(const std::string& extension_id,
+InternalError::InternalError(const ExtensionId& extension_id,
                              const std::u16string& message,
                              logging::LogSeverity level)
     : ExtensionError(ExtensionError::INTERNAL_ERROR,

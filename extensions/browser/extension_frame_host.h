@@ -7,6 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "content/public/browser/render_frame_host_receiver_set.h"
+#include "extensions/common/extension_id.h"
 #include "extensions/common/mojom/frame.mojom.h"
 #include "extensions/common/mojom/injection_type.mojom-shared.h"
 #include "extensions/common/mojom/run_location.mojom-shared.h"
@@ -41,7 +42,7 @@ class ExtensionFrameHost : public mojom::LocalFrameHost {
 
   // mojom::LocalFrameHost:
   void RequestScriptInjectionPermission(
-      const std::string& extension_id,
+      const ExtensionId& extension_id,
       mojom::InjectionType script_type,
       mojom::RunLocation run_location,
       RequestScriptInjectionPermissionCallback callback) override;

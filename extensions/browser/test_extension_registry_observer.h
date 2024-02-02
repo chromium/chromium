@@ -22,7 +22,7 @@ class TestExtensionRegistryObserver : public ExtensionRegistryObserver {
   // extension. Otherwise, listens to all events.
   explicit TestExtensionRegistryObserver(ExtensionRegistry* registry);
   TestExtensionRegistryObserver(ExtensionRegistry* registry,
-                                const std::string& extension_id);
+                                const ExtensionId& extension_id);
 
   TestExtensionRegistryObserver(const TestExtensionRegistryObserver&) = delete;
   TestExtensionRegistryObserver& operator=(

@@ -33,6 +33,7 @@
 #include "extensions/browser/process_manager.h"
 #include "extensions/browser/process_manager_factory.h"
 #include "extensions/browser/service_worker_task_queue.h"
+#include "extensions/common/extension_id.h"
 #include "extensions/common/extension_l10n_util.h"
 #include "extensions/common/extension_set.h"
 #include "extensions/common/extensions_client.h"
@@ -512,7 +513,7 @@ void RendererStartupHelper::WakeEventPage(const ExtensionId& extension_id,
 }
 
 void RendererStartupHelper::GetMessageBundle(
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     GetMessageBundleCallback callback) {
   auto* browser_context = GetRendererBrowserContext();
   if (!browser_context) {
@@ -561,7 +562,7 @@ void RendererStartupHelper::GetMessageBundle(
       FROM_HERE, {base::MayBlock()},
       base::BindOnce(
           [](const std::vector<base::FilePath>& extension_paths,
-             const std::string& main_extension_id,
+             const ExtensionId& main_extension_id,
              const std::string& default_locale,
              extension_l10n_util::GzippedMessagesPermission gzip_permission) {
             return base::WrapUnique<MessageBundle::SubstitutionMap>(

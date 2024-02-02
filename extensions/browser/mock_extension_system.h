@@ -11,6 +11,7 @@
 #include "extensions/browser/extension_registry_factory.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/extension_system_provider.h"
+#include "extensions/common/extension_id.h"
 
 namespace extensions {
 
@@ -51,15 +52,15 @@ class MockExtensionSystem : public ExtensionSystem {
   ContentVerifier* content_verifier() override;
   std::unique_ptr<ExtensionSet> GetDependentExtensions(
       const Extension* extension) override;
-  void InstallUpdate(const std::string& extension_id,
+  void InstallUpdate(const ExtensionId& extension_id,
                      const std::string& public_key,
                      const base::FilePath& temp_dir,
                      bool install_immediately,
                      InstallUpdateCallback install_update_callback) override;
   void PerformActionBasedOnOmahaAttributes(
-      const std::string& extension_id,
+      const ExtensionId& extension_id,
       const base::Value::Dict& attributes) override;
-  bool FinishDelayedInstallationIfReady(const std::string& extension_id,
+  bool FinishDelayedInstallationIfReady(const ExtensionId& extension_id,
                                         bool install_immediately) override;
 
  private:

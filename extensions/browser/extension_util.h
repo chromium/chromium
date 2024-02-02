@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "extensions/common/extension_id.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/mojom/host_id.mojom.h"
 #include "extensions/common/mojom/renderer.mojom.h"
@@ -137,7 +138,7 @@ bool IsExtensionVisibleToContext(const Extension& extension,
 // Initializes file scheme access if the extension has such permission.
 void InitializeFileSchemeAccessForExtension(
     int render_process_id,
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     content::BrowserContext* browser_context);
 
 // Returns the default extension/app icon (for extensions or apps that don't
@@ -161,16 +162,16 @@ bool CanRendererHostExtensionOrigin(int render_process_id,
                                     const ExtensionId& extension_id);
 
 // Returns true if the extension associated with `extension_id` is a Chrome App.
-bool IsChromeApp(const std::string& extension_id,
+bool IsChromeApp(const ExtensionId& extension_id,
                  content::BrowserContext* context);
 
 // Returns true if `extension_id` can be launched (possibly only after being
 // enabled).
-bool IsAppLaunchable(const std::string& extension_id,
+bool IsAppLaunchable(const ExtensionId& extension_id,
                      content::BrowserContext* context);
 
 // Returns true if `extension_id` can be launched without being enabled first.
-bool IsAppLaunchableWithoutEnabling(const std::string& extension_id,
+bool IsAppLaunchableWithoutEnabling(const ExtensionId& extension_id,
                                     content::BrowserContext* context);
 
 }  // namespace util

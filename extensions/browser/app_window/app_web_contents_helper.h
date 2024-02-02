@@ -31,7 +31,7 @@ class Extension;
 class AppWebContentsHelper {
  public:
   AppWebContentsHelper(content::BrowserContext* browser_context,
-                       const std::string& extension_id,
+                       const ExtensionId& extension_id,
                        content::WebContents* web_contents,
                        AppDelegate* app_delegate);
 

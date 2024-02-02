@@ -9,6 +9,7 @@
 
 #include "extensions/browser/content_verifier/content_verifier_key.h"
 #include "extensions/browser/content_verify_job.h"
+#include "extensions/common/extension_id.h"
 #include "url/gurl.h"
 
 namespace base {
@@ -50,7 +51,7 @@ class ContentVerifierDelegate {
 
   // Returns a URL that can be used to fetch the verified_contents.json
   // containing signatures for the given extension id/version pair.
-  virtual GURL GetSignatureFetchUrl(const std::string& extension_id,
+  virtual GURL GetSignatureFetchUrl(const ExtensionId& extension_id,
                                     const base::Version& version) = 0;
 
   // Returns the set of file paths for images used within the browser process.
@@ -60,7 +61,7 @@ class ContentVerifierDelegate {
 
   // Called when the content verifier detects that a read of a file inside an
   // extension did not match its expected hash.
-  virtual void VerifyFailed(const std::string& extension_id,
+  virtual void VerifyFailed(const ExtensionId& extension_id,
                             ContentVerifyJob::FailureReason reason) = 0;
 
   // Called when ExtensionSystem is shutting down.

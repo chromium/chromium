@@ -17,6 +17,7 @@
 #include "extensions/browser/message_service_api.h"
 #include "extensions/browser/process_manager.h"
 #include "extensions/common/api/messaging/port_context.h"
+#include "extensions/common/extension_id.h"
 #include "extensions/common/mojom/message_port.mojom.h"
 #include "extensions/common/trace_util.h"
 
@@ -36,7 +37,7 @@ void ExtensionFrameHost::BindLocalFrameHost(
 }
 
 void ExtensionFrameHost::RequestScriptInjectionPermission(
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     mojom::InjectionType script_type,
     mojom::RunLocation run_location,
     RequestScriptInjectionPermissionCallback callback) {

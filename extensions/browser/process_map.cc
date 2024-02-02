@@ -4,6 +4,7 @@
 
 #include "extensions/browser/process_map.h"
 
+#include <string>
 #include <tuple>
 
 #include "content/public/browser/child_process_security_policy.h"
@@ -14,6 +15,7 @@
 #include "extensions/browser/process_map_factory.h"
 #include "extensions/browser/script_injection_tracker.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/extension_id.h"
 #include "extensions/common/features/feature.h"
 #include "extensions/common/mojom/context_type.mojom.h"
 
@@ -49,7 +51,7 @@ bool IsWebViewProcessForExtension(int process_id,
 
 // Item
 struct ProcessMap::Item {
-  Item(const std::string& extension_id, int process_id)
+  Item(const ExtensionId& extension_id, int process_id)
       : extension_id(extension_id), process_id(process_id) {}
 
   Item(const Item&) = delete;
@@ -65,7 +67,7 @@ struct ProcessMap::Item {
            std::tie(other.extension_id, other.process_id);
   }
 
-  std::string extension_id;
+  ExtensionId extension_id;
   int process_id = 0;
 };
 
@@ -80,7 +82,7 @@ ProcessMap* ProcessMap::Get(content::BrowserContext* browser_context) {
   return ProcessMapFactory::GetForBrowserContext(browser_context);
 }
 
-bool ProcessMap::Insert(const std::string& extension_id, int process_id) {
+bool ProcessMap::Insert(const ExtensionId& extension_id, int process_id) {
   return items_.insert(Item(extension_id, process_id)).second;
 }
 
@@ -97,7 +99,7 @@ int ProcessMap::RemoveAllFromProcess(int process_id) {
   return result;
 }
 
-bool ProcessMap::Contains(const std::string& extension_id,
+bool ProcessMap::Contains(const ExtensionId& extension_id,
                           int process_id) const {
   for (auto iter = items_.cbegin(); iter != items_.cend(); ++iter) {
     if (iter->process_id == process_id && iter->extension_id == extension_id)
@@ -114,8 +116,8 @@ bool ProcessMap::Contains(int process_id) const {
   return false;
 }
 
-std::set<std::string> ProcessMap::GetExtensionsInProcess(int process_id) const {
-  std::set<std::string> result;
+std::set<ExtensionId> ProcessMap::GetExtensionsInProcess(int process_id) const {
+  std::set<ExtensionId> result;
   for (auto iter = items_.cbegin(); iter != items_.cend(); ++iter) {
     if (iter->process_id == process_id)
       result.insert(iter->extension_id);

@@ -37,6 +37,7 @@
 #include "extensions/browser/service_worker_task_queue_factory.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension_features.h"
+#include "extensions/common/extension_id.h"
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/manifest_handlers/background_info.h"
 #include "extensions/common/manifest_handlers/incognito_info.h"
@@ -759,7 +760,7 @@ ServiceWorkerTaskQueue::GetCurrentActivationToken(
 
 void ServiceWorkerTaskQueue::OnRegistrationStored(int64_t registration_id,
                                                   const GURL& scope) {
-  const std::string extension_id = scope.host();
+  const ExtensionId extension_id = scope.host();
   auto iter = pending_registrations_.find(extension_id);
   if (iter == pending_registrations_.end()) {
     return;

@@ -28,6 +28,7 @@
 #include "extensions/browser/extension_file_task_runner.h"
 #include "extensions/common/api/declarative_net_request/dnr_manifest_data.h"
 #include "extensions/common/constants.h"
+#include "extensions/common/extension_id.h"
 #include "extensions/common/extension_l10n_util.h"
 #include "extensions/common/file_util.h"
 #include "extensions/common/manifest_handlers/background_info.h"
@@ -436,7 +437,7 @@ void ContentVerifier::ShutdownOnIO() {
 }
 
 scoped_refptr<ContentVerifyJob> ContentVerifier::CreateAndStartJobFor(
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     const base::FilePath& extension_root,
     const base::FilePath& relative_path) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
@@ -691,7 +692,7 @@ void ContentVerifier::BindURLLoaderFactoryReceiverOnUIThread(
 }
 
 bool ContentVerifier::ShouldVerifyAnyPaths(
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     const base::FilePath& extension_root,
     const std::set<base::FilePath>& relative_unix_paths) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
@@ -795,7 +796,7 @@ base::FilePath ContentVerifier::NormalizeRelativePathForTesting(
 }
 
 bool ContentVerifier::ShouldVerifyAnyPathsForTesting(
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     const base::FilePath& extension_root,
     const std::set<base::FilePath>& relative_unix_paths) {
   return ShouldVerifyAnyPaths(extension_id, extension_root,
