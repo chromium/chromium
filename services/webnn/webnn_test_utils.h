@@ -264,6 +264,8 @@ class GraphInfoBuilder final {
                         std::optional<float> alpha,
                         std::optional<float> beta);
 
+  void BuildHardSwish(uint64_t input_operand_id, uint64_t output_operand_id);
+
   // A `LayerNormalizationAttributes` type should have the following members:
   // struct LayerNormalizationAttributes {
   //  std::optional<uint64_t> scale_operand_id;

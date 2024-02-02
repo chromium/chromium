@@ -4325,7 +4325,7 @@ TEST_P(MLGraphTestMojo, ReshapeTest) {
   }
 }
 
-enum class FloatingPointUnaryKind { kSigmoid, kTanh };
+enum class FloatingPointUnaryKind { kHardSwish, kSigmoid, kTanh };
 
 struct FloatingPointUnaryTester {
   OperandInfoBlink input;
@@ -4348,6 +4348,10 @@ struct FloatingPointUnaryTester {
                    scope.GetExceptionState());
     MLOperand* output_operand = nullptr;
     switch (kind) {
+      case FloatingPointUnaryKind::kHardSwish:
+        output_operand =
+            builder->hardSwish(input_operand, scope.GetExceptionState());
+        break;
       case FloatingPointUnaryKind::kSigmoid:
         output_operand =
             builder->sigmoid(input_operand, scope.GetExceptionState());
@@ -4394,6 +4398,13 @@ struct FloatingPointUnaryTester {
     // Verify the `mojo::Operator`.
     auto& operation = graph_info->operations[0];
     switch (kind) {
+      case FloatingPointUnaryKind::kHardSwish: {
+        EXPECT_TRUE(operation->is_hard_swish());
+        auto& unary = operation->get_hard_swish();
+        EXPECT_EQ(unary->input_operand_id, input_operand_id);
+        EXPECT_EQ(unary->output_operand_id, output_operand_id);
+        break;
+      }
       case FloatingPointUnaryKind::kSigmoid: {
         EXPECT_TRUE(operation->is_sigmoid());
         auto& unary = operation->get_sigmoid();

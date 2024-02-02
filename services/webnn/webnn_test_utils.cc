@@ -257,6 +257,15 @@ void GraphInfoBuilder::BuildHardSigmoid(uint64_t input_operand_id,
       mojom::Operation::NewHardSigmoid(std::move(hard_sigmoid)));
 }
 
+void GraphInfoBuilder::BuildHardSwish(uint64_t input_operand_id,
+                                      uint64_t output_operand_id) {
+  mojom::HardSwishPtr hard_swish = mojom::HardSwish::New();
+  hard_swish->input_operand_id = input_operand_id;
+  hard_swish->output_operand_id = output_operand_id;
+  graph_info_->operations.push_back(
+      mojom::Operation::NewHardSwish(std::move(hard_swish)));
+}
+
 void GraphInfoBuilder::BuildPrelu(uint64_t input_operand_id,
                                   uint64_t slope_operand_id,
                                   uint64_t output_operand_id) {

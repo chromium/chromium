@@ -515,7 +515,7 @@ TEST_F(WebNNGraphDMLImplTest, BuildSingleOperatorBatchNormalization) {
         .Test();
   }
   {
-    // Test batchNormalization with 4-D input with activation = hardsigmoids.
+    // Test batchNormalization with 4-D input with activation = hardsigmoid.
     BatchNormalizationTester<float>{
         .input = {.type = mojom::Operand::DataType::kFloat32,
                   .dimensions = {1, 2, 1, 3},
@@ -3308,6 +3308,9 @@ struct UnaryOperatorTester {
         builder.BuildHardSigmoid(input_operand_id, output_operand_id,
                                  hard_sigmoid_alpha, hard_sigmoid_beta);
         break;
+      case mojom::Operation::Tag::kHardSwish:
+        builder.BuildHardSwish(input_operand_id, output_operand_id);
+        break;
       case mojom::Operation::Tag::kLeakyRelu:
         CHECK(leaky_relu_alpha);
         builder.BuildLeakyRelu(input_operand_id, output_operand_id,
@@ -3430,6 +3433,34 @@ TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorHardSigmoid) {
         .output = {.type = mojom::Operand::DataType::kFloat32,
                    .dimensions = {},
                    .values = {1}}}
+        .Test();
+  }
+}
+
+// Test building and computing a DML graph with single operator hardSwish.
+TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorHardSwish) {
+  // Test hardSwish with a 0-D scalar input.
+  {
+    UnaryOperatorTester<float>{
+        .tag = mojom::Operation::Tag::kHardSwish,
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {},
+                  .values = {7.0}},
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {},
+                   .values = {7.0}}}
+        .Test();
+  }
+  // Test hardSwish with a 4-D input.
+  {
+    UnaryOperatorTester<float>{
+        .tag = mojom::Operation::Tag::kHardSwish,
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {1, 2, 2, 2},
+                  .values = {-6, -5, -4, -3, 0, 4, 5, 6}},
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 2, 2, 2},
+                   .values = {0, 0, 0, 0, 0, 4, 5, 6}}}
         .Test();
   }
 }

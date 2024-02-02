@@ -4488,7 +4488,13 @@ TEST_F(WebNNGraphImplTest, SliceTest) {
   }
 }
 
-enum class FloatingPointUnaryKind { kLeakyRelu, kLinear, kSigmoid, kTanh };
+enum class FloatingPointUnaryKind {
+  kHardSwish,
+  kLeakyRelu,
+  kLinear,
+  kSigmoid,
+  kTanh
+};
 
 struct FloatingPointUnaryTester {
   OperandInfo input;
@@ -4496,6 +4502,7 @@ struct FloatingPointUnaryTester {
   bool expected;
 
   void Test() {
+    Test(FloatingPointUnaryKind::kHardSwish);
     Test(FloatingPointUnaryKind::kLeakyRelu);
     Test(FloatingPointUnaryKind::kLinear);
     Test(FloatingPointUnaryKind::kSigmoid);
@@ -4510,6 +4517,9 @@ struct FloatingPointUnaryTester {
     uint64_t output_operand_id =
         builder.BuildOutput("output", output.dimensions, output.type);
     switch (kind) {
+      case FloatingPointUnaryKind::kHardSwish:
+        builder.BuildHardSwish(input_operand_id, output_operand_id);
+        break;
       case FloatingPointUnaryKind::kLeakyRelu:
         builder.BuildLeakyRelu(input_operand_id, output_operand_id,
                                /*alpha*/ 1.0);

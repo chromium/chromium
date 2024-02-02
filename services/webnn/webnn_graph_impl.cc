@@ -1307,6 +1307,10 @@ bool ValidateOperation(const IdToOperandMap& id_to_operand_map,
     case mojom::Operation::Tag::kHardSigmoid:
       return ValidateHardSigmoid(id_to_operand_map,
                                  operation->get_hard_sigmoid());
+    case mojom::Operation::Tag::kHardSwish:
+      return ValidateUnaryOperation(id_to_operand_map,
+                                    operation->get_hard_swish(),
+                                    DataTypeConstraint::kFloat);
     case mojom::Operation::Tag::kLayerNormalization:
       return ValidateLayerNormalization(id_to_operand_map,
                                         operation->get_layer_normalization());

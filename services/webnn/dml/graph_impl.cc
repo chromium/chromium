@@ -1974,6 +1974,65 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForHardSigmoid(
   return base::ok();
 }
 
+// Since DirectML feature levels before 6.2, we need to implement hardSwish
+// by composing from smaller operators:
+// Output = input * clamp((input / 6) + 0.5, 0, 1).
+base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForHardSwish(
+    const IdToOperandMap& id_to_operand_map,
+    const mojom::HardSwishPtr& hard_swish,
+    GraphBuilder& graph_builder,
+    IdToNodeOutputMap& id_to_node_output_map) {
+  const NodeOutput* input = GetNodeOutputForOperand(
+      id_to_node_output_map, hard_swish->input_operand_id);
+  const auto& input_tensor_desc = input->GetTensorDesc();
+
+  const uint64_t output_id = hard_swish->output_operand_id;
+  auto output_tensor_desc =
+      CreateOutputTensorDesc(id_to_operand_map, output_id);
+
+  // First step: build `clamp((x / 6) + 0.5, 0, 1)`.
+  DML_SCALE_BIAS scale_bias = {.Scale = 1.0 / 6.0, .Bias = 0.5};
+  DML_ELEMENT_WISE_CLIP_OPERATOR_DESC clamp_operator_desc{
+      .InputTensor = &input_tensor_desc.GetDMLTensorDesc(),
+      .OutputTensor = &output_tensor_desc.GetDMLTensorDesc(),
+      // Applying the function `g(x) = x / 6 + 0.5` to each input element prior
+      // to clamp.
+      .ScaleBias = &scale_bias,
+      .Min = 0,
+      .Max = 1};
+  std::array<const NodeOutput*, 1> clamp_inputs = {input};
+  const OperatorNode* clamp_node = graph_builder.CreateOperatorNode(
+      DML_OPERATOR_ELEMENT_WISE_CLIP, &clamp_operator_desc, clamp_inputs);
+  if (!clamp_node) {
+    return base::unexpected(CreateError(mojom::Error::Code::kUnknownError,
+                                        "Failed to create clamp operator."));
+  }
+  const NodeOutput* clamp_output =
+      graph_builder.CreateNodeOutput(clamp_node, output_tensor_desc, 0);
+  const auto& clamp_output_tensor_desc = clamp_output->GetTensorDesc();
+
+  // Second step: build `x * first_step`.
+  std::array<const NodeOutput*, 2> mul_inputs = {input, clamp_output};
+  DML_ELEMENT_WISE_MULTIPLY_OPERATOR_DESC binary_mul_desc{
+      .ATensor = &input_tensor_desc.GetDMLTensorDesc(),
+      .BTensor = &clamp_output_tensor_desc.GetDMLTensorDesc(),
+      .OutputTensor = &output_tensor_desc.GetDMLTensorDesc()};
+  const OperatorNode* binary_mul_node = graph_builder.CreateOperatorNode(
+      DML_OPERATOR_ELEMENT_WISE_MULTIPLY, &binary_mul_desc, mul_inputs);
+  if (!binary_mul_node) {
+    return base::unexpected(
+        CreateError(mojom::Error::Code::kUnknownError,
+                    "Failed to create binary mul operator."));
+  }
+  const NodeOutput* mul_output =
+      graph_builder.CreateNodeOutput(binary_mul_node, output_tensor_desc);
+
+  // The output id must be unique in the map.
+  CHECK(id_to_node_output_map.try_emplace(output_id, mul_output).second);
+
+  return base::ok();
+}
+
 template <typename NormalizationPtr>
 base::expected<void, mojom::ErrorPtr>
 CreateOperatorNodeForMeanVarianceNormalization(
@@ -3071,6 +3130,12 @@ void GraphImpl::CreateAndBuild(
       case mojom::Operation::Tag::kHardSigmoid: {
         create_operator_result = CreateOperatorNodeForHardSigmoid(
             id_to_operand_map, operation->get_hard_sigmoid(), graph_builder,
+            id_to_node_output_map);
+        break;
+      }
+      case mojom::Operation::Tag::kHardSwish: {
+        create_operator_result = CreateOperatorNodeForHardSwish(
+            id_to_operand_map, operation->get_hard_swish(), graph_builder,
             id_to_node_output_map);
         break;
       }

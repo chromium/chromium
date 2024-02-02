@@ -548,6 +548,15 @@ struct HardSigmoid {
   float beta = 0.5;
 };
 
+// Represents an operation which computes the nonlinear function
+// output = input * max(0, min(6, (input + 3))) / 6
+struct HardSwish {
+  // The input operand (referenced by input_operand_id) must be distinct from
+  // the output operand (referenced by output_operand_id).
+  uint64 input_operand_id;
+  uint64 output_operand_id;
+};
+
 // Represents an operation of normalizing the input across the feature
 // dimensions for each individual sample in a batch, where the feature
 // dimensions are the input dimensions indexed by `axes`.
@@ -806,6 +815,7 @@ union Operation {
   Gather gather;
   Gemm gemm;
   HardSigmoid hard_sigmoid;
+  HardSwish hard_swish;
   LayerNormalization layer_normalization;
   InstanceNormalization instance_normalization;
   LeakyRelu leaky_relu;

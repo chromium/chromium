@@ -1,16 +1,4 @@
 This is a testharness.js-based test.
-[FAIL] hardSwish float32 1D constant tensor / sync
-  Failed to execute 'buildSync' on 'MLGraphBuilder': Failed to build graph: hardSwish is not implemented.
-[FAIL] hardSwish float32 1D tensor / sync
-  Failed to execute 'buildSync' on 'MLGraphBuilder': Failed to build graph: hardSwish is not implemented.
-[FAIL] hardSwish float32 2D tensor / sync
-  Failed to execute 'buildSync' on 'MLGraphBuilder': Failed to build graph: hardSwish is not implemented.
-[FAIL] hardSwish float32 3D tensor / sync
-  Failed to execute 'buildSync' on 'MLGraphBuilder': Failed to build graph: hardSwish is not implemented.
-[FAIL] hardSwish float32 4D tensor / sync
-  Failed to execute 'buildSync' on 'MLGraphBuilder': Failed to build graph: hardSwish is not implemented.
-[FAIL] hardSwish float32 5D tensor / sync
-  Failed to execute 'buildSync' on 'MLGraphBuilder': Failed to build graph: hardSwish is not implemented.
 [FAIL] hardSwish float32 1D constant tensor / async
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
 [FAIL] hardSwish float32 1D tensor / async
