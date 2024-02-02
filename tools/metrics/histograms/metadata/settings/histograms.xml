@@ -168,6 +168,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Settings.IpProtection.Enabled" enum="BooleanEnabled"
+    expires_after="2024-09-30">
+  <owner>fmacintosh@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <summary>
+    Records the state of the pref that represents whether the user has chosen to
+    enable IP Protection via the Tracking Protection settings page. Logged on
+    profile startup.
+  </summary>
+</histogram>
+
 <histogram name="Settings.OpenSettingsFromMenu.PerProfileType"
     enum="BrowserProfileType" expires_after="2024-04-28">
   <owner>roagarwal@chromium.org</owner>
