@@ -42,7 +42,8 @@
   AppLaunchConfiguration config = [super appConfigurationForTestCase];
   // Set the country to one that is eligible for the choice screen (in this
   // case, France).
-  config.additional_args.push_back("--search-engine-choice-country=FR");
+  config.additional_args.push_back(
+      "--" + std::string(switches::kSearchEngineChoiceCountry) + "=FR");
   // Force the dialog to trigger also for existing users.
   config.additional_args.push_back(
       "--enable-features=SearchEngineChoiceTrigger:for_tagged_profiles_only/"

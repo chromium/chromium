@@ -1473,7 +1473,8 @@ void DismissDefaultBrowserAndOmniboxPositionSelectionScreens() {
   AppLaunchConfiguration config = [super appConfigurationForTestCase];
   // Set the country to one that is eligible for the choice screen (in this
   // case, France).
-  config.additional_args.push_back("--search-engine-choice-country=FR");
+  config.additional_args.push_back(
+      "--" + std::string(switches::kSearchEngineChoiceCountry) + "=FR");
   config.features_enabled.push_back(switches::kSearchEngineChoiceTrigger);
   config.additional_args.push_back("--" +
                                    std::string(kSearchEngineForceEnabled));
