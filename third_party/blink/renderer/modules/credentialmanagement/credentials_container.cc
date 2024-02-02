@@ -2040,7 +2040,8 @@ ScriptPromise CredentialsContainer::GetForIdentity(
       UseCounter::Count(resolver->GetExecutionContext(),
                         WebFeature::kFedCmDomainHint);
     }
-    if (RuntimeEnabledFeatures::WebIdentityDigitalCredentialsEnabled() &&
+    if (RuntimeEnabledFeatures::WebIdentityDigitalCredentialsEnabled(
+            resolver->GetExecutionContext()) &&
         !RuntimeEnabledFeatures::FedCmMultipleIdentityProvidersEnabled()) {
       // TODO(https://crbug.com/1416939): make sure the Digital Credentials
       //  API works well with the Multiple IdP API.

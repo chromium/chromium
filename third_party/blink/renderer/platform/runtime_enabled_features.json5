@@ -4292,6 +4292,8 @@
     },
     {
       name: "WebIdentityDigitalCredentials",
+      origin_trial_feature_name: "WebIdentityDigitalCredentials",
+      origin_trial_os: ["android"],
       depends_on: ["FedCm"],
       public: true,
       status: "test",

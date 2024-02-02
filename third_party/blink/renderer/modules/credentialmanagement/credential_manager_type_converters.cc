@@ -902,7 +902,6 @@ IdentityProviderPtr
 TypeConverter<IdentityProviderPtr, blink::IdentityProviderRequestOptions>::
     Convert(const blink::IdentityProviderRequestOptions& provider) {
   if (provider.hasHolder() &&
-      blink::RuntimeEnabledFeatures::WebIdentityDigitalCredentialsEnabled() &&
       // TODO(https://crbug.com/1416939): make sure the Digital Credentials API
       // works well with the Multiple IdP API.
       !blink::RuntimeEnabledFeatures::FedCmMultipleIdentityProvidersEnabled()) {
