@@ -3215,6 +3215,28 @@
             ]
         }
     ],
+    "Canvas2DHibernationReleaseTransferMemory": [
+        {
+            "platforms": [
+                "android",
+                "android_webview",
+                "chromeos",
+                "chromeos_lacros",
+                "fuchsia",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "Canvas2DHibernationReleaseTransferMemory"
+                    ]
+                }
+            ]
+        }
+    ],
     "CanvasOopWithoutGpuTileRaster": [
         {
             "platforms": [
