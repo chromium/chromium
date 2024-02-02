@@ -2519,17 +2519,29 @@ void RenderFrameImpl::GetInterfaceProvider(
 
 void RenderFrameImpl::AllowBindings(int32_t enabled_bindings_flags) {
   enabled_bindings_ |= enabled_bindings_flags;
+
+  if (enabled_bindings_flags & BINDINGS_POLICY_MOJO_WEB_UI) {
+    // If mojo web UI is being enabled, update the protected memory bool to
+    // allow MojoJS binding in this process.
+    blink::WebV8Features::AllowMojoJSForProcess();
+  }
 }
 
 void RenderFrameImpl::EnableMojoJsBindings(
     content::mojom::ExtraMojoJsFeaturesPtr features) {
   enable_mojo_js_bindings_ = true;
   mojo_js_features_ = std::move(features);
+
+  // Update the protected memory bool to allow MojoJS binding in this process.
+  blink::WebV8Features::AllowMojoJSForProcess();
 }
 
 void RenderFrameImpl::EnableMojoJsBindingsWithBroker(
     mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker> broker) {
   mojo_js_interface_broker_ = std::move(broker);
+
+  // Update the protected memory bool to allow MojoJS binding in this process.
+  blink::WebV8Features::AllowMojoJSForProcess();
 }
 
 void RenderFrameImpl::BindWebUI(

@@ -811,6 +811,12 @@ BASE_FEATURE(kDeprecateUnloadByAllowList,
 const base::FeatureParam<std::string> kDeprecateUnloadAllowlist{
     &kDeprecateUnloadByAllowList, "allowlist", ""};
 
+// Enables using a base::ProtectedMemory<bool> value to provide extra protection
+// against MojoJS bindings being enabled via a data-only attack.
+BASE_FEATURE(kEnableMojoJSProtectedMemory,
+             "EnableMojoJSProtectedMemory",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Controls whether LCP calculations should exclude low-entropy images. If
 // enabled, then the associated parameter sets the cutoff, expressed as the
 // minimum number of bits of encoded image data used to encode each rendered
@@ -2387,6 +2393,11 @@ bool DisplayWarningDeprecateURNIframesUseFencedFrames() {
 bool IsAllowBFCacheWhenClosedMediaStreamTrackEnabled() {
   return base::FeatureList::IsEnabled(
       blink::features::kAllowBFCacheWhenClosedMediaStreamTrack);
+}
+
+bool IsEnableMojoJSProtectedMemoryEnabled() {
+  return base::FeatureList::IsEnabled(
+      blink::features::kEnableMojoJSProtectedMemory);
 }
 
 bool IsFencedFramesEnabled() {

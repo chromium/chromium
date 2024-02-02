@@ -751,6 +751,10 @@ _CONFIG = [
             'base::apple::ScopedCFTypeRef',
             'base::mac::MacOSVersion',
             'base::mac::MacOSMajorVersion',
+
+            # Protected memory
+            'base::ProtectedMemory',
+            'base::AutoWritableMemory',
         ],
         'disallowed': [
             ('base::Bind(|Once|Repeating)',

@@ -3,6 +3,7 @@ include_rules = [
     "+base/apple/scoped_cftyperef.h",
     "+base/atomic_sequence_num.h",
     "+base/cancelable_callback.h",
+    "+base/memory/protected_memory.h",
     "+base/memory/values_equivalent.h",
     "+base/files/file.h",
     "+base/files/file_path.h",
