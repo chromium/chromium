@@ -1618,7 +1618,7 @@ gpu_fyi_windows_builder(
         category = "Windows|Builder|Release",
         short_name = "a64",
     ),
-    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CI,
+    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
 )
 
 gpu_fyi_windows_builder(
