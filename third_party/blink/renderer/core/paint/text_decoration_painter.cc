@@ -145,17 +145,6 @@ void TextDecorationPainter::PaintUnderOrOverLineDecorations(
   }
   const TextDecorationOffset decoration_offset(style_);
 
-  // Updating Graphics Context for text only (kTextProperOnly),
-  // instead of the default text and shadows (kBothShadowsAndTextProper),
-  // because shadows will be painted by PaintWithTextShadow.
-  // TODO(fs): Eliminate the state saver, state will have been saved
-  // already. The color state from `text_style` isn't used except to setup the
-  // shadow, so the call to UpdateGraphicsContext() can be removed.
-  GraphicsContextStateSaver state_saver(paint_info_.context, false);
-  TextPainter::UpdateGraphicsContext(paint_info_.context, text_style,
-                                     state_saver,
-                                     TextPainter::ShadowMode::kTextProperOnly);
-
   PaintWithTextShadow(
       [&](TextShadowPaintPhase phase) {
         for (wtf_size_t i = 0; i < decoration_info.AppliedDecorationCount();
@@ -204,16 +193,6 @@ void TextDecorationPainter::PaintLineThroughDecorations(
   if (paint_info_.IsRenderingResourceSubtree()) {
     paint_info_.context.Scale(1, decoration_info.ScalingFactor());
   }
-  // Updating Graphics Context for text only (kTextProperOnly),
-  // instead of the default text and shadows (kBothShadowsAndTextProper),
-  // because shadows will be painted by PaintWithTextShadow.
-  // TODO(fs): Eliminate the state saver, state will have been saved
-  // already. The color state from `text_style` isn't used except to setup the
-  // shadow, so the call to UpdateGraphicsContext() can be removed.
-  GraphicsContextStateSaver state_saver(paint_info_.context, false);
-  TextPainter::UpdateGraphicsContext(paint_info_.context, text_style,
-                                     state_saver,
-                                     TextPainter::ShadowMode::kTextProperOnly);
 
   PaintWithTextShadow(
       [&](TextShadowPaintPhase phase) {
