@@ -79,19 +79,6 @@ class ScopedRtVcpuFeature {
   base::test::ScopedFeatureList feature_list;
 };
 
-// Fake user that can be created with a specified type.
-class FakeUser : public user_manager::User {
- public:
-  explicit FakeUser(user_manager::UserType type)
-      : User(AccountId::FromUserEmailGaiaId("user@test.com", "1234567890"),
-             type) {}
-
-  FakeUser(const FakeUser&) = delete;
-  FakeUser& operator=(const FakeUser&) = delete;
-
-  ~FakeUser() override = default;
-};
-
 class ArcUtilTest : public ash::AshTestBase {
  public:
   ArcUtilTest() {
