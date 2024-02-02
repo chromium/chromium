@@ -42,6 +42,12 @@ class AudioBus;
 
 class MEDIA_EXPORT AudioRendererAlgorithm {
  public:
+  enum class FillBufferMode {
+    kPassthrough,
+    kResampler,
+    kWSOLA,
+  };
+
   AudioRendererAlgorithm(MediaLog* media_log);
   AudioRendererAlgorithm(MediaLog* media_log,
                          AudioRendererAlgorithmParameters params);
@@ -139,12 +145,10 @@ class MEDIA_EXPORT AudioRendererAlgorithm {
 
   std::vector<bool> channel_mask_for_testing() { return channel_mask_; }
 
+  FillBufferMode last_mode_for_testing() { return last_mode_; }
+
  private:
-  enum class FillBufferMode {
-    kPassthrough,
-    kResampler,
-    kWSOLA,
-  };
+  FillBufferMode ChooseBufferMode(double playback_rate);
 
   // Remove buffered data that will be outdated if we switch fill mode.
   void SetFillBufferMode(FillBufferMode mode);
@@ -197,6 +201,12 @@ class MEDIA_EXPORT AudioRendererAlgorithm {
   // Uses |resampler_| to speed up or slowdown audio, by using a resampling
   // ratio of |playback_rate|.
   int ResampleAndFill(AudioBus* dest,
+                      int dest_offset,
+                      int requested_frames,
+                      double playback_rate);
+
+  // Uses the WSOLA algorithm to speed up or slowdown audio.
+  int RunWsolaAndFill(AudioBus* dest,
                       int dest_offset,
                       int requested_frames,
                       double playback_rate);

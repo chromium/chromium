@@ -486,6 +486,45 @@ TEST_F(AudioRendererAlgorithmTest, FillBuffer_ResamplingRates) {
   TestPlaybackRate(2.00);
 }
 
+// This test verifies that we use the right underlying algorithms based on
+// the preserves pitch flag and the playback rate.
+TEST_F(AudioRendererAlgorithmTest, FillBuffer_FillModes) {
+  Initialize();
+
+  // WSOLA.
+  algorithm_.SetPreservesPitch(true);
+
+  // Passthrough data when we are close to a playback rate of 1.0.
+  TestPlaybackRate(1.00);
+  EXPECT_EQ(algorithm_.last_mode_for_testing(),
+            AudioRendererAlgorithm::FillBufferMode::kPassthrough);
+
+  // Use WSOLA when we are not close to 1.0.
+  TestPlaybackRate(1.05);
+  EXPECT_EQ(algorithm_.last_mode_for_testing(),
+            AudioRendererAlgorithm::FillBufferMode::kWSOLA);
+
+  // Return to passthrough.
+  TestPlaybackRate(1.00);
+  EXPECT_EQ(algorithm_.last_mode_for_testing(),
+            AudioRendererAlgorithm::FillBufferMode::kPassthrough);
+
+  // Always use resampling when preservesPitch is false.
+  algorithm_.SetPreservesPitch(false);
+
+  TestPlaybackRate(1.00);
+  EXPECT_EQ(algorithm_.last_mode_for_testing(),
+            AudioRendererAlgorithm::FillBufferMode::kResampler);
+
+  TestPlaybackRate(1.05);
+  EXPECT_EQ(algorithm_.last_mode_for_testing(),
+            AudioRendererAlgorithm::FillBufferMode::kResampler);
+
+  TestPlaybackRate(1.00);
+  EXPECT_EQ(algorithm_.last_mode_for_testing(),
+            AudioRendererAlgorithm::FillBufferMode::kResampler);
+}
+
 TEST_F(AudioRendererAlgorithmTest, FillBuffer_WithOffset) {
   Initialize();
   const int kBufferSize = algorithm_.samples_per_second() / 10;
