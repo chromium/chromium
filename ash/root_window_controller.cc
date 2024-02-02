@@ -996,11 +996,7 @@ void RootWindowController::StartSplitViewOverviewSession(
     std::optional<OverviewStartAction> action,
     std::optional<OverviewEnterExitType> type,
     WindowSnapActionSource snap_action_source) {
-  if (split_view_overview_session_ ||
-      !OverviewController::Get()->CanEnterOverview()) {
-    // If we can't start overview, we shouldn't start split view overview
-    // either. This can happen when we restore snap state after exiting
-    // overview.
+  if (split_view_overview_session_) {
     return;
   }
 
@@ -1014,6 +1010,7 @@ void RootWindowController::StartSplitViewOverviewSession(
     return;
   }
 
+  CHECK(OverviewController::Get()->CanEnterOverview());
   split_view_overview_session_ =
       std::make_unique<SplitViewOverviewSession>(window, snap_action_source);
   split_view_overview_session_->Init(action, type);

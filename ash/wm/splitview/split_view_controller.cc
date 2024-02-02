@@ -681,12 +681,9 @@ void SplitViewController::OnSnapEvent(
   // faster split screen setup session, the window should be managed by
   // `SplitViewController`. Otherwise, the window should be managed by
   // `WindowState`.
-  // TODO(michelefan): Replace
-  // `window_util::IsFasterSplitScreenOrSnapGroupEnabledInClamshell()` with
-  // `CanStartSplitViewOverviewSessionInClamshell()`.
   if (!InTabletMode() &&
       !(in_overview ||
-        window_util::IsFasterSplitScreenOrSnapGroupEnabledInClamshell())) {
+        ShouldConsiderWindowForFasterSplitView(window, snap_action_source))) {
     return;
   }
 

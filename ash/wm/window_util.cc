@@ -742,14 +742,4 @@ bool IsInFasterSplitScreenSetupSession(aura::Window* window) {
              SplitViewOverviewSetupType::kSnapThenAutomaticOverview;
 }
 
-chromeos::WindowStateType GetOppositeSnapType(aura::Window* window) {
-  CHECK(window);
-  WindowState* window_state = WindowState::Get(window);
-  CHECK(window_state->IsSnapped());
-  return window_state->GetStateType() ==
-                 chromeos::WindowStateType::kPrimarySnapped
-             ? chromeos::WindowStateType::kSecondarySnapped
-             : chromeos::WindowStateType::kPrimarySnapped;
-}
-
 }  // namespace ash::window_util

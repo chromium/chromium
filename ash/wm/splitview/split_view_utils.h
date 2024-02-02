@@ -251,8 +251,20 @@ gfx::Rect CalculateSnappedWindowBoundsInScreen(
     int divider_width,
     bool is_resizing_with_divider);
 
-// Returns true `SplitViewOverviewSession` is allowed to start for the given
-// `window` and `snap_action_source`. Returns false otherwise.
+// Returns the opposite snap type of a snapped `window`. This will be
+// `kPrimarySnapped` if `window` is `kSecondarySnapped`, or `kSecondarySnapped`
+// if `window` is `kPrimarySnapped`.
+chromeos::WindowStateType GetOppositeSnapType(aura::Window* window);
+
+// Returns true if the given `window` can be considered as the candidate for
+// faster split screen set up. Returns false otherwise. `snap_action_source` is
+// used to filter out some unwanted snap sources.
+bool ShouldConsiderWindowForFasterSplitView(
+    aura::Window* window,
+    WindowSnapActionSource snap_action_source);
+
+// Returns true if `SplitViewOverviewSession` is allowed to start when the given
+// `window` is snapped with given `snap_action_source`. Returns false otherwise.
 bool CanStartSplitViewOverviewSessionInClamshell(
     aura::Window* window,
     WindowSnapActionSource snap_action_source);

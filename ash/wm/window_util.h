@@ -221,11 +221,6 @@ bool IsFasterSplitScreenOrSnapGroupEnabledInClamshell();
 // screen when `window` is snapped.
 bool IsInFasterSplitScreenSetupSession(aura::Window* window);
 
-// Returns the opposite snap type of a snapped `window`. This will be
-// `kPrimarySnapped` if `window` is `kSecondarySnapped`, or `kSecondarySnapped`
-// if `window` is `kPrimarySnapped`.
-chromeos::WindowStateType GetOppositeSnapType(aura::Window* window);
-
 }  // namespace ash::window_util
 
 #endif  // ASH_WM_WINDOW_UTIL_H_

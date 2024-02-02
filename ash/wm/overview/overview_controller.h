@@ -176,6 +176,7 @@ class ASH_EXPORT OverviewController : public OverviewDelegate,
       occlusion_tracker_pauser_;
 
   std::unique_ptr<OverviewSession> overview_session_;
+
   base::Time last_overview_session_time_;
 
   base::TimeDelta occlusion_pause_duration_for_end_;

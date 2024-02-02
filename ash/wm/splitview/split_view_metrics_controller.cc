@@ -12,6 +12,7 @@
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/splitview/split_view_controller.h"
+#include "ash/wm/splitview/split_view_utils.h"
 #include "ash/wm/switchable_windows.h"
 #include "ash/wm/window_positioning_utils.h"
 #include "ash/wm/window_restore/window_restore_controller.h"
@@ -670,7 +671,7 @@ void SplitViewMetricsController::MaybeStartOrEndRecordSnapTwoWindowsDuration(
     if (first_snapped_window_ && !first_snapped_time_.is_null() &&
         window_state->window() != first_snapped_window_ &&
         window_state->GetStateType() ==
-            window_util::GetOppositeSnapType(first_snapped_window_)) {
+            GetOppositeSnapType(first_snapped_window_)) {
       // If this is a different window that got snapped on the opposite side,
       // record the duration since `first_snapped_time_`.
       RecordSnapTwoWindowsDuration(base::TimeTicks::Now() -
@@ -723,7 +724,7 @@ void SplitViewMetricsController::MaybeStartOrEndRecordCloseTwoWindowsDuration(
     }
     // If `window` has the opposite state type of `first_closed_state_type_`,
     // record the duration.
-    if (window_util::GetOppositeSnapType(window) == first_closed_state_type_ &&
+    if (GetOppositeSnapType(window) == first_closed_state_type_ &&
         !first_closed_time_.is_null()) {
       RecordCloseTwoWindowsDuration(base::TimeTicks::Now() -
                                     first_closed_time_);
