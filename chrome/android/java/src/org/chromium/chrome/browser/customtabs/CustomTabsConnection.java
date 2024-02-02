@@ -1980,10 +1980,13 @@ public class CustomTabsConnection {
             BrowserServicesIntentDataProvider intentData,
             @Nullable NavigationHandle navigationHandle,
             Supplier<Profile> profileSupplier) {
+        // For all params, by default populate the most conservative values.
         return PageInsightsConfig.newBuilder()
                 .setShouldAutoTrigger(false)
                 .setShouldXsurfaceLog(false)
+                .setIsInitialPage(false)
                 .setShouldAttachGaiaToRequest(false)
+                .setServerShouldNotLogOrPersonalize(true)
                 .build();
     }
 
