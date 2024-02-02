@@ -24,6 +24,8 @@ import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyModel;
 
+import java.util.List;
+
 /** Delegate that manages the observer for the modal dialog on new tab group creation. */
 public class TabGroupCreationDialogDelegate {
     private final Activity mActivity;
@@ -118,6 +120,19 @@ public class TabGroupCreationDialogDelegate {
                                         R.plurals.bottom_tab_grid_title_placeholder,
                                         tabCount,
                                         tabCount));
+
+        List<Integer> colors = ColorPickerUtils.getTabGroupColorIdList();
+        ColorPickerCoordinator.Delegate delegate =
+                new ColorPickerCoordinator.Delegate() {
+                    @Override
+                    public int getColorPickerUIComponent() {
+                        return R.layout.tab_group_color_picker_container;
+                    }
+                };
+
+        ColorPickerCoordinator colorPickerCoordinator =
+                new ColorPickerCoordinator(mActivity, colors, delegate);
+        colorPickerCoordinator.setSelectedColorItem(colors.get(1));
 
         TabGroupCreationTextInputLayout groupTitle = customView.findViewById(R.id.tab_group_title);
         ModalDialogProperties.Controller dialogController =

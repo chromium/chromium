@@ -4,27 +4,14 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
-import androidx.annotation.IntDef;
-
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModel.ReadableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-
 /** Model for a color entry in the color picker UI. */
 public class ColorPickerItemProperties {
-    /** The different item types in the RecyclerView on the color picker. */
-    @IntDef({ColorItemType.DEFAULT_ITEM})
-    @Retention(RetentionPolicy.SOURCE)
-    public @interface ColorItemType {
-        /** The default item type. */
-        int DEFAULT_ITEM = 1;
-    }
-
     /** The {@link TabGroupColorId} represented by this entry. */
     public static final ReadableIntPropertyKey COLOR_ID = new ReadableIntPropertyKey();
 

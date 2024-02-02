@@ -8,12 +8,12 @@ import static org.chromium.chrome.browser.tasks.tab_management.ColorPickerItemPr
 import static org.chromium.chrome.browser.tasks.tab_management.ColorPickerItemProperties.IS_SELECTED;
 import static org.chromium.chrome.browser.tasks.tab_management.ColorPickerItemProperties.ON_CLICK_LISTENER;
 
+import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.LayerDrawable;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import androidx.annotation.ColorInt;
@@ -25,15 +25,15 @@ import org.chromium.ui.modelutil.PropertyModel;
 
 /** A binder class for color items on the color picker view. */
 public class ColorPickerItemViewBinder {
-    private static final int OUTER_LAYER = 0;
-    private static final int SELECTION_LAYER = 1;
-    private static final int INNER_LAYER = 2;
+    public static final int OUTER_LAYER = 0;
+    public static final int SELECTION_LAYER = 1;
+    public static final int INNER_LAYER = 2;
     // TODO(crbug.com/1517346): Replace this value when color schemes are ready.
     private static final @TabGroupColorId int SELECTION_BG_COLOR = TabGroupColorId.GREY;
 
-    static View create(ViewGroup parent) {
-        return LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.color_picker_item, parent, false);
+    static View createItemView(Context context) {
+        return LayoutInflater.from(context)
+                .inflate(R.layout.color_picker_item, /* root= */ null, false);
     }
 
     static void bind(PropertyModel model, View view, PropertyKey propertyKey) {

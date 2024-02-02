@@ -4,40 +4,47 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
-import org.chromium.chrome.browser.tasks.tab_management.ColorPickerItemProperties.ColorItemType;
-import org.chromium.components.tab_groups.TabGroupColorId;
-import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
-import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
+import android.content.Context;
+import android.widget.FrameLayout;
+
+import androidx.annotation.NonNull;
+
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /** Contains the logic to set the state of the model and react to color change clicks. */
 public class ColorPickerMediator {
-    private ModelList mColorItems;
-    private @TabGroupColorId int mSelectedColor;
-    private List<Integer> mColors = new ArrayList<>();
+    private final @NonNull List<PropertyModel> mColorItems;
+    private final @NonNull List<Integer> mColors;
+    private int mSelectedColor;
 
-    public ColorPickerMediator(ModelList colorItems) {
+    public ColorPickerMediator(List<Integer> colors) {
+        this(colors, new ArrayList<>());
+    }
+
+    protected ColorPickerMediator(List<Integer> colors, List<PropertyModel> colorItems) {
+        mColors = colors;
         mColorItems = colorItems;
-
-        // The color ids used here can be found in {@link TabGroupColorId}. Note that it is assumed
-        // the id list is contiguous from 0 to size-1.
-        for (int i = 0; i < TabGroupColorId.class.getDeclaredFields().length; i++) {
-            mColors.add(i);
-        }
     }
 
     /**
      * Sets the color items and creates the corresponding models for the color item entries on the
      * color picker UI. The default color is selected from all colors in the list.
+     *
+     * @param containerView The parent container for all color items inflated by this component.
      */
-    public void setColorListItems() {
+    public void setColorListItems(ColorPickerContainer containerView) {
         // The default selected color, which is the 0th item in the list.
-        int defaultSelectedColor = TabGroupColorId.GREY;
+        List<FrameLayout> colorViews = new ArrayList<>();
+        Context context = containerView.getContext();
 
         for (int color : mColors) {
+            FrameLayout view = (FrameLayout) ColorPickerItemViewBinder.createItemView(context);
+            colorViews.add(view);
+
             PropertyModel model =
                     ColorPickerItemProperties.create(
                             /* color= */ color,
@@ -45,29 +52,24 @@ public class ColorPickerMediator {
                             /* onClickListener= */ () -> {
                                 setSelectedColorItem(color);
                             });
-            mColorItems.add(new ListItem(ColorItemType.DEFAULT_ITEM, model));
+            mColorItems.add(model);
+
+            PropertyModelChangeProcessor.create(model, view, ColorPickerItemViewBinder::bind);
         }
 
-        setSelectedColorItem(defaultSelectedColor);
+        // Set all color item views on the parent container view.
+        containerView.setColorViews(colorViews);
     }
 
-    private void setSelectedColorItem(int selectedColor) {
-        for (ListItem item : mColorItems) {
-            boolean isSelected =
-                    selectedColor == item.model.get(ColorPickerItemProperties.COLOR_ID);
-            item.model.set(ColorPickerItemProperties.IS_SELECTED, isSelected);
-
-            if (isSelected) {
-                mSelectedColor = selectedColor;
-            }
+    void setSelectedColorItem(int selectedColor) {
+        for (PropertyModel model : mColorItems) {
+            boolean isSelected = selectedColor == model.get(ColorPickerItemProperties.COLOR_ID);
+            model.set(ColorPickerItemProperties.IS_SELECTED, isSelected);
         }
+
+        mSelectedColor = selectedColor;
     }
 
-    /**
-     * Retrieve the currently selected color in the color picker.
-     *
-     * @return the currently selected color id.
-     */
     int getSelectedColor() {
         return mSelectedColor;
     }

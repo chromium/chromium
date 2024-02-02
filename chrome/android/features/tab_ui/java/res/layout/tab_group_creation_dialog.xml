@@ -13,6 +13,7 @@ found in the LICENSE file.
     android:clickable="false">
 
         <LinearLayout
+            android:id="@+id/creation_dialog_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
@@ -42,5 +43,5 @@ found in the LICENSE file.
                             android:inputType="textCapSentences|textAutoCorrect"
                             android:selectAllOnFocus="true" />
             </org.chromium.chrome.browser.tasks.tab_management.TabGroupCreationTextInputLayout>
-    </LinearLayout>
+        </LinearLayout>
 </ScrollView>
