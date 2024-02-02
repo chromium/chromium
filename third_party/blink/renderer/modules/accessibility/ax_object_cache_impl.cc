@@ -28,6 +28,8 @@
 
 #include "third_party/blink/renderer/modules/accessibility/ax_object_cache_impl.h"
 
+#include <numeric>
+
 #include "base/auto_reset.h"
 #include "base/containers/contains.h"
 #include "base/memory/scoped_refptr.h"
@@ -5211,7 +5213,14 @@ void AXObjectCacheImpl::SerializeDirtyObjectsAndEvents(
   if (!HasDirtyObjects()) {
     CheckTreeConsistency(*this, *ax_tree_serializer_);
   }
-#endif
+
+  // Provide the expected node count in the last update, so that
+  // AXTree::Unserialize() can check for tree consistency on the browser side.
+  if (!updates.back().tree_checks) {
+    updates.back().tree_checks = absl::make_optional<ui::AXTreeChecks>();
+  }
+  updates.back().tree_checks->node_count = included_node_count_;
+#endif  // DCHECK_IS_ON()
 }
 
 #if DCHECK_IS_ON()
@@ -5222,7 +5231,7 @@ void AXObjectCacheImpl::UpdateIncludedNodeCount(const AXObject* obj) {
     --included_node_count_;
   }
 }
-#endif
+#endif  // DCHECK_IS_ON()
 
 void AXObjectCacheImpl::GetImagesToAnnotate(
     ui::AXTreeUpdate& update,

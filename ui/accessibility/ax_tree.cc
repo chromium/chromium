@@ -1410,8 +1410,51 @@ bool AXTree::Unserialize(const AXTreeUpdate& update) {
   for (AXTreeObserver& observer : observers_)
     observer.OnAtomicUpdateFinished(this, root_->id() != old_root_id, changes);
 
+#if DCHECK_IS_ON()
+  CheckTreeConsistency(update);
+#endif
+
   return true;
 }
+
+#if DCHECK_IS_ON()
+void AXTree::CheckTreeConsistency(const AXTreeUpdate& update) {
+  // Return early if no expected node count was supplied.
+  if (!update.tree_checks || !update.tree_checks->node_count) {
+    return;
+  }
+
+  // Do not check pages with child trees.
+  // Required to pass PDFExtensionAccessibilityTreeDumpTest tests.
+  if (has_plugin_) {
+    return;
+  }
+  for (const auto& node_data : update.nodes) {
+    if (node_data.role == ax::mojom::Role::kEmbeddedObject) {
+      has_plugin_ = true;
+    }
+  }
+  if (has_plugin_) {
+    return;
+  }
+
+  // Return early if the expected node count matches the node ids mapped.
+  if (update.tree_checks->node_count == id_map_.size()) {
+    return;
+  }
+
+  DCHECK(root_);
+  std::ostringstream msg;
+  msg << "After a tree update, there is a tree inconsistency.\n"
+      << "\n* Number of ids mapped: " << id_map_.size()
+      << "\n* Serializer's node count: " << update.tree_checks->node_count
+      << "\n* Slow nodes count: " << root_->GetSubtreeCount()
+      << "\n* AXTreeUpdate: "
+      << TreeToStringHelper(root_, 0, /*verbose*/ false);
+
+  DCHECK(false) << msg.str();
+}
+#endif
 
 AXTableInfo* AXTree::GetTableInfo(const AXNode* const_table_node) const {
   DCHECK(!GetTreeUpdateInProgressState());

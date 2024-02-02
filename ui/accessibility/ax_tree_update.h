@@ -15,6 +15,7 @@
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_event_intent.h"
 #include "ui/accessibility/ax_node_data.h"
+#include "ui/accessibility/ax_tree_checks.h"
 #include "ui/accessibility/ax_tree_data.h"
 
 namespace ui {
@@ -83,6 +84,8 @@ struct AX_BASE_EXPORT AXTreeUpdate {
 
   // The event intents associated with this tree update.
   std::vector<AXEventIntent> event_intents;
+
+  absl::optional<AXTreeChecks> tree_checks;
 
   // Return a multi-line indented string representation, for logging.
   std::string ToString(bool verbose = true) const;

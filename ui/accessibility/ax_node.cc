@@ -65,6 +65,17 @@ size_t AXNode::GetChildCount() const {
   return children_.size();
 }
 
+#if DCHECK_IS_ON()
+size_t AXNode::GetSubtreeCount() const {
+  DCHECK(!tree_->GetTreeUpdateInProgressState());
+  size_t count = 1;  // |this| counts as one.
+  for (AXNode* child : children_) {
+    count += child->GetSubtreeCount();
+  }
+  return count;
+}
+#endif  // DCHECK_IS_ON()
+
 size_t AXNode::GetChildCountCrossingTreeBoundary() const {
   DCHECK(!tree_->GetTreeUpdateInProgressState());
 

@@ -702,6 +702,7 @@ _CONFIG = [
             'ui::AXMode',
             'ui::AXNodeData',
             'ui::AXRelativeBounds',
+            'ui::AXTreeChecks',
             'ui::AXTreeData',
             'ui::AXTreeSerializer',
             'ui::AXTreeSource',
