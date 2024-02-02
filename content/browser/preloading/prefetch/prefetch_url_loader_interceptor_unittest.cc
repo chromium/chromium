@@ -46,7 +46,6 @@
 #include "net/base/isolation_info.h"
 #include "net/base/load_timing_info.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
-#include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -246,11 +245,6 @@ class PrefetchURLLoaderInterceptorTestBase : public RenderViewHostTestHarness {
         web_contents()->GetPrimaryMainFrame()->GetFrameTreeNodeId(),
         std::move(prefetch_service));
 
-    browser_context()
-        ->GetDefaultStoragePartition()
-        ->GetNetworkContext()
-        ->GetCookieManager(cookie_manager_.BindNewPipeAndPassReceiver());
-
     auto navigation_simulator = NavigationSimulator::CreateBrowserInitiated(
         GURL("https://test.com"), web_contents());
     navigation_simulator->Start();
@@ -316,44 +310,6 @@ class PrefetchURLLoaderInterceptorTestBase : public RenderViewHostTestHarness {
     return FrameTreeNode::GloballyFindByID(
                web_contents()->GetPrimaryMainFrame()->GetFrameTreeNodeId())
         ->navigation_request();
-  }
-
-  bool SetCookie(const GURL& url, const std::string& value) {
-    bool result = false;
-    base::RunLoop run_loop;
-
-    std::unique_ptr<net::CanonicalCookie> cookie(net::CanonicalCookie::Create(
-        url, value, base::Time::Now(), /*server_time=*/absl::nullopt,
-        /*cookie_partition_key=*/absl::nullopt));
-    EXPECT_TRUE(cookie.get());
-    EXPECT_TRUE(cookie->IsHostCookie());
-
-    net::CookieOptions options;
-    options.set_include_httponly();
-    options.set_same_site_cookie_context(
-        net::CookieOptions::SameSiteCookieContext::MakeInclusive());
-
-    cookie_manager_->SetCanonicalCookie(
-        *cookie.get(), url, options,
-        base::BindOnce(
-            [](bool* result, base::RunLoop* run_loop,
-               net::CookieAccessResult set_cookie_access_result) {
-              *result = set_cookie_access_result.status.IsInclude();
-              run_loop->Quit();
-            },
-            &result, &run_loop));
-
-    // This will run until the cookie is set.
-    run_loop.Run();
-
-    // This will run until the cookie listener gets the cookie change.
-    task_environment()->RunUntilIdle();
-
-    return result;
-  }
-
-  network::mojom::CookieManager* cookie_manager() {
-    return cookie_manager_.get();
   }
 
   const base::HistogramTester& histogram_tester() { return histogram_tester_; }
@@ -424,7 +380,6 @@ class PrefetchURLLoaderInterceptorTestBase : public RenderViewHostTestHarness {
   std::map<GURL, bool> was_intercepted_;
   std::map<GURL, base::OnceClosure> on_loader_callback_closure_;
 
-  mojo::Remote<network::mojom::CookieManager> cookie_manager_;
   std::unique_ptr<ScopedMockContentBrowserClient> test_content_browser_client_;
 
   std::unique_ptr<ukm::TestAutoSetUkmRecorder> test_ukm_recorder_;
@@ -841,68 +796,6 @@ TEST_P(PrefetchURLLoaderInterceptorTest,
   ExpectCorrectUkmLogs(GURL("http://Not.Accurate.Trigger/"),
                        /*is_accurate_trigger=*/false,
                        PreloadingTriggeringOutcome::kReady);
-}
-
-TEST_P(PrefetchURLLoaderInterceptorTest,
-       DISABLE_ASAN(DoNotInterceptNavigationCookiesChanged)) {
-  const GURL kTestUrl("https://example.com");
-
-  EXPECT_CALL(*test_content_browser_client(), WillCreateURLLoaderFactory)
-      .Times(0);
-
-  std::unique_ptr<PrefetchContainer> prefetch_container =
-      std::make_unique<PrefetchContainer>(
-          main_rfh()->GetGlobalId(), MainDocumentToken(), kTestUrl,
-          PrefetchType(PreloadingTriggerType::kSpeculationRule,
-                       /*use_prefetch_proxy=*/true,
-                       blink::mojom::SpeculationEagerness::kEager),
-          blink::mojom::Referrer(),
-          /*no_vary_search_expected=*/absl::nullopt,
-
-          /*prefetch_document_manager=*/nullptr);
-  prefetch_container->RegisterCookieListener(cookie_manager());
-  prefetch_container->SimulateAttemptAtInterceptorForTest();
-
-  MakeServableStreamingURLLoaderForTest(prefetch_container.get(),
-                                        network::mojom::URLResponseHead::New(),
-                                        "test body");
-
-  // Since the cookies associated with |kTestUrl| have changed, the prefetch can
-  // no longer be served.
-  ASSERT_TRUE(SetCookie(kTestUrl, "test-cookie"));
-
-  interceptor()->AddPrefetch(prefetch_container->GetWeakPtr());
-
-  GetPrefetchService()->TakePrefetchOriginProber(
-      std::make_unique<TestPrefetchOriginProber>(
-          browser_context(), /*should_probe_origins_response=*/false, kTestUrl,
-          PrefetchProbeResult::kNoProbing));
-
-  network::ResourceRequest request;
-  request.url = kTestUrl;
-  request.resource_type =
-      static_cast<int>(blink::mojom::ResourceType::kMainFrame);
-  request.method = "GET";
-
-  interceptor()->MaybeCreateLoader(
-      request, browser_context(),
-      base::BindOnce(&PrefetchURLLoaderInterceptorTest::LoaderCallback,
-                     base::Unretained(this), kTestUrl),
-      base::BindOnce(UnreachableFallback));
-  WaitForCallback(kTestUrl);
-
-  EXPECT_TRUE(was_intercepted(kTestUrl).has_value());
-  EXPECT_FALSE(was_intercepted(kTestUrl).value());
-
-  histogram_tester().ExpectTotalCount(
-      "PrefetchProxy.AfterClick.Mainframe.CookieWaitTime", 0);
-
-  EXPECT_EQ(GetPrefetchService()->num_probes(), 0);
-  ExpectCorrectUkmLogs(GURL("http://Not.Accurate.Trigger/"),
-                       /*is_accurate_trigger=*/false,
-                       PreloadingTriggeringOutcome::kFailure,
-                       ToPreloadingFailureReason(
-                           PrefetchStatus::kPrefetchNotUsedCookiesChanged));
 }
 
 TEST_P(PrefetchURLLoaderInterceptorTest, DISABLE_ASAN(ProbeSuccess)) {

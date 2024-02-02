@@ -1412,6 +1412,19 @@ std::vector<PrefetchContainer*> PrefetchService::FindPrefetchContainerToServe(
         break;
     }
 
+    // Note: This codepath is only be reached in practice if we create a
+    // second NavigationRequest to this prefetch's URL. The first
+    // NavigationRequest would call GetPrefetch, which might set this
+    // PrefetchContainer's status to kPrefetchNotUsedCookiesChanged.
+    if (prefetch_container->GetPrefetchStatus() ==
+        PrefetchStatus::kPrefetchNotUsedCookiesChanged) {
+      DVLOG(1)
+          << "PrefetchService::FindPrefetchContainerToServe: skipped because "
+             "cookies for url have changed since prefetch completed: "
+          << *prefetch_container;
+      return true;
+    }
+
     DVLOG(1) << "PrefetchService::FindPrefetchContainerToServe: matched: "
              << *prefetch_container;
     return false;

@@ -2330,6 +2330,48 @@ TEST_F(PrefetchServiceTest, SuccessNonHTML) {
   ExpectServingMetricsSuccess();
 }
 
+// Regression test for crbug.com/1491889. Completes a prefetch, and then changes
+// the cookies for the prefetched URL. It then creates two NavigationRequests
+// (to the same URL) and calls GetPrefetchToServe for each request. This can
+// happen in practice when a user clicks on a link to a URL twice).
+TEST_F(PrefetchServiceTest,
+       MultipleNavigationRequestsCallGetPrefetchAfterCookieChange) {
+  MakePrefetchService(
+      std::make_unique<testing::NiceMock<MockPrefetchServiceDelegate>>());
+
+  MakePrefetchOnMainFrame(
+      GURL("https://example.com"),
+      PrefetchType(PreloadingTriggerType::kSpeculationRule,
+                   /*use_prefetch_proxy=*/true,
+                   blink::mojom::SpeculationEagerness::kEager));
+  task_environment()->RunUntilIdle();
+
+  VerifyCommonRequestState(GURL("https://example.com"),
+                           {.use_prefetch_proxy = true});
+  MakeResponseAndWait(net::HTTP_OK, net::OK, kHTMLMimeType,
+                      /*use_prefetch_proxy=*/true,
+                      {{"X-Testing", "Hello World"}}, kHTMLBody);
+
+  // Adding a cookie after the prefetch has started will cause it to fail when
+  // being served.
+  ASSERT_TRUE(SetCookie(GURL("https://example.com"), "testing"));
+  task_environment()->RunUntilIdle();
+
+  Navigate(GURL("https://example.com"));
+  base::test::TestFuture<PrefetchContainer::Reader> future_1;
+  GetPrefetchToServe(future_1, GURL("https://example.com"));
+  EXPECT_TRUE(future_1.IsReady());
+  // No prefetch should be returned (the example.com prefetch had its cookies
+  // changed).
+  EXPECT_FALSE(future_1.Get().GetPrefetchContainer());
+
+  Navigate(GURL("https://example.com"));
+  base::test::TestFuture<PrefetchContainer::Reader> future_2;
+  GetPrefetchToServe(future_2, GURL("https://example.com"));
+  EXPECT_TRUE(future_2.IsReady());
+  EXPECT_FALSE(future_2.Get().GetPrefetchContainer());
+}
+
 TEST_F(PrefetchServiceTest, NotServeableNavigationInDifferentRenderFrameHost) {
   base::HistogramTester histogram_tester;
 

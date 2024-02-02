@@ -225,11 +225,10 @@ void OnGotPrefetchToServe(
       break;
   }
 
-  if (reader.HaveDefaultContextCookiesChanged()) {
-    reader.GetPrefetchContainer()->OnCookiesChanged();
-    std::move(get_prefetch_callback).Run({});
-    return;
-  }
+  // We should not reach here if the cookies have changed; this should have
+  // already been checked in PrefetchService::ReturnPrefetchToServe and this
+  // method should have been called with an empty reader.
+  CHECK(!reader.HaveDefaultContextCookiesChanged());
 
   // TODO(crbug.com/1462206): Should we check for existence of an
   // `origin_prober` earlier instead of waiting until we have a matching
