@@ -568,9 +568,12 @@ bool ImmersiveModeControllerCocoa::IsContentFullscreen() {
 }
 
 double ImmersiveModeControllerCocoa::GetOffscreenYOrigin() {
-  // Get the height of the screen. Using this as the y origin will move a window
-  // offscreen.
-  double y = browser_window_.screen.frame.size.height;
+  // Get the height of the screen plus the browser window's y origin. Use this
+  // as the y origin for the overlay windows, it will move them offscreen. The
+  // browser window's y origin is especially important for external displays
+  // where the y origin is not 0, such as vertically aligned displays.
+  double y =
+      browser_window_.screen.frame.size.height + browser_window_.frame.origin.y;
 
   // Make sure to make it past the safe area insets, otherwise some portion
   // of the window may still be displayed.
