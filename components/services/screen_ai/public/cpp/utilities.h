@@ -21,5 +21,8 @@ base::FilePath GetComponentDir();
 // Returns the file name of component binary.
 base::FilePath GetComponentBinaryFileName();
 
+// Returns true if the binary exists for browser tests on current platform.
+bool PlatformSupportsBrowserTests();
+
 }  // namespace screen_ai
 #endif  // COMPONENTS_SERVICES_SCREEN_AI_PUBLIC_CPP_UTILITIES_H_

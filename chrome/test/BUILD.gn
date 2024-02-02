@@ -2866,18 +2866,6 @@ if (!is_android) {
       ]
     }
 
-    if (enable_screen_ai_service) {
-      sources +=
-          [ "../browser/screen_ai/screen_ai_service_router_browsertest.cc" ]
-
-      if (is_linux) {
-        # Add a data dependency for screen_ai_service_router_browsertest.cc to
-        # notify testing builders that this test needs this library, which will
-        # need to be downloaded from CIPD as defined in //DEPS.
-        data_deps += [ "//third_party/screen-ai:screen_ai" ]
-      }
-    }
-
     if (enable_supervised_users) {
       sources += [
         # TODO(b/301587955): Fix placement of supervised_user/e2e test files and their dependencies.
@@ -2933,13 +2921,22 @@ if (!is_android) {
         "../browser/accessibility/ax_screen_ai_annotator.h",
         "../browser/accessibility/pdf_ocr_controller_browsertest.cc",
         "../browser/renderer_context_menu/pdf_ocr_menu_observer_browsertest.cc",
+        "../browser/screen_ai/screen_ai_service_router_browsertest.cc",
       ]
       deps += [
         "//chrome/browser/screen_ai:screen_ai_install_state",
         "//chrome/browser/screen_ai:screen_ai_service_router_factory",
         "//components/services/screen_ai:test_support",
+        "//components/services/screen_ai/public/cpp:utilities",
         "//components/services/screen_ai/public/mojom",
       ]
+
+      if (is_linux || is_mac) {
+        # Add a data dependency for screen_ai_service_router_browsertest.cc to
+        # notify testing builders that this test needs this library, which will
+        # need to be downloaded from CIPD as defined in //DEPS.
+        data_deps += [ "//third_party/screen-ai:screen_ai" ]
+      }
     }
 
     if (enable_allocation_trace_recorder_integration_tests) {

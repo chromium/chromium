@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/services/screen_ai/buildflags/buildflags.h"
+#include "components/services/screen_ai/public/cpp/utilities.h"
 #include "content/public/test/browser_test.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_features.mojom-features.h"
@@ -98,13 +99,8 @@ class ScreenAIServiceRouterTest
   ~ScreenAIServiceRouterTest() override = default;
 
   bool IsLibraryAvailable() {
-    // Library is now only available on Linux.
-    // TODO(crbug.com/1443346): Expand when more platforms are covered.
-#if BUILDFLAG(IS_LINUX)
-    return std::get<0>(GetParam());
-#else
-    return false;
-#endif
+    return screen_ai::PlatformSupportsBrowserTests() ? std::get<0>(GetParam())
+                                                     : false;
   }
 
   bool IsOCREnabled() { return std::get<1>(GetParam()); }

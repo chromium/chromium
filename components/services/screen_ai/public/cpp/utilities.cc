@@ -32,6 +32,11 @@ constexpr char kScreenAIDlcRootPath[] =
     "/run/imageloader/screen-ai/package/root/";
 #endif
 
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
+#define PLATFORM_SUPPORTS_BROWSER_TESTS
+#endif
+
+#if defined(PLATFORM_SUPPORTS_BROWSER_TESTS)
 #if BUILDFLAG(IS_LINUX)
 constexpr base::FilePath::CharType kScreenAIResourcePathForTests[] =
     FILE_PATH_LITERAL("third_party/screen-ai/linux/resources");
@@ -45,7 +50,6 @@ constexpr base::FilePath::CharType kScreenAIResourcePathForTests[] =
 #endif  // defined(ARCH_CPU_X86_64)
 #endif  // BUILDFLAG(IS_LINUX)
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
 // Get the directory that contains the ScreenAI component for testing.
 base::FilePath GetTestComponentDir() {
   base::FilePath test_data_dir;
@@ -68,7 +72,7 @@ base::FilePath GetTestComponentBinaryPath() {
   CHECK(base::PathExists(screenai_library_path));
   return screenai_library_path;
 }
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
+#endif  // defined(PLATFORM_SUPPORTS_BROWSER_TESTS)
 
 }  // namespace
 
@@ -81,14 +85,14 @@ base::FilePath GetComponentBinaryFileName() {
 }
 
 base::FilePath GetComponentDir() {
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
+#if defined(PLATFORM_SUPPORTS_BROWSER_TESTS)
   // When in `ScreenAITestMode`, return the path that contains the screen-ai
   // binary downloaded from CIPD.
   if (features::IsScreenAITestModeEnabled()) {
     CHECK_IS_TEST();
     return GetTestComponentDir();
   }
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
+#endif  // defined(PLATFORM_SUPPORTS_BROWSER_TESTS)
 
   base::FilePath components_dir;
   if (!base::PathService::Get(component_updater::DIR_COMPONENT_USER,
@@ -101,12 +105,12 @@ base::FilePath GetComponentDir() {
 }
 
 base::FilePath GetLatestComponentBinaryPath() {
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
+#if defined(PLATFORM_SUPPORTS_BROWSER_TESTS)
   if (features::IsScreenAITestModeEnabled()) {
     CHECK_IS_TEST();
     return GetTestComponentBinaryPath();
   }
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
+#endif  // defined(PLATFORM_SUPPORTS_BROWSER_TESTS)
 
   base::FilePath latest_version_dir;
 #if BUILDFLAG(IS_CHROMEOS)
@@ -137,6 +141,14 @@ base::FilePath GetLatestComponentBinaryPath() {
     return base::FilePath();
 
   return component_path;
+}
+
+bool PlatformSupportsBrowserTests() {
+#if defined(PLATFORM_SUPPORTS_BROWSER_TESTS)
+  return true;
+#else
+  return false;
+#endif
 }
 
 }  // namespace screen_ai
