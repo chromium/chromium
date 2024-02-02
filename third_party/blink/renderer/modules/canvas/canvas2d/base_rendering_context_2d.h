@@ -323,7 +323,11 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
 
   // Returns the paint ops recorder this context uses. Can be `nullptr` if no
   // recorder is available.
-  virtual MemoryManagedPaintRecorder* Recorder() = 0;
+  virtual const MemoryManagedPaintRecorder* Recorder() const = 0;
+  MemoryManagedPaintRecorder* Recorder() {
+    return const_cast<MemoryManagedPaintRecorder*>(
+        const_cast<const BaseRenderingContext2D*>(this)->Recorder());
+  }
 
   // Called when about to draw. When this is called GetPaintCanvas() has already
   // been called and returned a non-null value.

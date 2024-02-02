@@ -160,7 +160,7 @@ class MODULES_EXPORT CanvasRenderingContext2D final
 
   cc::PaintCanvas* GetOrCreatePaintCanvas() final;
   cc::PaintCanvas* GetPaintCanvas() final;
-  MemoryManagedPaintRecorder* Recorder() override;
+  const MemoryManagedPaintRecorder* Recorder() const override;
 
   void WillDraw(const SkIRect& dirty_rect,
                 CanvasPerformanceMonitor::DrawType) final;

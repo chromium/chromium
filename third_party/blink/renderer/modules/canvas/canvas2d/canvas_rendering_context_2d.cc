@@ -391,8 +391,8 @@ cc::PaintCanvas* CanvasRenderingContext2D::GetPaintCanvas() {
   return canvas()->GetCanvas2DLayerBridge()->GetPaintCanvas();
 }
 
-MemoryManagedPaintRecorder* CanvasRenderingContext2D::Recorder() {
-  CanvasResourceProvider* provider = ResourceProvider();
+const MemoryManagedPaintRecorder* CanvasRenderingContext2D::Recorder() const {
+  const CanvasResourceProvider* provider = ResourceProvider();
   if (UNLIKELY(provider == nullptr)) {
     return nullptr;
   }

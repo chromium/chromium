@@ -258,6 +258,7 @@ class PLATFORM_EXPORT CanvasResourceProvider
 
   void FlushIfRecordingLimitExceeded();
 
+  const MemoryManagedPaintRecorder& Recorder() const { return *recorder_; }
   MemoryManagedPaintRecorder& Recorder() { return *recorder_; }
   std::unique_ptr<MemoryManagedPaintRecorder> ReleaseRecorder();
   void SetRecorder(std::unique_ptr<MemoryManagedPaintRecorder> recorder);

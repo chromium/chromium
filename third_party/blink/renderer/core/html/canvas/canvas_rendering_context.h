@@ -155,12 +155,13 @@ class CORE_EXPORT CanvasRenderingContext
 
   CanvasRenderingContextHost* Host() const { return host_.Get(); }
 
+  const CanvasResourceProvider* ResourceProvider() const {
+    const CanvasRenderingContextHost* host = Host();
+    return UNLIKELY(host == nullptr) ? nullptr : host->ResourceProvider();
+  }
   CanvasResourceProvider* ResourceProvider() {
     CanvasRenderingContextHost* host = Host();
-    if (UNLIKELY(host == nullptr)) {
-      return nullptr;
-    }
-    return host->ResourceProvider();
+    return UNLIKELY(host == nullptr) ? nullptr : host->ResourceProvider();
   }
 
   virtual SkColorInfo CanvasRenderingContextSkColorInfo() const;

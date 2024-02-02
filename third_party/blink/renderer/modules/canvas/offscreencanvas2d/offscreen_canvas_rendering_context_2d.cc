@@ -323,8 +323,9 @@ cc::PaintCanvas* OffscreenCanvasRenderingContext2D::GetPaintCanvas() {
   return &provider->Canvas();
 }
 
-MemoryManagedPaintRecorder* OffscreenCanvasRenderingContext2D::Recorder() {
-  CanvasResourceProvider* provider = GetCanvasResourceProvider();
+const MemoryManagedPaintRecorder* OffscreenCanvasRenderingContext2D::Recorder()
+    const {
+  const CanvasResourceProvider* provider = GetCanvasResourceProvider();
   if (UNLIKELY(provider == nullptr)) {
     return nullptr;
   }

@@ -151,7 +151,9 @@ class TestRenderingContext2D final
     return recorder_.finishRecordingAsPicture();
   }
 
-  MemoryManagedPaintRecorder* Recorder() override { return &recorder_; }
+  const MemoryManagedPaintRecorder* Recorder() const override {
+    return &recorder_;
+  }
 
   bool ResolveFont(const String& new_font) override {
     if (host_canvas_element_ == nullptr) {

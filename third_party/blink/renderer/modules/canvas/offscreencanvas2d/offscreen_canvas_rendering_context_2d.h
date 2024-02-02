@@ -103,7 +103,7 @@ class MODULES_EXPORT OffscreenCanvasRenderingContext2D final
 
   cc::PaintCanvas* GetOrCreatePaintCanvas() final;
   cc::PaintCanvas* GetPaintCanvas() final;
-  MemoryManagedPaintRecorder* Recorder() final;
+  const MemoryManagedPaintRecorder* Recorder() const final;
 
   void WillDraw(const SkIRect& dirty_rect,
                 CanvasPerformanceMonitor::DrawType) final;
