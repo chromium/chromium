@@ -414,6 +414,16 @@ extension TabStripViewController: UICollectionViewDragDelegate, UICollectionView
 
   func collectionView(
     _ collectionView: UICollectionView,
+    dragSessionIsRestrictedToDraggingApplication session: UIDragSession
+  ) -> Bool {
+    // Needed to avoid triggering new Chrome window opening when dragging
+    // an item close to an edge of the collection view.
+    // Dragged item can still be dropped in another Chrome window.
+    return true
+  }
+
+  func collectionView(
+    _ collectionView: UICollectionView,
     dragSessionWillBegin session: UIDragSession
   ) {
     dragDropHandler?.dragWillBegin(for: draggedItem)
