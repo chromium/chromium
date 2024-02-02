@@ -56,10 +56,11 @@ found in the LICENSE file.
 
       <LinearLayout
           app:layout_constraintStart_toEndOf="@id/bookmark_image"
+          app:layout_constraintEnd_toStartOf="@id/edit_chev"
           app:layout_constraintTop_toTopOf="parent"
           app:layout_constraintBottom_toBottomOf="parent"
           android:layout_gravity="center"
-          android:layout_width="wrap_content"
+          android:layout_width="0dp"
           android:layout_height="wrap_content"
           android:layout_marginStart="12dp"
           android:orientation="vertical"
@@ -68,8 +69,10 @@ found in the LICENSE file.
           android:clickable="false" >
         <TextView
             android:id="@+id/bookmark_title"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:maxLines="1"
+            android:ellipsize="end"
             android:text="@string/bookmark_save_flow_title"
             android:textAppearance="@style/TextAppearance.TextLarge.Secondary"
             android:importantForAccessibility="no"
@@ -77,14 +80,17 @@ found in the LICENSE file.
         <!-- Spans are used to mutate the color of part of this text at runtime. -->
         <TextView
             android:id="@+id/bookmark_subtitle"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:maxLines="1"
+            android:ellipsize="end"
             android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
             android:importantForAccessibility="no"
             android:focusable="false" />
 
       </LinearLayout>
       <ImageView
+          android:id="@+id/edit_chev"
           app:layout_constraintTop_toTopOf="parent"
           app:layout_constraintBottom_toBottomOf="parent"
           app:layout_constraintEnd_toEndOf="parent"

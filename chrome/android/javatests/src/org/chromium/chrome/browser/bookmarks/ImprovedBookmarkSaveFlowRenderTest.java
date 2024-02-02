@@ -70,7 +70,7 @@ public class ImprovedBookmarkSaveFlowRenderTest {
     @Rule
     public ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
-                    .setRevision(2)
+                    .setRevision(3)
                     .setBugComponent(ChromeRenderTestRule.Component.UI_BROWSER_BOOKMARKS)
                     .build();
 
@@ -142,6 +142,21 @@ public class ImprovedBookmarkSaveFlowRenderTest {
     @Feature({"RenderTest"})
     public void testImage() throws IOException {
         mRenderTestRule.render(mContentView, "image");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    public void testLongText() throws IOException {
+        String folderText = "in really really long, I mean an extremely long folder";
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mModel.set(
+                            ImprovedBookmarkSaveFlowProperties.SUBTITLE,
+                            BookmarkSaveFlowMediator.createHighlightedCharSequence(
+                                    mActivity, new FolderText(folderText, 3, 51)));
+                });
+        mRenderTestRule.render(mContentView, "long_text");
     }
 
     @Test
