@@ -213,7 +213,7 @@ void InputMappingView::OnContentBoundsSizeChanged() {
   }
 }
 
-BEGIN_METADATA(InputMappingView, views::View)
+BEGIN_METADATA(InputMappingView)
 END_METADATA
 
 }  // namespace arc::input_overlay

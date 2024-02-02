@@ -335,7 +335,7 @@ void ButtonOptionsMenu::OnActionNewStateRemoved(const Action& action) {
   }
 }
 
-BEGIN_METADATA(ButtonOptionsMenu, views::View)
+BEGIN_METADATA(ButtonOptionsMenu)
 END_METADATA
 
 }  // namespace arc::input_overlay

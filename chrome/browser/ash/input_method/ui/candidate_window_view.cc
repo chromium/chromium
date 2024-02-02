@@ -113,9 +113,9 @@ int ComputeIndexInPage(const ui::CandidateWindow& candidate_window) {
 }  // namespace
 
 class InformationTextArea : public views::View {
- public:
-  METADATA_HEADER(InformationTextArea);
+  METADATA_HEADER(InformationTextArea, views::View)
 
+ public:
   // InformationTextArea's border is drawn as a separator, it should appear
   // at either top or bottom.
   enum BorderPosition { TOP, BOTTOM };
@@ -179,7 +179,7 @@ class InformationTextArea : public views::View {
   std::optional<BorderPosition> position_;
 };
 
-BEGIN_METADATA(InformationTextArea, views::View)
+BEGIN_METADATA(InformationTextArea)
 END_METADATA
 
 CandidateWindowView::CandidateWindowView(gfx::NativeView parent)
@@ -515,7 +515,7 @@ void CandidateWindowView::CandidateViewPressed(int index) {
     observer.OnCandidateCommitted(index);
 }
 
-BEGIN_METADATA(CandidateWindowView, views::BubbleDialogDelegateView)
+BEGIN_METADATA(CandidateWindowView)
 END_METADATA
 
 }  // namespace ime

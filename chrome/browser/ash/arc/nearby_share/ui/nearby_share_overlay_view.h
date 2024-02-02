@@ -18,9 +18,9 @@ class View;
 namespace arc {
 
 class NearbyShareOverlayView : public views::FlexLayoutView {
- public:
-  METADATA_HEADER(NearbyShareOverlayView);
+  METADATA_HEADER(NearbyShareOverlayView, views::FlexLayoutView)
 
+ public:
   NearbyShareOverlayView(const NearbyShareOverlayView&) = delete;
   NearbyShareOverlayView& operator=(const NearbyShareOverlayView&) = delete;
   ~NearbyShareOverlayView() override;

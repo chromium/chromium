@@ -649,7 +649,7 @@ views::LabelButton* EditingList::GetAddButtonForTesting() const {
   return add_container_->add_button();
 }
 
-BEGIN_METADATA(EditingList, views::View)
+BEGIN_METADATA(EditingList)
 END_METADATA
 
 }  // namespace arc::input_overlay

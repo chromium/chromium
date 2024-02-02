@@ -48,8 +48,9 @@ class SimpleWebViewDialog : public views::View,
                             public content::WebContentsDelegate,
                             public ChromeWebModalDialogManagerDelegate,
                             public web_modal::WebContentsModalDialogHost {
+  METADATA_HEADER(SimpleWebViewDialog, views::View)
+
  public:
-  METADATA_HEADER(SimpleWebViewDialog);
   explicit SimpleWebViewDialog(Profile* profile);
   SimpleWebViewDialog(const SimpleWebViewDialog&) = delete;
   SimpleWebViewDialog& operator=(const SimpleWebViewDialog&) = delete;

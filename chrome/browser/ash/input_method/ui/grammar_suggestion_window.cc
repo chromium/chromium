@@ -173,7 +173,7 @@ views::Button* GrammarSuggestionWindow::GetIgnoreButtonForTesting() {
   return ignore_button_;
 }
 
-BEGIN_METADATA(GrammarSuggestionWindow, views::BubbleDialogDelegateView)
+BEGIN_METADATA(GrammarSuggestionWindow)
 END_METADATA
 
 }  // namespace ime

@@ -261,6 +261,6 @@ void TargetView::OnPaintBackground(gfx::Canvas* canvas) {
                              UIState::kDefault, center_);
 }
 
-BEGIN_METADATA(TargetView, views::View)
+BEGIN_METADATA(TargetView)
 END_METADATA
 }  // namespace arc::input_overlay

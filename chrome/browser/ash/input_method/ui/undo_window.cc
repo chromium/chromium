@@ -164,7 +164,7 @@ void UndoWindow::UndoButtonPressed() {
   delegate_->AssistiveWindowButtonClicked(button);
 }
 
-BEGIN_METADATA(UndoWindow, views::BubbleDialogDelegateView)
+BEGIN_METADATA(UndoWindow)
 END_METADATA
 
 }  // namespace ime

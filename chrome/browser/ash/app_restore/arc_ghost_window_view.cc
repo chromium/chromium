@@ -297,7 +297,7 @@ void ArcGhostWindowView::AddChildrenViewsForAppLaunchType() {
   base::UmaHistogramEnumeration(kGhostWindowTypeHistogram,
                                 GhostWindowType::kIconSpinning);
 }
-BEGIN_METADATA(ArcGhostWindowView, views::View)
+BEGIN_METADATA(ArcGhostWindowView)
 END_METADATA
 
 }  // namespace ash::full_restore

@@ -58,8 +58,9 @@ const int kExternalMargin = 60;
 const int kInnerMargin = 2;
 
 class ToolbarRowView : public views::View {
+  METADATA_HEADER(ToolbarRowView, views::View)
+
  public:
-  METADATA_HEADER(ToolbarRowView);
   ToolbarRowView() {
     SetBackground(
         views::CreateThemedSolidBackground(ui::kColorDialogBackground));
@@ -89,7 +90,7 @@ class ToolbarRowView : public views::View {
   }
 };
 
-BEGIN_METADATA(ToolbarRowView, views::View)
+BEGIN_METADATA(ToolbarRowView)
 END_METADATA
 
 }  // namespace
@@ -379,7 +380,7 @@ void SimpleWebViewDialog::RemoveObserver(
   observers_.RemoveObserver(observer);
 }
 
-BEGIN_METADATA(SimpleWebViewDialog, views::View)
+BEGIN_METADATA(SimpleWebViewDialog)
 END_METADATA
 
 }  // namespace ash

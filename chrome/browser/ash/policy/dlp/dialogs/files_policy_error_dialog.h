@@ -19,9 +19,9 @@ namespace policy {
 // FilesPolicyErrorDialog is a window modal dialog used to show detailed
 // overview of files blocked by data protection policies.
 class FilesPolicyErrorDialog : public FilesPolicyDialog {
- public:
-  METADATA_HEADER(FilesPolicyErrorDialog);
+  METADATA_HEADER(FilesPolicyErrorDialog, FilesPolicyDialog)
 
+ public:
   FilesPolicyErrorDialog() = delete;
   FilesPolicyErrorDialog(const std::map<BlockReason, Info>& dialog_info_map,
                          dlp::FileAction action,

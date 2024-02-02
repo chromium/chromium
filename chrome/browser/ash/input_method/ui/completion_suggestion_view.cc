@@ -239,7 +239,7 @@ CompletionSuggestionView::suggestion_label_for_testing() const {
   return suggestion_label_;
 }
 
-BEGIN_METADATA(CompletionSuggestionView, views::Button)
+BEGIN_METADATA(CompletionSuggestionView)
 END_METADATA
 
 }  // namespace ime

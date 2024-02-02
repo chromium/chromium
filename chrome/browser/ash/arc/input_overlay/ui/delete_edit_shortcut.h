@@ -30,8 +30,9 @@ class DisplayOverlayController;
 // ||icon||
 // +------+
 class DeleteEditShortcut : public views::BubbleDialogDelegateView {
+  METADATA_HEADER(DeleteEditShortcut, views::BubbleDialogDelegateView)
+
  public:
-  METADATA_HEADER(DeleteEditShortcut);
   DeleteEditShortcut(DisplayOverlayController* controller,
                      ActionViewListItem* anchor_view);
   DeleteEditShortcut(const DeleteEditShortcut&) = delete;

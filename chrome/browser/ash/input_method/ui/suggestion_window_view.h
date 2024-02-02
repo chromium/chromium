@@ -42,6 +42,8 @@ class CompletionSuggestionView;
 // SuggestionWindowView is the main container of the suggestion window UI.
 class UI_CHROMEOS_EXPORT SuggestionWindowView
     : public views::BubbleDialogDelegateView {
+  METADATA_HEADER(SuggestionWindowView, views::BubbleDialogDelegateView)
+
  public:
   enum Orientation {
     kHorizontal =
@@ -49,8 +51,6 @@ class UI_CHROMEOS_EXPORT SuggestionWindowView
             // Currently only rotates the candidates horizontally.
     kVertical,
   };
-
-  METADATA_HEADER(SuggestionWindowView);
 
   // Creates a bubble widget containing a SuggestionWindowView.  Returns a
   // pointer to the contained view.

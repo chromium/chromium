@@ -46,9 +46,9 @@ class WebUILoginView : public views::View,
                        public ChromeWebModalDialogManagerDelegate,
                        public web_modal::WebContentsModalDialogHost,
                        public SystemTrayObserver {
- public:
-  METADATA_HEADER(WebUILoginView);
+  METADATA_HEADER(WebUILoginView, views::View)
 
+ public:
   struct WebViewSettings {
     // If true, this will check for and consume a preloaded views::WebView
     // instance.

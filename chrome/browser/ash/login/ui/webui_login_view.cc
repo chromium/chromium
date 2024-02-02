@@ -404,7 +404,7 @@ void WebUILoginView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
       l10n_util::GetStringUTF16(IDS_OOBE_ACCESSIBLE_SCREEN_NAME));
 }
 
-BEGIN_METADATA(WebUILoginView, views::View)
+BEGIN_METADATA(WebUILoginView)
 END_METADATA
 
 }  // namespace ash

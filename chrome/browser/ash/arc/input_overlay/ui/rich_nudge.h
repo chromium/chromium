@@ -17,9 +17,9 @@ namespace arc::input_overlay {
 // layout follows ash::SystemNudgeView, but the behaviors are controlled by
 // DisplayOverlayController.
 class RichNudge : public views::BubbleDialogDelegateView {
- public:
-  METADATA_HEADER(RichNudge);
+  METADATA_HEADER(RichNudge, views::BubbleDialogDelegateView)
 
+ public:
   explicit RichNudge(aura::Window* parent_window);
 
   RichNudge(const RichNudge&) = delete;

@@ -120,7 +120,7 @@ void DeleteEditShortcut::OnMouseExited(const ui::MouseEvent& event) {
   }
 }
 
-BEGIN_METADATA(DeleteEditShortcut, views::BubbleDialogDelegateView)
+BEGIN_METADATA(DeleteEditShortcut)
 END_METADATA
 
 }  // namespace arc::input_overlay

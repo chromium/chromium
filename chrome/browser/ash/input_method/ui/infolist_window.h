@@ -25,8 +25,9 @@ class InfolistEntryView;
 // A widget delegate representing the infolist window UI.
 class UI_CHROMEOS_EXPORT InfolistWindow
     : public views::BubbleDialogDelegateView {
+  METADATA_HEADER(InfolistWindow, views::BubbleDialogDelegateView)
+
  public:
-  METADATA_HEADER(InfolistWindow);
   InfolistWindow(views::View* candidate_window,
                  const std::vector<ui::InfolistEntry>& entries);
   InfolistWindow(const InfolistWindow&) = delete;

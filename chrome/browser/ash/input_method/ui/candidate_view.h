@@ -20,8 +20,9 @@ namespace ime {
 
 // CandidateView renderes a row of a candidate.
 class UI_CHROMEOS_EXPORT CandidateView : public views::Button {
+  METADATA_HEADER(CandidateView, views::Button)
+
  public:
-  METADATA_HEADER(CandidateView);
   CandidateView(PressedCallback callback,
                 ui::CandidateWindow::Orientation orientation);
   CandidateView(const CandidateView&) = delete;

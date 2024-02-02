@@ -59,7 +59,7 @@ NearbyShareOverlayView::NearbyShareOverlayView(views::View* child_view)
   }
 }
 
-BEGIN_METADATA(NearbyShareOverlayView, views::FlexLayoutView)
+BEGIN_METADATA(NearbyShareOverlayView)
 END_METADATA
 
 }  // namespace arc

@@ -19,8 +19,9 @@ class DisplayOverlayController;
 
 // EditLabel shows input mappings and can be edited to change mappings.
 class EditLabel : public views::LabelButton {
+  METADATA_HEADER(EditLabel, views::LabelButton)
+
  public:
-  METADATA_HEADER(EditLabel);
   EditLabel(DisplayOverlayController* controller,
             Action* action,
             bool for_editing_list,

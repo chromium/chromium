@@ -44,8 +44,9 @@ constexpr cros_styles::ColorName kButtonHighlightColor =
 
 // CompletionSuggestionView renders a suggestion.
 class UI_CHROMEOS_EXPORT CompletionSuggestionView : public views::Button {
+  METADATA_HEADER(CompletionSuggestionView, views::Button)
+
  public:
-  METADATA_HEADER(CompletionSuggestionView);
   explicit CompletionSuggestionView(PressedCallback callback);
   CompletionSuggestionView(const CompletionSuggestionView&) = delete;
   CompletionSuggestionView& operator=(const CompletionSuggestionView&) = delete;

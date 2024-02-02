@@ -284,7 +284,7 @@ void FilesPolicyErrorDialog::Dismiss() {
       views::Widget::ClosedReason::kCloseButtonClicked);
 }
 
-BEGIN_METADATA(FilesPolicyErrorDialog, FilesPolicyDialog)
+BEGIN_METADATA(FilesPolicyErrorDialog)
 END_METADATA
 
 }  // namespace policy

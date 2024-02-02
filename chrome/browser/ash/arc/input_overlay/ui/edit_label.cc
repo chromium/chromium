@@ -286,7 +286,7 @@ bool EditLabel::OnKeyPressed(const ui::KeyEvent& event) {
   return true;
 }
 
-BEGIN_METADATA(EditLabel, views::LabelButton)
+BEGIN_METADATA(EditLabel)
 END_METADATA
 
 }  // namespace arc::input_overlay
