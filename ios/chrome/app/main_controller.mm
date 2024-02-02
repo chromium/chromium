@@ -699,9 +699,8 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
 
 - (void)initializeBrowserState:(ChromeBrowserState*)browserState {
   DCHECK(!browserState->IsOffTheRecord());
-  search_engines::UpdateSearchEnginesIfNeeded(
-      browserState->GetPrefs(),
-      ios::TemplateURLServiceFactory::GetForBrowserState(browserState));
+  search_engines::UpdateSearchEngineCountryCodeIfNeeded(
+      browserState->GetPrefs());
 }
 
 #pragma mark - AppStateObserver

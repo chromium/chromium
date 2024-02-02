@@ -86,12 +86,15 @@ source_set("unit_tests") {
     "extension_search_engine_data_updater_unittest.mm",
     "search_engine_js_unittest.mm",
     "search_engine_tab_helper_unittest.mm",
+    "search_engines_util_unittest.cc",
   ]
   deps = [
     ":extension_search_engine_data_updater",
     ":model",
+    ":search_engines_util",
     "//base:base",
     "//base/test:test_support",
+    "//components/country_codes",
     "//components/favicon/core",
     "//components/favicon/ios",
     "//components/search_engines",
