@@ -4714,6 +4714,24 @@
             ]
         }
     ],
+    "CrOSFederatedLauncherQueryPhhVersion1": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "launch_stage": "prod"
+                    },
+                    "enable_features": [
+                        "FederatedLauncherQueryAnalyticsTask"
+                    ]
+                }
+            ]
+        }
+    ],
     "CrOSFederatedTimezoneCodePhh": [
         {
             "platforms": [
