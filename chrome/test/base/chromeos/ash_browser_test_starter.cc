@@ -63,17 +63,14 @@ class NewLacrosWindowWatcher : public exo::WMHelper::ExoWindowObserver {
 
   // `exo::WMHelper::ExoWindowObserver`
   void OnExoWindowCreated(aura::Window* window) override {
-    if (crosapi::browser_util::IsLacrosWindow(window) &&
-        // TODO(crbug.com/1502062): Remove the title check when the extra
-        // Lacros window is gone.
-        window->GetTitle() == u"New Tab") {
+    if (crosapi::browser_util::IsLacrosWindow(window)) {
       window_future_.SetValue(window);
     }
   }
 
-  // Waits until a new exo window is created.
+  // Waits until a new Lacros window is created.
   // The watch period starts when this object was created, not when this method
-  // is called. In other words, this method may return immediately if an exo
+  // is called. In other words, this method may return immediately if a Lacros
   // window was already created before.
   aura::Window* Await() { return window_future_.Take(); }
 
