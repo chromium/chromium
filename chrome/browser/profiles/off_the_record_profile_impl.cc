@@ -98,6 +98,11 @@
 #include "chrome/browser/profiles/guest_profile_creation_logger.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chromeos/constants/chromeos_features.h"
+#include "chromeos/constants/pref_names.h"
+#endif
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/preferences.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -231,6 +236,17 @@ void OffTheRecordProfileImpl::Init() {
 #if !BUILDFLAG(IS_ANDROID)
   if (IsGuestSession()) {
     profile::MaybeRecordGuestChildCreation(this);
+  }
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS)
+  if (chromeos::features::IsCaptivePortalPopupWindowEnabled()) {
+    if (otr_profile_id_.IsCaptivePortal()) {
+      // Set a pref to indicate that the Profile's PrefService is associated
+      // with a captive portal signin window. We use a pref for this because
+      // proxy configuration is associated with the PrefService, not a Profile.
+      GetPrefs()->SetBoolean(chromeos::prefs::kCaptivePortalSignin, true);
+    }
   }
 #endif
 }

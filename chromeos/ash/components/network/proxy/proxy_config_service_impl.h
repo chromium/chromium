@@ -80,6 +80,8 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ProxyConfigServiceImpl
       const PrefService* local_state_prefs);
 
  private:
+  friend class ProxyConfigServiceImplTest;
+
   // Called when any proxy preference changes.
   void OnProxyPrefChanged();
 

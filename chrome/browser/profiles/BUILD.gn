@@ -73,6 +73,9 @@ source_set("profile") {
   if (enable_extensions) {
     deps += [ "//extensions/browser" ]
   }
+  if (is_chromeos) {
+    deps += [ "//chromeos/constants" ]
+  }
   if (is_chromeos_ash) {
     deps += [
       "//ash/constants",

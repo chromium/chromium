@@ -688,6 +688,7 @@ source_set("browser_sources") {
       "api/clipboard/clipboard_api.h",
     ]
     deps += [
+      "//chromeos/constants",
       "//chromeos/dbus/permission_broker",
       "//components/prefs:prefs",
       "//ui/base/clipboard",

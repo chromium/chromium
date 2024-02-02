@@ -34,6 +34,12 @@
 #include "ui/base/resource/resource_bundle.h"
 #include "url/gurl.h"
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chromeos/constants/chromeos_features.h"
+#include "chromeos/constants/pref_names.h"
+#include "components/prefs/pref_service.h"
+#endif
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "base/system/sys_info.h"
 #endif
@@ -108,6 +114,24 @@ bool IsIncognitoEnabled(const ExtensionId& extension_id,
       return true;
 #endif
   }
+#if BUILDFLAG(IS_CHROMEOS)
+  if (chromeos::features::IsCaptivePortalPopupWindowEnabled()) {
+    // An OTR Profile is used for captive portal signin to hide PII from
+    // captive portals (which require HTTP redirects to function).
+    // However, for captive portal signin we do not want want to disable
+    // extensions by default. (Proxies are explicitly disabled elsewhere).
+    // See b/261727502 for details.
+    PrefService* prefs =
+        ExtensionsBrowserClient::Get()->GetPrefServiceForContext(context);
+    if (prefs) {
+      const PrefService::Preference* captive_portal_pref =
+          prefs->FindPreference(chromeos::prefs::kCaptivePortalSignin);
+      if (captive_portal_pref && captive_portal_pref->GetValue()->GetBool()) {
+        return true;
+      }
+    }
+  }
+#endif
   return ExtensionPrefs::Get(context)->IsIncognitoEnabled(extension_id);
 }
 
