@@ -721,6 +721,9 @@ void OnTokenRequestParsed(
       if (fetch_status.response_code == net::HTTP_INTERNAL_SERVER_ERROR) {
         token_result.error = TokenError{kServerError, GURL()};
         type = ErrorDialogType::kServerErrorWithoutUrl;
+      } else if (fetch_status.response_code == net::HTTP_SERVICE_UNAVAILABLE) {
+        token_result.error = TokenError{kTemporarilyUnavailable, GURL()};
+        type = ErrorDialogType::kTemporarilyUnavailableWithoutUrl;
       } else {
         token_result.error = TokenError{kGenericEmpty, GURL()};
         type = ErrorDialogType::kGenericEmptyWithoutUrl;

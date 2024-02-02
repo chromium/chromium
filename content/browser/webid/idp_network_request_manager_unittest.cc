@@ -1630,6 +1630,27 @@ TEST_F(IdpNetworkRequestManagerTest, IdAssertionResponse500NonParsable) {
   EXPECT_FALSE(error_url_type());
 }
 
+TEST_F(IdpNetworkRequestManagerTest, IdAssertionResponse503NonParsable) {
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeature(features::kFedCmError);
+
+  FetchStatus fetch_status;
+  TokenResult token_result;
+  std::tie(fetch_status, token_result) = SendTokenRequestAndWaitForResponse(
+      "account", "request", net::HTTP_SERVICE_UNAVAILABLE, "application/json",
+      R"({}})");
+
+  EXPECT_TRUE(token_result.error);
+  EXPECT_EQ("temporarily_unavailable", token_result.error->code);
+  EXPECT_EQ(GURL(), token_result.error->url);
+  EXPECT_EQ(TokenResponseType::kTokenNotReceivedAndErrorNotReceived,
+            token_response_type());
+  EXPECT_TRUE(error_dialog_type());
+  EXPECT_EQ(ErrorDialogType::kTemporarilyUnavailableWithoutUrl,
+            *error_dialog_type());
+  EXPECT_FALSE(error_url_type());
+}
+
 TEST_F(IdpNetworkRequestManagerTest, IdAssertionResponseWithErrorAndHttpError) {
   base::test::ScopedFeatureList list;
   list.InitAndEnableFeature(features::kFedCmError);
