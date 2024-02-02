@@ -5,6 +5,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "components/search_engines/search_engines_switches.h"
+#import "components/sync/base/features.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
@@ -83,6 +84,7 @@ id<GREYMatcher> TabPickupSwitchItem(bool is_toggled_on, bool enabled) {
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
   config.features_enabled.push_back(kTabPickupThreshold);
+  config.features_enabled.push_back(syncer::kSyncSessionOnVisibilityChanged);
 
   // In order to present banners on the NTP, the tab resumption feature must be
   // disabled.
