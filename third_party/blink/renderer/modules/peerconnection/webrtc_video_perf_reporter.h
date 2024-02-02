@@ -9,6 +9,7 @@
 #include "media/base/video_codecs.h"
 #include "media/mojo/mojom/webrtc_video_perf.mojom-blink.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
+#include "third_party/blink/renderer/platform/heap/cross_thread_handle.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 #include "third_party/blink/renderer/platform/peerconnection/stats_collector.h"
@@ -41,8 +42,9 @@ class MODULES_EXPORT WebrtcVideoPerfReporter
       const StatsCollector::StatsKey& stats_key,
       const StatsCollector::VideoStats& video_stats);
 
-  scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
+  const scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   HeapMojoRemote<media::mojom::blink::WebrtcVideoPerfRecorder> perf_recorder_;
+  CrossThreadWeakHandle<WebrtcVideoPerfReporter> weak_handle_;
 };
 
 }  // namespace blink

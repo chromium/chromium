@@ -7,6 +7,7 @@
 #include "base/check.h"
 #include "base/task/single_thread_task_runner.h"
 #include "media/base/video_codecs.h"
+#include "third_party/blink/renderer/platform/heap/cross_thread_handle.h"
 
 namespace blink {
 
@@ -15,8 +16,9 @@ WebrtcVideoPerfReporter::WebrtcVideoPerfReporter(
     ContextLifecycleNotifier* notifier,
     mojo::PendingRemote<media::mojom::blink::WebrtcVideoPerfRecorder>
         perf_recorder)
-    : perf_recorder_(notifier) {
-  task_runner_ = task_runner;
+    : task_runner_(task_runner),
+      perf_recorder_(notifier),
+      weak_handle_(MakeCrossThreadWeakHandle(this)) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
   perf_recorder_.Bind(std::move(perf_recorder), task_runner_);
 }
@@ -29,7 +31,8 @@ void WebrtcVideoPerfReporter::StoreWebrtcVideoStats(
       FROM_HERE,
       base::BindOnce(
           &WebrtcVideoPerfReporter::StoreWebrtcVideoStatsOnTaskRunner,
-          WrapWeakPersistent(this), stats_key, video_stats));
+          MakeUnwrappingCrossThreadWeakHandle(weak_handle_), stats_key,
+          video_stats));
 }
 
 void WebrtcVideoPerfReporter::StoreWebrtcVideoStatsOnTaskRunner(
