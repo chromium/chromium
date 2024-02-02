@@ -44,6 +44,12 @@ class ASH_EXPORT TabletModeWindowManager : public aura::WindowObserver,
                                            public SplitViewObserver,
                                            public SessionObserver {
  public:
+  // There are two reasons that we would destroy `this`.
+  enum class ShutdownReason {
+    kSystemShutdown,
+    kExitTabletUIMode,
+  };
+
   // This should only be created or deleted by the creator
   // (TabletModeController).
   TabletModeWindowManager();
@@ -62,7 +68,7 @@ class ASH_EXPORT TabletModeWindowManager : public aura::WindowObserver,
   // Stops tracking windows and returns them to their clamshell mode state. Work
   // is done here instead of the destructor because TabletModeController may
   // still need this object alive during shutdown.
-  void Shutdown();
+  void Shutdown(ShutdownReason shutdown_reason);
 
   // True if |window| is in |window_state_map_|.
   bool IsTrackingWindow(aura::Window* window);

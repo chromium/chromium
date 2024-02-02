@@ -214,53 +214,54 @@ void TabletModeWindowManager::Init() {
       std::make_unique<TabletModeMultitaskMenuController>();
 }
 
-void TabletModeWindowManager::Shutdown() {
-  SplitViewController* split_view_controller =
-      SplitViewController::Get(Shell::GetPrimaryRootWindow());
+void TabletModeWindowManager::Shutdown(ShutdownReason shutdown_reason) {
   WindowAndStateTypeList carryover_windows_in_splitview;
   const bool was_in_overview =
       Shell::Get()->overview_controller()->InOverviewSession();
 
-  // There are 4 cases when exiting tablet mode:
-  // 1) overview is active but split view is inactive: keep overview active in
-  //    clamshell mode.
-  // 2) overview and splitview are both active: keep overview and splitview
-  // both
-  //    active in clamshell mode, unless if it's single split state, splitview
-  //    and overview will both be ended.
-  // 3) overview is inactive but split view is active (two snapped windows):
-  //    split view is no longer active. But the two snapped windows will still
-  //    keep snapped in clamshell mode.
-  // 4) overview and splitview are both inactive: keep the current behavior,
-  //    i.e., restore all windows to its window state before entering tablet
-  //    mode.
+  if (shutdown_reason == ShutdownReason::kExitTabletUIMode) {
+    // There are 4 cases when exiting tablet mode:
+    // 1) overview is active but split view is inactive: keep overview active in
+    //    clamshell mode.
+    // 2) overview and splitview are both active: keep overview and splitview
+    //    both active in clamshell mode, unless if it's single split state,
+    //    splitview and overview will both be ended.
+    // 3) overview is inactive but split view is active (two snapped windows):
+    //    split view is no longer active. But the two snapped windows will still
+    //    keep snapped in clamshell mode.
+    // 4) overview and splitview are both inactive: keep the current behavior,
+    //    i.e., restore all windows to its window state before entering tablet
+    //    mode.
 
-  // TODO(xdai): Instead of caching snapped windows and their state here, we
-  // should try to see if it can be done in the WindowState::State impl.
-  carryover_windows_in_splitview =
-      GetCarryOverWindowsInSplitView(/*clamshell_to_tablet=*/false);
+    // TODO(xdai): Instead of caching snapped windows and their state here, we
+    // should try to see if it can be done in the WindowState::State impl.
+    carryover_windows_in_splitview =
+        GetCarryOverWindowsInSplitView(/*clamshell_to_tablet=*/false);
 
-  // For case 2 and 3: End splitview mode for two snapped windows case or
-  // single split case to match the clamshell split view behavior except for the
-  // case when two windows are in a snap group. (there is no both snapped state
-  // or single split state in clamshell split view). The windows will still be
-  // kept snapped though.
-  MaybeEndSplitViewAndOverview();
+    // For case 2 and 3: End splitview mode for two snapped windows case or
+    // single split case to match the clamshell split view behavior except for
+    // the case when two windows are in a snap group. (there is no both snapped
+    // state or single split state in clamshell split view). The windows will
+    // still be kept snapped though.
+    MaybeEndSplitViewAndOverview();
+  }
 
   for (aura::Window* window : windows_to_track_)
     window->RemoveObserver(this);
   windows_to_track_.clear();
-  split_view_controller->RemoveObserver(this);
+  SplitViewController::Get(Shell::GetPrimaryRootWindow())->RemoveObserver(this);
   Shell::Get()->session_controller()->RemoveObserver(this);
   Shell::Get()->overview_controller()->RemoveObserver(this);
   display_observer_.reset();
   RemoveWindowCreationObservers();
 
-  ScopedObserveWindowAnimation scoped_observe(
-      window_util::GetTopNonFloatedWindow(), this,
-      /*exiting_tablet_mode=*/true);
-  ArrangeWindowsForClamshellMode(carryover_windows_in_splitview,
-                                 was_in_overview);
+  if (shutdown_reason == ShutdownReason::kExitTabletUIMode) {
+    ScopedObserveWindowAnimation scoped_observe(
+        window_util::GetTopNonFloatedWindow(), this,
+        /*exiting_tablet_mode=*/true);
+    ArrangeWindowsForClamshellMode(carryover_windows_in_splitview,
+                                   was_in_overview);
+  }
 }
 
 bool TabletModeWindowManager::IsTrackingWindow(aura::Window* window) {
