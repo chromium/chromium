@@ -24,7 +24,7 @@ source_set("tab_grid") {
     "//components/prefs/ios",
     "//components/search_engines",
     "//components/strings",
-    "//components/supervised_user/core/browser:supervised_user_preferences",
+    "//components/supervised_user/core/browser",
     "//components/supervised_user/core/common",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/bookmarks/model",

@@ -10387,9 +10387,7 @@ if (!is_android) {
         "//components/prefs",
         "//components/supervised_user/test_support",
       ]
-      public_deps += [
-        "//components/supervised_user/core/browser:supervised_user_preferences",
-      ]
+      public_deps += [ "//components/supervised_user/core/browser" ]
     }
 
     if (use_ozone) {

@@ -43,7 +43,7 @@ source_set("google_services") {
     "//components/signin/public/base",
     "//components/signin/public/identity_manager/objc",
     "//components/strings",
-    "//components/supervised_user/core/browser:supervised_user_preferences",
+    "//components/supervised_user/core/browser",
     "//components/supervised_user/core/common",
     "//components/sync",
     "//components/sync/service",

@@ -2,26 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-static_library("supervised_user_preferences") {
-  sources = [
-    "supervised_user_preferences.cc",
-    "supervised_user_preferences.h",
-  ]
-
-  deps = [
-    "//base",
-    "//components/google/core/common:common",
-    "//components/keyed_service/core",
-    "//components/pref_registry:pref_registry",
-    "//components/prefs",
-    "//components/supervised_user/core/browser/proto",
-    "//components/supervised_user/core/common",
-    "//url",
-  ]
-
-  if (is_android) {
-    deps += [ "//components/supervised_user/android:supervised_user_preferences_jni_headers" ]
-  }
+if (is_android) {
+  import("//build/config/android/rules.gni")
 }
 
 static_library("list_family_members_service") {
@@ -111,6 +93,8 @@ static_library("browser") {
     "supervised_user_metrics_service.h",
     "supervised_user_pref_store.cc",
     "supervised_user_pref_store.h",
+    "supervised_user_preferences.cc",
+    "supervised_user_preferences.h",
     "supervised_user_service.cc",
     "supervised_user_service.h",
     "supervised_user_service_observer.h",
@@ -120,6 +104,8 @@ static_library("browser") {
     "supervised_user_settings_service.h",
     "supervised_user_url_filter.cc",
     "supervised_user_url_filter.h",
+    "supervised_user_utils.cc",
+    "supervised_user_utils.h",
     "web_content_handler.cc",
     "web_content_handler.h",
   ]
@@ -141,7 +127,6 @@ static_library("browser") {
     ":fetcher",
     ":fetcher_config",
     ":list_family_members_service",
-    ":supervised_user_preferences",
     "//base",
     "//components/content_settings/core/browser",
     "//components/feed/core/shared_prefs:feed_shared_prefs",
@@ -162,6 +147,16 @@ static_library("browser") {
     "//ui/base",
     "//url",
   ]
+
+  if (is_android) {
+    deps += [ "//components/supervised_user/android:supervised_user_preferences_jni_headers" ]
+  }
+}
+
+if (is_android) {
+  java_cpp_enum("supervised_user_utils_enum_javagen") {
+    sources = [ "supervised_user_utils.h" ]
+  }
 }
 
 source_set("unit_tests") {
@@ -190,7 +185,6 @@ source_set("unit_tests") {
     ":fetcher",
     ":fetcher_config",
     ":list_family_members_service",
-    ":supervised_user_preferences",
     "//base",
     "//base/test:test_support",
     "//components/content_settings/core/browser:test_support",

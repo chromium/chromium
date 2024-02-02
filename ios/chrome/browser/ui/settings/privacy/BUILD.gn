@@ -34,7 +34,7 @@ source_set("privacy_ui") {
     "//components/safe_browsing/core/common",
     "//components/safe_browsing/core/common:safe_browsing_prefs",
     "//components/strings",
-    "//components/supervised_user/core/browser:supervised_user_preferences",
+    "//components/supervised_user/core/browser",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/browsing_data/model:feature_flags",
     "//ios/chrome/browser/feature_engagement/model",

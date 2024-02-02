@@ -405,7 +405,6 @@ source_set("eg_app_support+eg2") {
     "//components/search_engines",
     "//components/supervised_user/core/browser",
     "//components/supervised_user/core/browser:mocked",
-    "//components/supervised_user/core/browser:supervised_user_preferences",
     "//components/supervised_user/core/common",
     "//ios/chrome/app:app_internal",
     "//ios/chrome/browser/content_settings/model",
@@ -435,7 +434,6 @@ source_set("eg_test_support+eg2") {
   deps = [
     "//base",
     "//components/supervised_user/core/browser",
-    "//components/supervised_user/core/browser:supervised_user_preferences",
     "//components/supervised_user/core/common",
     "//ios/testing/earl_grey:eg_test_support+eg2",
   ]

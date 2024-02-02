@@ -16,7 +16,7 @@ source_set("incognito") {
     "//base",
     "//components/prefs",
     "//components/prefs/ios",
-    "//components/supervised_user/core/browser:supervised_user_preferences",
+    "//components/supervised_user/core/browser",
     "//components/supervised_user/core/common",
     "//components/supervised_user/core/common:features",
     "//ios/chrome/browser/policy/model:policy_util",

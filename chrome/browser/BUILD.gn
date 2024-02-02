@@ -3609,7 +3609,6 @@ static_library("browser") {
       deps += [
         "//chrome/browser/supervised_user:website_parent_approval_jni_headers",
         "//components/supervised_user/core/browser",
-        "//components/supervised_user/core/browser:supervised_user_preferences",
       ]
     }
 
@@ -7815,7 +7814,6 @@ static_library("browser") {
       "//components/supervised_user/core/browser",
       "//components/supervised_user/core/browser:fetcher",
       "//components/supervised_user/core/browser:list_family_members_service",
-      "//components/supervised_user/core/browser:supervised_user_preferences",
       "//components/supervised_user/core/common",
     ]
   }

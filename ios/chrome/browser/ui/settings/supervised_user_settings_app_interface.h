@@ -7,7 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
-#import "components/supervised_user/core/common/supervised_user_utils.h"
+#import "components/supervised_user/core/browser/supervised_user_utils.h"
 
 // The app interface for supervised user settings tests.
 @interface SupervisedUserSettingsAppInterface : NSObject
