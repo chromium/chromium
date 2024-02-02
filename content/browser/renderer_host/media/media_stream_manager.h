@@ -53,6 +53,10 @@
 #include "content/browser/media/captured_surface_controller.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "media/capture/video/chromeos/system_event_monitor_impl.h"
+#endif
+
 namespace media {
 class AudioSystem;
 }
@@ -846,6 +850,10 @@ class CONTENT_EXPORT MediaStreamManager
   mojo::UniqueReceiverSet<media::mojom::VideoCaptureHost> video_capture_hosts_;
 
   GenerateStreamTestCallback generate_stream_test_callback_;
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  std::unique_ptr<media::SystemEventMonitorImpl> system_event_monitor_;
+#endif
 };
 
 }  // namespace content

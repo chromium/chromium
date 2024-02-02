@@ -48,3 +48,8 @@ mojom("jpeg_accelerator") {
 
   deps = [ "//components/chromeos_camera/common" ]
 }
+
+mojom("system_event_monitor") {
+  sources = [ "system_event_monitor.mojom" ]
+  public_deps = [ "//mojo/public/mojom/base" ]
+}

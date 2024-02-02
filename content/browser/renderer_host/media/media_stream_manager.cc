@@ -1622,6 +1622,7 @@ MediaStreamManager::MediaStreamManager(
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     if (media::ShouldUseCrosCameraService()) {
+      system_event_monitor_ = std::make_unique<media::SystemEventMonitorImpl>();
       media::VideoCaptureDeviceFactoryChromeOS::SetGpuBufferManager(
           GpuMemoryBufferManagerSingleton::GetInstance());
       media::CameraHalDispatcherImpl::GetInstance()->Start();

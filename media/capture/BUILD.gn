@@ -306,6 +306,8 @@ component("capture_lib") {
       "video/chromeos/scoped_video_capture_jpeg_decoder.h",
       "video/chromeos/stream_buffer_manager.cc",
       "video/chromeos/stream_buffer_manager.h",
+      "video/chromeos/system_event_monitor_impl.cc",
+      "video/chromeos/system_event_monitor_impl.h",
       "video/chromeos/token_manager.cc",
       "video/chromeos/token_manager.h",
       "video/chromeos/vendor_tag_ops_delegate.cc",
@@ -337,11 +339,13 @@ component("capture_lib") {
       "//gpu/ipc/common:common",
       "//media/capture/video/chromeos/mojom:cros_camera",
       "//media/capture/video/chromeos/mojom:jpeg_accelerator",
+      "//media/capture/video/chromeos/mojom:system_event_monitor",
       "//third_party/libsync",
     ]
     data_deps = [
       ":camera_hal_dispatcher_mojo_policy",
       ":jpeg_accelerator_mojo_policy",
+      ":system_event_monitor_mojo_policy",
     ]
   }
 
@@ -566,5 +570,10 @@ copy("camera_hal_dispatcher_mojo_policy") {
 
 copy("jpeg_accelerator_mojo_policy") {
   sources = [ "video/chromeos/jpeg_accelerator_mojo_policy.jsonc" ]
+  outputs = [ "$root_out_dir/mojo_service_manager/{{source_file_part}}" ]
+}
+
+copy("system_event_monitor_mojo_policy") {
+  sources = [ "video/chromeos/system_event_monitor.jsonc" ]
   outputs = [ "$root_out_dir/mojo_service_manager/{{source_file_part}}" ]
 }
