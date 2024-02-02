@@ -404,24 +404,11 @@ void SyncPrefs::SetSelectedTypeForAccount(
 
 void SyncPrefs::KeepAccountSettingsPrefsOnlyForUsers(
     const std::vector<signin::GaiaIdHash>& available_gaia_ids) {
-  std::vector<std::string> removed_identities;
-  for (std::pair<const std::string&, const base::Value&> account_settings :
-       pref_service_->GetDict(prefs::internal::kSelectedTypesPerAccount)) {
-    if (!base::Contains(available_gaia_ids, signin::GaiaIdHash::FromBase64(
-                                                account_settings.first))) {
-      removed_identities.push_back(account_settings.first);
-    }
-  }
-  if (!removed_identities.empty()) {
-    {
-      ScopedDictPrefUpdate update_selected_types_dict(
-          pref_service_, prefs::internal::kSelectedTypesPerAccount);
-      base::Value::Dict& all_accounts = update_selected_types_dict.Get();
-      for (const auto& account_id : removed_identities) {
-        all_accounts.Remove(account_id);
-      }
-    }
-  }
+  KeepAccountSettingsPrefsOnlyForUsers(
+      available_gaia_ids, prefs::internal::kSelectedTypesPerAccount);
+  KeepAccountSettingsPrefsOnlyForUsers(
+      available_gaia_ids,
+      prefs::internal::kSyncEncryptionBootstrapTokenPerAccount);
 }
 
 #if BUILDFLAG(IS_IOS)
@@ -751,6 +738,29 @@ void SyncPrefs::OnFirstSetupCompletePrefChange() {
   }
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+
+void SyncPrefs::KeepAccountSettingsPrefsOnlyForUsers(
+    const std::vector<signin::GaiaIdHash>& available_gaia_ids,
+    const char* pref_path) {
+  std::vector<std::string> removed_identities;
+  for (std::pair<const std::string&, const base::Value&> account_settings :
+       pref_service_->GetDict(pref_path)) {
+    if (!base::Contains(available_gaia_ids, signin::GaiaIdHash::FromBase64(
+                                                account_settings.first))) {
+      removed_identities.push_back(account_settings.first);
+    }
+  }
+  if (!removed_identities.empty()) {
+    {
+      ScopedDictPrefUpdate update_account_settings_dict(pref_service_,
+                                                        pref_path);
+      base::Value::Dict& all_accounts = update_account_settings_dict.Get();
+      for (const auto& account_id : removed_identities) {
+        all_accounts.Remove(account_id);
+      }
+    }
+  }
+}
 
 // static
 void SyncPrefs::RegisterTypeSelectedPref(PrefRegistrySimple* registry,

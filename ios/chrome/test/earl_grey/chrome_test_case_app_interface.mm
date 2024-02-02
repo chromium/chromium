@@ -31,7 +31,7 @@ NSMutableSet* invokedCompletionUUID = nil;
 + (void)resetAuthentication {
   chrome_test_util::ResetSigninPromoPreferences();
   chrome_test_util::ResetMockAuthentication();
-  chrome_test_util::ResetSyncSelectedDataTypes();
+  chrome_test_util::ResetSyncAccountSettingsPrefs();
   chrome_test_util::ResetHistorySyncPreferencesForTesting();
 }
 

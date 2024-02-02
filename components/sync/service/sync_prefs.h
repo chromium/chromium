@@ -129,6 +129,7 @@ class SyncPrefs {
   void SetSelectedTypeForAccount(UserSelectableType type,
                                  bool is_type_on,
                                  const signin::GaiaIdHash& gaia_id_hash);
+
   // Used to clear per account prefs for all users *except* the ones in the
   // passed-in |available_gaia_ids|.
   void KeepAccountSettingsPrefsOnlyForUsers(
@@ -290,6 +291,10 @@ class SyncPrefs {
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   void OnFirstSetupCompletePrefChange();
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+
+  void KeepAccountSettingsPrefsOnlyForUsers(
+      const std::vector<signin::GaiaIdHash>& available_gaia_ids,
+      const char* pref_path);
 
   // Never null.
   const raw_ptr<PrefService> pref_service_;

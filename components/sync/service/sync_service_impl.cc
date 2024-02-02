@@ -2173,6 +2173,9 @@ void SyncServiceImpl::StopAndClear() {
   sync_prefs_.ClearPassphrasePromptMutedProductVersion();
   // The passphrase type is now undefined again.
   sync_prefs_.ClearCachedPassphraseType();
+  // TODO(crbug.com/1471928): Update comment to specify that
+  // *EncryptionBootstrapToken will be used for syncing users only, when
+  // kSyncRememberCustomPassphraseAfterSignout is fully rolled-out.
   // For explicit passphrase users, clear the encryption key, such that they
   // will need to reenter it if sync gets re-enabled.
   sync_prefs_.ClearEncryptionBootstrapToken();

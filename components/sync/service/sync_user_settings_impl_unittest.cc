@@ -635,6 +635,22 @@ TEST_F(SyncUserSettingsImplTest,
   EXPECT_TRUE(sync_user_settings->GetEncryptionBootstrapToken().empty());
 }
 
+TEST_F(SyncUserSettingsImplTest, ClearEncryptionBootstrapTokenPerAccount) {
+  base::test::ScopedFeatureList enable_keep_account_passphrase(
+      kSyncRememberCustomPassphraseAfterSignout);
+  SetSyncAccountState(SyncPrefs::SyncAccountState::kSignedInNotSyncing);
+  std::unique_ptr<SyncUserSettingsImpl> sync_user_settings =
+      MakeSyncUserSettings(GetUserTypes());
+  ASSERT_TRUE(sync_user_settings->GetEncryptionBootstrapToken().empty());
+  sync_user_settings->SetEncryptionBootstrapToken("token");
+  signin::GaiaIdHash gaia_id_hash =
+      signin::GaiaIdHash::FromGaiaId(GetSyncAccountInfoForPrefs().gaia);
+  sync_user_settings->KeepAccountSettingsPrefsOnlyForUsers({gaia_id_hash});
+  EXPECT_EQ("token", sync_user_settings->GetEncryptionBootstrapToken());
+  sync_user_settings->KeepAccountSettingsPrefsOnlyForUsers({});
+  EXPECT_TRUE(sync_user_settings->GetEncryptionBootstrapToken().empty());
+}
+
 }  // namespace
 
 }  // namespace syncer

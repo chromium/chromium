@@ -83,6 +83,30 @@ TEST_F(SyncPrefsTest, EncryptionBootstrapTokenPerAccount) {
             sync_prefs_->GetEncryptionBootstrapTokenForAccount(gaia_id_hash_2));
 }
 
+TEST_F(SyncPrefsTest, ClearEncryptionBootstrapTokenPerAccount) {
+  ASSERT_TRUE(sync_prefs_->GetEncryptionBootstrapTokenForAccount(gaia_id_hash_)
+                  .empty());
+  sync_prefs_->SetEncryptionBootstrapTokenForAccount("token", gaia_id_hash_);
+  EXPECT_EQ("token",
+            sync_prefs_->GetEncryptionBootstrapTokenForAccount(gaia_id_hash_));
+  auto gaia_id_hash_2 = signin::GaiaIdHash::FromGaiaId("account_gaia_2");
+  EXPECT_TRUE(sync_prefs_->GetEncryptionBootstrapTokenForAccount(gaia_id_hash_2)
+                  .empty());
+  sync_prefs_->SetEncryptionBootstrapTokenForAccount("token2", gaia_id_hash_2);
+  EXPECT_EQ("token",
+            sync_prefs_->GetEncryptionBootstrapTokenForAccount(gaia_id_hash_));
+  EXPECT_EQ("token2",
+            sync_prefs_->GetEncryptionBootstrapTokenForAccount(gaia_id_hash_2));
+  // Remove account 2 from device by setting the available_gaia_ids to have the
+  // gaia id of account 1 only.
+  sync_prefs_->KeepAccountSettingsPrefsOnlyForUsers(
+      /*available_gaia_ids=*/{gaia_id_hash_});
+  EXPECT_EQ("token",
+            sync_prefs_->GetEncryptionBootstrapTokenForAccount(gaia_id_hash_));
+  EXPECT_TRUE(sync_prefs_->GetEncryptionBootstrapTokenForAccount(gaia_id_hash_2)
+                  .empty());
+}
+
 TEST_F(SyncPrefsTest, CachedPassphraseType) {
   EXPECT_FALSE(sync_prefs_->GetCachedPassphraseType().has_value());
 
