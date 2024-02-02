@@ -1876,9 +1876,10 @@ chromium-metrics-reviews@google.com.
   <owner>brunobraga@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
-    Recorded when a field-by-field filling suggestion is accepted by the user
-    from a {FillingProduct} popup and the {ClassificationMatchesFillingProduct}.
-    Specifies the field type used to fill a specific field.
+    Specifies the field type used to fill a specific field and whether the
+    product chosen (Address, payments, passwords etc) matches the field
+    classification. Recorded when a field-by-field filling suggestion is
+    accepted by the user from an Autofill popup.
   </summary>
   <token key="FillingProduct" variants="FillingProduct"/>
   <token key="ClassificationMatchesFillingProduct"
@@ -1918,12 +1919,13 @@ chromium-metrics-reviews@google.com.
   <owner>brunobraga@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
-    For {AutofillFillingMethod} and {AutofillFormType} logs an histogram of the
-    number of fields with the {FillingStatus} at submission time. The
-    non-aggregated FillingStatuses are mutually exclusive and each field can
-    only contribute to one of corresponding histograms. However, the combined
-    histograms that are prefixed with Total are not mutually exclusive and a
-    single field can contribute to multiple of those.
+    For a filling method (full form, group filling or field-by-field-filling)
+    and {AutofillFormType} logs an histogram of the number of fields with the
+    {FillingStatus} at submission time. The non-aggregated FillingStatuses are
+    mutually exclusive and each field can only contribute to one of
+    corresponding histograms. However, the combined histograms that are prefixed
+    with Total are not mutually exclusive and a single field can contribute to
+    multiple of those.
   </summary>
   <token key="AutofillFillingMethod" variants="AutofillFillingMethod"/>
   <token key="AutofillFormType" variants="AutofillFormType"/>
@@ -2075,10 +2077,10 @@ chromium-metrics-reviews@google.com.
   <owner>brunobraga@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
-    Recorded when a {FillingProduct} suggestion is accepted by the user from a
-    {ClassificationMatchesFillingProduct}. The filling method defines whether
-    the user chose to fill the whole form, a specific field or a group of fields
-    (address fields, phone fields, name fields or email fields).
+    Recorded when an Autofill suggestion is accepted by the user. The filling
+    method defines whether the user chose to fill the whole form, a specific
+    field or a group of fields (address fields, phone fields, name fields or
+    email fields).
   </summary>
   <token key="FillingProduct" variants="FillingProduct"/>
   <token key="ClassificationMatchesFillingProduct"
