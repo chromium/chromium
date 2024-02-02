@@ -17,39 +17,36 @@ import {ChromeVoxRange, ChromeVoxRangeObserver} from '../chromevox_range.js';
 import {ChromeVoxState} from '../chromevox_state.js';
 import {ChromeVoxPrefs} from '../prefs.js';
 
-/** @implements {ChromeVoxRangeObserver} */
-export class SmartStickyMode {
+import AutomationNode = chrome.automation.AutomationNode;
+import StateType = chrome.automation.StateType;
+
+export class SmartStickyMode implements ChromeVoxRangeObserver {
+  /**
+   * Tracks whether we (and not the user) turned off sticky mode when over an
+   * editable.
+   */
+  private didTurnOffStickyMode_ = false;
+  private ignoreRangeChanges_ = false;
+  private ignoredNodeSubtree_?: AutomationNode | null;
+
+  static instance?: SmartStickyMode;
+
   constructor() {
-    /** @private {boolean} */
-    this.ignoreRangeChanges_ = false;
-
-    /**
-     * Tracks whether we (and not the user) turned off sticky mode when over an
-     * editable.
-     * @private {boolean}
-     */
-    this.didTurnOffStickyMode_ = false;
-    /** @private {chrome.automation.AutomationNode|undefined} */
-    this.ignoredNodeSubtree_;
-
     ChromeVoxRange.addObserver(this);
   }
 
-  static init() {
+  static init(): void {
     if (SmartStickyMode.instance) {
       throw new Error('SmartStickyMode.init() should only be called once');
     }
     SmartStickyMode.instance = new SmartStickyMode();
   }
 
-  /**
-   * @param {?CursorRange} newRange
-   * @param {boolean=} opt_fromEditing
-   * @override
-   */
-  onCurrentRangeChanged(newRange, opt_fromEditing) {
+  onCurrentRangeChanged(
+      newRange: CursorRange | null, fromEditing?: boolean): void {
     if (!newRange || this.ignoreRangeChanges_ ||
-        ChromeVoxState.instance.isReadingContinuously || opt_fromEditing ||
+      // TODO(b/314203187): Not null asserted, check that this is correct.
+      ChromeVoxState.instance!.isReadingContinuously || fromEditing ||
         !SettingsManager.get('smartStickyMode')) {
       return;
     }
@@ -110,7 +107,7 @@ export class SmartStickyMode {
    * When called, ignores all changes in the current range when toggling sticky
    * mode without user input.
    */
-  startIgnoringRangeChanges() {
+  startIgnoringRangeChanges(): void {
     this.ignoreRangeChanges_ = true;
   }
 
@@ -118,18 +115,16 @@ export class SmartStickyMode {
    * When called, stops ignoring changes in the current range when toggling
    * sticky mode without user input.
    */
-  stopIgnoringRangeChanges() {
+  stopIgnoringRangeChanges(): void {
     this.ignoreRangeChanges_ = false;
   }
 
   /**
    * Called whenever a user toggles sticky mode. In this case, we need to ensure
    * we reset our internal state appropriately.
-   * @param {!CursorRange} range The range when the sticky mode command was
-   *     received.
-   * @private
+   * @param range The range when the sticky mode command was received.
    */
-  onStickyModeCommand_(range) {
+  private onStickyModeCommand_(range: CursorRange): void {
     if (!this.didTurnOffStickyMode_) {
       return;
     }
@@ -145,8 +140,9 @@ export class SmartStickyMode {
 
     let editable = this.getEditableOrRelatedEditable_(range.start.node);
     while (editable && !editable.nonAtomicTextFieldRoot) {
+      // TODO(b/314203187): Not nulls asserted, check that this is correct.
       if (!editable.parent ||
-          editable.parent.state[chrome.automation.StateType.EDITABLE]) {
+          editable.parent.state![chrome.automation.StateType.EDITABLE]) {
         // Not all editables from all trees (e.g. Android, views) set the
         // editable root boolean attribute.
         break;
@@ -157,7 +153,7 @@ export class SmartStickyMode {
   }
 
   /** Toggles basic stickyMode on or off. */
-  toggle() {
+  toggle(): void {
     ChromeVoxPrefs.instance.setAndAnnounceStickyPref(
         !ChromeVoxPrefs.isStickyPrefOn);
 
@@ -166,32 +162,27 @@ export class SmartStickyMode {
     }
   }
 
-
-  /**
-   * @param {chrome.automation.AutomationNode} node
-   * @return {chrome.automation.AutomationNode}
-   * @private
-   */
-  getEditableOrRelatedEditable_(node) {
+  private getEditableOrRelatedEditable_(
+      node: AutomationNode | null): AutomationNode | null {
     if (!node) {
       return null;
     }
 
-    if (node.state[chrome.automation.StateType.EDITABLE]) {
+    // TODO(b/314203187): Not nulls asserted, check that this is correct.
+    if (node.state![StateType.EDITABLE]) {
       return node;
-    } else if (
-        node.parent &&
-        node.parent.state[chrome.automation.StateType.EDITABLE]) {
+    } else if (node.parent && node.parent.state![StateType.EDITABLE]) {
       // This covers inline text boxes (which are not
       // editable themselves, but may have an editable parent).
       return node.parent;
     } else {
-      let focus = node;
+      let focus: AutomationNode | undefined = node;
       let found;
       while (!found && focus) {
         if (focus.activeDescendantFor && focus.activeDescendantFor.length) {
-          found = focus.activeDescendantFor.find(
-              n => n.state[chrome.automation.StateType.EDITABLE]);
+          // TODO(b/314203187): Not nulls asserted, check that this is correct.
+          found =
+              focus.activeDescendantFor.find(n => n.state![StateType.EDITABLE]);
         }
 
         if (found) {
@@ -199,8 +190,8 @@ export class SmartStickyMode {
         }
 
         if (focus.controlledBy && focus.controlledBy.length) {
-          found = focus.controlledBy.find(
-              n => n.state[chrome.automation.StateType.EDITABLE]);
+          // TODO(b/314203187): Not nulls asserted, check that this is correct.
+          found = focus.controlledBy.find(n => n.state![StateType.EDITABLE]);
         }
 
         if (found) {
@@ -214,6 +205,3 @@ export class SmartStickyMode {
     return null;
   }
 }
-
-/** @public {SmartStickyMode} */
-SmartStickyMode.instance;
