@@ -23,6 +23,9 @@ using PermissionResponseHandler = void (^)(BOOL granted,
                                            NSError* error);
 using push_notification::SettingsAuthorizationStatus;
 
+using ProvisionalPermissionResponseHandler = void (^)(BOOL granted,
+                                                      NSError* error);
+
 // This enum is used to record the action a user performed when prompted to
 // allow push notification permissions.
 enum class PermissionPromptAction {
@@ -32,9 +35,21 @@ enum class PermissionPromptAction {
   kMaxValue = ERROR
 };
 
+enum class ProvisionalPermissionPromptAction {
+  ACCEPTED,
+  OTHERACTIVE,
+  ERROR,
+  kMaxValue = ERROR
+};
+
 // The histogram used to record the outcome of the permission prompt.
 const char kEnabledPermissionsHistogram[] =
     "IOS.PushNotification.EnabledPermisisons";
+
+// The histogram used to record the outcome of the provisional notifications
+// permission.
+const char kProvisionalEnabledPermissionsHistogram[] =
+    "IOS.PushNotification.Provisional.EnabledPermissions";
 
 // The histogram used to record the user's push notification authorization
 // status.
@@ -62,7 +77,8 @@ const char kNotificationAutorizationStatusChangedToDenied[] =
         [PushNotificationUtil
             logPermissionSettingsMetrics:settings.authorizationStatus];
 
-        if (settings.authorizationStatus == UNAuthorizationStatusAuthorized) {
+        if (settings.authorizationStatus == UNAuthorizationStatusAuthorized ||
+            settings.authorizationStatus == UNAuthorizationStatusProvisional) {
           [[UIApplication sharedApplication] registerForRemoteNotifications];
         }
       }];
@@ -82,6 +98,16 @@ const char kNotificationAutorizationStatusChangedToDenied[] =
     [PushNotificationUtil requestPushNotificationPermission:completionHandler
                                          permissionSettings:settings];
   }];
+}
+
++ (void)enableProvisionalPushNotificationPermission:
+    (ProvisionalPermissionResponseHandler)completionHandler {
+  [PushNotificationUtil
+      getPermissionSettings:^(UNNotificationSettings* settings) {
+        [PushNotificationUtil
+            enableProvisionalPushNotificationPermission:completionHandler
+                                     permissionSettings:settings];
+      }];
 }
 
 + (void)getPermissionSettings:
@@ -172,6 +198,36 @@ const char kNotificationAutorizationStatusChangedToDenied[] =
                         }];
 }
 
+// Enrolls the user in provisional notifications.
++ (void)enableProvisionalPushNotificationPermission:
+            (ProvisionalPermissionResponseHandler)completion
+                                 permissionSettings:
+                                     (UNNotificationSettings*)settings {
+  if (settings.authorizationStatus != UNAuthorizationStatusNotDetermined) {
+    if (completion) {
+      completion(
+          settings.authorizationStatus == UNAuthorizationStatusProvisional,
+          nil);
+    }
+    base::UmaHistogramEnumeration(
+        kProvisionalEnabledPermissionsHistogram,
+        ProvisionalPermissionPromptAction::OTHERACTIVE);
+    return;
+  }
+  UNAuthorizationOptions options =
+      UNAuthorizationOptionProvisional | UNAuthorizationOptionBadge |
+      UNAuthorizationOptionAlert | UNAuthorizationOptionSound;
+  UNUserNotificationCenter* center =
+      UNUserNotificationCenter.currentNotificationCenter;
+  [center requestAuthorizationWithOptions:options
+                        completionHandler:^(BOOL granted, NSError* error) {
+                          [PushNotificationUtil
+                              requestProvisionalAuthorizationResult:completion
+                                                            granted:granted
+                                                              error:error];
+                        }];
+}
+
 // Reports the push notification permission prompt's outcome to metrics.
 + (void)requestAuthorizationResult:(PermissionResponseHandler)completion
                            granted:(BOOL)granted
@@ -190,6 +246,26 @@ const char kNotificationAutorizationStatusChangedToDenied[] =
 
   if (completion) {
     completion(granted, YES, error);
+  }
+}
+
+// Reports the push notification permission prompt's outcome to metrics and
+// registers the device to APNs.
++ (void)requestProvisionalAuthorizationResult:
+            (ProvisionalPermissionResponseHandler)completion
+                                      granted:(BOOL)granted
+                                        error:(NSError*)error {
+  if (granted) {
+    [PushNotificationUtil registerDeviceWithAPNS];
+    base::UmaHistogramEnumeration(kProvisionalEnabledPermissionsHistogram,
+                                  ProvisionalPermissionPromptAction::ACCEPTED);
+  } else {
+    base::UmaHistogramEnumeration(kProvisionalEnabledPermissionsHistogram,
+                                  ProvisionalPermissionPromptAction::ERROR);
+  }
+
+  if (completion) {
+    completion(granted, error);
   }
 }
 

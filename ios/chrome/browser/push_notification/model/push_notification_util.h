@@ -57,6 +57,19 @@ enum class SettingsAuthorizationStatus {
 + (void)requestPushNotificationPermission:
     (void (^)(BOOL granted, BOOL promptShown, NSError* error))completionHandler;
 
+// This function enrolls the user into provisional notifications. If the OS
+// grants this permission, then `completionHandler` is executed with `granted`
+// equaling true. Also, there is a possibility that `completionHandler` will
+// be executed in a background thread. In addition, this function reports
+// permission request's outcome to metrics. It only grants permission if the
+// notification authorization status is NotDetermined which indicates it was
+// never set.  If notifications were already enabled, it returns `granted`
+// equaling true only if the type enabled is Provisional, otherwise it returns
+// false. This function does not present a prompt to the user and runs its
+// logic silently.
++ (void)enableProvisionalPushNotificationPermission:
+    (void (^)(BOOL granted, NSError* error))completionHandler;
+
 // This functions retrieves the authorization and feature-related settings for
 // push notifications. This function ensures that the `completionHandler` is
 // executed on the application's main thread.

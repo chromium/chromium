@@ -2622,6 +2622,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.PushNotification.Provisional.EnabledPermissisons"
+    enum="PushNotificationPermissionPromptStatus" expires_after="2024-05-24">
+  <owner>guiperez@google.com</owner>
+  <owner>chrome-sherlock@google.com</owner>
+  <summary>
+    Logs whether the provisional push notification permissions were granted for
+    the current device or an error occured. This is logged each time the user
+    responds to a push notification permission prompt.
+  </summary>
+</histogram>
+
 <histogram name="IOS.ReadingList.BulkAddURLsCount" units="count"
     expires_after="2024-08-09">
   <owner>nicolasmacbeth@google.com</owner>
