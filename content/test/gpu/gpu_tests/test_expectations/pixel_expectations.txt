@@ -369,7 +369,10 @@ crbug.com/1372141 [ android android-sm-a235m ] Pixel_CanvasLowLatencyWebGLAlphaF
 
 crbug.com/1376927 [ win10 target-cpu-32 nvidia-0x2184 ] Pixel_MediaFoundationClearDirectComposition [ Failure ]
 
-crbug.com/1517110 [ win10 nvidia-0x2184 renderer-skia-gl ] Pixel_Video_* [ RetryOnFailure ]
+crbug.com/1517110 [ clang-coverage nvidia-0x2184 nvidia_lt_31.0.15.4601 release-x64 renderer-skia-gl target-cpu-64 win10 ] Pixel_Video_* [ RetryOnFailure ]
+crbug.com/1517110 [ debug-x64 no-clang-coverage nvidia-0x2184 nvidia_lt_31.0.15.4601 renderer-skia-gl target-cpu-64 win10 ] Pixel_Video_* [ RetryOnFailure ]
+crbug.com/1517110 [ no-clang-coverage nvidia-0x2184 nvidia_ge_31.0.15.4601 release-x64 renderer-skia-gl target-cpu-64 win10 ] Pixel_Video_* [ RetryOnFailure ]
+crbug.com/1517110 [ no-clang-coverage nvidia-0x2184 nvidia_lt_31.0.15.4601 release renderer-skia-gl target-cpu-32 win10 ] Pixel_Video_* [ RetryOnFailure ]
 
 
 # Lacros consistent failures on CrOS devices, skip to save some time
