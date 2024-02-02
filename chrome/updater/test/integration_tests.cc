@@ -1917,7 +1917,7 @@ TEST_F(IntegrationTestLegacyUpdate3WebNewInstall, Install) {
 
   // "expected_install_data_index" is set in `integration_tests_win.cc`,
   // `DoUpdate`.
-  ASSERT_NO_FATAL_FAILURE(ExpectUpdateSequence(
+  ASSERT_NO_FATAL_FAILURE(ExpectInstallSequence(
       test_server_.get(), kAppId, "expected_install_data_index",
       UpdateService::Priority::kForeground, base::Version(kNullVersion), v1));
 
@@ -2027,7 +2027,7 @@ TEST_F(IntegrationTestLegacyUpdate3Web, Install) {
   ASSERT_NO_FATAL_FAILURE(ExpectUpdateCheckSequence(
       test_server_.get(), kAppId, UpdateService::Priority::kForeground,
       base::Version("0.1"), base::Version("0.1")));
-  ASSERT_NO_FATAL_FAILURE(ExpectUpdateSequence(
+  ASSERT_NO_FATAL_FAILURE(ExpectInstallSequence(
       test_server_.get(), kAppId, "", UpdateService::Priority::kForeground,
       base::Version("0.1"), base::Version("0.1")));
   ASSERT_NO_FATAL_FAILURE(
