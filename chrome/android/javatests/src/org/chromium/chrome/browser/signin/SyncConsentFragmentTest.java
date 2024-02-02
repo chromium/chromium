@@ -74,6 +74,7 @@ import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.components.externalauth.ExternalAuthUtils;
+import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
@@ -253,6 +254,33 @@ public class SyncConsentFragmentTest {
         mRenderTestRule.render(
                 mSyncConsentActivity.findViewById(R.id.fragment_container),
                 "tangible_sync_consent_fragment_default_account");
+    }
+
+    @Test
+    @LargeTest
+    @Feature("RenderTest")
+    @DisableFeatures(ChromeFeatureList.TANGIBLE_SYNC)
+    @EnableFeatures(SigninFeatures.MINOR_MODE_RESTRICTIONS_FOR_HISTORY_SYNC_OPT_IN)
+    public void testSyncConsentFragmentDefaultAccountWithUnweightedButtons() throws IOException {
+        mChromeActivityTestRule.startMainActivityOnBlankPage();
+        CoreAccountInfo accountInfo =
+                mSigninTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_EMAIL);
+
+        mSyncConsentActivity =
+                ActivityTestUtils.waitForActivity(
+                        InstrumentationRegistry.getInstrumentation(),
+                        SyncConsentActivity.class,
+                        () -> {
+                            SyncConsentActivityLauncherImpl.get()
+                                    .launchActivityForPromoDefaultFlow(
+                                            mChromeActivityTestRule.getActivity(),
+                                            SigninAccessPoint.START_PAGE,
+                                            accountInfo.getEmail());
+                        });
+
+        mRenderTestRule.render(
+                mSyncConsentActivity.findViewById(R.id.fragment_container),
+                "sync_consent_fragment_with_equally_weighted_buttons");
     }
 
     @Test

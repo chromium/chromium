@@ -50,6 +50,8 @@ import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountUtils;
 import org.chromium.components.signin.AccountsChangeObserver;
+import org.chromium.components.signin.SigninFeatureMap;
+import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.AccountInfoServiceProvider;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
@@ -496,6 +498,9 @@ public abstract class SyncConsentFragmentBase extends Fragment
     private void createSigninView(LayoutInflater inflater, ViewGroup container) {
         mSigninView = (SigninView) inflater.inflate(R.layout.signin_view, container, false);
 
+        mSigninView.createButtons(
+                /* equallyWeighted */ !SigninFeatureMap.isEnabled(
+                        SigninFeatures.MINOR_MODE_RESTRICTIONS_FOR_HISTORY_SYNC_OPT_IN));
         mSigninView.getAccountPickerView().setOnClickListener(view -> onAccountPickerClicked());
         mSigninView.getRefuseButton().setOnClickListener(this::onRefuseButtonClicked);
         mSigninView.getButtonBar().setVisibility(View.GONE);
