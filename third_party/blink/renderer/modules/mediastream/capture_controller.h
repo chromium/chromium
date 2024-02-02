@@ -40,7 +40,7 @@ class MODULES_EXPORT CaptureController final
 
   // Captured Surface Control IDL interface - zooming
   static Vector<int> getSupportedZoomLevels();
-  ScriptPromise getZoomLevel(ScriptState* script_state);
+  int getZoomLevel(ExceptionState& exception_state);
   ScriptPromise setZoomLevel(ScriptState* script_state, int zoom_level);
 
   void SetIsBound(bool value) { is_bound_ = value; }
@@ -76,7 +76,14 @@ class MODULES_EXPORT CaptureController final
   void Trace(Visitor* visitor) const override;
 
  private:
-  std::pair<bool, DOMException*> ValidateCapturedSurfaceControlCall() const;
+  struct ValidationResult {
+    ValidationResult(DOMExceptionCode code, String message);
+
+    DOMExceptionCode code;
+    String message;
+  };
+
+  ValidationResult ValidateCapturedSurfaceControlCall() const;
 
   // Whether this CaptureController has been passed to a getDisplayMedia() call.
   // This helps enforce the requirement that any CaptureController may only

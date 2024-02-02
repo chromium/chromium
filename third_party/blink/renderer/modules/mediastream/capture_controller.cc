@@ -134,6 +134,10 @@ std::optional<int> GetInitialZoomLevel(MediaStreamTrack* video_track) {
 
 }  // namespace
 
+CaptureController::ValidationResult::ValidationResult(DOMExceptionCode code,
+                                                      String message)
+    : code(code), message(message) {}
+
 CaptureController* CaptureController::Create(ExecutionContext* context) {
   return MakeGarbageCollected<CaptureController>(context);
 }
@@ -198,10 +202,10 @@ ScriptPromise CaptureController::sendWheel(ScriptState* script_state,
       DOMExceptionCode::kNotSupportedError, "Unsupported."));
   return promise;
 #else
-  std::pair<bool, DOMException*> validation_result =
-      ValidateCapturedSurfaceControlCall();
-  if (!validation_result.first) {
-    resolver->Reject(validation_result.second);
+  ValidationResult validation_result = ValidateCapturedSurfaceControlCall();
+  if (validation_result.code != DOMExceptionCode::kNoError) {
+    resolver->Reject(MakeGarbageCollected<DOMException>(
+        validation_result.code, validation_result.message));
     return promise;
   }
 
@@ -219,7 +223,7 @@ ScriptPromise CaptureController::sendWheel(ScriptState* script_state,
       WTF::BindOnce(&OnCapturedSurfaceControlResult, WrapPersistent(resolver)));
 
   return promise;
-#endif  // !BUILDFLAG(IS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 }
 
 Vector<int> CaptureController::getSupportedZoomLevels() {
@@ -247,42 +251,29 @@ Vector<int> CaptureController::getSupportedZoomLevels() {
   return result;
 }
 
-ScriptPromise CaptureController::getZoomLevel(ScriptState* script_state) {
+int CaptureController::getZoomLevel(ExceptionState& exception_state) {
   DCHECK(IsMainThread());
 
-  ScriptPromiseResolver* const resolver =
-      MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-
-  const ScriptPromise promise = resolver->Promise();
-#if BUILDFLAG(IS_ANDROID)
-  resolver->Reject(MakeGarbageCollected<DOMException>(
-      DOMExceptionCode::kNotSupportedError, "Unsupported."));
-  return promise;
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+  exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
+                                    "Unsupported.");
+  return 100;
 #else
-  std::pair<bool, DOMException*> validation_result =
-      ValidateCapturedSurfaceControlCall();
-  if (!validation_result.first) {
-    resolver->Reject(validation_result.second);
-    return promise;
+  ValidationResult validation_result = ValidateCapturedSurfaceControlCall();
+  if (validation_result.code != DOMExceptionCode::kNoError) {
+    exception_state.ThrowDOMException(validation_result.code,
+                                      validation_result.message);
+    return 100;
   }
 
-  base::OnceCallback<void(absl::optional<int>, const String&)> callback =
-      WTF::BindOnce(
-          [](ScriptPromiseResolver* resolver, absl::optional<int> zoom_level,
-             const String& error) {
-            if (zoom_level) {
-              resolver->Resolve(*zoom_level);
-            } else {
-              resolver->Reject(MakeGarbageCollected<DOMException>(
-                  DOMExceptionCode::kUnknownError, error));
-            }
-          },
-          WrapPersistent(resolver));
+  if (!zoom_level_) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      "The zoom level is not yet known.");
+    return 100;
+  }
 
-  video_track_->GetZoomLevel(std::move(callback));
-
-  return promise;
-#endif  // !BUILDFLAG(IS_ANDROID)
+  return *zoom_level_;
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 }
 
 ScriptPromise CaptureController::setZoomLevel(ScriptState* script_state,
@@ -298,10 +289,10 @@ ScriptPromise CaptureController::setZoomLevel(ScriptState* script_state,
       DOMExceptionCode::kNotSupportedError, "Unsupported."));
   return promise;
 #else
-  std::pair<bool, DOMException*> validation_result =
-      ValidateCapturedSurfaceControlCall();
-  if (!validation_result.first) {
-    resolver->Reject(validation_result.second);
+  ValidationResult validation_result = ValidateCapturedSurfaceControlCall();
+  if (validation_result.code != DOMExceptionCode::kNoError) {
+    resolver->Reject(MakeGarbageCollected<DOMException>(
+        validation_result.code, validation_result.message));
     return promise;
   }
 
@@ -316,7 +307,7 @@ ScriptPromise CaptureController::setZoomLevel(ScriptState* script_state,
       zoom_level,
       WTF::BindOnce(&OnCapturedSurfaceControlResult, WrapPersistent(resolver)));
   return promise;
-#endif  // !BUILDFLAG(IS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 }
 
 void CaptureController::SetVideoTrack(MediaStreamTrack* video_track,
@@ -400,32 +391,28 @@ void CaptureController::Trace(Visitor* visitor) const {
   ExecutionContextClient::Trace(visitor);
 }
 
-std::pair<bool, DOMException*>
+CaptureController::ValidationResult
 CaptureController::ValidateCapturedSurfaceControlCall() const {
   if (!is_bound_) {
-    return std::make_pair(false, MakeGarbageCollected<DOMException>(
-                                     DOMExceptionCode::kInvalidStateError,
-                                     "getDisplayMedia() not called yet."));
+    return ValidationResult(DOMExceptionCode::kInvalidStateError,
+                            "getDisplayMedia() not called yet.");
   }
 
   if (!video_track_) {
-    return std::make_pair(false, MakeGarbageCollected<DOMException>(
-                                     DOMExceptionCode::kInvalidStateError,
-                                     "Capture-session not started."));
+    return ValidationResult(DOMExceptionCode::kInvalidStateError,
+                            "Capture-session not started.");
   }
 
   if (video_track_->readyState() == "ended") {
-    return std::make_pair(
-        false, MakeGarbageCollected<DOMException>(
-                   DOMExceptionCode::kInvalidStateError, "Video track ended."));
+    return ValidationResult(DOMExceptionCode::kInvalidStateError,
+                            "Video track ended.");
   }
 
   if (!IsCaptureType(video_track_, {SurfaceType::BROWSER})) {
-    return std::make_pair(false, MakeGarbageCollected<DOMException>(
-                                     DOMExceptionCode::kNotSupportedError,
-                                     "Action only supported for tab-capture."));
+    return ValidationResult(DOMExceptionCode::kNotSupportedError,
+                            "Action only supported for tab-capture.");
   }
-  return std::make_pair(true, nullptr);
+  return ValidationResult(DOMExceptionCode::kNoError, "");
 }
 
 }  // namespace blink
