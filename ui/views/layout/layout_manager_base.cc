@@ -155,8 +155,11 @@ bool LayoutManagerBase::IsChildIncludedInLayout(const View* child,
   // During callbacks when a child is removed we can get in a state where a view
   // in the child list of the host view is not in |child_infos_|. In that case,
   // the view is being removed and is not part of the layout.
-  if (it == child_infos_.end())
+  // TODO(crbug.com/1524187): This is a symptom of bad removal handling. Fix,
+  // then convert this to a CHECK.
+  if (it == child_infos_.end()) {
     return false;
+  }
 
   return !IsChildViewIgnoredByLayout(child) &&
          (include_hidden || it->second.can_be_visible);
@@ -168,8 +171,11 @@ bool LayoutManagerBase::CanBeVisible(const View* child) const {
   // During callbacks when a child is removed we can get in a state where a view
   // in the child list of the host view is not in |child_infos_|. In that case,
   // the view is being removed and is not part of the layout.
-  if (it == child_infos_.end())
+  // TODO(crbug.com/1524187): This is a symptom of bad removal handling. Fix,
+  // then convert this to a CHECK.
+  if (it == child_infos_.end()) {
     return false;
+  }
 
   return it->second.can_be_visible;
 }
@@ -242,12 +248,16 @@ bool LayoutManagerBase::OnChildViewIgnoredByLayout(View* child_view,
 }
 
 bool LayoutManagerBase::OnViewAdded(View* host, View* view) {
-  OnLayoutChanged();
+  if (IsChildIncludedInLayout(view)) {
+    OnLayoutChanged();
+  }
   return false;
 }
 
 bool LayoutManagerBase::OnViewRemoved(View* host, View* view) {
-  OnLayoutChanged();
+  if (IsChildIncludedInLayout(view)) {
+    OnLayoutChanged();
+  }
   return false;
 }
 
@@ -375,14 +385,15 @@ bool LayoutManagerBase::PropagateViewAdded(View* host, View* view) {
 }
 
 bool LayoutManagerBase::PropagateViewRemoved(View* host, View* view) {
-  child_infos_.erase(view);
-
   bool result = false;
 
   for (auto& owned_layout : owned_layouts_)
     result |= owned_layout->PropagateViewRemoved(host, view);
 
   result |= OnViewRemoved(host, view);
+
+  child_infos_.erase(view);
+
   return result;
 }
 

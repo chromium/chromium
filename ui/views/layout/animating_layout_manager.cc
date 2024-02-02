@@ -523,7 +523,7 @@ bool AnimatingLayoutManager::OnViewAdded(View* host, View* view) {
     }
   }
 
-  return RecalculateTarget();
+  return LayoutManagerBase::OnViewAdded(host, view);
 }
 
 void AnimatingLayoutManager::OnLayoutChanged() {
