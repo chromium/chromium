@@ -44,17 +44,6 @@ class FakeOsIntegrationManager : public OsIntegrationManager {
                      const WebAppInstallInfo& web_app_info,
                      UpdateOsHooksCallback callback) override;
 
-  // FakeOsIntegrationManager skips the execution logic and writes directly
-  // to the DB, even if the execute_and_write_config
-  // param is enabled in features::kOsIntegrationSubManagers. To test the
-  // actual OS integration, use the production version of OsIntegrationManager.
-  //
-  // See OsIntegrationSynchronizeCommandTest as an example of using this
-  // function.
-  void Synchronize(const webapps::AppId& app_id,
-                   base::OnceClosure callback,
-                   std::optional<SynchronizeOsOptions> options) override;
-
   size_t num_create_shortcuts_calls() const {
     return num_create_shortcuts_calls_;
   }
@@ -119,6 +108,8 @@ class FakeOsIntegrationManager : public OsIntegrationManager {
 
   bool can_create_shortcuts_ = true;
   std::map<webapps::AppId, bool> next_create_shortcut_results_;
+  std::unique_ptr<OsIntegrationManager::ScopedSuppressForTesting>
+      scoped_suppress_;
 };
 
 // Stub test shortcut manager.

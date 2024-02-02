@@ -28,7 +28,9 @@ FakeOsIntegrationManager::FakeOsIntegrationManager(
                            std::move(shortcut_manager),
                            std::move(file_handler_manager),
                            std::move(protocol_handler_manager),
-                           std::move(url_handler_manager)) {
+                           std::move(url_handler_manager)),
+      scoped_suppress_(
+          std::make_unique<OsIntegrationManager::ScopedSuppressForTesting>()) {
   if (!this->shortcut_manager()) {
     set_shortcut_manager(std::make_unique<TestShortcutManager>(profile));
   }
@@ -124,25 +126,6 @@ void FakeOsIntegrationManager::UpdateOsHooks(
   OsHooksErrors os_hooks_errors;
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), os_hooks_errors));
-}
-
-void FakeOsIntegrationManager::Synchronize(
-    const webapps::AppId& app_id,
-    base::OnceClosure callback,
-    std::optional<SynchronizeOsOptions> options) {
-  // Holding a scoped_supress ensures that execution is skipped during the
-  // entire Synchronization flow. See
-  // OsIntegrationManager::StartSubManagerExecutionIfRequired() for more
-  // information.
-  auto scoped_supress =
-      std::make_unique<OsIntegrationManager::ScopedSuppressForTesting>();
-  auto scoped_supress_callback = base::BindOnce(
-      [&](std::unique_ptr<OsIntegrationManager::ScopedSuppressForTesting>
-              scoped_supress) {},
-      std::move(scoped_supress));
-  OsIntegrationManager::Synchronize(
-      app_id, std::move(callback).Then(std::move(scoped_supress_callback)),
-      options);
 }
 
 void FakeOsIntegrationManager::SetFileHandlerManager(
