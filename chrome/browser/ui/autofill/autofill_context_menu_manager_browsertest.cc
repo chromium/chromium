@@ -647,8 +647,7 @@ IN_PROC_BROWSER_TEST_P(ManualFallbackMetricsTest,
                       ? CreateAndAttachUnclassifiedForm()
                       : CreateAndAttachAutocompleteUnrecognizedForm();
   autofill_context_menu_manager()->set_params_for_testing(
-      CreateContextMenuParams(form.unique_renderer_id,
-                              form.fields[0].unique_renderer_id));
+      CreateContextMenuParams(form.renderer_id, form.fields[0].renderer_id));
   autofill_context_menu_manager()->AppendItems();
 
   if (params.option_accepted) {

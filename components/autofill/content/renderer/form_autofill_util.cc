@@ -1493,8 +1493,8 @@ std::optional<FormData> ExtractFormDataWithFieldsAndFrames(
     return std::nullopt;
   }
   if (base::flat_set<FieldRendererId> field_ids =
-          base::MakeFlatSet<FieldRendererId>(
-              form.fields, {}, &FormFieldData::unique_renderer_id);
+          base::MakeFlatSet<FieldRendererId>(form.fields, {},
+                                             &FormFieldData::renderer_id);
       field_ids.size() != form.fields.size()) {
     DumpWithoutCrashingForDuplicateIds(form);
   }

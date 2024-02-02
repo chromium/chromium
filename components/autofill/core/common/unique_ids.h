@@ -13,11 +13,6 @@
 #include "build/build_config.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
-// Temporary hack to avoid silent conflicts with the renaming of
-// `unique_renderer_id` to `renderer_id`.
-// TODO(crbug.com/1522715): Remove.
-#define unique_renderer_id renderer_id
-
 namespace autofill {
 
 namespace internal {
