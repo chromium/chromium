@@ -88,11 +88,6 @@ class ASH_EXPORT DeskButton : public views::Button {
 
   std::u16string GetDeskNameLabelText(const Desk* active_desk) const;
 
-  // Shows the context menu for the given located event when the button is not
-  // activated. Please note, it re-uses the shelf view as the context menu
-  // controller so that they show the same menu items.
-  void MaybeShowContextMenuForEvent(ui::LocatedEvent* event);
-
   // Updates the shelf auto-hide disabler given `should_enable_shelf_auto_hide`.
   void UpdateShelfAutoHideDisabler(
       std::optional<Shelf::ScopedDisableAutoHide>& disabler,

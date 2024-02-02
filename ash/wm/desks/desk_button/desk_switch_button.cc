@@ -6,6 +6,9 @@
 
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shelf/desk_button_widget.h"
+#include "ash/shelf/hotseat_widget.h"
+#include "ash/shelf/shelf.h"
+#include "ash/shelf/shelf_view.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/wm/desks/desk.h"
 #include "ash/wm/desks/desk_button/desk_button_container.h"
@@ -45,6 +48,26 @@ void DeskSwitchButton::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   }
 }
 
+void DeskSwitchButton::OnMouseEvent(ui::MouseEvent* event) {
+  if (GetEnabled() && event->type() == ui::ET_MOUSE_PRESSED &&
+      event->IsOnlyRightMouseButton()) {
+    desk_button_container_->MaybeShowContextMenu(this, event);
+    return;
+  }
+
+  views::ImageButton::OnMouseEvent(event);
+}
+
+void DeskSwitchButton::OnGestureEvent(ui::GestureEvent* event) {
+  if (GetEnabled() && (event->type() == ui::ET_GESTURE_LONG_PRESS ||
+                       event->type() == ui::ET_GESTURE_LONG_TAP)) {
+    desk_button_container_->MaybeShowContextMenu(this, event);
+    return;
+  }
+
+  views::ImageButton::OnGestureEvent(event);
+}
+
 void DeskSwitchButton::StateChanged(ButtonState old_state) {
   if (GetState() != ButtonState::STATE_NORMAL &&
       GetState() != ButtonState::STATE_HOVERED &&
@@ -82,6 +105,11 @@ void DeskSwitchButton::Init(DeskButtonContainer* desk_button_container,
       kDeskButtonCornerRadius);
 
   UpdateLocaleSpecificSettings();
+
+  // Use shelf view as the context menu controller so that it shows the same
+  // context menu.
+  set_context_menu_controller(
+      desk_button_container_->shelf()->hotseat_widget()->GetShelfView());
 }
 
 std::u16string DeskSwitchButton::GetTitle() const {
@@ -113,21 +141,10 @@ void DeskSwitchButton::UpdateUi(const Desk* active_desk) {
           GetEnabled() ? ui::kColorMenuIcon
                        : (ui::ColorId)cros_tokens::kCrosSysDisabled));
 
-  SetBackground(
-      IsMouseHovered() && GetEnabled()
-          ? views::CreateThemedRoundedRectBackground(
-                cros_tokens::kCrosSysHoverOnSubtle,
-                type_ == Type::kPrev
-                    ? gfx::RoundedCornersF(kDeskButtonCornerRadius,
-                                           kDeskButtonSwitchButtonCornerRadius,
-                                           kDeskButtonSwitchButtonCornerRadius,
-                                           kDeskButtonCornerRadius)
-                    : gfx::RoundedCornersF(kDeskButtonSwitchButtonCornerRadius,
-                                           kDeskButtonCornerRadius,
-                                           kDeskButtonCornerRadius,
-                                           kDeskButtonSwitchButtonCornerRadius),
-                /*for_border_thickness=*/0)
-          : nullptr);
+  // It's possible that the cursor is on top of this button, and button state is
+  // normal, e.g. right clicks on the button.
+  SetBackgroundVisible(GetEnabled() && IsMouseHovered() &&
+                       GetState() == ButtonState::STATE_HOVERED);
 }
 
 void DeskSwitchButton::UpdateLocaleSpecificSettings() {
@@ -153,6 +170,24 @@ void DeskSwitchButton::DeskSwitchButtonPressed() {
     desk_controller->ActivateAdjacentDesk(
         going_left, DesksSwitchSource::kDeskButtonSwitchButton);
   }
+}
+
+void DeskSwitchButton::SetBackgroundVisible(bool visible) {
+  SetBackground(
+      visible
+          ? views::CreateThemedRoundedRectBackground(
+                cros_tokens::kCrosSysHoverOnSubtle,
+                type_ == Type::kPrev
+                    ? gfx::RoundedCornersF(kDeskButtonCornerRadius,
+                                           kDeskButtonSwitchButtonCornerRadius,
+                                           kDeskButtonSwitchButtonCornerRadius,
+                                           kDeskButtonCornerRadius)
+                    : gfx::RoundedCornersF(kDeskButtonSwitchButtonCornerRadius,
+                                           kDeskButtonCornerRadius,
+                                           kDeskButtonCornerRadius,
+                                           kDeskButtonSwitchButtonCornerRadius),
+                /*for_border_thickness=*/0)
+          : nullptr);
 }
 
 BEGIN_METADATA(DeskSwitchButton)

@@ -30,9 +30,13 @@ class ASH_EXPORT DeskSwitchButton : public views::ImageButton {
   DeskSwitchButton& operator=(const DeskSwitchButton&) = delete;
   ~DeskSwitchButton() override;
 
+  Type type() { return type_; }
+
   // views::ImageButton:
   gfx::Size CalculatePreferredSize() const override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
+  void OnMouseEvent(ui::MouseEvent* event) override;
+  void OnGestureEvent(ui::GestureEvent* event) override;
   void StateChanged(ButtonState old_state) override;
   void AboutToRequestFocusFromTabTraversal(bool reverse) override;
 
@@ -50,6 +54,9 @@ class ASH_EXPORT DeskSwitchButton : public views::ImageButton {
 
  private:
   void DeskSwitchButtonPressed();
+
+  // Shows or hides the background.
+  void SetBackgroundVisible(bool visible);
 
   Type type_ = Type::kPrev;
 

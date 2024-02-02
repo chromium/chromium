@@ -262,6 +262,24 @@ void DeskButtonContainer::HandleLocaleChange() {
   next_desk_button_->UpdateLocaleSpecificSettings();
 }
 
+void DeskButtonContainer::MaybeShowContextMenu(views::View* source,
+                                               ui::LocatedEvent* event) {
+  if (!desk_button_->is_activated()) {
+    ui::MenuSourceType source_type = ui::MenuSourceType::MENU_SOURCE_MOUSE;
+    if (event->type() == ui::ET_GESTURE_LONG_PRESS) {
+      source_type = ui::MenuSourceType::MENU_SOURCE_LONG_PRESS;
+    } else if (event->type() == ui::ET_GESTURE_LONG_TAP) {
+      source_type = ui::MenuSourceType::MENU_SOURCE_LONG_TAP;
+    }
+    gfx::Point location_in_screen(event->location());
+    View::ConvertPointToScreen(source, &location_in_screen);
+    source->ShowContextMenu(location_in_screen, source_type);
+  }
+
+  event->SetHandled();
+  event->StopPropagation();
+}
+
 BEGIN_METADATA(DeskButtonContainer, views::View)
 END_METADATA
 

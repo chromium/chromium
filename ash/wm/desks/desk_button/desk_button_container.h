@@ -14,6 +14,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/events/event.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/view.h"
 
@@ -97,6 +98,11 @@ class ASH_EXPORT DeskButtonContainer : public DeskProfilesDelegate::Observer,
 
   // Updates locale-specific settings within this container.
   void HandleLocaleChange();
+
+  // Shows the context menu for `source` and `event` when the desk button is
+  // *not* activated. Please note, it re-uses the shelf view as the context menu
+  // controller so that they show the same menu items.
+  void MaybeShowContextMenu(views::View* source, ui::LocatedEvent* event);
 
  private:
   bool zero_state_ = false;

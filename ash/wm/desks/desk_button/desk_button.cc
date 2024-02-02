@@ -168,7 +168,7 @@ void DeskButton::GetAccessibleNodeData(ui::AXNodeData* node_data) {
 void DeskButton::OnMouseEvent(ui::MouseEvent* event) {
   if (event->type() == ui::ET_MOUSE_PRESSED &&
       event->IsOnlyRightMouseButton()) {
-    MaybeShowContextMenuForEvent(event);
+    desk_button_container_->MaybeShowContextMenu(this, event);
     return;
   }
 
@@ -178,7 +178,7 @@ void DeskButton::OnMouseEvent(ui::MouseEvent* event) {
 void DeskButton::OnGestureEvent(ui::GestureEvent* event) {
   if (event->type() == ui::ET_GESTURE_LONG_PRESS ||
       event->type() == ui::ET_GESTURE_LONG_TAP) {
-    MaybeShowContextMenuForEvent(event);
+    desk_button_container_->MaybeShowContextMenu(this, event);
     return;
   }
 
@@ -247,8 +247,8 @@ void DeskButton::Init(DeskButtonContainer* desk_button_container) {
 
   UpdateLocaleSpecificSettings();
 
-  // Use shelf view as the context menu controller so that right click on the
-  // desk button shows the same context menu.
+  // Use shelf view as the context menu controller so that it shows the same
+  // context menu.
   set_context_menu_controller(
       desk_button_container_->shelf()->hotseat_widget()->GetShelfView());
 }
@@ -358,23 +358,6 @@ std::u16string DeskButton::GetDeskNameLabelText(const Desk* active_desk) const {
   }
 
   return active_desk->name();
-}
-
-void DeskButton::MaybeShowContextMenuForEvent(ui::LocatedEvent* event) {
-  if (!is_activated_) {
-    ui::MenuSourceType source_type = ui::MenuSourceType::MENU_SOURCE_MOUSE;
-    if (event->type() == ui::ET_GESTURE_LONG_PRESS) {
-      source_type = ui::MenuSourceType::MENU_SOURCE_LONG_PRESS;
-    } else if (event->type() == ui::ET_GESTURE_LONG_TAP) {
-      source_type = ui::MenuSourceType::MENU_SOURCE_LONG_TAP;
-    }
-    gfx::Point location_in_screen(event->location());
-    View::ConvertPointToScreen(this, &location_in_screen);
-    ShowContextMenu(location_in_screen, source_type);
-  }
-
-  event->SetHandled();
-  event->StopPropagation();
 }
 
 void DeskButton::UpdateShelfAutoHideDisabler(

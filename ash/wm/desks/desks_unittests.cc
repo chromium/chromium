@@ -11566,23 +11566,133 @@ TEST_P(DeskButtonTest, SendFocusBackToDeskButton) {
   ASSERT_TRUE(GetDeskButton()->HasFocus());
 }
 
-// Tests that desk button shows context menu when right clicked.
-TEST_P(DeskButtonTest, ContextMenuRightClick) {
-  auto* event_generator = GetEventGenerator();
-  auto* desk_button = GetDeskButton();
-  RightClickOnView(desk_button, event_generator);
-  EXPECT_FALSE(desk_button->GetHovered());
-  EXPECT_TRUE(GetPrimaryShelf()->GetShelfViewForTesting()->IsShowingMenu());
+// Tests that desk button shows context menu when right clicked and long tapped,
+// and does not show the menu when the desk bar is active.
+TEST_P(DeskButtonTest, DeskButtonContextMenu) {
+  for (bool use_touch_gestures : {false, true}) {
+    auto* event_generator = GetEventGenerator();
+    auto* desk_button = GetDeskButton();
+
+    // The context menu should show when the desk bar is *not* active.
+    if (use_touch_gestures) {
+      LongGestureTap(desk_button->GetBoundsInScreen().CenterPoint(),
+                     event_generator);
+    } else {
+      RightClickOnView(desk_button, event_generator);
+    }
+    EXPECT_NE(desk_button->GetState(),
+              views::Button::ButtonState::STATE_HOVERED);
+    EXPECT_TRUE(GetPrimaryShelf()->GetShelfViewForTesting()->IsShowingMenu());
+    SendKey(ui::VKEY_ESCAPE);
+    EXPECT_FALSE(GetPrimaryShelf()->GetShelfViewForTesting()->IsShowingMenu());
+
+    // The context menu should *not* show when the desk bar is active.
+    ClickDeskButton();
+    if (use_touch_gestures) {
+      LongGestureTap(desk_button->GetBoundsInScreen().CenterPoint(),
+                     event_generator);
+    } else {
+      RightClickOnView(desk_button, event_generator);
+    }
+    EXPECT_FALSE(GetPrimaryShelf()->GetShelfViewForTesting()->IsShowingMenu());
+    CloseDeskBar();
+  }
 }
 
-// Tests that desk button shows context menu when long tapped.
-TEST_P(DeskButtonTest, ContextMenuLongTap) {
+// Tests that desk switch buttons show context menu when right clicked and long
+// tapped, and do not show the menu when the desk bar is active.
+TEST_P(DeskButtonTest, DeskSwitchButtonContextMenu) {
+  if (GetParam().alignment != ShelfAlignment::kBottom) {
+    SUCCEED();
+    return;
+  }
+
+  NewDesk();
+  NewDesk();
+
+  struct DeskSwitchButtonTestCase {
+    bool visible;
+    bool enabled;
+    bool show_context_menu;
+  };
+  const DeskSwitchButtonTestCase prev_test_cases[] = {
+      {.visible = false, .enabled = false, .show_context_menu = false},
+      {.visible = true, .enabled = true, .show_context_menu = true},
+      {.visible = true, .enabled = true, .show_context_menu = true},
+  };
+  const DeskSwitchButtonTestCase next_test_cases[] = {
+      {.visible = true, .enabled = true, .show_context_menu = true},
+      {.visible = true, .enabled = true, .show_context_menu = true},
+      {.visible = true, .enabled = false, .show_context_menu = false},
+  };
+
   auto* event_generator = GetEventGenerator();
-  auto* desk_button = GetDeskButton();
-  LongGestureTap(desk_button->GetBoundsInScreen().CenterPoint(),
-                 event_generator);
-  EXPECT_FALSE(desk_button->GetHovered());
-  EXPECT_TRUE(GetPrimaryShelf()->GetShelfViewForTesting()->IsShowingMenu());
+  auto* shelf_view = GetPrimaryShelf()->GetShelfViewForTesting();
+  auto verify_button = [&](DeskSwitchButton* button, bool button_visible,
+                           bool button_enabled, bool button_show_context_menu,
+                           bool use_touch_gestures, bool desk_bar_active) {
+    SCOPED_TRACE(
+        "Testing " +
+        (button->type() == DeskSwitchButton::Type::kPrev
+             ? std::string("previous desk button")
+             : std::string("next desk button")) +
+        " in " +
+        base::UTF16ToUTF8(DesksController::Get()->active_desk()->name()) +
+        " using " +
+        (use_touch_gestures ? std::string("gestures") : std::string("mouse")) +
+        " when desk bar " +
+        (desk_bar_active ? std::string("active") : std::string("not active")));
+
+    ASSERT_EQ(button->GetVisible(), button_visible);
+    if (!button->GetVisible()) {
+      return;
+    }
+    EXPECT_EQ(button->GetEnabled(), button_enabled);
+    if (use_touch_gestures) {
+      LongGestureTap(button->GetBoundsInScreen().CenterPoint(),
+                     event_generator);
+    } else {
+      RightClickOnView(button, event_generator);
+    }
+    EXPECT_EQ(shelf_view->IsShowingMenu(), button_show_context_menu);
+    if (!desk_bar_active) {
+      EXPECT_NE(button->GetState(), views::Button::ButtonState::STATE_HOVERED);
+    }
+    if (shelf_view->IsShowingMenu()) {
+      SendKey(ui::VKEY_ESCAPE);
+      EXPECT_FALSE(shelf_view->IsShowingMenu());
+    }
+  };
+
+  for (bool use_touch_gestures : {false, true}) {
+    auto* desk_controller = DesksController::Get();
+    for (int index = 0; index < desk_controller->GetNumberOfDesks(); index++) {
+      // Switch to the desired desk if needed.
+      if (desk_controller->GetActiveDeskIndex() != index) {
+        ActivateDesk(desk_controller->GetDeskAtIndex(index));
+      }
+
+      // The context menu could show when the desk bar is *not* active.
+      verify_button(GetPrevDeskButton(), prev_test_cases[index].visible,
+                    prev_test_cases[index].enabled,
+                    prev_test_cases[index].show_context_menu,
+                    use_touch_gestures, false);
+      verify_button(GetNextDeskButton(), next_test_cases[index].visible,
+                    next_test_cases[index].enabled,
+                    next_test_cases[index].show_context_menu,
+                    use_touch_gestures, false);
+
+      // The context menu could *not* show when the desk bar is active.
+      ClickDeskButton();
+      verify_button(GetPrevDeskButton(), prev_test_cases[index].visible,
+                    prev_test_cases[index].enabled, false, use_touch_gestures,
+                    true);
+      verify_button(GetNextDeskButton(), next_test_cases[index].visible,
+                    next_test_cases[index].enabled, false, use_touch_gestures,
+                    true);
+      CloseDeskBar();
+    }
+  }
 }
 
 // Tests that metrics are being recorded when a desk animation screenshot is
