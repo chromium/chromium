@@ -18,9 +18,9 @@ namespace enterprise_watermark {
 // other views. The view should be appropriately sized using its parent's layout
 // manager.
 class WatermarkView : public views::View {
- public:
-  METADATA_HEADER(WatermarkView);
+  METADATA_HEADER(WatermarkView, views::View)
 
+ public:
   WatermarkView();
   explicit WatermarkView(std::string text);
   ~WatermarkView() override;

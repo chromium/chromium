@@ -53,7 +53,7 @@ void PreTargetHandlerView::ResetPreTargetHandler() {
   pre_target_handler_.reset();
 }
 
-BEGIN_METADATA(PreTargetHandlerView, views::View)
+BEGIN_METADATA(PreTargetHandlerView)
 END_METADATA
 
 }  // namespace chromeos::editor_menu

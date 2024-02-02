@@ -48,8 +48,9 @@ namespace {
 class DownloadDangerPromptViews : public DownloadDangerPrompt,
                                   public download::DownloadItem::Observer,
                                   public views::DialogDelegateView {
+  METADATA_HEADER(DownloadDangerPromptViews, views::DialogDelegateView)
+
  public:
-  METADATA_HEADER(DownloadDangerPromptViews);
   DownloadDangerPromptViews(download::DownloadItem* item,
                             Profile* profile,
                             bool show_context,
@@ -315,7 +316,7 @@ void DownloadDangerPromptViews::RunDone(Action action) {
     std::move(done).Run(action);
 }
 
-BEGIN_METADATA(DownloadDangerPromptViews, views::DialogDelegateView)
+BEGIN_METADATA(DownloadDangerPromptViews)
 ADD_READONLY_PROPERTY_METADATA(std::u16string, MessageBody)
 END_METADATA
 

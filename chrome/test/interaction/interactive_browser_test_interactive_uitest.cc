@@ -454,8 +454,9 @@ namespace {
 // Simple bubble containing a WebView. Allows us to simulate swapping out one
 // WebContents for another.
 class WebBubbleView : public views::BubbleDialogDelegateView {
+  METADATA_HEADER(WebBubbleView, views::BubbleDialogDelegateView)
+
  public:
-  METADATA_HEADER(WebBubbleView);
   ~WebBubbleView() override = default;
 
   // Creates a bubble with a WebView and loads `url` in the view.
@@ -496,7 +497,7 @@ class WebBubbleView : public views::BubbleDialogDelegateView {
   std::unique_ptr<content::WebContents> owned_web_contents_;
 };
 
-BEGIN_METADATA(WebBubbleView, views::BubbleDialogDelegateView)
+BEGIN_METADATA(WebBubbleView)
 END_METADATA
 
 }  // namespace

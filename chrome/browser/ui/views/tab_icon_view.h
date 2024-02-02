@@ -18,8 +18,9 @@ class ImageSkia;
 
 // A view to display a tab favicon or a throbber.
 class TabIconView : public views::MenuButton {
+  METADATA_HEADER(TabIconView, views::MenuButton)
+
  public:
-  METADATA_HEADER(TabIconView);
   TabIconView();
   TabIconView(const TabIconView&) = delete;
   TabIconView& operator=(const TabIconView&) = delete;

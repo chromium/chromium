@@ -84,9 +84,9 @@ int GetMemorySavingsQuartile(const int memory_savings_bytes) {
 }
 
 class GaugeView : public views::FlexLayoutView {
- public:
-  METADATA_HEADER(GaugeView);
+  METADATA_HEADER(GaugeView, views::FlexLayoutView)
 
+ public:
   explicit GaugeView(const int memory_savings_bytes)
       : memory_savings_bytes_(memory_savings_bytes) {
     SetOrientation(views::LayoutOrientation::kVertical);
@@ -174,7 +174,7 @@ class GaugeView : public views::FlexLayoutView {
   }
 };
 
-BEGIN_METADATA(GaugeView, views::View)
+BEGIN_METADATA(GaugeView)
 END_METADATA
 
 }  // namespace

@@ -126,9 +126,9 @@ class DeepScanningBaseView {
 
 class DeepScanningTopImageView : public DeepScanningBaseView,
                                  public views::ImageView {
- public:
-  METADATA_HEADER(DeepScanningTopImageView);
+  METADATA_HEADER(DeepScanningTopImageView, views::ImageView)
 
+ public:
   using DeepScanningBaseView::DeepScanningBaseView;
 
   void Update() {
@@ -144,14 +144,14 @@ class DeepScanningTopImageView : public DeepScanningBaseView,
   }
 };
 
-BEGIN_METADATA(DeepScanningTopImageView, views::ImageView)
+BEGIN_METADATA(DeepScanningTopImageView)
 END_METADATA
 
 class DeepScanningSideIconImageView : public DeepScanningBaseView,
                                       public views::ImageView {
- public:
-  METADATA_HEADER(DeepScanningSideIconImageView);
+  METADATA_HEADER(DeepScanningSideIconImageView, views::ImageView)
 
+ public:
   using DeepScanningBaseView::DeepScanningBaseView;
 
   void Update() {
@@ -175,14 +175,14 @@ class DeepScanningSideIconImageView : public DeepScanningBaseView,
   }
 };
 
-BEGIN_METADATA(DeepScanningSideIconImageView, views::ImageView)
+BEGIN_METADATA(DeepScanningSideIconImageView)
 END_METADATA
 
 class DeepScanningSideIconSpinnerView : public DeepScanningBaseView,
                                         public views::Throbber {
- public:
-  METADATA_HEADER(DeepScanningSideIconSpinnerView);
+  METADATA_HEADER(DeepScanningSideIconSpinnerView, views::Throbber)
 
+ public:
   using DeepScanningBaseView::DeepScanningBaseView;
 
   void Update() {
@@ -199,7 +199,7 @@ class DeepScanningSideIconSpinnerView : public DeepScanningBaseView,
   }
 };
 
-BEGIN_METADATA(DeepScanningSideIconSpinnerView, views::Throbber)
+BEGIN_METADATA(DeepScanningSideIconSpinnerView)
 END_METADATA
 
 // static

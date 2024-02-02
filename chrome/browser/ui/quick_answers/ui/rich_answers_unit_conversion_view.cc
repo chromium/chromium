@@ -88,7 +88,7 @@ void RichAnswersUnitConversionView::MaybeAddFormulaInformation() {
       /*is_multi_line=*/true, cros_tokens::kCrosSysOnSurface));
 }
 
-BEGIN_METADATA(RichAnswersUnitConversionView, RichAnswersView)
+BEGIN_METADATA(RichAnswersUnitConversionView)
 END_METADATA
 
 }  // namespace quick_answers

@@ -17,8 +17,9 @@ class SendTabToSelfBubbleController;
 // The location bar icon to show the send tab to self bubble where the user can
 // choose to share the url to a target device.
 class SendTabToSelfIconView : public PageActionIconView {
+  METADATA_HEADER(SendTabToSelfIconView, PageActionIconView)
+
  public:
-  METADATA_HEADER(SendTabToSelfIconView);
   SendTabToSelfIconView(
       CommandUpdater* command_updater,
       IconLabelBubbleView::Delegate* icon_label_bubble_delegate,

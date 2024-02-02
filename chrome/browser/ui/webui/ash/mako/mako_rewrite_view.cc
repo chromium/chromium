@@ -90,7 +90,7 @@ bool MakoRewriteView::HandleKeyboardEvent(
   return WebUIBubbleDialogView::HandleKeyboardEvent(source, event);
 }
 
-BEGIN_METADATA(MakoRewriteView, WebUIBubbleDialogView)
+BEGIN_METADATA(MakoRewriteView)
 END_METADATA
 
 }  // namespace ash

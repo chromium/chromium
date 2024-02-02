@@ -43,9 +43,9 @@ class RichAnswersPreTargetHandler;
 // specific cards, e.g. settings button (both UI and on-click handling).
 // Subclasses are responsible for populating their UI on `GetContentsView()`.
 class RichAnswersView : public views::View {
- public:
-  METADATA_HEADER(RichAnswersView);
+  METADATA_HEADER(RichAnswersView, views::View)
 
+ public:
   static constexpr char kWidgetName[] = "RichAnswersViewWidget";
 
   RichAnswersView(const RichAnswersView&) = delete;

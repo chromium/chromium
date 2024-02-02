@@ -21,9 +21,9 @@
 class AutoPipSettingOverlayView : public views::View,
                                   public views::ViewTargeterDelegate,
                                   public views::WidgetObserver {
- public:
-  METADATA_HEADER(AutoPipSettingOverlayView);
+  METADATA_HEADER(AutoPipSettingOverlayView, views::View)
 
+ public:
   // Represents the Picture-in-Picture window type. Used by the |ShowBubble|
   // method to properly display the bubble according to the PipWindowType.
   enum class PipWindowType {

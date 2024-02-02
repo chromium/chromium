@@ -40,5 +40,5 @@ void RecordingOverlayViewImpl::InitializeAnnotator() {
   ProjectorClientImpl::InitForProjectorAnnotator(web_view_);
 }
 
-BEGIN_METADATA(RecordingOverlayViewImpl, ash::RecordingOverlayView)
+BEGIN_METADATA(RecordingOverlayViewImpl)
 END_METADATA

@@ -793,7 +793,7 @@ void SharesheetBubbleView::CloseWidgetWithReason(
   delegator_->OnBubbleClosed(active_target_);
 }
 
-BEGIN_METADATA(SharesheetBubbleView, views::BubbleDialogDelegateView)
+BEGIN_METADATA(SharesheetBubbleView)
 END_METADATA
 
 }  // namespace sharesheet

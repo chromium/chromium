@@ -25,9 +25,9 @@ class PreTargetHandler;
 // A view that is attached with `chromeos::editor_menu::PreTargetHandler` and
 // control the lifecycle of it.
 class PreTargetHandlerView : public views::View, public views::WidgetObserver {
- public:
-  METADATA_HEADER(PreTargetHandlerView);
+  METADATA_HEADER(PreTargetHandlerView, views::View)
 
+ public:
   explicit PreTargetHandlerView(const CardType& card_type = CardType::kDefault);
 
   PreTargetHandlerView(const PreTargetHandlerView&) = delete;

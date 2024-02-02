@@ -59,9 +59,9 @@ namespace payments {
 namespace {
 
 class ThemeTrackingLabel : public views::Label {
- public:
-  METADATA_HEADER(ThemeTrackingLabel);
+  METADATA_HEADER(ThemeTrackingLabel, views::Label)
 
+ public:
   explicit ThemeTrackingLabel(const std::u16string& text) : Label(text) {}
   ~ThemeTrackingLabel() override = default;
 
@@ -80,13 +80,13 @@ class ThemeTrackingLabel : public views::Label {
   std::optional<ui::ColorId> enabled_color_id_;
 };
 
-BEGIN_METADATA(ThemeTrackingLabel, views::Label)
+BEGIN_METADATA(ThemeTrackingLabel)
 END_METADATA
 
 class ChromeLogoImageView : public views::ImageView {
- public:
-  METADATA_HEADER(ChromeLogoImageView);
+  METADATA_HEADER(ChromeLogoImageView, views::ImageView)
 
+ public:
   ChromeLogoImageView() {
     SetCanProcessEventsWithinSubtree(false);
     SetTooltipText(l10n_util::GetStringUTF16(IDS_PRODUCT_NAME));
@@ -102,7 +102,7 @@ class ChromeLogoImageView : public views::ImageView {
   }
 };
 
-BEGIN_METADATA(ChromeLogoImageView, views::ImageView)
+BEGIN_METADATA(ChromeLogoImageView)
 END_METADATA
 
 // |s1|, |s2|, and |s3| are lines identifying the profile. |s1| is the

@@ -26,8 +26,10 @@ class Size;
 // frameworks like layers and views animation builder.
 class DownloadBubbleStartedAnimationViews
     : public DownloadStartedAnimationViews {
+  METADATA_HEADER(DownloadBubbleStartedAnimationViews,
+                  DownloadStartedAnimationViews)
+
  public:
-  METADATA_HEADER(DownloadBubbleStartedAnimationViews);
   DownloadBubbleStartedAnimationViews(content::WebContents* web_contents,
                                       const gfx::Rect& toolbar_icon_bounds,
                                       SkColor image_foreground_color,

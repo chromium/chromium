@@ -370,7 +370,7 @@ void UserConsentView::UpdateWidgetBounds() {
   GetWidget()->SetBounds(bounds);
 }
 
-BEGIN_METADATA(UserConsentView, views::View)
+BEGIN_METADATA(UserConsentView)
 END_METADATA
 
 }  // namespace quick_answers

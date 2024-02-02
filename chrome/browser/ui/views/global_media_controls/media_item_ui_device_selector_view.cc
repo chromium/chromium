@@ -63,8 +63,9 @@ constexpr gfx::Insets kDropdownButtonBorderInsets{4};
 const int kAudioDevicesCountHistogramMax = 30;
 
 class ExpandDeviceSelectorLabel : public views::Label {
+  METADATA_HEADER(ExpandDeviceSelectorLabel, views::Label)
+
  public:
-  METADATA_HEADER(ExpandDeviceSelectorLabel);
   explicit ExpandDeviceSelectorLabel(
       global_media_controls::GlobalMediaControlsEntryPoint entry_point);
   ~ExpandDeviceSelectorLabel() override = default;
@@ -72,12 +73,13 @@ class ExpandDeviceSelectorLabel : public views::Label {
   void OnColorsChanged(SkColor foreground_color, SkColor background_color);
 };
 
-BEGIN_METADATA(ExpandDeviceSelectorLabel, views::Label)
+BEGIN_METADATA(ExpandDeviceSelectorLabel)
 END_METADATA
 
 class ExpandDeviceSelectorButton : public views::ToggleImageButton {
+  METADATA_HEADER(ExpandDeviceSelectorButton, views::ToggleImageButton)
+
  public:
-  METADATA_HEADER(ExpandDeviceSelectorButton);
   explicit ExpandDeviceSelectorButton(PressedCallback callback,
                                       SkColor background_color);
   ~ExpandDeviceSelectorButton() override = default;
@@ -85,7 +87,7 @@ class ExpandDeviceSelectorButton : public views::ToggleImageButton {
   void OnColorsChanged(SkColor foreground_color);
 };
 
-BEGIN_METADATA(ExpandDeviceSelectorButton, views::ToggleImageButton)
+BEGIN_METADATA(ExpandDeviceSelectorButton)
 END_METADATA
 
 }  // namespace

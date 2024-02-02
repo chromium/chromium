@@ -29,9 +29,9 @@ namespace sharesheet {
 // button is disabled. Otherwise, when pressed this button launches the
 // associated target.
 class SharesheetTargetButton : public views::Button {
- public:
-  METADATA_HEADER(SharesheetTargetButton);
+  METADATA_HEADER(SharesheetTargetButton, views::Button)
 
+ public:
   SharesheetTargetButton(PressedCallback callback,
                          const std::u16string& display_name,
                          const std::u16string& secondary_display_name,

@@ -270,7 +270,7 @@ void RichAnswersDefinitionView::AddSubsense(const Sense& subsense) {
   box_layout_view->SetFlexForView(subsense_view, /*flex=*/1);
 }
 
-BEGIN_METADATA(RichAnswersDefinitionView, RichAnswersView)
+BEGIN_METADATA(RichAnswersDefinitionView)
 END_METADATA
 
 }  // namespace quick_answers

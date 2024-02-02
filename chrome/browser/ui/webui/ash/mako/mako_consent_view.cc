@@ -29,7 +29,7 @@ MakoConsentView::MakoConsentView(BubbleContentsWrapper* contents_wrapper,
 
 MakoConsentView::~MakoConsentView() = default;
 
-BEGIN_METADATA(MakoConsentView, WebUIBubbleDialogView)
+BEGIN_METADATA(MakoConsentView)
 END_METADATA
 
 }  // namespace ash

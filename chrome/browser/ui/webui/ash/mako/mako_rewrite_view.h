@@ -13,9 +13,9 @@ namespace ash {
 
 // A view to contain the Mako rewrite UI.
 class MakoRewriteView : public WebUIBubbleDialogView {
- public:
-  METADATA_HEADER(MakoRewriteView);
+  METADATA_HEADER(MakoRewriteView, WebUIBubbleDialogView)
 
+ public:
   MakoRewriteView(BubbleContentsWrapper* contents_wrapper,
                   const gfx::Rect& caret_bounds);
   MakoRewriteView(const MakoRewriteView&) = delete;

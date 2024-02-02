@@ -40,7 +40,7 @@ QuickAnswersTextLabel::CreateLabelWithStyle(const std::string& text,
   return label;
 }
 
-BEGIN_METADATA(QuickAnswersTextLabel, views::Label)
+BEGIN_METADATA(QuickAnswersTextLabel)
 END_METADATA
 
 }  // namespace quick_answers

@@ -270,7 +270,7 @@ void ClipboardBubbleView::UpdateBorderSize(const gfx::Size& size) {
   border_->SetSize(size);
 }
 
-BEGIN_METADATA(ClipboardBubbleView, views::View)
+BEGIN_METADATA(ClipboardBubbleView)
 ADD_READONLY_PROPERTY_METADATA(gfx::Size, BubbleSize)
 END_METADATA
 
@@ -303,7 +303,7 @@ void ClipboardBlockBubble::SetDismissCallback(base::OnceClosure cb) {
   button_->SetCallback(std::move(cb));
 }
 
-BEGIN_METADATA(ClipboardBlockBubble, ClipboardBubbleView)
+BEGIN_METADATA(ClipboardBlockBubble)
 END_METADATA
 
 ClipboardWarnBubble::ClipboardWarnBubble(const std::u16string& text)
@@ -356,7 +356,7 @@ void ClipboardWarnBubble::SetProceedCallback(base::OnceClosure cb) {
   paste_button_->SetCallback(std::move(cb));
 }
 
-BEGIN_METADATA(ClipboardWarnBubble, ClipboardBubbleView)
+BEGIN_METADATA(ClipboardWarnBubble)
 END_METADATA
 
 }  // namespace policy

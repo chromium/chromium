@@ -150,5 +150,5 @@ void AutoPipSettingOverlayView::IgnoreInputEvents(
   scoped_ignore_input_events_ = web_contents->IgnoreInputEvents();
 }
 
-BEGIN_METADATA(AutoPipSettingOverlayView, views::View)
+BEGIN_METADATA(AutoPipSettingOverlayView)
 END_METADATA

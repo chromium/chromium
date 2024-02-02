@@ -39,8 +39,9 @@ constexpr gfx::Size kExtensionWindowSize(420, 480);
 constexpr int kPaddingAroundCursor = 8;
 
 class EmojiBubbleDialogView : public WebUIBubbleDialogView {
+  METADATA_HEADER(EmojiBubbleDialogView, WebUIBubbleDialogView)
+
  public:
-  METADATA_HEADER(EmojiBubbleDialogView);
   explicit EmojiBubbleDialogView(
       std::unique_ptr<BubbleContentsWrapper> contents_wrapper)
       : WebUIBubbleDialogView(nullptr, contents_wrapper->GetWeakPtr()),
@@ -53,7 +54,7 @@ class EmojiBubbleDialogView : public WebUIBubbleDialogView {
   std::unique_ptr<BubbleContentsWrapper> contents_wrapper_;
 };
 
-BEGIN_METADATA(EmojiBubbleDialogView, WebUIBubbleDialogView)
+BEGIN_METADATA(EmojiBubbleDialogView)
 END_METADATA
 
 }  // namespace

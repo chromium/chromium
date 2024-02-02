@@ -245,6 +245,6 @@ const flags_ui::FeatureEntry* ChromeLabsItemView::GetFeatureEntry() {
   return feature_entry_;
 }
 
-BEGIN_METADATA(ChromeLabsItemView, views::View)
+BEGIN_METADATA(ChromeLabsItemView)
 ADD_READONLY_PROPERTY_METADATA(std::optional<size_t>, SelectedIndex)
 END_METADATA

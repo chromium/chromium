@@ -17,8 +17,9 @@
 // It is used as a content of the security subpage or is directly integrated in
 // the main page if connection isn't secure.
 class PageInfoSecurityContentView : public views::View, public PageInfoUI {
+  METADATA_HEADER(PageInfoSecurityContentView, views::View)
+
  public:
-  METADATA_HEADER(PageInfoSecurityContentView);
   // `is_standalone_page` is true, when this view is used as a content view of
   // a subpage and this view becomes current UI for `PageInfo` by calling
   // `InitializeUiState()`. Otherwise, it is part of another page (part of the

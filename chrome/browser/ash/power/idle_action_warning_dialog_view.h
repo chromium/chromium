@@ -16,8 +16,9 @@ namespace ash {
 // warning is only really necessary when the idle action is to log out the user,
 // the warning is hard-coded to warn about logout.
 class IdleActionWarningDialogView : public views::DialogDelegateView {
+  METADATA_HEADER(IdleActionWarningDialogView, views::DialogDelegateView)
+
  public:
-  METADATA_HEADER(IdleActionWarningDialogView);
   explicit IdleActionWarningDialogView(base::TimeTicks idle_action_time);
   IdleActionWarningDialogView(const IdleActionWarningDialogView&) = delete;
   IdleActionWarningDialogView& operator=(const IdleActionWarningDialogView&) =

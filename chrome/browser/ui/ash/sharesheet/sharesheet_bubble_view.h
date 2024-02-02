@@ -37,8 +37,9 @@ class SharesheetExpandButton;
 
 class SharesheetBubbleView : public views::BubbleDialogDelegateView,
                              public display::DisplayObserver {
+  METADATA_HEADER(SharesheetBubbleView, views::BubbleDialogDelegateView)
+
  public:
-  METADATA_HEADER(SharesheetBubbleView);
   using TargetInfo = ::sharesheet::TargetInfo;
 
   SharesheetBubbleView(gfx::NativeWindow native_window,

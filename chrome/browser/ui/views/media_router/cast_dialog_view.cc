@@ -441,7 +441,7 @@ bool CastDialogView::IsAccessCodeCastingEnabled() const {
          GetAccessCodeCastEnabledPref(profile_);
 }
 
-BEGIN_METADATA(CastDialogView, views::BubbleDialogDelegateView)
+BEGIN_METADATA(CastDialogView)
 END_METADATA
 
 }  // namespace media_router

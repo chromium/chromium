@@ -217,7 +217,7 @@ void DlpWarnDialog::AddConfidentialRow(const gfx::ImageSkia& icon,
                                          gfx::Font::Weight::NORMAL));
 }
 
-BEGIN_METADATA(DlpWarnDialog, PolicyDialogBase)
+BEGIN_METADATA(DlpWarnDialog)
 END_METADATA
 
 }  // namespace policy

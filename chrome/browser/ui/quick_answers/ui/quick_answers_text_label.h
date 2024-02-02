@@ -15,9 +15,9 @@ class Label;
 namespace quick_answers {
 
 class QuickAnswersTextLabel : public views::Label {
- public:
-  METADATA_HEADER(QuickAnswersTextLabel);
+  METADATA_HEADER(QuickAnswersTextLabel, views::Label)
 
+ public:
   explicit QuickAnswersTextLabel(const QuickAnswerText& quick_answers_text);
 
   QuickAnswersTextLabel(const QuickAnswersTextLabel&) = delete;

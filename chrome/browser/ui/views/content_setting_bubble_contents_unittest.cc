@@ -31,8 +31,10 @@ class TestContentSettingBubbleModel : public ContentSettingBubbleModel {
 };
 
 class TestContentSettingBubbleContents : public ContentSettingBubbleContents {
+  METADATA_HEADER(TestContentSettingBubbleContents,
+                  ContentSettingBubbleContents)
+
  public:
-  METADATA_HEADER(TestContentSettingBubbleContents);
   TestContentSettingBubbleContents(content::WebContents* web_contents,
                                    gfx::NativeView parent_window)
       : ContentSettingBubbleContents(
@@ -50,7 +52,7 @@ class TestContentSettingBubbleContents : public ContentSettingBubbleContents {
   }
 };
 
-BEGIN_METADATA(TestContentSettingBubbleContents, ContentSettingBubbleContents)
+BEGIN_METADATA(TestContentSettingBubbleContents)
 END_METADATA
 
 // Regression test for http://crbug.com/1050801 .

@@ -364,7 +364,7 @@ views::View* RichAnswersView::GetContentView() {
   return content_view_;
 }
 
-BEGIN_METADATA(RichAnswersView, views::View)
+BEGIN_METADATA(RichAnswersView)
 END_METADATA
 
 }  // namespace quick_answers

@@ -52,9 +52,9 @@ gfx::Rect GetChooserAnchorRect(Browser* browser) {
 // View implementation for the chooser bubble.
 class ChooserBubbleUiViewDelegate : public LocationBarBubbleDelegateView,
                                     public views::TableViewObserver {
- public:
-  METADATA_HEADER(ChooserBubbleUiViewDelegate);
+  METADATA_HEADER(ChooserBubbleUiViewDelegate, LocationBarBubbleDelegateView)
 
+ public:
   ChooserBubbleUiViewDelegate(
       Browser* browser,
       content::WebContents* web_contents,
@@ -184,7 +184,7 @@ void ChooserBubbleUiViewDelegate::Close() {
     GetWidget()->CloseWithReason(views::Widget::ClosedReason::kUnspecified);
 }
 
-BEGIN_METADATA(ChooserBubbleUiViewDelegate, LocationBarBubbleDelegateView)
+BEGIN_METADATA(ChooserBubbleUiViewDelegate)
 END_METADATA
 
 namespace chrome {

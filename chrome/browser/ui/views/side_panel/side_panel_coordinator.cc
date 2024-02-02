@@ -195,8 +195,9 @@ using PopulateSidePanelCallback = base::OnceCallback<void(
 // swaps the views when the content is ready. If the SidePanelContextProxy
 // doesn't exist, the content is swapped immediately.
 class SidePanelContentSwappingContainer : public views::View {
+  METADATA_HEADER(SidePanelContentSwappingContainer, views::View)
+
  public:
-  METADATA_HEADER(SidePanelContentSwappingContainer);
   explicit SidePanelContentSwappingContainer(bool show_immediately_for_testing)
       : show_immediately_for_testing_(show_immediately_for_testing) {
     SetUseDefaultFillLayout(true);
@@ -265,7 +266,7 @@ class SidePanelContentSwappingContainer : public views::View {
   PopulateSidePanelCallback loaded_callback_;
 };
 
-BEGIN_METADATA(SidePanelContentSwappingContainer, views::View)
+BEGIN_METADATA(SidePanelContentSwappingContainer)
 END_METADATA
 
 }  // namespace

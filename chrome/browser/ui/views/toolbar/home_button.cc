@@ -35,8 +35,9 @@
 namespace {
 
 class HomePageUndoBubble : public views::BubbleDialogDelegateView {
+  METADATA_HEADER(HomePageUndoBubble, views::BubbleDialogDelegateView)
+
  public:
-  METADATA_HEADER(HomePageUndoBubble);
   HomePageUndoBubble(views::View* anchor_view,
                      PrefService* prefs,
                      const GURL& undo_url,
@@ -100,7 +101,7 @@ void HomePageUndoBubble::UndoClicked() {
   GetWidget()->Close();
 }
 
-BEGIN_METADATA(HomePageUndoBubble, views::BubbleDialogDelegateView)
+BEGIN_METADATA(HomePageUndoBubble)
 END_METADATA
 
 }  // namespace

@@ -71,9 +71,9 @@ namespace {
 // "[preview] and N more" where preview might be elided to allow "and N more" to
 // be always visible.
 class PreviewEliderLabel : public views::Label {
- public:
-  METADATA_HEADER(PreviewEliderLabel);
+  METADATA_HEADER(PreviewEliderLabel, views::Label)
 
+ public:
   // Creates a PreviewEliderLabel where |preview_text| might be elided,
   // |format_string| is the string with format argument numbers in ICU syntax
   // and |n| is the "N more" item count.
@@ -121,7 +121,7 @@ class PreviewEliderLabel : public views::Label {
   int n_;
 };
 
-BEGIN_METADATA(PreviewEliderLabel, views::Label)
+BEGIN_METADATA(PreviewEliderLabel)
 END_METADATA
 
 std::unique_ptr<PaymentRequestRowView> CreatePaymentSheetRow(

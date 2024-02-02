@@ -31,9 +31,9 @@ class SigninDialog : public views::DialogDelegateView,
                      public ChromeWebModalDialogManagerDelegate,
                      public web_modal::WebContentsModalDialogHost,
                      public content::WebContentsObserver {
- public:
-  METADATA_HEADER(SigninDialog);
+  METADATA_HEADER(SigninDialog, views::DialogDelegateView)
 
+ public:
   explicit SigninDialog(content::BrowserContext* browser_context);
 
   SigninDialog(const SigninDialog&) = delete;

@@ -175,7 +175,7 @@ void RichAnswersTranslationView::OnCopyButtonPressed(
   writer.WriteText(base::UTF8ToUTF16(copy_text));
 }
 
-BEGIN_METADATA(RichAnswersTranslationView, RichAnswersView)
+BEGIN_METADATA(RichAnswersTranslationView)
 END_METADATA
 
 }  // namespace quick_answers

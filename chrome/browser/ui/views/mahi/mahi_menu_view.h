@@ -17,9 +17,9 @@ namespace chromeos::mahi {
 
 // A bubble style view to show Mahi Menu.
 class MahiMenuView : public chromeos::editor_menu::PreTargetHandlerView {
- public:
-  METADATA_HEADER(MahiMenuView);
+  METADATA_HEADER(MahiMenuView, chromeos::editor_menu::PreTargetHandlerView)
 
+ public:
   MahiMenuView();
 
   MahiMenuView(const MahiMenuView&) = delete;
