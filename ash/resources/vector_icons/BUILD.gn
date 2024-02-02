@@ -284,6 +284,7 @@ aggregate_vector_icons("ash_vector_icons") {
     "notification_timer.icon",
     "overflow_shelf_left.icon",
     "overflow_shelf_right.icon",
+    "overview_settings.icon",
     "overview_window_close.icon",
     "paint_brush.icon",
     "palette_action_create_note.icon",

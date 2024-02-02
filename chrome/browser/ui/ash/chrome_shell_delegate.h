@@ -92,6 +92,7 @@ class ChromeShellDelegate : public ash::ShellDelegate {
   void ShouldExitFullscreenBeforeLock(
       ShouldExitFullscreenCallback callback) override;
   ash::DeskProfilesDelegate* GetDeskProfilesDelegate() override;
+  void OpenMultitaskingSettings() override;
 };
 
 #endif  // CHROME_BROWSER_UI_ASH_CHROME_SHELL_DELEGATE_H_

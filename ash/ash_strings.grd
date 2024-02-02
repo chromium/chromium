@@ -2460,6 +2460,9 @@ Style notes:
       <message name="IDS_ASH_OVERVIEW_CLOSABLE_DESK_MINIVIEW_A11Y_EXTRA_TIP" desc="The accessibility text read by screen readers for a closeable desk mini view when the close all feature is enabled.">
           Press Ctrl + W to combine with <ph name="DESK_NAME">$1<ex>Desk 1</ex></ph>. Press Ctrl + Shift + W to close desk and windows.
       </message>
+       <message name="IDS_ASH_OVERVIEW_SETTINGS_BUTTON_LABEL" translateable="false" desc="The accessible name for the Overview Settings button during faster splitscreen setup.">
+        Multitasking settings
+      </message>
       <message name="IDS_ASH_OVERVIEW_WINDOW_CLOSING_A11Y_ALERT" desc="The accessibility alert read by screen readers to alert the user that a window in overview mode is closing.">
         Window <ph name="WINDOW_TITILE">$1<ex>1</ex></ph> closed.
       </message>

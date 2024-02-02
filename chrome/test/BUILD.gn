@@ -4751,6 +4751,7 @@ if (!is_android) {
         "../browser/ui/ash/download_status/holding_space_display_client_browsertest.cc",
         "../browser/ui/ash/download_status/notification_display_client_browsertest.cc",
         "../browser/ui/ash/event_latency_metrics_browsertest.cc",
+        "../browser/ui/ash/faster_split_screen_browsertest.cc",
         "../browser/ui/ash/feature_discovery_duration_reporter_browsertest.cc",
         "../browser/ui/ash/float_controller_browsertest.cc",
         "../browser/ui/ash/glanceables/glanceables_browsertest.cc",

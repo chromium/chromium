@@ -78,6 +78,7 @@ class TestShellDelegate : public ShellDelegate {
   bool ShouldWaitForTouchPressAck(gfx::NativeWindow window) override;
   int GetBrowserWebUITabStripHeight() override;
   DeskProfilesDelegate* GetDeskProfilesDelegate() override;
+  void OpenMultitaskingSettings() override {}
   void BindMultiDeviceSetup(
       mojo::PendingReceiver<multidevice_setup::mojom::MultiDeviceSetup>
           receiver) override;
