@@ -34,9 +34,12 @@ class AuthenticatorMakeCredentialResponse;
 // https://fidoalliance.org/specs/fido-v2.0-rd-20161004/fido-client-to-authenticator-protocol-v2.0-rd-20161004.html#authenticatorgetassertion
 class COMPONENT_EXPORT(DEVICE_FIDO) GetAssertionTask : public FidoTask {
  public:
-  using GetAssertionTaskCallback = base::OnceCallback<void(
-      CtapDeviceResponseCode,
-      absl::optional<AuthenticatorGetAssertionResponse>)>;
+  using GetAssertionTaskCallback =
+      base::OnceCallback<void(CtapDeviceResponseCode,
+                              std::vector<AuthenticatorGetAssertionResponse>)>;
+  using GetNextAssertionOperation =
+      DeviceOperation<CtapGetNextAssertionRequest,
+                      AuthenticatorGetAssertionResponse>;
   using SignOperation = DeviceOperation<CtapGetAssertionRequest,
                                         AuthenticatorGetAssertionResponse>;
   using RegisterOperation =
@@ -77,6 +80,13 @@ class COMPONENT_EXPORT(DEVICE_FIDO) GetAssertionTask : public FidoTask {
       CtapDeviceResponseCode response_code,
       absl::optional<AuthenticatorGetAssertionResponse> response_data);
 
+  // HandleNextResponse processes an assertion and requests the next one if
+  // necessary.
+  void HandleNextResponse(
+      uint8_t num_responses,
+      CtapDeviceResponseCode response_code,
+      absl::optional<AuthenticatorGetAssertionResponse> response_data);
+
   // HandleResponseToSilentRequest is a callback to a request without user-
   // presence requested used to silently probe credentials from the allow list.
   void HandleResponseToSilentRequest(
@@ -103,10 +113,12 @@ class COMPONENT_EXPORT(DEVICE_FIDO) GetAssertionTask : public FidoTask {
   std::vector<std::vector<PublicKeyCredentialDescriptor>> allow_list_batches_;
   size_t current_allow_list_batch_ = 0;
 
+  std::unique_ptr<GetNextAssertionOperation> next_assertion_operation_;
   std::unique_ptr<SignOperation> sign_operation_;
   std::unique_ptr<RegisterOperation> dummy_register_operation_;
   GetAssertionTaskCallback callback_;
   std::unique_ptr<pin::HMACSecretRequest> hmac_secret_request_;
+  std::vector<AuthenticatorGetAssertionResponse> responses_;
 
   bool canceled_ = false;
 

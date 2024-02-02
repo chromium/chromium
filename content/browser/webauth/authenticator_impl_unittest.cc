@@ -8182,6 +8182,99 @@ TEST_F(ResidentKeyAuthenticatorImplTest, PRFExtension) {
   }
 }
 
+// Tests that the PRF function is evaluated for all credentials in an empty
+// allow-list request. Regression test for crbug.com/1520646.
+TEST_F(ResidentKeyAuthenticatorImplTest, PRFEvaluationForMultipleCreds) {
+  NavigateAndCommit(GURL(kTestOrigin1));
+  device::PublicKeyCredentialDescriptor cred1;
+  device::PublicKeyCredentialDescriptor cred2;
+  device::VirtualCtap2Device::Config config;
+  config.prf_support = false;
+  config.hmac_secret_support = true;
+  config.pin_support = true;
+  config.resident_key_support = true;
+  virtual_device_factory_->SetCtap2Config(config);
+  {
+    PublicKeyCredentialCreationOptionsPtr options =
+        GetTestPublicKeyCredentialCreationOptions();
+    options->prf_enable = true;
+    options->authenticator_selection->resident_key =
+        device::ResidentKeyRequirement::kRequired;
+    options->user.id = {1};
+    options->user.name = "noah";
+    options->user.display_name = "Noah";
+    MakeCredentialResult result =
+        AuthenticatorMakeCredential(std::move(options));
+    EXPECT_EQ(result.status, AuthenticatorStatus::SUCCESS);
+    ASSERT_TRUE(result.response->echo_prf);
+    ASSERT_EQ(result.response->prf, true);
+    device::AuthenticatorData auth_data =
+        AuthDataFromMakeCredentialResponse(result.response);
+    cred1 = device::PublicKeyCredentialDescriptor(
+        device::CredentialType::kPublicKey, auth_data.GetCredentialId());
+  }
+  {
+    PublicKeyCredentialCreationOptionsPtr options =
+        GetTestPublicKeyCredentialCreationOptions();
+    options->prf_enable = true;
+    options->authenticator_selection->resident_key =
+        device::ResidentKeyRequirement::kRequired;
+    options->user.id = {2};
+    options->user.name = "mio";
+    options->user.display_name = "Mio";
+    MakeCredentialResult result =
+        AuthenticatorMakeCredential(std::move(options));
+    EXPECT_EQ(result.status, AuthenticatorStatus::SUCCESS);
+    ASSERT_TRUE(result.response->echo_prf);
+    ASSERT_EQ(result.response->prf, true);
+    device::AuthenticatorData auth_data =
+        AuthDataFromMakeCredentialResponse(result.response);
+    cred2 = device::PublicKeyCredentialDescriptor(
+        device::CredentialType::kPublicKey, auth_data.GetCredentialId());
+  }
+
+  const std::vector<uint8_t> salt(32, 1);
+  std::vector<uint8_t> salt1_eval;
+  std::vector<uint8_t> salt2_eval;
+  {
+    PublicKeyCredentialRequestOptionsPtr options =
+        GetTestPublicKeyCredentialRequestOptions();
+    options->extensions->prf = true;
+    auto prf_value = blink::mojom::PRFValues::New();
+    prf_value->first = salt;
+    std::vector<blink::mojom::PRFValuesPtr> inputs;
+    inputs.emplace_back(std::move(prf_value));
+    options->extensions->prf_inputs = std::move(inputs);
+    options->allow_credentials.clear();
+    test_client_.delegate_config.expected_accounts = "01:noah:Noah/02:mio:Mio";
+    test_client_.delegate_config.selected_user_id = {1};
+    GetAssertionResult result = AuthenticatorGetAssertion(std::move(options));
+    EXPECT_EQ(result.status, AuthenticatorStatus::SUCCESS);
+    ASSERT_TRUE(result.response->extensions->prf_results);
+    ASSERT_FALSE(result.response->extensions->prf_results->id);
+    salt1_eval = result.response->extensions->prf_results->first;
+  }
+  {
+    PublicKeyCredentialRequestOptionsPtr options =
+        GetTestPublicKeyCredentialRequestOptions();
+    options->extensions->prf = true;
+    auto prf_value = blink::mojom::PRFValues::New();
+    prf_value->first = salt;
+    std::vector<blink::mojom::PRFValuesPtr> inputs;
+    inputs.emplace_back(std::move(prf_value));
+    options->extensions->prf_inputs = std::move(inputs);
+    options->allow_credentials.clear();
+    test_client_.delegate_config.expected_accounts = "01:noah:Noah/02:mio:Mio";
+    test_client_.delegate_config.selected_user_id = {2};
+    GetAssertionResult result = AuthenticatorGetAssertion(std::move(options));
+    EXPECT_EQ(result.status, AuthenticatorStatus::SUCCESS);
+    ASSERT_TRUE(result.response->extensions->prf_results);
+    ASSERT_FALSE(result.response->extensions->prf_results->id);
+    salt2_eval = result.response->extensions->prf_results->first;
+  }
+  EXPECT_NE(salt1_eval, salt2_eval);
+}
+
 TEST_F(ResidentKeyAuthenticatorImplTest, PRFEvaluationDuringMakeCredential) {
   // The WebAuthn "prf" extension supports evaluating the PRF when making a
   // credential. The hmac-secret extension does not support this, but hybrid

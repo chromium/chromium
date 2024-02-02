@@ -158,13 +158,12 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoDeviceAuthenticator
   void MaybeGetEphemeralKeyForGetAssertion(CtapGetAssertionRequest request,
                                            CtapGetAssertionOptions options,
                                            GetAssertionCallback callback);
-  void OnHaveNextAssertion(
+  void OnHaveAssertion(
       CtapGetAssertionRequest request,
       CtapGetAssertionOptions options,
-      std::vector<AuthenticatorGetAssertionResponse> responses,
       GetAssertionCallback callback,
       CtapDeviceResponseCode status,
-      absl::optional<AuthenticatorGetAssertionResponse> response);
+      std::vector<AuthenticatorGetAssertionResponse> responses);
   void PerformGetAssertionLargeBlobOperation(
       CtapGetAssertionRequest request,
       CtapGetAssertionOptions options,
@@ -276,9 +275,9 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoDeviceAuthenticator
   void OperationClearProxy(base::OnceCallback<void(Args...)> callback,
                            Args... args);
   template <typename Task, typename Response, typename... RequestArgs>
-  void RunTask(RequestArgs&&... request_args,
-               base::OnceCallback<void(CtapDeviceResponseCode,
-                                       absl::optional<Response>)> callback);
+  void RunTask(
+      RequestArgs&&... request_args,
+      base::OnceCallback<void(CtapDeviceResponseCode, Response)> callback);
   template <typename Request, typename Response>
   void RunOperation(Request request,
                     base::OnceCallback<void(CtapDeviceResponseCode,
