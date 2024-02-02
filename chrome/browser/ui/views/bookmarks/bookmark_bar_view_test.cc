@@ -333,7 +333,7 @@ class BookmarkBarViewEventTestBase : public ViewEventTestBase {
     Browser::CreateParams native_params(profile_.get(), true);
     browser_ = CreateBrowserWithTestWindowForParams(native_params);
 
-    model_->ClearStore();
+    model_->DisableWritesToDiskForTest();
 
     AddTestData(CreateBigMenu());
 
