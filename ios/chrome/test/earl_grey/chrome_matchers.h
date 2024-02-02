@@ -124,6 +124,12 @@ id<GREYMatcher> StopButton();
 // Returns a matcher for the omnibox.
 id<GREYMatcher> Omnibox();
 
+// Returns a matcher for the omnibox at the bottom.
+id<GREYMatcher> OmniboxAtBottom();
+
+// Returns a matcher for the omnibox on the top.
+id<GREYMatcher> OmniboxOnTop();
+
 // Returns matcher for the omnibox popup list row views.
 id<GREYMatcher> OmniboxPopupRow();
 
