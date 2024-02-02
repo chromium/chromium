@@ -474,18 +474,28 @@ public class ScrimTest {
     @SmallTest
     @Feature({"Scrim"})
     public void testOldScrimHidden() throws TimeoutException {
-        showScrim(buildModel(true, false, true, Color.RED), false);
+        PropertyModel firstModel = buildModel(false, false, true, Color.RED);
+        showScrim(firstModel, false);
 
         assertScrimVisibility(true);
 
         View oldScrim = mScrimCoordinator.getViewForTesting();
 
-        showScrim(buildModel(true, false, true, Color.BLUE), false);
+        showScrim(buildModel(false, false, true, Color.BLUE), false);
+        assertScrimColor(Color.BLUE);
 
         View newScrim = mScrimCoordinator.getViewForTesting();
 
         assertNotEquals("The view should have changed.", oldScrim, newScrim);
         assertEquals("The old scrim should be gone.", View.GONE, oldScrim.getVisibility());
+
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> firstModel.set(ScrimProperties.BACKGROUND_COLOR, Color.MAGENTA));
+        assertScrimColor(Color.BLUE);
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> mScrimCoordinator.hideScrim(false));
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> firstModel.set(ScrimProperties.BACKGROUND_COLOR, Color.GREEN));
     }
 
     /**
