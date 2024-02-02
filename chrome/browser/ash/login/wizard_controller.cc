@@ -930,12 +930,10 @@ WizardController::CreateScreens() {
       base::BindRepeating(&WizardController::OnApplyOnlinePasswordScreenExit,
                           weak_factory_.GetWeakPtr())));
 
-  if (features::AreLocalPasswordsEnabledForConsumers()) {
-    append(std::make_unique<LocalPasswordSetupScreen>(
-        oobe_ui->GetView<LocalPasswordSetupHandler>()->AsWeakPtr(),
-        base::BindRepeating(&WizardController::OnLocalPasswordSetupScreenExit,
-                            weak_factory_.GetWeakPtr())));
-  }
+  append(std::make_unique<LocalPasswordSetupScreen>(
+      oobe_ui->GetView<LocalPasswordSetupHandler>()->AsWeakPtr(),
+      base::BindRepeating(&WizardController::OnLocalPasswordSetupScreenExit,
+                          weak_factory_.GetWeakPtr())));
 
   append(std::make_unique<LocalDataLossWarningScreen>(
       oobe_ui->GetView<LocalDataLossWarningScreenHandler>()->AsWeakPtr(),

@@ -178,6 +178,8 @@ void QuickStartController::ForceEnableQuickStart() {
   }
 
   InitTargetDeviceBootstrapController();
+  QS_LOG(INFO) << "Force enabling LocalPasswordsForConsumers!";
+  ash::features::ForceEnableLocalPasswordsForConsumers();
 }
 
 void QuickStartController::DetermineEntryPointVisibility(

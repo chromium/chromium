@@ -1114,6 +1114,7 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsLicensePackagedOobeFlowEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsLinkCrossDeviceDogfoodFeedbackEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsLinkCrossDeviceInternalsEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool AreLocalPasswordsEnabledForConsumers();
+COMPONENT_EXPORT(ASH_CONSTANTS) void ForceEnableLocalPasswordsForConsumers();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsLockScreenHideSensitiveNotificationsSupported();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsLockScreenInlineReplyEnabled();

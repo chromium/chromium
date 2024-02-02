@@ -17,6 +17,10 @@
 namespace ash::features {
 namespace {
 
+// Whether 'LocalPasswordsForConsumers' has been force enabled.
+// TODO(b/323178117) - Remove once enabled by default, or by M123 branch.
+static bool g_local_password_for_consumers_force_enable = false;
+
 // Controls whether Instant Tethering supports hosts which use the background
 // advertisement model.
 BASE_FEATURE(kInstantTetheringBackgroundAdvertisementSupport,
@@ -3796,7 +3800,15 @@ bool IsLinkCrossDeviceInternalsEnabled() {
 }
 
 bool AreLocalPasswordsEnabledForConsumers() {
+  if (g_local_password_for_consumers_force_enable) {
+    return true;
+  }
+
   return base::FeatureList::IsEnabled(kLocalPasswordForConsumers);
+}
+
+void ForceEnableLocalPasswordsForConsumers() {
+  g_local_password_for_consumers_force_enable = true;
 }
 
 bool IsLockScreenHideSensitiveNotificationsSupported() {
