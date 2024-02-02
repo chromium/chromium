@@ -819,7 +819,7 @@ PasswordsPrivateDelegateImpl::GetExportProgressStatus() {
 
 bool PasswordsPrivateDelegateImpl::IsOptedInForAccountStorage() {
   return password_manager::features_util::IsOptedInForAccountStorage(
-      SyncServiceFactory::GetForProfile(profile_));
+      profile_->GetPrefs(), SyncServiceFactory::GetForProfile(profile_));
 }
 
 void PasswordsPrivateDelegateImpl::SetAccountStorageOptIn(

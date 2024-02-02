@@ -620,7 +620,7 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorWithUnoEnabledBrowserTest,
   syncer::SyncService* sync_service =
       SyncServiceFactory::GetForProfile(GetProfile());
   EXPECT_TRUE(password_manager::features_util::IsOptedInForAccountStorage(
-      sync_service));
+      pref_service, sync_service));
   EXPECT_EQ(password_manager::features_util::GetDefaultPasswordStore(
                 pref_service, sync_service),
             password_manager::PasswordForm::Store::kAccountStore);
@@ -662,6 +662,7 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorWithUnoEnabledBrowserTest,
 
   EXPECT_FALSE(IsChromeSignedIn());
   EXPECT_FALSE(password_manager::features_util::IsOptedInForAccountStorage(
+      GetProfile()->GetPrefs(),
       SyncServiceFactory::GetForProfile(GetProfile())));
   // The pref should have recorded the declined action.
   EXPECT_EQ(GetChromeSigninInterceptDeclinedCountPref(account_info), 1);
@@ -873,7 +874,7 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorWithUnoEnabledBrowserTest,
   syncer::SyncService* sync_service =
       SyncServiceFactory::GetForProfile(GetProfile());
   EXPECT_TRUE(password_manager::features_util::IsOptedInForAccountStorage(
-      sync_service));
+      pref_service, sync_service));
 
   // Opt out of account storage.
   password_manager::features_util::OptOutOfAccountStorageAndClearSettings(
@@ -881,14 +882,14 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorWithUnoEnabledBrowserTest,
 
   // Check that the password account storage is disabled.
   EXPECT_FALSE(password_manager::features_util::IsOptedInForAccountStorage(
-      sync_service));
+      pref_service, sync_service));
 
   // Log out.
   identity_test_env()->ClearPrimaryAccount();
 
   // Check that the password account storage is false if there is no account.
   EXPECT_FALSE(password_manager::features_util::IsOptedInForAccountStorage(
-      sync_service));
+      pref_service, sync_service));
 
   // Log in again.
   account_info = MakeAccountInfoAvailableAndUpdate("alice@example.com");
@@ -897,7 +898,7 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorWithUnoEnabledBrowserTest,
 
   // Check that the password account storage is still disabled.
   EXPECT_FALSE(password_manager::features_util::IsOptedInForAccountStorage(
-      sync_service));
+      pref_service, sync_service));
 }
 
 // Test Suite where PRE_* tests are with `switches::kUnoDesktop` disabled, and
@@ -938,6 +939,7 @@ IN_PROC_BROWSER_TEST_F(
       prefs::kExplicitBrowserSignin));
   // Passwords are defaulted to disabled without an explicit signin.
   EXPECT_FALSE(password_manager::features_util::IsOptedInForAccountStorage(
+      GetProfile()->GetPrefs(),
       SyncServiceFactory::GetForProfile(GetProfile())));
 
   SetSignoutAllowed(false);
@@ -958,10 +960,11 @@ IN_PROC_BROWSER_TEST_F(
       prefs::kExplicitBrowserSignin));
   // Since we did not interact with passwords before, passwords should remain
   // disabled as long as we did not explicitly sign in.
+  PrefService* pref_service = GetProfile()->GetPrefs();
   syncer::SyncService* sync_service =
       SyncServiceFactory::GetForProfile(GetProfile());
   EXPECT_FALSE(password_manager::features_util::IsOptedInForAccountStorage(
-      sync_service));
+      pref_service, sync_service));
 
   // Sign out, and sign back in.
   SetSignoutAllowed(true);
@@ -982,7 +985,7 @@ IN_PROC_BROWSER_TEST_F(
   // Signing in with `switches::kUnoDesktop` enabled, should affect the
   // passwords default.
   EXPECT_TRUE(password_manager::features_util::IsOptedInForAccountStorage(
-      sync_service));
+      pref_service, sync_service));
 
   // Sign out should clear the explicit signin pref.
   identity_test_env()->ClearPrimaryAccount();
@@ -1027,6 +1030,7 @@ IN_PROC_BROWSER_TEST_F(
   // Passwords are defaulted to enabled with an explicit sign in and
   // `switches::kUnoDesktop` active.
   EXPECT_TRUE(password_manager::features_util::IsOptedInForAccountStorage(
+      GetProfile()->GetPrefs(),
       SyncServiceFactory::GetForProfile(GetProfile())));
 
   SetSignoutAllowed(false);
@@ -1045,6 +1049,7 @@ IN_PROC_BROWSER_TEST_F(
   // previous default state, since there were no interactions, defaults to
   // disabled.
   EXPECT_FALSE(password_manager::features_util::IsOptedInForAccountStorage(
+      GetProfile()->GetPrefs(),
       SyncServiceFactory::GetForProfile(GetProfile())));
 }
 

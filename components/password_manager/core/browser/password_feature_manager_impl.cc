@@ -58,17 +58,19 @@ bool PasswordFeatureManagerImpl::IsBiometricAuthenticationBeforeFillingEnabled()
 }
 
 bool PasswordFeatureManagerImpl::IsOptedInForAccountStorage() const {
-  return features_util::IsOptedInForAccountStorage(sync_service_);
+  return features_util::IsOptedInForAccountStorage(pref_service_,
+                                                   sync_service_);
 }
 
 bool PasswordFeatureManagerImpl::ShouldShowAccountStorageOptIn() const {
-  return features_util::ShouldShowAccountStorageOptIn(sync_service_);
+  return features_util::ShouldShowAccountStorageOptIn(pref_service_,
+                                                      sync_service_);
 }
 
 bool PasswordFeatureManagerImpl::ShouldShowAccountStorageReSignin(
     const GURL& current_page_url) const {
-  return features_util::ShouldShowAccountStorageReSignin(sync_service_,
-                                                         current_page_url);
+  return features_util::ShouldShowAccountStorageReSignin(
+      pref_service_, sync_service_, current_page_url);
 }
 
 bool PasswordFeatureManagerImpl::ShouldShowAccountStorageBubbleUi() const {

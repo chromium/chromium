@@ -446,7 +446,7 @@ constexpr int kNotifyAutoSigninDuration = 3;  // seconds
   syncer::SyncService* syncService =
       SyncServiceFactory::GetForBrowserState(self.browserState);
   const std::optional<std::string> accountToStorePassword =
-      password_manager::sync_util::GetAccountForSaving(syncService);
+      password_manager::sync_util::GetAccountForSaving(prefs, syncService);
   const password_manager::features_util::PasswordAccountStorageUserState
       accountStorageUserState = password_manager::features_util::
           ComputePasswordAccountStorageUserState(prefs, syncService);

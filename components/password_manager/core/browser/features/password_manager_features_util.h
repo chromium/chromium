@@ -68,8 +68,10 @@ enum class PasswordAccountStorageUsageLevel {
 
 // Internal helpers, not meant to be used directly:
 namespace internal {
-bool CanAccountStorageBeEnabled(const syncer::SyncService* sync_service);
-bool IsUserEligibleForAccountStorage(const syncer::SyncService* sync_service);
+bool CanAccountStorageBeEnabled(const PrefService* pref_service,
+                                const syncer::SyncService* sync_service);
+bool IsUserEligibleForAccountStorage(const PrefService* pref_service,
+                                     const syncer::SyncService* sync_service);
 }  // namespace internal
 
 // Whether to instantiate a second PasswordStore whose data is account-scoped.
@@ -85,19 +87,23 @@ bool CanCreateAccountStore(const PrefService* pref_service);
 // Whether the current signed-in user (aka unconsented primary account) has
 // opted in to use the Google account storage for passwords (as opposed to
 // local/profile storage). This always returns false for sync-the-feature users.
+// |pref_service| must not be null.
 // |sync_service| may be null (commonly the case in incognito mode), in which
 // case this will simply return false.
 // See PasswordFeatureManager::IsOptedInForAccountStorage.
-bool IsOptedInForAccountStorage(const syncer::SyncService* sync_service);
+bool IsOptedInForAccountStorage(const PrefService* pref_service,
+                                const syncer::SyncService* sync_service);
 
 // Whether it makes sense to ask the user to opt-in for account-based
 // password storage. This is true if the opt-in doesn't exist yet, but all
 // other requirements are met (i.e. there is a signed-in user, Sync-the-feature
 // is not enabled, etc).
+// |pref_service| must not be null.
 // |sync_service| may be null (commonly the case in incognito mode), in which
 // case this will simply return false.
 // See PasswordFeatureManager::ShouldShowAccountStorageOptIn.
-bool ShouldShowAccountStorageOptIn(const syncer::SyncService* sync_service);
+bool ShouldShowAccountStorageOptIn(const PrefService* pref_service,
+                                   const syncer::SyncService* sync_service);
 
 // Whether it makes sense to ask the user to signin again to access the
 // account-based password storage. This is true if a user on this device
@@ -107,7 +113,8 @@ bool ShouldShowAccountStorageOptIn(const syncer::SyncService* sync_service);
 // already doing that). For non-web contexts (e.g. native UIs), it is valid to
 // pass an empty GURL.
 // See PasswordFeatureManager::ShouldShowAccountStorageReSignin.
-bool ShouldShowAccountStorageReSignin(const syncer::SyncService* sync_service,
+bool ShouldShowAccountStorageReSignin(const PrefService* pref_service,
+                                      const syncer::SyncService* sync_service,
                                       const GURL& current_page_url);
 
 // Whether it makes sense to ask the user to move a password to their account or

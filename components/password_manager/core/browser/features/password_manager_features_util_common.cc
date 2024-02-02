@@ -19,7 +19,13 @@ namespace internal {
 // Returns whether the account-scoped password storage can be enabled in
 // principle for the current profile. This is constant for a given profile
 // (until browser restart).
-bool CanAccountStorageBeEnabled(const syncer::SyncService* sync_service) {
+bool CanAccountStorageBeEnabled(const PrefService* pref_service,
+                                const syncer::SyncService* sync_service) {
+  CHECK(pref_service);
+
+  // TODO(crbug.com/1509058): Replace with CanCreateAccountStore(pref_service).
+  // Also, on Android the predicate should return true for syncing and false
+  // for signed-in non-syncing users.
   if (!base::FeatureList::IsEnabled(features::kEnablePasswordsAccountStorage)) {
     return false;
   }
@@ -48,8 +54,9 @@ bool CanAccountStorageBeEnabled(const syncer::SyncService* sync_service) {
 //   disabled by policy, etc).
 // - Desktop-only: There is no custom passphrase (because Sync transport offers
 //   no way to enter the passphrase yet).
-bool IsUserEligibleForAccountStorage(const syncer::SyncService* sync_service) {
-  if (!CanAccountStorageBeEnabled(sync_service)) {
+bool IsUserEligibleForAccountStorage(const PrefService* pref_service,
+                                     const syncer::SyncService* sync_service) {
+  if (!CanAccountStorageBeEnabled(pref_service, sync_service)) {
     return false;
   }
   DCHECK(sync_service);
@@ -104,8 +111,9 @@ bool CanCreateAccountStore(const PrefService* pref_service) {
 #endif
 }
 
-bool IsOptedInForAccountStorage(const syncer::SyncService* sync_service) {
-  if (!internal::IsUserEligibleForAccountStorage(sync_service)) {
+bool IsOptedInForAccountStorage(const PrefService* pref_service,
+                                const syncer::SyncService* sync_service) {
+  if (!internal::IsUserEligibleForAccountStorage(pref_service, sync_service)) {
     return false;
   }
 
@@ -140,7 +148,7 @@ bool IsOptedInForAccountStorage(const syncer::SyncService* sync_service) {
 bool ShouldShowAccountStorageBubbleUi(const PrefService* pref_service,
                                       const syncer::SyncService* sync_service) {
   // Opted in implies eligible, so that case is covered here too.
-  return internal::IsUserEligibleForAccountStorage(sync_service);
+  return internal::IsUserEligibleForAccountStorage(pref_service, sync_service);
 }
 
 PasswordAccountStorageUserState ComputePasswordAccountStorageUserState(
@@ -162,7 +170,7 @@ PasswordAccountStorageUserState ComputePasswordAccountStorageUserState(
   if (sync_service->HasDisableReason(
           syncer::SyncService::DisableReason::DISABLE_REASON_NOT_SIGNED_IN)) {
     // Signed out. Check if any account storage opt-in exists.
-    return ShouldShowAccountStorageReSignin(sync_service, GURL())
+    return ShouldShowAccountStorageReSignin(pref_service, sync_service, GURL())
                ? PasswordAccountStorageUserState::kSignedOutAccountStoreUser
                : PasswordAccountStorageUserState::kSignedOutUser;
   }
@@ -172,7 +180,7 @@ PasswordAccountStorageUserState ComputePasswordAccountStorageUserState(
                             PasswordForm::Store::kProfileStore;
 
   // Signed in. Check for account storage opt-in.
-  if (IsOptedInForAccountStorage(sync_service)) {
+  if (IsOptedInForAccountStorage(pref_service, sync_service)) {
     // Signed in and opted in. Check default storage location.
     return saving_locally
                ? PasswordAccountStorageUserState::

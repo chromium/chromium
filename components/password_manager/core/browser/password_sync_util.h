@@ -73,6 +73,7 @@ bool IsSyncFeatureActiveIncludingPasswords(
 // are being saved only locally. In practice, this returns a non-empty
 // value if the user is syncing or signed in and opted in to account storage.
 std::optional<std::string> GetAccountForSaving(
+    const PrefService* pref_service,
     const syncer::SyncService* sync_service);
 
 // Reports whether and how passwords are currently synced. In particular, for a
