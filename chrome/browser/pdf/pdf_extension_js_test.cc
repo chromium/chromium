@@ -479,7 +479,8 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, DISABLED_AnnotationsFeatureEnabled) {
   RunTestsInJsModule("annotations_feature_enabled_test.js", "test.pdf");
 }
 
-IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, AnnotationsToolbar) {
+// TODO(crbug.com/1524371): Re-enable this test
+IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, DISABLED_AnnotationsToolbar) {
   // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
   if (UseOopif()) {
     GTEST_SKIP();
