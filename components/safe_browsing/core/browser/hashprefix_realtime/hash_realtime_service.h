@@ -110,6 +110,10 @@ class HashRealTimeService : public KeyedService {
   FRIEND_TEST_ALL_PREFIXES(HashRealTimeServiceTest,
                            TestLookupFailure_RetriableNetError);
   FRIEND_TEST_ALL_PREFIXES(HashRealTimeServiceTest,
+                           TestLookupFailure_NetErrorNameNotResolved);
+  FRIEND_TEST_ALL_PREFIXES(HashRealTimeServiceTest,
+                           TestLookupFailure_NetErrorConnectionClosed);
+  FRIEND_TEST_ALL_PREFIXES(HashRealTimeServiceTest,
                            TestLookupFailure_NetErrorHttpCodeFailure);
   FRIEND_TEST_ALL_PREFIXES(HashRealTimeServiceTest,
                            TestLookupFailure_OuterResponseCodeError);

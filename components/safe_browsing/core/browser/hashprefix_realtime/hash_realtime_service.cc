@@ -19,6 +19,7 @@
 #include "components/safe_browsing/core/common/utils.h"
 #include "google_apis/google_api_keys.h"
 #include "net/base/load_flags.h"
+#include "net/base/net_errors.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -425,8 +426,8 @@ void HashRealTimeService::OnURLLoaderComplete(
     std::optional<int> webui_delegate_token,
     bool ohttp_client_destructed_early) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  base::UmaHistogramTimes("SafeBrowsing.HPRT.Network.Time",
-                          base::TimeTicks::Now() - request_start_time);
+  base::TimeDelta network_time = base::TimeTicks::Now() - request_start_time;
+  base::UmaHistogramTimes("SafeBrowsing.HPRT.Network.Time", network_time);
   RecordHttpResponseOrErrorCode("SafeBrowsing.HPRT.Network.Result", net_error,
                                 response_code);
   if (net_error == net::ERR_INTERNET_DISCONNECTED) {
@@ -443,6 +444,14 @@ void HashRealTimeService::OnURLLoaderComplete(
     base::UmaHistogramBoolean(
         "SafeBrowsing.HPRT.FailedNetResultIsFromEarlyOhttpClientDestruct",
         ohttp_client_destructed_early);
+  }
+  if (net_error == net::ERR_NAME_NOT_RESOLVED) {
+    base::UmaHistogramTimes("SafeBrowsing.HPRT.Network.Time.NameNotResolved",
+                            network_time);
+  }
+  if (net_error == net::ERR_CONNECTION_CLOSED) {
+    base::UmaHistogramTimes("SafeBrowsing.HPRT.Network.Time.ConnectionClosed",
+                            network_time);
   }
 
   base::expected<std::unique_ptr<V5::SearchHashesResponse>, OperationOutcome>

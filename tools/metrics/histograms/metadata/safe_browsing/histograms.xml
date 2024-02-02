@@ -1425,6 +1425,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="SafeBrowsing.HPRT.Network.Time.{NetError}" units="ms"
+    expires_after="2024-08-01">
+  <owner>xinghuilu@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Logs the roundtrip time it took to perform a Safe Browsing hash-prefix
+    real-time lookup when the net error is {NetError}. Logged on each resource
+    check for which a lookup request is sent to the server.
+  </summary>
+  <token key="NetError">
+    <variant name="ConnectionClosed" summary="ERR_CONNECTION_CLOSED"/>
+    <variant name="NameNotResolved" summary="ERR_NAME_NOT_RESOLVED"/>
+  </token>
+</histogram>
+
 <histogram name="SafeBrowsing.HPRT.Network.{ResponseSource}Result"
     enum="CombinedHttpResponseAndNetErrorCode" expires_after="2024-06-30">
   <owner>thefrog@chromium.org</owner>
