@@ -49,6 +49,7 @@
 #include "components/sync/service/sync_service.h"
 #include "content/public/browser/navigation_handle.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/resource/resource_bundle.h"
 
 namespace autofill {
 
@@ -351,6 +352,15 @@ bool SaveCardBubbleControllerImpl::ShouldRequestNameFromUser() const {
 
 bool SaveCardBubbleControllerImpl::ShouldRequestExpirationDateFromUser() const {
   return options_.should_request_expiration_date_from_user;
+}
+
+ui::ImageModel SaveCardBubbleControllerImpl::GetCreditCardImage() const {
+  gfx::Image* card_art_image =
+      personal_data_manager_->GetCreditCardArtImageForUrl(card_.card_art_url());
+  return ui::ImageModel::FromImage(
+      card_art_image ? *card_art_image
+                     : ui::ResourceBundle::GetSharedInstance().GetImageNamed(
+                           CreditCard::IconResourceId(card_.network())));
 }
 
 void SaveCardBubbleControllerImpl::OnSaveButton(
