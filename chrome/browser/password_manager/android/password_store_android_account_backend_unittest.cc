@@ -89,13 +89,6 @@ constexpr JobId kJobId{1337};
 const int kNetworkErrorCode =
     static_cast<int>(AndroidBackendAPIErrorCode::kNetworkError);
 
-MATCHER_P2(ExpectError, error_type, recovery_type, "") {
-  return absl::holds_alternative<PasswordStoreBackendError>(arg) &&
-         error_type == absl::get<PasswordStoreBackendError>(arg).type &&
-         recovery_type ==
-             absl::get<PasswordStoreBackendError>(arg).recovery_type;
-}
-
 PasswordForm CreateEntry(const std::string& username,
                          const std::string& password,
                          const GURL& origin_url,
@@ -737,10 +730,11 @@ TEST_F(PasswordStoreAndroidAccountBackendTest,
   base::MockCallback<LoginsOrErrorReply> mock_reply;
   EXPECT_CALL(*bridge_helper(), GetAllLogins).WillOnce(Return(kJobId));
   backend().GetAllLoginsAsync(mock_reply.Get());
-  EXPECT_CALL(
-      mock_reply,
-      Run(ExpectError(PasswordStoreBackendErrorType::kUncategorized,
-                      PasswordStoreBackendErrorRecoveryType::kUnrecoverable)));
+  PasswordStoreBackendError expected_error{
+      PasswordStoreBackendErrorType::kUncategorized,
+      PasswordStoreBackendErrorRecoveryType::kUnrecoverable};
+  EXPECT_CALL(mock_reply,
+              Run(VariantWith<PasswordStoreBackendError>(expected_error)));
   AndroidBackendError error{AndroidBackendErrorType::kExternalError};
   // Simulate receiving INTERNAL_ERROR code.
   int kInternalErrorCode =
@@ -777,10 +771,11 @@ TEST_F(PasswordStoreAndroidAccountBackendTest,
   base::MockCallback<LoginsOrErrorReply> mock_reply;
   EXPECT_CALL(*bridge_helper(), GetAllLogins).WillOnce(Return(kJobId));
   backend().GetAllLoginsAsync(mock_reply.Get());
-  EXPECT_CALL(
-      mock_reply,
-      Run(ExpectError(PasswordStoreBackendErrorType::kAuthErrorResolvable,
-                      PasswordStoreBackendErrorRecoveryType::kRecoverable)));
+  PasswordStoreBackendError expected_error{
+      PasswordStoreBackendErrorType::kAuthErrorResolvable,
+      PasswordStoreBackendErrorRecoveryType::kRecoverable};
+  EXPECT_CALL(mock_reply,
+              Run(VariantWith<PasswordStoreBackendError>(expected_error)));
   AndroidBackendError error{AndroidBackendErrorType::kExternalError};
   // Simulate receiving AUTH_ERROR_RESOLVABLE code.
   int kAuthErrorResolvableCode =
@@ -827,10 +822,11 @@ TEST_F(
 
   // AddLogin operation is non-retriable, so the returned error should not be
   // indicated as retriable even if the error itself is retriable.
-  EXPECT_CALL(
-      mock_reply,
-      Run(ExpectError(PasswordStoreBackendErrorType::kUncategorized,
-                      PasswordStoreBackendErrorRecoveryType::kUnrecoverable)));
+  PasswordStoreBackendError expected_error{
+      PasswordStoreBackendErrorType::kUncategorized,
+      PasswordStoreBackendErrorRecoveryType::kUnrecoverable};
+  EXPECT_CALL(mock_reply,
+              Run(VariantWith<PasswordStoreBackendError>(expected_error)));
 
   consumer().OnError(kJobId, std::move(error));
   RunUntilIdle();
@@ -891,10 +887,11 @@ TEST_F(PasswordStoreAndroidAccountBackendTest,
     // the bridge.
     task_environment_.FastForwardUntilNoTasksRemain();
   }
-  EXPECT_CALL(
-      mock_reply,
-      Run(ExpectError(PasswordStoreBackendErrorType::kUncategorized,
-                      PasswordStoreBackendErrorRecoveryType::kRecoverable)));
+  PasswordStoreBackendError expected_error{
+      PasswordStoreBackendErrorType::kUncategorized,
+      PasswordStoreBackendErrorRecoveryType::kRecoverable};
+  EXPECT_CALL(mock_reply,
+              Run(VariantWith<PasswordStoreBackendError>(expected_error)));
   consumer().OnError(kJobId, CreateNetworkError());
 
   RunUntilIdle();
@@ -1003,6 +1000,129 @@ TEST_F(PasswordStoreAndroidAccountBackendTest,
 }
 
 TEST_F(PasswordStoreAndroidAccountBackendTest,
+       PostedDelayedRetryCancelledOnSyncStateChange) {
+  base::HistogramTester histogram_tester;
+  backend().InitBackend(
+      /*affiliated_match_helper=*/nullptr,
+      PasswordStoreAndroidAccountBackend::RemoteChangesReceived(),
+      base::NullCallback(), base::DoNothing());
+  backend().OnSyncServiceInitialized(sync_service());
+  EnableSyncForTestAccount();
+
+  base::MockCallback<LoginsOrErrorReply> mock_reply;
+
+  // GetAllLogins will be called once with a retriable error.
+  const JobId kFailedJobId{1};
+  EXPECT_CALL(*bridge_helper(), GetAllLogins).WillOnce(Return(kFailedJobId));
+
+  base::Time before_call_time = task_environment_.GetMockClock()->Now();
+
+  // Initiating the first call.
+  backend().GetAllLoginsAsync(mock_reply.Get());
+
+  // Answering the call with an error.
+  consumer().OnError(kFailedJobId, CreateNetworkError());
+  RunUntilIdle();
+
+  DisableSyncFeature();
+  sync_service()->FireStateChanged();
+  PasswordStoreBackendError expected_error{
+      PasswordStoreBackendErrorType::kUncategorized,
+      PasswordStoreBackendErrorRecoveryType::kRecoverable};
+  EXPECT_CALL(mock_reply,
+              Run(VariantWith<PasswordStoreBackendError>(expected_error)));
+  RunUntilIdle();
+
+  // Since the retry was cancelled, nothing should happen after the retry
+  // timeout
+  EXPECT_CALL(*bridge_helper(), GetAllLogins).Times(0);
+  task_environment_.FastForwardUntilNoTasksRemain();
+  base::Time after_retry_time = task_environment_.GetMockClock()->Now();
+  EXPECT_GE(after_retry_time - before_call_time, base::Seconds(1));
+
+  // Per-operation retry histograms
+  histogram_tester.ExpectBucketCount(
+      base::StrCat({kRetryHistogramBase, ".GetAllLoginsAsync.APIError"}),
+      static_cast<int>(AndroidBackendAPIErrorCode::kNetworkError), 1);
+
+  // "Attempt" is recorder when the method call attempt ends.
+  histogram_tester.ExpectUniqueSample(
+      base::StrCat({kRetryHistogramBase, ".GetAllLoginsAsync.Attempt"}), 1, 1);
+  // "CancelledAtAttempt", records the attempt that was ongoing when the
+  // sync status changes.
+  histogram_tester.ExpectUniqueSample(
+      base::StrCat(
+          {kRetryHistogramBase, ".GetAllLoginsAsync.CancelledAtAttempt"}),
+      2, 1);
+
+  // Aggregated retry histograms
+  histogram_tester.ExpectBucketCount(
+      base::StrCat({kRetryHistogramBase, ".APIError"}),
+      static_cast<int>(AndroidBackendAPIErrorCode::kNetworkError), 1);
+
+  histogram_tester.ExpectUniqueSample(
+      base::StrCat({kRetryHistogramBase, ".Attempt"}), 1, 1);
+  histogram_tester.ExpectUniqueSample(
+      base::StrCat({kRetryHistogramBase, ".CancelledAtAttempt"}), 2, 1);
+}
+
+// Tests that switching sync state has no impact on retry tasks that have
+// already been executed.
+TEST_F(PasswordStoreAndroidAccountBackendTest,
+       OnSyncStateChangeHasNoEffectOnFinishedRetries) {
+  base::HistogramTester histogram_tester;
+  backend().InitBackend(
+      /*affiliated_match_helper=*/nullptr,
+      PasswordStoreAndroidAccountBackend::RemoteChangesReceived(),
+      base::NullCallback(), base::DoNothing());
+  backend().OnSyncServiceInitialized(sync_service());
+  EnableSyncForTestAccount();
+
+  base::MockCallback<LoginsOrErrorReply> mock_reply;
+
+  // GetAllLogins will be called once with a retriable error.
+  const JobId kFailedJobId{1};
+  EXPECT_CALL(*bridge_helper(), GetAllLogins).WillOnce(Return(kFailedJobId));
+
+  base::Time before_call_time = task_environment_.GetMockClock()->Now();
+
+  // Initiating the first call.
+  backend().GetAllLoginsAsync(mock_reply.Get());
+
+  // Answering the call with an error.
+  consumer().OnError(kFailedJobId, CreateNetworkError());
+  RunUntilIdle();
+
+  // Since the retry was cancelled, nothing should happen after the retry
+  // timeout
+  EXPECT_CALL(*bridge_helper(), GetAllLogins);
+  // Execute the posted delayed retry.
+  task_environment_.FastForwardUntilNoTasksRemain();
+
+  base::Time after_retry_time = task_environment_.GetMockClock()->Now();
+
+  EXPECT_GE(after_retry_time - before_call_time, base::Seconds(1));
+
+  // Change the sync state. Since the retry was already executed, the
+  // state change shouldn't invoke the reply callback.
+  EXPECT_CALL(mock_reply, Run).Times(0);
+  DisableSyncFeature();
+  sync_service()->FireStateChanged();
+
+  // "Attempt" is recorded when the method call attempt ends.
+  histogram_tester.ExpectUniqueSample(
+      base::StrCat({kRetryHistogramBase, ".GetAllLoginsAsync.Attempt"}), 1, 1);
+  // Expect that no attempts were cancelled.
+  histogram_tester.ExpectTotalCount(
+      base::StrCat(
+          {kRetryHistogramBase, ".GetAllLoginsAsync.CancelledAtAttempt"}),
+      0);
+
+  histogram_tester.ExpectTotalCount(
+      base::StrCat({kRetryHistogramBase, ".CancelledAtAttempt"}), 0);
+}
+
+TEST_F(PasswordStoreAndroidAccountBackendTest,
        OnExternalAuthErrorNotCausingExperimentUnenrollmentButSuspendsSaving) {
   backend().InitBackend(/*affiliated_match_helper=*/nullptr,
                         PasswordStoreAndroidAccountBackend::RemoteChangesReceived(),
@@ -1015,10 +1135,11 @@ TEST_F(PasswordStoreAndroidAccountBackendTest,
   base::MockCallback<LoginsOrErrorReply> mock_reply;
   EXPECT_CALL(*bridge_helper(), GetAllLogins).WillOnce(Return(kJobId));
   backend().GetAllLoginsAsync(mock_reply.Get());
-  EXPECT_CALL(
-      mock_reply,
-      Run(ExpectError(PasswordStoreBackendErrorType::kAuthErrorUnresolvable,
-                      PasswordStoreBackendErrorRecoveryType::kRecoverable)));
+  PasswordStoreBackendError expected_error{
+      PasswordStoreBackendErrorType::kAuthErrorUnresolvable,
+      PasswordStoreBackendErrorRecoveryType::kRecoverable};
+  EXPECT_CALL(mock_reply,
+              Run(VariantWith<PasswordStoreBackendError>(expected_error)));
   AndroidBackendError error{AndroidBackendErrorType::kExternalError};
   // Simulate receiving AUTH_ERROR_UNRESOLVABLE code.
   int kUnresolvableAuthErrorCode =
@@ -1064,10 +1185,12 @@ TEST_F(PasswordStoreAndroidAccountBackendTest,
   base::MockCallback<LoginsOrErrorReply> mock_reply;
   EXPECT_CALL(*bridge_helper(), GetAllLogins).WillOnce(Return(kJobId));
   backend().GetAllLoginsAsync(mock_reply.Get());
-  EXPECT_CALL(
-      mock_reply,
-      Run(ExpectError(PasswordStoreBackendErrorType::kUncategorized,
-                      PasswordStoreBackendErrorRecoveryType::kUnrecoverable)));
+
+  PasswordStoreBackendError expected_error{
+      PasswordStoreBackendErrorType::kUncategorized,
+      PasswordStoreBackendErrorRecoveryType::kUnrecoverable};
+  EXPECT_CALL(mock_reply,
+              Run(VariantWith<PasswordStoreBackendError>(expected_error)));
   // Simulate receiving PASSPHRASE_REQUIRED code.
   int kPassphraseRequiredErrorCode =
       static_cast<int>(AndroidBackendAPIErrorCode::kPassphraseRequired);
@@ -1106,10 +1229,11 @@ TEST_F(PasswordStoreAndroidAccountBackendTest,
   base::MockCallback<LoginsOrErrorReply> mock_reply;
   EXPECT_CALL(*bridge_helper(), GetAllLogins).WillOnce(Return(kJobId));
   backend().GetAllLoginsAsync(mock_reply.Get());
-  EXPECT_CALL(
-      mock_reply,
-      Run(ExpectError(PasswordStoreBackendErrorType::kUncategorized,
-                      PasswordStoreBackendErrorRecoveryType::kRecoverable)));
+  PasswordStoreBackendError expected_error{
+      PasswordStoreBackendErrorType::kUncategorized,
+      PasswordStoreBackendErrorRecoveryType::kRecoverable};
+  EXPECT_CALL(mock_reply,
+              Run(VariantWith<PasswordStoreBackendError>(expected_error)));
   EXPECT_CALL(try_fix_passphrase_error_cb, Run);
   // Simulate receiving PASSPHRASE_REQUIRED code.
   int kPassphraseRequiredErrorCode =
@@ -1149,10 +1273,11 @@ TEST_F(PasswordStoreAndroidAccountBackendTest,
   base::MockCallback<LoginsOrErrorReply> mock_reply;
   EXPECT_CALL(*bridge_helper(), GetAllLogins).WillOnce(Return(kJobId));
   backend().GetAllLoginsAsync(mock_reply.Get());
-  EXPECT_CALL(
-      mock_reply,
-      Run(ExpectError(PasswordStoreBackendErrorType::kUncategorized,
-                      PasswordStoreBackendErrorRecoveryType::kUnrecoverable)));
+  PasswordStoreBackendError expected_error{
+      PasswordStoreBackendErrorType::kUncategorized,
+      PasswordStoreBackendErrorRecoveryType::kUnrecoverable};
+  EXPECT_CALL(mock_reply,
+              Run(VariantWith<PasswordStoreBackendError>(expected_error)));
   AndroidBackendError error{AndroidBackendErrorType::kExternalError};
   // Simulate receiving INTERNAL_ERROR code.
   int kInternalErrorCode =
@@ -1176,10 +1301,11 @@ TEST_F(PasswordStoreAndroidAccountBackendTest,
   base::MockCallback<LoginsOrErrorReply> mock_reply;
   EXPECT_CALL(*bridge_helper(), GetAllLogins).WillOnce(Return(kJobId));
   backend().GetAllLoginsAsync(mock_reply.Get());
-  EXPECT_CALL(
-      mock_reply,
-      Run(ExpectError(PasswordStoreBackendErrorType::kUncategorized,
-                      PasswordStoreBackendErrorRecoveryType::kUnrecoverable)));
+  PasswordStoreBackendError expected_error{
+      PasswordStoreBackendErrorType::kUncategorized,
+      PasswordStoreBackendErrorRecoveryType::kUnrecoverable};
+  EXPECT_CALL(mock_reply,
+              Run(VariantWith<PasswordStoreBackendError>(expected_error)));
   AndroidBackendError error{AndroidBackendErrorType::kExternalError};
   // Simulate receiving INTERNAL_ERROR code.
   int kInternalErrorCode =
@@ -1323,10 +1449,8 @@ TEST_F(PasswordStoreAndroidAccountBackendTest,
   PasswordStoreBackendError expected_error{
       PasswordStoreBackendErrorType::kUncategorized,
       PasswordStoreBackendErrorRecoveryType::kRecoverable};
-  EXPECT_CALL(
-      mock_reply,
-      Run(ExpectError(PasswordStoreBackendErrorType::kUncategorized,
-                      PasswordStoreBackendErrorRecoveryType::kRecoverable)));
+  EXPECT_CALL(mock_reply,
+              Run(VariantWith<PasswordStoreBackendError>(expected_error)));
   RunUntilIdle();
   histogram_tester.ExpectUniqueSample(kSuccessMetric, false, 1);
   histogram_tester.ExpectUniqueSample(

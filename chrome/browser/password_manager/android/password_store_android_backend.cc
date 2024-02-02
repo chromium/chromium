@@ -10,8 +10,6 @@
 #include <list>
 #include <memory>
 #include <optional>
-#include <string_view>
-#include <utility>
 #include <vector>
 
 #include "base/barrier_callback.h"
@@ -27,6 +25,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/task/task_runner.h"
 #include "base/time/time.h"
 #include "chrome/browser/password_manager/android/password_manager_eviction_util.h"
 #include "chrome/browser/password_manager/android/password_manager_lifecycle_helper_impl.h"
@@ -259,14 +258,19 @@ std::string GetOperationName(PasswordStoreOperation operation) {
   return "";
 }
 
+int GetRetryAttemptFromDelay(base::TimeDelta delay) {
+  // Delays are exponential (powers of 2). Original operation delay is 0.
+  int attempt = 1;
+  if (delay.InSeconds() >= 1) {
+    attempt = log2(delay.InSeconds()) + 2;
+  }
+  return attempt;
+}
+
 void RecordRetryHistograms(PasswordStoreOperation operation,
                            AndroidBackendAPIErrorCode api_error_code,
                            base::TimeDelta delay) {
-  // Delays are exponential (powers of 2). Original operation delay is 0.
-  int attempt = 1;
-  if (delay.InSeconds() >= 1)
-    attempt = log2(delay.InSeconds()) + 2;
-
+  int attempt = GetRetryAttemptFromDelay(delay);
   // Record per-operation metrics
   base::UmaHistogramSparse(
       base::StrCat(
@@ -284,6 +288,20 @@ void RecordRetryHistograms(PasswordStoreOperation operation,
                                 attempt, kMaxReportedRetryAttempts);
 }
 
+void RecordCancelledRetryMetrics(PasswordStoreOperation operation,
+                                 base::TimeDelta delay) {
+  int attempt = GetRetryAttemptFromDelay(delay);
+
+  // Record per-operation metrics
+  base::UmaHistogramExactLinear(
+      base::StrCat({kRetryHistogramBase, ".", GetOperationName(operation),
+                    ".CancelledAtAttempt"}),
+      attempt, kMaxReportedRetryAttempts);
+
+  base::UmaHistogramExactLinear(
+      base::StrCat({kRetryHistogramBase, ".CancelledAtAttempt"}), attempt,
+      kMaxReportedRetryAttempts);
+}
 enum class ActionOnApiError {
   // See password_manager_upm_eviction::EvictCurrentUser().
   kEvict,
@@ -600,6 +618,8 @@ void PasswordStoreAndroidBackend::ClearAllTasksAndReplyWithReason(
     const AndroidBackendError& reason,
     const PasswordStoreBackendError& reply_error) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
+
+  // Cancel queued jobs that haven't yet received a reply.
   for (auto& [id, job_reply] : request_for_job_) {
     job_reply.RecordMetrics(reason);
     if (job_reply.Holds<LoginsOrErrorReply>()) {
@@ -617,6 +637,15 @@ void PasswordStoreAndroidBackend::ClearAllTasksAndReplyWithReason(
     }
   }
   request_for_job_.clear();
+
+  // Cancel posted delayed retries
+  for (const auto& [id, retry_wrapper] : scheduled_retries_) {
+    LoginsOrErrorReply reply_callback =
+        retry_wrapper->GetReplyCallbackAndCancel();
+    main_task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(std::move(reply_callback), reply_error));
+  }
+  scheduled_retries_.clear();
 }
 
 PasswordStoreAndroidBackend::JobReturnHandler::JobReturnHandler(
@@ -641,7 +670,6 @@ PasswordStoreAndroidBackend::JobReturnHandler::JobReturnHandler(
 
 PasswordStoreAndroidBackend::JobReturnHandler::JobReturnHandler(
     JobReturnHandler&&) = default;
-
 PasswordStoreAndroidBackend::JobReturnHandler::~JobReturnHandler() = default;
 
 void PasswordStoreAndroidBackend::JobReturnHandler::RecordMetrics(
@@ -666,13 +694,98 @@ PasswordStoreAndroidBackend::JobReturnHandler::GetOperation() {
   return operation_;
 }
 
+PasswordStoreAndroidBackend::CancellableRetryCallback::CancellableRetryCallback(
+    base::OnceCallback<void(LoginsOrErrorReply,
+                            PasswordStoreOperation,
+                            base::TimeDelta)> callback,
+    PasswordStoreOperation operation,
+    LoginsOrErrorReply reply_callback,
+    base::TimeDelta current_delay)
+    : callback_(std::move(callback)),
+      operation_(operation),
+      reply_callback_(std::move(reply_callback)),
+      current_delay_(current_delay) {}
+PasswordStoreAndroidBackend::CancellableRetryCallback::
+    ~CancellableRetryCallback() = default;
+
+base::WeakPtr<PasswordStoreAndroidBackend::CancellableRetryCallback>
+PasswordStoreAndroidBackend::CancellableRetryCallback::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
+void PasswordStoreAndroidBackend::CancellableRetryCallback::Run() {
+  CHECK(callback_);
+  std::move(callback_).Run(std::move(reply_callback_), operation_,
+                           current_delay_);
+}
+
+LoginsOrErrorReply PasswordStoreAndroidBackend::CancellableRetryCallback::
+    GetReplyCallbackAndCancel() {
+  RecordCancelledRetryMetrics(operation_, current_delay_);
+  weak_ptr_factory_.InvalidateWeakPtrs();
+
+  return std::move(reply_callback_);
+}
+
+base::OnceCallback<
+    void(LoginsOrErrorReply, PasswordStoreOperation, base::TimeDelta)>
+PasswordStoreAndroidBackend::GetRetryCallbackForOperation(
+    PasswordStoreOperation operation) {
+  switch (operation) {
+    case PasswordStoreOperation::kGetAllLoginsAsync:
+      return base::BindOnce(&PasswordStoreAndroidBackend::GetAllLoginsInternal,
+                            weak_ptr_factory_.GetWeakPtr(),
+                            GetAccountToRetryOperation());
+    case PasswordStoreOperation::kGetAutofillableLoginsAsync:
+      return base::BindOnce(
+          &PasswordStoreAndroidBackend::GetAutofillableLoginsInternal,
+          weak_ptr_factory_.GetWeakPtr(), GetAccountToRetryOperation());
+    case PasswordStoreOperation::kFillMatchingLoginsAsync:
+    case PasswordStoreOperation::kAddLoginAsync:
+    case PasswordStoreOperation::kUpdateLoginAsync:
+    case PasswordStoreOperation::kRemoveLoginAsync:
+    case PasswordStoreOperation::kRemoveLoginsByURLAndTimeAsync:
+    case PasswordStoreOperation::kRemoveLoginsCreatedBetweenAsync:
+    case PasswordStoreOperation::kDisableAutoSignInForOriginsAsync:
+    case PasswordStoreOperation::kGetGroupedMatchingLoginsAsync:
+    case PasswordStoreOperation::kGetAllLoginsWithBrandingInfoAsync:
+      NOTREACHED_NORETURN();
+  }
+}
+
 void PasswordStoreAndroidBackend::RetryOperation(
-    base::OnceCallback<void(base::TimeDelta)> callback,
-    base::TimeDelta delay) {
+    PasswordStoreOperation operation,
+    AndroidBackendAPIErrorCode api_error_code,
+    base::TimeDelta delay,
+    LoginsOrErrorReply reply) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
+  RecordRetryHistograms(operation, api_error_code, delay);
+
   base::TimeDelta new_delay =
       delay.InSeconds() == 0 ? base::Seconds(1) : delay * 2;
+
+  auto retry =
+      std::make_unique<PasswordStoreAndroidBackend::CancellableRetryCallback>(
+          GetRetryCallbackForOperation(operation), operation, std::move(reply),
+          new_delay);
+
+  DelayedRetryId id = delayed_retry_id_generator_.GenerateNextId();
+  base::OnceClosure cleanup =
+      base::BindOnce(&PasswordStoreAndroidBackend::CleanupRetryAfterRun,
+                     weak_ptr_factory_.GetWeakPtr(), id);
+
   main_task_runner_->PostDelayedTask(
-      FROM_HERE, base::BindOnce(std::move(callback), new_delay), new_delay);
+      FROM_HERE,
+      base::BindOnce(&CancellableRetryCallback::Run, retry->AsWeakPtr())
+          .Then(std::move(cleanup)),
+      new_delay);
+  scheduled_retries_.emplace(id, std::move(retry));
+}
+
+void PasswordStoreAndroidBackend::CleanupRetryAfterRun(
+    DelayedRetryId retry_id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
+  scheduled_retries_.erase(retry_id);
 }
 
 void PasswordStoreAndroidBackend::OnCompleteWithLogins(
@@ -734,22 +847,11 @@ void PasswordStoreAndroidBackend::OnError(JobId job_id,
     int api_error = error.api_error_code.value();
     auto api_error_code = static_cast<AndroidBackendAPIErrorCode>(api_error);
 
-    // TODO(crbug.com/1372343): Extract the retry logic into a separate method.
     // Retry the call if the performed operation in combination with the error
     // was retriable and the time limit was not reached.
     if (ShouldRetryOperationOnError(operation, api_error_code, delay)) {
-      RecordRetryHistograms(operation, api_error_code, delay);
-      CHECK(operation == PasswordStoreOperation::kGetAllLoginsAsync ||
-            operation == PasswordStoreOperation::kGetAutofillableLoginsAsync);
-      const auto method =
-          operation == PasswordStoreOperation::kGetAllLoginsAsync
-              ? &PasswordStoreAndroidBackend::GetAllLoginsInternal
-              : &PasswordStoreAndroidBackend::GetAutofillableLoginsInternal;
-      RetryOperation(base::BindOnce(method, weak_ptr_factory_.GetWeakPtr(),
-                                    GetAccountToRetryOperation(),
-                                    std::move(*reply).Get<LoginsOrErrorReply>(),
-                                    operation),
-                     delay);
+      RetryOperation(operation, api_error_code, delay,
+                     std::move(*reply).Get<LoginsOrErrorReply>());
       return;
     }
 

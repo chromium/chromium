@@ -24,7 +24,6 @@
 #include "chrome/browser/password_manager/android/password_store_android_backend_bridge_helper.h"
 #include "chrome/browser/password_manager/android/password_store_android_backend_dispatcher_bridge.h"
 #include "components/password_manager/core/browser/password_store/password_store_backend_metrics_recorder.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 class PrefService;
 
@@ -235,18 +234,60 @@ class PasswordStoreAndroidBackend
     PasswordStoreOperation operation_;
   };
 
+  // Wraps the `callback` to retry after the previous attempt to call
+  // the backend failed. Used to be able to cancel a posted delayed
+  // operation while also replying to its `reply_callback` that the
+  // delayed retry was cancelled. In order to cancel the retry, it's
+  // enough to destroy the wrapper object, which will invalidate the weak
+  // pointer bound to the delayed task.
+  class CancellableRetryCallback {
+   public:
+    CancellableRetryCallback(base::OnceCallback<void(LoginsOrErrorReply,
+                                                     PasswordStoreOperation,
+                                                     base::TimeDelta)> callback,
+                             PasswordStoreOperation operation,
+                             LoginsOrErrorReply reply_callback,
+                             base::TimeDelta current_delay);
+    CancellableRetryCallback(CancellableRetryCallback&&) = delete;
+    CancellableRetryCallback& operator=(CancellableRetryCallback&&) = delete;
+    ~CancellableRetryCallback();
+
+    base::WeakPtr<CancellableRetryCallback> AsWeakPtr();
+
+    void Run();
+    LoginsOrErrorReply GetReplyCallbackAndCancel();
+
+   private:
+    base::OnceCallback<
+        void(LoginsOrErrorReply, PasswordStoreOperation, base::TimeDelta)>
+        callback_;
+    PasswordStoreOperation operation_;
+    LoginsOrErrorReply reply_callback_;
+    base::TimeDelta current_delay_;
+    base::WeakPtrFactory<CancellableRetryCallback> weak_ptr_factory_{this};
+  };
+
   using JobId = PasswordStoreAndroidBackendDispatcherBridge::JobId;
   // Using a small_map should ensure that we handle rare cases with many jobs
   // like a bulk deletion just as well as the normal, rather small job load.
   using JobMap = base::small_map<
       std::unordered_map<JobId, JobReturnHandler, JobId::Hasher>>;
 
+  using DelayedRetryId = base::IdType32<CancellableRetryCallback>;
+
+  base::OnceCallback<
+      void(LoginsOrErrorReply, PasswordStoreOperation, base::TimeDelta)>
+  GetRetryCallbackForOperation(PasswordStoreOperation operation);
   // Implements the retry mechanism for the operations that are safe to retry.
-  // The given |delay| comes from the previous attempt to run the operation.
-  // The delay before the next retry will be double the value of |delay|,
-  // except for the first retry that has a delay of 1 second.
-  void RetryOperation(base::OnceCallback<void(base::TimeDelta)> callback,
-                      base::TimeDelta delay);
+  // It attempts to retry the |operation|. The given |delay| comes from the
+  // previous attempt to run the operation. The delay before the next retry will
+  // be double the value of |delay|, except for the first retry that has a delay
+  // of 1 second.
+  void RetryOperation(PasswordStoreOperation operation,
+                      AndroidBackendAPIErrorCode api_error_code,
+                      base::TimeDelta delay,
+                      LoginsOrErrorReply reply);
+  void CleanupRetryAfterRun(DelayedRetryId retry_id);
 
   // Implements PasswordStoreAndroidBackendDispatcherBridge::Consumer interface.
   void OnCompleteWithLogins(
@@ -334,6 +375,15 @@ class PasswordStoreAndroidBackend
   // This object is the proxy to the dispatcher JNI bridge that performs the API
   // requests.
   std::unique_ptr<PasswordStoreAndroidBackendBridgeHelper> bridge_helper_;
+
+  // Used to store retry callbacks that will be executed as part of a
+  // posted delayed task.
+  std::map<DelayedRetryId, std::unique_ptr<CancellableRetryCallback>>
+      scheduled_retries_ GUARDED_BY_CONTEXT(main_sequence_checker_);
+
+  // The id of the latest scheduled retry. Incremented when a new retry is
+  // scheduled.
+  DelayedRetryId::Generator delayed_retry_id_generator_;
 
   raw_ptr<PrefService> prefs_ = nullptr;
 

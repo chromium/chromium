@@ -86,6 +86,13 @@ chromium-metrics-reviews@google.com.
   <variant name="LocalProfile"/>
 </variants>
 
+<variants name="RetriedOperation">
+  <variant name=""/>
+  <variant name=".GetAllLoginsAsync" summary="GetAllLoginsAsync"/>
+  <variant name=".GetAutofillableLoginsAsync"
+      summary="GetAutofillableLoginsAsync"/>
+</variants>
+
 <variants name="Scheme">
   <variant name=""/>
   <variant name=".Android" summary="The password is for an Android app."/>
@@ -2658,24 +2665,7 @@ chromium-metrics-reviews@google.com.
     asynchronous call comes back with an error and it is checked that operation
     could be retried. This is only recorded for GMS API errors on Android.
   </summary>
-  <token key="Operation">
-    <variant name=""/>
-    <variant name=".AddLoginAsync" summary="AddLogin"/>
-    <variant name=".DisableAutoSignInForOriginsAsync"
-        summary="DisableAutoSignInForOrigins"/>
-    <variant name=".FillMatchingLoginsAsync" summary="FillMatchingLogins"/>
-    <variant name=".GetAllLoginsAsync" summary="GetAllLogins"/>
-    <variant name=".GetAllLoginsForAccountAsync"
-        summary="GetAllLoginsForAccount"/>
-    <variant name=".GetAutofillableLoginsAsync"
-        summary="GetAutofillableLogins"/>
-    <variant name=".RemoveLoginAsync" summary="RemoveLogin"/>
-    <variant name=".RemoveLoginsByURLAndTimeAsync"
-        summary="RemoveLoginsByURLAndTime"/>
-    <variant name=".RemoveLoginsCreatedBetweenAsync"
-        summary="RemoveLoginsCreatedBetween"/>
-    <variant name=".UpdateLoginAsync" summary="UpdateLogin"/>
-  </token>
+  <token key="Operation" variants="RetriedOperation"/>
 </histogram>
 
 <histogram
@@ -2691,24 +2681,22 @@ chromium-metrics-reviews@google.com.
     API errors on Android. Note: This histogram expired after M120. Data might
     be incomplete before M122, Jan 4 2023.
   </summary>
-  <token key="Operation">
-    <variant name=""/>
-    <variant name=".AddLoginAsync" summary="AddLoginAsync"/>
-    <variant name=".DisableAutoSignInForOriginsAsync"
-        summary="DisableAutoSignInForOriginsAsync"/>
-    <variant name=".FillMatchingLoginsAsync" summary="FillMatchingLoginsAsync"/>
-    <variant name=".GetAllLoginsAsync" summary="GetAllLoginsAsync"/>
-    <variant name=".GetAllLoginsForAccountAsync"
-        summary="GetAllLoginsForAccountAsync"/>
-    <variant name=".GetAutofillableLoginsAsync"
-        summary="GetAutofillableLoginsAsync"/>
-    <variant name=".RemoveLoginAsync" summary="RemoveLoginAsync"/>
-    <variant name=".RemoveLoginsByURLAndTimeAsync"
-        summary="RemoveLoginsByURLAndTimeAsync"/>
-    <variant name=".RemoveLoginsCreatedBetweenAsync"
-        summary="RemoveLoginsCreatedBetweenAsync"/>
-    <variant name=".UpdateLoginAsync" summary="UpdateLoginAsync"/>
-  </token>
+  <token key="Operation" variants="RetriedOperation"/>
+</histogram>
+
+<histogram
+    name="PasswordManager.PasswordStoreAndroidBackend.Retry{Operation}.CancelledAtAttempt"
+    units="Times" expires_after="2024-07-07">
+  <owner>izuzic@google.com</owner>
+  <owner>ioanap@chromium.org</owner>
+  <summary>
+    Records which attempt was ongoing when the posted retry was cancelled for
+    {Operation}. Recorded when the sync state changes and the callback which was
+    supposed to be invoked after the attempt's delay is invalidated. Note that
+    the original attempt to call the method counts as attempt 1, so the first
+    retry would be attempt 2, etc.
+  </summary>
+  <token key="Operation" variants="RetriedOperation"/>
 </histogram>
 
 <histogram
