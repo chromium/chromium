@@ -20315,6 +20315,7 @@ from previous Chrome versions.
   <int value="-168306701" label="SystemLiveCaption:disabled"/>
   <int value="-167744090" label="EnableHomeLauncher:enabled"/>
   <int value="-167420098" label="WebBluetoothNewPermissionsBackend:enabled"/>
+  <int value="-167302414" label="AutomaticFullscreenContentSetting:enabled"/>
   <int value="-165756594" label="enable-touch-feedback"/>
   <int value="-165712979" label="AdaptiveChargingForTesting:enabled"/>
   <int value="-165063145" label="LauncherManateeForKeyboardShortcuts:enabled"/>
@@ -24022,6 +24023,7 @@ from previous Chrome versions.
   <int value="1556835732"
       label="CrOSLateBootArcVmAAudioMMAPLowLatency:disabled"/>
   <int value="1557680135" label="PartitionedCookies:disabled"/>
+  <int value="1557709833" label="AutomaticFullscreenContentSetting:disabled"/>
   <int value="1558410842" label="FilesZipNoNaCl:disabled"/>
   <int value="1558757619"
       label="AccessibilitySelectToSpeakPageMigration:enabled"/>

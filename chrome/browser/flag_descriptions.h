@@ -1218,6 +1218,9 @@ extern const char kIpProtectionProxyOptOutDescription[];
 extern const char kIpProtectionProxyOptOutChoiceDefault[];
 extern const char kIpProtectionProxyOptOutChoiceOptOut[];
 
+extern const char kAutomaticFullscreenContentSettingName[];
+extern const char kAutomaticFullscreenContentSettingDescription[];
+
 extern const char kJapaneseOSSettingsName[];
 extern const char kJapaneseOSSettingsDescription[];
 

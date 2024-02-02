@@ -121,6 +121,7 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(kInstalledAppProvider);
 // LINT.IfChange
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kIsolatedWebApps);
 // LINT.ThenChange(//PRESUBMIT.py)
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kAutomaticFullscreenContentSetting);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kIsolateFencedFrames);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kIsolateOrigins);
 CONTENT_EXPORT extern const char kIsolateOriginsFieldTrialParamName[];

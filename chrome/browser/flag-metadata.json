@@ -757,6 +757,11 @@
     "expiry_milestone": 125
   },
   {
+    "name": "automatic-fullscreen-content-setting",
+    "owners": [ "msw@chromium.org", "web-windowing-team@google.com" ],
+    "expiry_milestone": 140
+  },
+  {
     "name": "auxiliary-search-donation",
     "owners": [ "gangwu@chromium.org", "chrome-mobile-search@google.com" ],
     "expiry_milestone": 140

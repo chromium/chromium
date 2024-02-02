@@ -2168,6 +2168,12 @@ const char kIpProtectionProxyOptOutDescription[] =
 const char kIpProtectionProxyOptOutChoiceDefault[] = "Default";
 const char kIpProtectionProxyOptOutChoiceOptOut[] = "Disabled";
 
+const char kAutomaticFullscreenContentSettingName[] =
+    "Automatic Fullscreen Content Setting";
+const char kAutomaticFullscreenContentSettingDescription[] =
+    "Enables a new Automatic Fullscreen content setting that lets allowlisted "
+    "origins use the HTML Fullscreen API without transient activation.";
+
 const char kJapaneseOSSettingsName[] = "Japanese OS Settings Page";
 const char kJapaneseOSSettingsDescription[] =
     "Enable OS Settings Page for Japanese input methods";

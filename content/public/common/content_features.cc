@@ -515,6 +515,12 @@ BASE_FEATURE(kIsolatedWebApps,
              "IsolatedWebApps",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables a new Automatic Fullscreen content setting that lets allowlisted
+// origins use the HTML Fullscreen API without transient activation.
+BASE_FEATURE(kAutomaticFullscreenContentSetting,
+             "AutomaticFullscreenContentSetting",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables process isolation of fenced content (content inside fenced frames)
 // from non-fenced content. See
 // https://github.com/WICG/fenced-frame/blob/master/explainer/process_isolation.md
