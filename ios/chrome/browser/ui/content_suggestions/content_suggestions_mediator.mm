@@ -6,7 +6,6 @@
 
 #import <AuthenticationServices/AuthenticationServices.h>
 
-#import <optional>
 #import <vector>
 
 #import "base/apple/foundation_util.h"
@@ -38,8 +37,6 @@
 #import "components/sync/base/user_selectable_type.h"
 #import "components/sync/service/sync_user_settings.h"
 #import "components/url_formatter/elide_url.h"
-#import "ios/chrome/app/application_delegate/app_state.h"
-#import "ios/chrome/app/application_delegate/app_state_observer.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/intents/intents_donation_helper.h"
 #import "ios/chrome/browser/net/model/crurl.h"
@@ -47,11 +44,7 @@
 #import "ios/chrome/browser/ntp_tiles/model/tab_resumption/tab_resumption_prefs.h"
 #import "ios/chrome/browser/parcel_tracking/parcel_tracking_prefs.h"
 #import "ios/chrome/browser/parcel_tracking/parcel_tracking_util.h"
-#import "ios/chrome/browser/passwords/model/password_checkup_utils.h"
-#import "ios/chrome/browser/safety_check/model/ios_chrome_safety_check_manager.h"
 #import "ios/chrome/browser/safety_check/model/ios_chrome_safety_check_manager_constants.h"
-#import "ios/chrome/browser/safety_check/model/ios_chrome_safety_check_manager_factory.h"
-#import "ios/chrome/browser/safety_check/model/ios_chrome_safety_check_manager_observer_bridge.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
@@ -84,6 +77,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/identifier/content_suggestions_section_information.h"
 #import "ios/chrome/browser/ui/content_suggestions/magic_stack/shortcuts_config.h"
 #import "ios/chrome/browser/ui/content_suggestions/parcel_tracking/parcel_tracking_item.h"
+#import "ios/chrome/browser/ui/content_suggestions/safety_check/safety_check_magic_stack_mediator.h"
 #import "ios/chrome/browser/ui/content_suggestions/safety_check/safety_check_prefs.h"
 #import "ios/chrome/browser/ui/content_suggestions/safety_check/safety_check_state.h"
 #import "ios/chrome/browser/ui/content_suggestions/safety_check/utils.h"
@@ -110,17 +104,12 @@ namespace {
 using CSCollectionViewItem = CollectionViewItem<SuggestedContent>;
 using RequestSource = SearchTermsData::RequestSource;
 
-// The Safety Check (Magic Stack) module runs (at minimum) once every 24 hours.
-constexpr base::TimeDelta kSafetyCheckRunThreshold = base::Hours(24);
-
 }  // namespace
 
-@interface ContentSuggestionsMediator () <AppStateObserver,
-                                          IdentityManagerObserverBridgeDelegate,
+@interface ContentSuggestionsMediator () <IdentityManagerObserverBridgeDelegate,
                                           MostVisitedTilesMediatorDelegate,
                                           SyncObserverModelBridge,
                                           PrefObserverDelegate,
-                                          SafetyCheckManagerObserver,
                                           SyncedSessionsObserver> {
   std::unique_ptr<synced_sessions::SyncedSessionsObserverBridge>
       _syncedSessionsObserver;
@@ -157,24 +146,17 @@ constexpr base::TimeDelta kSafetyCheckRunThreshold = base::Hours(24);
 @end
 
 @implementation ContentSuggestionsMediator {
-  // Bridge to listen to pref changes.
-  std::unique_ptr<PrefObserverBridge> _prefObserverBridge;
   // Registrar for pref changes notifications.
   PrefChangeRegistrar _prefChangeRegistrar;
   // Local State prefs.
   raw_ptr<PrefService> _localState;
   // Used by SetUpList to get the sync status.
   raw_ptr<syncer::SyncService> _syncService;
-  // Used by the Safety Check (Magic Stack) module for the current Safety Check
-  // state.
-  SafetyCheckState* _safetyCheckState;
   // Observes changes to signed-in status.
   std::unique_ptr<signin::IdentityManagerObserverBridge>
       _identityObserverBridge;
   // Observer for sync service status changes.
   std::unique_ptr<SyncObserverBridge> _syncObserverBridge;
-  // Observer for Safety Check changes.
-  std::unique_ptr<SafetyCheckObserverBridge> _safetyCheckManagerObserver;
   // Helper class for the tab resumption tile.
   std::unique_ptr<TabResumptionHelper> _tabResumptionHelper;
   // Item displayed in the tab resumption tile.
@@ -200,7 +182,6 @@ constexpr base::TimeDelta kSafetyCheckRunThreshold = base::Hours(24);
                   mostVisitedSite:(std::unique_ptr<ntp_tiles::MostVisitedSites>)
                                       mostVisitedSites
                       prefService:(PrefService*)prefService
-    isGoogleDefaultSearchProvider:(BOOL)isGoogleDefaultSearchProvider
                       syncService:(syncer::SyncService*)syncService
             authenticationService:(AuthenticationService*)authenticationService
                   identityManager:(signin::IdentityManager*)identityManager
@@ -258,47 +239,8 @@ constexpr base::TimeDelta kSafetyCheckRunThreshold = base::Hours(24);
       _tabResumptionHelper = std::make_unique<TabResumptionHelper>(browser);
     }
 
-    SceneState* sceneState = browser->GetSceneState();
-
-    [sceneState.appState addObserver:self];
-
     _browser = browser;
 
-    if (IsSafetyCheckMagicStackEnabled() &&
-        !safety_check_prefs::IsSafetyCheckInMagicStackDisabled(_localState)) {
-      if (!_prefObserverBridge) {
-        _prefObserverBridge = std::make_unique<PrefObserverBridge>(self);
-      }
-
-      _prefChangeRegistrar.Init(_localState);
-
-      // TODO(crbug.com/1481230): Stop observing
-      // `kIosSettingsSafetyCheckLastRunTime` changes once the Settings Safety
-      // Check is refactored to use the new Safety Check Manager.
-      _prefObserverBridge->ObserveChangesForPreference(
-          prefs::kIosSettingsSafetyCheckLastRunTime, &_prefChangeRegistrar);
-
-      _prefObserverBridge->ObserveChangesForPreference(
-          prefs::kIosSafetyCheckManagerSafeBrowsingCheckResult,
-          &_prefChangeRegistrar);
-
-      _safetyCheckState = [self initialSafetyCheckState];
-      _safetyCheckState.commandhandler = _presentationDelegate;
-
-      _safetyCheckManagerObserver = std::make_unique<SafetyCheckObserverBridge>(
-          self, IOSChromeSafetyCheckManagerFactory::GetForBrowserState(
-                    browser->GetBrowserState()));
-
-      if (sceneState.appState.initStage > InitStageNormalUI &&
-          sceneState.appState.firstSceneHasInitializedUI &&
-          _safetyCheckState.runningState == RunningSafetyCheckState::kRunning) {
-        IOSChromeSafetyCheckManager* safetyCheckManager =
-            IOSChromeSafetyCheckManagerFactory::GetForBrowserState(
-                browser->GetBrowserState());
-
-        safetyCheckManager->StartSafetyCheck();
-      }
-    }
   }
 
   return self;
@@ -316,14 +258,7 @@ constexpr base::TimeDelta kSafetyCheckRunThreshold = base::Hours(24);
   _mostVisitedTilesMediator = nil;
   _syncObserverBridge.reset();
   _identityObserverBridge.reset();
-  _safetyCheckManagerObserver.reset();
   _syncedSessionsObserver.reset();
-  if (_prefObserverBridge) {
-    _prefChangeRegistrar.RemoveAll();
-    _prefObserverBridge.reset();
-  }
-  SceneState* sceneState = self.browser->GetSceneState();
-  [sceneState.appState removeObserver:self];
   _localState = nullptr;
 }
 
@@ -409,27 +344,6 @@ constexpr base::TimeDelta kSafetyCheckRunThreshold = base::Hours(24);
       recordMagicStackModuleEngagementForType:type
                                       atIndex:
                                           [self indexForMagicStackModule:type]];
-}
-
-#pragma mark - AppStateObserver
-
-// Conditionally starts the Safety Check if the upcoming init stage is
-// `InitStageFinal` and the Safety Check state indicates it's running.
-//
-// NOTE: It's safe to call `StartSafetyCheck()` multiple times, because calling
-// `StartSafetyCheck()` on an already-running Safety Check is a no-op.
-- (void)appState:(AppState*)appState
-    willTransitionToInitStage:(InitStage)nextInitStage {
-  if (IsSafetyCheckMagicStackEnabled() &&
-      !safety_check_prefs::IsSafetyCheckInMagicStackDisabled(_localState) &&
-      nextInitStage == InitStageFinal && appState.firstSceneHasInitializedUI &&
-      _safetyCheckState.runningState == RunningSafetyCheckState::kRunning) {
-    IOSChromeSafetyCheckManager* safetyCheckManager =
-        IOSChromeSafetyCheckManagerFactory::GetForBrowserState(
-            _browser->GetBrowserState());
-
-    safetyCheckManager->StartSafetyCheck();
-  }
 }
 
 #pragma mark - IdentityManagerObserverBridgeDelegate
@@ -581,112 +495,6 @@ constexpr base::TimeDelta kSafetyCheckRunThreshold = base::Hours(24);
   return [self.parcelTrackingMediator parcelTrackingItemsToShow];
 }
 
-// Creates the initial `SafetyCheckState` based on the previous check states
-// stored in Prefs, or (for development builds) the overridden check states via
-// Experimental settings.
-- (SafetyCheckState*)initialSafetyCheckState {
-  SafetyCheckState* state = [[SafetyCheckState alloc]
-      initWithUpdateChromeState:UpdateChromeSafetyCheckState::kDefault
-                  passwordState:PasswordSafetyCheckState::kDefault
-              safeBrowsingState:SafeBrowsingSafetyCheckState::kDefault
-                   runningState:RunningSafetyCheckState::kDefault];
-
-  IOSChromeSafetyCheckManager* safetyCheckManager =
-      IOSChromeSafetyCheckManagerFactory::GetForBrowserState(
-          _browser->GetBrowserState());
-
-  // Update Chrome check.
-  std::optional<UpdateChromeSafetyCheckState> overrideUpdateChromeState =
-      experimental_flags::GetUpdateChromeSafetyCheckState();
-
-  state.updateChromeState = overrideUpdateChromeState.value_or(
-      safetyCheckManager->GetUpdateChromeCheckState());
-
-  // Password check.
-  std::optional<PasswordSafetyCheckState> overridePasswordState =
-      experimental_flags::GetPasswordSafetyCheckState();
-
-  state.passwordState = overridePasswordState.value_or(
-      safetyCheckManager->GetPasswordCheckState());
-
-  // Safe Browsing check.
-  std::optional<SafeBrowsingSafetyCheckState> overrideSafeBrowsingState =
-      experimental_flags::GetSafeBrowsingSafetyCheckState();
-
-  state.safeBrowsingState = overrideSafeBrowsingState.value_or(
-      safetyCheckManager->GetSafeBrowsingCheckState());
-
-  // Insecure credentials.
-  std::optional<int> overrideWeakPasswordsCount =
-      experimental_flags::GetSafetyCheckWeakPasswordsCount();
-
-  std::optional<int> overrideReusedPasswordsCount =
-      experimental_flags::GetSafetyCheckReusedPasswordsCount();
-
-  std::optional<int> overrideCompromisedPasswordsCount =
-      experimental_flags::GetSafetyCheckCompromisedPasswordsCount();
-
-  bool passwordCountsOverride = overrideWeakPasswordsCount.has_value() ||
-                                overrideReusedPasswordsCount.has_value() ||
-                                overrideCompromisedPasswordsCount.has_value();
-
-  // NOTE: If any password counts are overriden via Experimental
-  // settings, all password counts will be considered overriden.
-  if (passwordCountsOverride) {
-    state.weakPasswordsCount = overrideWeakPasswordsCount.value_or(0);
-    state.reusedPasswordsCount = overrideReusedPasswordsCount.value_or(0);
-    state.compromisedPasswordsCount =
-        overrideCompromisedPasswordsCount.value_or(0);
-  } else {
-    std::vector<password_manager::CredentialUIEntry> insecureCredentials =
-        safetyCheckManager->GetInsecureCredentials();
-
-    password_manager::InsecurePasswordCounts counts =
-        password_manager::CountInsecurePasswordsPerInsecureType(
-            insecureCredentials);
-
-    state.weakPasswordsCount = counts.weak_count;
-    state.reusedPasswordsCount = counts.reused_count;
-    state.compromisedPasswordsCount = counts.compromised_count;
-  }
-
-  state.lastRunTime = [self latestSafetyCheckRunTimestamp];
-
-  state.runningState = CanRunSafetyCheck(state.lastRunTime)
-                           ? RunningSafetyCheckState::kRunning
-                           : RunningSafetyCheckState::kDefault;
-
-  return state;
-}
-
-// Returns the last run time of the Safety Check, regardless if the check was
-// started from the Safety Check (Magic Stack) module, or the Safety Check
-// Settings UI.
-- (std::optional<base::Time>)latestSafetyCheckRunTimestamp {
-  IOSChromeSafetyCheckManager* safetyCheckManager =
-      IOSChromeSafetyCheckManagerFactory::GetForBrowserState(
-          _browser->GetBrowserState());
-
-  base::Time lastRunTimeViaModule =
-      safetyCheckManager->GetLastSafetyCheckRunTime();
-
-  base::Time lastRunTimeViaSettings =
-      _localState->GetTime(prefs::kIosSettingsSafetyCheckLastRunTime);
-
-  // Use the most recent Last Run Time—regardless of where the Safety Check was
-  // run—to minimize user confusion.
-  base::Time lastRunTime = lastRunTimeViaModule > lastRunTimeViaSettings
-                               ? lastRunTimeViaModule
-                               : lastRunTimeViaSettings;
-
-  base::TimeDelta lastRunAge = base::Time::Now() - lastRunTime;
-
-  // Only return the Last Run Time if the run happened within the last 24hr.
-  return lastRunAge <= kSafetyCheckRunThreshold
-             ? std::optional<base::Time>(lastRunTime)
-             : std::nullopt;
-}
-
 - (void)configureConsumer {
   if (!self.consumer) {
     return;
@@ -726,9 +534,10 @@ constexpr base::TimeDelta kSafetyCheckRunThreshold = base::Hours(24);
 
   if (IsSafetyCheckMagicStackEnabled() &&
       !safety_check_prefs::IsSafetyCheckInMagicStackDisabled(_localState) &&
-      _safetyCheckState.runningState == RunningSafetyCheckState::kDefault) {
-    _safetyCheckState.commandhandler = self.presentationDelegate;
-    [self.consumer showSafetyCheck:_safetyCheckState];
+      self.safetyCheckMediator.safetyCheckState.runningState ==
+          RunningSafetyCheckState::kDefault) {
+    //    _safetyCheckState.commandhandler = self.presentationDelegate;
+    [self.consumer showSafetyCheck:self.safetyCheckMediator.safetyCheckState];
   }
   if (IsIOSParcelTrackingEnabled() &&
       !IsParcelTrackingDisabled(GetApplicationContext()->GetLocalState())) {
@@ -970,7 +779,8 @@ constexpr base::TimeDelta kSafetyCheckRunThreshold = base::Hours(24);
 - (void)addSafetyCheckToMagicStackOrder:(NSMutableArray*)order {
   CHECK(IsSafetyCheckMagicStackEnabled());
 
-  int checkIssuesCount = CheckIssuesCount(_safetyCheckState);
+  int checkIssuesCount =
+      CheckIssuesCount(self.safetyCheckMediator.safetyCheckState);
 
   if (checkIssuesCount > 2) {
     [order addObject:@(int(ContentSuggestionsModuleType::
@@ -1145,74 +955,6 @@ constexpr base::TimeDelta kSafetyCheckRunThreshold = base::Hours(24);
       [self hideTabResumption];
     }
   }
-
-  if (IsSafetyCheckMagicStackEnabled() &&
-      (preferenceName == prefs::kIosSettingsSafetyCheckLastRunTime ||
-       preferenceName ==
-           prefs::kIosSafetyCheckManagerSafeBrowsingCheckResult)) {
-    _safetyCheckState.lastRunTime = [self latestSafetyCheckRunTimestamp];
-
-    _safetyCheckState.safeBrowsingState =
-        SafeBrowsingSafetyCheckStateForName(
-            _localState->GetString(
-                prefs::kIosSafetyCheckManagerSafeBrowsingCheckResult))
-            .value_or(_safetyCheckState.safeBrowsingState);
-
-    // Trigger a module update when the Last Run Time, or Safe Browsing state,
-    // has changed.
-    [self runningStateChanged:_safetyCheckState.runningState];
-  }
-}
-
-#pragma mark - SafetyCheckManagerObserver
-
-- (void)passwordCheckStateChanged:(PasswordSafetyCheckState)state {
-  _safetyCheckState.passwordState = state;
-
-  IOSChromeSafetyCheckManager* safetyCheckManager =
-      IOSChromeSafetyCheckManagerFactory::GetForBrowserState(
-          self.browser->GetBrowserState());
-
-  std::vector<password_manager::CredentialUIEntry> insecureCredentials =
-      safetyCheckManager->GetInsecureCredentials();
-
-  password_manager::InsecurePasswordCounts counts =
-      password_manager::CountInsecurePasswordsPerInsecureType(
-          insecureCredentials);
-
-  _safetyCheckState.weakPasswordsCount = counts.weak_count;
-  _safetyCheckState.reusedPasswordsCount = counts.reused_count;
-  _safetyCheckState.compromisedPasswordsCount = counts.compromised_count;
-}
-
-- (void)safeBrowsingCheckStateChanged:(SafeBrowsingSafetyCheckState)state {
-  _safetyCheckState.safeBrowsingState = state;
-}
-
-- (void)updateChromeCheckStateChanged:(UpdateChromeSafetyCheckState)state {
-  _safetyCheckState.updateChromeState = state;
-}
-
-- (void)runningStateChanged:(RunningSafetyCheckState)state {
-  _safetyCheckState.runningState = state;
-  _safetyCheckState.shouldShowSeeMore = CheckIssuesCount(_safetyCheckState) > 2;
-
-  if (safety_check_prefs::IsSafetyCheckInMagicStackDisabled(_localState)) {
-    // Safety Check can be disabled by long-pressing the module, so
-    // SafetyCheckManager can still be running and returning results even after
-    // disabling.
-    return;
-  }
-
-  // Ensures the consumer gets the latest Safety Check state only when the
-  // running state changes; this avoids calling the consumer every time an
-  // individual check state changes.
-  _safetyCheckState.commandhandler = self.presentationDelegate;
-  [self.consumer showSafetyCheck:_safetyCheckState];
-}
-
-- (void)safetyCheckManagerWillShutdown {
-  _safetyCheckManagerObserver.reset();
 }
 
 #pragma mark - SyncObserverModelBridge

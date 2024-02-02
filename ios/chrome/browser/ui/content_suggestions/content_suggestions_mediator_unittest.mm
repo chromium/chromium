@@ -208,7 +208,6 @@ class ContentSuggestionsMediatorTest : public PlatformTest {
                        largeIconCache:cache
                       mostVisitedSite:std::move(mostVisitedSites)
                           prefService:chrome_browser_state_.get()->GetPrefs()
-        isGoogleDefaultSearchProvider:NO
                           syncService:sync_service
                 authenticationService:authentication_service
                       identityManager:identityManager

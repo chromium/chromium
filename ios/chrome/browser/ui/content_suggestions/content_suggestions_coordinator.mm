@@ -85,6 +85,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_constant.h"
 #import "ios/chrome/browser/ui/content_suggestions/parcel_tracking/magic_stack_parcel_list_half_sheet_table_view_controller.h"
 #import "ios/chrome/browser/ui/content_suggestions/parcel_tracking/parcel_tracking_mediator.h"
+#import "ios/chrome/browser/ui/content_suggestions/safety_check/safety_check_magic_stack_mediator.h"
 #import "ios/chrome/browser/ui/content_suggestions/safety_check/types.h"
 #import "ios/chrome/browser/ui/content_suggestions/safety_check/utils.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_content_notification_promo_coordinator.h"
@@ -184,6 +185,7 @@
   NotificationsOptInAlertCoordinator* _notificationsOptInAlertCoordinator;
 
   ShortcutsMediator* _shortcutsMediator;
+  SafetyCheckMagicStackMediator* _safetyCheckMediator;
 }
 
 - (void)start {
@@ -222,9 +224,6 @@
   PromosManager* promosManager =
       PromosManagerFactory::GetForBrowserState(self.browser->GetBrowserState());
 
-  BOOL isGoogleDefaultSearchProvider =
-      [self.NTPDelegate isGoogleDefaultSearchEngine];
-
   self.contentSuggestionsMetricsRecorder =
       [[ContentSuggestionsMetricsRecorder alloc]
           initWithLocalState:GetApplicationContext()->GetLocalState()];
@@ -249,7 +248,6 @@
                      largeIconCache:cache
                     mostVisitedSite:std::move(mostVisitedFactory)
                         prefService:prefs
-      isGoogleDefaultSearchProvider:isGoogleDefaultSearchProvider
                         syncService:syncService
               authenticationService:authenticationService
                     identityManager:identityManager
@@ -290,6 +288,17 @@
     self.contentSuggestionsMediator.parcelTrackingMediator =
         self.parcelTrackingMediator;
   }
+  if (IsSafetyCheckMagicStackEnabled()) {
+    IOSChromeSafetyCheckManager* safetyCheckManager =
+        IOSChromeSafetyCheckManagerFactory::GetForBrowserState(
+            self.browser->GetBrowserState());
+    _safetyCheckMediator = [[SafetyCheckMagicStackMediator alloc]
+        initWithSafetyCheckManager:safetyCheckManager
+                        localState:GetApplicationContext()->GetLocalState()
+                          appState:self.browser->GetSceneState().appState];
+    _safetyCheckMediator.presentationDelegate = self;
+    self.contentSuggestionsMediator.safetyCheckMediator = _safetyCheckMediator;
+  }
   if (base::FeatureList::IsEnabled(segmentation_platform::features::
                                        kSegmentationPlatformIosModuleRanker)) {
     self.contentSuggestionsMediator.segmentationService =
@@ -326,6 +335,7 @@
   self.contentSuggestionsMediator.consumer =
       self.contentSuggestionsViewController;
   _shortcutsMediator.consumer = self.contentSuggestionsViewController;
+  _safetyCheckMediator.consumer = self.contentSuggestionsViewController;
 }
 
 - (void)stop {
@@ -340,6 +350,8 @@
   self.parcelTrackingMediator = nil;
   [_shortcutsMediator disconnect];
   _shortcutsMediator = nil;
+  [_safetyCheckMediator disconnect];
+  _safetyCheckMediator = nil;
   [self.contentSuggestionsMediator disconnect];
   self.contentSuggestionsMediator = nil;
   [self.contentSuggestionsMetricsRecorder disconnect];

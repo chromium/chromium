@@ -53,6 +53,7 @@ class GURL;
 class LargeIconCache;
 @protocol NewTabPageMetricsDelegate;
 class PromosManager;
+@class SafetyCheckMagicStackMediator;
 @class ShortcutsMediator;
 @protocol SnackbarCommands;
 class WebStateList;
@@ -71,7 +72,6 @@ class WebStateList;
                   mostVisitedSite:(std::unique_ptr<ntp_tiles::MostVisitedSites>)
                                       mostVisitedSites
                       prefService:(PrefService*)prefService
-    isGoogleDefaultSearchProvider:(BOOL)isGoogleDefaultSearchProvider
                       syncService:(syncer::SyncService*)syncService
             authenticationService:(AuthenticationService*)authService
                   identityManager:(signin::IdentityManager*)identityManager
@@ -132,6 +132,9 @@ class WebStateList;
 
 // Shortcuts Mediator.
 @property(nonatomic, weak) ShortcutsMediator* shortcutsMediator;
+
+// Safety Check Mediator.
+@property(nonatomic, weak) SafetyCheckMagicStackMediator* safetyCheckMediator;
 
 // Disconnects the mediator.
 - (void)disconnect;
