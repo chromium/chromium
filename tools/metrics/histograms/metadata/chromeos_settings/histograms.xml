@@ -408,13 +408,13 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.LoadDocumentTime" units="ms"
-    expires_after="2024-03-14">
+    expires_after="2025-02-02">
   <owner>wesokuhara@google.com</owner>
   <owner>xiaohuic@chromium.org</owner>
   <owner>cros-settings@google.com</owner>
   <summary>
     The amount of time between the RenderFrameHost StartProvisionalLoad and
-    DidFinishDocumentLoad events for the Chrome OS settings page.
+    DidFinishDocumentLoad events for the ChromeOS settings page.
   </summary>
 </histogram>
 
