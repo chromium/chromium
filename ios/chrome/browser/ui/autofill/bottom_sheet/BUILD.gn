@@ -113,3 +113,22 @@ source_set("eg2_tests") {
   ]
   frameworks = [ "UIKit.framework" ]
 }
+
+# Virtual Card Enrollment Bottom Sheet related classes are below:
+
+source_set("virtual_card_enrollment_bottom_sheet_coordinator") {
+  sources = [
+    "virtual_card_enrollment_bottom_sheet_coordinator.h",
+    "virtual_card_enrollment_bottom_sheet_coordinator.mm",
+  ]
+  deps = [
+    "//components/autofill/core/browser",
+    "//ios/chrome/browser/autofill/model/bottom_sheet:bottom_sheet",
+    "//ios/chrome/browser/autofill/model/bottom_sheet:virtual_card_enrollment_callbacks",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator:chrome_coordinator",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/web/public:public",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}

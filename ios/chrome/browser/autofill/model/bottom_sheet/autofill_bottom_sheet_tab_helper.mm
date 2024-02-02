@@ -10,6 +10,7 @@
 #import "base/ranges/algorithm.h"
 #import "components/autofill/core/browser/form_structure.h"
 #import "components/autofill/core/browser/personal_data_manager.h"
+#import "components/autofill/core/browser/ui/payments/virtual_card_enroll_ui_model.h"
 #import "components/autofill/ios/browser/autofill_driver_ios.h"
 #import "components/autofill/ios/form_util/form_activity_params.h"
 #import "components/password_manager/core/common/password_manager_features.h"
@@ -71,6 +72,13 @@ void AutofillBottomSheetTabHelper::ShowPlusAddressesBottomSheet(
     plus_addresses::PlusAddressCallback callback) {
   pending_plus_address_callback_ = std::move(callback);
   [commands_handler_ showPlusAddressesBottomSheet];
+}
+
+void AutofillBottomSheetTabHelper::ShowVirtualCardEnrollmentBottomSheet(
+    autofill::VirtualCardEnrollUiModel model,
+    autofill::VirtualCardEnrollmentCallbacks callbacks) {
+  virtual_card_enrollment_callbacks_ = std::move(callbacks);
+  [commands_handler_ showVirtualCardEnrollmentBottomSheet:model];
 }
 
 void AutofillBottomSheetTabHelper::SetAutofillBottomSheetHandler(
@@ -337,6 +345,11 @@ void AutofillBottomSheetTabHelper::OnFieldTypesDetermined(
 plus_addresses::PlusAddressCallback
 AutofillBottomSheetTabHelper::GetPendingPlusAddressFillCallback() {
   return std::move(pending_plus_address_callback_);
+}
+
+autofill::VirtualCardEnrollmentCallbacks
+AutofillBottomSheetTabHelper::GetVirtualCardEnrollmentCallbacks() {
+  return std::move(virtual_card_enrollment_callbacks_);
 }
 
 // Private methods

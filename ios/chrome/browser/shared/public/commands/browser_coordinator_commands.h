@@ -104,6 +104,9 @@ class GURL;
 // Dismiss the plus address bottom sheet.
 - (void)dismissPlusAddressBottomSheet;
 
+// Dismiss the virtual card enrollment bottom sheet.
+- (void)dismissVirtualCardEnrollmentBottomSheet;
+
 // Shows the plus addresses management page in a tab, much like `showHelpPage`.
 - (void)showPlusAddressManagementPage;
 
