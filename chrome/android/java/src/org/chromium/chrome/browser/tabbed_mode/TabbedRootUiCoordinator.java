@@ -271,6 +271,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
      * @param backPressManager The {@link BackPressManager} handling back press.
      * @param savedInstanceState The saved bundle for the last recorded state.
      * @param multiInstanceManager Manages multi-instance mode.
+     * @param overviewIncognitoSupplier An optional incognito state for the overview. When not set,
+     *     the tab model is used to determine incognito state.
      */
     public TabbedRootUiCoordinator(
             @NonNull AppCompatActivity activity,
@@ -320,7 +322,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             boolean initializeUiWithIncognitoColors,
             @NonNull BackPressManager backPressManager,
             @Nullable Bundle savedInstanceState,
-            @Nullable MultiInstanceManager multiInstanceManager) {
+            @Nullable MultiInstanceManager multiInstanceManager,
+            @Nullable BooleanSupplier overviewIncognitoSupplier) {
         super(
                 activity,
                 onOmniboxFocusChangedListener,
@@ -363,7 +366,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                 ephemeralTabCoordinatorSupplier,
                 initializeUiWithIncognitoColors,
                 backPressManager,
-                savedInstanceState);
+                savedInstanceState,
+                overviewIncognitoSupplier);
         mControlContainerHeightResource = controlContainerHeightResource;
         mInsetObserverViewSupplier = insetObserverViewSupplier;
         mBackButtonShouldCloseTabFn = backButtonShouldCloseTabFn;

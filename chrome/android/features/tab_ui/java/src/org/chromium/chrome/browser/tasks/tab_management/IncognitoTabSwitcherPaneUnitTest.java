@@ -56,6 +56,8 @@ import org.chromium.chrome.browser.tabmodel.IncognitoTabModel;
 import org.chromium.chrome.browser.tabmodel.IncognitoTabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelFilter;
 
+import java.util.function.DoubleConsumer;
+
 /**
  * Unit tests for {@link IncognitoTabSwitcherPane}. Refer to {@link TabSwitcherPaneUnitTest} for
  * tests for shared functionality with {@link TabSwitcherPaneBase}.
@@ -71,6 +73,7 @@ public class IncognitoTabSwitcherPaneUnitTest {
     @Mock private TabModelFilter mTabModelFilter;
     @Mock private IncognitoTabModel mIncognitoTabModel;
     @Mock private PaneHubController mPaneHubController;
+    @Mock private DoubleConsumer mOnAlphaChange;
 
     @Captor private ArgumentCaptor<IncognitoTabModelObserver> mIncognitoTabModelObserverCaptor;
     @Captor private ArgumentCaptor<IncognitoReauthCallback> mIncognitoReauthCallbackCaptor;
@@ -109,7 +112,8 @@ public class IncognitoTabSwitcherPaneUnitTest {
                         mTabSwitcherPaneCoordinatorFactory,
                         () -> mTabModelFilter,
                         mNewTabButtonClickListener,
-                        mIncognitoReauthControllerSupplier);
+                        mIncognitoReauthControllerSupplier,
+                        mOnAlphaChange);
     }
 
     @After
@@ -188,7 +192,8 @@ public class IncognitoTabSwitcherPaneUnitTest {
                         mTabSwitcherPaneCoordinatorFactory,
                         () -> mTabModelFilter,
                         mNewTabButtonClickListener,
-                        mIncognitoReauthControllerSupplier);
+                        mIncognitoReauthControllerSupplier,
+                        mOnAlphaChange);
 
         checkNewTabButton(/* enabled= */ null);
 

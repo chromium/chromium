@@ -13,30 +13,38 @@ import androidx.annotation.NonNull;
 
 import org.chromium.ui.interpolators.Interpolators;
 
+import java.util.function.DoubleConsumer;
+
 /** Implementation of interface exposed by {@link FadeHubLayoutAnimationFactory}. */
 public class FadeHubLayoutAnimationFactoryImpl {
     /** See {@link FadeHubLayoutAnimationFactory#createFadeInAnimator(HubContainerView, long)}. */
     public static HubLayoutAnimator createFadeInAnimator(
-            @NonNull HubContainerView hubContainerView, long durationMs) {
+            @NonNull HubContainerView hubContainerView,
+            long durationMs,
+            @NonNull DoubleConsumer onAlphaChange) {
         return createFadeAnimator(
                 HubLayoutAnimationType.FADE_IN,
                 hubContainerView,
                 /* initialAlpha= */ 0.0f,
                 /* finalAlpha= */ 1.0f,
                 Interpolators.LINEAR_OUT_SLOW_IN_INTERPOLATOR,
-                durationMs);
+                durationMs,
+                onAlphaChange);
     }
 
     /** See {@link FadeHubLayoutAnimationFactory#createFadeOutAnimator(HubContainerView, long)}. */
     public static HubLayoutAnimator createFadeOutAnimator(
-            @NonNull HubContainerView hubContainerView, long durationMs) {
+            @NonNull HubContainerView hubContainerView,
+            long durationMs,
+            @NonNull DoubleConsumer onAlphaChange) {
         return createFadeAnimator(
                 HubLayoutAnimationType.FADE_OUT,
                 hubContainerView,
                 /* initialAlpha= */ 1.0f,
                 /* finalAlpha= */ 0.0f,
                 Interpolators.FAST_OUT_LINEAR_IN_INTERPOLATOR,
-                durationMs);
+                durationMs,
+                onAlphaChange);
     }
 
     /**
@@ -44,9 +52,11 @@ public class FadeHubLayoutAnimationFactoryImpl {
      * long)}.
      */
     public static HubLayoutAnimatorProvider createFadeInAnimatorProvider(
-            @NonNull HubContainerView hubContainerView, long durationMs) {
+            @NonNull HubContainerView hubContainerView,
+            long durationMs,
+            @NonNull DoubleConsumer onAlphaChange) {
         return new PresetHubLayoutAnimatorProvider(
-                createFadeInAnimator(hubContainerView, durationMs));
+                createFadeInAnimator(hubContainerView, durationMs, onAlphaChange));
     }
 
     /**
@@ -54,9 +64,11 @@ public class FadeHubLayoutAnimationFactoryImpl {
      * long)}.
      */
     public static HubLayoutAnimatorProvider createFadeOutAnimatorProvider(
-            @NonNull HubContainerView hubContainerView, long durationMs) {
+            @NonNull HubContainerView hubContainerView,
+            long durationMs,
+            @NonNull DoubleConsumer onAlphaChange) {
         return new PresetHubLayoutAnimatorProvider(
-                createFadeOutAnimator(hubContainerView, durationMs));
+                createFadeOutAnimator(hubContainerView, durationMs, onAlphaChange));
     }
 
     private static HubLayoutAnimator createFadeAnimator(
@@ -65,11 +77,18 @@ public class FadeHubLayoutAnimationFactoryImpl {
             float initialAlpha,
             float finalAlpha,
             Interpolator interpolator,
-            long durationMs) {
+            long durationMs,
+            @NonNull DoubleConsumer onAlphaChange) {
         ObjectAnimator animator =
                 ObjectAnimator.ofFloat(hubContainerView, View.ALPHA, initialAlpha, finalAlpha);
         animator.setDuration(durationMs);
         animator.setInterpolator(interpolator);
+        animator.addUpdateListener(
+                animation -> {
+                    if (animation.getAnimatedValue() instanceof Float animationAlpha) {
+                        onAlphaChange.accept(animationAlpha);
+                    }
+                });
 
         AnimatorSet animatorSet = new AnimatorSet();
         animatorSet.play(animator);
@@ -80,6 +99,7 @@ public class FadeHubLayoutAnimationFactoryImpl {
                     public void beforeStart() {
                         hubContainerView.setAlpha(initialAlpha);
                         hubContainerView.setVisibility(View.VISIBLE);
+                        onAlphaChange.accept(initialAlpha);
                     }
 
                     @Override
@@ -87,6 +107,7 @@ public class FadeHubLayoutAnimationFactoryImpl {
                         // Reset alpha for the next animation. If the animation is hiding the view
                         // will already be INVISIBLE. If the animation is showing this is a noop.
                         hubContainerView.setAlpha(1f);
+                        onAlphaChange.accept(finalAlpha);
                     }
                 };
         return new HubLayoutAnimator(animationType, animatorSet, listener);

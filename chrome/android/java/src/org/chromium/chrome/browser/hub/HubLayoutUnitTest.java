@@ -83,6 +83,7 @@ import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.resources.ResourceManager;
 
 import java.util.Collections;
+import java.util.function.DoubleConsumer;
 
 /**
  * Unit tests for {@link HubLayout}.
@@ -130,6 +131,7 @@ public class HubLayoutUnitTest {
     @Mock private TabContentManager mTabContentManager;
     @Mock private TabModelSelector mTabModelSelector;
     @Mock private Tab mTab;
+    @Mock private DoubleConsumer mOnAlphaChange;
 
     private UserActionTester mActionTester;
 
@@ -271,7 +273,7 @@ public class HubLayoutUnitTest {
                 LazyOneshotSupplier.fromValue(mFrameLayout);
         HubLayoutDependencyHolder dependencyHolder =
                 new HubLayoutDependencyHolder(
-                        hubManagerSupplier, rootViewSupplier, mScrimController);
+                        hubManagerSupplier, rootViewSupplier, mScrimController, mOnAlphaChange);
 
         mHubLayout =
                 spy(

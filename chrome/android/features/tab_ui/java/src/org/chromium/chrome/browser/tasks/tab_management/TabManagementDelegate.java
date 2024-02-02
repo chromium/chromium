@@ -41,6 +41,7 @@ import org.chromium.ui.resources.dynamics.DynamicResourceLoader;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.function.DoubleConsumer;
 
 /** Interface to get access to components concerning tab management. */
 public interface TabManagementDelegate {
@@ -180,6 +181,7 @@ public interface TabManagementDelegate {
      * @param incognitoReauthControllerSupplier The incognito reauth controller supplier.
      * @param newTabButtonOnClickListener The listener for clicking the new tab button.
      * @param isIncognito Whether this is an incognito pane.
+     * @param onToolbarAlphaChange Observer to notify when alpha changes during animations.
      */
     Pair<TabSwitcher, Pane> createTabSwitcherPane(
             @NonNull Activity activity,
@@ -195,5 +197,6 @@ public interface TabManagementDelegate {
             @NonNull ModalDialogManager modalDialogManager,
             @Nullable OneshotSupplier<IncognitoReauthController> incognitoReauthControllerSupplier,
             @NonNull OnClickListener newTabButtonOnClickListener,
-            boolean isIncognito);
+            boolean isIncognito,
+            @NonNull DoubleConsumer onToolbarAlphaChange);
 }

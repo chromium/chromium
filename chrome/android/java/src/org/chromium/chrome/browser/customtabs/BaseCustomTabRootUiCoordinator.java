@@ -227,7 +227,8 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
                 ephemeralTabCoordinatorSupplier,
                 false,
                 backPressManager,
-                null);
+                null,
+                /* overviewIncognitoSupplier= */ null);
         mToolbarCoordinator = customTabToolbarCoordinator;
         mNavigationController = customTabNavigationController;
         mIntentDataProvider = intentDataProvider;

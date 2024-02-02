@@ -110,6 +110,7 @@ import org.chromium.chrome.browser.fonts.FontPreloader;
 import org.chromium.chrome.browser.gesturenav.NavigationSheet;
 import org.chromium.chrome.browser.homepage.HomepageManager;
 import org.chromium.chrome.browser.hub.DefaultPaneOrderController;
+import org.chromium.chrome.browser.hub.HubColorScheme;
 import org.chromium.chrome.browser.hub.HubFieldTrial;
 import org.chromium.chrome.browser.hub.HubLayoutDependencyHolder;
 import org.chromium.chrome.browser.hub.HubManager;
@@ -262,6 +263,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.BooleanSupplier;
+import java.util.function.DoubleConsumer;
 
 /**
  * This is the main activity for ChromeMobile when not running in document mode. All the tabs are
@@ -764,7 +767,8 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 rootViewSupplier,
                 mRootUiCoordinator.getScrimCoordinator(),
                 rootViewSupplier::get,
-                incognitoSupplier);
+                incognitoSupplier,
+                adaptOnToolbarAlphaChange());
     }
 
     private void setupCompositorContentPreNativeForPhone() {
@@ -927,6 +931,18 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                         });
     }
 
+    private @Nullable BooleanSupplier getOverviewIncognitoSupplier() {
+        return HubFieldTrial.isHubEnabled() ? this::isHubCurrentlyShowingIncognito : null;
+    }
+
+    private boolean isHubCurrentlyShowingIncognito() {
+        if (!mHubManagerSupplier.hasValue()) {
+            return false;
+        }
+        Pane pane = mHubManagerSupplier.get().getPaneManager().getFocusedPaneSupplier().get();
+        return pane == null ? false : pane.getColorScheme() == HubColorScheme.INCOGNITO;
+    }
+
     private Pane createTabSwitcherPane(boolean isIncognito) {
         Pair<TabSwitcher, Pane> result =
                 TabManagementDelegateProvider.getDelegate()
@@ -944,7 +960,8 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                                 getModalDialogManager(),
                                 mRootUiCoordinator.getIncognitoReauthControllerSupplier(),
                                 mNewTabButtonClickListener,
-                                isIncognito);
+                                isIncognito,
+                                adaptOnToolbarAlphaChange());
         if (didFinishNativeInitialization()) {
             result.first.initWithNative();
         }
@@ -2163,7 +2180,8 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 IntentHandler.hasAnyIncognitoExtra(getIntent().getExtras()),
                 mBackPressManager,
                 getSavedInstanceState(),
-                mMultiInstanceManager);
+                mMultiInstanceManager,
+                getOverviewIncognitoSupplier());
     }
 
     @Override
@@ -3976,6 +3994,17 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
      */
     private boolean skipSavingNonActiveNtps() {
         return StartSurfaceConfiguration.isNtpAsHomeSurfaceEnabled(isTablet());
+    }
+
+    /**
+     * Creates an adapter between the toolbar's observer that takes a float and the format that the
+     * hub expects which is a double.
+     */
+    private DoubleConsumer adaptOnToolbarAlphaChange() {
+        return alpha ->
+                getToolbarManager()
+                        .getToolbarAlphaInOverviewObserver()
+                        .onOverviewAlphaChanged((float) alpha);
     }
 
     public void showStartSurfaceForTesting() {

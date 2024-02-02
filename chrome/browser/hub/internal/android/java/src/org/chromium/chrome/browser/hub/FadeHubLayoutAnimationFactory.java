@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.hub;
 
 import androidx.annotation.NonNull;
 
+import java.util.function.DoubleConsumer;
+
 /**
  * Factory for creating fade {@link HubLayoutAnimator}s and {@link HubLayoutAnimatorProvider}s to
  * use as {@link HubLayout} animations.
@@ -26,11 +28,15 @@ public class FadeHubLayoutAnimationFactory {
      *
      * @param hubContainerView The {@link HubContainerView} to animate.
      * @param durationMs The duration of the animation in milliseconds.
+     * @param onAlphaChange Observer to notify when alpha changes during animations.
      * @return the requested animator.
      */
     public static HubLayoutAnimator createFadeInAnimator(
-            @NonNull HubContainerView hubContainerView, long durationMs) {
-        return FadeHubLayoutAnimationFactoryImpl.createFadeInAnimator(hubContainerView, durationMs);
+            @NonNull HubContainerView hubContainerView,
+            long durationMs,
+            @NonNull DoubleConsumer onAlphaChange) {
+        return FadeHubLayoutAnimationFactoryImpl.createFadeInAnimator(
+                hubContainerView, durationMs, onAlphaChange);
     }
 
     /**
@@ -38,12 +44,15 @@ public class FadeHubLayoutAnimationFactory {
      *
      * @param hubContainerView The {@link HubContainerView} to animate.
      * @param durationMs The duration of the animation in milliseconds.
+     * @param onAlphaChange Observer to notify when alpha changes during animations.
      * @return the requested animator.
      */
     public static HubLayoutAnimator createFadeOutAnimator(
-            @NonNull HubContainerView hubContainerView, long durationMs) {
+            @NonNull HubContainerView hubContainerView,
+            long durationMs,
+            @NonNull DoubleConsumer onAlphaChange) {
         return FadeHubLayoutAnimationFactoryImpl.createFadeOutAnimator(
-                hubContainerView, durationMs);
+                hubContainerView, durationMs, onAlphaChange);
     }
 
     /**
@@ -51,12 +60,15 @@ public class FadeHubLayoutAnimationFactory {
      *
      * @param hubContainerView The {@link HubContainerView} to animate.
      * @param durationMs The duration of the animation in milliseconds.
+     * @param onAlphaChange Observer to notify when alpha changes during animations.
      * @return the requested animator provider
      */
     public static HubLayoutAnimatorProvider createFadeInAnimatorProvider(
-            @NonNull HubContainerView hubContainerView, long durationMs) {
+            @NonNull HubContainerView hubContainerView,
+            long durationMs,
+            @NonNull DoubleConsumer onAlphaChange) {
         return FadeHubLayoutAnimationFactoryImpl.createFadeInAnimatorProvider(
-                hubContainerView, durationMs);
+                hubContainerView, durationMs, onAlphaChange);
     }
 
     /**
@@ -64,11 +76,14 @@ public class FadeHubLayoutAnimationFactory {
      *
      * @param hubContainerView The {@link HubContainerView} to animate.
      * @param durationMs The duration of the animation in milliseconds.
+     * @param onAlphaChange Observer to notify when alpha changes during animations.
      * @return the requested animator provider.
      */
     public static HubLayoutAnimatorProvider createFadeOutAnimatorProvider(
-            @NonNull HubContainerView hubContainerView, long durationMs) {
+            @NonNull HubContainerView hubContainerView,
+            long durationMs,
+            @NonNull DoubleConsumer onAlphaChange) {
         return FadeHubLayoutAnimationFactoryImpl.createFadeOutAnimatorProvider(
-                hubContainerView, durationMs);
+                hubContainerView, durationMs, onAlphaChange);
     }
 }

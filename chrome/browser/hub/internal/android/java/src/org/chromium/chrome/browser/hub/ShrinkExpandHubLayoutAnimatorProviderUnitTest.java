@@ -11,6 +11,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
@@ -39,6 +40,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.AdditionalMatchers;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnit;
@@ -53,6 +55,7 @@ import org.chromium.chrome.browser.hub.ShrinkExpandHubLayoutAnimatorProvider.Ima
 import org.chromium.ui.base.TestActivity;
 
 import java.lang.ref.WeakReference;
+import java.util.function.DoubleConsumer;
 
 /** Unit tests for {@link ShrinkExpandHubLayoutAnimatorProvider}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -70,6 +73,7 @@ public class ShrinkExpandHubLayoutAnimatorProviderUnitTest {
     @Mock private Runnable mRunnableMock;
     @Mock private ImageView mImageViewMock;
     @Mock private Bitmap mBitmap;
+    @Mock private DoubleConsumer mOnAlphaChange;
 
     private Activity mActivity;
     private FrameLayout mRootView;
@@ -113,7 +117,8 @@ public class ShrinkExpandHubLayoutAnimatorProviderUnitTest {
                         mHubContainerView,
                         mAnimationDataSupplier,
                         Color.BLUE,
-                        SHRINK_EXPAND_DURATION_MS);
+                        SHRINK_EXPAND_DURATION_MS,
+                        mOnAlphaChange);
         assertEquals(HubLayoutAnimationType.SHRINK_TAB, animatorProvider.getPlannedAnimationType());
         Callback<Bitmap> thumbnailCallback = animatorProvider.getThumbnailCallback();
         assertNotNull(thumbnailCallback);
@@ -159,7 +164,8 @@ public class ShrinkExpandHubLayoutAnimatorProviderUnitTest {
                         mHubContainerView,
                         mAnimationDataSupplier,
                         Color.RED,
-                        SHRINK_EXPAND_DURATION_MS);
+                        SHRINK_EXPAND_DURATION_MS,
+                        mOnAlphaChange);
         assertEquals(HubLayoutAnimationType.EXPAND_TAB, animatorProvider.getPlannedAnimationType());
         Callback<Bitmap> thumbnailCallback = animatorProvider.getThumbnailCallback();
         assertNotNull(thumbnailCallback);
@@ -197,7 +203,8 @@ public class ShrinkExpandHubLayoutAnimatorProviderUnitTest {
                         mHubContainerView,
                         mAnimationDataSupplier,
                         Color.RED,
-                        EXPAND_NEW_TAB_DURATION_MS);
+                        EXPAND_NEW_TAB_DURATION_MS,
+                        mOnAlphaChange);
         assertEquals(
                 HubLayoutAnimationType.EXPAND_NEW_TAB, animatorProvider.getPlannedAnimationType());
         assertNull(animatorProvider.getThumbnailCallback());
@@ -236,7 +243,8 @@ public class ShrinkExpandHubLayoutAnimatorProviderUnitTest {
                         mHubContainerView,
                         mAnimationDataSupplier,
                         Color.BLUE,
-                        SHRINK_EXPAND_DURATION_MS);
+                        SHRINK_EXPAND_DURATION_MS,
+                        mOnAlphaChange);
 
         HubLayoutAnimationRunner runner =
                 HubLayoutAnimationRunnerFactory.createHubLayoutAnimationRunner(animatorProvider);
@@ -262,7 +270,8 @@ public class ShrinkExpandHubLayoutAnimatorProviderUnitTest {
                         mHubContainerView,
                         mAnimationDataSupplier,
                         Color.BLUE,
-                        SHRINK_EXPAND_DURATION_MS);
+                        SHRINK_EXPAND_DURATION_MS,
+                        mOnAlphaChange);
 
         Size thumbnailSize = new Size(20, 85);
         Rect initialRect = new Rect(0, 0, WIDTH, HEIGHT);
@@ -293,7 +302,8 @@ public class ShrinkExpandHubLayoutAnimatorProviderUnitTest {
                         mHubContainerView,
                         mAnimationDataSupplier,
                         Color.BLUE,
-                        SHRINK_EXPAND_DURATION_MS);
+                        SHRINK_EXPAND_DURATION_MS,
+                        mOnAlphaChange);
 
         Size thumbnailSize = new Size(20, 85);
         Rect initialRect = new Rect(0, 0, WIDTH, HEIGHT);
@@ -324,7 +334,8 @@ public class ShrinkExpandHubLayoutAnimatorProviderUnitTest {
                         mHubContainerView,
                         mAnimationDataSupplier,
                         Color.BLUE,
-                        SHRINK_EXPAND_DURATION_MS);
+                        SHRINK_EXPAND_DURATION_MS,
+                        mOnAlphaChange);
 
         HubLayoutAnimationRunner runner =
                 HubLayoutAnimationRunnerFactory.createHubLayoutAnimationRunner(animatorProvider);
@@ -348,7 +359,8 @@ public class ShrinkExpandHubLayoutAnimatorProviderUnitTest {
                         mHubContainerView,
                         mAnimationDataSupplier,
                         Color.RED,
-                        EXPAND_NEW_TAB_DURATION_MS);
+                        EXPAND_NEW_TAB_DURATION_MS,
+                        mOnAlphaChange);
 
         HubLayoutAnimationRunner runner =
                 HubLayoutAnimationRunnerFactory.createHubLayoutAnimationRunner(animatorProvider);
@@ -530,6 +542,8 @@ public class ShrinkExpandHubLayoutAnimatorProviderUnitTest {
                                         "HubContainerView has unexpected extra child",
                                         1,
                                         mHubContainerView.getChildCount());
+                                verify(mOnAlphaChange, atLeast(1))
+                                        .accept(AdditionalMatchers.eq(initialAlpha, EPSILON));
                             }
 
                             @Override
@@ -543,6 +557,16 @@ public class ShrinkExpandHubLayoutAnimatorProviderUnitTest {
                                         finalAlpha,
                                         mHubContainerView.getAlpha(),
                                         EPSILON);
+                                verify(mOnAlphaChange, atLeast(1))
+                                        .accept(AdditionalMatchers.eq(finalAlpha, EPSILON));
+
+                                // At this point, there should have been a bunch of alpha change
+                                // values somewhere between initial and final alpha. Verify we saw
+                                // something in the middle half.
+                                float middleAlpha = (initialAlpha + finalAlpha) / 2;
+                                float halfRange = Math.abs(initialAlpha - finalAlpha) / 2;
+                                verify(mOnAlphaChange, atLeast(1))
+                                        .accept(AdditionalMatchers.eq(middleAlpha, halfRange));
                             }
 
                             @Override
