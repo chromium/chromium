@@ -26,6 +26,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_INPUT_EVENT_HANDLER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_INPUT_EVENT_HANDLER_H_
 
+#include "base/debug/crash_logging.h"
 #include "base/gtest_prod_util.h"
 #include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -281,6 +282,8 @@ class CORE_EXPORT EventHandler final : public GarbageCollected<EventHandler> {
   void SetDelayedNavigationTaskHandle(TaskHandle task_handle);
 
   TaskHandle& GetDelayedNavigationTaskHandle();
+
+  base::debug::CrashKeyString* CrashKeyForBug1519197() const;
 
  private:
   WebInputEventResult HandleMouseMoveOrLeaveEvent(

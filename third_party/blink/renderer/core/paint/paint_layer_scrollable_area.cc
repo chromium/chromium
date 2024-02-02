@@ -2099,6 +2099,12 @@ bool PaintLayerScrollableArea::HitTestOverflowControls(
   }
 
   if (scroll_corner_ && ScrollCornerRect().Contains(local_point)) {
+    if (GetLayoutBox() && GetLayoutBox()->GetFrame()) {
+      base::debug::CrashKeyString* crash_key =
+          GetLayoutBox()->GetFrame()->GetEventHandler().CrashKeyForBug1519197();
+      base::debug::SetCrashKeyString(crash_key,
+                                     GetLayoutBox()->DebugName().Utf8());
+    }
     result.SetIsOverScrollCorner(true);
     return true;
   }
