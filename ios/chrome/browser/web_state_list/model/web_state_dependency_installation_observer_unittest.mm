@@ -70,9 +70,9 @@ TEST_F(WebStateDependencyInstallationObserverTest,
   web::WebState* web_state_1_raw = web_state_1.get();
 
   EXPECT_FALSE(installer_.WasInstalled(web_state_1_raw));
-  web_state_list_.InsertWebState(0, std::move(web_state_1),
-                                 WebStateList::INSERT_ACTIVATE,
-                                 WebStateOpener());
+  web_state_list_.InsertWebState(
+      std::move(web_state_1),
+      WebStateList::InsertionParams::Automatic().Activate());
   EXPECT_TRUE(installer_.WasInstalled(web_state_1_raw));
   EXPECT_FALSE(installer_.WasUninstalled(web_state_1_raw));
 
@@ -91,7 +91,8 @@ TEST_F(WebStateDependencyInstallationObserverTest,
   auto web_state = std::make_unique<web::FakeWebState>();
   web::WebState* web_state_raw = web_state.get();
   web_state_list_.InsertWebState(
-      0, std::move(web_state), WebStateList::INSERT_ACTIVATE, WebStateOpener());
+      std::move(web_state),
+      WebStateList::InsertionParams::Automatic().Activate());
   WebStateDependencyInstallationObserver observer(&web_state_list_,
                                                   &installer_);
   EXPECT_TRUE(installer_.WasInstalled(web_state_raw));
@@ -103,9 +104,9 @@ TEST_F(WebStateDependencyInstallationObserverTest, UnrealizedWebStates) {
                                                   &installer_);
   auto web_state_1 = std::make_unique<web::FakeWebState>();
   web::WebState* web_state_1_raw = web_state_1.get();
-  web_state_list_.InsertWebState(0, std::move(web_state_1),
-                                 WebStateList::INSERT_ACTIVATE,
-                                 WebStateOpener());
+  web_state_list_.InsertWebState(
+      std::move(web_state_1),
+      WebStateList::InsertionParams::Automatic().Activate());
   EXPECT_TRUE(installer_.WasInstalled(web_state_1_raw));
 
   auto web_state_2 = std::make_unique<web::FakeWebState>();
@@ -114,9 +115,8 @@ TEST_F(WebStateDependencyInstallationObserverTest, UnrealizedWebStates) {
 
   // Insert the unrealized webstate but don't have it activate (since that
   // forces realization).
-  web_state_list_.InsertWebState(1, std::move(web_state_2),
-                                 WebStateList::INSERT_NO_FLAGS,
-                                 WebStateOpener());
+  web_state_list_.InsertWebState(std::move(web_state_2),
+                                 WebStateList::InsertionParams::Automatic());
   // The unrealized webstate should not have dependencies installed.
   EXPECT_FALSE(installer_.WasInstalled(web_state_2_raw));
   // Once realized, dependencies should be installed.
@@ -128,9 +128,9 @@ TEST_F(WebStateDependencyInstallationObserverTest, UnrealizedWebStates) {
   web::WebState* web_state_3_raw = web_state_3.get();
 
   // Insert the unrealized webstate and activate it, forcing realization.
-  web_state_list_.InsertWebState(2, std::move(web_state_3),
-                                 WebStateList::INSERT_ACTIVATE,
-                                 WebStateOpener());
+  web_state_list_.InsertWebState(
+      std::move(web_state_3),
+      WebStateList::InsertionParams::Automatic().Activate());
   // The formerly unrealized webstate should have dependencies installed.
   // (The webstate should also be realized, but that's not the responsibility
   // of the code under test).
@@ -146,9 +146,9 @@ TEST_F(WebStateDependencyInstallationObserverTest, Disconnect) {
   auto web_state_1 = std::make_unique<web::FakeWebState>();
   web::WebState* web_state_1_raw = web_state_1.get();
 
-  web_state_list_.InsertWebState(0, std::move(web_state_1),
-                                 WebStateList::INSERT_ACTIVATE,
-                                 WebStateOpener());
+  web_state_list_.InsertWebState(
+      std::move(web_state_1),
+      WebStateList::InsertionParams::Automatic().Activate());
   EXPECT_TRUE(installer_.WasInstalled(web_state_1_raw));
   observer.reset();
 

@@ -48,9 +48,8 @@ class AccountConsistencyBrowserAgentTest : public PlatformTest {
 
     WebStateList* web_state_list = browser_.get()->GetWebStateList();
     auto test_web_state = std::make_unique<web::FakeWebState>();
-    WebStateOpener opener;
-    web_state_list->InsertWebState(0, std::move(test_web_state),
-                                   WebStateList::INSERT_FORCE_INDEX, opener);
+    web_state_list->InsertWebState(std::move(test_web_state),
+                                   WebStateList::InsertionParams::AtIndex(0));
   }
 
   void TearDown() override {

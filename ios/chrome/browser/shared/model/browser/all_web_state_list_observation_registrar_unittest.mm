@@ -57,8 +57,7 @@ class AllWebStateListObservationRegistrarTest : public PlatformTest {
   void AppendNewWebState(Browser* browser) {
     auto fake_web_state = std::make_unique<web::FakeWebState>();
     browser->GetWebStateList()->InsertWebState(
-        WebStateList::kInvalidIndex, std::move(fake_web_state),
-        WebStateList::INSERT_NO_FLAGS, WebStateOpener());
+        std::move(fake_web_state), WebStateList::InsertionParams::Automatic());
   }
 
   base::test::TaskEnvironment task_environment_;
