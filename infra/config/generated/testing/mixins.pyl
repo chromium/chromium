@@ -264,19 +264,6 @@
       'service_account': 'chrome-tester@chops-service-accounts.iam.gserviceaccount.com',
     },
   },
-  'chrome-win-arm64': {
-    'swarming': {
-      'dimensions': {
-        'cpu': 'arm64',
-        'os': 'Windows-11',
-        'pool': 'chrome.tests',
-        'gpu': 'qcom:043a',
-        'zone': 'us-sfo',
-      },
-      'expiration': 64800,
-      'hard_timeout': 43200,
-    },
-  },
   'chromeos-amd64-generic': {
     'args': [
       '--magic-vm-cache=magic_cros_vm_cache',

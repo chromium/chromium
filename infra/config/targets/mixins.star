@@ -1657,26 +1657,6 @@ targets.mixin(
 )
 
 targets.mixin(
-    name = "chrome-win-arm64",
-    swarming = targets.swarming(
-        dimensions = {
-            "cpu": "arm64",
-            "os": "Windows-11",
-            "pool": "chrome.tests",
-            # Qualcomm Adreno 690.
-            "gpu": "qcom:043a",
-            # Currently used to limit testing to the homogenous fleet. Can be
-            # removed once the older experimental devices are decommissioned.
-            "zone": "us-sfo",
-        },
-        # The resources are limited in the pool.
-        # The slowest test is expected to run >9 hours.
-        expiration_sec = 64800,  # 18 hours
-        hard_timeout_sec = 43200,  # 12 hours
-    ),
-)
-
-targets.mixin(
     name = "win-arm64",
     swarming = targets.swarming(
         dimensions = {

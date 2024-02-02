@@ -1255,14 +1255,6 @@
           'shards': 20,  # crbug.com/1361887
         },
       },
-      'win-arm64-rel': {
-        # Some Win Arm64 bots aren't using 100% scaling, which some browser
-        # tests rely on. They also have touch enabled, which we need to disable.
-        'args': [
-          '--force-device-scale-factor=1',
-          '--top-chrome-touch-ui=disabled',
-        ],
-      },
       'win-asan': {
          # Tests shows tests run faster with fewer retries by using fewer jobs crbug.com/1411912
         'args': [
@@ -1317,7 +1309,6 @@
     'remove_from': [
       'win10-rel-no-external-ip',
       'win11-arm64-rel-tests',
-      'win-arm64-rel',
       'win-rel-cft',
       'Win11 Tests x64',
     ],
@@ -1741,7 +1732,6 @@
     'remove_from': [
       'win10-rel-no-external-ip',
       'win11-arm64-rel-tests',
-      'win-arm64-rel',
       'win-rel-cft',
       'Win11 Tests x64',
     ],
@@ -2306,22 +2296,9 @@
           '--jobs=1',
         ],
       },
-      'win-arm64-rel': {
-        'args': [
-          # These devices have issues running these tests in parallel.
-          '--jobs=1',
-        ],
-      },
     },
     'replacements': {
       'Win11 FYI arm64 Release (Qualcomm Adreno 690)': {
-        'args': {
-          # Magic substitution happens after regular replacement, so remove it
-          # now since we are manually applying the number of jobs above.
-          '$$MAGIC_SUBSTITUTION_GPUParallelJobs': None,
-        },
-      },
-      'win-arm64-rel': {
         'args': {
           # Magic substitution happens after regular replacement, so remove it
           # now since we are manually applying the number of jobs above.
@@ -3287,14 +3264,6 @@
           'shards': 6,
         },
       },
-      'win-arm64-rel': {
-        # Some Win Arm64 bots have touch turned on, which makes some tests fail.
-        # Similarly, some have a non 1.0 device scale factor.
-        'args': [
-          '--force-device-scale-factor=1',
-          '--top-chrome-touch-ui=disabled',
-        ],
-      },
       'win-asan': {
          # Tests shows tests run faster with fewer retries by using fewer jobs crbug.com/1411912
         'args': [
@@ -3371,7 +3340,6 @@
       'Win11 Tests x64',
       'win10-rel-no-external-ip',
       'win11-arm64-rel-tests',
-      'win-arm64-rel',
       'win-rel-cft',
     ],
   },
@@ -3549,7 +3517,6 @@
       'Linux TSan Tests',  # The TSan bot sets enable_nacl=false
       'linux-exp-tsan-fyi-rel',  # The TSan bot sets enable_nacl=false
       'Mac ASan 64 Tests (1)',  # The mac asan bot sets enable_nacl=false
-      'win-arm64-rel',  # Not available on arm64.
       'linux-arm64-rel-cft',  # Not available on arm64.
     ],
   },
@@ -3970,7 +3937,6 @@
       'Linux TSan Tests',  # The TSan bot sets enable_nacl=false
       'linux-exp-tsan-fyi-rel',  # The TSan bot sets enable_nacl=false
       'Mac ASan 64 Tests (1)',  # The mac asan bot sets enable_nacl=false
-      'win-arm64-rel',  # Not available on arm64.
     ],
   },
   'pthreadpool_unittests': {
@@ -4256,7 +4222,6 @@
     'remove_from': [
       'win10-rel-no-external-ip',
       'win11-arm64-rel-tests',
-      'win-arm64-rel',
       'win-rel-cft',
       'Win11 Tests x64',
     ],
@@ -4559,11 +4524,6 @@
         'swarming': {
           'shards': 2,
         }
-      },
-      'win-arm64-rel': {
-        'args': [
-          '--top-chrome-touch-ui=disabled',
-        ],
       },
       'win-asan': {
         'swarming': {
