@@ -343,9 +343,16 @@ crbug.com/1420067 [ fuchsia fuchsia-board-nelson ] Pixel_Video* [ Failure ]
 crbug.com/1420067 [ fuchsia fuchsia-board-sherlock ] Pixel_Video* [ Failure ]
 
 # Failures on Sherlock
+# fuchsia-fyi-sherlock-qemu is using sherlock x64 image.
+crbug.com/1268144 [ fuchsia fuchsia-board-qemu-x64 renderer-skia-vulkan ] Pixel_BackgroundImage [ Failure ]
+crbug.com/1268144 [ fuchsia fuchsia-board-qemu-x64 renderer-skia-vulkan ] Pixel_SolidColorBackground [ Failure ]
 # These two tests causes a crash on Swarming. Skipping so that we have a signal for other tests.
 crbug.com/1268144 [ fuchsia fuchsia-board-sherlock renderer-skia-vulkan ] Pixel_BackgroundImage [ Skip ]
 crbug.com/1268144 [ fuchsia fuchsia-board-sherlock renderer-skia-vulkan ] Pixel_SolidColorBackground [ Skip ]
+
+# These test renders blank page on the emulator, likely the gpu on the emulator
+# missing some features.
+crbug.com/1490427 [ fuchsia fuchsia-board-qemu-x64 renderer-skia-vulkan ] Pixel_WebGLFloat [ Failure ]
 
 
 # Pixel 6 failures.
