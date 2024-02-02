@@ -62,13 +62,9 @@ views::View* CreateScrollViewAndGetContents(views::View& parent_view,
       views::ScrollView::ScrollBarMode::kHiddenButEnabled);
   scroll_view->SetDrawOverflowIndicator(false);
 
-  auto* provider = ChromeLayoutProvider::Get();
-  const int kRoundedRadius = provider->GetCornerRadiusMetric(
-      views::ShapeContextTokens::kOmniboxExpandedRadius);
-  const int max_height =
-      provider->GetDistanceMetric(views::DISTANCE_BUBBLE_PREFERRED_WIDTH);
-  scroll_view->SetViewportRoundedCornerRadius(
-      gfx::RoundedCornersF(kRoundedRadius));
+  // TODO(b/323568011): Add rounded radii to the `scroll_view`.
+  const int max_height = ChromeLayoutProvider::Get()->GetDistanceMetric(
+      views::DISTANCE_BUBBLE_PREFERRED_WIDTH);
   scroll_view->ClipHeightTo(0, max_height);
 
   return contents;
