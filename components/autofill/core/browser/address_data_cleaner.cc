@@ -9,7 +9,7 @@
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "components/autofill/core/browser/data_model/autofill_profile_comparator.h"
-#include "components/autofill/core/browser/metrics/autofill_metrics.h"
+#include "components/autofill/core/browser/metrics/address_data_cleaner_metrics.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_constants.h"
@@ -56,7 +56,7 @@ void DeduplicateProfiles(
     const AutofillProfileComparator comparator,
     std::vector<std::unique_ptr<AutofillProfile>>& existing_profiles,
     std::set<std::string>& profiles_to_delete) {
-  AutofillMetrics::LogNumberOfProfilesConsideredForDedupe(
+  autofill_metrics::LogNumberOfProfilesConsideredForDedupe(
       existing_profiles.size());
 
   // Sort the profiles by ranking score. That way the most relevant profiles
@@ -140,7 +140,7 @@ void DeduplicateProfiles(
       }
     }
   }
-  AutofillMetrics::LogNumberOfProfilesRemovedDuringDedupe(
+  autofill_metrics::LogNumberOfProfilesRemovedDuringDedupe(
       profiles_to_delete.size());
 }
 
@@ -241,7 +241,8 @@ void AddressDataCleaner::DeleteDisusedAddresses() {
   for (const std::string& guid : guids_to_delete) {
     personal_data_manager_->RemoveByGUID(guid);
   }
-  AutofillMetrics::LogNumberOfAddressesDeletedForDisuse(guids_to_delete.size());
+  autofill_metrics::LogNumberOfAddressesDeletedForDisuse(
+      guids_to_delete.size());
 }
 
 void AddressDataCleaner::OnPersonalDataFinishedProfileTasks() {

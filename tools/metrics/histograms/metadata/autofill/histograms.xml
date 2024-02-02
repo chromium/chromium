@@ -615,9 +615,9 @@ chromium-metrics-reviews@google.com.
   <owner>battre@chromium.org</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
-    The number of unverified autofill addresses deleted because they have not
-    been used for a long time, and are not used as billing addresses of valid
-    credit cards. Note the deletion only happens once per major version upgrade.
+    Log the number of kLocalOrSyncable Autofill addresses that were deleted
+    because they have not been used for `kDisusedDataModelDeletionTimeDelta`.
+    Emitted once on browser startup, if the user has at least one address.
   </summary>
 </histogram>
 
@@ -2937,6 +2937,7 @@ chromium-metrics-reviews@google.com.
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
     The number of Autofill profiles that have been considered for deduplication.
+    Emitted once per major version, if the user has at least two profiles.
   </summary>
 </histogram>
 
@@ -2946,6 +2947,7 @@ chromium-metrics-reviews@google.com.
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
     The number of Autofill profiles that have been removed during deduplication.
+    Emitted once per major version, if the user has at least two profiles.
   </summary>
 </histogram>
 

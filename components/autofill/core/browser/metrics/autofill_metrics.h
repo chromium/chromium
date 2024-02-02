@@ -1100,12 +1100,6 @@ class AutofillMetrics {
   // always offered, regardless of how recently they have been used.
   static void LogNumberOfAddressesSuppressedForDisuse(size_t num_profiles);
 
-  // Log the number of unverified autofill addresses deleted because they have
-  // not been used for a long time, and are not used as billing addresses of
-  // valid credit cards. Note the deletion only happens once per major version
-  // upgrade.
-  static void LogNumberOfAddressesDeletedForDisuse(size_t num_profiles);
-
   // Log the number of Autofill address suggestions presented to the user when
   // filling a form.
   static void LogAddressSuggestionsCount(size_t num_suggestions);
@@ -1191,12 +1185,6 @@ class AutofillMetrics {
 
   // This should be called when parsing each form.
   static void LogParseFormTiming(const base::TimeDelta& duration);
-
-  // Log how many profiles were considered for the deduplication process.
-  static void LogNumberOfProfilesConsideredForDedupe(size_t num_considered);
-
-  // Log how many profiles were removed as part of the deduplication process.
-  static void LogNumberOfProfilesRemovedDuringDedupe(size_t num_removed);
 
   // Log whether the Autofill query on a credit card form is made in a secure
   // context.

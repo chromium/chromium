@@ -294,6 +294,8 @@ static_library("browser") {
     "manual_testing_import.h",
     "merchant_promo_code_manager.cc",
     "merchant_promo_code_manager.h",
+    "metrics/address_data_cleaner_metrics.cc",
+    "metrics/address_data_cleaner_metrics.h",
     "metrics/address_rewriter_in_profile_subset_metrics.cc",
     "metrics/address_rewriter_in_profile_subset_metrics.h",
     "metrics/autofill_metrics.cc",
