@@ -9,6 +9,7 @@
 #include "components/content_settings/core/browser/content_settings_rule.h"
 #include "components/content_settings/core/browser/content_settings_utils.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
+#include "extensions/common/extension_id.h"
 
 namespace content_settings {
 
@@ -45,7 +46,7 @@ void CustomExtensionProvider::ShutdownOnUIThread() {
 }
 
 void CustomExtensionProvider::OnContentSettingChanged(
-    const std::string& extension_id,
+    const extensions::ExtensionId& extension_id,
     bool incognito) {
   if (incognito_ != incognito)
     return;

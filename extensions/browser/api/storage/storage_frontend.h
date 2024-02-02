@@ -18,6 +18,7 @@
 #include "extensions/browser/api/storage/value_store_cache.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
 #include "extensions/common/api/storage.h"
+#include "extensions/common/extension_id.h"
 
 namespace content {
 class BrowserContext;
@@ -61,7 +62,7 @@ class StorageFrontend : public BrowserContextKeyedAPI {
 
   // Deletes the settings for the given |extension_id| and synchronously invokes
   // |done_callback| once the settings are deleted.
-  void DeleteStorageSoon(const std::string& extension_id,
+  void DeleteStorageSoon(const ExtensionId& extension_id,
                          base::OnceClosure done_callback);
 
   // Gets the Settings change callback.
@@ -95,7 +96,7 @@ class StorageFrontend : public BrowserContextKeyedAPI {
   // session (other storage areas don't support access levels, see
   // crbug.com/1508463).
   void OnSettingsChanged(
-      const std::string& extension_id,
+      const ExtensionId& extension_id,
       StorageAreaNamespace storage_area,
       absl::optional<api::storage::AccessLevel> session_access_level,
       base::Value changes);

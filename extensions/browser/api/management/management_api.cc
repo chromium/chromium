@@ -40,6 +40,7 @@
 #include "extensions/common/error_utils.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_icon_set.h"
+#include "extensions/common/extension_id.h"
 #include "extensions/common/extension_urls.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/manifest_handlers/icons_handler.h"
@@ -526,7 +527,7 @@ void ManagementSetEnabledFunction::OnInstallPromptDone(bool did_accept) {
 }
 
 bool ManagementSetEnabledFunction::HasUnsupportedRequirements(
-    const std::string& extension_id) const {
+    const ExtensionId& extension_id) const {
   ExtensionPrefs* prefs = ExtensionPrefs::Get(browser_context());
   return prefs->GetDisableReasons(extension_id) &
          disable_reason::DISABLE_UNSUPPORTED_REQUIREMENT;

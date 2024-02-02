@@ -27,6 +27,7 @@
 #include "extensions/browser/api/web_request/web_request_permissions.h"
 #include "extensions/browser/extension_event_histogram_value.h"
 #include "extensions/browser/guest_view/guest_view_events.h"
+#include "extensions/common/extension_id.h"
 #include "extensions/common/url_pattern_set.h"
 
 namespace content {
@@ -99,7 +100,7 @@ class WebRequestEventRouter {
 
   // Contains an extension's response to a blocking event.
   struct EventResponse {
-    EventResponse(const std::string& extension_id,
+    EventResponse(const ExtensionId& extension_id,
                   const base::Time& extension_install_time);
 
     EventResponse(const EventResponse&) = delete;
@@ -108,7 +109,7 @@ class WebRequestEventRouter {
     ~EventResponse();
 
     // ID of the extension that sent this response.
-    std::string extension_id;
+    ExtensionId extension_id;
 
     // The time that the extension was installed. Used for deciding order of
     // precedence in case multiple extensions respond with conflicting
@@ -251,7 +252,7 @@ class WebRequestEventRouter {
 
   // Called when an event listener handles a blocking event and responds.
   void OnEventHandled(content::BrowserContext* browser_context,
-                      const std::string& extension_id,
+                      const ExtensionId& extension_id,
                       const std::string& event_name,
                       const std::string& sub_event_name,
                       uint64_t request_id,
@@ -266,7 +267,7 @@ class WebRequestEventRouter {
   // the extension process to correspond to the given filter and
   // extra_info_spec. It returns true on success, false on failure.
   bool AddEventListener(content::BrowserContext* browser_context,
-                        const std::string& extension_id,
+                        const ExtensionId& extension_id,
                         const std::string& extension_name,
                         const std::string& event_name,
                         const std::string& sub_event_name,
@@ -358,7 +359,7 @@ class WebRequestEventRouter {
   struct EventListener {
     struct ID {
       ID(content::BrowserContext* browser_context,
-         const std::string& extension_id,
+         const ExtensionId& extension_id,
          const std::string& sub_event_name,
          int render_process_id,
          int web_view_instance_id,
@@ -371,7 +372,7 @@ class WebRequestEventRouter {
       bool operator==(const ID& that) const;
 
       raw_ptr<content::BrowserContext> browser_context;
-      std::string extension_id;
+      ExtensionId extension_id;
       std::string sub_event_name;
       // In the case of a webview, this is the process ID of the embedder.
       int render_process_id;
@@ -571,7 +572,7 @@ class WebRequestEventRouter {
   // method requested by the extension with the highest precedence. Precedence
   // is decided by extension install time.
   void DecrementBlockCount(content::BrowserContext* browser_context,
-                           const std::string& extension_id,
+                           const ExtensionId& extension_id,
                            const std::string& event_name,
                            uint64_t request_id,
                            std::unique_ptr<EventResponse> response,

@@ -38,6 +38,7 @@
 #include "extensions/common/api/runtime.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/extension_id.h"
 #include "extensions/common/manifest_handlers/background_info.h"
 #include "extensions/common/manifest_handlers/shared_module_info.h"
 #include "storage/browser/file_system/isolated_context.h"
@@ -101,7 +102,7 @@ bool allow_non_kiosk_apps_restart_api_for_test = false;
 
 void DispatchOnStartupEventImpl(
     BrowserContext* browser_context,
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     bool first_call,
     std::unique_ptr<LazyContextTaskQueue::ContextInfo> context_info) {
   // A NULL ContextInfo from the task callback means the page failed
@@ -152,7 +153,7 @@ void DispatchOnStartupEventImpl(
 }
 
 std::string GetUninstallURL(ExtensionPrefs* prefs,
-                            const std::string& extension_id) {
+                            const ExtensionId& extension_id) {
   std::string url_string;
   prefs->ReadPrefAsString(extension_id, kUninstallUrl, &url_string);
   return url_string;
@@ -305,12 +306,12 @@ void RuntimeAPI::OnBackgroundHostStartup(const Extension* extension) {
   RuntimeEventRouter::DispatchOnStartupEvent(browser_context_, extension->id());
 }
 
-void RuntimeAPI::ReloadExtension(const std::string& extension_id) {
+void RuntimeAPI::ReloadExtension(const ExtensionId& extension_id) {
   delegate_->ReloadExtension(extension_id);
 }
 
 bool RuntimeAPI::CheckForUpdates(
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     RuntimeAPIDelegate::UpdateCheckCallback callback) {
   return delegate_->CheckForUpdates(extension_id, std::move(callback));
 }
@@ -342,7 +343,7 @@ bool RuntimeAPI::RestartDevice(std::string* error_message) {
 }
 
 RuntimeAPI::RestartAfterDelayStatus RuntimeAPI::RestartDeviceAfterDelay(
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     int seconds_from_now) {
   // To achieve as much accuracy as possible, record the time of the call as
   // |now| here.
@@ -473,14 +474,14 @@ void RuntimeAPI::AllowNonKioskAppsInRestartAfterDelayForTesting() {
 // static
 void RuntimeEventRouter::DispatchOnStartupEvent(
     content::BrowserContext* context,
-    const std::string& extension_id) {
+    const ExtensionId& extension_id) {
   DispatchOnStartupEventImpl(context, extension_id, true, nullptr);
 }
 
 // static
 void RuntimeEventRouter::DispatchOnInstalledEvent(
     content::BrowserContext* context,
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     const base::Version& old_version,
     bool chrome_updated) {
   if (!ExtensionsBrowserClient::Get()->IsValidContext(context)) {
@@ -549,7 +550,7 @@ void RuntimeEventRouter::DispatchOnInstalledEvent(
 // static
 void RuntimeEventRouter::DispatchOnUpdateAvailableEvent(
     content::BrowserContext* context,
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     const base::Value::Dict* manifest) {
   ExtensionSystem* system = ExtensionSystem::Get(context);
   if (!system) {
@@ -604,7 +605,7 @@ void RuntimeEventRouter::DispatchOnRestartRequiredEvent(
 // static
 void RuntimeEventRouter::OnExtensionUninstalled(
     content::BrowserContext* context,
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     UninstallReason reason) {
   if (!(reason == UNINSTALL_REASON_USER_INITIATED ||
         reason == UNINSTALL_REASON_MANAGEMENT_API ||

@@ -38,7 +38,7 @@ class AppFirewallHole {
   AppFirewallHole(const base::WeakPtr<AppFirewallHoleManager>& manager,
                   chromeos::FirewallHole::PortType type,
                   uint16_t port,
-                  const std::string& extension_id);
+                  const ExtensionId& extension_id);
 
   void SetVisible(bool app_visible);
   void OnFirewallHoleOpened(
@@ -73,7 +73,7 @@ class AppFirewallHoleManager : public KeyedService,
   // currently visible.
   std::unique_ptr<AppFirewallHole> Open(chromeos::FirewallHole::PortType type,
                                         uint16_t port,
-                                        const std::string& extension_id);
+                                        const ExtensionId& extension_id);
 
   static void EnsureFactoryBuilt();
 

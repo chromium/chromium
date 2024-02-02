@@ -16,6 +16,7 @@
 #include "extensions/browser/api/extensions_api_client.h"
 #include "extensions/browser/api/feedback_private/feedback_private_delegate.h"
 #include "extensions/browser/api/feedback_private/log_source_resource.h"
+#include "extensions/common/extension_id.h"
 
 namespace extensions {
 
@@ -99,7 +100,7 @@ void LogSourceAccessManager::SetRateLimitingTimeoutForTesting(
 }
 
 bool LogSourceAccessManager::FetchFromSource(const ReadLogSourceParams& params,
-                                             const std::string& extension_id,
+                                             const ExtensionId& extension_id,
                                              ReadLogSourceCallback callback) {
   int requested_resource_id =
       params.reader_id ? *params.reader_id : kInvalidResourceId;
@@ -143,7 +144,7 @@ bool LogSourceAccessManager::FetchFromSource(const ReadLogSourceParams& params,
 }
 
 void LogSourceAccessManager::OnFetchComplete(
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     ResourceId resource_id,
     bool delete_resource,
     ReadLogSourceCallback callback,
@@ -186,12 +187,12 @@ void LogSourceAccessManager::RemoveHandle(ResourceId id) {
 
 LogSourceAccessManager::SourceAndExtension::SourceAndExtension(
     LogSource source,
-    const std::string& extension_id)
+    const ExtensionId& extension_id)
     : source(source), extension_id(extension_id) {}
 
 LogSourceAccessManager::ResourceId LogSourceAccessManager::CreateResource(
     LogSource source,
-    const std::string& extension_id) {
+    const ExtensionId& extension_id) {
   // Enforce the rules: Do not create too many SingleLogSource objects to read
   // from a source, even if they are from different extensions.
   if (GetNumActiveResourcesForSource(source) >= kMaxReadersPerSource)

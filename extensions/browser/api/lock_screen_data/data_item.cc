@@ -21,6 +21,7 @@
 #include "extensions/browser/api/lock_screen_data/operation_result.h"
 #include "extensions/browser/api/storage/local_value_store_cache.h"
 #include "extensions/browser/extension_registry.h"
+#include "extensions/common/extension_id.h"
 
 using value_store::ValueStore;
 
@@ -270,7 +271,7 @@ void DataItem::GetRegisteredValuesForExtension(
     content::BrowserContext* context,
     ValueStoreCache* value_store_cache,
     base::SequencedTaskRunner* task_runner,
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     RegisteredValuesCallback callback) {
   scoped_refptr<const Extension> extension =
       ExtensionRegistry::Get(context)->GetExtensionById(
@@ -303,7 +304,7 @@ void DataItem::DeleteAllItemsForExtension(
     content::BrowserContext* context,
     ValueStoreCache* value_store_cache,
     base::SequencedTaskRunner* task_runner,
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     base::OnceClosure callback) {
   task_runner->PostTaskAndReply(
       FROM_HERE,
@@ -313,7 +314,7 @@ void DataItem::DeleteAllItemsForExtension(
 }
 
 DataItem::DataItem(const std::string& id,
-                   const std::string& extension_id,
+                   const ExtensionId& extension_id,
                    content::BrowserContext* context,
                    ValueStoreCache* value_store_cache,
                    base::SequencedTaskRunner* task_runner,

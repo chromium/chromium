@@ -48,7 +48,7 @@ class ExtensionMessagePort : public MessagePort {
   // Create a port that is tied to frame(s) in a single tab.
   ExtensionMessagePort(base::WeakPtr<ChannelDelegate> channel_delegate,
                        const PortId& port_id,
-                       const std::string& extension_id,
+                       const ExtensionId& extension_id,
                        content::RenderFrameHost* render_frame_host,
                        bool include_child_frames);
 
@@ -57,7 +57,7 @@ class ExtensionMessagePort : public MessagePort {
   static std::unique_ptr<ExtensionMessagePort> CreateForExtension(
       base::WeakPtr<ChannelDelegate> channel_delegate,
       const PortId& port_id,
-      const std::string& extension_id,
+      const ExtensionId& extension_id,
       content::BrowserContext* browser_context);
 
   // Creates a port for any ChannelEndpoint which can be for a render frame or
@@ -65,7 +65,7 @@ class ExtensionMessagePort : public MessagePort {
   static std::unique_ptr<ExtensionMessagePort> CreateForEndpoint(
       base::WeakPtr<ChannelDelegate> channel_delegate,
       const PortId& port_id,
-      const std::string& extension_id,
+      const ExtensionId& extension_id,
       const ChannelEndpoint& endpoint,
       mojo::PendingAssociatedRemote<extensions::mojom::MessagePort> port,
       mojo::PendingAssociatedReceiver<extensions::mojom::MessagePortHost>

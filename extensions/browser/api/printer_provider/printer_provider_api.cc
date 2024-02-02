@@ -37,6 +37,7 @@
 #include "extensions/common/api/printer_provider_internal.h"
 #include "extensions/common/api/usb.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/extension_id.h"
 #include "extensions/common/mojom/context_type.mojom.h"
 #include "extensions/common/mojom/event_dispatcher.mojom-forward.h"
 
@@ -51,7 +52,7 @@ const char kPrinterIdSeparator = ':';
 // Given an extension ID and an ID of a printer reported by the extension, it
 // generates a ID for the printer unique across extensions (assuming that the
 // printer id is unique in the extension's space).
-std::string GeneratePrinterId(const std::string& extension_id,
+std::string GeneratePrinterId(const ExtensionId& extension_id,
                               const std::string& internal_printer_id) {
   std::string result = extension_id;
   result.append(1, kPrinterIdSeparator);
@@ -109,14 +110,14 @@ class GetPrintersRequest {
 
   // Adds an extension id to the list of the extensions that need to respond
   // to the event.
-  void AddSource(const std::string& extension_id);
+  void AddSource(const ExtensionId& extension_id);
 
   // Whether all extensions have responded to the event.
   bool IsDone() const;
 
   // Runs the callback for an extension and removes the extension from the
   // list of extensions that still have to respond to the event.
-  void ReportForExtension(const std::string& extension_id,
+  void ReportForExtension(const ExtensionId& extension_id,
                           base::Value::List printers);
 
  private:
@@ -144,18 +145,18 @@ class PendingGetPrintersRequests {
 
   // Completes a request for an extension. It runs the request callback with
   // values reported by the extension.
-  bool CompleteForExtension(const std::string& extension_id,
+  bool CompleteForExtension(const ExtensionId& extension_id,
                             int request_id,
                             base::Value::List result);
 
   // Runs callbacks for the extension for all requests that are waiting for a
   // response from the extension with the provided extension id. Callbacks are
   // called as if the extension reported empty set of printers.
-  void FailAllForExtension(const std::string& extension_id);
+  void FailAllForExtension(const ExtensionId& extension_id);
 
   // Adds an extension id to the list of the extensions that need to respond to
   // the event.
-  bool AddSource(int request_id, const std::string& extension_id);
+  bool AddSource(int request_id, const ExtensionId& extension_id);
 
  private:
   int last_request_id_;
@@ -270,7 +271,7 @@ class PrinterProviderAPIImpl : public PrinterProviderAPI,
   const PrinterProviderPrintJob* GetPrintJob(const Extension* extension,
                                              int request_id) const override;
   void DispatchGetUsbPrinterInfoRequested(
-      const std::string& extension_id,
+      const ExtensionId& extension_id,
       const device::mojom::UsbDeviceInfo& device,
       GetPrinterInfoCallback callback) override;
 
@@ -338,7 +339,7 @@ GetPrintersRequest::GetPrintersRequest(
 GetPrintersRequest::~GetPrintersRequest() {
 }
 
-void GetPrintersRequest::AddSource(const std::string& extension_id) {
+void GetPrintersRequest::AddSource(const ExtensionId& extension_id) {
   extensions_.insert(extension_id);
 }
 
@@ -346,7 +347,7 @@ bool GetPrintersRequest::IsDone() const {
   return extensions_.empty();
 }
 
-void GetPrintersRequest::ReportForExtension(const std::string& extension_id,
+void GetPrintersRequest::ReportForExtension(const ExtensionId& extension_id,
                                             base::Value::List printers) {
   if (extensions_.erase(extension_id) > 0)
     callback_.Run(std::move(printers), IsDone());
@@ -366,7 +367,7 @@ int PendingGetPrintersRequests::Add(
 }
 
 bool PendingGetPrintersRequests::CompleteForExtension(
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     int request_id,
     base::Value::List result) {
   auto it = pending_requests_.find(request_id);
@@ -381,7 +382,7 @@ bool PendingGetPrintersRequests::CompleteForExtension(
 }
 
 void PendingGetPrintersRequests::FailAllForExtension(
-    const std::string& extension_id) {
+    const ExtensionId& extension_id) {
   auto it = pending_requests_.begin();
   while (it != pending_requests_.end()) {
     int request_id = it->first;
@@ -393,7 +394,7 @@ void PendingGetPrintersRequests::FailAllForExtension(
 }
 
 bool PendingGetPrintersRequests::AddSource(int request_id,
-                                           const std::string& extension_id) {
+                                           const ExtensionId& extension_id) {
   auto it = pending_requests_.find(request_id);
   if (it == pending_requests_.end())
     return false;
@@ -572,7 +573,7 @@ void PrinterProviderAPIImpl::DispatchGetPrintersRequested(
 void PrinterProviderAPIImpl::DispatchGetCapabilityRequested(
     const std::string& printer_id,
     GetCapabilityCallback callback) {
-  std::string extension_id;
+  ExtensionId extension_id;
   std::string internal_printer_id;
   if (!ParsePrinterId(printer_id, &extension_id, &internal_printer_id)) {
     std::move(callback).Run(base::Value::Dict());
@@ -606,7 +607,7 @@ void PrinterProviderAPIImpl::DispatchGetCapabilityRequested(
 
 void PrinterProviderAPIImpl::DispatchPrintRequested(PrinterProviderPrintJob job,
                                                     PrintCallback callback) {
-  std::string extension_id;
+  ExtensionId extension_id;
   std::string internal_printer_id;
   if (!ParsePrinterId(job.printer_id, &extension_id, &internal_printer_id)) {
     std::move(callback).Run(base::Value(GetDefaultPrintError()));
@@ -660,7 +661,7 @@ const PrinterProviderPrintJob* PrinterProviderAPIImpl::GetPrintJob(
 }
 
 void PrinterProviderAPIImpl::DispatchGetUsbPrinterInfoRequested(
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     const device::mojom::UsbDeviceInfo& device,
     GetPrinterInfoCallback callback) {
   EventRouter* event_router = EventRouter::Get(browser_context_);

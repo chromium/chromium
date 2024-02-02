@@ -22,6 +22,7 @@
 #include "extensions/browser/unloaded_extension_reason.h"
 #include "extensions/common/api/idle.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/extension_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -44,7 +45,7 @@ class MockEventDelegate : public IdleManager::EventDelegate {
 
 class ScopedListen {
  public:
-  ScopedListen(IdleManager* idle_manager, const std::string& extension_id);
+  ScopedListen(IdleManager* idle_manager, const ExtensionId& extension_id);
   ~ScopedListen();
 
  private:
@@ -53,7 +54,7 @@ class ScopedListen {
 };
 
 ScopedListen::ScopedListen(IdleManager* idle_manager,
-                           const std::string& extension_id)
+                           const ExtensionId& extension_id)
     : idle_manager_(idle_manager), extension_id_(extension_id) {
   const EventListenerInfo details(idle::OnStateChanged::kEventName,
                                   extension_id_, GURL(), nullptr);

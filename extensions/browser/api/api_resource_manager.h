@@ -29,6 +29,7 @@
 #include "extensions/browser/process_manager_factory.h"
 #include "extensions/browser/process_manager_observer.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/extension_id.h"
 
 namespace extensions {
 
@@ -123,15 +124,15 @@ class ApiResourceManager : public BrowserContextKeyedAPI,
   // Takes ownership.
   int Add(T* api_resource) { return data_->Add(api_resource); }
 
-  void Remove(const std::string& extension_id, int api_resource_id) {
+  void Remove(const ExtensionId& extension_id, int api_resource_id) {
     data_->Remove(extension_id, api_resource_id);
   }
 
-  T* Get(const std::string& extension_id, int api_resource_id) {
+  T* Get(const ExtensionId& extension_id, int api_resource_id) {
     return data_->Get(extension_id, api_resource_id);
   }
 
-  std::unordered_set<int>* GetResourceIds(const std::string& extension_id) {
+  std::unordered_set<int>* GetResourceIds(const ExtensionId& extension_id) {
     return data_->GetResourceIds(extension_id);
   }
 
@@ -151,7 +152,7 @@ class ApiResourceManager : public BrowserContextKeyedAPI,
   // |api_resource_id| to |resource|. Returns true and succeeds unless
   // |api_resource_id| does not already identify a resource held by
   // |extension_id|.
-  bool Replace(const std::string& extension_id,
+  bool Replace(const ExtensionId& extension_id,
                int api_resource_id,
                T* resource) {
     return data_->Replace(extension_id, api_resource_id, resource);
@@ -159,7 +160,7 @@ class ApiResourceManager : public BrowserContextKeyedAPI,
 
  protected:
   // ProcessManagerObserver:
-  void OnBackgroundHostClose(const std::string& extension_id) override {
+  void OnBackgroundHostClose(const ExtensionId& extension_id) override {
     data_->InitiateExtensionSuspendedCleanup(extension_id);
   }
 
@@ -204,7 +205,7 @@ class ApiResourceManager : public BrowserContextKeyedAPI,
       if (id > 0) {
         api_resource_map_[id] = base::WrapUnique<T>(api_resource);
 
-        const std::string& extension_id = api_resource->owner_extension_id();
+        const ExtensionId& extension_id = api_resource->owner_extension_id();
         ExtensionToResourceMap::iterator it =
             extension_resource_map_.find(extension_id);
         if (it == extension_resource_map_.end()) {
@@ -219,7 +220,7 @@ class ApiResourceManager : public BrowserContextKeyedAPI,
       return 0;
     }
 
-    void Remove(const std::string& extension_id, int api_resource_id) {
+    void Remove(const ExtensionId& extension_id, int api_resource_id) {
       DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
       if (GetOwnedResource(extension_id, api_resource_id)) {
         ExtensionToResourceMap::iterator it =
@@ -229,7 +230,7 @@ class ApiResourceManager : public BrowserContextKeyedAPI,
       }
     }
 
-    T* Get(const std::string& extension_id, int api_resource_id) {
+    T* Get(const ExtensionId& extension_id, int api_resource_id) {
       DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
       return GetOwnedResource(extension_id, api_resource_id);
     }
@@ -238,7 +239,7 @@ class ApiResourceManager : public BrowserContextKeyedAPI,
     // |api_resource_id| to |resource|. Returns true and succeeds unless
     // |api_resource_id| does not already identify a resource held by
     // |extension_id|.
-    bool Replace(const std::string& extension_id,
+    bool Replace(const ExtensionId& extension_id,
                  int api_resource_id,
                  T* api_resource) {
       DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -250,12 +251,12 @@ class ApiResourceManager : public BrowserContextKeyedAPI,
       return false;
     }
 
-    std::unordered_set<int>* GetResourceIds(const std::string& extension_id) {
+    std::unordered_set<int>* GetResourceIds(const ExtensionId& extension_id) {
       DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
       return GetOwnedResourceIds(extension_id);
     }
 
-    void InitiateExtensionUnloadedCleanup(const std::string& extension_id) {
+    void InitiateExtensionUnloadedCleanup(const ExtensionId& extension_id) {
       ThreadingTraits::GetSequencedTaskRunner()->PostTask(
           FROM_HERE,
           base::BindOnce(
@@ -263,7 +264,7 @@ class ApiResourceManager : public BrowserContextKeyedAPI,
               extension_id));
     }
 
-    void InitiateExtensionSuspendedCleanup(const std::string& extension_id) {
+    void InitiateExtensionSuspendedCleanup(const ExtensionId& extension_id) {
       ThreadingTraits::GetSequencedTaskRunner()->PostTask(
           FROM_HERE,
           base::BindOnce(
@@ -281,7 +282,7 @@ class ApiResourceManager : public BrowserContextKeyedAPI,
 
     virtual ~ApiResourceData() {}
 
-    T* GetOwnedResource(const std::string& extension_id, int api_resource_id) {
+    T* GetOwnedResource(const ExtensionId& extension_id, int api_resource_id) {
       const std::unique_ptr<T>& ptr = api_resource_map_[api_resource_id];
       T* resource = ptr.get();
       if (resource && extension_id == resource->owner_extension_id())
@@ -290,7 +291,7 @@ class ApiResourceManager : public BrowserContextKeyedAPI,
     }
 
     std::unordered_set<int>* GetOwnedResourceIds(
-        const std::string& extension_id) {
+        const ExtensionId& extension_id) {
       DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
       ExtensionToResourceMap::iterator it =
           extension_resource_map_.find(extension_id);
@@ -300,16 +301,16 @@ class ApiResourceManager : public BrowserContextKeyedAPI,
     }
 
     void CleanupResourcesFromUnloadedExtension(
-        const std::string& extension_id) {
+        const ExtensionId& extension_id) {
       CleanupResourcesFromExtension(extension_id, true);
     }
 
     void CleanupResourcesFromSuspendedExtension(
-        const std::string& extension_id) {
+        const ExtensionId& extension_id) {
       CleanupResourcesFromExtension(extension_id, false);
     }
 
-    void CleanupResourcesFromExtension(const std::string& extension_id,
+    void CleanupResourcesFromExtension(const ExtensionId& extension_id,
                                        bool remove_all) {
       DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 

@@ -18,6 +18,7 @@
 #include "components/content_settings/core/test/content_settings_test_utils.h"
 #include "components/permissions/features.h"
 #include "extensions/common/api/types.h"
+#include "extensions/common/extension_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -55,7 +56,7 @@ class MockContentSettingsStoreObserver
     : public ContentSettingsStore::Observer {
  public:
   MOCK_METHOD2(OnContentSettingChanged,
-               void(const std::string& extension_id, bool incognito));
+               void(const ExtensionId& extension_id, bool incognito));
 };
 
 ContentSetting GetContentSettingFromStore(

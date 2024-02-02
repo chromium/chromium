@@ -12,6 +12,7 @@
 #include "extensions/browser/api/socket/tcp_socket.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extensions_browser_client.h"
+#include "extensions/common/extension_id.h"
 #include "net/base/net_errors.h"
 
 namespace extensions {
@@ -70,7 +71,7 @@ TCPServerSocketEventDispatcher::AcceptParams::AcceptParams(
 TCPServerSocketEventDispatcher::AcceptParams::~AcceptParams() = default;
 
 void TCPServerSocketEventDispatcher::OnServerSocketListen(
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     int socket_id) {
   DCHECK_CURRENTLY_ON(thread_id_);
 
@@ -78,7 +79,7 @@ void TCPServerSocketEventDispatcher::OnServerSocketListen(
 }
 
 void TCPServerSocketEventDispatcher::OnServerSocketResume(
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     int socket_id) {
   DCHECK_CURRENTLY_ON(thread_id_);
 
@@ -86,7 +87,7 @@ void TCPServerSocketEventDispatcher::OnServerSocketResume(
 }
 
 void TCPServerSocketEventDispatcher::StartSocketAccept(
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     int socket_id) {
   DCHECK_CURRENTLY_ON(thread_id_);
 
@@ -191,7 +192,7 @@ void TCPServerSocketEventDispatcher::PostEvent(const AcceptParams& params,
 // static
 void TCPServerSocketEventDispatcher::DispatchEvent(
     void* browser_context_id,
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     std::unique_ptr<Event> event) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 

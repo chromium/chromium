@@ -10,6 +10,7 @@
 #include "extensions/browser/api/api_resource_manager.h"
 #include "extensions/browser/api/bluetooth_socket/bluetooth_api_socket.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
+#include "extensions/common/extension_id.h"
 
 namespace content {
 class BrowserContext;
@@ -36,13 +37,13 @@ class BluetoothSocketEventDispatcher : public BrowserContextKeyedAPI {
   ~BluetoothSocketEventDispatcher() override;
 
   // Socket is active, start receiving data from it.
-  void OnSocketConnect(const std::string& extension_id, int socket_id);
+  void OnSocketConnect(const ExtensionId& extension_id, int socket_id);
 
   // Socket is active again, start accepting connections from it.
-  void OnSocketListen(const std::string& extension_id, int socket_id);
+  void OnSocketListen(const ExtensionId& extension_id, int socket_id);
 
   // Socket is active again, start receiving data from it.
-  void OnSocketResume(const std::string& extension_id, int socket_id);
+  void OnSocketResume(const ExtensionId& extension_id, int socket_id);
 
   // BrowserContextKeyedAPI implementation.
   static BrowserContextKeyedAPIFactory<BluetoothSocketEventDispatcher>*
@@ -69,7 +70,7 @@ class BluetoothSocketEventDispatcher : public BrowserContextKeyedAPI {
 
     content::BrowserThread::ID thread_id;
     raw_ptr<void> browser_context_id;
-    std::string extension_id;
+    ExtensionId extension_id;
     scoped_refptr<SocketData> sockets;
     int socket_id;
   };
@@ -106,7 +107,7 @@ class BluetoothSocketEventDispatcher : public BrowserContextKeyedAPI {
 
   // Dispatch an extension event on to EventRouter instance on UI thread.
   static void DispatchEvent(void* browser_context_id,
-                            const std::string& extension_id,
+                            const ExtensionId& extension_id,
                             std::unique_ptr<Event> event);
 
   // Usually FILE thread (except for unit testing).

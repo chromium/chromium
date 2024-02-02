@@ -18,6 +18,7 @@
 #include "build/chromeos_buildflags.h"
 #include "extensions/browser/extension_function.h"
 #include "extensions/common/api/file_system.h"
+#include "extensions/common/extension_id.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -35,10 +36,10 @@ namespace file_system_api {
 
 // Returns an empty path on failure.
 base::FilePath GetLastChooseEntryDirectory(const ExtensionPrefs* prefs,
-                                           const std::string& extension_id);
+                                           const ExtensionId& extension_id);
 
 void SetLastChooseEntryDirectory(ExtensionPrefs* prefs,
-                                 const std::string& extension_id,
+                                 const ExtensionId& extension_id,
                                  const base::FilePath& path);
 
 }  // namespace file_system_api

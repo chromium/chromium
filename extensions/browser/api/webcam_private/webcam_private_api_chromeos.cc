@@ -19,6 +19,7 @@
 #include "extensions/browser/extensions_browser_client.h"
 #include "extensions/browser/process_manager.h"
 #include "extensions/browser/process_manager_factory.h"
+#include "extensions/common/extension_id.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "url/origin.h"
 
@@ -59,7 +60,7 @@ WebcamPrivateAPI::~WebcamPrivateAPI() {
 }
 
 void WebcamPrivateAPI::OnGotDeviceIdOnUIThread(
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     const std::string& webcam_id,
     base::OnceCallback<void(Webcam*)> callback,
     const std::optional<std::string>& device_id) {
@@ -102,7 +103,7 @@ void WebcamPrivateAPI::GetDeviceIdOnIOThread(
       content::GetUIThreadTaskRunner({}), std::move(callback));
 }
 
-void WebcamPrivateAPI::GetWebcam(const std::string& extension_id,
+void WebcamPrivateAPI::GetWebcam(const ExtensionId& extension_id,
                                  const std::string& webcam_id,
                                  base::OnceCallback<void(Webcam*)> callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -134,7 +135,7 @@ void WebcamPrivateAPI::GetWebcam(const std::string& extension_id,
 
 void WebcamPrivateAPI::GetDeviceIdOnUIThread(
     const url::Origin& security_origin,
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     const std::string& webcam_id,
     base::OnceCallback<void(Webcam*)> webcam_callback,
     const std::string& salt) {
@@ -152,7 +153,7 @@ void WebcamPrivateAPI::GetDeviceIdOnUIThread(
 }
 
 void WebcamPrivateAPI::OpenSerialWebcam(
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     const std::string& device_path,
     const base::RepeatingCallback<void(const std::string&,
                                        OpenSerialWebcamResult)>& callback) {
@@ -163,7 +164,7 @@ void WebcamPrivateAPI::OpenSerialWebcam(
 }
 
 void WebcamPrivateAPI::GotWebcamId(
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     const std::string& device_path,
     const base::RepeatingCallback<void(const std::string&,
                                        OpenSerialWebcamResult)>& callback,
@@ -187,7 +188,7 @@ void WebcamPrivateAPI::GotWebcamId(
                           extension_id, device_path, visca_webcam, callback));
 }
 
-bool WebcamPrivateAPI::CloseWebcam(const std::string& extension_id,
+bool WebcamPrivateAPI::CloseWebcam(const ExtensionId& extension_id,
                                    const std::string& webcam_id) {
   if (FindWebcamResource(extension_id, webcam_id)) {
     RemoveWebcamResource(extension_id, webcam_id);
@@ -198,7 +199,7 @@ bool WebcamPrivateAPI::CloseWebcam(const std::string& extension_id,
 
 void WebcamPrivateAPI::OnOpenSerialWebcam(
     const std::string& webcam_id,
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     const std::string& device_path,
     scoped_refptr<Webcam> webcam,
     const base::RepeatingCallback<void(const std::string&,
@@ -214,7 +215,7 @@ void WebcamPrivateAPI::OnOpenSerialWebcam(
 }
 
 void WebcamPrivateAPI::GetWebcamId(
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     const std::string& device_id,
     base::OnceCallback<void(const std::string&)> webcam_id_callback) {
   url::Origin security_origin =
@@ -247,7 +248,7 @@ void WebcamPrivateAPI::FinalizeGetWebcamId(
 }
 
 WebcamResource* WebcamPrivateAPI::FindWebcamResource(
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     const std::string& webcam_id) const {
   DCHECK(webcam_resource_manager_);
 
@@ -266,7 +267,7 @@ WebcamResource* WebcamPrivateAPI::FindWebcamResource(
   return nullptr;
 }
 
-bool WebcamPrivateAPI::RemoveWebcamResource(const std::string& extension_id,
+bool WebcamPrivateAPI::RemoveWebcamResource(const ExtensionId& extension_id,
                                             const std::string& webcam_id) {
   DCHECK(webcam_resource_manager_);
 

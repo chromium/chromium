@@ -21,6 +21,7 @@ source_set("serial") {
 
   deps = [
     "//content/public/common",
+    "//extensions/common",
     "//extensions/common/api",
     "//mojo/public/cpp/bindings",
     "//services/device/public/mojom",

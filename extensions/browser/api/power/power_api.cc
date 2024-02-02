@@ -11,6 +11,7 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/api/power.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/extension_id.h"
 #include "services/device/public/mojom/wake_lock_provider.mojom.h"
 
 namespace extensions {
@@ -70,13 +71,13 @@ BrowserContextKeyedAPIFactory<PowerAPI>* PowerAPI::GetFactoryInstance() {
   return g_factory.Pointer();
 }
 
-void PowerAPI::AddRequest(const std::string& extension_id,
+void PowerAPI::AddRequest(const ExtensionId& extension_id,
                           api::power::Level level) {
   extension_levels_[extension_id] = level;
   UpdateWakeLock();
 }
 
-void PowerAPI::RemoveRequest(const std::string& extension_id) {
+void PowerAPI::RemoveRequest(const ExtensionId& extension_id) {
   extension_levels_.erase(extension_id);
   UpdateWakeLock();
 }

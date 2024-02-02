@@ -28,6 +28,7 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/test_extensions_browser_client.h"
 #include "extensions/common/extension_builder.h"
+#include "extensions/common/extension_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace extensions {
@@ -130,7 +131,7 @@ class DataItemTest : public testing::Test {
   }
 
   std::unique_ptr<DataItem> CreateDataItem(const std::string& item_id,
-                                           const std::string& extension_id,
+                                           const ExtensionId& extension_id,
                                            const std::string& crypto_key) {
     return std::make_unique<DataItem>(item_id, extension_id, context_.get(),
                                       value_store_cache_.get(),
@@ -139,7 +140,7 @@ class DataItemTest : public testing::Test {
 
   std::unique_ptr<DataItem> CreateAndRegisterDataItem(
       const std::string& item_id,
-      const std::string& extension_id,
+      const ExtensionId& extension_id,
       const std::string& crypto_key) {
     std::unique_ptr<DataItem> item =
         CreateDataItem(item_id, extension_id, crypto_key);
@@ -168,7 +169,7 @@ class DataItemTest : public testing::Test {
   }
 
   scoped_refptr<const Extension> CreateTestExtension(
-      const std::string& extension_id) {
+      const ExtensionId& extension_id) {
     base::Value::Dict app_builder;
     app_builder.Set("background",
                     base::Value::Dict().Set(
@@ -237,7 +238,7 @@ class DataItemTest : public testing::Test {
   }
 
   void SetReturnCodeForValueStoreOperations(
-      const std::string& extension_id,
+      const ExtensionId& extension_id,
       value_store::ValueStore::StatusCode code) {
     base::FilePath value_store_dir = value_store_util::GetValueStoreDir(
         settings_namespace::LOCAL, value_store_util::ModelType::APP,
@@ -249,7 +250,7 @@ class DataItemTest : public testing::Test {
     store->set_status_code(code);
   }
 
-  OperationResult GetRegisteredItemIds(const std::string& extension_id,
+  OperationResult GetRegisteredItemIds(const ExtensionId& extension_id,
                                        std::set<std::string>* items) {
     OperationResult result = OperationResult::kFailed;
     base::Value::Dict items_dict;
@@ -273,7 +274,7 @@ class DataItemTest : public testing::Test {
     return OperationResult::kSuccess;
   }
 
-  void DeleteAllItems(const std::string& extension_id) {
+  void DeleteAllItems(const ExtensionId& extension_id) {
     base::RunLoop run_loop;
     DataItem::DeleteAllItemsForExtension(
         context_.get(), value_store_cache_.get(), task_runner_.get(),

@@ -26,19 +26,19 @@ TestRulesRegistry::TestRulesRegistry(content::BrowserContext* browser_context,
 }
 
 std::string TestRulesRegistry::AddRulesImpl(
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     const std::vector<const api::events::Rule*>& rules) {
   return result_;
 }
 
 std::string TestRulesRegistry::RemoveRulesImpl(
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     const std::vector<std::string>& rule_identifiers) {
   return result_;
 }
 
 std::string TestRulesRegistry::RemoveAllRulesImpl(
-    const std::string& extension_id) {
+    const ExtensionId& extension_id) {
   return result_;
 }
 

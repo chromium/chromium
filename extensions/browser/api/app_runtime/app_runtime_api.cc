@@ -19,6 +19,7 @@
 #include "extensions/browser/granted_file_entry.h"
 #include "extensions/common/api/app_runtime.h"
 #include "extensions/common/constants.h"
+#include "extensions/common/extension_id.h"
 #include "extensions/common/feature_switch.h"
 #include "url/gurl.h"
 
@@ -31,7 +32,7 @@ namespace app_runtime = api::app_runtime;
 namespace {
 
 void DispatchOnEmbedRequestedEventImpl(
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     base::Value::Dict app_embedding_request_data,
     content::BrowserContext* context) {
   base::Value::List args;
@@ -46,7 +47,7 @@ void DispatchOnEmbedRequestedEventImpl(
                                                   base::Time::Now());
 }
 
-void DispatchOnLaunchedEventImpl(const std::string& extension_id,
+void DispatchOnLaunchedEventImpl(const ExtensionId& extension_id,
                                  app_runtime::LaunchSource source,
                                  base::Value::Dict launch_data,
                                  BrowserContext* context) {

@@ -24,6 +24,7 @@
 #include "extensions/browser/process_manager_observer.h"
 #include "extensions/browser/update_observer.h"
 #include "extensions/common/api/runtime.h"
+#include "extensions/common/extension_id.h"
 
 namespace base {
 class Version;
@@ -90,15 +91,15 @@ class RuntimeAPI : public BrowserContextKeyedAPI,
 
   ~RuntimeAPI() override;
 
-  void ReloadExtension(const std::string& extension_id);
-  bool CheckForUpdates(const std::string& extension_id,
+  void ReloadExtension(const ExtensionId& extension_id);
+  bool CheckForUpdates(const ExtensionId& extension_id,
                        RuntimeAPIDelegate::UpdateCheckCallback callback);
   void OpenURL(const GURL& uninstall_url);
   bool GetPlatformInfo(api::runtime::PlatformInfo* info);
   bool RestartDevice(std::string* error_message);
 
   RestartAfterDelayStatus RestartDeviceAfterDelay(
-      const std::string& extension_id,
+      const ExtensionId& extension_id,
       int seconds_from_now);
 
   bool OpenOptionsPage(const Extension* extension,
@@ -195,17 +196,17 @@ class RuntimeEventRouter {
  public:
   // Dispatches the onStartup event to all currently-loaded extensions.
   static void DispatchOnStartupEvent(content::BrowserContext* context,
-                                     const std::string& extension_id);
+                                     const ExtensionId& extension_id);
 
   // Dispatches the onInstalled event to the given extension.
   static void DispatchOnInstalledEvent(content::BrowserContext* context,
-                                       const std::string& extension_id,
+                                       const ExtensionId& extension_id,
                                        const base::Version& old_version,
                                        bool chrome_updated);
 
   // Dispatches the onUpdateAvailable event to the given extension.
   static void DispatchOnUpdateAvailableEvent(content::BrowserContext* context,
-                                             const std::string& extension_id,
+                                             const ExtensionId& extension_id,
                                              const base::Value::Dict* manifest);
 
   // Dispatches the onBrowserUpdateAvailable event to all extensions.
@@ -220,7 +221,7 @@ class RuntimeEventRouter {
 
   // Does any work needed at extension uninstall (e.g. load uninstall url).
   static void OnExtensionUninstalled(content::BrowserContext* context,
-                                     const std::string& extension_id,
+                                     const ExtensionId& extension_id,
                                      UninstallReason reason);
 };
 
