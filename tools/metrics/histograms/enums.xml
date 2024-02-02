@@ -20189,6 +20189,7 @@ from previous Chrome versions.
   <int value="-231426350" label="AutofillEnableToolbarStatusChip:enabled"/>
   <int value="-230824955" label="NTPMostLikelyFaviconsFromServer:enabled"/>
   <int value="-229995076" label="AltClickAndSixPackCustomization:disabled"/>
+  <int value="-228847300" label="OmniboxLimitKeywordModeSuggestions:disabled"/>
   <int value="-226826278" label="ForceEnableFastCheckoutCapabilities:disabled"/>
   <int value="-226715863" label="SHA1ServerSignature:enabled"/>
   <int value="-226542943"
@@ -23958,6 +23959,7 @@ from previous Chrome versions.
   <int value="1527072723" label="PdfUseSkiaRenderer:enabled"/>
   <int value="1527172748" label="disable-http2-grease-settings"/>
   <int value="1527292264" label="DisplayChangeModal:enabled"/>
+  <int value="1527848574" label="OmniboxLimitKeywordModeSuggestions:enabled"/>
   <int value="1528633042"
       label="kFileSystemAccessPersistentPermissionsUpdatedPageInfo:disabled"/>
   <int value="1529285725"

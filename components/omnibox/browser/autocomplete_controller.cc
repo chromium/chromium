@@ -45,6 +45,7 @@
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
 #include "components/omnibox/browser/autocomplete_provider.h"
+#include "components/omnibox/browser/autocomplete_provider_client.h"
 #include "components/omnibox/browser/autocomplete_scoring_model_service.h"
 #include "components/omnibox/browser/autocomplete_scoring_signals_annotator.h"
 #include "components/omnibox/browser/bookmark_provider.h"
@@ -1685,6 +1686,7 @@ bool AutocompleteController::ShouldRunProvider(
     const TemplateURL* keyword_turl =
         KeywordProvider::GetSubstitutingTemplateURLForInput(
             template_url_service_, &keyword_input);
+
     if (keyword_turl && keyword_turl->starter_pack_id() > 0) {
       switch (provider->type()) {
         // Search provider and keyword provider are still run because we would
@@ -1715,6 +1717,29 @@ bool AutocompleteController::ShouldRunProvider(
         // No other providers should run when in a starter pack scope.
         default:
           return false;
+      }
+    }
+
+    // Outside of the starter pack scopes, keyword mode should still restrict
+    // certain providers (when LimitKeywordModeSuggestions is enabled).
+    if (omnibox_feature_configs::LimitKeywordModeSuggestions::Get().enabled) {
+      switch (provider->type()) {
+        // Don't run history cluster provider.
+        case AutocompleteProvider::TYPE_HISTORY_CLUSTER_PROVIDER:
+          return !(omnibox_feature_configs::LimitKeywordModeSuggestions::Get()
+                       .limit_history_cluster_suggestions);
+
+        // Don't run document provider, except for Google Drive.
+        case AutocompleteProvider::TYPE_DOCUMENT:
+          return !(omnibox_feature_configs::LimitKeywordModeSuggestions::Get()
+                       .limit_document_suggestions) ||
+                 base::StartsWith(keyword_turl->url(),
+                                  "https://drive.google.com",
+                                  base::CompareCase::INSENSITIVE_ASCII);
+
+        // Otherwise, all other providers should still run.
+        default:
+          return true;
       }
     }
   }

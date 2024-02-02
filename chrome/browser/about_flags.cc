@@ -6067,6 +6067,13 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kOmniboxMlUrlScoringModelName,
      flag_descriptions::kOmniboxMlUrlScoringModelDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(omnibox::kUrlScoringModel)},
+
+    {"omnibox-limit-keyword-mode-suggestions",
+     flag_descriptions::kOmniboxLimitKeywordModeSuggestionsName,
+     flag_descriptions::kOmniboxLimitKeywordModeSuggestionsDescription,
+     kOsDesktop,
+     FEATURE_VALUE_TYPE(omnibox_feature_configs::LimitKeywordModeSuggestions::
+                            kLimitKeywordModeSuggestions)},
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) ||
         // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_FUCHSIA)
 

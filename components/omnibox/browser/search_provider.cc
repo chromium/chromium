@@ -35,6 +35,7 @@
 #include "components/omnibox/browser/autocomplete_provider_listener.h"
 #include "components/omnibox/browser/autocomplete_result.h"
 #include "components/omnibox/browser/keyword_provider.h"
+#include "components/omnibox/browser/omnibox_feature_configs.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/omnibox_triggered_feature_service.h"
 #include "components/omnibox/browser/page_classification_functions.h"
@@ -1342,12 +1343,16 @@ int SearchProvider::GetVerbatimRelevance(bool* relevance_from_server) const {
 }
 
 bool SearchProvider::ShouldCurbDefaultSuggestions() const {
-  // Only curb if we're in keyword mode and we believe the user selected the
-  // mode explicitly.
+  // Only curb if we're in keyword mode for stater pack, or
+  // LimitKeywordModeSuggestions flag is enabled.
   if (providers_.has_keyword_provider()) {
     const TemplateURL* turl = providers_.GetKeywordProviderURL();
     DCHECK(turl);
-    return turl->starter_pack_id() > 0;
+    return (omnibox_feature_configs::LimitKeywordModeSuggestions::Get()
+                .enabled &&
+            omnibox_feature_configs::LimitKeywordModeSuggestions::Get()
+                .limit_dse_suggestions) ||
+           turl->starter_pack_id() > 0;
   } else {
     return false;
   }

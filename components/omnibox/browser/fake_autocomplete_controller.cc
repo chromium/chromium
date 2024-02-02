@@ -43,6 +43,20 @@ FakeAutocompleteController::FakeAutocompleteController(
 
   providers_.push_back(base::MakeRefCounted<FakeAutocompleteProvider>(
       AutocompleteProvider::Type::TYPE_BOOKMARK));
+  providers_.push_back(base::MakeRefCounted<FakeAutocompleteProvider>(
+      AutocompleteProvider::Type::TYPE_BUILTIN));
+  providers_.push_back(base::MakeRefCounted<FakeAutocompleteProvider>(
+      AutocompleteProvider::Type::TYPE_HISTORY_QUICK));
+  providers_.push_back(base::MakeRefCounted<FakeAutocompleteProvider>(
+      AutocompleteProvider::Type::TYPE_KEYWORD));
+  providers_.push_back(base::MakeRefCounted<FakeAutocompleteProvider>(
+      AutocompleteProvider::Type::TYPE_SEARCH));
+  providers_.push_back(base::MakeRefCounted<FakeAutocompleteProvider>(
+      AutocompleteProvider::Type::TYPE_HISTORY_URL));
+  providers_.push_back(base::MakeRefCounted<FakeAutocompleteProvider>(
+      AutocompleteProvider::Type::TYPE_DOCUMENT));
+  providers_.push_back(base::MakeRefCounted<FakeAutocompleteProvider>(
+      AutocompleteProvider::Type::TYPE_HISTORY_CLUSTER_PROVIDER));
 
   observer_ = std::make_unique<FakeAutocompleteControllerObserver>();
   AddObserver(observer_.get());

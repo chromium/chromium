@@ -5968,6 +5968,14 @@
     "expiry_milestone": 130
   },
   {
+    "name": "omnibox-limit-keyword-mode-suggestions",
+    "owners": [
+      "yoangela@chromium.org",
+      "chrome-omnibox-team@google.com"
+    ],
+    "expiry_milestone": 130
+  },
+  {
     "name": "omnibox-local-history-zero-suggest-beyond-ntp",
     "owners": [ "mahmadi@chromium.org", "ender@chromium.org", "stkhapugin@chromium.org", "chrome-omnibox-team@google.com" ],
     "expiry_milestone": 130
