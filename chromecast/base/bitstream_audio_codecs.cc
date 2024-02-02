@@ -4,10 +4,10 @@
 
 #include "chromecast/base/bitstream_audio_codecs.h"
 
+#include <string_view>
 #include <vector>
 
 #include "base/strings/strcat.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 
 namespace chromecast {
@@ -63,7 +63,7 @@ std::string BitstreamAudioCodecsToString(int codecs) {
   if (!codec_string.empty()) {
     return codec_string;
   }
-  std::vector<base::StringPiece> codec_strings;
+  std::vector<std::string_view> codec_strings;
   for (int codec :
        {kBitstreamAudioCodecAc3, kBitstreamAudioCodecDts,
         kBitstreamAudioCodecDtsHd, kBitstreamAudioCodecEac3,
