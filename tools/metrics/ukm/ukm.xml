@@ -26011,6 +26011,7 @@ be describing additional metrics about the same event.
 
 <event name="ThirdPartyCookies.BreakageIndicator">
   <owner>3pcd-core@google.com</owner>
+  <owner>kurtosis-team@google.com</owner>
   <owner>johannhof@chromium.org</owner>
   <summary>
     Recorded when there is an event that could be associated with breakage from
