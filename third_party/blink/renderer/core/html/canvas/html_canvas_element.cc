@@ -104,6 +104,7 @@
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/image_data_buffer.h"
+#include "third_party/blink/renderer/platform/graphics/memory_managed_paint_recorder.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_canvas.h"
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image_to_video_frame_copier.h"
 #include "third_party/blink/renderer/platform/graphics/web_graphics_context_3d_video_frame_pool.h"
@@ -1831,6 +1832,11 @@ size_t HTMLCanvasElement::GetMemoryUsage() const {
 void HTMLCanvasElement::ReplaceExisting2dLayerBridge(
     std::unique_ptr<Canvas2DLayerBridge> new_layer_bridge,
     std::unique_ptr<CanvasResourceProvider> new_provider_for_testing) {
+  CanvasResourceProvider* old_provider = ResourceProvider();
+  if (old_provider == nullptr) {
+    return;
+  }
+
   scoped_refptr<StaticBitmapImage> image;
   std::unique_ptr<Canvas2DLayerBridge> old_layer_bridge;
   if (canvas2d_bridge_) {
@@ -1847,6 +1853,8 @@ void HTMLCanvasElement::ReplaceExisting2dLayerBridge(
     // assigning the new canvas layer bridge.
     old_layer_bridge->SetCanvasResourceHost(nullptr);
   }
+  std::unique_ptr<MemoryManagedPaintRecorder> recorder =
+      old_provider->ReleaseRecorder();
   ResetLayer();
   ReplaceResourceProvider(nullptr);
   canvas2d_bridge_ = std::move(new_layer_bridge);
@@ -1858,9 +1866,9 @@ void HTMLCanvasElement::ReplaceExisting2dLayerBridge(
 
   // If PaintCanvas cannot be get from the new layer bridge, revert the
   // replacement.
-  CanvasResourceProvider* provider =
+  CanvasResourceProvider* new_provider =
       canvas2d_bridge_->GetOrCreateResourceProvider();
-  if (!provider) {
+  if (!new_provider) {
     if (old_layer_bridge) {
       canvas2d_bridge_ = std::move(old_layer_bridge);
       canvas2d_bridge_->SetCanvasResourceHost(this);
@@ -1872,7 +1880,7 @@ void HTMLCanvasElement::ReplaceExisting2dLayerBridge(
     auto paint_image = image->PaintImageForCurrentFrame();
     if ((GetRasterMode() == RasterMode::kCPU) &&
         paint_image.IsTextureBacked()) {
-      // If new bridge is unaccelrated we must read back |paint_image| here.
+      // If new bridge is unaccelerated we must read back |paint_image| here.
       // DrawFullImage will record the image and potentially raster on a worker
       // thread, but texture backed PaintImages can't be used on a different
       // thread.
@@ -1883,8 +1891,10 @@ void HTMLCanvasElement::ReplaceExisting2dLayerBridge(
               .set_image(sk_image, content_id);
       paint_image = builder.TakePaintImage();
     }
-    provider->RestoreBackBuffer(paint_image);
+    new_provider->RestoreBackBuffer(paint_image);
   }
+
+  new_provider->SetRecorder(std::move(recorder));
 
   UpdateMemoryUsage();
 }
