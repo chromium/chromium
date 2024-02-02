@@ -46,9 +46,9 @@ class Shape;
 class LogoViewImpl : public LogoView,
                      public chromeos::assistant::StateAnimatorTimerDelegate,
                      public ui::CompositorAnimationObserver {
- public:
-  METADATA_HEADER(LogoViewImpl);
+  METADATA_HEADER(LogoViewImpl, LogoView)
 
+ public:
   using Dot = chromeos::assistant::Dot;
   using Logo = chromeos::assistant::Logo;
   using StateAnimator = chromeos::assistant::StateAnimator;

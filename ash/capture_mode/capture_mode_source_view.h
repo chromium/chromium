@@ -20,9 +20,9 @@ class TabSliderButton;
 // between the three available capture sources (fullscreen, region, and window).
 // Only a single capture source can be active at any time.
 class ASH_EXPORT CaptureModeSourceView : public views::View {
- public:
-  METADATA_HEADER(CaptureModeSourceView);
+  METADATA_HEADER(CaptureModeSourceView, views::View)
 
+ public:
   CaptureModeSourceView();
   CaptureModeSourceView(const CaptureModeSourceView&) = delete;
   CaptureModeSourceView& operator=(const CaptureModeSourceView&) = delete;

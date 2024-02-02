@@ -149,7 +149,7 @@ void KeyItemView::SetText(const std::u16string& text) {
   label_->SetText(text);
 }
 
-BEGIN_METADATA(KeyItemView, views::View)
+BEGIN_METADATA(KeyItemView)
 END_METADATA
 
 }  // namespace ash

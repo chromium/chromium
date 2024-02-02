@@ -20,9 +20,6 @@ namespace hud_display {
 ////////////////////////////////////////////////////////////////////////////////
 // CpuGraphPageView, public:
 
-BEGIN_METADATA(CpuGraphPageView, GraphPageViewBase)
-END_METADATA
-
 CpuGraphPageView::CpuGraphPageView(const base::TimeDelta refresh_interval)
     : cpu_other_(kHUDGraphWidth,
                  Graph::Baseline::kBaselineBottom,
@@ -108,8 +105,9 @@ void CpuGraphPageView::UpdateData(const DataSource::Snapshot& snapshot) {
   const float total = snapshot.cpu_idle_part + snapshot.cpu_user_part +
                       snapshot.cpu_system_part + snapshot.cpu_other_part;
   // Nothing to do if data is not available yet (sum < 1%).
-  if (total < 0.01)
+  if (total < 0.01) {
     return;
+  }
 
   // Assume total already equals 1, no need to re-weight.
 
@@ -122,6 +120,9 @@ void CpuGraphPageView::UpdateData(const DataSource::Snapshot& snapshot) {
 
   RefreshLegendValues();
 }
+
+BEGIN_METADATA(CpuGraphPageView)
+END_METADATA
 
 }  // namespace hud_display
 }  // namespace ash

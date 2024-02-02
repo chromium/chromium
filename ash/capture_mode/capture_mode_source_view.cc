@@ -110,7 +110,7 @@ void CaptureModeSourceView::OnWindowToggle() {
   CaptureModeController::Get()->SetSource(CaptureModeSource::kWindow);
 }
 
-BEGIN_METADATA(CaptureModeSourceView, views::View)
+BEGIN_METADATA(CaptureModeSourceView)
 END_METADATA
 
 }  // namespace ash

@@ -22,9 +22,9 @@ class ModifiersContainerView;
 // shortcuts combo view. The modifier key will always show before the
 // non-modifier key, which will be hosted in the `modifiers_container_view_`.
 class ASH_EXPORT KeyComboView : public views::View {
- public:
-  METADATA_HEADER(KeyComboView);
+  METADATA_HEADER(KeyComboView, views::View)
 
+ public:
   KeyComboView();
   KeyComboView(const KeyComboView&) = delete;
   KeyComboView& operator=(const KeyComboView&) = delete;
