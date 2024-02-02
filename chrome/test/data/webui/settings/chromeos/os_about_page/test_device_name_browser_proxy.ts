@@ -2,10 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {SetDeviceNameResult} from 'chrome://os-settings/os_settings.js';
+import {DeviceNameBrowserProxy, DeviceNameMetadata, DeviceNameState, SetDeviceNameResult} from 'chrome://os-settings/os_settings.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
-export class TestDeviceNameBrowserProxy extends TestBrowserProxy {
+export class TestDeviceNameBrowserProxy extends TestBrowserProxy implements
+    DeviceNameBrowserProxy {
   private deviceName_ = '';
   private deviceNameResult_: SetDeviceNameResult =
       SetDeviceNameResult.UPDATE_SUCCESSFUL;
@@ -25,8 +26,12 @@ export class TestDeviceNameBrowserProxy extends TestBrowserProxy {
     return this.deviceName_;
   }
 
-  notifyReadyForDeviceName(): void {
+  notifyReadyForDeviceName(): Promise<DeviceNameMetadata> {
     this.methodCalled('notifyReadyForDeviceName');
+    return Promise.resolve({
+      deviceName: this.deviceName_,
+      deviceNameState: DeviceNameState.CAN_BE_MODIFIED,
+    });
   }
 
   attemptSetDeviceName(name: string): Promise<SetDeviceNameResult> {

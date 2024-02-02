@@ -45,7 +45,6 @@ build_webui_tests("build") {
     "os_page_availability_test.ts",
     "test_about_page_browser_proxy.ts",
     "test_api.ts",
-    "test_device_name_browser_proxy.ts",
     "test_extension_control_browser_proxy.ts",
     "test_lacros_extension_control_browser_proxy.ts",
     "test_os_lifetime_browser_proxy.ts",
@@ -204,6 +203,8 @@ build_webui_tests("build") {
 
     "os_about_page/channel_switcher_dialog_test.ts",
     "os_about_page/consumer_auto_update_toggle_dialog_test.ts",
+    "os_about_page/edit_hostname_dialog_test.ts",
+    "os_about_page/test_device_name_browser_proxy.ts",
 
     "os_apps_page/app_management_page/app_detail_view_test.ts",
     "os_apps_page/app_management_page/app_details_item_test.ts",
@@ -374,13 +375,13 @@ build_webui_tests("build") {
 
   ts_deps = [
     "//ash/webui/common/resources:build_ts",
+    "//ash/webui/common/resources/cr_elements:build_ts",
     "//chrome/browser/resources/ash/settings:build_ts",
     "//chrome/test/data/webui/chromeos:build_ts",
     "//chrome/test/data/webui/cr_components/chromeos:build_ts",
     "//chrome/test/data/webui/nearby_share:build_ts",
     "//third_party/polymer/v3_0:library",
     "//ui/webui/resources/cr_components/app_management:build_ts",
-    "//ash/webui/common/resources/cr_elements:build_ts",
     "//ui/webui/resources/js:build_ts",
     "//ui/webui/resources/mojo:build_ts",
   ]

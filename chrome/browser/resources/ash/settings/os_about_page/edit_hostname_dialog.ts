@@ -31,7 +31,7 @@ const UNALLOWED_CHARACTERS = '[^0-9A-Za-z-]+';
 const EMOJI_REGEX_EXP =
     /(\u00a9|\u00ae|[\u2000-\u3300]|\ud83c[\ud000-\udfff]|\ud83d[\ud000-\udfff]|\ud83e[\ud000-\udfff])/gi;
 
-interface EditHostnameDialogElement {
+export interface EditHostnameDialogElement {
   $: {
     dialog: CrDialogElement,
   };
@@ -39,9 +39,9 @@ interface EditHostnameDialogElement {
 
 const EditHostnameDialogElementBase = I18nMixin(PolymerElement);
 
-class EditHostnameDialogElement extends EditHostnameDialogElementBase {
+export class EditHostnameDialogElement extends EditHostnameDialogElementBase {
   static get is() {
-    return 'edit-hostname-dialog';
+    return 'edit-hostname-dialog' as const;
   }
 
   static get template() {
@@ -141,7 +141,7 @@ class EditHostnameDialogElement extends EditHostnameDialogElementBase {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'edit-hostname-dialog': EditHostnameDialogElement;
+    [EditHostnameDialogElement.is]: EditHostnameDialogElement;
   }
 }
 

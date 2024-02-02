@@ -16,8 +16,8 @@ import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_
 import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
 
 import {FakeUserActionRecorder} from './fake_user_action_recorder.js';
+import {TestDeviceNameBrowserProxy} from './os_about_page/test_device_name_browser_proxy.js';
 import {TestAboutPageBrowserProxy} from './test_about_page_browser_proxy.js';
-import {TestDeviceNameBrowserProxy} from './test_device_name_browser_proxy.js';
 import {TestLifetimeBrowserProxy} from './test_os_lifetime_browser_proxy.js';
 import {clearBody} from './utils.js';
 
@@ -1287,36 +1287,9 @@ suite('<os-about-page> AllBuilds DetailedBuildInfoTest', function() {
         'TestDeviceName3',
         DeviceNameState.CANNOT_BE_MODIFIED_BECAUSE_NOT_DEVICE_OWNER);
   });
-});
 
-suite('<os-about-page> AllBuilds EditHostnameDialogTest', function() {
-  let dialog = null;
-  let deviceNameBrowserProxy = null;
-
-  setup(function() {
-    deviceNameBrowserProxy = new TestDeviceNameBrowserProxy();
-    DeviceNameBrowserProxyImpl.setInstanceForTesting(deviceNameBrowserProxy);
-    clearBody();
-  });
-
-  teardown(function() {
-    dialog.remove();
-    dialog = null;
-    Router.getInstance().resetRouteForTesting();
-  });
-
-  function flushAsync() {
-    flush();
-    // Use setTimeout to wait for the next macrotask.
-    return new Promise(resolve => setTimeout(resolve));
-  }
-
-  test('OpenAndCloseDialog', async () => {
-    loadTimeData.overrideValues({
-      isHostnameSettingEnabled: true,
-    });
-
-    const page = document.createElement('settings-detailed-build-info-subpage');
+  test('Edit hostname dialog can be opened', async () => {
+    page = document.createElement('settings-detailed-build-info-subpage');
     document.body.appendChild(page);
 
     await deviceNameBrowserProxy.whenCalled('notifyReadyForDeviceName');
@@ -1326,163 +1299,9 @@ suite('<os-about-page> AllBuilds EditHostnameDialogTest', function() {
     editHostnameButton.click();
     flush();
 
-    dialog = page.shadowRoot.querySelector('edit-hostname-dialog');
+    const dialog = page.shadowRoot.querySelector('edit-hostname-dialog');
     assertTrue(!!dialog);
     assertTrue(dialog.$.dialog.open);
-
-    dialog.shadowRoot.querySelector('#cancel').click();
-    flush();
-    assertFalse(dialog.$.dialog.open);
-  });
-
-  /**
-   * @param {string} value The value of the input
-   * @param {boolean} invalid If the input is invalid or not
-   * @param {string} inputCount The length of value in string format
-   */
-  function assertInput(value, invalid, valueLength) {
-    const inputBox = dialog.shadowRoot.querySelector('#deviceName');
-    const inputCount = dialog.shadowRoot.querySelector('#inputCount');
-    assertTrue(!!inputBox);
-    assertTrue(!!inputCount);
-
-    assertEquals(inputBox.value, value);
-    assertEquals(inputBox.invalid, invalid);
-    assertEquals(inputCount.textContent.trim(), valueLength + '/15');
-
-    // Done button should be disabled when input is invalid and cancel button
-    // should be always enabled.
-    const doneButton = dialog.shadowRoot.querySelector('#done');
-    const cancelButton = dialog.shadowRoot.querySelector('#cancel');
-    assertTrue(!!doneButton);
-    assertTrue(!!cancelButton);
-    assertEquals(invalid, doneButton.disabled);
-    assertTrue(!cancelButton.disabled);
-
-    // Verify A11y labels and descriptions.
-    assertEquals(
-        inputBox.ariaLabel, dialog.i18n('aboutDeviceNameInputA11yLabel'));
-    assertEquals(
-        inputBox.ariaDescription,
-        dialog.i18n('aboutDeviceNameConstraintsA11yDescription'));
-    assertEquals(
-        doneButton.ariaLabel,
-        dialog.i18n('aboutDeviceNameDoneBtnA11yLabel', value));
-  }
-
-  test('CheckInputSanitizationAndValidity', async function() {
-    loadTimeData.overrideValues({
-      isHostnameSettingEnabled: true,
-    });
-
-    dialog = document.createElement('edit-hostname-dialog');
-    document.body.appendChild(dialog);
-    const inputBox = dialog.shadowRoot.querySelector('#deviceName');
-    assertTrue(!!inputBox);
-
-    // Test empty name, which is the value on opening dialog.
-    assertInput(
-        /*value=*/ '', /*invalid=*/ true, /*valueLength=*/ '0');
-
-    // Test name with no emojis, under character limit.
-    inputBox.value = '123456789';
-    assertInput(
-        /*value=*/ '123456789', /*invalid=*/ false,
-        /*valueLength=*/ '9');
-
-    // Test name with emojis, under character limit.
-    inputBox.value = '1234🦤56789🧟';
-    assertInput(
-        /*value=*/ '123456789', /*invalid=*/ false,
-        /*valueLength=*/ '9');
-
-    // Test name with only emojis, under character limit.
-    inputBox.value = '🦤🦤🦤🦤🦤';
-    assertInput(
-        /*value=*/ '', /*invalid=*/ true, /*valueLength=*/ '0');
-
-    // Test name with no emojis, at character limit.
-    inputBox.value = '123456789012345';
-    assertInput(
-        /*value=*/ '123456789012345', /*invalid=*/ false,
-        /*valueLength=*/ '15');
-
-    // Test name with emojis, at character limit.
-    inputBox.value = '123456789012345🧟';
-    assertInput(
-        /*value=*/ '123456789012345', /*invalid=*/ false,
-        /*valueLength=*/ '15');
-
-    // Test name with only emojis, at character limit.
-    inputBox.value =
-        '🦤🦤🦤🦤🦤🦤🦤🦤🦤🦤🦤🦤🦤🦤🦤';
-    assertInput(
-        /*value=*/ '', /*invalid=*/ true, /*valueLength=*/ '0');
-
-    // Test name with no emojis, above character limit.
-    inputBox.value = '1234567890123456';
-    assertInput(
-        /*value=*/ '123456789012345', /*invalid=*/ true,
-        /*valueLength=*/ '15');
-
-    // Make sure input is not invalid once its value changes to a string below
-    // the character limit. (Simulates the user pressing backspace once
-    // they've reached the limit).
-    inputBox.value = '12345678901234';
-    assertInput(
-        /*value=*/ '12345678901234', /*invalid=*/ false,
-        /*valueLength=*/ '14');
-
-    // Test name with emojis, above character limit.
-    inputBox.value = '123456789012345🧟';
-    assertInput(
-        /*value=*/ '123456789012345', /*invalid=*/ false,
-        /*valueLength=*/ '15');
-
-    // Test name with only emojis, above character limit.
-    inputBox.value =
-        '🦤🦤🦤🦤🦤🦤🦤🦤🦤🦤🦤🦤🦤🦤🦤🦤🦤🦤🦤🦤';
-    assertInput(
-        /*value=*/ '', /*invalid=*/ true, /*valueLength=*/ '0');
-
-    // Test invalid name because of empty space character.
-    inputBox.value = 'Device Name';
-    assertInput(
-        /*value=*/ 'Device Name', /*invalid=*/ true, /*valueLength=*/ '11');
-
-    // Test invalid name because of special characters.
-    inputBox.value = 'Device&(#@!';
-    assertInput(
-        /*value=*/ 'Device&(#@!', /*invalid=*/ true, /*valueLength=*/ '11');
-
-    // Test valid name with letters and numbers.
-    inputBox.value = 'Device123';
-    assertInput(
-        /*value=*/ 'Device123', /*invalid=*/ false, /*valueLength=*/ '9');
-
-    // Test valid name with letters and numbers and hyphens.
-    inputBox.value = '-Device1-';
-    assertInput(
-        /*value=*/ '-Device1-', /*invalid=*/ false, /*valueLength=*/ '9');
-  });
-
-  test('SetDeviceName', async () => {
-    loadTimeData.overrideValues({
-      isHostnameSettingEnabled: true,
-    });
-
-    dialog = document.createElement('edit-hostname-dialog');
-    document.body.appendChild(dialog);
-
-    deviceNameBrowserProxy.setDeviceNameResultForTesting(
-        SetDeviceNameResult.UPDATE_SUCCESSFUL);
-    dialog.shadowRoot.querySelector('#deviceName').value = 'TestName';
-    dialog.shadowRoot.querySelector('#done').click();
-    flush();
-
-    await deviceNameBrowserProxy.whenCalled('attemptSetDeviceName');
-    assertEquals(deviceNameBrowserProxy.getDeviceName(), 'TestName');
-    assertFalse(dialog.$.dialog.open);
   });
 });
 
