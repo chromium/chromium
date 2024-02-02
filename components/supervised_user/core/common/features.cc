@@ -125,6 +125,12 @@ BASE_FEATURE(kCustomWebSignInInterceptForSupervisedUsers,
              "CustomWebSignInInterceptForSupervisedUsers",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+#if BUILDFLAG(IS_ANDROID)
+BASE_FEATURE(kMigrateAccountManagementSettingsToCapabilities,
+             "MigrateAccountManagementSettingsToCapabilities",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#endif
+
 bool IsChildAccountSupervisionEnabled() {
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
   // Supervision features are fully supported on Android and ChromeOS.

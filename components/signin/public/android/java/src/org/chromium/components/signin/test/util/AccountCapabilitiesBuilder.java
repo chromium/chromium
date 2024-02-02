@@ -27,6 +27,13 @@ public final class AccountCapabilitiesBuilder {
         return this;
     }
 
+    public AccountCapabilitiesBuilder setIsSubjectToParentalControls(boolean value) {
+        mCapabilities.put(
+                AccountCapabilitiesConstants.IS_SUBJECT_TO_PARENTAL_CONTROLS_CAPABILITY_NAME,
+                value);
+        return this;
+    }
+
     /** @return {@link AccountCapabilities} object with the capabilities set up with the builder. */
     public AccountCapabilities build() {
         return new AccountCapabilities((HashMap<String, Boolean>) mCapabilities.clone());

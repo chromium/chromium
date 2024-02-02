@@ -334,6 +334,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &send_tab_to_self::kSendTabToSelfV2,
     &share::kScreenshotsForAndroidV2,
     &supervised_user::kKidFriendlyContentFeed,
+    &supervised_user::kMigrateAccountManagementSettingsToCapabilities,
     &switches::kForceStartupSigninPromo,
     &switches::kForceDisableExtendedSyncPromos,
     &switches::kSearchEngineChoice,

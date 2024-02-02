@@ -51,6 +51,12 @@ BASE_DECLARE_FEATURE(kShadowKidsApiWithSafeSites);
 // Forces Safe Search for supervised users.
 BASE_DECLARE_FEATURE(kForceGoogleSafeSearchForSupervisedUsers);
 
+// Updates usages of Profile.isChild() in Profile.java to use the account
+// capability to determine if account is supervised.
+#if BUILDFLAG(IS_ANDROID)
+BASE_DECLARE_FEATURE(kMigrateAccountManagementSettingsToCapabilities);
+#endif
+
 // Returns whether local parent approvals on Family Link user's device are
 // enabled.
 // Local web approvals are only available when refreshed version of web

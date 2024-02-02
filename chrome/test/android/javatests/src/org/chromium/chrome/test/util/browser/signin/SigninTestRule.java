@@ -22,6 +22,9 @@ import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.sync.SyncService;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * This test rule mocks AccountManagerFacade and manages sign-in/sign-out.
  *
@@ -35,11 +38,14 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 public class SigninTestRule extends AccountManagerTestRule {
     public static final AccountCapabilities NON_DISPLAYABLE_EMAIL_ACCOUNT_CAPABILITIES =
             new AccountCapabilities(
-                    new String[] {
-                        AccountCapabilitiesConstants
-                                .CAN_HAVE_EMAIL_ADDRESS_DISPLAYED_CAPABILITY_NAME
-                    },
-                    new boolean[] {false});
+                    new HashMap<>(
+                            Map.of(
+                                    AccountCapabilitiesConstants
+                                            .CAN_HAVE_EMAIL_ADDRESS_DISPLAYED_CAPABILITY_NAME,
+                                    false,
+                                    AccountCapabilitiesConstants
+                                            .IS_SUBJECT_TO_PARENTAL_CONTROLS_CAPABILITY_NAME,
+                                    true)));
 
     private boolean mIsSignedIn;
 
