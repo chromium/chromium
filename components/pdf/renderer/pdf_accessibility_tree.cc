@@ -2366,17 +2366,21 @@ std::unique_ptr<ui::AXActionTarget> PdfAccessibilityTree::CreateActionTarget(
 }
 
 void PdfAccessibilityTree::AccessibilityModeChanged(const ui::AXMode& mode) {
-  bool always_load_or_reload_accessibility = false;
+  if (!mode.has_mode(ui::AXMode::kPDF)) {
+    if (GetRenderAccessibility()) {
+      GetRenderAccessibility()->SetPluginTreeSource(nullptr);
+    }
+    return;
+  }
+
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
   if (!mode.has_mode(ui::AXMode::kPDFOcr)) {
     if (ocr_service_) {
       VLOG(2) << "PDF OCR has been turned off. So, deleting OCR service.";
       ocr_service_.reset();
-      // Need to perform LoadAccessibility() again to update PDF accessibility
-      // tree without OCR results.
-      always_load_or_reload_accessibility = true;
     }
-    MaybeHandleAccessibilityChange(always_load_or_reload_accessibility);
+    MaybeHandleAccessibilityChange(
+        /*always_load_or_reload_accessibility=*/true);
     return;
   }
 
@@ -2384,9 +2388,9 @@ void PdfAccessibilityTree::AccessibilityModeChanged(const ui::AXMode& mode) {
     return;
   }
   CreateOcrService();
-  always_load_or_reload_accessibility = true;
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-  MaybeHandleAccessibilityChange(always_load_or_reload_accessibility);
+  MaybeHandleAccessibilityChange(
+      /*always_load_or_reload_accessibility=*/true);
 }
 
 void PdfAccessibilityTree::OnDestruct() {
