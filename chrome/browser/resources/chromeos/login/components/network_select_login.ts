@@ -240,9 +240,9 @@ export class NetworkSelectLogin extends PolymerElement {
    * Event triggered when the default network state may have changed.
    */
   private onDefaultNetworkChanged(
-      event: CustomEvent<OncMojo.NetworkStateProperties>): void {
-    // Note: event.detail will be {} if there is no default network.
-    const networkState = event.detail.type ? event.detail : undefined;
+      event: CustomEvent<OncMojo.NetworkStateProperties|undefined>): void {
+    // Note: event.detail will be |undefined| if there is no default network.
+    const networkState = event.detail?.type ? event.detail : undefined;
     this.isNetworkConnected = !!networkState &&
         OncMojo.connectionStateIsConnected(networkState.connectionState);
     if (!this.isNetworkConnected || !this.isShown) {
