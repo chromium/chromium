@@ -1109,6 +1109,15 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerInstallAllAppsBrowserTest,
              "should match the order in go/default-apps";
     }
   }
+
+  // Verify that all system web apps have an icon.
+  for (const auto& [_, delegate] : app_map) {
+    const auto info = delegate->GetWebAppInfo();
+    EXPECT_FALSE(info->manifest_icons.empty())
+        << delegate->GetInternalName() << " needs a manifest icon";
+    EXPECT_FALSE(delegate->GetWebAppInfo()->icon_bitmaps.empty())
+        << delegate->GetInternalName() << " needs an icon bitmap";
+  }
 }
 
 IN_PROC_BROWSER_TEST_P(SystemWebAppManagerInstallAllAppsBrowserTest, Upgrade) {
