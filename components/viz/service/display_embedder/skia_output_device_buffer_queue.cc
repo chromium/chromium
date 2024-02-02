@@ -586,9 +586,9 @@ void SkiaOutputDeviceBufferQueue::DoFinishSwapBuffers(
       return false;
     }
 
-    // Right now, only macOS and LaCros needs to return maliboxes of released
-    // overlays, so SkiaRenderer can unlock resources for them.
-#if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_OZONE)
+    // macOS needs to signal to SkiaRenderer that render pass overlay resources
+    // can be unlocked and returned.
+#if BUILDFLAG(IS_APPLE)
     // The root render pass buffers are managed by SkiaRenderer so we don't need
     // to explicitly return them via callback.
     if (!overlay.IsRootRenderPass()) {
