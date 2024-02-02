@@ -679,9 +679,9 @@ char const kFullScreenStateHistogram[] = "IOS.Fullscreen.State";
               ui::PageTransition::PAGE_TRANSITION_FORWARD_BACK),
           type == web::NavigationInitiationType::RENDERER_INITIATED);
   context->SetNavigationItemUniqueID(item->GetUniqueID());
-  if (!navigation) {
-    // goToBackForwardListItem: returns nil for same-document back forward
-    // navigations.
+  bool isSameDocument = web::GURLByRemovingRefFromGURL(URL) ==
+                        web::GURLByRemovingRefFromGURL(_documentURL);
+  if (isSameDocument) {
     context->SetIsSameDocument(true);
   } else {
     self.navigationHandler.navigationState = web::WKNavigationState::REQUESTED;

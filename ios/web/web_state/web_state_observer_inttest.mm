@@ -1426,10 +1426,6 @@ TEST_F(WebStateObserverTest, ReloadWithUserAgentType) {
 
 // Tests user-initiated hash change.
 TEST_F(WebStateObserverTest, UserInitiatedHashChangeNavigation) {
-  if (@available(iOS 17.2, *)) {
-    // TODO(crbug.com/1523379): Re-enable this test on iOS 17.2+
-    return;
-  }
   const GURL url = test_server_->GetURL("/echoall");
 
   // Perform new page navigation.
