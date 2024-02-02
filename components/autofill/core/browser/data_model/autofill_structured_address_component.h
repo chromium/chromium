@@ -6,6 +6,7 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_MODEL_AUTOFILL_STRUCTURED_ADDRESS_COMPONENT_H_
 
 #include <map>
+#include <memory>
 #include <optional>
 #include <string>
 #include <vector>
@@ -328,6 +329,12 @@ class AddressComponent {
   // Returns a constant vector of pointers to the child nodes of the component.
   const SubcomponentsList& Subcomponents() const { return subcomponents_; }
 
+  // Register a new synthesized component in the `synthesized_subcomponents_`
+  // list. Note that similarly as default subcomponents, synthesized
+  // subcomponents are owned by the corresponding `AddressComponentsStore` and
+  // not by `this`
+  void RegisterSynthesizedSubcomponent(AddressComponent* synthesized_component);
+
   // Returns a vector containing sorted normalized tokens of the
   // value of the component. The tokens are lazily calculated when first
   // needed.
@@ -580,6 +587,15 @@ class AddressComponent {
 
   // A vector of children of the component.
   SubcomponentsList subcomponents_;
+
+  // A vector of synthesized nodes of the component.
+  //
+  // Nodes in the tree might have synthesized nodes linked to it. A synthesized
+  // node, is a node whose value is calculated from its constituents. While
+  // synthesized types are not directly part of the address hierarchy tree, its
+  // constituents are. Synthesized nodes, similarly as normal subcomponents are
+  // stored in the AddressComponentsStore.
+  SubcomponentsList synthesized_subcomponents_;
 
   // A vector that contains the tokens of |value_| after normalization,
   // meaning that it was converted to lower case and diacritics have been

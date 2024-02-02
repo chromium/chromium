@@ -28,6 +28,14 @@ constexpr AddressCountryCode kLegacyHierarchyCountryCode =
 AddressComponentsStore CreateAddressComponentModel(
     AddressCountryCode country_code = AddressCountryCode(""));
 
+// Returns whether or not the `field_type` is a synthesized type on the address
+// model for `country_code`.
+// A synthesized type, is a type whose value is calculated from other address
+// types (its constituents). While synthesized types are not directly part of
+// the address hierarchy tree, its constituents are. Synthesized types cannot be
+// stored, learned from form submissions, or viewed in settings.
+bool IsSynthesizedType(FieldType field_type, AddressCountryCode country_code);
+
 // Returns the formatting expression corresponding to the provided parameters.
 // If the expression can't be found or the country is empty, it attempts to look
 // for a legacy expression. Returns an empty string if none can be found.

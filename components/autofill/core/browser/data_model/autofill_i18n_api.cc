@@ -20,6 +20,7 @@
 #include "components/autofill/core/browser/data_model/autofill_structured_address_format_provider.h"
 #include "components/autofill/core/browser/data_model/autofill_structured_address_name.h"
 #include "components/autofill/core/browser/data_model/autofill_structured_address_utils.h"
+#include "components/autofill/core/browser/data_model/autofill_synthesized_address_component.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/common/autofill_features.h"
 
@@ -177,23 +178,65 @@ std::unique_ptr<AddressComponent> BuildTreeNode(
   NOTREACHED_NORETURN();
 }
 
+std::unique_ptr<SynthesizedAddressComponent> BuildSynthesizedNode(
+    FieldType type,
+    const TreeDefinition& tree_def,
+    const base::flat_map<FieldType, std::unique_ptr<AddressComponent>>&
+        nodes_registry) {
+  std::vector<AddressComponent*> children;
+  children.reserve(tree_def.at(type).size());
+  for (FieldType child_type : tree_def.at(type)) {
+    children.push_back(nodes_registry.at(child_type).get());
+  }
+  return std::make_unique<SynthesizedAddressComponent>(
+      type, std::move(children), MergeMode::kDefault);
+}
+
 AddressComponent* BuildSubTree(
     const TreeDefinition& tree_def,
     FieldType root,
+    AddressCountryCode country_code,
     base::flat_map<FieldType, std::unique_ptr<AddressComponent>>&
         nodes_registry) {
+  // Registers `node` in the nodes registry.
+  auto RegisterNode =
+      [&nodes_registry](std::unique_ptr<AddressComponent> node) {
+        auto [it, inserted] =
+            nodes_registry.emplace(node->GetStorageType(), std::move(node));
+        CHECK(inserted);
+        return it->second.get();
+      };
+
+  // Leaf nodes do not have an entry in the `tree_def`. By definition
+  // they cannot have children nor be synthesized nodes.
+  if (!tree_def.contains(root)) {
+    return RegisterNode(BuildTreeNode(root, /*children=*/{}));
+  }
+
   std::vector<AddressComponent*> children;
-  // Leaf nodes do not have an entry in the tree_def.
-  if (tree_def.contains(root)) {
-    children.reserve(tree_def.at(root).size());
-    for (FieldType child_type : tree_def.at(root)) {
-      children.push_back(BuildSubTree(tree_def, child_type, nodes_registry));
+  children.reserve(tree_def.at(root).size());
+  for (FieldType child_type : tree_def.at(root)) {
+    if (!IsSynthesizedType(child_type, country_code)) {
+      children.push_back(
+          BuildSubTree(tree_def, child_type, country_code, nodes_registry));
     }
   }
-  auto [it, inserted] =
-      nodes_registry.emplace(root, BuildTreeNode(root, std::move(children)));
-  CHECK(inserted);
-  return it->second.get();
+
+  std::unique_ptr<AddressComponent> node =
+      BuildTreeNode(root, std::move(children));
+
+  // Synthesized nodes are owned by the lowest common ancestor of their
+  // constituents. That means that at this point, all their constituents have
+  // been built and stored in the nodes registry.
+  for (FieldType child_type : tree_def.at(root)) {
+    if (IsSynthesizedType(child_type, country_code)) {
+      AddressComponent* synthesized_node = RegisterNode(
+          BuildSynthesizedNode(child_type, tree_def, nodes_registry));
+      node->RegisterSynthesizedSubcomponent(synthesized_node);
+    }
+  }
+
+  return RegisterNode(std::move(node));
 }
 
 TreeEdgesList GetTreeEdges(AddressCountryCode country_code) {
@@ -229,7 +272,7 @@ AddressComponentsStore CreateAddressComponentModel(
 
   base::flat_map<FieldType, std::unique_ptr<AddressComponent>> components;
   AddressComponent* root =
-      BuildSubTree(tree_def, ADDRESS_HOME_ADDRESS, components);
+      BuildSubTree(tree_def, ADDRESS_HOME_ADDRESS, country_code, components);
 
   if (!country_code->empty() && country_code != kLegacyHierarchyCountryCode) {
     // Set the address model country to the one requested.
@@ -238,6 +281,14 @@ AddressComponentsStore CreateAddressComponentModel(
                           VerificationStatus::kObserved);
   }
   return AddressComponentsStore(std::move(components));
+}
+
+bool IsSynthesizedType(FieldType field_type, AddressCountryCode country_code) {
+  return kAutofillSynthesizeNodes.contains(
+      {IsCustomHierarchyAvailableForCountry(country_code)
+           ? country_code.value()
+           : kLegacyHierarchyCountryCode.value(),
+       field_type});
 }
 
 std::u16string GetFormattingExpression(FieldType field_type,

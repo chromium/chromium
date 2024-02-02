@@ -52,6 +52,7 @@ class AutofillI18nApiTest : public testing::Test {
         {
             features::kAutofillUseI18nAddressModel,
             features::kAutofillUseDEAddressModel,
+            features::kAutofillUseINAddressModel,
         },
         {});
   }
@@ -217,4 +218,41 @@ TEST_F(AutofillI18nApiTest, IsTypeEnabledForCountry) {
     }
   }
 }
+
+TEST_F(AutofillI18nApiTest, IsSynthesizedType) {
+  EXPECT_TRUE(IsSynthesizedType(ADDRESS_HOME_DEPENDENT_LOCALITY_AND_LANDMARK,
+                                AddressCountryCode("IN")));
+  EXPECT_TRUE(IsSynthesizedType(ADDRESS_HOME_STREET_LOCATION_AND_LANDMARK,
+                                AddressCountryCode("IN")));
+  EXPECT_FALSE(
+      IsSynthesizedType(ADDRESS_HOME_OVERFLOW, AddressCountryCode("DE")));
+  EXPECT_FALSE(IsSynthesizedType(ADDRESS_HOME_LINE1, AddressCountryCode("US")));
+}
+
+TEST_F(AutofillI18nApiTest, SynthesizedTypesAreAccessible) {
+  AddressComponentsStore store =
+      CreateAddressComponentModel(AddressCountryCode("IN"));
+  // Test that synthesized node values can be accessed through the root node.
+  ASSERT_TRUE(
+      test_api(store.Root())
+          .GetNodeForType(ADDRESS_HOME_DEPENDENT_LOCALITY_AND_LANDMARK));
+  ASSERT_TRUE(test_api(store.Root())
+                  .GetNodeForType(ADDRESS_HOME_STREET_LOCATION_AND_LANDMARK));
+}
+
+TEST_F(AutofillI18nApiTest, SynthesizedTypesAreSupportedButNotStorable) {
+  AddressComponentsStore store =
+      CreateAddressComponentModel(AddressCountryCode("IN"));
+
+  FieldTypeSet field_type_set;
+  store.Root()->GetStorableTypes(&field_type_set);
+  EXPECT_FALSE(
+      field_type_set.contains(ADDRESS_HOME_DEPENDENT_LOCALITY_AND_LANDMARK));
+
+  field_type_set.clear();
+  store.Root()->GetSupportedTypes(&field_type_set);
+  EXPECT_TRUE(
+      field_type_set.contains(ADDRESS_HOME_DEPENDENT_LOCALITY_AND_LANDMARK));
+}
+
 }  // namespace autofill::i18n_model_definition
