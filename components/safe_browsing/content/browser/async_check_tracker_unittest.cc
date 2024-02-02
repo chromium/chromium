@@ -109,6 +109,7 @@ class AsyncCheckTrackerTest : public content::RenderViewHostTestHarness,
         SafeBrowsingUrlCheckerImpl::PerformedCheck::kUrlRealTimeCheck,
         all_checks_completed);
     tracker_->PendingCheckerCompleted(navigation_id, result);
+    task_environment()->RunUntilIdle();
   }
 
   void CallTransferUrlChecker(int64_t navigation_id) {
@@ -124,6 +125,7 @@ class AsyncCheckTrackerTest : public content::RenderViewHostTestHarness,
         /*hash_realtime_service=*/nullptr,
         /*hash_realtime_selection=*/
         hash_realtime_utils::HashRealTimeSelection::kNone);
+    checker->AddUrlInRedirectChainForTesting(url_);
     tracker_->TransferUrlChecker(std::move(checker));
   }
 
@@ -200,6 +202,26 @@ TEST_P(AsyncCheckTrackerTest, DisplayBlockingPageCalled) {
                               /*has_post_commit_interstitial_skipped=*/true,
                               /*all_checks_completed=*/true);
   CallDidFinishNavigation(handle, /*has_committed=*/true);
+  EXPECT_EQ(ui_manager_->DisplayBlockingPageCalledTimes(), 1);
+  UnsafeResource resource = ui_manager_->GetDisplayedResource();
+  EXPECT_EQ(resource.threat_type, SB_THREAT_TYPE_URL_PHISHING);
+  EXPECT_EQ(resource.url, url_);
+  EXPECT_EQ(resource.render_process_id, main_rfh()->GetGlobalId().child_id);
+  EXPECT_EQ(resource.render_frame_token, main_rfh()->GetFrameToken().value());
+}
+
+TEST_P(AsyncCheckTrackerTest,
+       DisplayBlockingPageCalled_DidFinishNavigationCalledFirst) {
+  content::MockNavigationHandle handle(url_, main_rfh());
+  CallTransferUrlChecker(handle.GetNavigationId());
+  CallDidFinishNavigation(handle, /*has_committed=*/true);
+  // Usually has_post_commit_interstitial_skipped is false if
+  // DidFinishNavigation is already called. It can be true if
+  // DidFinishNavigation happens to be called between when
+  // PendingCheckerCompleted is scheduled and when it is run.
+  CallPendingCheckerCompleted(handle.GetNavigationId(), /*proceed=*/false,
+                              /*has_post_commit_interstitial_skipped=*/true,
+                              /*all_checks_completed=*/true);
   EXPECT_EQ(ui_manager_->DisplayBlockingPageCalledTimes(), 1);
   UnsafeResource resource = ui_manager_->GetDisplayedResource();
   EXPECT_EQ(resource.threat_type, SB_THREAT_TYPE_URL_PHISHING);

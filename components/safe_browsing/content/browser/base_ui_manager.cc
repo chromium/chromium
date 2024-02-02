@@ -514,13 +514,25 @@ ThreatSeverity BaseUIManager::GetSeverestThreatForNavigation(
   if (!handle)
     return min_severity;
 
-  for (auto&& url : handle->GetRedirectChain()) {
+  return GetSeverestThreatForRedirectChain(
+      handle->GetRedirectChain(), handle->GetNavigationId(), severest_resource);
+}
+
+ThreatSeverity BaseUIManager::GetSeverestThreatForRedirectChain(
+    const std::vector<GURL>& redirect_chain,
+    int64_t navigation_id,
+    security_interstitials::UnsafeResource& severest_resource) {
+  // Default is safe
+  // Smaller numbers are more severe for ThreatSeverity
+  ThreatSeverity min_severity = std::numeric_limits<ThreatSeverity>::max();
+
+  for (auto&& url : redirect_chain) {
     security_interstitials::UnsafeResource resource;
-    if (PopUnsafeResourceForNavigation(url, handle->GetNavigationId(),
-                                       &resource)) {
+    if (PopUnsafeResourceForNavigation(url, navigation_id, &resource)) {
       ThreatSeverity severity = GetThreatSeverity(resource.threat_type);
-      if (severity > min_severity)
+      if (severity > min_severity) {
         continue;
+      }
       min_severity = severity;
       severest_resource = std::move(resource);
     }

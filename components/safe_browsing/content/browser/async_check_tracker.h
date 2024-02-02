@@ -83,6 +83,11 @@ class AsyncCheckTracker
   // is keyed by `excluded_navigation_id`.
   void DeletePendingCheckers(absl::optional<int64_t> excluded_navigation_id);
 
+  // Displays an interstitial if there is unsafe resource associated with
+  // `redirect_chain` and `navigation_id`.
+  void MaybeDisplayBlockingPage(const std::vector<GURL>& redirect_chain,
+                                int64_t navigation_id);
+
   // Displays an interstitial on `resource`.
   void DisplayBlockingPage(security_interstitials::UnsafeResource resource);
 
