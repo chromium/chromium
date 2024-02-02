@@ -463,8 +463,8 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
     // reset instead of starting from the cell that triggered the navigation.
     self.tabGridMode = TabGridModeNormal;
   }
-  [self.regularTabsDelegate discardSavedClosedItems];
-  [self.inactiveTabsDelegate discardSavedClosedItems];
+  [self.regularGridHandler discardSavedClosedItems];
+  [self.inactiveGridHandler discardSavedClosedItems];
 
   [self.swipeToIncognitoIPH
       dismissWithReason:IPHDismissalReasonType::kTappedOutsideIPHAndAnchorView];
@@ -522,7 +522,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
     // search terms exist, `resetToAllItems` is used instead.
     DCHECK(searchTerms.length);
     self.regularTabsViewController.searchText = searchTerms;
-    [self.regularTabsDelegate searchItemsWithText:searchTerms];
+    [self.regularGridHandler searchItemsWithText:searchTerms];
   } else {
     self.remoteTabsViewController.searchTerms = searchTerms;
   }
@@ -608,8 +608,8 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
     self.remoteTabsViewController.searchTerms = nil;
     self.regularTabsViewController.searchText = nil;
     self.incognitoTabsViewController.searchText = nil;
-    [self.regularTabsDelegate resetToAllItems];
-    [self.incognitoTabsDelegate resetToAllItems];
+    [self.regularGridHandler resetToAllItems];
+    [self.incognitoGridHandler resetToAllItems];
     [self hideScrim];
   }
 
@@ -1258,11 +1258,11 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   switch (page) {
     case TabGridPageIncognitoTabs:
       [self.incognitoTabsViewController prepareForDismissal];
-      [self.incognitoTabsDelegate addNewItem];
+      [self.incognitoGridHandler addNewItem];
       break;
     case TabGridPageRegularTabs:
       [self.regularTabsViewController prepareForDismissal];
-      [self.regularTabsDelegate addNewItem];
+      [self.regularGridHandler addNewItem];
       break;
     case TabGridPageRemoteTabs:
       NOTREACHED() << "It is invalid to open a new tab in remote tabs.";
@@ -1584,13 +1584,12 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   switch (self.currentPage) {
     case TabGridPageIncognitoTabs:
       self.incognitoTabsViewController.searchText = searchText;
-      [self updateSearchGrid:self.incognitoTabsDelegate
+      [self updateSearchGrid:self.incognitoGridHandler
               withSearchText:searchText];
       break;
     case TabGridPageRegularTabs:
       self.regularTabsViewController.searchText = searchText;
-      [self updateSearchGrid:self.regularTabsDelegate
-              withSearchText:searchText];
+      [self updateSearchGrid:self.regularGridHandler withSearchText:searchText];
       break;
     case TabGridPageRemoteTabs:
       self.remoteTabsViewController.searchTerms = searchText;
@@ -1674,8 +1673,8 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
     completion(0);
     return;
   }
-  [self.regularTabsDelegate fetchSearchHistoryResultsCountForText:searchText
-                                                       completion:completion];
+  [self.regularGridHandler fetchSearchHistoryResultsCountForText:searchText
+                                                      completion:completion];
 }
 
 - (void)searchHistoryForText:(NSString*)searchText {
@@ -1703,7 +1702,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   // Record how long it took to select an item.
   [self reportTabSelectionTime];
 
-  [self.regularTabsDelegate selectItemWithID:itemID pinned:YES];
+  [self.regularGridHandler selectItemWithID:itemID pinned:YES];
 
   self.activePage = self.currentPage;
   [self setCurrentIdlePageStatus:NO];
@@ -1787,14 +1786,14 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 
   id<GridCommands> tabsDelegate;
   if (gridViewController == self.regularTabsViewController) {
-    tabsDelegate = self.regularTabsDelegate;
+    tabsDelegate = self.regularGridHandler;
     base::RecordAction(base::UserMetricsAction("MobileTabGridOpenRegularTab"));
     if (self.tabGridMode == TabGridModeSearch) {
       base::RecordAction(
           base::UserMetricsAction("MobileTabGridOpenRegularTabSearchResult"));
     }
   } else if (gridViewController == self.incognitoTabsViewController) {
-    tabsDelegate = self.incognitoTabsDelegate;
+    tabsDelegate = self.incognitoGridHandler;
     base::RecordAction(
         base::UserMetricsAction("MobileTabGridOpenIncognitoTab"));
     if (self.tabGridMode == TabGridModeSearch) {
@@ -1845,11 +1844,11 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   [self setCurrentIdlePageStatus:NO];
 
   if (gridViewController == self.regularTabsViewController) {
-    [self.regularTabsDelegate closeItemWithID:itemID];
+    [self.regularGridHandler closeItemWithID:itemID];
     // Record when a regular tab is closed.
     base::RecordAction(base::UserMetricsAction("MobileTabGridCloseRegularTab"));
   } else if (gridViewController == self.incognitoTabsViewController) {
-    [self.incognitoTabsDelegate closeItemWithID:itemID];
+    [self.incognitoGridHandler closeItemWithID:itemID];
     // Record when an incognito tab is closed.
     base::RecordAction(
         base::UserMetricsAction("MobileTabGridCloseIncognitoTab"));
@@ -1862,9 +1861,9 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   [self setCurrentIdlePageStatus:NO];
 
   if (gridViewController == self.regularTabsViewController) {
-    [self.regularTabsDelegate moveItemWithID:itemID toIndex:destinationIndex];
+    [self.regularGridHandler moveItemWithID:itemID toIndex:destinationIndex];
   } else if (gridViewController == self.incognitoTabsViewController) {
-    [self.incognitoTabsDelegate moveItemWithID:itemID toIndex:destinationIndex];
+    [self.incognitoGridHandler moveItemWithID:itemID toIndex:destinationIndex];
   }
 }
 

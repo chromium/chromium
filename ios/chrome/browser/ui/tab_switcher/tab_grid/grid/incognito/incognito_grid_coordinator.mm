@@ -79,6 +79,11 @@
   return _browser.get();
 }
 
+- (id)gridHandler {
+  CHECK(_mediator);
+  return _mediator;
+}
+
 #pragma mark - ChromeCoordinator
 
 - (void)start {
@@ -107,7 +112,6 @@
   _mediator.browser = self.browser;
   _mediator.delegate = self.gridMediatorDelegate;
   _mediator.toolbarsMutator = self.toolbarsMutator;
-  _mediator.toolbarTabGridDelegate = self.tabGridViewController;
   _mediator.incognitoDelegate = self;
   _mediator.reauthSceneAgent = _reauthAgent;
   _mediator.dispatcher = self;

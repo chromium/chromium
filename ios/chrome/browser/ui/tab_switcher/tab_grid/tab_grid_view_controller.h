@@ -127,9 +127,9 @@ enum class TabGridPageConfiguration {
 @property(nonatomic, readonly) id<RecentTabsConsumer> remoteTabsConsumer;
 
 // Delegates send updates from the UI layer to the model layer.
-@property(nonatomic, weak) id<GridCommands> regularTabsDelegate;
-@property(nonatomic, weak) id<GridCommands> inactiveTabsDelegate;
-@property(nonatomic, weak) id<GridCommands> incognitoTabsDelegate;
+@property(nonatomic, weak) id<GridCommands> regularGridHandler;
+@property(nonatomic, weak) id<GridCommands> inactiveGridHandler;
+@property(nonatomic, weak) id<GridCommands> incognitoGridHandler;
 
 // Data source for acquiring data which power the PriceCardView
 @property(nonatomic, weak) id<PriceCardDataSource> priceCardDataSource;

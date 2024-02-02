@@ -7,6 +7,7 @@
 
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/base_grid_coordinator+subclassing.h"
 
+@protocol GridCommands;
 @class PinnedTabsMediator;
 @class PinnedTabsViewController;
 @class RegularGridMediator;
@@ -15,6 +16,10 @@
 
 // Coordinator to manage regular grid.
 @interface RegularGridCoordinator : BaseGridCoordinator
+
+// The command handler to handle commands related to this grid. This is exposed
+// to make sure other can use it.
+@property(nonatomic, weak, readonly) id<GridCommands> gridHandler;
 
 // Delegate for the context menu.
 // TODO(crbug.com/1457146): Make it private.

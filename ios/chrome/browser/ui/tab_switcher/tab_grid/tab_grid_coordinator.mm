@@ -725,19 +725,20 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   _regularGridCoordinator.disabledTabViewControllerDelegate =
       self.baseViewController;
   _regularGridCoordinator.tabContextMenuDelegate = self;
-  // TODO(crbug.com/1457146): Init view controller inside the coordinator. Also
-  // it should be a RegularViewController instead of a TabGridViewController.
-  _regularGridCoordinator.tabGridViewController = self.baseViewController;
+
   [_regularGridCoordinator start];
-  self.baseViewController.regularTabsViewController =
+
+  baseViewController.regularTabsViewController =
       _regularGridCoordinator.gridViewController;
-  self.baseViewController.regularDisabledGridViewController =
+  baseViewController.regularDisabledGridViewController =
       _regularGridCoordinator.disabledViewController;
-  self.baseViewController.regularGridContainerViewController =
+  baseViewController.regularGridContainerViewController =
       _regularGridCoordinator.gridContainerViewController;
-  self.baseViewController.pinnedTabsViewController =
+  baseViewController.pinnedTabsViewController =
       _regularGridCoordinator.pinnedTabsViewController;
+  baseViewController.regularGridHandler = _regularGridCoordinator.gridHandler;
   self.regularTabsMediator = _regularGridCoordinator.regularGridMediator;
+  self.regularTabsMediator.toolbarTabGridDelegate = baseViewController;
 
   ChromeBrowserState* regularBrowserState =
       _regularBrowser ? _regularBrowser->GetBrowserState() : nullptr;
@@ -766,23 +767,24 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
                          browser:_incognitoBrowser
                  toolbarsMutator:_toolbarsCoordinator.toolbarsMutator
             gridMediatorDelegate:self];
-  // TODO(crbug.com/1457146): Init view controller inside the coordinator. Also
-  // it should be a IncognitoViewController instead of a TabGridViewController.
-  _incognitoGridCoordinator.tabGridViewController = self.baseViewController;
   _incognitoGridCoordinator.disabledTabViewControllerDelegate =
       self.baseViewController;
   _incognitoGridCoordinator.audience = self;
   _incognitoGridCoordinator.tabContextMenuDelegate = self;
+
   [_incognitoGridCoordinator start];
+
   self.incognitoTabsMediator = _incognitoGridCoordinator.incognitoGridMediator;
+  self.incognitoTabsMediator.toolbarTabGridDelegate = baseViewController;
 
-  self.baseViewController.incognitoTabsDelegate = self.incognitoTabsMediator;
+  baseViewController.incognitoGridHandler =
+      _incognitoGridCoordinator.gridHandler;
 
-  self.baseViewController.incognitoTabsViewController =
+  baseViewController.incognitoTabsViewController =
       _incognitoGridCoordinator.gridViewController;
-  self.baseViewController.incognitoDisabledGridViewController =
+  baseViewController.incognitoDisabledGridViewController =
       _incognitoGridCoordinator.disabledViewController;
-  self.baseViewController.incognitoGridContainerViewController =
+  baseViewController.incognitoGridContainerViewController =
       _incognitoGridCoordinator.gridContainerViewController;
 
   self.recentTabsContextMenuHelper =
@@ -801,7 +803,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 
     [self.inactiveTabsCoordinator start];
 
-    baseViewController.inactiveTabsDelegate =
+    baseViewController.inactiveGridHandler =
         self.inactiveTabsCoordinator.gridCommandsHandler;
     self.regularTabsMediator.containedGridToolbarsProvider =
         self.inactiveTabsCoordinator.toolbarsConfigurationProvider;

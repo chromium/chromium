@@ -13,7 +13,6 @@ class Browser;
 @class GridContainerViewController;
 @protocol GridMediatorDelegate;
 @protocol GridToolbarsMutator;
-@class TabGridViewController;
 
 @interface BaseGridCoordinator : ChromeCoordinator <TabGroupsCommands>
 
@@ -23,9 +22,6 @@ class Browser;
 // The view controller to displayed when incognito is disabled.
 // TODO(crbug.com/1457146): Make it private.
 @property(nonatomic, readonly, strong) UIViewController* disabledViewController;
-// The overall TabGrid.
-// TODO(crbug.com/1457146): Remove this.
-@property(nonatomic, weak) TabGridViewController* tabGridViewController;
 // Delegate for when this is presenting the Disable View Controller.
 // TODO(crbug.com/1457146): This protocol should be implemented by this object.
 @property(nonatomic, weak) id<DisabledGridViewControllerDelegate>

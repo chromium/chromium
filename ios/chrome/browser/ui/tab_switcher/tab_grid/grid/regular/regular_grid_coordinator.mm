@@ -51,6 +51,11 @@
   return _pinnedTabsMediator;
 }
 
+- (id<GridCommands>)gridHandler {
+  CHECK(_mediator);
+  return _mediator;
+}
+
 #pragma mark - ChromeCoordinator
 
 - (void)start {
@@ -85,10 +90,8 @@
   _mediator.browser = self.browser;
   _mediator.delegate = self.gridMediatorDelegate;
   _mediator.toolbarsMutator = self.toolbarsMutator;
-  _mediator.toolbarTabGridDelegate = self.tabGridViewController;
   _mediator.dispatcher = self;
 
-  self.tabGridViewController.regularTabsDelegate = _mediator;
   gridViewController.dragDropHandler = _mediator;
   gridViewController.mutator = _mediator;
   gridViewController.gridProvider = _mediator;
