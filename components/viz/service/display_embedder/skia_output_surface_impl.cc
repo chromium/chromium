@@ -1371,7 +1371,6 @@ void SkiaOutputSurfaceImpl::DidSwapBuffersComplete(
 void SkiaOutputSurfaceImpl::ReleaseOverlays(
     std::vector<gpu::Mailbox> released_overlays) {
   if (!released_overlays.empty()) {
-    DCHECK(!client_);
     client_->DidReceiveReleasedOverlays(released_overlays);
   }
 }
