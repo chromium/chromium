@@ -16,6 +16,7 @@
 #import "base/metrics/histogram_functions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/sessions/core/session_id.h"
+#import "ios/chrome/browser/sessions/features.h"
 #import "ios/chrome/browser/sessions/proto/storage.pb.h"
 #import "ios/chrome/browser/sessions/session_constants.h"
 #import "ios/chrome/browser/sessions/session_window_ios.h"
@@ -317,12 +318,21 @@ std::vector<web::WebState*> DeserializeWebStateListInternal(
   // the WebState as active during the insertion, if restored.
   const int active_index = deserializer.GetActiveIndex();
 
+  int32_t max_identifier = -1;
+
   // Restore all items directly at their correct position in the WebStateList.
   // The opener-opened relationship is not restored yet, as some WebState may
   // have an opener that is stored after them.
   for (int index = 0; index < restored_tabs_count; ++index) {
     std::unique_ptr<web::WebState> web_state = deserializer.RestoreTabAt(index);
     restored_web_states.push_back(web_state.get());  // Store pointer to item.
+
+    if (base::FeatureList::IsEnabled(
+            session::features::kSessionRestorationSessionIDCheck)) {
+      web::WebStateID web_state_id = web_state->GetUniqueIdentifier();
+      CHECK(web_state_id.valid(), base::NotFatalUntil::M125);
+      max_identifier = std::max(max_identifier, web_state_id.identifier());
+    }
 
     const int insertion_flags = WebStateInsertionFlags(
         index, index < restored_pinned_tabs_count, index == active_index);
@@ -331,6 +341,16 @@ std::vector<web::WebState*> DeserializeWebStateListInternal(
         index, std::move(web_state), insertion_flags, WebStateOpener{});
 
     DCHECK_EQ(inserted_index, index);
+  }
+
+  if (base::FeatureList::IsEnabled(
+          session::features::kSessionRestorationSessionIDCheck)) {
+    int32_t next_id = SessionID::NewUnique().id();
+    if (next_id > max_identifier - 10000000) {
+      // In case the ID went over the max int value, make sure that we only
+      // compare them if they are not too far.
+      CHECK_LT(max_identifier, next_id, base::NotFatalUntil::M125);
+    }
   }
 
   // Check that all WebStates have been restored.

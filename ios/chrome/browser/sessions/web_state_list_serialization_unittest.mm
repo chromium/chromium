@@ -10,6 +10,8 @@
 #import "base/functional/bind.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/test/metrics/histogram_tester.h"
+#import "base/test/scoped_feature_list.h"
+#import "ios/chrome/browser/sessions/features.h"
 #import "ios/chrome/browser/sessions/proto/storage.pb.h"
 #import "ios/chrome/browser/sessions/session_constants.h"
 #import "ios/chrome/browser/sessions/session_window_ios.h"
@@ -769,6 +771,71 @@ TEST_F(WebStateListSerializationTest, Deserialize_Proto_PinnedEnabled) {
 //
 // Protobuf message variant.
 TEST_F(WebStateListSerializationTest, Deserialize_Proto_PinnedDisabled) {
+  FakeWebStateListDelegate delegate;
+
+  // Create a WebStateList, populate it and serialize to `storage`.
+  ios::proto::WebStateListStorage storage;
+  {
+    WebStateList web_state_list(&delegate);
+    web_state_list.InsertWebState(
+        0, CreateWebState(),
+        WebStateList::INSERT_FORCE_INDEX | WebStateList::INSERT_PINNED,
+        WebStateOpener());
+    web_state_list.InsertWebState(
+        1, CreateWebState(),
+        WebStateList::INSERT_FORCE_INDEX | WebStateList::INSERT_ACTIVATE,
+        WebStateOpener(web_state_list.GetWebStateAt(0), 3));
+    web_state_list.InsertWebState(
+        2, CreateWebState(), WebStateList::INSERT_FORCE_INDEX,
+        WebStateOpener(web_state_list.GetWebStateAt(0), 2));
+    web_state_list.InsertWebState(
+        3, CreateWebState(), WebStateList::INSERT_FORCE_INDEX,
+        WebStateOpener(web_state_list.GetWebStateAt(1), 1));
+
+    SerializeWebStateList(web_state_list, storage);
+
+    EXPECT_EQ(storage.items_size(), 4);
+    EXPECT_EQ(storage.active_index(), 1);
+    EXPECT_EQ(storage.pinned_item_count(), 1);
+  }
+
+  // Deserialize `storage` into a new empty WebStateList.
+  WebStateList web_state_list(&delegate);
+  const std::vector<web::WebState*> restored_web_states =
+      DeserializeWebStateList(&web_state_list, std::move(storage),
+                              /*enable_pinned_web_states*/ false,
+                              base::BindRepeating(&CreateWebStateFromProto));
+  EXPECT_EQ(restored_web_states.size(), 4u);
+
+  ASSERT_EQ(web_state_list.count(), 4);
+  EXPECT_EQ(web_state_list.active_index(), 1);
+  EXPECT_EQ(web_state_list.pinned_tabs_count(), 0);
+
+  // Check the opener-opened relationship.
+  EXPECT_EQ(web_state_list.GetOpenerOfWebStateAt(0), WebStateOpener());
+  EXPECT_EQ(web_state_list.GetOpenerOfWebStateAt(1),
+            WebStateOpener(web_state_list.GetWebStateAt(0), 3));
+  EXPECT_EQ(web_state_list.GetOpenerOfWebStateAt(2),
+            WebStateOpener(web_state_list.GetWebStateAt(0), 2));
+  EXPECT_EQ(web_state_list.GetOpenerOfWebStateAt(3),
+            WebStateOpener(web_state_list.GetWebStateAt(1), 1));
+
+  // Check that the pinned tab has been restored at the correct position
+  // but is no longer pinned.
+  EXPECT_FALSE(web_state_list.IsWebStatePinnedAt(0));
+}
+
+// Tests deserializing works with the kSessionRestorationSessionIDCheck flag
+// enabled.
+TEST_F(WebStateListSerializationTest, Deserialize_Proto_SessionIDCheck) {
+  base::test::ScopedFeatureList feature_list;
+  // This test is just here for exercising the code path behind the feature flag
+  // (which is just a CHECK). Remove the test when cleaning up the feature.
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{session::features::
+                                kSessionRestorationSessionIDCheck},
+      /*disabled_features=*/{});
+
   FakeWebStateListDelegate delegate;
 
   // Create a WebStateList, populate it and serialize to `storage`.

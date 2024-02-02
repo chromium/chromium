@@ -98,6 +98,7 @@ source_set("serialisation") {
     "web_state_list_serialization.mm",
   ]
   deps = [
+    ":features",
     ":session_constants",
     "//base",
     "//components/sessions:session_id",
@@ -356,6 +357,7 @@ source_set("unit_tests") {
   ]
   deps = [
     ":fake",
+    ":features",
     ":legacy_session_restoration_service",
     ":resources_unit_tests",
     ":restoration_agent",
