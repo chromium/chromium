@@ -2958,13 +2958,17 @@ void LineBreaker::UpdateLineOpportunity() {
 // Restore the states changed by `HandleFloat` to before
 // `item_results[new_end]`.
 void LineBreaker::RewindFloats(unsigned new_end,
+                               LineInfo& line_info,
                                InlineItemResults& item_results) {
   for (const InlineItemResult& item_result :
        base::make_span(item_results).subspan(new_end)) {
     if (item_result.positioned_float) {
+      const unsigned item_index = item_result.item_index;
+      line_info.RemoveParallelFlowBreakToken(item_index);
+
       // Adjust `leading_floats_index_` if this is a leading float. See
       // `HandleFloat` and `PositionLeadingFloats`.
-      if (item_result.item_index < leading_floats_.handled_index) {
+      if (item_index < leading_floats_.handled_index) {
         for (unsigned i = 0; i < leading_floats_.floats.size(); ++i) {
           if (leading_floats_.floats[i].layout_result ==
               item_result.positioned_float->layout_result) {
@@ -3457,7 +3461,7 @@ void LineBreaker::Rewind(unsigned new_end, LineInfo* line_info) {
 
   // Check if floats are being rewound.
   if (RuntimeEnabledFeatures::RewindFloatsEnabled()) {
-    RewindFloats(new_end, item_results);
+    RewindFloats(new_end, *line_info, item_results);
   } else {
     // The code and comments in this `else` block is obsolete when
     // `RewindFloatsEnabled` is enabled, and will be removed when the flag

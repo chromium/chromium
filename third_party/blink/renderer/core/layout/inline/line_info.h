@@ -99,6 +99,7 @@ class CORE_EXPORT LineInfo {
     DCHECK(token->IsInParallelBlockFlow());
     parallel_flow_break_tokens_.push_back(token);
   }
+  void RemoveParallelFlowBreakToken(unsigned item_index);
 
   absl::optional<LayoutUnit> MinimumSpaceShortage() const {
     return minimum_space_shortage_;

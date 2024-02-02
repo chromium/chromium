@@ -222,7 +222,7 @@ class CORE_EXPORT LineBreaker {
                    const BlockBreakToken* float_break_token,
                    LineInfo*);
   void UpdateLineOpportunity();
-  void RewindFloats(unsigned new_end, InlineItemResults& item_results);
+  void RewindFloats(unsigned new_end, LineInfo&, InlineItemResults&);
 
   void HandleInitialLetter(const InlineItem&, LineInfo*);
   void HandleOutOfFlowPositioned(const InlineItem&, LineInfo*);
