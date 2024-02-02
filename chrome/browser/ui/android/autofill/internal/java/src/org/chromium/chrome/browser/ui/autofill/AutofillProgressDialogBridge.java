@@ -162,6 +162,7 @@ public class AutofillProgressDialogBridge {
                     .setVisibility(View.VISIBLE);
             ((TextView) mProgressDialogContentView.findViewById(R.id.message))
                     .setText(confirmationMessage);
+            mProgressDialogContentView.announceForAccessibility(confirmationMessage);
             // TODO(crbug.com/1243475): Dismiss the Java View after some delay if confirmation has
             // been shown.
         }
