@@ -398,6 +398,7 @@ class GtestTestInstance(test_instance.TestInstance):
     self._data_deps = []
     self._gtest_filters = test_filter.InitializeFiltersFromArgs(args)
     self._run_disabled = args.run_disabled
+    self._run_pre_tests = args.run_pre_tests
 
     self._data_deps_delegate = data_deps_delegate
     self._runtime_deps_path = args.runtime_deps_path
@@ -431,6 +432,8 @@ class GtestTestInstance(test_instance.TestInstance):
         self._flags.extend(flag for flag in stripped_lines if flag)
     if args.run_disabled:
       self._flags.append('--gtest_also_run_disabled_tests')
+    if args.run_pre_tests:
+      self._flags.append('--gtest_also_run_pre_tests')
 
   @property
   def activity(self):
@@ -614,12 +617,13 @@ class GtestTestInstance(test_instance.TestInstance):
     disabled_filter_items = []
 
     if disabled_prefixes is None:
-      # TODO(crbug/1257820): Remove PRE_ once flag is ready.
-      disabled_prefixes = ['FAILS_', 'PRE_']
+      disabled_prefixes = ['FAILS_']
       if '--run-manual' not in self._flags:
         disabled_prefixes += ['MANUAL_']
       if not self._run_disabled:
         disabled_prefixes += ['DISABLED_', 'FLAKY_']
+      if not self._run_pre_tests:
+        disabled_prefixes += ['PRE_']
 
     disabled_filter_items += ['%s*' % dp for dp in disabled_prefixes]
     disabled_filter_items += ['*.%s*' % dp for dp in disabled_prefixes]
