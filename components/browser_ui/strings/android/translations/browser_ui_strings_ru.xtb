@@ -289,7 +289,7 @@
 <translation id="6040143037577758943">Закрыть</translation>
 <translation id="6042308850641462728">Ещё</translation>
 <translation id="6064125863973209585">Завершенные скачивания</translation>
-<translation id="6071501408666570960">Вы выйдете из аккаунта на этом сайте.</translation>
+<translation id="6071501408666570960">Возможно, вам потребуется повторно войти в аккаунт на этом сайте.</translation>
 <translation id="6165508094623778733">Подробнее</translation>
 <translation id="6177111841848151710">Закрыт доступ для текущей поисковой системы</translation>
 <translation id="6177128806592000436">Подключение к сайту не защищено</translation>
@@ -472,7 +472,7 @@
 <translation id="8990043154272859344">Вы выйдете из аккаунта на всех сайтах</translation>
 <translation id="9011903857143958461">Действует для сайта <ph name="SITE_NAME" /></translation>
 <translation id="9019902583201351841">Управляется вашими родителями</translation>
-<translation id="9039697262778250930">Возможно, на этих сайтах вам потребуется повторно войти в аккаунт.</translation>
+<translation id="9039697262778250930">Возможно, вам потребуется повторно войти в аккаунт на этих сайтах.</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9090268041676521955">Этот сайт может отслеживать ваши действия. Он входит в группу <ph name="FPS_OWNER" />.</translation>
 <translation id="9106233582039520022">Удалить файлы cookie</translation>
