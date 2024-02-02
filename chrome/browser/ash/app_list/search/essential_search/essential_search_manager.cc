@@ -60,6 +60,10 @@ std::unique_ptr<EssentialSearchManager> EssentialSearchManager::Create(
   return std::make_unique<EssentialSearchManager>(primary_profile);
 }
 
+void EssentialSearchManager::OnChromeTerminating() {
+  scoped_observation_.Reset();
+}
+
 void EssentialSearchManager::OnSessionStateChanged(
     session_manager::SessionState state) {
   if (state == session_manager::SessionState::ACTIVE &&

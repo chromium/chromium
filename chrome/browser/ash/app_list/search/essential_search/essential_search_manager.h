@@ -44,6 +44,7 @@ class EssentialSearchManager : public ash::SessionObserver,
 
   // SessionObserver:
   void OnSessionStateChanged(session_manager::SessionState state) override;
+  void OnChromeTerminating() override;
 
   // SocsCookieFetcher::Consumer
   void OnCookieFetched(const std::string& socs_cookie) override;
