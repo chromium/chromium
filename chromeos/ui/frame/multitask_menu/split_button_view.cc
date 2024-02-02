@@ -156,8 +156,6 @@ SplitButtonView::SplitButtonView(SplitButtonType type,
   SetMirrored(false);
   SetOrientation(is_portrait_mode ? views::BoxLayout::Orientation::kVertical
                                   : views::BoxLayout::Orientation::kHorizontal);
-  SetPreferredSize(is_portrait_mode ? kMultitaskButtonPortraitSize
-                                    : kMultitaskButtonLandscapeSize);
 
   auto on_hover_pressed = base::BindRepeating(
       &SplitButtonView::OnButtonHoveredOrPressed, base::Unretained(this));
