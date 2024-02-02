@@ -113,10 +113,6 @@ class PasswordStoreAndroidAccountBackend : public PasswordStoreBackend,
   // called.
   void SyncShutdown();
 
-  // Callback to be invoked when the backend finished initializing with
-  // the success status of the initialization.
-  base::OnceCallback<void(bool)> init_completion_callback_;
-
   raw_ptr<AffiliationsPrefetcher> affiliations_prefetcher_ = nullptr;
   raw_ptr<AffiliatedMatchHelper> affiliated_match_helper_ = nullptr;
   raw_ptr<const syncer::SyncService> sync_service_ = nullptr;

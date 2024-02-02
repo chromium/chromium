@@ -333,10 +333,7 @@ void PasswordStore::RemoveObserver(Observer* observer) {
 
 bool PasswordStore::IsAbleToSavePasswords() const {
   DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
-  // TODO(crbug.com/1523699): Remove init_status_, rely on individual backends
-  // reporting that via IsAbleToSavePasswords().
-  return init_status_ == InitStatus::kSuccess && backend_ &&
-         backend_->IsAbleToSavePasswords();
+  return backend_ && backend_->IsAbleToSavePasswords();
 }
 
 void PasswordStore::ShutdownOnUIThread() {
@@ -390,7 +387,6 @@ PasswordStore::~PasswordStore() {
 
 void PasswordStore::OnInitCompleted(bool success) {
   DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
-  init_status_ = success ? InitStatus::kSuccess : InitStatus::kFailure;
 
   TRACE_EVENT_NESTABLE_ASYNC_END0(
       "passwords", "PasswordStore::InitOnBackgroundSequence", this);

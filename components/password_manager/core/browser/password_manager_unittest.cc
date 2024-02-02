@@ -346,13 +346,7 @@ void CheckMetricHasValue(const ukm::TestUkmRecorder& test_ukm_recorder,
 }
 
 class FailingPasswordStoreBackend : public FakePasswordStoreBackend {
-  void InitBackend(AffiliatedMatchHelper* affiliated_match_helper,
-                   RemoteChangesReceived remote_form_changes_received,
-                   base::RepeatingClosure sync_enabled_or_disabled_cb,
-                   base::OnceCallback<void(bool)> completion) override {
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(completion), /*success=*/false));
-  }
+  bool IsAbleToSavePasswords() override { return false; }
 };
 
 // Creates a set map of `ServerPrediction`s for `form` according to the

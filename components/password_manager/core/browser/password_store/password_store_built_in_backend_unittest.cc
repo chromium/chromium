@@ -843,4 +843,11 @@ TEST_F(PasswordStoreBuiltInBackendTest,
   RunUntilIdle();
 }
 
+TEST_F(PasswordStoreBuiltInBackendTest, NotAbleSavePasswordsWhenDatabaseIsBad) {
+  PasswordStoreBackend* bad_backend =
+      Initialize(std::make_unique<BadLoginDatabase>());
+
+  EXPECT_FALSE(bad_backend->IsAbleToSavePasswords());
+}
+
 }  // namespace password_manager

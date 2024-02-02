@@ -78,7 +78,7 @@ void PasswordStoreBuiltInBackend::Shutdown(
 }
 
 bool PasswordStoreBuiltInBackend::IsAbleToSavePasswords() {
-  return true;
+  return is_database_initialized_successfully_;
 }
 
 void PasswordStoreBuiltInBackend::InitBackend(
@@ -96,7 +96,8 @@ void PasswordStoreBuiltInBackend::InitBackend(
           base::Unretained(helper_.get()),  // Safe until `Shutdown()`.
           std::move(remote_form_changes_received),
           std::move(sync_enabled_or_disabled_cb)),
-      std::move(completion));
+      base::BindOnce(&PasswordStoreBuiltInBackend::OnInitComplete,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(completion)));
 }
 
 void PasswordStoreBuiltInBackend::GetAllLoginsAsync(
@@ -354,6 +355,13 @@ void PasswordStoreBuiltInBackend::InjectAffiliationAndBrandingInformation(
   }
   affiliated_match_helper_->InjectAffiliationAndBrandingInformation(
       std::move(absl::get<LoginsResult>(forms_or_error)), std::move(callback));
+}
+
+void PasswordStoreBuiltInBackend::OnInitComplete(
+    base::OnceCallback<void(bool)> completion,
+    bool result) {
+  is_database_initialized_successfully_ = result;
+  std::move(completion).Run(result);
 }
 
 }  // namespace password_manager

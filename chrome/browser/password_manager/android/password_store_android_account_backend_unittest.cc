@@ -279,13 +279,14 @@ class PasswordStoreAndroidAccountBackendTest : public testing::Test {
 };
 
 TEST_F(PasswordStoreAndroidAccountBackendTest,
-       CallsCompletionCallbackAfterSyncServiceInitialized) {
-  base::MockCallback<base::OnceCallback<void(bool)>> completion_callback;
-  backend().InitBackend(/*affiliated_match_helper=*/nullptr,
-                        PasswordStoreAndroidAccountBackend::RemoteChangesReceived(),
-                        base::NullCallback(), completion_callback.Get());
-  EXPECT_CALL(completion_callback, Run(true));
+       IsAbleToSavePasswordsDependsOnSyncInit) {
+  backend().InitBackend(
+      /*affiliated_match_helper=*/nullptr,
+      PasswordStoreAndroidAccountBackend::RemoteChangesReceived(),
+      base::NullCallback(), base::DoNothing());
+  EXPECT_FALSE(backend().IsAbleToSavePasswords());
   backend().OnSyncServiceInitialized(sync_service());
+  EXPECT_TRUE(backend().IsAbleToSavePasswords());
 }
 
 TEST_F(PasswordStoreAndroidAccountBackendTest, CallsBridgeForLogins) {

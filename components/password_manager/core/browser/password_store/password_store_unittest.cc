@@ -1436,42 +1436,23 @@ TEST_F(PasswordStoreTest, RecordsPotentialOnLoginsRetainedInvokations) {
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 
-TEST_F(PasswordStoreTest, AbleToSavePasswordsIfInitBackendSuccessful) {
+TEST_F(PasswordStoreTest, AbleToSavePasswords) {
   auto [store, mock_backend] = CreateUnownedStoreWithOwnedMockBackend();
-  base::OnceCallback<void(bool)> init_backend_completion_cb;
-  EXPECT_CALL(*mock_backend, InitBackend)
-      .WillOnce(MoveArg<3>(&init_backend_completion_cb));
   store->Init(/*prefs=*/nullptr, /*affiliated_match_helper=*/nullptr);
-
-  // PasswordStoreBackend::InitBackend() hasn't replied with success yet.
-  EXPECT_FALSE(store->IsAbleToSavePasswords());
-
-  std::move(init_backend_completion_cb).Run(/*success=*/true);
-
-  // PasswordStoreBackend::IsAbleToSavePasswords() isn't true yet.
-  EXPECT_FALSE(store->IsAbleToSavePasswords());
-
-  ON_CALL(*mock_backend, IsAbleToSavePasswords)
-      .WillByDefault(testing::Return(true));
+  EXPECT_CALL(*mock_backend, IsAbleToSavePasswords)
+      .WillOnce(testing::Return(true));
 
   EXPECT_TRUE(store->IsAbleToSavePasswords());
-
   store->ShutdownOnUIThread();
 }
 
-TEST_F(PasswordStoreTest, NotAbleToSavePasswordsIfInitBackendFailed) {
+TEST_F(PasswordStoreTest, NotAbleToSavePasswords) {
   auto [store, mock_backend] = CreateUnownedStoreWithOwnedMockBackend();
-  ON_CALL(*mock_backend, IsAbleToSavePasswords)
-      .WillByDefault(testing::Return(true));
-  EXPECT_CALL(*mock_backend, InitBackend)
-      .WillOnce(
-          [](auto, auto, auto, base::OnceCallback<void(bool)> completion) {
-            std::move(completion).Run(/*success=*/false);
-          });
   store->Init(/*prefs=*/nullptr, /*affiliated_match_helper=*/nullptr);
+  EXPECT_CALL(*mock_backend, IsAbleToSavePasswords)
+      .WillOnce(testing::Return(false));
 
   EXPECT_FALSE(store->IsAbleToSavePasswords());
-
   store->ShutdownOnUIThread();
 }
 
