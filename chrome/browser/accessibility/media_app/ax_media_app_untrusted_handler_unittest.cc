@@ -12,6 +12,7 @@
 #include "chrome/browser/accessibility/accessibility_state_utils.h"
 #include "chrome/browser/accessibility/media_app/ax_media_app.h"
 #include "chrome/browser/accessibility/media_app/test/fake_ax_media_app.h"
+#include "chrome/browser/accessibility/media_app/test/test_helpers.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/services/screen_ai/buildflags/buildflags.h"
 #include "components/services/screen_ai/public/test/fake_screen_ai_annotator.h"
@@ -47,19 +48,6 @@ class TestScreenAIInstallState : public screen_ai::ScreenAIInstallState {
   void DownloadComponentInternal() override {}
 };
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-
-class TestAXMediaAppUntrustedHandler : public AXMediaAppUntrustedHandler {
- public:
-  TestAXMediaAppUntrustedHandler(
-      content::BrowserContext& context,
-      mojo::PendingRemote<media_app_ui::mojom::OcrUntrustedPage> page)
-      : AXMediaAppUntrustedHandler(context, std::move(page)) {}
-
-  std::map<const std::string, AXMediaAppPageMetadata>
-  GetPageMetadataForTesting() {
-    return page_metadata_;
-  }
-};
 
 class AXMediaAppUntrustedHandlerTest : public ChromeRenderViewHostTestHarness {
  public:
@@ -246,6 +234,41 @@ TEST_F(AXMediaAppUntrustedHandlerTest, PageMetadataWithNewPages) {
 
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(bad_message_observer.got_bad_message());
+}
+
+TEST_F(AXMediaAppUntrustedHandlerTest, DirtyPageOcrOrder) {
+  mojo::FakeMessageDispatchContext fake_dispatch_context;
+  mojo::test::BadMessageObserver bad_message_observer;
+
+  const std::vector<const std::string> kPageIds{"pageW", "pageX", "pageY",
+                                                "pageZ"};
+  const size_t kTestNumPages = kPageIds.size();
+  std::vector<PageMetadataPtr> fakeMetadata;
+  for (size_t i = 0; i < kTestNumPages; ++i) {
+    auto page = MojoPageMetadata::New();
+    page->id = std::move(kPageIds[i]);
+    auto rect = gfx::RectF(0, 0, 10, 15);
+    page->rect = std::move(rect);
+    fakeMetadata.push_back(std::move(page));
+  }
+  handler_->SetDelayCallingOcrNextDirtyPage(true);
+
+  handler_->PageMetadataUpdated(std::move(fakeMetadata));
+
+  // All pages should now be marked dirty, and OCRed in the order they were
+  // added.
+  EXPECT_EQ(handler_->PopDirtyPageForTesting(), "pageW");
+  EXPECT_EQ(handler_->PopDirtyPageForTesting(), "pageX");
+  EXPECT_EQ(handler_->PopDirtyPageForTesting(), "pageY");
+  EXPECT_EQ(handler_->PopDirtyPageForTesting(), "pageZ");
+
+  // Each time a page becomes dirty, it should be sent to the back of the queue.
+  handler_->PushDirtyPageForTesting("pageX");
+  handler_->PushDirtyPageForTesting("pageZ");
+  handler_->PushDirtyPageForTesting("pageX");
+
+  EXPECT_EQ(handler_->PopDirtyPageForTesting(), "pageZ");
+  EXPECT_EQ(handler_->PopDirtyPageForTesting(), "pageX");
 }
 
 }  // namespace ash::test

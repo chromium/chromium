@@ -55,23 +55,8 @@ class AXMediaAppUntrustedHandler : private ui::AXActionHandlerBase,
       const AXMediaAppUntrustedHandler&) = delete;
   ~AXMediaAppUntrustedHandler() override;
 
-  bool IsOcrServiceEnabled() const;
+  virtual bool IsOcrServiceEnabled() const;
   bool IsAccessibilityEnabled() const;
-
-  const std::map<const std::string, std::unique_ptr<ui::AXTreeManager>>&
-  GetPagesForTesting() {
-    return pages_;
-  }
-
-  void SetIsOcrServiceEnabledForTesting() {
-    is_ocr_service_enabled_for_testing_ = true;
-  }
-
-  void SetScreenAIAnnotatorForTesting(
-      mojo::PendingRemote<screen_ai::mojom::ScreenAIAnnotator>
-          screen_ai_annotator);
-
-  void FlushForTesting();
 
   void OnOCRServiceInitialized(bool successful);
 
@@ -85,22 +70,27 @@ class AXMediaAppUntrustedHandler : private ui::AXActionHandlerBase,
   void PageMetadataUpdated(
       const std::vector<ash::media_app_ui::mojom::PageMetadataPtr>
           page_metadata) override;
+  void PageContentsUpdated(const std::string& dirty_page_id) override;
   void ViewportUpdated(const gfx::RectF& viewport_box,
                        float scale_factor) override;
 
-  // TODO(b/309860428): Delete once AXMediaApp is deleted.
-  void SetMediaAppForTesting(AXMediaApp* media_app) { media_app_ = media_app; }
-
  protected:
+  void PushDirtyPage(const std::string& dirty_page_id);
+  std::string PopDirtyPage();
+  virtual void OcrNextDirtyPageIfAny();
+
   // `AXMediaApp` should outlive this handler.
   // TODO(b/309860428): Delete once AXMediaApp is deleted.
   raw_ptr<AXMediaApp> media_app_;
+  ui::AXTreeManager document_;
   std::map<const std::string, AXMediaAppPageMetadata> page_metadata_;
+  std::map<const std::string, std::unique_ptr<ui::AXTreeManager>> pages_;
+  mojo::Remote<screen_ai::mojom::ScreenAIAnnotator> screen_ai_annotator_;
 
  private:
+  void UpdateDocumentTree();
   void UpdatePageLocation(const std::string& page_id,
                           const gfx::RectF& page_location);
-  void OcrNextDirtyPageIfAny();
   void OnPageOcred(const std::string& dirty_page_id,
                    const ui::AXTreeUpdate& tree_update);
 
@@ -111,11 +101,8 @@ class AXMediaAppUntrustedHandler : private ui::AXActionHandlerBase,
   raw_ref<content::BrowserContext> browser_context_;
   mojo::Remote<media_app_ui::mojom::OcrUntrustedPage> media_app_page_;
 
-  bool is_ocr_service_enabled_for_testing_ = false;
-  base::queue<std::string> dirty_page_ids_;
-  ui::AXTreeManager document_;
-  std::map<const std::string, std::unique_ptr<ui::AXTreeManager>> pages_;
-  mojo::Remote<screen_ai::mojom::ScreenAIAnnotator> screen_ai_annotator_;
+  base::circular_deque<std::string> dirty_page_ids_;
+  ui::AXTreeID document_tree_id_ = ui::AXTreeID::CreateNewAXTreeID();
   SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<AXMediaAppUntrustedHandler> weak_ptr_factory_{this};
 };

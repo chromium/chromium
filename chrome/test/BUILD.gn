@@ -755,6 +755,8 @@ static_library("test_support") {
 
   if (is_chromeos_ash) {
     sources += [
+      "../browser/accessibility/media_app/test/test_helpers.cc",
+      "../browser/accessibility/media_app/test/test_helpers.h",
       "../browser/ash/login/app_mode/test/ash_accelerator_helpers.cc",
       "../browser/ash/login/lock/screen_locker_tester.cc",
       "../browser/ash/login/lock/screen_locker_tester.h",

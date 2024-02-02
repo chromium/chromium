@@ -29,6 +29,13 @@ namespace ash {
 
 namespace {
 
+// The ID used for the AX document root.
+const uint64_t kDocumentRootNodeId = 1;
+
+// The first ID at which pages start. 0 is a special ID number reserved only for
+// invalid nodes, and 1 is for the AX document root. So all pages begin at ID 2.
+const size_t kStartPageAXNodeId = 2;
+
 // The maximum number of pages supported by the OCR service. This maximum is
 // used both to validate the number of pages (untrusted data) coming from the
 // MediaApp and manage resources (caps the number of pages stored at a time).
@@ -68,18 +75,7 @@ AXMediaAppUntrustedHandler::AXMediaAppUntrustedHandler(
 AXMediaAppUntrustedHandler::~AXMediaAppUntrustedHandler() = default;
 
 bool AXMediaAppUntrustedHandler::IsOcrServiceEnabled() const {
-  return screen_ai_annotator_.is_bound() || is_ocr_service_enabled_for_testing_;
-}
-
-void AXMediaAppUntrustedHandler::SetScreenAIAnnotatorForTesting(
-    mojo::PendingRemote<screen_ai::mojom::ScreenAIAnnotator>
-        screen_ai_annotator) {
-  screen_ai_annotator_.reset();
-  screen_ai_annotator_.Bind(std::move(screen_ai_annotator));
-}
-
-void AXMediaAppUntrustedHandler::FlushForTesting() {
-  screen_ai_annotator_.FlushForTesting();  // IN-TEST
+  return screen_ai_annotator_.is_bound();
 }
 
 void AXMediaAppUntrustedHandler::OnOCRServiceInitialized(bool successful) {
@@ -188,7 +184,7 @@ void AXMediaAppUntrustedHandler::PageMetadataUpdated(
         return;
       }
       page_metadata_[data.id] = data;
-      dirty_page_ids_.push(data.id);
+      PushDirtyPage(data.id);
     }
     // Only one page goes through OCR at a time, so start the process here.
     OcrNextDirtyPageIfAny();
@@ -212,6 +208,7 @@ void AXMediaAppUntrustedHandler::PageMetadataUpdated(
       UpdatePageLocation(page_id, page_metadata[i]->rect);
     }
   }
+  UpdateDocumentTree();
 
   // Skip all further processing that applies to only updates (not first load).
   if (is_first_load) {
@@ -227,6 +224,17 @@ void AXMediaAppUntrustedHandler::PageMetadataUpdated(
       page_metadata_[page_id].page_num = 0;
     }
   }
+}
+
+void AXMediaAppUntrustedHandler::PageContentsUpdated(
+    const std::string& dirty_page_id) {
+  if (!page_metadata_.contains(dirty_page_id)) {
+    mojo::ReportBadMessage(
+        "SetPageMetadata() called with a non-existent page ID");
+    return;
+  }
+  PushDirtyPage(dirty_page_id);
+  OcrNextDirtyPageIfAny();
 }
 
 void AXMediaAppUntrustedHandler::ViewportUpdated(const gfx::RectF& viewport_box,
@@ -257,15 +265,129 @@ void AXMediaAppUntrustedHandler::UpdatePageLocation(
   }
 }
 
+void AXMediaAppUntrustedHandler::UpdateDocumentTree() {
+  ui::AXNodeData document_root_data;
+  document_root_data.id = kDocumentRootNodeId;
+  document_root_data.role = ax::mojom::Role::kPdfRoot;
+  // A scrollable container should (by design) also be focusable.
+  document_root_data.AddState(ax::mojom::State::kFocusable);
+  document_root_data.AddBoolAttribute(ax::mojom::BoolAttribute::kScrollable,
+                                      true);
+  document_root_data.AddBoolAttribute(ax::mojom::BoolAttribute::kClipsChildren,
+                                      true);
+  document_root_data.AddBoolAttribute(
+      ax::mojom::BoolAttribute::kIsLineBreakingObject, true);
+  // Text direction is set individually by each page element via the OCR
+  // Service, so no need to set it here.
+  //
+  // Text alignment cannot be set in PDFs, so use left as the default alignment.
+  document_root_data.SetTextAlign(ax::mojom::TextAlign::kLeft);
+  // The PDF document cannot itself be modified.
+  document_root_data.SetRestriction(ax::mojom::Restriction::kReadOnly);
+  // TODO(b/319536234): Populate the title with the PDF's filename by
+  // retrieving it from the Media App.
+  document_root_data.SetNameChecked(
+      base::StringPrintf("PDF document containing %zu pages", pages_.size()));
+
+  std::vector<int32_t> child_ids(pages_.size());
+  std::iota(std::begin(child_ids), std::end(child_ids), kStartPageAXNodeId);
+  document_root_data.child_ids = child_ids;
+
+  gfx::RectF document_location;
+  for (auto const& [_, metadata] : page_metadata_) {
+    document_location.Union(metadata.rect);
+  }
+  document_root_data.relative_bounds.bounds = document_location;
+  document_root_data.AddIntAttribute(ax::mojom::IntAttribute::kScrollXMin,
+                                     document_location.x());
+  document_root_data.AddIntAttribute(ax::mojom::IntAttribute::kScrollYMin,
+                                     document_location.y());
+
+  ui::AXTreeUpdate document_update;
+  document_update.root_id = document_root_data.id;
+  std::vector<ui::AXNodeData> document_pages;
+  document_pages.push_back(document_root_data);
+  for (size_t page_index = 0; auto const& [page_id, pageTreeManager] : pages_) {
+    ui::AXNodeData page_data;
+    page_data.role = ax::mojom::Role::kRegion;
+    base::CheckedNumeric<ui::AXNodeID> ax_page_id =
+        page_index + kStartPageAXNodeId;
+    if (!ax_page_id.AssignIfValid(&page_data.id)) {
+      mojo::ReportBadMessage("Bad pages size from renderer.");
+      return;
+    }
+    page_data.AddBoolAttribute(ax::mojom::BoolAttribute::kIsPageBreakingObject,
+                               true);
+    page_data.SetRestriction(ax::mojom::Restriction::kReadOnly);
+    // Page numbers are 1-indexed, so add one here.
+    // TODO(b/319543924): Add a localized version of an accessible name.
+    page_data.SetNameChecked(base::StringPrintf("Page %zu", page_index + 1u));
+    // If the page doesn't exist, that means it hasn't been through OCR yet.
+    if (pages_.contains(page_id) && pages_[page_id]->ax_tree() &&
+        pages_[page_id]->GetRoot()) {
+      page_data.AddChildTreeId(pages_[page_id]->GetTreeID());
+      page_data.relative_bounds.bounds =
+          pages_[page_id]->GetRoot()->data().relative_bounds.bounds;
+    }
+    document_pages.push_back(page_data);
+    ++page_index;
+  }
+  if (document_root_data.child_ids.size() + 1u != document_pages.size()) {
+    mojo::ReportBadMessage("Bad pages size from renderer.");
+    return;
+  }
+  document_update.nodes.swap(document_pages);
+
+  if (document_.ax_tree()) {
+    if (!document_.ax_tree()->Unserialize(document_update)) {
+      mojo::ReportBadMessage(document_.ax_tree()->error());
+      return;
+    }
+  } else {
+    document_update.has_tree_data = true;
+    document_update.tree_data.tree_id = document_tree_id_;
+    // TODO(b/319543924): Add a localized version of an accessible name.
+    document_update.tree_data.title = "PDF document";
+    document_.SetTree(std::make_unique<ui::AXTree>(document_update));
+  }
+}
+
+void AXMediaAppUntrustedHandler::PushDirtyPage(
+    const std::string& dirty_page_id) {
+  // If the dirty page is already marked as dirty, move it to the back of the
+  // queue.
+  auto it =
+      std::find(dirty_page_ids_.begin(), dirty_page_ids_.end(), dirty_page_id);
+  if (it != dirty_page_ids_.end()) {
+    std::rotate(it, it + 1, dirty_page_ids_.end());
+    return;
+  }
+  dirty_page_ids_.push_back(dirty_page_id);
+}
+
+std::string AXMediaAppUntrustedHandler::PopDirtyPage() {
+  if (dirty_page_ids_.empty()) {
+    mojo::ReportBadMessage("PopDirtyPage() found no more dirty pages.");
+  }
+
+  auto dirty_page_id = dirty_page_ids_.front();
+  dirty_page_ids_.pop_front();
+  return dirty_page_id;
+}
+
 void AXMediaAppUntrustedHandler::OcrNextDirtyPageIfAny() {
   if (!IsOcrServiceEnabled()) {
     return;
   }
+  // If there are no more dirty pages, we can assume all pages have up-to-date
+  // page locations. Update the document tree information to reflect that.
   if (dirty_page_ids_.empty()) {
+    UpdateDocumentTree();
     return;
   }
-  auto dirty_page_id = dirty_page_ids_.front();
-  dirty_page_ids_.pop();
+  auto dirty_page_id = PopDirtyPage();
+  // TODO(b/289012145): Refactor this code to support things happening
+  // asynchronously - e.g. RequestBitmap will be async.
   SkBitmap page_bitmap = media_app_->RequestBitmap(dirty_page_id);
   screen_ai_annotator_->PerformOcrAndReturnAXTreeUpdate(
       page_bitmap,
@@ -288,7 +410,7 @@ void AXMediaAppUntrustedHandler::OnPageOcred(
   }
   ui::AXTreeUpdate complete_tree_update;
   complete_tree_update.has_tree_data = true;
-  complete_tree_update.tree_data.tree_id = ui::AXTreeID::CreateNewAXTreeID();
+  complete_tree_update.tree_data.parent_tree_id = document_tree_id_;
   complete_tree_update.tree_data.title = "OCR results";
   complete_tree_update.root_id = tree_update.root_id;
   complete_tree_update.nodes = tree_update.nodes;
@@ -301,13 +423,19 @@ void AXMediaAppUntrustedHandler::OnPageOcred(
         std::make_unique<ui::AXTree>(complete_tree_update));
     UpdatePageLocation(dirty_page_id, page_metadata_[dirty_page_id].rect);
   } else {
+    complete_tree_update.tree_data.tree_id = pages_[dirty_page_id]->GetTreeID();
     if (!pages_[dirty_page_id]->ax_tree() ||
         !pages_[dirty_page_id]->ax_tree()->Unserialize(complete_tree_update)) {
       mojo::ReportBadMessage(pages_[dirty_page_id]->ax_tree()->error());
       return;
     }
   }
-  // TODO(nektar): Attach the page to the tree for the main PDF document.
+  // Update the page location again - running the page through OCR overwrites
+  // the previous AXTree it was given and thus the page location it was already
+  // given in DocumentUpdated(). Restore it here.
+  UpdatePageLocation(dirty_page_id, page_metadata_[dirty_page_id].rect);
+  // TODO(b/289012145): Attach the page to the tree for the main PDF document.
+  LOG(ERROR) << "WHAT onocr done?";
   OcrNextDirtyPageIfAny();
 }
 
