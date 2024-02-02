@@ -39,10 +39,6 @@ BASE_DECLARE_FEATURE(kDisablePasswordsDropdownForCvcFields);
 BASE_DECLARE_FEATURE(kRemoveUPMUnenrollment);
 #endif  // BUILDFLAG(IS_ANDROID)
 
-// Enables a second, Gaia-account-scoped password store for users who are signed
-// in but not syncing.
-BASE_DECLARE_FEATURE(kEnablePasswordsAccountStorage);
-
 #if BUILDFLAG(IS_ANDROID)
 // Enables filling password on a website when there is saved password on
 // affiliated website.

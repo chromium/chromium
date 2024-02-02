@@ -143,13 +143,20 @@ class PasswordReceiverServiceImplTest
     profile_password_store_->Init(/*prefs=*/nullptr,
                                   /*affiliated_match_helper=*/nullptr);
 
-    feature_list_.InitWithFeatureState(features::kEnablePasswordsAccountStorage,
-                                       GetEnableAccountStoreTestParam());
     if (GetEnableAccountStoreTestParam()) {
       account_password_store_ = base::MakeRefCounted<TestPasswordStore>();
       account_password_store_->Init(/*prefs=*/nullptr,
                                     /*affiliated_match_helper=*/nullptr);
     }
+#if BUILDFLAG(IS_ANDROID)
+    const auto upm_pref_value =
+        GetEnableAccountStoreTestParam()
+            ? password_manager::prefs::UseUpmLocalAndSeparateStoresState::kOn
+            : password_manager::prefs::UseUpmLocalAndSeparateStoresState::kOff;
+    pref_service_.registry()->RegisterIntegerPref(
+        prefs::kPasswordsUseUPMLocalAndSeparateStores,
+        static_cast<int>(upm_pref_value));
+#endif  // BUILDFLAG(IS_ANDROID)
 
     password_receiver_service_ = std::make_unique<PasswordReceiverServiceImpl>(
         &pref_service_,

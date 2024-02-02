@@ -77,28 +77,41 @@ class PasswordManagerFeaturesUtilTestBase {
   syncer::TestSyncService sync_service_;
 };
 
+#if BUILDFLAG(IS_ANDROID)
 // Test fixture where the account-scoped password storage is *disabled*.
+// Android is the only platform still supporting that.
 class PasswordManagerFeaturesUtilWithoutAccountStorageTest
     : public PasswordManagerFeaturesUtilTestBase,
       public testing::Test {
  public:
   PasswordManagerFeaturesUtilWithoutAccountStorageTest() {
-    features_.InitAndDisableFeature(features::kEnablePasswordsAccountStorage);
+    pref_service_.registry()->RegisterIntegerPref(
+        prefs::kPasswordsUseUPMLocalAndSeparateStores,
+        static_cast<int>(
+            password_manager::prefs::UseUpmLocalAndSeparateStoresState::kOff));
   }
 
  private:
   base::test::ScopedFeatureList features_;
 };
+#endif  // BUIDLFLAG(IS_ANDROID)
 
 // Test fixture where the account-scoped password storage is *enabled*.
 class PasswordManagerFeaturesUtilTest
     : public PasswordManagerFeaturesUtilTestBase,
       public testing::Test {
- private:
-  base::test::ScopedFeatureList features_{
-      features::kEnablePasswordsAccountStorage};
+ public:
+  PasswordManagerFeaturesUtilTest() {
+#if BUILDFLAG(IS_ANDROID)
+    pref_service_.registry()->RegisterIntegerPref(
+        prefs::kPasswordsUseUPMLocalAndSeparateStores,
+        static_cast<int>(
+            password_manager::prefs::UseUpmLocalAndSeparateStoresState::kOn));
+#endif  //  BUILDFLAG(IS_ANDROID)
+  }
 };
 
+#if BUILDFLAG(IS_ANDROID)
 TEST_F(PasswordManagerFeaturesUtilWithoutAccountStorageTest,
        AccountStorageOptIn) {
   CoreAccountInfo account;
@@ -122,6 +135,7 @@ TEST_F(PasswordManagerFeaturesUtilWithoutAccountStorageTest,
   EXPECT_EQ(GetDefaultPasswordStore(&pref_service_, &sync_service_),
             PasswordForm::Store::kProfileStore);
 }
+#endif  // BUILDFLAG(IS_ANDROID)
 
 #if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
 TEST_F(PasswordManagerFeaturesUtilTest, AccountStorageOptIn) {

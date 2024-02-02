@@ -188,8 +188,7 @@ void OptInToAccountStorage(PrefService* pref_service,
                            syncer::SyncService* sync_service) {
   DCHECK(pref_service);
   DCHECK(sync_service);
-  DCHECK(
-      base::FeatureList::IsEnabled(features::kEnablePasswordsAccountStorage));
+  CHECK(CanCreateAccountStore(pref_service));
 
   std::string gaia_id = sync_service->GetAccountInfo().gaia;
   if (gaia_id.empty()) {
@@ -217,8 +216,7 @@ void OptOutOfAccountStorageAndClearSettings(PrefService* pref_service,
                                             syncer::SyncService* sync_service) {
   DCHECK(pref_service);
   DCHECK(sync_service);
-  DCHECK(
-      base::FeatureList::IsEnabled(features::kEnablePasswordsAccountStorage));
+  CHECK(CanCreateAccountStore(pref_service));
 
   std::string gaia_id = sync_service->GetAccountInfo().gaia;
   if (gaia_id.empty()) {
@@ -248,8 +246,7 @@ void SetDefaultPasswordStore(PrefService* pref_service,
                              PasswordForm::Store default_store) {
   DCHECK(pref_service);
   DCHECK(sync_service);
-  DCHECK(
-      base::FeatureList::IsEnabled(features::kEnablePasswordsAccountStorage));
+  CHECK(CanCreateAccountStore(pref_service));
 
   std::string gaia_id = sync_service->GetAccountInfo().gaia;
   if (gaia_id.empty()) {

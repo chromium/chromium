@@ -41,15 +41,6 @@ BASE_FEATURE(kRemoveUPMUnenrollment,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID)
 
-BASE_FEATURE(kEnablePasswordsAccountStorage,
-             "EnablePasswordsAccountStorage",
-#if BUILDFLAG(IS_ANDROID)
-             base::FEATURE_DISABLED_BY_DEFAULT
-#else
-             base::FEATURE_ENABLED_BY_DEFAULT
-#endif
-);
-
 #if BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(kFillingAcrossAffiliatedWebsitesAndroid,
              "FillingAcrossAffiliatedWebsitesAndroid",

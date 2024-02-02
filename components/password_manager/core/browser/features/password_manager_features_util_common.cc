@@ -23,10 +23,9 @@ bool CanAccountStorageBeEnabled(const PrefService* pref_service,
                                 const syncer::SyncService* sync_service) {
   CHECK(pref_service);
 
-  // TODO(crbug.com/1509058): Replace with CanCreateAccountStore(pref_service).
-  // Also, on Android the predicate should return true for syncing and false
-  // for signed-in non-syncing users.
-  if (!base::FeatureList::IsEnabled(features::kEnablePasswordsAccountStorage)) {
+  // TODO(crbug.com/1509058): Also, on Android the predicate should return true
+  // for syncing and false for signed-in non-syncing users.
+  if (!CanCreateAccountStore(pref_service)) {
     return false;
   }
 
@@ -56,15 +55,16 @@ bool CanAccountStorageBeEnabled(const PrefService* pref_service,
 //   no way to enter the passphrase yet).
 bool IsUserEligibleForAccountStorage(const PrefService* pref_service,
                                      const syncer::SyncService* sync_service) {
-  if (!CanAccountStorageBeEnabled(pref_service, sync_service)) {
+  if (!sync_service) {
     return false;
   }
-  DCHECK(sync_service);
+
   // TODO(crbug.com/1462978): Delete this when ConsentLevel::kSync is deleted.
   // See ConsentLevel::kSync documentation for details.
   if (sync_service->IsSyncFeatureEnabled()) {
     return false;
   }
+
   switch (sync_service->GetTransportState()) {
     case syncer::SyncService::TransportState::DISABLED:
     case syncer::SyncService::TransportState::PAUSED:
@@ -76,12 +76,16 @@ bool IsUserEligibleForAccountStorage(const PrefService* pref_service,
     case syncer::SyncService::TransportState::ACTIVE:
       break;
   }
+
 #if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
   if (sync_service->GetUserSettings()->IsUsingExplicitPassphrase()) {
     return false;
   }
 #endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
-  return true;
+
+  // Check last to avoid tests for signed-out users unnecessarily having to
+  // register some prefs to avoid a crash.
+  return CanAccountStorageBeEnabled(pref_service, sync_service);
 }
 
 }  // namespace internal

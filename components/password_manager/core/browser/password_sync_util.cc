@@ -109,6 +109,8 @@ std::optional<std::string> GetAccountForSaving(
 
 password_manager::SyncState GetPasswordSyncState(
     const syncer::SyncService* sync_service) {
+  // TODO(crbug.com/1509058): On Android, we might want to return
+  // kAccountPasswordsActive for syncing users. Possibly rename the enum values.
   if (!sync_service ||
       !sync_service->GetActiveDataTypes().Has(syncer::PASSWORDS)) {
     return password_manager::SyncState::kNotSyncing;
@@ -119,9 +121,6 @@ password_manager::SyncState GetPasswordSyncState(
                ? password_manager::SyncState::kSyncingWithCustomPassphrase
                : password_manager::SyncState::kSyncingNormalEncryption;
   }
-
-  DCHECK(base::FeatureList::IsEnabled(
-      password_manager::features::kEnablePasswordsAccountStorage));
 
   return sync_service->GetUserSettings()->IsUsingExplicitPassphrase()
              ? password_manager::SyncState::

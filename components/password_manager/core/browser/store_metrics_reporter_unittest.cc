@@ -1091,9 +1091,12 @@ TEST_F(StoreMetricsReporterTest, DuplicatesMetrics_MismatchedDuplicates) {
 // A test that covers multi-store metrics, which are recorded by the
 // StoreMetricsReporter directly.
 TEST_F(StoreMetricsReporterTest, MultiStoreMetrics) {
-  // This test is only relevant when the passwords accounts store is enabled.
-  base::test::ScopedFeatureList feature_list{
-      features::kEnablePasswordsAccountStorage};
+#if BUILDFLAG(IS_ANDROID)
+  prefs_.registry()->RegisterIntegerPref(
+      prefs::kPasswordsUseUPMLocalAndSeparateStores,
+      static_cast<int>(
+          password_manager::prefs::UseUpmLocalAndSeparateStoresState::kOn));
+#endif  // BUILDFLAG(IS_ANDROID)
 
   auto profile_store =
       base::MakeRefCounted<TestPasswordStore>(IsAccountStore(false));

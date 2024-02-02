@@ -14,12 +14,10 @@
 #include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "components/password_manager/core/browser/affiliation/affiliated_match_helper.h"
 #include "components/password_manager/core/browser/affiliation/mock_affiliated_match_helper.h"
-#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/password_manager/core/browser/password_store/interactions_stats.h"
@@ -259,13 +257,7 @@ class FormFetcherImplTestBase : public testing::Test {
       client_.set_profile_store(nullptr);
     }
 
-    if (!create_account_store) {
-      feature_list_.InitAndDisableFeature(
-          password_manager::features::kEnablePasswordsAccountStorage);
-    } else {
-      feature_list_.InitAndEnableFeature(
-          password_manager::features::kEnablePasswordsAccountStorage);
-
+    if (create_account_store) {
       account_mock_store_ = new testing::NiceMock<MockPasswordStoreInterface>;
       client_.set_account_store(account_mock_store_.get());
     }
@@ -322,7 +314,6 @@ class FormFetcherImplTestBase : public testing::Test {
 
   PasswordStoreConsumer* store_consumer() { return form_fetcher_.get(); }
 
-  base::test::ScopedFeatureList feature_list_;
   base::test::TaskEnvironment task_environment_;
   PasswordFormDigest form_digest_;
   scoped_refptr<MockPasswordStoreInterface> profile_mock_store_;

@@ -11,14 +11,11 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_mock_time_task_runner.h"
-#include "base/test/with_feature_override.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/autofill/core/common/form_field_data.h"
-#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/form_fetcher_impl.h"
 #include "components/password_manager/core/browser/http_auth_manager_impl.h"
 #include "components/password_manager/core/browser/password_form.h"
@@ -104,19 +101,18 @@ ACTION_P(InvokeEmptyConsumerWithForms, store) {
 }
 }  // namespace
 
+// The boolean param determines the presence of the "account" PasswordStore.
 class HttpAuthManagerTest : public testing::Test,
-                            public base::test::WithFeatureOverride {
+                            public testing::WithParamInterface<bool> {
  public:
-  HttpAuthManagerTest()
-      : base::test::WithFeatureOverride(
-            features::kEnablePasswordsAccountStorage) {}
+  HttpAuthManagerTest() = default;
   ~HttpAuthManagerTest() override = default;
 
  protected:
   void SetUp() override {
     store_ = new testing::StrictMock<MockPasswordStoreInterface>;
 
-    if (IsParamFeatureEnabled()) {
+    if (GetParam()) {
       account_store_ = new testing::NiceMock<MockPasswordStoreInterface>;
 
       // Most tests don't really need the account store, but it'll still get
@@ -154,7 +150,6 @@ class HttpAuthManagerTest : public testing::Test,
 
   HttpAuthManagerImpl* httpauth_manager() { return httpauth_manager_.get(); }
 
-  base::test::ScopedFeatureList feature_list_;
   base::test::TaskEnvironment task_environment_;
   scoped_refptr<MockPasswordStoreInterface> store_;
   scoped_refptr<MockPasswordStoreInterface> account_store_;
@@ -377,6 +372,6 @@ TEST_P(HttpAuthManagerTest, FillingDisabled) {
   httpauth_manager()->DetachObserver(&observer);
 }
 
-INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(HttpAuthManagerTest);
+INSTANTIATE_TEST_SUITE_P(, HttpAuthManagerTest, ::testing::Bool());
 
 }  // namespace password_manager

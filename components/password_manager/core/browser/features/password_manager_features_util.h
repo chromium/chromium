@@ -78,10 +78,9 @@ bool IsUserEligibleForAccountStorage(const PrefService* pref_service,
 // This doesn't necessarily mean the store is being used, e.g. this predicate
 // can return true for a signed-out user. For whether the store can be used,
 // see IsOptedInForAccountStorage() instead.
-// TODO(crbug.com/1509058): Replace kEnablePasswordsAccountStorage checks with
-// this predicate and remove the flag. Rename IsOptedInForAccountStorage() to
-// CanUseAccountStore() - there's no opt-in on mobile platforms anyway.
-// Rename CanAccountStorageBeEnabled() and IsUserEligibleForAccountStorage().
+// TODO(crbug.com/1509058): Rename IsOptedInForAccountStorage() to
+// CanUseAccountStore() - there's no opt-in on mobile platforms anyway. Rename
+// CanAccountStorageBeEnabled() and IsUserEligibleForAccountStorage().
 bool CanCreateAccountStore(const PrefService* pref_service);
 
 // Whether the current signed-in user (aka unconsented primary account) has

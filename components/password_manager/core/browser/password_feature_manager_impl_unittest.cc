@@ -52,9 +52,12 @@ class PasswordFeatureManagerImplTest : public ::testing::Test {
 };
 
 TEST_F(PasswordFeatureManagerImplTest, GenerationEnabledIfUserIsOptedIn) {
-  base::test::ScopedFeatureList features;
-  features.InitAndEnableFeature(
-      password_manager::features::kEnablePasswordsAccountStorage);
+#if BUILDFLAG(IS_ANDROID)
+  pref_service_.registry()->RegisterIntegerPref(
+      password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores,
+      static_cast<int>(
+          password_manager::prefs::UseUpmLocalAndSeparateStoresState::kOn));
+#endif  // BUILDFLAG(IS_ANDROID)
 
   sync_service_.SetAccountInfo(account_);
   sync_service_.SetHasSyncConsent(false);
@@ -74,9 +77,12 @@ TEST_F(PasswordFeatureManagerImplTest, GenerationEnabledIfUserIsOptedIn) {
 
 TEST_F(PasswordFeatureManagerImplTest,
        GenerationEnabledIfUserEligibleForAccountStorageOptIn) {
-  base::test::ScopedFeatureList features;
-  features.InitAndEnableFeature(
-      password_manager::features::kEnablePasswordsAccountStorage);
+#if BUILDFLAG(IS_ANDROID)
+  pref_service_.registry()->RegisterIntegerPref(
+      password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores,
+      static_cast<int>(
+          password_manager::prefs::UseUpmLocalAndSeparateStoresState::kOn));
+#endif  // BUILDFLAG(IS_ANDROID)
 
   sync_service_.SetAccountInfo(account_);
   sync_service_.SetHasSyncConsent(false);
@@ -106,13 +112,13 @@ TEST_F(PasswordFeatureManagerImplTest,
   EXPECT_TRUE(password_feature_manager_.IsGenerationEnabled());
 }
 
+#if BUILDFLAG(IS_ANDROID)
 TEST_F(PasswordFeatureManagerImplTest,
-       GenerationDisabledIfUserNotEligibleForAccountStorageOptIn) {
-  // Setup one example of user not eligible for opt in: signed in but with
-  // feature flag disabled.
-  base::test::ScopedFeatureList features;
-  features.InitAndDisableFeature(
-      password_manager::features::kEnablePasswordsAccountStorage);
+       GenerationDisabledIfCannotCreateAccountStore) {
+  pref_service_.registry()->RegisterIntegerPref(
+      password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores,
+      static_cast<int>(
+          password_manager::prefs::UseUpmLocalAndSeparateStoresState::kOff));
 
   sync_service_.SetAccountInfo(account_);
   sync_service_.SetHasSyncConsent(false);
@@ -124,11 +130,10 @@ TEST_F(PasswordFeatureManagerImplTest,
 
   ASSERT_EQ(password_manager::sync_util::GetPasswordSyncState(&sync_service_),
             password_manager::SyncState::kNotSyncing);
-  // The user must not be eligible for account storage opt in now.
-  ASSERT_FALSE(password_feature_manager_.ShouldShowAccountStorageOptIn());
 
   EXPECT_FALSE(password_feature_manager_.IsGenerationEnabled());
 }
+#endif  // BUILDFLAG(IS_ANDROID)
 
 TEST_F(PasswordFeatureManagerImplTest, GenerationDisabledIfSyncPaused) {
   sync_service_.SetAccountInfo(account_);
@@ -146,11 +151,8 @@ TEST_F(PasswordFeatureManagerImplTest, GenerationDisabledIfSyncPaused) {
 
 #if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
 TEST_F(PasswordFeatureManagerImplTest, ShouldChangeDefaultPasswordStore) {
-  base::test::ScopedFeatureList features;
-  features.InitWithFeatures(
-      {password_manager::features::kEnablePasswordsAccountStorage,
-       password_manager::features::kButterOnDesktopFollowup},
-      {});
+  base::test::ScopedFeatureList features(
+      password_manager::features::kButterOnDesktopFollowup);
 
   sync_service_.SetLocalSyncEnabled(false);
   sync_service_.SetHasSyncConsent(false);
@@ -165,11 +167,8 @@ TEST_F(PasswordFeatureManagerImplTest, ShouldChangeDefaultPasswordStore) {
 }
 
 TEST_F(PasswordFeatureManagerImplTest, ShouldNotChangeDefaultPasswordStore) {
-  base::test::ScopedFeatureList features;
-  features.InitWithFeatures(
-      {password_manager::features::kEnablePasswordsAccountStorage,
-       password_manager::features::kButterOnDesktopFollowup},
-      {});
+  base::test::ScopedFeatureList features(
+      password_manager::features::kButterOnDesktopFollowup);
 
   sync_service_.SetLocalSyncEnabled(false);
   sync_service_.SetHasSyncConsent(false);
