@@ -1477,7 +1477,7 @@ TEST_F(BrowserAutofillManagerTest,
   GetAutofillSuggestions(
       form, first_field,
       AutofillSuggestionTriggerSource::kManualFallbackAddress);
-  external_delegate()->CheckSuggestionsNotReturned(first_field.global_id());
+  external_delegate()->CheckNoSuggestions(first_field.global_id());
   // Expect 3 credit card suggestions + footer because the fixture created 3
   // credit cards during setup (see `CreateTestCreditCards()`).
   GetAutofillSuggestions(
@@ -1883,6 +1883,23 @@ TEST_F(BrowserAutofillManagerTest, GetProfileSuggestions_UnknownFields) {
 
   GetAutofillSuggestions(form, form.fields.back());
   EXPECT_FALSE(external_delegate()->on_suggestions_returned_seen());
+}
+
+// Test that single field suggestions are not queries when autofill is triggered
+// manually by the user.
+TEST_F(BrowserAutofillManagerTest,
+       GetProfileSuggestions_ManualFallback_NoData) {
+  personal_data().ClearProfiles();
+  FormData form = CreateTestAddressFormData();
+  FormsSeen({form});
+
+  GetAutofillSuggestions(
+      form, form.fields.back(),
+      AutofillSuggestionTriggerSource::kManualFallbackAddress);
+
+  EXPECT_CALL(single_field_form_fill_router(), OnGetSingleFieldSuggestions)
+      .Times(0);
+  external_delegate()->CheckNoSuggestions(form.fields.back().global_id());
 }
 
 // Test parameter data for asserting that the expected suggestion types are

@@ -1080,7 +1080,12 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
     }
   }
 
-  if (suggestions.empty() &&
+  // Check if other suggestion sources should be queried. Manual fallbacks can't
+  // trigger different suggestion types.
+  const bool should_offer_other_suggestions =
+      suggestions.empty() && !IsAutofillManuallyTriggered(trigger_source);
+
+  if (should_offer_other_suggestions &&
       (field.form_control_type == FormControlType::kTextArea ||
        field.form_control_type == FormControlType::kContentEditable)) {
     if (std::optional<Suggestion> maybe_compose_suggestion =
@@ -1090,8 +1095,7 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
   }
 
   auto ShouldOfferSingleFieldFormFill = [&] {
-    // Do not offer single field form fill if there are already suggestions.
-    if (!suggestions.empty()) {
+    if (!should_offer_other_suggestions) {
       return false;
     }
 
