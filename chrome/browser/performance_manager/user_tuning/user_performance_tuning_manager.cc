@@ -20,6 +20,7 @@
 #include "chrome/browser/performance_manager/policies/page_discarding_helper.h"
 #include "chrome/browser/performance_manager/user_tuning/user_performance_tuning_notifier.h"
 #include "chrome/browser/resource_coordinator/lifecycle_unit_state.mojom-shared.h"
+#include "chrome/browser/ui/performance_controls/tab_resource_usage_tab_helper.h"
 #include "components/performance_manager/public/features.h"
 #include "components/performance_manager/public/performance_manager.h"
 #include "components/performance_manager/public/user_tuning/prefs.h"
@@ -88,25 +89,6 @@ class MemorySaverModeDelegateImpl
 };
 
 }  // namespace
-
-WEB_CONTENTS_USER_DATA_KEY_IMPL(
-    UserPerformanceTuningManager::ResourceUsageTabHelper);
-
-UserPerformanceTuningManager::ResourceUsageTabHelper::
-    ~ResourceUsageTabHelper() = default;
-
-void UserPerformanceTuningManager::ResourceUsageTabHelper::PrimaryPageChanged(
-    content::Page&) {
-  // Reset memory usage count when we navigate to another site since the
-  // memory usage reported will be outdated.
-  resource_usage_->set_memory_usage_in_bytes(0);
-}
-
-UserPerformanceTuningManager::ResourceUsageTabHelper::ResourceUsageTabHelper(
-    content::WebContents* contents)
-    : content::WebContentsObserver(contents),
-      content::WebContentsUserData<ResourceUsageTabHelper>(*contents),
-      resource_usage_(base::MakeRefCounted<TabResourceUsage>()) {}
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(
     UserPerformanceTuningManager::PreDiscardResourceUsage);
@@ -210,8 +192,8 @@ void UserPerformanceTuningManager::UserPerformanceTuningReceiverImpl::
                    web_contents_memory_usage) {
                 content::WebContents* web_contents = contents_proxy.Get();
                 if (web_contents) {
-                  ResourceUsageTabHelper* helper =
-                      ResourceUsageTabHelper::FromWebContents(web_contents);
+                  TabResourceUsageTabHelper* const helper =
+                      TabResourceUsageTabHelper::FromWebContents(web_contents);
                   if (helper) {
                     helper->SetMemoryUsageInBytes(pmf * 1024);
                   }

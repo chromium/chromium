@@ -12,12 +12,12 @@
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/interstitials/security_interstitial_page_test_utils.h"
-#include "chrome/browser/performance_manager/public/user_tuning/user_performance_tuning_manager.h"
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/performance_controls/memory_saver_utils.h"
+#include "chrome/browser/ui/performance_controls/tab_resource_usage_tab_helper.h"
 #include "chrome/browser/ui/performance_controls/test_support/memory_saver_browser_test_mixin.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -599,10 +599,9 @@ IN_PROC_BROWSER_TEST_P(TabHoverCardFadeFooterInteractiveUiTest,
   uint64_t bytes_used = 1000;
   content::WebContents* const web_contents =
       browser()->tab_strip_model()->GetWebContentsAt(1);
-  auto* const resource_usage_tab_helper =
-      performance_manager::user_tuning::UserPerformanceTuningManager::
-          ResourceUsageTabHelper::FromWebContents(web_contents);
-  resource_usage_tab_helper->SetMemoryUsageInBytes(bytes_used);
+  auto* const tab_resource_usage_tab_helper =
+      TabResourceUsageTabHelper::FromWebContents(web_contents);
+  tab_resource_usage_tab_helper->SetMemoryUsageInBytes(bytes_used);
 
   // Show memory usage without savings
   auto* const hover_card = SimulateHoverTab(browser(), 1);
@@ -619,7 +618,7 @@ IN_PROC_BROWSER_TEST_P(TabHoverCardFadeFooterInteractiveUiTest,
       performance_manager::features::kMemoryUsageInHovercardsHighThresholdBytes
           .Get() +
       100;
-  resource_usage_tab_helper->SetMemoryUsageInBytes(bytes_used);
+  tab_resource_usage_tab_helper->SetMemoryUsageInBytes(bytes_used);
   GetTabStrip(browser())
       ->hover_card_controller_for_testing()
       ->OnMemoryMetricsRefreshed();
