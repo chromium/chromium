@@ -55,11 +55,6 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Managed"/>
 </enum>
 
-<enum name="BooleanOriginHeaderSameAsRequestOrigin">
-  <int value="0" label="Headers differ"/>
-  <int value="1" label="Headers match"/>
-</enum>
-
 <enum name="CaptivePortalNetworkState">
   <int value="0" label="UNKNOWN"/>
   <int value="1" label="ONLINE"/>

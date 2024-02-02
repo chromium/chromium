@@ -4651,17 +4651,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram
-    name="NetworkService.URLLoaderFactory.OriginHeaderSameAsRequestOrigin"
-    enum="BooleanOriginHeaderSameAsRequestOrigin" expires_after="2019-06-30">
-  <owner>jam@chromium.org</owner>
-  <owner>mmenke@chromium.org</owner>
-  <summary>
-    Whether the Origin header is the same as the request origin in the
-    URLLoaderFactory when it creates a URLLoader.
-  </summary>
-</histogram>
-
 <histogram name="NetworkService.URLLoaderFactory.UpdateLoadInfo" units="ms"
     expires_after="2024-12-30">
   <owner>jam@chromium.org</owner>
