@@ -17,7 +17,7 @@ namespace signin {
 namespace {
 // Array of features exposed through the Java SigninFeatures API.
 const base::Feature* const kFeaturesExposedToJava[] = {
-    &switches::kSeedAccountsRevamp,
+    &switches::kSeedAccountsRevamp, &switches::kEnterprisePolicyOnSignin,
     &switches::kRestoreSignedInAccountAndSettingsFromBackup,
     &switches::kMinorModeRestrictionsForHistorySyncOptIn};
 

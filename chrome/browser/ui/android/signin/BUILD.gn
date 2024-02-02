@@ -147,6 +147,7 @@ robolectric_library("junit") {
   sources = [
     "junit/src/org/chromium/chrome/browser/ui/signin/ConfirmSyncDataStateMachineTest.java",
     "junit/src/org/chromium/chrome/browser/ui/signin/FullScreenSyncPromoTest.java",
+    "junit/src/org/chromium/chrome/browser/ui/signin/SigninUtilsTest.java",
     "junit/src/org/chromium/chrome/browser/ui/signin/SyncPromoControllerTest.java",
     "junit/src/org/chromium/chrome/browser/ui/signin/account_picker/AccountPickerMediatorTest.java",
     "junit/src/org/chromium/chrome/browser/ui/signin/account_picker/WebSigninAccountPickerDelegateTest.java",

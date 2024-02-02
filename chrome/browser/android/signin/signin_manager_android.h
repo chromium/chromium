@@ -78,6 +78,11 @@ class SigninManagerAndroid : public KeyedService {
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& j_callback);
 
+  void SetUserAcceptedAccountManagement(JNIEnv* env,
+                                        jboolean acceptedAccountManagement);
+
+  bool GetUserAcceptedAccountManagement(JNIEnv* env);
+
  private:
   friend class SigninManagerAndroidTest;
   FRIEND_TEST_ALL_PREFIXES(SigninManagerAndroidTest,

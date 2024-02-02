@@ -41,6 +41,7 @@ import org.robolectric.annotation.LooperMode;
 import org.robolectric.shadows.ShadowApplication;
 import org.robolectric.shadows.ShadowLooper;
 
+import org.chromium.base.Callback;
 import org.chromium.base.Promise;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
@@ -57,6 +58,7 @@ import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountUtils;
+import org.chromium.components.signin.SigninFeatureMap;
 import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.base.AccountCapabilities;
 import org.chromium.components.signin.base.AccountInfo;
@@ -84,6 +86,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 /** Tests for {@link SigninManagerImpl}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @LooperMode(LooperMode.Mode.LEGACY)
+@DisableFeatures(SigninFeatures.ENTERPRISE_POLICY_ON_SIGNIN)
 public class SigninManagerImplTest {
     private static final long NATIVE_SIGNIN_MANAGER = 10001L;
     private static final long NATIVE_IDENTITY_MANAGER = 10002L;
@@ -228,6 +231,9 @@ public class SigninManagerImplTest {
     @Test
     @DisableFeatures(SigninFeatures.SEED_ACCOUNTS_REVAMP)
     public void signinAndTurnSyncOn() {
+        if (SigninFeatureMap.isEnabled(SigninFeatures.ENTERPRISE_POLICY_ON_SIGNIN)) {
+            when(mNativeMock.getUserAcceptedAccountManagement(anyLong())).thenReturn(true);
+        }
         when(mIdentityMutator.setPrimaryAccount(any(), anyInt(), anyInt(), any()))
                 .thenReturn(PrimaryAccountError.NO_ERROR);
         when(mSyncService.getSelectedTypes()).thenReturn(Set.of(UserSelectableType.BOOKMARKS));
@@ -280,6 +286,9 @@ public class SigninManagerImplTest {
     @Test
     @EnableFeatures(SigninFeatures.SEED_ACCOUNTS_REVAMP)
     public void signinAndTurnSyncOn_seedAccountsRevampEnabled() {
+        if (SigninFeatureMap.isEnabled(SigninFeatures.ENTERPRISE_POLICY_ON_SIGNIN)) {
+            when(mNativeMock.getUserAcceptedAccountManagement(anyLong())).thenReturn(true);
+        }
         mFakeAccountManagerFacade.addAccount(ACCOUNT_FROM_INFO);
         when(mIdentityMutator.setPrimaryAccount(any(), anyInt(), anyInt(), any()))
                 .thenReturn(PrimaryAccountError.NO_ERROR);
@@ -399,6 +408,61 @@ public class SigninManagerImplTest {
         verify(mIdentityMutator)
                 .setPrimaryAccount(
                         eq(primaryAccountId),
+                        eq(ConsentLevel.SIGNIN),
+                        eq(SigninAccessPoint.START_PAGE),
+                        any());
+
+        verify(mSyncService, never()).setSyncRequested();
+        // Signin should be complete and callback should be invoked.
+        verify(callback).onSignInComplete();
+        verify(callback, never()).onSignInAborted();
+
+        // The primary account is now present and consented to sign in.
+        when(mIdentityManagerNativeMock.getPrimaryAccountInfo(
+                        eq(NATIVE_IDENTITY_MANAGER), eq(ConsentLevel.SIGNIN)))
+                .thenReturn(ACCOUNT_INFO);
+        assertFalse(mSigninManager.isSigninAllowed());
+        assertTrue(mSigninManager.isSyncOptInAllowed());
+    }
+
+    @Test
+    @EnableFeatures({
+        SigninFeatures.ENTERPRISE_POLICY_ON_SIGNIN,
+        SigninFeatures.SEED_ACCOUNTS_REVAMP
+    })
+    public void signinNoTurnSyncOn_enterprisePoliciesOnSignin() {
+        when(mIdentityMutator.setPrimaryAccount(any(), anyInt(), anyInt(), any()))
+                .thenReturn(PrimaryAccountError.NO_ERROR);
+
+        when(mNativeMock.getUserAcceptedAccountManagement(anyLong())).thenReturn(true);
+
+        doAnswer(
+                        (args) -> {
+                            ((Callback<Boolean>) args.getArgument(2)).onResult(true);
+                            return null;
+                        })
+                .when(mNativeMock)
+                .isAccountManaged(anyLong(), any(), any());
+
+        doAnswer(
+                        (args) -> {
+                            ((Runnable) args.getArgument(2)).run();
+                            return null;
+                        })
+                .when(mNativeMock)
+                .fetchAndApplyCloudPolicy(anyLong(), any(), any());
+
+        assertTrue(mSigninManager.isSigninAllowed());
+        assertTrue(mSigninManager.isSyncOptInAllowed());
+
+        SigninManager.SignInCallback callback = mock(SigninManager.SignInCallback.class);
+        mSigninManager.signin(ACCOUNT_INFO, SigninAccessPoint.START_PAGE, callback);
+
+        // Signin without turning on sync should still apply policies.
+        verify(mNativeMock).fetchAndApplyCloudPolicy(anyLong(), any(), any());
+        verify(mIdentityMutator)
+                .setPrimaryAccount(
+                        eq(ACCOUNT_INFO.getId()),
                         eq(ConsentLevel.SIGNIN),
                         eq(SigninAccessPoint.START_PAGE),
                         any());
@@ -889,6 +953,9 @@ public class SigninManagerImplTest {
     @Test
     @DisableFeatures(SigninFeatures.SEED_ACCOUNTS_REVAMP)
     public void callbackNotifiedOnSignin() {
+        if (SigninFeatureMap.isEnabled(SigninFeatures.ENTERPRISE_POLICY_ON_SIGNIN)) {
+            when(mNativeMock.getUserAcceptedAccountManagement(anyLong())).thenReturn(true);
+        }
         final Answer<Integer> setPrimaryAccountAnswer =
                 invocation -> {
                     // From now on getPrimaryAccountInfo should return account.
@@ -924,6 +991,9 @@ public class SigninManagerImplTest {
     @Test
     @EnableFeatures(SigninFeatures.SEED_ACCOUNTS_REVAMP)
     public void callbackNotifiedOnSignin_seedAccountsRevampEnabled() {
+        if (SigninFeatureMap.isEnabled(SigninFeatures.ENTERPRISE_POLICY_ON_SIGNIN)) {
+            when(mNativeMock.getUserAcceptedAccountManagement(anyLong())).thenReturn(true);
+        }
         mFakeAccountManagerFacade.addAccount(ACCOUNT_FROM_INFO);
         final Answer<Integer> setPrimaryAccountAnswer =
                 invocation -> {
@@ -978,6 +1048,9 @@ public class SigninManagerImplTest {
     @Test
     @DisableFeatures(SigninFeatures.SEED_ACCOUNTS_REVAMP)
     public void signInStateObserverCallOnSignIn() {
+        if (SigninFeatureMap.isEnabled(SigninFeatures.ENTERPRISE_POLICY_ON_SIGNIN)) {
+            when(mNativeMock.getUserAcceptedAccountManagement(anyLong())).thenReturn(true);
+        }
         final Answer<Integer> setPrimaryAccountAnswer =
                 invocation -> {
                     // From now on getPrimaryAccountInfo should return account.
@@ -1016,6 +1089,9 @@ public class SigninManagerImplTest {
     @Test
     @EnableFeatures(SigninFeatures.SEED_ACCOUNTS_REVAMP)
     public void signInStateObserverCallOnSignIn_seedAccountsRevampEnabled() {
+        if (SigninFeatureMap.isEnabled(SigninFeatures.ENTERPRISE_POLICY_ON_SIGNIN)) {
+            when(mNativeMock.getUserAcceptedAccountManagement(anyLong())).thenReturn(true);
+        }
         mFakeAccountManagerFacade.addAccount(ACCOUNT_FROM_INFO);
         List<CoreAccountInfo> coreAccountInfos =
                 mFakeAccountManagerFacade.getCoreAccountInfos().getResult();

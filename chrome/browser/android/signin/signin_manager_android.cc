@@ -24,6 +24,7 @@
 #include "base/android/callback_android.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_constants.h"
+#include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/policy/cloud/user_policy_signin_service_factory.h"
 #include "chrome/browser/policy/cloud/user_policy_signin_service_mobile.h"
 #include "chrome/browser/profiles/profile.h"
@@ -328,4 +329,15 @@ JNI_SigninManagerImpl_ExtractDomainName(JNIEnv* env,
   std::string email = base::android::ConvertJavaStringToUTF8(env, j_email);
   std::string domain = gaia::ExtractDomainName(email);
   return base::android::ConvertUTF8ToJavaString(env, domain);
+}
+
+void SigninManagerAndroid::SetUserAcceptedAccountManagement(
+    JNIEnv* env,
+    jboolean acceptedAccountManagement) {
+  chrome::enterprise_util::SetUserAcceptedAccountManagement(
+      profile_, acceptedAccountManagement);
+}
+
+bool SigninManagerAndroid::GetUserAcceptedAccountManagement(JNIEnv* env) {
+  return chrome::enterprise_util::UserAcceptedAccountManagement(profile_);
 }

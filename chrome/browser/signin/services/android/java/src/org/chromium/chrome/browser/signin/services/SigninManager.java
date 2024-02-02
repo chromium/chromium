@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.signin.services;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.MainThread;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
@@ -205,16 +206,27 @@ public interface SigninManager {
     String getManagementDomain();
 
     /**
-     * Verifies if the account is managed. Callback may be called either
-     * synchronously or asynchronously depending on the availability of the
-     * result.
-     * TODO(crbug.com/1002408) Update API to use CoreAccountInfo instead of email
+     * Verifies if the account is managed. Callback may be called either synchronously or
+     * asynchronously depending on the availability of the result. TODO(crbug.com/1002408) Update
+     * API to use CoreAccountInfo instead of email
      *
      * @param email An email of the account.
      * @param callback The callback that will receive true if the account is managed, false
-     *                 otherwise.
+     *     otherwise.
+     * @deprecated Use the {@link CoreAccountInfo} version below.
      */
+    @Deprecated
     void isAccountManaged(String email, Callback<Boolean> callback);
+
+    /**
+     * Verifies if the account is managed. Callback may be called either synchronously or
+     * asynchronously depending on the availability of the result.
+     *
+     * @param accountInfo A CoreAccountInfo representing the account.
+     * @param callback The callback that will receive true if the account is managed, false
+     *     otherwise.
+     */
+    void isAccountManaged(@NonNull CoreAccountInfo accountInfo, Callback<Boolean> callback);
 
     /**
      * Reloads all the accounts from the system within the {@link IdentityManager}.
@@ -232,4 +244,12 @@ public interface SigninManager {
      * @param dataWipeOption What kind of data to delete.
      */
     void wipeSyncUserData(Runnable wipeDataCallback, @DataWipeOption int dataWipeOption);
+
+    /** Records that the user has accepted signing into a Managed Account. */
+    void setUserAcceptedAccountManagement(boolean acceptedAccountManagement);
+
+    /**
+     * @return Whether the user has accepted signing into a Managed Account.
+     */
+    boolean getUserAcceptedAccountManagement();
 }

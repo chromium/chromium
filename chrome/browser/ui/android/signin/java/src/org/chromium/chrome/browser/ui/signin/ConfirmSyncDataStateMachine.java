@@ -13,6 +13,9 @@ import androidx.annotation.Nullable;
 import org.chromium.base.ThreadUtils;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
+import org.chromium.chrome.browser.signin.services.SigninManager;
+import org.chromium.components.signin.SigninFeatureMap;
+import org.chromium.components.signin.SigninFeatures;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -200,8 +203,16 @@ public class ConfirmSyncDataStateMachine
         assert mNewAccountManaged != null;
         assert mState == State.AFTER_NEW_ACCOUNT_DIALOG;
 
-        if (mNewAccountManaged) {
-            // Show 'logging into managed account' dialog.
+        SigninManager signinManager =
+                IdentityServicesProvider.get()
+                        .getSigninManager(Profile.getLastUsedRegularProfile());
+        // If ENTERPRISE_POLICY_ON_SIGNIN is enabled, signin will already show the account
+        // management dialog before the confirm sync screen is shown, so we shouldn't show it
+        // again.
+        if (mNewAccountManaged
+                && (!SigninFeatureMap.isEnabled(SigninFeatures.ENTERPRISE_POLICY_ON_SIGNIN)
+                        || !signinManager.getUserAcceptedAccountManagement())) {
+            // Show 'logging into managed account' dialog
             // This will call back into onConfirm on success.
             mDelegate.showSignInToManagedAccountDialog(
                     this,

@@ -16,6 +16,11 @@ namespace switches {
 BASE_FEATURE(kSeedAccountsRevamp,
              "SeedAccountsRevamp",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Feature to apply enterprise policies on signin regardless of sync status.
+BASE_FEATURE(kEnterprisePolicyOnSignin,
+             "EnterprisePolicyOnSignin",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 // Clears the token service before using it. This allows simulating the
