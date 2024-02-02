@@ -104,6 +104,8 @@
 #import "ios/chrome/browser/ui/ntp/new_tab_page_metrics_delegate.h"
 #import "ios/chrome/browser/ui/push_notification/notifications_confirmation_presenter.h"
 #import "ios/chrome/browser/ui/push_notification/notifications_opt_in_alert_coordinator.h"
+#import "ios/chrome/browser/ui/push_notification/notifications_opt_in_coordinator.h"
+#import "ios/chrome/browser/ui/push_notification/notifications_opt_in_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/start_surface/start_surface_features.h"
 #import "ios/chrome/browser/ui/start_surface/start_surface_recent_tab_browser_agent.h"
 #import "ios/chrome/browser/ui/start_surface/start_surface_util.h"
@@ -121,6 +123,7 @@
     MagicStackParcelListHalfSheetTableViewControllerDelegate,
     NotificationsConfirmationPresenter,
     NotificationsOptInAlertCoordinatorDelegate,
+    NotificationsOptInCoordinatorDelegate,
     SetUpListContentNotificationPromoCoordinatorDelegate,
     SetUpListDefaultBrowserPromoCoordinatorDelegate,
     SetUpListViewDelegate>
@@ -153,6 +156,10 @@
   // The coordinator that displays the Content Notification Promo for the Set Up
   // List.
   SetUpListContentNotificationPromoCoordinator* _contentNotificationCoordinator;
+
+  // The coordinator that displays the opt-in notification settings view for the
+  // Set Up List.
+  NotificationsOptInCoordinator* _notificationsOptInCoordinator;
 
   // The coordinator used to present an action sheet for the Set Up List menu.
   ActionSheetCoordinator* _actionSheetCoordinator;
@@ -623,9 +630,11 @@
         [weakSelf showCredentialProviderPromo];
         break;
       case SetUpListItemType::kNotifications:
-        // TODO(crbug.com/1519599): start the NotificationsOptInCoordinator to
-        // display the view.
-        [weakSelf showContentNotificationBottomSheet];
+        if (IsIOSTipsNotificationsEnabled()) {
+          [weakSelf showNotificationsOptInView];
+        } else {
+          [weakSelf showContentNotificationBottomSheet];
+        }
         break;
       case SetUpListItemType::kFollow:
       case SetUpListItemType::kAllSet:
@@ -779,11 +788,29 @@
   [_contentNotificationCoordinator start];
 }
 
+- (void)showNotificationsOptInView {
+  [_notificationsOptInCoordinator stop];
+  _notificationsOptInCoordinator = [[NotificationsOptInCoordinator alloc]
+      initWithBaseViewController:[self viewController]
+                         browser:self.browser];
+  _notificationsOptInCoordinator.delegate = self;
+  [_notificationsOptInCoordinator start];
+}
+
 #pragma mark - NotificationsOptInAlertCoordinatorDelegate
 
 - (void)notificationsOptInAlertResult:(NotificationsOptInAlertResult)result {
   [_notificationsOptInAlertCoordinator stop];
   _notificationsOptInAlertCoordinator = nil;
+}
+
+#pragma mark - NotificationsOptInCoordinatorDelegate
+
+- (void)notificationsOptInScreenDidFinish:
+    (NotificationsOptInCoordinator*)coordinator {
+  CHECK_EQ(coordinator, _notificationsOptInCoordinator);
+  [_notificationsOptInCoordinator stop];
+  _notificationsOptInCoordinator = nil;
 }
 
 #pragma mark - SetUpListDefaultBrowserPromoCoordinatorDelegate

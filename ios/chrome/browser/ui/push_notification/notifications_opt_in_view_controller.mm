@@ -1,0 +1,278 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#import "ios/chrome/browser/ui/push_notification/notifications_opt_in_view_controller.h"
+
+#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_cell.h"
+#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_item.h"
+#import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/grit/ios_branded_strings.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ui/base/l10n/l10n_util_mac.h"
+
+namespace {
+enum SectionIdentifier {
+  kNotificationOptions,
+};
+enum ItemIdentifier {
+  kContent,
+  kTips,
+  kPriceTracking,
+  kMaxValue = kPriceTracking,
+};
+struct CellConfig {
+  int title_id;
+  int subtitle_id;
+  BOOL on;
+  BOOL show_separator;
+};
+// Radius size of the table view.
+CGFloat const kTableViewCornerRadius = 10;
+// Name of the banner image above the title.
+NSString* const kBanner = @"notifications_opt_in_banner";
+// Table view separator inset.
+CGFloat const kTableViewSeparatorInset = 16.0;
+// Space above the title.
+CGFloat const kSpaceAboveTitle = 20.0;
+}  // namespace
+
+@interface NotificationsOptInViewController () <UITableViewDelegate>
+
+@end
+
+@implementation NotificationsOptInViewController {
+  UITableView* _tableView;
+  NSLayoutConstraint* _tableViewHeightConstraint;
+  UITableViewDiffableDataSource<NSNumber*, NSNumber*>* _dataSource;
+  UISwitch* _contentToggle;
+  UISwitch* _tipsToggle;
+  UISwitch* _priceTrackingToggle;
+  BOOL _contentNotificationsEnabled;
+  BOOL _tipsNotificationsEnabled;
+  BOOL _priceTrackingNotificationsEnabled;
+}
+
+- (void)viewDidLoad {
+  self.titleText = l10n_util::GetNSString(IDS_IOS_NOTIFICATIONS_OPT_IN_TITLE);
+  self.subtitleText =
+      l10n_util::GetNSString(IDS_IOS_NOTIFICATIONS_OPT_IN_SUBTITLE);
+  self.primaryActionString =
+      l10n_util::GetNSString(IDS_IOS_NOTIFICATIONS_OPT_IN_ENABLE_BUTTON);
+  self.secondaryActionString =
+      l10n_util::GetNSString(IDS_IOS_NOTIFICATIONS_ALERT_CANCEL);
+  self.titleTopMarginWhenNoHeaderImage = kSpaceAboveTitle;
+  self.bannerName = kBanner;
+  self.bannerSize = BannerImageSizeType::kShort;
+  self.shouldBannerFillTopSpace = YES;
+  [self setPrimaryButtonConfiguration];
+  [self updatePrimaryButtonState];
+  _tableView = [self createTableView];
+  [self.specificContentView addSubview:_tableView];
+  [NSLayoutConstraint activateConstraints:@[
+    [_tableView.topAnchor
+        constraintEqualToAnchor:self.specificContentView.topAnchor],
+    [_tableView.centerXAnchor
+        constraintEqualToAnchor:self.specificContentView.centerXAnchor],
+    [_tableView.widthAnchor
+        constraintEqualToAnchor:self.specificContentView.widthAnchor],
+    [_tableView.bottomAnchor
+        constraintLessThanOrEqualToAnchor:self.specificContentView
+                                              .bottomAnchor],
+  ]];
+  [self loadModel];
+  [super viewDidLoad];
+
+  self.view.backgroundColor = [UIColor colorNamed:kSecondaryBackgroundColor];
+}
+
+- (void)viewWillLayoutSubviews {
+  [super viewWillLayoutSubviews];
+  [self updateTableViewHeightConstraint];
+}
+
+#pragma mark - PromoStyleViewController
+
+- (UIFontTextStyle)titleLabelFontTextStyle {
+  return UIFontTextStyleTitle2;
+}
+
+- (UILabel*)createSubtitleLabel {
+  UILabel* subtitleLabel = [[UILabel alloc] init];
+  subtitleLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
+  subtitleLabel.numberOfLines = 0;
+  subtitleLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
+  subtitleLabel.text = self.subtitleText;
+  subtitleLabel.textAlignment = NSTextAlignmentCenter;
+  subtitleLabel.translatesAutoresizingMaskIntoConstraints = NO;
+  subtitleLabel.adjustsFontForContentSizeCategory = YES;
+  return subtitleLabel;
+}
+
+#pragma mark - LegacyChromeTableViewController
+
+- (void)loadModel {
+  __weak __typeof(self) weakSelf = self;
+  _dataSource = [[UITableViewDiffableDataSource alloc]
+      initWithTableView:_tableView
+           cellProvider:^UITableViewCell*(UITableView* tableView,
+                                          NSIndexPath* indexPath,
+                                          NSNumber* itemIdentifier) {
+             return
+                 [weakSelf cellForTableView:tableView
+                                  indexPath:indexPath
+                             itemIdentifier:static_cast<ItemIdentifier>(
+                                                itemIdentifier.integerValue)];
+           }];
+
+  RegisterTableViewCell<TableViewSwitchCell>(_tableView);
+
+  NSDiffableDataSourceSnapshot* snapshot =
+      [[NSDiffableDataSourceSnapshot alloc] init];
+  [snapshot appendSectionsWithIdentifiers:@[
+    @(SectionIdentifier::kNotificationOptions)
+  ]];
+  [snapshot appendItemsWithIdentifiers:@[
+    @(ItemIdentifier::kContent), @(ItemIdentifier::kTips),
+    @(ItemIdentifier::kPriceTracking)
+  ]];
+  [_dataSource applySnapshot:snapshot animatingDifferences:NO];
+}
+
+#pragma mark - UITableViewDelegate
+
+- (void)tableView:(UITableView*)tableView
+      willDisplayCell:(UITableViewCell*)cell
+    forRowAtIndexPath:(NSIndexPath*)indexPath {
+  cell.backgroundColor = [UIColor colorNamed:kPrimaryBackgroundColor];
+}
+
+#pragma mark - Private
+
+// Creates the table view.
+- (UITableView*)createTableView {
+  UITableView* tableView =
+      [[UITableView alloc] initWithFrame:CGRectZero
+                                   style:UITableViewStylePlain];
+  tableView.layer.cornerRadius = kTableViewCornerRadius;
+  tableView.estimatedRowHeight = UITableViewAutomaticDimension;
+  tableView.scrollEnabled = NO;
+  tableView.showsVerticalScrollIndicator = NO;
+  tableView.delegate = self;
+  tableView.userInteractionEnabled = YES;
+  tableView.translatesAutoresizingMaskIntoConstraints = NO;
+  tableView.separatorInset = UIEdgeInsetsZero;
+  _tableViewHeightConstraint =
+      [tableView.heightAnchor constraintEqualToConstant:0];
+  _tableViewHeightConstraint.active = YES;
+
+  return tableView;
+}
+
+// Returns the CellConfig for the given itemIdentifier.
+- (CellConfig)configForItemIdentifier:(ItemIdentifier)itemIdentifier {
+  switch (itemIdentifier) {
+    case kContent:
+      return {IDS_IOS_CONTENT_NOTIFICATIONS_CONTENT_SETTINGS_TOGGLE_TITLE,
+              IDS_IOS_NOTIFICATIONS_OPT_IN_CONTENT_TOGGLE_MESSSAGE,
+              _contentNotificationsEnabled, YES};
+    case kTips:
+      return {IDS_IOS_SET_UP_LIST_TIPS_TITLE,
+              IDS_IOS_NOTIFICATIONS_OPT_IN_TIPS_SETTINGS_TOGGLE_MESSSAGE,
+              _tipsNotificationsEnabled, YES};
+    case kPriceTracking:
+      return {IDS_IOS_NOTIFICATIONS_OPT_IN_PRICE_TRACKING_TOGGLE_TITLE,
+              IDS_IOS_NOTIFICATIONS_OPT_IN_PRICE_TRACKING_TOGGLE_MESSAGE,
+              _priceTrackingNotificationsEnabled, YES};
+  }
+}
+
+// Configures the the table view cells.
+- (UITableViewCell*)cellForTableView:(UITableView*)tableView
+                           indexPath:(NSIndexPath*)indexPath
+                      itemIdentifier:(ItemIdentifier)itemIdentifier {
+  TableViewSwitchCell* cell =
+      DequeueTableViewCell<TableViewSwitchCell>(tableView);
+
+  CellConfig config = [self configForItemIdentifier:itemIdentifier];
+  [cell configureCellWithTitle:l10n_util::GetNSString(config.title_id)
+                      subtitle:l10n_util::GetNSString(config.subtitle_id)
+                 switchEnabled:YES
+                            on:config.on];
+
+  switch (itemIdentifier) {
+    case kContent:
+      _contentToggle = cell.switchView;
+      break;
+    case kTips:
+      _tipsToggle = cell.switchView;
+      break;
+    case kPriceTracking:
+      _priceTrackingToggle = cell.switchView;
+      break;
+  }
+  cell.switchView.tag = itemIdentifier;
+
+  // Make the separator invisible on the last row.
+  CGFloat separatorInset = itemIdentifier == ItemIdentifier::kMaxValue
+                               ? tableView.frame.size.width
+                               : kTableViewSeparatorInset;
+  cell.separatorInset = UIEdgeInsetsMake(0.f, separatorInset, 0.f, 0.f);
+
+  [cell.switchView addTarget:self
+                      action:@selector(switchToggled:)
+            forControlEvents:UIControlEventValueChanged];
+  cell.selectionStyle = UITableViewCellSelectionStyleNone;
+  cell.backgroundColor = [UIColor colorNamed:kSecondaryBackgroundColor];
+
+  return cell;
+}
+
+// Invoked when a a notification opt-in switch is toggled.
+- (void)switchToggled:(UISwitch*)sender {
+  // TODO(crbug.com/1519599): signal to
+  // NotificationsOptInViewControllerDelegate.
+  [self updatePrimaryButtonState];
+}
+
+// Updates the tableView's height constraint.
+- (void)updateTableViewHeightConstraint {
+  _tableViewHeightConstraint.constant = _tableView.contentSize.height;
+}
+
+// Sets the configurationUpdateHandler for the primaryActionButton to handle the
+// button's state changes. The button is blue when enabled, and grayed out when
+// disabled.
+- (void)setPrimaryButtonConfiguration {
+  self.updateHandler = ^(UIButton* incomingButton) {
+    UIButtonConfiguration* updatedConfig = incomingButton.configuration;
+    switch (incomingButton.state) {
+      case UIControlStateDisabled: {
+        updatedConfig.background.backgroundColor =
+            [UIColor colorNamed:kGrey300Color];
+        updatedConfig.baseForegroundColor = [UIColor colorNamed:kGrey800Color];
+        break;
+      }
+      case UIControlStateNormal: {
+        updatedConfig.background.backgroundColor =
+            [UIColor colorNamed:kBlueColor];
+        updatedConfig.baseForegroundColor =
+            [UIColor colorNamed:kBackgroundColor];
+        break;
+      }
+      default:
+        break;
+    }
+    incomingButton.configuration = updatedConfig;
+  };
+}
+
+// Enables the primary action button if any one of the toggles are on. Disables
+// otherwise.
+- (void)updatePrimaryButtonState {
+  self.primaryButtonEnabled =
+      _contentToggle.isOn || _tipsToggle.isOn || _priceTrackingToggle.isOn;
+}
+
+@end

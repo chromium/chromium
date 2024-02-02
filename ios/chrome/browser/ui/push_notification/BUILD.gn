@@ -28,6 +28,37 @@ source_set("opt_in_alert_coordinator") {
   ]
 }
 
+source_set("notifications_opt_in") {
+  sources = [
+    "notifications_opt_in_coordinator.h",
+    "notifications_opt_in_coordinator.mm",
+    "notifications_opt_in_coordinator_delegate.h",
+  ]
+  deps = [
+    ":notifications_opt_in_ui",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/common/ui/promo_style",
+    "//ui/base",
+  ]
+}
+
+source_set("notifications_opt_in_ui") {
+  sources = [
+    "notifications_opt_in_view_controller.h",
+    "notifications_opt_in_view_controller.mm",
+  ]
+  deps = [
+    "resources:notifications_opt_in_banner",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/ui/table_view:utils",
+    "//ios/chrome/browser/shared/ui/table_view/cells",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/promo_style",
+    "//ui/base",
+  ]
+}
+
 source_set("test_support") {
   testonly = true
   sources = [

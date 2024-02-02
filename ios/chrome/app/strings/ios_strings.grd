@@ -1,4 +1,3 @@
-<?xml version='1.0' encoding='UTF-8'?>
 <grit base_dir="." latest_public_release="0" current_release="1" output_all_resource_defines="false" source_lang_id="en" enc_check="möl">
   <!--
   This file contains definition of resources that will be translated for each
@@ -2443,6 +2442,21 @@ See your search engine’s instructions for deleting your search history, if app
       </message>
       <message name="IDS_IOS_NOTIFICATIONS_MANAGE_SETTINGS" desc="The label for a button that takes the user to the app's Notifications Settings page.">
         Manage
+      </message>
+      <message name="IDS_IOS_NOTIFICATIONS_OPT_IN_CONTENT_TOGGLE_MESSSAGE" desc="The label for the notification opt-in toggle message for content notifications.">
+        News and content based on your interests.
+      </message>
+      <message name="IDS_IOS_NOTIFICATIONS_OPT_IN_PRICE_TRACKING_TOGGLE_MESSAGE" desc="The label for the notification opt-in toggle message for price tracking notifications.">
+        Recieve price drop alerts for products you track.
+      </message>
+      <message name="IDS_IOS_NOTIFICATIONS_OPT_IN_PRICE_TRACKING_TOGGLE_TITLE" desc="The label for the notification opt-in toggle title for price tracking notifications.">
+        Price Tracking
+      </message>
+      <message name="IDS_IOS_NOTIFICATIONS_OPT_IN_TITLE" desc="The title of the screen that prompts to select which notifications to opt-in to.">
+        Choose the notifications you want to receive
+      </message>
+      <message name="IDS_IOS_NOTIFICATIONS_OPT_IN_ENABLE_BUTTON" desc="The text for the button in notifications opt-in screen that enables the selected notifications.">
+        Turn on Notifications
       </message>
       <message name="IDS_IOS_NTP_FEED_SIGNIN_COMPACT_PROMO_BODY" desc="The text on the body of the new tab page Feed Signin Promo (compact version), explaining that users will content based on users interests if they enable sync. [iOS only]">
         Sync to get content based on your interests.
