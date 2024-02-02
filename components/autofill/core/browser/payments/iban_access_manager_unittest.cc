@@ -94,6 +94,11 @@ class IbanAccessManagerTest : public testing::Test {
 // Verify that `FetchValue` returns the correct value for an existing local
 // IBAN.
 TEST_F(IbanAccessManagerTest, FetchValue_ExistingLocalIban) {
+#if BUILDFLAG(IS_ANDROID)
+  if (base::android::BuildInfo::GetInstance()->is_automotive()) {
+    GTEST_SKIP() << "This test should not run on automotive.";
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
   Suggestion suggestion(PopupItemId::kIbanEntry);
   Iban local_iban = test::GetLocalIban();
   local_iban.set_value(kFullIbanValue);
@@ -140,6 +145,11 @@ TEST_F(IbanAccessManagerTest, NoServerIbanWithBackendId_DoesNotUnmask) {
 // Verify that a successful `UnmaskIban` call results in the `FetchValue`
 // returning the complete server IBAN value.
 TEST_F(IbanAccessManagerTest, ServerIban_BackendId_Success) {
+#if BUILDFLAG(IS_ANDROID)
+  if (base::android::BuildInfo::GetInstance()->is_automotive()) {
+    GTEST_SKIP() << "This test should not run on automotive.";
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
   SetUpUnmaskIbanCall(/*is_successful=*/true, /*value=*/kFullIbanValue);
 
   Iban server_iban = test::GetServerIban();
