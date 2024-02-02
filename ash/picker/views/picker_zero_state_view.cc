@@ -45,12 +45,11 @@ PickerZeroStateView::PickerZeroStateView(
       std::make_unique<PickerSectionView>(kPlaceholderCategorySectionTitle));
   for (auto category : PickerModel().GetAvailableCategories()) {
     auto item_view = std::make_unique<PickerItemView>(
-        base::BindRepeating(select_category_callback, category),
-        PickerItemView::ItemType::kListItem);
+        base::BindRepeating(select_category_callback, category));
     item_view->SetPrimaryText(GetStringForPickerCategory(category));
     item_view->SetLeadingIcon(ui::ImageModel::FromVectorIcon(
         kPlaceholderIcon, cros_tokens::kCrosSysOnSurface));
-    section_view->AddItem(std::move(item_view));
+    section_view->AddListItem(std::move(item_view));
   }
   section_views_.push_back(section_view);
 }

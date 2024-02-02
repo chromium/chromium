@@ -88,6 +88,15 @@ PickerInsertMediaRequest::MediaData ResultToInsertMediaData(
           [](const PickerSearchResult::TextData& data) {
             return PickerInsertMediaRequest::MediaData::Text(data.text);
           },
+          [](const PickerSearchResult::EmojiData& data) {
+            return PickerInsertMediaRequest::MediaData::Text(data.emoji);
+          },
+          [](const PickerSearchResult::SymbolData& data) {
+            return PickerInsertMediaRequest::MediaData::Text(data.symbol);
+          },
+          [](const PickerSearchResult::EmoticonData& data) {
+            return PickerInsertMediaRequest::MediaData::Text(data.emoticon);
+          },
           [](const PickerSearchResult::GifData& data) {
             return PickerInsertMediaRequest::MediaData::Image(data.url);
           },
@@ -167,7 +176,10 @@ void PickerController::StartSearch(const std::u16string& query,
   callback.Run(PickerSearchResults({{
       PickerSearchResults::Section(
           u"Matching expressions",
-          {{PickerSearchResult::Text(u"👍"), PickerSearchResult::Text(u"😊"),
+          {{PickerSearchResult::Emoji(u"👍"), PickerSearchResult::Emoji(u"😊"),
+            PickerSearchResult::Symbol(u"⊃"), PickerSearchResult::Symbol(u"⊇"),
+            PickerSearchResult::Symbol(u"♬"),
+            PickerSearchResult::Emoticon(u"¯\\_(ツ)_/¯"),
             PickerSearchResult::Gif(
                 GURL(
                     "https://media.tenor.com/BzfS_9uPq_AAAAAd/cat-bonfire.gif"),
