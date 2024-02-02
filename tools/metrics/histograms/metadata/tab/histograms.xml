@@ -1574,20 +1574,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Tabs.StateTransfer.NumberOfOtherTabsActivatedBeforeMadeActive"
-    units="tabs" expires_after="M77">
-  <owner>kouhei@chromium.org</owner>
-  <owner>tzik@chromium.org</owner>
-  <summary>
-    Recorded once per tab activation. The number of tabs that were activated
-    while the tab was inactive.
-
-    This metric is to be removed after M46 hits stable. We don't expect this
-    metric to change over release, so we will remove this once we have the
-    numbers from stable.
-  </summary>
-</histogram>
-
 <histogram name="Tabs.StateTransfer.TabDistanceInactiveToActive" units="tabs"
     expires_after="M85">
   <owner>kouhei@chromium.org</owner>

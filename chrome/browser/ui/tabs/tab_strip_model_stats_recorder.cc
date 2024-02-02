@@ -100,22 +100,11 @@ void TabStripModelStatsRecorder::OnActiveTabChanged(
 
   DCHECK(new_contents);
   TabInfo* tab_info = TabInfo::Get(new_contents);
-
-  bool was_inactive = tab_info->state() == TabState::INACTIVE;
   tab_info->UpdateState(TabState::ACTIVE);
 
   // A UMA Histogram must be bounded by some number.
   // We chose 64 as our bound as 99.5% of the users open <64 tabs.
   const int kMaxTabHistory = 64;
-  auto it = base::ranges::find(active_tab_history_, new_contents);
-  int age = (it != active_tab_history_.cend()) ?
-      (it - active_tab_history_.cbegin()) : (kMaxTabHistory - 1);
-  if (was_inactive) {
-    UMA_HISTOGRAM_ENUMERATION(
-        "Tabs.StateTransfer.NumberOfOtherTabsActivatedBeforeMadeActive",
-        std::min(age, kMaxTabHistory - 1), kMaxTabHistory);
-  }
-
   active_tab_history_.insert(active_tab_history_.begin(), new_contents);
   if (active_tab_history_.size() > kMaxTabHistory)
     active_tab_history_.resize(kMaxTabHistory);
