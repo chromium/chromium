@@ -7,6 +7,8 @@
 #include <vector>
 
 #include "Config.h"
+#include "Edge.h"
+#include "RecordInfo.h"
 
 using namespace clang;
 
@@ -358,24 +360,30 @@ void CheckTraceVisitor::MarkTraced(RecordInfo::Fields::iterator it) {
   it->second.MarkTraced();
 }
 
-void CheckTraceVisitor::FoundField(FieldDecl* field) {
-  if (Config::IsTemplateInstantiation(info_->record())) {
+namespace {
+RecordInfo::Fields::iterator FindField(RecordInfo* info, FieldDecl* field) {
+  if (Config::IsTemplateInstantiation(info->record())) {
     // Pointer equality on fields does not work for template instantiations.
     // The trace method refers to fields of the template definition which
     // are different from the instantiated fields that need to be traced.
     const std::string& name = field->getNameAsString();
-    for (RecordInfo::Fields::iterator it = info_->GetFields().begin();
-         it != info_->GetFields().end();
-         ++it) {
+    for (RecordInfo::Fields::iterator it = info->GetFields().begin();
+         it != info->GetFields().end(); ++it) {
       if (it->first->getNameAsString() == name) {
-        MarkTraced(it);
-        break;
+        return it;
       }
     }
+    return info->GetFields().end();
   } else {
-    RecordInfo::Fields::iterator it = info_->GetFields().find(field);
-    if (it != info_->GetFields().end())
-      MarkTraced(it);
+    return info->GetFields().find(field);
+  }
+}
+}  // namespace
+
+void CheckTraceVisitor::FoundField(FieldDecl* field) {
+  RecordInfo::Fields::iterator it = FindField(info_, field);
+  if (it != info_->GetFields().end()) {
+    MarkTraced(it);
   }
 }
 
@@ -412,4 +420,60 @@ bool CheckTraceVisitor::CheckImplicitCastExpr(CallExpr* call,
     return true;
   }
   return false;
+}
+
+namespace {
+FieldDecl* GetRangeField(CXXForRangeStmt* for_range_stmt) {
+  DeclStmt* decl_stmt = for_range_stmt->getRangeStmt();
+  if (!decl_stmt->isSingleDecl()) {
+    return nullptr;
+  }
+  VarDecl* var_decl = dyn_cast<VarDecl>(decl_stmt->getSingleDecl());
+  if (!var_decl) {
+    return nullptr;
+  }
+  MemberExpr* member_expr = dyn_cast<MemberExpr>(var_decl->getInit());
+  if (!member_expr) {
+    return nullptr;
+  }
+  FieldDecl* field_decl = dyn_cast<FieldDecl>(member_expr->getMemberDecl());
+  if (!field_decl) {
+    return nullptr;
+  }
+  return field_decl;
+}
+}  // namespace
+
+bool CheckTraceVisitor::VisitStmt(Stmt* stmt) {
+  CXXForRangeStmt* for_range = dyn_cast<CXXForRangeStmt>(stmt);
+  if (!for_range) {
+    return true;
+  }
+
+  // Array tracing could be phrased as a for-range statement over the array.
+  FieldDecl* field_decl = GetRangeField(for_range);
+  if (!field_decl) {
+    return true;
+  }
+
+  // The range of the for-range statement references a field. If that field
+  // is an array, assume the array is being traced.
+  RecordInfo::Fields::iterator it = FindField(info_, field_decl);
+  if (it == info_->GetFields().end()) {
+    return true;
+  }
+
+  Edge* field_edge = it->second.edge();
+  if (field_edge->IsArray()) {
+    MarkTraced(it);
+  }
+  if (field_edge->IsCollection()) {
+    Collection* collection = static_cast<Collection*>(field_edge);
+    if (collection->IsSTDCollection() &&
+        (collection->GetCollectionName() == "array")) {
+      MarkTraced(it);
+    }
+  }
+
+  return true;
 }
