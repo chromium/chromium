@@ -1492,6 +1492,25 @@ TEST_F(DualReadingListModelTest, SetEntryTitleIfExistsForLocalEntry) {
   EXPECT_EQ(dual_model_->GetEntryByURL(kUrl)->Title(), "new_title");
 }
 
+TEST_F(DualReadingListModelTest,
+       SetEntryTitleIfExistsForLocalEntryFromLocalModel) {
+  ASSERT_TRUE(ResetStorageAndTriggerLoadCompletion(
+      /*initial_local_or_syncable_entries_builders=*/{TestEntryBuilder(
+          kUrl, clock_.Now())},
+      /*initial_account_entries_builders=*/{}));
+  ASSERT_EQ(dual_model_->GetStorageStateForURLForTesting(kUrl),
+            StorageStateForTesting::kExistsInLocalOrSyncableModelOnly);
+
+  testing::InSequence seq;
+  EXPECT_CALL(observer_, ReadingListWillUpdateEntry(dual_model_.get(), kUrl));
+  EXPECT_CALL(observer_, ReadingListDidUpdateEntry(dual_model_.get(), kUrl));
+  EXPECT_CALL(observer_, ReadingListDidApplyChanges(dual_model_.get()));
+
+  local_or_syncable_model_ptr_->SetEntryTitleIfExists(kUrl, "new_title");
+
+  EXPECT_EQ(dual_model_->GetEntryByURL(kUrl)->Title(), "new_title");
+}
+
 TEST_F(DualReadingListModelTest, SetEntryTitleIfExistsForAccountEntry) {
   ASSERT_TRUE(ResetStorageAndTriggerLoadCompletion(
       /*initial_local_or_syncable_entries_builders=*/{},

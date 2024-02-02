@@ -672,21 +672,19 @@ void DualReadingListModel::ReadingListDidAddEntry(
 void DualReadingListModel::ReadingListWillUpdateEntry(
     const ReadingListModel* model,
     const GURL& url) {
-  if (!suppress_observer_notifications_) {
-    // TODO(crbug.com/1424750): This should be reached via sync after merging
-    // ReadingList(Will|Did)MoveEntry() with ReadingList(Will|Did)UpdateEntry().
-    NOTREACHED();
+  if (!loaded() || suppress_observer_notifications_) {
+    return;
   }
+  NotifyObserversWithWillUpdateEntry(url);
 }
 
 void DualReadingListModel::ReadingListDidUpdateEntry(
     const ReadingListModel* model,
     const GURL& url) {
-  if (!suppress_observer_notifications_) {
-    // TODO(crbug.com/1424750): This should be reached via sync after merging
-    // ReadingList(Will|Did)MoveEntry() with ReadingList(Will|Did)UpdateEntry().
-    NOTREACHED();
+  if (!loaded() || suppress_observer_notifications_) {
+    return;
   }
+  NotifyObserversWithDidUpdateEntry(url);
 }
 
 void DualReadingListModel::ReadingListDidApplyChanges(ReadingListModel* model) {
