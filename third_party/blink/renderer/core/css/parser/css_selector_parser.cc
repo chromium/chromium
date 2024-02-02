@@ -850,6 +850,11 @@ CSSSelector::PseudoType CSSSelectorParser::ParsePseudoType(
   }
   if (name.StartsWith("--")) {
     String custom_name = name.GetString().Substring(2);
+    if (ExecutionContext* context =
+            document ? document->GetExecutionContext() : nullptr) {
+      Deprecation::CountDeprecation(
+          context, WebFeature::kCSSCustomStateDeprecatedSyntax);
+    }
     if (RuntimeEnabledFeatures::CSSCustomStateDeprecatedSyntaxEnabled()) {
       if (document) {
         // TODO(crbug.com/1514397): Add DevTools deprecations here as well

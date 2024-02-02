@@ -151,6 +151,16 @@
       ],
     },
     {
+      name: "CSSCustomStateDeprecatedSyntax",
+      message: "`:--customstatename` is deprecated. Please use the `:state(customstatename)` syntax instead.",
+      translation_note: "Warning displayed to developers when their website uses `:--customstatename` in CSS. They can simply switch their CSS to `:state(customstatename)` and it will be the same.",
+      web_features: [
+        "kCSSCustomStateDeprecatedSyntax",
+      ],
+      milestone: 122,
+      chrome_status_feature: 5140610730426368,
+    },
+    {
       name: "CSSSelectorInternalMediaControlsOverlayCastButton",
       message: "The `disableRemotePlayback` attribute should be used in order to disable the default Cast integration instead of using `-internal-media-controls-overlay-cast-button` selector.",
       translation_note: "Warning displayed to developers when they hide the Cast button on a video element using the deprecated CSS selector instead of using the disableRemotePlayback attribute on the element.",
