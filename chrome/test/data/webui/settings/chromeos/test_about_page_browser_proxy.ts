@@ -4,10 +4,14 @@
 
 import {AboutPageBrowserProxy, BrowserChannel, ChannelInfo, EndOfLifeInfo, RegulatoryInfo, TpmFirmwareUpdateStatusChangedEvent, UpdateStatus, VersionInfo} from 'chrome://os-settings/os_settings.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
+import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 export class TestAboutPageBrowserProxy extends TestBrowserProxy implements
     AboutPageBrowserProxy {
+  /* Used from tests to delay the resolving of the getChannelInfo() method. */
+  fakeChannelInfoDelay: PromiseResolver<unknown>|null = null;
+
   private updateStatus_: UpdateStatus = UpdateStatus.UPDATED;
   private sendUpdateStatus_ = true;
   private versionInfo_: VersionInfo = {
@@ -143,9 +147,20 @@ export class TestAboutPageBrowserProxy extends TestBrowserProxy implements
     return Promise.resolve(this.versionInfo_);
   }
 
-  getChannelInfo(): Promise<ChannelInfo> {
+  getVersionInfoForTesting(): VersionInfo {
+    return this.versionInfo_;
+  }
+
+  async getChannelInfo(): Promise<ChannelInfo> {
+    if (this.fakeChannelInfoDelay) {
+      await this.fakeChannelInfoDelay;
+    }
     this.methodCalled('getChannelInfo');
-    return Promise.resolve(this.channelInfo_);
+    return this.channelInfo_;
+  }
+
+  getChannelInfoForTesting(): ChannelInfo {
+    return this.channelInfo_;
   }
 
   canChangeChannel(): Promise<boolean> {

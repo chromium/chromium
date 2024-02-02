@@ -203,6 +203,7 @@ build_webui_tests("build") {
 
     "os_about_page/channel_switcher_dialog_test.ts",
     "os_about_page/consumer_auto_update_toggle_dialog_test.ts",
+    "os_about_page/detailed_build_info_subpage_test.ts",
     "os_about_page/edit_hostname_dialog_test.ts",
     "os_about_page/test_device_name_browser_proxy.ts",
 

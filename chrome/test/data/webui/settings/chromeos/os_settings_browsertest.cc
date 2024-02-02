@@ -1020,6 +1020,11 @@ IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest,
   RunSettingsTest("os_about_page/consumer_auto_update_toggle_dialog_test.js");
 }
 
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest,
+                       OsAboutPageDetailedBuildInfoSubpage) {
+  RunSettingsTest("os_about_page/detailed_build_info_subpage_test.js");
+}
+
 IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, OsAboutPageEditHostnameDialog) {
   RunSettingsTest("os_about_page/edit_hostname_dialog_test.js");
 }

@@ -47,7 +47,7 @@ const SettingsDetailedBuildInfoSubpageBase =
     DeepLinkingMixin(RouteObserverMixin(
         PrefsMixin(I18nMixin(WebUiListenerMixin(PolymerElement)))));
 
-class SettingsDetailedBuildInfoSubpageElement extends
+export class SettingsDetailedBuildInfoSubpageElement extends
     SettingsDetailedBuildInfoSubpageBase {
   static get is() {
     return 'settings-detailed-build-info-subpage' as const;
