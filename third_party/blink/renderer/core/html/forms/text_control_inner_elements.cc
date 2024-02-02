@@ -154,8 +154,7 @@ const ComputedStyle* TextControlInnerEditorElement::CustomStyleForLayoutObject(
   style_builder.SetDisplay(EDisplay::kBlock);
   style_builder.SetHasLineIfEmpty(true);
   if (!start_style.ApplyControlFixedSize(host)) {
-    Length caret_width(GetDocument().View()->CaretWidthInCssPixel(),
-                       Length::kFixed);
+    Length caret_width(GetDocument().View()->CaretWidth(), Length::kFixed);
     if (IsHorizontalWritingMode(style_builder.GetWritingMode())) {
       style_builder.SetMinWidth(caret_width);
     } else {

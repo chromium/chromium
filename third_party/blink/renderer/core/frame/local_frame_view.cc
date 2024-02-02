@@ -4597,13 +4597,6 @@ LayoutUnit LocalFrameView::CaretWidth() const {
       1.0f, GetChromeClient()->WindowToViewportScalar(&GetFrame(), 1.0f)));
 }
 
-float LocalFrameView::CaretWidthInCssPixel() const {
-  // This returns a value greater than 1.0f in less-than-100% zoom level.
-  float scale_factor =
-      GetChromeClient()->WindowToViewportScalar(&GetFrame(), 1.0f);
-  return std::max<float>(1.0f, scale_factor) / scale_factor;
-}
-
 void LocalFrameView::RegisterTapEvent(Element* target) {
   if (tap_friendliness_checker_) {
     tap_friendliness_checker_->RegisterTapEvent(target);

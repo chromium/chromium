@@ -678,7 +678,6 @@ class CORE_EXPORT LocalFrameView final
   bool VisualViewportOrOverlayNeedsRepaintForTesting() const;
 
   LayoutUnit CaretWidth() const;
-  float CaretWidthInCssPixel() const;
 
   size_t PaintFrameCount() const { return paint_frame_count_; }
 
