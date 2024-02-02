@@ -338,10 +338,6 @@ void Canvas2DLayerBridge::PageVisibilityChanged() {
   }
 }
 
-void Canvas2DLayerBridge::DrawFullImage(const cc::PaintImage& image) {
-  GetPaintCanvas()->drawImage(image, 0, 0);
-}
-
 bool Canvas2DLayerBridge::WritePixels(const SkImageInfo& orig_info,
                                       const void* pixels,
                                       size_t row_bytes,
