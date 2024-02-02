@@ -44,8 +44,10 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 /** Handles the Tabbed mode specific behaviors of tab persistence. */
 public class TabbedModeTabPersistencePolicy implements TabPersistencePolicy {
-
     private static final String TAG = "tabmodel";
+
+    // This shared prefs file was used for storing tab group session counts. It is no longer in use.
+    private static final String LEGACY_TAB_GROUP_PREFS_FILE = "tab_group_pref";
 
     /** <M53 The name of the file where the old tab metadata file is saved per directory. */
     @VisibleForTesting static final String LEGACY_SAVED_STATE_FILE = "tab_state";
@@ -472,6 +474,10 @@ public class TabbedModeTabPersistencePolicy implements TabPersistencePolicy {
             String thumbnailDirectory = PathUtils.getThumbnailCacheDirectory();
             mThumbnailFileNames = new File(thumbnailDirectory).list();
             mOtherTabIds = mOtherTabSupplier.get();
+
+            ContextUtils.getApplicationContext()
+                    .deleteSharedPreferences(LEGACY_TAB_GROUP_PREFS_FILE);
+
             return null;
         }
 

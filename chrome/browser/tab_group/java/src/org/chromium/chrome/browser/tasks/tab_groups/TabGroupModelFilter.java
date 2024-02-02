@@ -4,19 +4,13 @@
 
 package org.chromium.chrome.browser.tasks.tab_groups;
 
-import android.content.Context;
-import android.content.SharedPreferences;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.ContextUtils;
 import org.chromium.base.MathUtils;
 import org.chromium.base.ObserverList;
-import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
-import org.chromium.base.task.AsyncTask;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabList;
@@ -41,10 +35,6 @@ import java.util.Set;
  * also a {@link TabList} that contains the last shown {@link Tab} from every group.
  */
 public class TabGroupModelFilter extends TabModelFilter {
-    private static final String PREFS_FILE = "tab_group_pref";
-    private static final String SESSIONS_COUNT_FOR_GROUP = "SessionsCountForGroup-";
-    private static SharedPreferences sPref;
-
     /** An interface to be notified about changes to a {@link TabGroupModelFilter}. */
     public interface Observer {
         /**
@@ -551,26 +541,6 @@ public class TabGroupModelFilter extends TabModelFilter {
         }
     }
 
-    // TODO(crbug.com/951608): follow up with sessions count histogram for TabGroups.
-    private int updateAndGetSessionsCount(int groupId) {
-        ThreadUtils.assertOnBackgroundThread();
-
-        String sessionsCountForGroupKey = SESSIONS_COUNT_FOR_GROUP + Integer.toString(groupId);
-        SharedPreferences prefs = getSharedPreferences();
-        int sessionsCount = prefs.getInt(sessionsCountForGroupKey, 0);
-        sessionsCount++;
-        prefs.edit().putInt(sessionsCountForGroupKey, sessionsCount).apply();
-        return sessionsCount;
-    }
-
-    private SharedPreferences getSharedPreferences() {
-        if (sPref == null) {
-            sPref =
-                    ContextUtils.getApplicationContext()
-                            .getSharedPreferences(PREFS_FILE, Context.MODE_PRIVATE);
-        }
-        return sPref;
-    }
 
     // TabModelFilter implementation.
     @NonNull
@@ -744,17 +714,6 @@ public class TabGroupModelFilter extends TabModelFilter {
             updateGroupIdToGroupIndexMapAfterGroupClosed(groupId);
             mGroupIdToGroupIndexMap.remove(groupId);
             mGroupIdToGroupMap.remove(groupId);
-            AsyncTask.THREAD_POOL_EXECUTOR.execute(() -> removeGroupFromPref(groupId));
-        }
-    }
-
-    private void removeGroupFromPref(int groupId) {
-        ThreadUtils.assertOnBackgroundThread();
-
-        SharedPreferences prefs = getSharedPreferences();
-        String key = SESSIONS_COUNT_FOR_GROUP + Integer.toString(groupId);
-        if (prefs.contains(key)) {
-            prefs.edit().remove(key).apply();
         }
     }
 
