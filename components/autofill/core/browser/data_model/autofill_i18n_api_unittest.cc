@@ -255,4 +255,21 @@ TEST_F(AutofillI18nApiTest, SynthesizedTypesAreSupportedButNotStorable) {
       field_type_set.contains(ADDRESS_HOME_DEPENDENT_LOCALITY_AND_LANDMARK));
 }
 
+TEST_F(AutofillI18nApiTest, SynthesizedTypesDoNotSupportSetValueForType) {
+  AddressComponentsStore store =
+      CreateAddressComponentModel(AddressCountryCode("IN"));
+
+  FieldType synthesized_type = ADDRESS_HOME_DEPENDENT_LOCALITY_AND_LANDMARK;
+  ASSERT_TRUE(test_api(store.Root()).GetNodeForType(synthesized_type));
+  EXPECT_FALSE(store.Root()->SetValueForType(synthesized_type, u"foo",
+                                             VerificationStatus::kObserved));
+  EXPECT_EQ(u"", store.Root()->GetValueForType(synthesized_type));
+
+  FieldType normal_type = ADDRESS_HOME_STREET_LOCATION_AND_LOCALITY;
+  ASSERT_TRUE(test_api(store.Root()).GetNodeForType(normal_type));
+  EXPECT_TRUE(store.Root()->SetValueForType(normal_type, u"foo",
+                                            VerificationStatus::kObserved));
+  EXPECT_EQ(u"foo", store.Root()->GetValueForType(normal_type));
+}
+
 }  // namespace autofill::i18n_model_definition

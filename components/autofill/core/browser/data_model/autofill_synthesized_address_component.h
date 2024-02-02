@@ -24,6 +24,8 @@ class SynthesizedAddressComponent : public AddressComponent {
   // AddressComponent overrides:
   void GetTypes(bool storable_only,
                 FieldTypeSet* supported_types) const override;
+
+  bool IsValueReadOnly() const override;
 };
 
 }  // namespace autofill

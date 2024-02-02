@@ -382,6 +382,11 @@ class AddressComponent {
   // Returns whether `field_type` is a supported type for the current node.
   bool IsSupportedType(FieldType field_type) const;
 
+  // Returns whether the node's value is read-only. If true, the node's value
+  // can only be set internally via `SetValue` but not from a caller outside of
+  // the AddressComponent tree.
+  virtual bool IsValueReadOnly() const;
+
   // Returns a vector containing the |storage_types_| of all direct
   // subcomponents.
   std::vector<FieldType> GetSubcomponentTypes() const;

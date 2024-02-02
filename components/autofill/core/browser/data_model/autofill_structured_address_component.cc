@@ -238,6 +238,10 @@ bool AddressComponent::IsSupportedType(FieldType field_type) const {
          GetAdditionalSupportedFieldTypes().contains(field_type);
 }
 
+bool AddressComponent::IsValueReadOnly() const {
+  return false;
+}
+
 void AddressComponent::GetSupportedTypes(FieldTypeSet* supported_types) const {
   return AddressComponent::GetTypes(/*storable_only=*/false, supported_types);
 }
@@ -331,7 +335,7 @@ bool AddressComponent::SetValueForType(
     const std::u16string& value,
     const VerificationStatus& verification_status) {
   AddressComponent* node_for_type = GetNodeForType(field_type);
-  if (!node_for_type) {
+  if (!node_for_type || node_for_type->IsValueReadOnly()) {
     return false;
   }
   node_for_type->GetStorageType() == field_type

@@ -25,4 +25,8 @@ void SynthesizedAddressComponent::GetTypes(
   supported_types->insert(GetStorageType());
 }
 
+bool SynthesizedAddressComponent::IsValueReadOnly() const {
+  return true;
+}
+
 }  // namespace autofill
