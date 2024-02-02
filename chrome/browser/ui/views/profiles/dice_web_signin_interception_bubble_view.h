@@ -85,8 +85,6 @@ class DiceWebSigninInterceptionBubbleView
                            ChromeSigninAccepted);
   FRIEND_TEST_ALL_PREFIXES(DiceWebSigninInterceptionBubbleBrowserTest,
                            ChromeSigninDeclined);
-  FRIEND_TEST_ALL_PREFIXES(DiceWebSigninInterceptionBubbleWithParamBrowserTest,
-                           AvatarEffectWithInterceptType);
   FRIEND_TEST_ALL_PREFIXES(ProfileBubbleInteractiveUiTest,
                            InterceptionBubbleFocus);
 

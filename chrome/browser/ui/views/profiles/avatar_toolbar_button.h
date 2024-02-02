@@ -11,7 +11,6 @@
 #include "base/observer_list.h"
 #include "base/time/time.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/signin/web_signin_interceptor.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/events/event.h"
@@ -28,7 +27,7 @@ class AvatarToolbarButton : public ToolbarButton {
   enum class State {
     kIncognitoProfile,
     kGuestSession,
-    kInterceptTextShowing,
+    kSignInTextShowing,
     kAnimatedUserIdentity,
     kSyncPaused,
     // An error in sync-the-feature or sync-the-transport.
@@ -56,12 +55,11 @@ class AvatarToolbarButton : public ToolbarButton {
 
   void ShowAvatarHighlightAnimation();
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-  // Expands the pill to show the intercept text.
-  void ShowInterceptText(
-      WebSigninInterceptor::SigninInterceptionType interception_type);
+#if !BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_CHROMEOS_ASH)
+  // Expands the pill to show the signin text.
+  void ShowSignInText();
   // Contracts the pill so that no text is shown.
-  void HideText();
+  void HideSignInText();
 #endif
 
   // Control whether the button action is active or not.

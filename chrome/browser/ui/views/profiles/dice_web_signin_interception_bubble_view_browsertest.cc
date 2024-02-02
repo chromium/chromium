@@ -28,20 +28,16 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
-#include "chrome/grit/branded_strings.h"
-#include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/profile_destruction_waiter.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "components/google/core/common/google_util.h"
 #include "components/policy/core/common/management/scoped_management_service_override_for_testing.h"
-#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "third_party/skia/include/core/SkColor.h"
-#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/base/ui_base_switches.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
@@ -327,32 +323,25 @@ class DiceWebSigninInterceptionBubbleBrowserTest : public InProcessBrowserTest {
     callback_result_ = result;
   }
 
-  // Returns bubble parameters for testing.
-  WebSigninInterceptor::Delegate::BubbleParameters
-  GetTestBubbleParametersWithInterceptType(
-      WebSigninInterceptor::SigninInterceptionType intercept_type) {
+  // Returns dummy bubble parameters for testing.
+  WebSigninInterceptor::Delegate::BubbleParameters GetTestBubbleParameters() {
     AccountInfo account;
     account.account_id = CoreAccountId::FromGaiaId("ID1");
     AccountInfo primary_account;
-    if (intercept_type !=
-        WebSigninInterceptor::SigninInterceptionType::kChromeSignin) {
-      primary_account.account_id = CoreAccountId::FromGaiaId("ID2");
-    }
+    primary_account.account_id = CoreAccountId::FromGaiaId("ID2");
     return WebSigninInterceptor::Delegate::BubbleParameters(
-        intercept_type, account, primary_account);
+        WebSigninInterceptor::SigninInterceptionType::kMultiUser, account,
+        primary_account);
   }
 
-  // Returns dummy bubble parameters for testing.
-  WebSigninInterceptor::Delegate::BubbleParameters GetTestBubbleParameters() {
-    return GetTestBubbleParametersWithInterceptType(
-        WebSigninInterceptor::SigninInterceptionType::kMultiUser);
-  }
-
-  // Returns bubble parameters for Chrome Signin bubble testing.
   WebSigninInterceptor::Delegate::BubbleParameters
   GetTestChromeSigninBubbleParameters() {
-    return GetTestBubbleParametersWithInterceptType(
-        WebSigninInterceptor::SigninInterceptionType::kChromeSignin);
+    AccountInfo account;
+    account.account_id = CoreAccountId::FromGaiaId("ID1");
+
+    return WebSigninInterceptor::Delegate::BubbleParameters(
+        WebSigninInterceptor::SigninInterceptionType::kChromeSignin, account,
+        AccountInfo());
   }
 
   WebSigninInterceptor::Delegate::BubbleParameters
@@ -683,86 +672,3 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptionBubbleBrowserTest,
   EXPECT_EQ(0, user_action_tester.GetActionCount(
                    "Signin_Signin_FromChromeSigninInterceptBubble"));
 }
-
-#if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
-struct InterceptTypesParam {
-  WebSigninInterceptor::SigninInterceptionType intercept_type;
-  int expected_avatar_text_id;
-};
-
-const InterceptTypesParam kInterceptTypesTestParams[] = {
-    {.intercept_type = WebSigninInterceptor::SigninInterceptionType::kMultiUser,
-     .expected_avatar_text_id =
-         IDS_SIGNIN_DICE_WEB_INTERCEPT_AVATAR_BUTTON_SEPARATE_BROWSING_TEXT},
-    {.intercept_type =
-         WebSigninInterceptor::SigninInterceptionType::kEnterprise,
-     .expected_avatar_text_id =
-         IDS_SIGNIN_DICE_WEB_INTERCEPT_AVATAR_BUTTON_SEPARATE_BROWSING_TEXT},
-    {.intercept_type =
-         WebSigninInterceptor::SigninInterceptionType::kProfileSwitch,
-     .expected_avatar_text_id =
-         IDS_SIGNIN_DICE_WEB_INTERCEPT_AVATAR_BUTTON_SWITCH_PROFILE_TEXT},
-    {.intercept_type =
-         WebSigninInterceptor::SigninInterceptionType::kChromeSignin,
-     .expected_avatar_text_id =
-         IDS_AVATAR_BUTTON_INTERCEPT_BUBBLE_CHROME_SIGNIN_TEXT},
-};
-
-class DiceWebSigninInterceptionBubbleWithParamBrowserTest
-    : public DiceWebSigninInterceptionBubbleBrowserTest,
-      public testing::WithParamInterface<InterceptTypesParam> {
- public:
-  WebSigninInterceptor::SigninInterceptionType intercept_type() {
-    return GetParam().intercept_type;
-  }
-
-  std::u16string expected_avatar_text() {
-    return l10n_util::GetStringUTF16(GetParam().expected_avatar_text_id);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      switches::kExplicitBrowserSigninUIOnDesktop};
-};
-
-IN_PROC_BROWSER_TEST_P(DiceWebSigninInterceptionBubbleWithParamBrowserTest,
-                       AvatarEffectWithInterceptType) {
-  AvatarToolbarButton* avatar_button = GetAvatarButton();
-  // Creating the bubble through the static function.
-  std::unique_ptr<ScopedWebSigninInterceptionBubbleHandle> handle =
-      DiceWebSigninInterceptionBubbleView::CreateBubble(
-          browser(), avatar_button,
-          GetTestBubbleParametersWithInterceptType(intercept_type()),
-          base::BindOnce(&DiceWebSigninInterceptionBubbleBrowserTest::
-                             OnInterceptionComplete,
-                         base::Unretained(this)));
-
-  // `bubble` is owned by the view hierarchy.
-  DiceWebSigninInterceptionBubbleView* bubble =
-      static_cast<DiceWebSigninInterceptionBubbleView::ScopedHandle*>(
-          handle.get())
-          ->GetBubbleViewForTesting();
-  // Equivalent to `kInterceptionBubbleBaseHeight` default.
-  bubble->SetHeightAndShowWidget(/*height=*/500);
-
-  EXPECT_TRUE(avatar_button->IsButtonActionDisabled());
-  EXPECT_EQ(avatar_button->GetText(), expected_avatar_text());
-
-  views::Widget* widget = bubble->GetWidget();
-
-  views::test::WidgetDestroyedWaiter closing_observer(widget);
-  // Simulating declining the bubble.
-  bubble->OnWebUIUserChoice(SigninInterceptionUserChoice::kDecline);
-
-  // Widget will close now.
-  closing_observer.Wait();
-  EXPECT_TRUE(widget->IsClosed());
-
-  EXPECT_FALSE(avatar_button->IsButtonActionDisabled());
-  EXPECT_EQ(avatar_button->GetText(), std::u16string());
-}
-
-INSTANTIATE_TEST_SUITE_P(,
-                         DiceWebSigninInterceptionBubbleWithParamBrowserTest,
-                         testing::ValuesIn(kInterceptTypesTestParams));
-#endif
