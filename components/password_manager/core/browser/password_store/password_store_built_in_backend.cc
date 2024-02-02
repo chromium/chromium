@@ -77,6 +77,10 @@ void PasswordStoreBuiltInBackend::Shutdown(
   }
 }
 
+bool PasswordStoreBuiltInBackend::IsAbleToSavePasswords() {
+  return true;
+}
+
 void PasswordStoreBuiltInBackend::InitBackend(
     AffiliatedMatchHelper* affiliated_match_helper,
     RemoteChangesReceived remote_form_changes_received,

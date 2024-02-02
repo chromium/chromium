@@ -84,6 +84,10 @@ void FakePasswordStoreBackend::Shutdown(base::OnceClosure shutdown_completed) {
   GetTaskRunner()->PostTask(FROM_HERE, std::move(shutdown_completed));
 }
 
+bool FakePasswordStoreBackend::IsAbleToSavePasswords() {
+  return true;
+}
+
 void FakePasswordStoreBackend::GetAllLoginsAsync(LoginsOrErrorReply callback) {
   GetTaskRunner()->PostTaskAndReplyWithResult(
       FROM_HERE,

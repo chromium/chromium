@@ -64,7 +64,7 @@ class PasswordStoreInterface : public RefcountedKeyedService {
         const std::vector<PasswordForm>& retained_passwords) = 0;
   };
 
-  // Returns true iff initialization was successful.
+  // Necessary condition to offer saving passwords.
   virtual bool IsAbleToSavePasswords() const = 0;
 
   // Adds the given PasswordForm to the secure password store asynchronously.

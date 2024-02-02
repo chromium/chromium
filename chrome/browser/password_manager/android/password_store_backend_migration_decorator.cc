@@ -210,6 +210,16 @@ void PasswordStoreBackendMigrationDecorator::Shutdown(
           .Then(std::move(shutdown_completed)));
 }
 
+bool PasswordStoreBackendMigrationDecorator::IsAbleToSavePasswords() {
+  // Suppress saving while the migration of local passwords is ongoing, to avoid
+  // the migration "forgetting" any new passwords. In fact the same concern
+  // applies to all migration types, but it's scary to change behavior now.
+  return active_backend_->IsAbleToSavePasswords() &&
+         !(migrator_ && migrator_->migration_in_progress_type() ==
+                            BuiltInBackendToAndroidBackendMigrator::
+                                MigrationType::kForLocalUsers);
+}
+
 void PasswordStoreBackendMigrationDecorator::GetAllLoginsAsync(
     LoginsOrErrorReply callback) {
   active_backend_->GetAllLoginsAsync(std::move(callback));

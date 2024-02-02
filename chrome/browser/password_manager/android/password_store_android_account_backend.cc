@@ -196,6 +196,10 @@ void PasswordStoreAndroidAccountBackend::Shutdown(
   PasswordStoreAndroidBackend::Shutdown(std::move(shutdown_completed));
 }
 
+bool PasswordStoreAndroidAccountBackend::IsAbleToSavePasswords() {
+  return true;
+}
+
 void PasswordStoreAndroidAccountBackend::GetAllLoginsAsync(
     LoginsOrErrorReply callback) {
   CHECK(!init_completion_callback_, base::NotFatalUntil::M123);

@@ -16,6 +16,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/test/bind.h"
+#include "base/test/gmock_move_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -1434,6 +1435,45 @@ TEST_F(PasswordStoreTest, RecordsPotentialOnLoginsRetainedInvokations) {
   store->ShutdownOnUIThread();
 }
 #endif  // BUILDFLAG(IS_ANDROID)
+
+TEST_F(PasswordStoreTest, AbleToSavePasswordsIfInitBackendSuccessful) {
+  auto [store, mock_backend] = CreateUnownedStoreWithOwnedMockBackend();
+  base::OnceCallback<void(bool)> init_backend_completion_cb;
+  EXPECT_CALL(*mock_backend, InitBackend)
+      .WillOnce(MoveArg<3>(&init_backend_completion_cb));
+  store->Init(/*prefs=*/nullptr, /*affiliated_match_helper=*/nullptr);
+
+  // PasswordStoreBackend::InitBackend() hasn't replied with success yet.
+  EXPECT_FALSE(store->IsAbleToSavePasswords());
+
+  std::move(init_backend_completion_cb).Run(/*success=*/true);
+
+  // PasswordStoreBackend::IsAbleToSavePasswords() isn't true yet.
+  EXPECT_FALSE(store->IsAbleToSavePasswords());
+
+  ON_CALL(*mock_backend, IsAbleToSavePasswords)
+      .WillByDefault(testing::Return(true));
+
+  EXPECT_TRUE(store->IsAbleToSavePasswords());
+
+  store->ShutdownOnUIThread();
+}
+
+TEST_F(PasswordStoreTest, NotAbleToSavePasswordsIfInitBackendFailed) {
+  auto [store, mock_backend] = CreateUnownedStoreWithOwnedMockBackend();
+  ON_CALL(*mock_backend, IsAbleToSavePasswords)
+      .WillByDefault(testing::Return(true));
+  EXPECT_CALL(*mock_backend, InitBackend)
+      .WillOnce(
+          [](auto, auto, auto, base::OnceCallback<void(bool)> completion) {
+            std::move(completion).Run(/*success=*/false);
+          });
+  store->Init(/*prefs=*/nullptr, /*affiliated_match_helper=*/nullptr);
+
+  EXPECT_FALSE(store->IsAbleToSavePasswords());
+
+  store->ShutdownOnUIThread();
+}
 
 TEST_F(PasswordStoreTest, GetAllLogins) {
   static constexpr PasswordFormData kTestCredentials[] = {

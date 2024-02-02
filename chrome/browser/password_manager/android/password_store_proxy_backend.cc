@@ -114,6 +114,11 @@ void PasswordStoreProxyBackend::Shutdown(base::OnceClosure shutdown_completed) {
   built_in_backend_.reset();
 }
 
+bool PasswordStoreProxyBackend::IsAbleToSavePasswords() {
+  // shadow_backend()->IsAbleToSavePasswords() doesn't matter because it's a
+  // fallback.
+  return main_backend()->IsAbleToSavePasswords();
+}
 void PasswordStoreProxyBackend::GetAllLoginsAsync(LoginsOrErrorReply callback) {
   main_backend()->GetAllLoginsAsync(std::move(callback));
 }
