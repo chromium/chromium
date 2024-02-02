@@ -562,6 +562,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     // Restore links if they're enabled when speech pauses.
     if (chrome.readingMode.linksEnabled) {
       this.updateContent();
+      this.highlightNodes(chrome.readingMode.getCurrentText());
     }
   }
 
