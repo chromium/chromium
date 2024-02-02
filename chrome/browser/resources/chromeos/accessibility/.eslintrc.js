@@ -61,8 +61,8 @@ module.exports = {
                 modifiers: ['public'],
                 filter: {
                   regex: '^(' +
-                      // Exclude initialism JSON
-                      'toJSON' +
+                      // Exclude initialisms such as JSON and IME
+                      'toJSON|describeTextChangedByIME' +
                       ')$',
                   match: false,
                 },

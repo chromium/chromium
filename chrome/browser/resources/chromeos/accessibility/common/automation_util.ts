@@ -417,7 +417,7 @@ export class AutomationUtil {
     const prevAncestors = AutomationUtil.getAncestors(prevNode);
     const ancestors = AutomationUtil.getAncestors(node);
     const divergence = AutomationUtil.getDivergence(prevAncestors, ancestors);
-    return ancestors[divergence - 1];
+    return ancestors[divergence - 1]!;
   }
 
   /**

@@ -27,15 +27,19 @@ import {TypingEchoState} from './typing_echo.js';
  * a text change event to the user.
  */
 export class TextChangeEvent {
+  private value_ = '';
+  start: number;
+  end: number;
+  triggeredByUser: boolean;
+
   /**
-   * @param {string} newValue The new string value of the editable text control.
-   * @param {number} newStart The new 0-based start cursor/selection index.
-   * @param {number} newEnd The new 0-based end cursor/selection index.
-   * @param {boolean} triggeredByUser .
+   * @param newValue The new string value of the editable text control.
+   * @param newStart The new 0-based start cursor/selection index.
+   * @param newEnd The new 0-based end cursor/selection index.
    */
-  constructor(newValue, newStart, newEnd, triggeredByUser) {
-    /** @private {string} */
-    this.value_ = '';
+  constructor(
+      newValue: string, newStart: number, newEnd: number,
+      triggeredByUser: boolean) {
     this.value = newValue;
 
     this.start = newStart;
@@ -50,10 +54,10 @@ export class TextChangeEvent {
     }
   }
 
-  get value() {
+  get value(): string {
     return this.value_;
   }
-  set value(val) {
+  set value(val: string) {
     this.value_ = val.replace(/\u00a0/g, ' ');
   }
 }
@@ -62,110 +66,82 @@ export class TextChangeEvent {
  * A class representing an abstracted editable text control.
  */
 export class ChromeVoxEditableTextBase {
+  static shouldSpeakInsertions = false;
+  static maxShortPhraseLen = 60;
+
+  /** Current value of the text field. */
+  private value_ = '';
+  /** 0-based selection start index. */
+  protected start: number;
+  /** 0-based selection end index. */
+  protected end: number;
+  /** True if this is a password field. */
+  protected isPassword: boolean;
+  /** Text-to-speech object implementing speak() and stop() methods. */
+  protected tts: TtsInterface;
+  /** Whether or not the text field is multiline. */
+  protected multiline = false;
   /**
-   * @param {string} value The string value of the editable text control.
-   * @param {number} start The 0-based start cursor/selection index.
-   * @param {number} end The 0-based end cursor/selection index.
-   * @param {boolean} isPassword Whether the text control if a password field.
-   * @param {TtsInterface} tts A TTS object.
+   * Whether or not the last update to the text and selection was described.
+   *
+   * Some consumers of this flag like |ChromeVoxEventWatcher| depend on and
+   * react to when this flag is false by generating alternative feedback.
    */
-  constructor(value, start, end, isPassword, tts) {
-    /**
-     * Current value of the text field.
-     * @type {string}
-     * @private
-     */
-    this.value_ = '';
-    Object.defineProperty(this, 'value', {
-      get: () => this.value_,
-      set: val => this.value_ = val.replace('\u00a0', ' '),
-    });
+  lastChangeDescribed = false;
+
+  /**
+   * @param value The string value of the editable text control.
+   * @param start The 0-based start cursor/selection index.
+   * @param end The 0-based end cursor/selection index.
+   * @param isPassword Whether the text control if a password field.
+   */
+  constructor(
+      value: string, start: number, end: number, isPassword: boolean,
+      tts: TtsInterface) {
     this.value = value;
-
-    /**
-     * 0-based selection start index.
-     * @type {number}
-     * @protected
-     */
     this.start = start;
-
-    /**
-     * 0-based selection end index.
-     * @type {number}
-     * @protected
-     */
     this.end = end;
-
-    /**
-     * True if this is a password field.
-     * @type {boolean}
-     * @protected
-     */
     this.isPassword = isPassword;
-
-    /**
-     * Text-to-speech object implementing speak() and stop() methods.
-     * @type {TtsInterface}
-     * @protected
-     */
     this.tts = tts;
-
-    /**
-     * Whether or not the text field is multiline.
-     * @type {boolean}
-     * @protected
-     */
-    this.multiline = false;
-
-    /**
-     * Whether or not the last update to the text and selection was described.
-     *
-     * Some consumers of this flag like |ChromeVoxEventWatcher| depend on and
-     * react to when this flag is false by generating alternative feedback.
-     * @type {boolean}
-     */
-    this.lastChangeDescribed = false;
   }
 
-  /**
-   * @param {number} charIndex
-   * @return {number}
-   */
-  getLineIndex(charIndex) {
+  get value(): string {
+    return this.value_;
+  }
+
+  set value(newValue: string) {
+    this.value_ = newValue.replace('\u00a0', ' ');
+  }
+
+  getLineIndex(_charIndex: number): number {
     return 0;
   }
-  /**
-   * @param {number} lineIndex
-   * @return {number}
-   */
-  getLineStart(lineIndex) {
+
+  getLineStart(_lineIndex: number): number {
     return 0;
   }
-  /**
-   * @param {number} lineIndex
-   * @return {number}
-   */
-  getLineEnd(lineIndex) {
+
+  getLineEnd(_lineIndex: number): number {
     return this.value.length;
   }
 
   /**
    * Get the full text of the current line.
-   * @param {number} index The 0-based line index.
-   * @return {string} The text of the line.
+   * @param index The 0-based line index.
+   * @return The text of the line.
    */
-  getLine(index) {
+  getLine(index: number): string {
     const lineStart = this.getLineStart(index);
     const lineEnd = this.getLineEnd(index);
     return this.value.substr(lineStart, lineEnd - lineStart);
   }
 
   /**
-   * @param {TextChangeEvent} evt The new text changed event to test.
-   * @return {boolean} True if the event, when compared to the previous text,
-   * should trigger description.
+   * @param evt The new text changed event to test.
+   * @return True if the event, when compared to the previous text, should
+   *     trigger description.
    */
-  shouldDescribeChange(evt) {
+  shouldDescribeChange(evt: TextChangeEvent): boolean {
     if (evt.value === this.value && evt.start === this.start &&
         evt.end === this.end) {
       return false;
@@ -175,21 +151,20 @@ export class ChromeVoxEditableTextBase {
 
   /**
    * Speak text, but if it's a single character, describe the character.
-   * @param {string} str The string to speak.
-   * @param {boolean=} opt_triggeredByUser True if the speech was triggered by a
-   * user action.
-   * @param {TtsSpeechProperties=} opt_personality Personality used to speak
-   *     text.
+   * @param str The string to speak.
+   * @param triggeredByUser True if the speech was triggered by a user action.
+   * @param personality Personality used to speak text.
    */
-  speak(str, opt_triggeredByUser, opt_personality) {
+  speak(str: string, triggeredByUser?: boolean,
+        personality?: TtsSpeechProperties): void {
     if (!str) {
       return;
     }
     let queueMode = QueueMode.QUEUE;
-    if (opt_triggeredByUser === true) {
+    if (triggeredByUser === true) {
       queueMode = QueueMode.CATEGORY_FLUSH;
     }
-    const props = opt_personality ?? new TtsSpeechProperties();
+    const props = personality ?? new TtsSpeechProperties();
     props.category = TtsCategory.NAV;
     this.tts.speak(str, queueMode, props);
   }
@@ -197,10 +172,8 @@ export class ChromeVoxEditableTextBase {
   /**
    * Update the state of the text and selection and describe any changes as
    * appropriate.
-   *
-   * @param {TextChangeEvent} evt The text change event.
    */
-  changed(evt) {
+  changed(evt: TextChangeEvent): void {
     if (!this.shouldDescribeChange(evt)) {
       this.lastChangeDescribed = false;
       return;
@@ -222,9 +195,9 @@ export class ChromeVoxEditableTextBase {
   /**
    * Describe a change in the selection or cursor position when the text
    * stays the same.
-   * @param {TextChangeEvent} evt The text change event.
+   * @param evt The text change event.
    */
-  describeSelectionChanged(evt) {
+  describeSelectionChanged(evt: TextChangeEvent): void {
     // TODO(deboer): Factor this into two function:
     //   - one to determine the selection event
     //   - one to speak
@@ -319,12 +292,8 @@ export class ChromeVoxEditableTextBase {
     }
   }
 
-  /**
-   * Describe a change where the text changes.
-   * @param {TextChangeEvent} prev The previous text change event.
-   * @param {TextChangeEvent} evt The text change event.
-   */
-  describeTextChanged(prev, evt) {
+  /** Describe a change where the text changes. */
+  describeTextChanged(prev: TextChangeEvent, evt: TextChangeEvent): void {
     let personality = new TtsSpeechProperties();
     if (evt.value.length < (prev.value.length - 1)) {
       personality = Personality.DELETED;
@@ -376,7 +345,7 @@ export class ChromeVoxEditableTextBase {
       // Forward deletions causes reading of the character immediately to the
       // right of the caret.
       if (prev.start === evt.start && prev.end === evt.end) {
-        this.speak(evt.value[evt.start], evt.triggeredByUser);
+        this.speak(evt.value[evt.start]!, evt.triggeredByUser);
       } else {
         this.describeTextChangedHelper(
             prev, origEvt, prefixLen, suffixLen, autocompleteSuffix,
@@ -406,11 +375,11 @@ export class ChromeVoxEditableTextBase {
       if (evt.value.length > prev.value.length) {
         if (commonPrefixLen === prev.value.length) {
           this.speak(
-              evt.value[evt.value.length - 1], evt.triggeredByUser,
+              evt.value[evt.value.length - 1]!, evt.triggeredByUser,
               personality);
           return;
         } else if (commonSuffixLen === prev.value.length) {
-          this.speak(evt.value[0], evt.triggeredByUser, personality);
+          this.speak(evt.value[0]!, evt.triggeredByUser, personality);
           return;
         }
       }
@@ -418,11 +387,11 @@ export class ChromeVoxEditableTextBase {
       if (evt.value.length < prev.value.length) {
         if (commonPrefixLen === evt.value.length) {
           this.speak(
-              prev.value[prev.value.length - 1], evt.triggeredByUser,
+              prev.value[prev.value.length - 1]!, evt.triggeredByUser,
               personality);
           return;
         } else if (commonSuffixLen === evt.value.length) {
-          this.speak(prev.value[0], evt.triggeredByUser, personality);
+          this.speak(prev.value[0]!, evt.triggeredByUser, personality);
           return;
         }
       }
@@ -440,7 +409,7 @@ export class ChromeVoxEditableTextBase {
     }
 
     // If the text is short, just speak the whole thing.
-    if (evt.value.length <= this.maxShortPhraseLen) {
+    if (evt.value.length <= ChromeVoxEditableTextBase.maxShortPhraseLen) {
       this.describeTextChangedHelper(prev, evt, 0, 0, '', personality);
       return;
     }
@@ -453,7 +422,7 @@ export class ChromeVoxEditableTextBase {
       prefixLen++;
     }
     while (prefixLen > 0 &&
-           !StringUtil.isWordBreakChar(prev.value[prefixLen - 1])) {
+           !StringUtil.isWordBreakChar(prev.value[prefixLen - 1]!)) {
       prefixLen--;
     }
 
@@ -468,7 +437,7 @@ export class ChromeVoxEditableTextBase {
     }
     while (suffixLen > 0 &&
            !StringUtil.isWordBreakChar(
-               prev.value[prev.value.length - suffixLen])) {
+               prev.value[prev.value.length - suffixLen]!)) {
       suffixLen--;
     }
 
@@ -487,16 +456,17 @@ export class ChromeVoxEditableTextBase {
    *     suffix of this.value and newValue.
    * @return {boolean} True if the event was processed.
    */
-  describeTextChangedByIME(prev, evt, commonPrefixLen, commonSuffixLen) {
+  describeTextChangedByIME(
+      prev: TextChangeEvent, evt: TextChangeEvent, commonPrefixLen: number,
+      commonSuffixLen: number): boolean {
     // This supports typing Echo with IME.
     // - no selection range before and after.
     // - suffixes are common after both cursor end.
     // - prefixes are common at least max(0, "before length - 3").
     // Then, something changed in composition range. Announce the new
     // characters.
-    const relaxedPrefixLen = Math.max(
-        prev.start - ChromeVoxEditableTextBase.MAX_CHANGE_CHARS_BY_SINGLE_TYPE,
-        0);
+    const relaxedPrefixLen =
+        Math.max(prev.start - MAX_CHANGE_CHARS_BY_SINGLE_TYPE, 0);
     let suffixLen = evt.value.length - evt.end;
     if (prev.start === prev.end && evt.start === evt.end &&
         prev.value.length - prev.end === suffixLen &&
@@ -548,11 +518,13 @@ export class ChromeVoxEditableTextBase {
    * @param {string} autocompleteSuffix The autocomplete string that was added
    *     to the end, if any. It should be spoken at the end of the utterance
    *     describing the change.
-   * @param {TtsSpeechProperties=} opt_personality Personality to speak the
+   * @param {TtsSpeechProperties=} personality Personality to speak the
    *     text.
    */
   describeTextChangedHelper(
-      prev, evt, prefixLen, suffixLen, autocompleteSuffix, opt_personality) {
+      prev: TextChangeEvent, evt: TextChangeEvent, prefixLen: number,
+      suffixLen: number, autocompleteSuffix: string,
+      personality?: TtsSpeechProperties): void {
     const len = prev.value.length;
     const newLen = evt.value.length;
     const deletedLen = len - prefixLen - suffixLen;
@@ -575,7 +547,8 @@ export class ChromeVoxEditableTextBase {
           !StringUtil.isWordBreakChar(evt.value.substr(prefixLen - 1, 1))) {
         // Speak previous word.
         let index = prefixLen;
-        while (index > 0 && !StringUtil.isWordBreakChar(evt.value[index - 1])) {
+        while (index > 0 &&
+               !StringUtil.isWordBreakChar(evt.value[index - 1]!)) {
           index--;
         }
         if (index < prefixLen) {
@@ -595,7 +568,7 @@ export class ChromeVoxEditableTextBase {
     } else if (deletedLen === 1) {
       utterance = deleted;
       // Single-deleted characters should also use Personality.DELETED.
-      opt_personality = Personality.DELETED;
+      personality = Personality.DELETED;
     }
 
     if (autocompleteSuffix && utterance) {
@@ -605,32 +578,11 @@ export class ChromeVoxEditableTextBase {
     }
 
     if (utterance) {
-      this.speak(utterance, triggeredByUser, opt_personality);
+      this.speak(utterance, triggeredByUser, personality);
     }
   }
 }
 
-/**
- * @type {boolean} Whether insertions (i.e. changes of greater than one
- * character) should be spoken.
- */
-ChromeVoxEditableTextBase.shouldSpeakInsertions = false;
+// Private to module.
 
-/**
- * The maximum number of characters that are short enough to speak in response
- * to an event. For example, if the user selects "Hello", we will speak
- * "Hello, selected", but if the user selects 1000 characters, we will speak
- * "text selected" instead.
- *
- * @type {number}
- */
-ChromeVoxEditableTextBase.prototype.maxShortPhraseLen = 60;
-
-/**
- * The maximum number of characters that can be changed by typing a character.
- * This is not 1, because some IME, especially Japanese, have a complex typing
- * system.
- * For example, typing 'u' after 'xts' will be converted into 'っ'
- * @const {number}
- */
-ChromeVoxEditableTextBase.MAX_CHANGE_CHARS_BY_SINGLE_TYPE = 3;
+const MAX_CHANGE_CHARS_BY_SINGLE_TYPE = 3;

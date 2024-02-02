@@ -44,6 +44,7 @@ common_tsc_dir =
 # TS files to compile.
 ts_modules = [
   "background/chromevox_state.ts",
+  "background/editing/editable_text_base.ts",
   "background/editing/editing.ts",
   "background/editing/rich_editable_text.ts",
   "background/editing/text_edit_handler.ts",
@@ -89,7 +90,6 @@ js_modules = [
   "background/earcons.js",
   "background/editing/editable_line.js",
   "background/editing/editable_text.js",
-  "background/editing/editable_text_base.js",
   "background/editing/intent_handler.js",
   "background/editing/typing_echo.js",
   "background/es6_loader.js",
