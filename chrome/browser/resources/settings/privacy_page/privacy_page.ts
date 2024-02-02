@@ -211,11 +211,6 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
         },
       },
 
-      blockMidiByDefault_: {
-        type: Boolean,
-        value: () => loadTimeData.getBoolean('blockMidiByDefault'),
-      },
-
       isProactiveTopicsBlockingEnabled_: {
         type: Boolean,
         value: () =>
@@ -338,7 +333,6 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
   private enableSafeBrowsingSubresourceFilter_: boolean;
   private enableBlockAutoplayContentSetting_: boolean;
   private blockAutoplayStatus_: BlockAutoplayStatus;
-  private blockMidiByDefault_: boolean;
   private enableFederatedIdentityApiContentSetting_: boolean;
   private enablePaymentHandlerContentSetting_: boolean;
   private enableExperimentalWebPlatformFeatures_: boolean;

@@ -279,7 +279,6 @@ void ContentSettingSimpleBubbleModel::SetTitle() {
       {ContentSettingsType::SOUND, IDS_BLOCKED_SOUND_TITLE},
       {ContentSettingsType::CLIPBOARD_READ_WRITE, IDS_BLOCKED_CLIPBOARD_TITLE},
       {ContentSettingsType::GEOLOCATION, IDS_BLOCKED_GEOLOCATION_TITLE},
-      {ContentSettingsType::MIDI, IDS_BLOCKED_MIDI_TITLE},
       {ContentSettingsType::MIDI_SYSEX, IDS_BLOCKED_MIDI_SYSEX_TITLE},
       {ContentSettingsType::SENSORS, IDS_BLOCKED_SENSORS_TITLE},
   };
@@ -288,7 +287,6 @@ void ContentSettingSimpleBubbleModel::SetTitle() {
       {ContentSettingsType::COOKIES, IDS_ACCESSED_ON_DEVICE_SITE_DATA_TITLE},
       {ContentSettingsType::CLIPBOARD_READ_WRITE, IDS_ALLOWED_CLIPBOARD_TITLE},
       {ContentSettingsType::GEOLOCATION, IDS_ALLOWED_GEOLOCATION_TITLE},
-      {ContentSettingsType::MIDI, IDS_ALLOWED_MIDI_TITLE},
       {ContentSettingsType::MIDI_SYSEX, IDS_ALLOWED_MIDI_SYSEX_TITLE},
       {ContentSettingsType::SENSORS, IDS_ALLOWED_SENSORS_TITLE},
   };
@@ -318,7 +316,6 @@ void ContentSettingSimpleBubbleModel::SetMessage() {
       {ContentSettingsType::MIXEDSCRIPT,
        IDS_BLOCKED_DISPLAYING_INSECURE_CONTENT},
       {ContentSettingsType::GEOLOCATION, IDS_BLOCKED_GEOLOCATION_MESSAGE},
-      {ContentSettingsType::MIDI, IDS_BLOCKED_MIDI_MESSAGE},
       {ContentSettingsType::MIDI_SYSEX, IDS_BLOCKED_MIDI_SYSEX_MESSAGE},
       {ContentSettingsType::CLIPBOARD_READ_WRITE,
        IDS_BLOCKED_CLIPBOARD_MESSAGE},
@@ -331,7 +328,6 @@ void ContentSettingSimpleBubbleModel::SetMessage() {
   const ContentSettingsTypeIdEntry kAccessedMessageIDs[] = {
       {ContentSettingsType::COOKIES, IDS_ACCESSED_ON_DEVICE_SITE_DATA_MESSAGE},
       {ContentSettingsType::GEOLOCATION, IDS_ALLOWED_GEOLOCATION_MESSAGE},
-      {ContentSettingsType::MIDI, IDS_ALLOWED_MIDI_MESSAGE},
       {ContentSettingsType::MIDI_SYSEX, IDS_ALLOWED_MIDI_SYSEX_MESSAGE},
       {ContentSettingsType::CLIPBOARD_READ_WRITE,
        IDS_ALLOWED_CLIPBOARD_MESSAGE},
@@ -632,7 +628,6 @@ void ContentSettingSingleRadioGroup::SetRadioGroup() {
       {ContentSettingsType::POPUPS, IDS_BLOCKED_POPUPS_REDIRECTS_UNBLOCK},
       {ContentSettingsType::SOUND, IDS_BLOCKED_SOUND_UNBLOCK},
       {ContentSettingsType::GEOLOCATION, IDS_BLOCKED_GEOLOCATION_UNBLOCK},
-      {ContentSettingsType::MIDI, IDS_BLOCKED_MIDI_UNBLOCK},
       {ContentSettingsType::MIDI_SYSEX, IDS_BLOCKED_MIDI_SYSEX_UNBLOCK},
       {ContentSettingsType::CLIPBOARD_READ_WRITE,
        IDS_BLOCKED_CLIPBOARD_UNBLOCK},
@@ -642,7 +637,6 @@ void ContentSettingSingleRadioGroup::SetRadioGroup() {
   static const ContentSettingsTypeIdEntry kAllowedAllowIDs[] = {
       {ContentSettingsType::COOKIES, IDS_ALLOWED_ON_DEVICE_SITE_DATA_NO_ACTION},
       {ContentSettingsType::GEOLOCATION, IDS_ALLOWED_GEOLOCATION_NO_ACTION},
-      {ContentSettingsType::MIDI, IDS_ALLOWED_MIDI_NO_ACTION},
       {ContentSettingsType::MIDI_SYSEX, IDS_ALLOWED_MIDI_SYSEX_NO_ACTION},
       {ContentSettingsType::CLIPBOARD_READ_WRITE,
        IDS_ALLOWED_CLIPBOARD_NO_ACTION},
@@ -671,7 +665,6 @@ void ContentSettingSingleRadioGroup::SetRadioGroup() {
       {ContentSettingsType::POPUPS, IDS_BLOCKED_POPUPS_REDIRECTS_NO_ACTION},
       {ContentSettingsType::SOUND, IDS_BLOCKED_SOUND_NO_ACTION},
       {ContentSettingsType::GEOLOCATION, IDS_BLOCKED_GEOLOCATION_NO_ACTION},
-      {ContentSettingsType::MIDI, IDS_BLOCKED_MIDI_NO_ACTION},
       {ContentSettingsType::MIDI_SYSEX, IDS_BLOCKED_MIDI_SYSEX_NO_ACTION},
       {ContentSettingsType::CLIPBOARD_READ_WRITE,
        IDS_BLOCKED_CLIPBOARD_NO_ACTION},
@@ -680,7 +673,6 @@ void ContentSettingSingleRadioGroup::SetRadioGroup() {
   static const ContentSettingsTypeIdEntry kAllowedBlockIDs[] = {
       {ContentSettingsType::COOKIES, IDS_ALLOWED_ON_DEVICE_SITE_DATA_BLOCK},
       {ContentSettingsType::GEOLOCATION, IDS_ALLOWED_GEOLOCATION_BLOCK},
-      {ContentSettingsType::MIDI, IDS_ALLOWED_MIDI_BLOCK},
       {ContentSettingsType::MIDI_SYSEX, IDS_ALLOWED_MIDI_SYSEX_BLOCK},
       {ContentSettingsType::CLIPBOARD_READ_WRITE, IDS_ALLOWED_CLIPBOARD_BLOCK},
       {ContentSettingsType::SENSORS, IDS_ALLOWED_SENSORS_BLOCK},
@@ -1866,7 +1858,6 @@ ContentSettingBubbleModel::CreateContentSettingBubbleModel(
     case ContentSettingsType::JAVASCRIPT:
     case ContentSettingsType::SOUND:
     case ContentSettingsType::CLIPBOARD_READ_WRITE:
-    case ContentSettingsType::MIDI:
     case ContentSettingsType::MIDI_SYSEX:
     case ContentSettingsType::SENSORS:
       return std::make_unique<ContentSettingSingleRadioGroup>(

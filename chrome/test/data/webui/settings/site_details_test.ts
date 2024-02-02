@@ -55,7 +55,6 @@ suite('SiteDetails', function() {
   // Initialize a site-details before each test.
   setup(function() {
     loadTimeData.overrideValues({
-      blockMidiByDefault: true,
       enableWebPrintingContentSetting: true,
     });
     prefs = createSiteSettingsPrefs(
@@ -109,7 +108,7 @@ suite('SiteDetails', function() {
               ContentSettingsTypes.BACKGROUND_SYNC,
               [createRawSiteException('https://foo.com:443')]),
           createContentSettingTypeToValuePair(
-              ContentSettingsTypes.MIDI,
+              ContentSettingsTypes.MIDI_DEVICES,
               [createRawSiteException('https://foo.com:443')]),
           createContentSettingTypeToValuePair(
               ContentSettingsTypes.PROTECTED_CONTENT,

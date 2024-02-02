@@ -421,9 +421,6 @@
     <message name="IDS_PAGE_INFO_STATE_TEXT_MIC_ASK" desc="The Page Info permission subpage and the main page info page contain a label which shows the state of the site permission. This is the text shown if the microphone permission is in the ask state and the site can prompt the user to ask if allow the site to use your microphone.">
       Can ask to use your microphone
     </message>
-    <message name="IDS_PAGE_INFO_STATE_TEXT_MIDI_ASK" desc="The Page Info permission subpage and the main page info page contain a label which shows the state of the site permission. This is the text shown if the MIDI permission is in the ask state and the site can prompt the user to ask if they allow the site to use MIDI devices.">
-      Can ask to use your MIDI devices
-    </message>
     <message name="IDS_PAGE_INFO_STATE_TEXT_MIDI_SYSEX_ASK" desc="The Page Info permission subpage and the main page info page contain a label which shows the state of the site permission. This is the text shown if the MIDI_SYSEX permission is in the ask state and the site can prompt the user to ask if they allow the site to control and reprogram MIDI devices.">
       Can ask to control and reprogram your MIDI devices
     </message>

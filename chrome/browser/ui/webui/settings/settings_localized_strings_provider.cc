@@ -2799,9 +2799,9 @@ void AddSiteSettingsStrings(content::WebUIDataSource* html_source,
       {"siteSettingsHidDevicesAsk", IDS_SETTINGS_SITE_SETTINGS_HID_DEVICES_ASK},
       {"siteSettingsHidDevicesBlock",
        IDS_SETTINGS_SITE_SETTINGS_HID_DEVICES_BLOCK},
-      {"siteSettingsMidiDevices", IDS_SITE_SETTINGS_TYPE_MIDI},
+      {"siteSettingsMidiDevices", IDS_SITE_SETTINGS_TYPE_MIDI_SYSEX},
       {"siteSettingsMidiDevicesMidSentence",
-       IDS_SITE_SETTINGS_TYPE_MIDI_MID_SENTENCE},
+       IDS_SITE_SETTINGS_TYPE_MIDI_SYSEX_MID_SENTENCE},
       {"siteSettingsSerialPorts", IDS_SITE_SETTINGS_TYPE_SERIAL_PORTS},
       {"siteSettingsSerialPortsMidSentence",
        IDS_SITE_SETTINGS_TYPE_SERIAL_PORTS_MID_SENTENCE},
@@ -3436,10 +3436,6 @@ void AddSiteSettingsStrings(content::WebUIDataSource* html_source,
       "permissionDedicatedCpssSettings",
       base::FeatureList::IsEnabled(
           permissions::features::kPermissionDedicatedCpssSetting));
-
-  html_source->AddBoolean(
-      "blockMidiByDefault",
-      base::FeatureList::IsEnabled(features::kBlockMidiByDefault));
 
   // The exception placeholder should not be translated. See
   // crbug.com/1095878.

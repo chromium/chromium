@@ -103,12 +103,6 @@
   <message name="IDS_SITE_SETTINGS_TYPE_MIC_MID_SENTENCE" desc="The label used for the microphone site settings controls when used mid-sentence.">
     microphone
   </message>
-  <message name="IDS_SITE_SETTINGS_TYPE_MIDI" desc="The label used for MIDI devices site settings controls.">
-    MIDI devices
-  </message>
-  <message name="IDS_SITE_SETTINGS_TYPE_MIDI_MID_SENTENCE" desc="The label used for MIDI devices site settings controls when used mid-sentence.">
-    MIDI devices
-  </message>
   <message name="IDS_SITE_SETTINGS_TYPE_MIDI_SYSEX" desc="The label used for system exclusive messages for MIDI devices site settings controls.">
     MIDI device control and reprogramming
   </message>

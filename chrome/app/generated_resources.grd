@@ -13672,30 +13672,6 @@ Please help our engineers fix this problem. Tell us what happened right before y
         </message>
 
       <!-- Web MIDI messages -->
-      <message name="IDS_ALLOWED_MIDI_TITLE" desc="Title of the info bubble shown when a site is allowed to use MIDI messages.">
-        MIDI devices allowed
-      </message>
-      <message name="IDS_BLOCKED_MIDI_TITLE" desc="Title of the info bubble shown when a site is denied to use MIDI smessages.">
-        MIDI devices blocked
-      </message>
-      <message name="IDS_ALLOWED_MIDI_MESSAGE" desc="Info bubble message and location bar icon tooltip text shown when a site has been allowed to use MIDI messages.">
-        This site is using your MIDI devices.
-      </message>
-      <message name="IDS_ALLOWED_MIDI_BLOCK" desc="Radio button to block access to use MIDI messages.">
-        Always block <ph name="HOST">$1<ex>example.com</ex></ph> from using your MIDI devices.
-      </message>
-      <message name="IDS_ALLOWED_MIDI_NO_ACTION" desc="Radio button to keep allowing access to use MIDI messages.">
-        Continue allowing this site to use your MIDI devices.
-      </message>
-      <message name="IDS_BLOCKED_MIDI_MESSAGE" desc="Info bubble message and location bar icon tooltip text shown when a site has been denied access to use MIDI messages.">
-        This site has been blocked from using your MIDI devices.
-      </message>
-      <message name="IDS_BLOCKED_MIDI_UNBLOCK" desc="Radio button choice to unblock a site from using MIDI messages.">
-        Always allow <ph name="HOST">$1<ex>mail.google.com</ex></ph> to use your MIDI devices.
-      </message>
-      <message name="IDS_BLOCKED_MIDI_NO_ACTION" desc="Radio button choice to continue blocking a site from using MIDI messages.">
-        Continue blocking this site from using your MIDI devices.
-      </message>
       <message name="IDS_ALLOWED_MIDI_SYSEX_TITLE" desc="Title of the info bubble shown when a site is allowed to use MIDI system exclusive messages.">
         Control and reprogramming of MIDI devices allowed
       </message>

@@ -320,7 +320,6 @@ const ui::ImageModel PageInfoViewFactory::GetPermissionIcon(
                    : &vector_icons::kCertificateChromeRefreshIcon;
         break;
 #endif
-      case ContentSettingsType::MIDI:
       case ContentSettingsType::MIDI_SYSEX:
         icon = show_blocked_badge ? &vector_icons::kMidiOffChromeRefreshIcon
                                   : &vector_icons::kMidiChromeRefreshIcon;
@@ -451,7 +450,6 @@ const ui::ImageModel PageInfoViewFactory::GetPermissionIcon(
       icon = &vector_icons::kProtectedContentIcon;
       break;
 #endif
-    case ContentSettingsType::MIDI:
     case ContentSettingsType::MIDI_SYSEX:
       icon = &vector_icons::kMidiIcon;
       break;

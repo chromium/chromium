@@ -34,7 +34,6 @@ export enum ContentSettingsTypes {
   JAVASCRIPT_JIT = 'javascript-jit',
   LOCAL_FONTS = 'local-fonts',
   MIC = 'media-stream-mic',  // AKA Microphone.
-  MIDI = 'midi',
   MIDI_DEVICES = 'midi-sysex',
   MIXEDSCRIPT = 'mixed-script',
   NOTIFICATIONS = 'notifications',

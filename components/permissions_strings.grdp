@@ -91,9 +91,6 @@
   <message name="IDS_NOTIFICATION_PERMISSIONS_FRAGMENT" desc="Permission sentence fragment to show following the prompt 'This site wants to:' in a permissions request">
     Show notifications
   </message>
-  <message name="IDS_MIDI_PERMISSION_FRAGMENT" desc="Permission asked in the permission bubble when a URL wants to access MIDI devices, along with other permissions requests. Preceded by the prompt 'This site would like to:'">
-    Use your MIDI devices
-  </message>
   <message name="IDS_MIDI_SYSEX_PERMISSION_FRAGMENT" desc="Permission asked in the permission bubble when a URL wants to access MIDI devices with system exclusive messages, along with other permissions requests. Preceded by the prompt 'This site would like to:'">
     Control and reprogram your MIDI devices (SysEx)
   </message>
@@ -241,9 +238,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
     </message>
     <message name="IDS_NOTIFICATION_PERMISSIONS_CHIP" desc="Button text representing a request for showing notifications from a website. When clicked, shows a permission prompt bubble with more information.">
       Get notifications?
-    </message>
-    <message name="IDS_MIDI_PERMISSION_CHIP" desc="Button text representing a request for accessing MIDI devices from a website. When clicked, shows a permission prompt bubble with more information.">
-      Use MIDI devices?
     </message>
     <message name="IDS_MIDI_SYSEX_PERMISSION_CHIP" desc="Button text representing a request for accessing MIDI devices from a website. When clicked, shows a permission prompt bubble with more information.">
       Control and reprogram MIDI devices?
