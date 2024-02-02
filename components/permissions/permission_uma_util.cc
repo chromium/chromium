@@ -1298,11 +1298,44 @@ void PermissionUmaUtil::RecordPromptDecided(
 
 void PermissionUmaUtil::RecordTimeElapsedBetweenGrantAndUse(
     ContentSettingsType type,
-    base::TimeDelta delta) {
-  base::UmaHistogramCustomCounts("Permissions.Usage.ElapsedTimeSinceGrant." +
-                                     PermissionUtil::GetPermissionString(type),
-                                 delta.InSeconds(), 1,
+    base::TimeDelta delta,
+    content_settings::SettingSource source) {
+  std::string base_histogram = "Permissions.Usage.ElapsedTimeSinceGrant." +
+                               PermissionUtil::GetPermissionString(type);
+  std::string source_suffix;
+  switch (source) {
+    case content_settings::SETTING_SOURCE_NONE:
+      source_suffix = "FromNone";
+      break;
+    case content_settings::SETTING_SOURCE_POLICY:
+      source_suffix = "FromPolicy";
+      break;
+    case content_settings::SETTING_SOURCE_EXTENSION:
+      source_suffix = "FromExtension";
+      break;
+    case content_settings::SETTING_SOURCE_USER:
+      source_suffix = "FromUser";
+      break;
+    case content_settings::SETTING_SOURCE_ALLOWLIST:
+      source_suffix = "FromAllowlist";
+      break;
+    case content_settings::SETTING_SOURCE_SUPERVISED:
+      source_suffix = "FromSupervised";
+      break;
+    case content_settings::SETTING_SOURCE_INSTALLED_WEBAPP:
+      source_suffix = "FromInstalledWebApp";
+      break;
+    case content_settings::SETTING_SOURCE_TPCD_GRANT:
+      source_suffix = "FromSourceTpcdGrant";
+      break;
+  }
+  base::UmaHistogramCustomCounts(base_histogram, delta.InSeconds(), 1,
                                  base::Days(365).InSeconds(), 100);
+  if (!source_suffix.empty()) {
+    base::UmaHistogramCustomCounts(base_histogram + "." + source_suffix,
+                                   delta.InSeconds(), 1,
+                                   base::Days(365).InSeconds(), 100);
+  }
 }
 
 void PermissionUmaUtil::RecordTimeElapsedBetweenGrantAndRevoke(

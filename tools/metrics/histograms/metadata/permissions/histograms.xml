@@ -52,6 +52,17 @@ chromium-metrics-reviews@google.com.
   <variant name="WindowPlacement"/>
 </variants>
 
+<variants name="ContentSettingSource">
+  <variant name="FromAllowlist"/>
+  <variant name="FromExtension"/>
+  <variant name="FromInstalledWebApp"/>
+  <variant name="FromNone"/>
+  <variant name="FromPolicy"/>
+  <variant name="FromSourceTpcdGrant"/>
+  <variant name="FromSupervised"/>
+  <variant name="FromUser"/>
+</variants>
+
 <variants name="PermissionTypesSupportPermissionsPolicy">
   <variant name="AR"/>
   <variant name="AudioCapture"/>
@@ -1165,6 +1176,21 @@ chromium-metrics-reviews@google.com.
     usage. This histogram will be recorded only for the first usage of a given
     permission after the site has loaded.
   </summary>
+</histogram>
+
+<histogram base="true"
+    name="Permissions.Usage.ElapsedTimeSinceGrant.{PermissionType}.{Source}"
+    units="seconds" expires_after="2024-07-21">
+  <owner>fjacky@chromium.org</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
+  <summary>
+    Records the time elapsed since the grant of the permission until it's latest
+    usage for a particular content setting source. This histogram will be
+    recorded only for the first usage of a given permission after the site has
+    loaded.
+  </summary>
+  <token key="PermissionType" variants="AllPermissionTypes"/>
+  <token key="Source" variants="ContentSettingSource"/>
 </histogram>
 
 <histogram name="Permissions.Usage.Notifications.DidRecordUkm" enum="Boolean"
