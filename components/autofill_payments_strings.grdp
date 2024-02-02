@@ -415,9 +415,6 @@
     <message name="IDS_AUTOFILL_CARD_UNMASK_PROMPT_NAVIGATION_TITLE" desc="Title for the credit card unmasking dialog navigation bar.">
       Confirm Card
     </message>
-    <message name="IDS_AUTOFILL_CARD_UNMASK_PROMPT_NAVIGATION_TITLE_VERIFICATION" desc="Title for the IOS navigation bar view when a credit card unmasking related prompt is shown. Such dialog is shown when the user wants to fill a credit card into the form but Chrome needs to finish some verification steps before filling the form.">
-      Verification
-    </message>
     <message name="IDS_AUTOFILL_CARD_UNMASK_PROMPT_INSTRUCTIONS" desc="Text explaining what the user should do in the card unmasking dialog.">
       Enter the CVC for <ph name="CREDIT_CARD">$1<ex>Visa - 5679</ex></ph>. After you confirm, card details from your Google Account will be shared with this site.
     </message>

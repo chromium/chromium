@@ -197,9 +197,7 @@ void CardUnmaskPromptControllerImpl::NewCardLinkClicked() {
 #if BUILDFLAG(IS_IOS)
 std::u16string CardUnmaskPromptControllerImpl::GetNavigationTitle() const {
   return l10n_util::GetStringUTF16(
-      VirtualCardFeatureEnabled()
-          ? IDS_AUTOFILL_CARD_UNMASK_PROMPT_NAVIGATION_TITLE_VERIFICATION
-          : IDS_AUTOFILL_CARD_UNMASK_PROMPT_NAVIGATION_TITLE);
+      IDS_AUTOFILL_CARD_UNMASK_PROMPT_NAVIGATION_TITLE);
 }
 #endif
 
