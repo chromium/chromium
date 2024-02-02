@@ -43,7 +43,7 @@ js_library("welcome") {
   extra_deps = [ ":web_components" ]
   externs_list = [
     "$externs_path/tts.js",
-    "//ui/webui/resources/cr_elements/cr_input/cr_input_externs.js",
+    "//ash/webui/common/resources/cr_elements/cr_input/cr_input_externs.js",
   ]
 }
 

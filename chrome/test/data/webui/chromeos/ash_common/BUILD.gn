@@ -124,7 +124,7 @@ js_library("navigation_view_panel_test") {
     "//ash/webui/common/resources:navigation_view_panel",
   ]
   externs_list = [
-    "//ui/webui/resources/cr_elements/cr_drawer/cr_drawer_externs.js",
+    "//ash/webui/common/resources/cr_elements/cr_drawer/cr_drawer_externs.js",
     "$externs_path/mocha-2.5.js",
   ]
 }

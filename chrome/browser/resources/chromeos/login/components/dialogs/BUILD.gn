@@ -58,7 +58,7 @@ js_library("oobe_modal_dialog") {
   ]
   externs_list = [
     "$externs_path/chrome_send.js",
-    "//ui/webui/resources/cr_elements/cr_dialog/cr_dialog_externs.js",
+    "//ash/webui/common/resources/cr_elements/cr_dialog/cr_dialog_externs.js",
   ]
   extra_deps = [ ":web_components" ]
 }
