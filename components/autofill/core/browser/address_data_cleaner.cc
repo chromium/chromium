@@ -111,8 +111,8 @@ void DeduplicateProfiles(
       }
 
       // The profiles are found to be mergeable; update the existing profile.
-      existing_profile.SaveAdditionalInfo(*profile_to_merge,
-                                          comparator.app_locale());
+      existing_profile.MergeDataFrom(*profile_to_merge,
+                                     comparator.app_locale());
       profiles_to_delete.insert(profile_to_merge->guid());
 
       // Account profiles track from which service they originate. This allows

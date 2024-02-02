@@ -56,13 +56,6 @@ extern const int kMaxBucketsCount;
 
 class AutofillMetrics {
  public:
-  enum AutofillProfileAction {
-    EXISTING_PROFILE_USED,
-    EXISTING_PROFILE_UPDATED,
-    NEW_PROFILE_CREATED,
-    AUTOFILL_PROFILE_ACTION_ENUM_SIZE,
-  };
-
   enum AutofillFormSubmittedState {
     NON_FILLABLE_FORM_OR_NEW_DATA,
     FILLABLE_FORM_AUTOFILLED_ALL,
@@ -1137,10 +1130,6 @@ class AutofillMetrics {
 
   // This should be called each time a server response is parsed for a form.
   static void LogServerResponseHasDataForForm(bool has_data);
-
-  // This should be called at each form submission to indicate what profile
-  // action happened.
-  static void LogProfileActionOnFormSubmitted(AutofillProfileAction action);
 
   // This should be called at each form submission to indicate the autofilled
   // state of the form.

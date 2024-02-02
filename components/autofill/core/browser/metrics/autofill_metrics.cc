@@ -1703,13 +1703,6 @@ void AutofillMetrics::LogServerResponseHasDataForForm(bool has_data) {
 }
 
 // static
-void AutofillMetrics::LogProfileActionOnFormSubmitted(
-    AutofillProfileAction action) {
-  UMA_HISTOGRAM_ENUMERATION("Autofill.ProfileActionOnFormSubmitted", action,
-                            AUTOFILL_PROFILE_ACTION_ENUM_SIZE);
-}
-
-// static
 void AutofillMetrics::LogAutofillFormSubmittedState(
     AutofillFormSubmittedState state,
     bool is_for_credit_card,

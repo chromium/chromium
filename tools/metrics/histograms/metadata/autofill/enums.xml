@@ -3025,12 +3025,6 @@ Called by update_autofill_enums.py.-->
   <int value="1" label="Empty on page load"/>
 </enum>
 
-<enum name="AutofillProfileAction">
-  <int value="0" label="Existing profile used"/>
-  <int value="1" label="Existing profile updated"/>
-  <int value="2" label="New profile created"/>
-</enum>
-
 <enum name="AutofillProfileTokenQualityObservationType">
   <int value="0" label="Unknown"/>
   <int value="1" label="Accepted"/>
