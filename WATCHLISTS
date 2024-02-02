@@ -40,7 +40,8 @@
                   '|content/browser/accessibility/browser_accessibility(\.|_manager|_win|_com|_cocoa)'
     },
     'accessibility_reading': {
-      'filepath': 'read_anything/',
+      'filepath': 'read_anything/|'\
+      'chrome/renderer/accessibility/',
     },
     'accessibility_service': {
       'filepath': 'services/accessibility/',
