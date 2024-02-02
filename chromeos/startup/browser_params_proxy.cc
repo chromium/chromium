@@ -26,8 +26,12 @@ bool BrowserParamsProxy::IsLoggedIn() {
   return BrowserPostLoginParams::IsLoggedIn();
 }
 
-bool BrowserParamsProxy::IsCrosapiDisabledForTesting() const {
-  return BrowserInitParams::is_crosapi_disabled_for_testing();
+bool BrowserParamsProxy::IsCrosapiDisabledForTesting() {
+  return BrowserInitParams::IsCrosapiDisabledForTesting();
+}
+
+void BrowserParamsProxy::DisableCrosapiForTesting() {
+  return BrowserInitParams::DisableCrosapiForTesting();
 }
 
 uint32_t BrowserParamsProxy::CrosapiVersion() const {
