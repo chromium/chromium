@@ -4,8 +4,10 @@
 
 #include "chrome/browser/ash/app_restore/full_restore_service.h"
 
+#include <memory>
 #include <optional>
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/wm/window_restore/window_restore_util.h"
@@ -94,6 +96,18 @@ bool CanPerformRestore(const AccountId& account_id) {
       account_id);
 }
 
+class MockFullRestoreServiceDelegate : public FullRestoreService::Delegate {
+ public:
+  MockFullRestoreServiceDelegate() = default;
+  MockFullRestoreServiceDelegate(const MockFullRestoreServiceDelegate&) =
+      delete;
+  MockFullRestoreServiceDelegate& operator=(
+      const MockFullRestoreServiceDelegate&) = delete;
+  ~MockFullRestoreServiceDelegate() override = default;
+
+  MOCK_METHOD(void, MaybeStartPineOverviewSession, (), (override));
+};
+
 }  // namespace
 
 class FullRestoreServiceTest : public testing::Test {
@@ -133,13 +147,19 @@ class FullRestoreServiceTest : public testing::Test {
     return fake_user_manager_.Get();
   }
 
-  void CreateFullRestoreServiceForTesting() {
+  void CreateFullRestoreServiceForTesting(
+      std::unique_ptr<MockFullRestoreServiceDelegate> mock_delegate = nullptr) {
     FullRestoreServiceFactory::GetInstance()->SetTestingFactoryAndUse(
         profile(), base::BindRepeating([](content::BrowserContext* context)
                                            -> std::unique_ptr<KeyedService> {
           return std::make_unique<FullRestoreService>(
               Profile::FromBrowserContext(context));
         }));
+
+    if (mock_delegate) {
+      FullRestoreService::GetForProfile(profile())->delegate_ =
+          std::move(mock_delegate);
+    }
     content::RunAllTasksUntilIdle();
   }
 
@@ -593,6 +613,32 @@ TEST_F(FullRestoreServiceTestHavingFullRestoreFile, AskEveryTimeAndRestore) {
   VerifyNotification(false, false);
 
   FullRestoreService::MaybeCloseNotification(profile());
+}
+
+// TODO(sammiequon): These forest tests should be either parameterized or use
+// their own suite, once the direction is more clear.
+TEST_F(FullRestoreServiceTestHavingFullRestoreFile,
+       AskEveryTimeAndRestoreForest) {
+  base::test::ScopedFeatureList scoped_feature_list_{features::kForestFeature};
+  switches::SetIgnoreForestSecretKeyForTest(true);
+
+  profile()->GetPrefs()->SetInteger(
+      prefs::kRestoreAppsAndPagesPrefName,
+      static_cast<int>(RestoreOption::kAskEveryTime));
+  auto mock_delegate = std::make_unique<MockFullRestoreServiceDelegate>();
+  EXPECT_CALL(*mock_delegate, MaybeStartPineOverviewSession).Times(1);
+  CreateFullRestoreServiceForTesting(std::move(mock_delegate));
+
+  // The notification should not show up anymore with forest enabled.
+  VerifyRestoreInitSettingHistogram(RestoreOption::kAskEveryTime, 1);
+  VerifyNotification(/*has_crash_notification=*/false,
+                     /*has_restore_notification=*/false);
+
+  EXPECT_EQ(RestoreOption::kAskEveryTime, GetRestoreOption());
+  EXPECT_TRUE(CanPerformRestore(account_id()));
+  EXPECT_TRUE(allow_save());
+
+  switches::SetIgnoreForestSecretKeyForTest(false);
 }
 
 // If the OS restore setting is 'Ask every time', after reboot, show the restore
