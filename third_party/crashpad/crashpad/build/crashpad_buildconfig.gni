@@ -106,7 +106,7 @@ template("crashpad_executable") {
     if (crashpad_is_in_fuchsia) {
       conversion_config = [ "//build/config:Wno-conversion" ]
       if (configs + conversion_config - conversion_config == configs) {
-        # TODO(https://fxbug.dev/58162): Decide if these are worth enabling.
+        # TODO(https://fxbug.dev/42136089): Decide if these are worth enabling.
         configs += conversion_config
       }
     }
@@ -132,7 +132,7 @@ template("crashpad_loadable_module") {
     if (crashpad_is_in_fuchsia) {
       conversion_config = [ "//build/config:Wno-conversion" ]
       if (configs + conversion_config - conversion_config == configs) {
-        # TODO(https://fxbug.dev/58162): Decide if these are worth enabling.
+        # TODO(https://fxbug.dev/42136089): Decide if these are worth enabling.
         configs += conversion_config
       }
     }
@@ -158,7 +158,7 @@ template("crashpad_static_library") {
     if (crashpad_is_in_fuchsia) {
       conversion_config = [ "//build/config:Wno-conversion" ]
       if (configs + conversion_config - conversion_config == configs) {
-        # TODO(https://fxbug.dev/58162): Decide if these are worth enabling.
+        # TODO(https://fxbug.dev/42136089): Decide if these are worth enabling.
         configs += conversion_config
       }
     }
