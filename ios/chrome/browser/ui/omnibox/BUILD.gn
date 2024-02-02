@@ -258,8 +258,6 @@ source_set("eg2_tests") {
     "//components/feature_engagement/public",
     "//components/strings:components_strings_grit",
     "//ios/chrome/app/strings",
-    "//ios/chrome/browser/iph_for_new_chrome_user/model:features",
-    "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/ui/content_suggestions:content_suggestions_constant",
     "//ios/chrome/browser/ui/omnibox/popup:popup_accessibility_identifier_constants",

@@ -14,8 +14,6 @@
 #import "build/build_config.h"
 #import "components/feature_engagement/public/feature_constants.h"
 #import "components/strings/grit/components_strings.h"
-#import "ios/chrome/browser/iph_for_new_chrome_user/model/features.h"
-#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_constant.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_app_interface.h"
@@ -560,9 +558,6 @@ void FocusFakebox() {
   if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"Skipped for iPad (no bottom omnibox in tablet)");
   }
-
-  [ChromeEarlGrey setBoolValue:YES forUserPref:prefs::kBottomOmnibox];
-
   // Enable the IPH Demo Mode feature to ensure the IPH triggers
   AppLaunchConfiguration config = [self appConfigurationForTestCase];
   config.additional_args.push_back(
@@ -634,10 +629,6 @@ void FocusFakebox() {
   [ChromeEarlGrey verifyStringCopied:base::SysUTF8ToNSString(_URL1.spec())];
 
   DefocusOmnibox();
-
-  // Verify the omnibox is at the top.
-  [ChromeEarlGrey
-      waitForUIElementToAppearWithMatcher:chrome_test_util::OmniboxOnTop()];
 
   // Verify the share button IPH is shown.
   [ChromeEarlGrey
@@ -775,26 +766,22 @@ void FocusFakebox() {
   if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"Skipped for iPad (no bottom omnibox in tablet)");
   }
-
-  [ChromeEarlGrey setBoolValue:YES forUserPref:prefs::kBottomOmnibox];
-
   // Enable the IPH Demo Mode feature to ensure the IPH triggers
   AppLaunchConfiguration config = [self appConfigurationForTestCase];
   config.additional_args.push_back(
       base::StringPrintf("--enable-features=%s:chosen_feature/"
-                         "IPH_iOSShareToolbarItemFeature",
-                         feature_engagement::kIPHDemoMode.name) +
-      "," + std::string(kIPHForSafariSwitcher.name));
-
+                         "IPH_iOSShareToolbarItemFeature,IPHForSafariSwitcher",
+                         feature_engagement::kIPHDemoMode.name));
   // Force the conditions that allow the iph to show.
   config.additional_args.push_back("-ForceExperienceForDeviceSwitcher");
   config.additional_args.push_back("SyncedAndFirstDevice");
 
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
 
+  GREYAssertTrue([ChromeEarlGrey isBottomOmniboxSteadyStateEnabled],
+                 @"Test case should have ran in bottom omnibox environment");
+
   [self openPage1];
-  [ChromeEarlGrey
-      waitForUIElementToAppearWithMatcher:chrome_test_util::OmniboxAtBottom()];
 
   // Long pressing should allow copying.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::DefocusedLocationView()]
@@ -847,10 +834,6 @@ void FocusFakebox() {
   [[EarlGrey selectElementWithMatcher:CopyContextMenuButton()]
       performAction:grey_tap()];
   [ChromeEarlGrey verifyStringCopied:base::SysUTF8ToNSString(_URL1.spec())];
-
-  // Verify the omnibox is at the top.
-  [ChromeEarlGrey
-      waitForUIElementToAppearWithMatcher:chrome_test_util::OmniboxOnTop()];
 
   // Verify the share button IPH is shown.
   GREYAssert([ChromeEarlGrey testUIElementAppearanceWithMatcher:
@@ -1060,7 +1043,6 @@ void FocusFakebox() {
 }
 
 - (void)tearDown {
-  [ChromeEarlGrey setBoolValue:NO forUserPref:prefs::kBottomOmnibox];
   // Clear the pasteboard after every test.
   [ChromeEarlGrey clearPasteboard];
   [super tearDown];
