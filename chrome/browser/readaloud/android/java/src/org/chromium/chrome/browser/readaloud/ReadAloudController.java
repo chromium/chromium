@@ -9,6 +9,7 @@ import static org.chromium.chrome.modules.readaloud.PlaybackListener.State.PLAYI
 import static org.chromium.chrome.modules.readaloud.PlaybackListener.State.STOPPED;
 
 import android.app.Activity;
+import android.content.Intent;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
@@ -660,6 +661,13 @@ public class ReadAloudController
         }
     }
 
+    /** Pause audio if playing. */
+    public void pause() {
+        if (mPlayback != null && mCurrentPlaybackData.state() == PLAYING) {
+            mPlayback.pause();
+        }
+    }
+
     private void maybeHandleTabReload(Tab tab, GURL newUrl) {
         if (mHighlighter != null
                 && tab.getUrl() != null
@@ -717,6 +725,17 @@ public class ReadAloudController
             selectedVoiceId = voices.get(0).getVoiceId();
         }
         mSelectedVoiceId.set(selectedVoiceId);
+    }
+
+    /**
+     * Pause if the given intent is for processing text.
+     *
+     * @param intent Intent being sent by Chrome.
+     */
+    public void maybePauseForOutgoingIntent(@Nullable Intent intent) {
+        if (intent != null && intent.getAction().equals(Intent.ACTION_PROCESS_TEXT)) {
+            pause();
+        }
     }
 
     // Player.Delegate

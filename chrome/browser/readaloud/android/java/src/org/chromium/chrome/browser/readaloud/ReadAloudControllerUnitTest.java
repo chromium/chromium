@@ -24,6 +24,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
+import android.content.Intent;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -1600,6 +1601,66 @@ public class ReadAloudControllerUnitTest {
                 /* skipLoadingTab= */ true);
         verify(mPlayback, never()).play();
         verify(mPlayerCoordinator).restorePlayers();
+    }
+
+    @Test
+    public void testPause_notPlayingTab() {
+        mController.pause();
+        // Not currently playing, so nothing should happen.
+        verify(mPlayback, never()).pause();
+    }
+
+    @Test
+    public void testPause_alreadyStopped() {
+        requestAndStartPlayback();
+        var data = Mockito.mock(PlaybackListener.PlaybackData.class);
+        doReturn(PlaybackListener.State.STOPPED).when(data).state();
+        mController.onPlaybackDataChanged(data);
+
+        mController.pause();
+        // Not currently playing, so nothing should happen.
+        verify(mPlayback, never()).pause();
+    }
+
+    @Test
+    public void testPause() {
+        requestAndStartPlayback();
+        var data = Mockito.mock(PlaybackListener.PlaybackData.class);
+        doReturn(PlaybackListener.State.PLAYING).when(data).state();
+        mController.onPlaybackDataChanged(data);
+
+        mController.pause();
+        verify(mPlayback).pause();
+    }
+
+    @Test
+    public void testMaybePauseForOutgoingIntent_pause() {
+        // Play.
+        requestAndStartPlayback();
+        var data = Mockito.mock(PlaybackListener.PlaybackData.class);
+        doReturn(PlaybackListener.State.PLAYING).when(data).state();
+        mController.onPlaybackDataChanged(data);
+
+        // Simulate select-to-speak context menu click. Playback should pause.
+        Intent intent = new Intent();
+        intent.setAction(Intent.ACTION_PROCESS_TEXT);
+        mController.maybePauseForOutgoingIntent(intent);
+        verify(mPlayback).pause();
+    }
+
+    @Test
+    public void testMaybePauseForOutgoingIntent_noPause() {
+        // Play.
+        requestAndStartPlayback();
+        var data = Mockito.mock(PlaybackListener.PlaybackData.class);
+        doReturn(PlaybackListener.State.PLAYING).when(data).state();
+        mController.onPlaybackDataChanged(data);
+
+        // Simulate some unimportant context menu click. Playback should not pause.
+        Intent intent = new Intent();
+        intent.setAction(Intent.ACTION_DEFINE);
+        mController.maybePauseForOutgoingIntent(intent);
+        verify(mPlayback, never()).pause();
     }
 
     private void requestAndStartPlayback() {
