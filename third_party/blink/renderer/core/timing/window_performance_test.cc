@@ -112,8 +112,9 @@ class WindowPerformanceTest : public testing::Test {
     init->setKeyCode(key_code);
     KeyboardEvent* keyboard_event =
         MakeGarbageCollected<KeyboardEvent>(type, init);
-    performance_->RegisterEventTiming(*keyboard_event, start_time,
-                                      processing_start, processing_end);
+    performance_->RegisterEventTiming(*keyboard_event, keyboard_event->target(),
+                                      start_time, processing_start,
+                                      processing_end);
     return performance_->event_presentation_promise_count_;
   }
 
@@ -129,8 +130,9 @@ class WindowPerformanceTest : public testing::Test {
     if (target) {
       pointer_event->SetTarget(target);
     }
-    performance_->RegisterEventTiming(*pointer_event, start_time,
-                                      processing_start, processing_end);
+    performance_->RegisterEventTiming(*pointer_event, pointer_event->target(),
+                                      start_time, processing_start,
+                                      processing_end);
   }
 
   PerformanceEventTiming* CreatePerformanceEventTiming(

@@ -254,7 +254,7 @@ WebInputEventResult MouseEventManager::DispatchMouseEvent(
                                   : MouseEvent::kRealOrIndistinguishable,
           mouse_event.menu_source_type);
       if (frame_ && frame_->DomWindow())
-        event_timing = EventTiming::Create(frame_->DomWindow(), *event);
+        event_timing = EventTiming::Create(frame_->DomWindow(), *event, target);
       if (should_dispatch) {
         input_event_result = event_handling_util::ToWebInputEventResult(
             target->DispatchEvent(*event));
@@ -270,7 +270,7 @@ WebInputEventResult MouseEventManager::DispatchMouseEvent(
                                   : MouseEvent::kRealOrIndistinguishable,
           mouse_event.menu_source_type);
       if (frame_ && frame_->DomWindow())
-        event_timing = EventTiming::Create(frame_->DomWindow(), *event);
+        event_timing = EventTiming::Create(frame_->DomWindow(), *event, target);
       if (should_dispatch) {
         input_event_result = event_handling_util::ToWebInputEventResult(
             target->DispatchEvent(*event));

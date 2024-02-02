@@ -133,6 +133,7 @@ class CORE_EXPORT WindowPerformance final : public Performance,
   // presentation promise to calculate the |duration| attribute when such
   // promise is resolved.
   void RegisterEventTiming(const Event& event,
+                           EventTarget* event_target,
                            base::TimeTicks start_time,
                            base::TimeTicks processing_start,
                            base::TimeTicks processing_end);

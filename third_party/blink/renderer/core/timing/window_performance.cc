@@ -391,6 +391,7 @@ void WindowPerformance::ReportLongTask(base::TimeTicks start_time,
 }
 
 void WindowPerformance::RegisterEventTiming(const Event& event,
+                                            EventTarget* event_target,
                                             base::TimeTicks start_time,
                                             base::TimeTicks processing_start,
                                             base::TimeTicks processing_end) {
@@ -426,7 +427,7 @@ void WindowPerformance::RegisterEventTiming(const Event& event,
       event_type, MonotonicTimeToDOMHighResTimeStamp(start_time),
       MonotonicTimeToDOMHighResTimeStamp(processing_start),
       MonotonicTimeToDOMHighResTimeStamp(processing_end), event.cancelable(),
-      event.target() ? event.target()->ToNode() : nullptr,
+      event_target ? event_target->ToNode() : nullptr,
       DomWindow());  // TODO(haoliuk): Add WPT for Event Timing.
                      // See crbug.com/1320878.
   absl::optional<PointerId> pointer_id;
