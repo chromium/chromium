@@ -151,8 +151,15 @@ bool StructTraits<network::mojom::ProxyChainDataView, net::ProxyChain>::Read(
   if (!data.ReadProxyServers(&proxy_servers)) {
     return false;
   }
+
   if (proxy_servers.has_value()) {
-    *out = net::ProxyChain(std::move(proxy_servers).value());
+    int chain_id = data.ip_protection_chain_id();
+    if (chain_id != net::ProxyChain::kNotIpProtectionChainId) {
+      *out =
+          net::ProxyChain::ForIpProtection(std::move(*proxy_servers), chain_id);
+    } else {
+      *out = net::ProxyChain(std::move(*proxy_servers));
+    }
     if (!out->IsValid()) {
       return false;
     }
@@ -160,14 +167,6 @@ bool StructTraits<network::mojom::ProxyChainDataView, net::ProxyChain>::Read(
     *out = net::ProxyChain();
   }
 
-  bool is_for_ip_protection = data.is_for_ip_protection();
-  if (is_for_ip_protection) {
-    // An invalid ProxyChain should not be marked as being for IP Protection.
-    if (!out->IsValid()) {
-      return false;
-    }
-    *out = net::ProxyChain::ForIpProtection(std::move(out->proxy_servers()));
-  }
   return true;
 }
 

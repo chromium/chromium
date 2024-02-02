@@ -23,6 +23,9 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/base/features.h"
+#include "net/base/proxy_chain.h"
+#include "net/base/proxy_server.h"
+#include "net/base/proxy_string_util.h"
 #include "net/third_party/quiche/src/quiche/blind_sign_auth/blind_sign_auth.h"
 #include "net/third_party/quiche/src/quiche/blind_sign_auth/proto/blind_sign_auth_options.pb.h"
 #include "net/third_party/quiche/src/quiche/blind_sign_auth/proto/spend_token_data.pb.h"
@@ -237,49 +240,83 @@ void IpProtectionConfigProvider::CallGetProxyConfig(
     std::optional<std::string> oauth_token) {
   ip_protection_config_http_->GetProxyConfig(
       oauth_token,
-      base::BindOnce(
-          [](GetProxyListCallback callback,
-             absl::StatusOr<ip_protection::GetProxyConfigResponse> response) {
-            if (!response.ok()) {
-              VLOG(2) << "IPATP::GetProxyList failed: " << response.status();
-              std::move(callback).Run(std::nullopt);
-              return;
-            }
-            std::vector<std::vector<std::string>> proxy_list;
-            if (net::features::kIpPrivacyUseProxyChains.Get()) {
-              for (const auto& proxy_chain : response->proxy_chain()) {
-                std::vector<std::string> proxies = {};
-                if (const std::string a_override =
-                        net::features::kIpPrivacyProxyAHostnameOverride.Get();
-                    a_override != "") {
-                  proxies.push_back(a_override);
-                } else {
-                  proxies.push_back(proxy_chain.proxy_a());
-                }
-                if (const std::string b_override =
-                        net::features::kIpPrivacyProxyBHostnameOverride.Get();
-                    b_override != "") {
-                  proxies.push_back(b_override);
-                } else {
-                  // TODO(crbug.com/1491092): Remove check once proxy_b is
-                  // populated by Phosphor.
-                  if (!proxy_chain.proxy_b().empty()) {
-                    proxies.push_back(proxy_chain.proxy_b());
-                  }
-                }
-                proxy_list.push_back(std::move(proxies));
-              }
-            } else {
-              for (const auto& hostname : response->first_hop_hostnames()) {
-                proxy_list.push_back({hostname});
-              }
-            }
+      base::BindOnce(&IpProtectionConfigProvider::OnGetProxyConfigCompleted,
+                     base::Unretained(this), std::move(callback)));
+}
 
-            VLOG(2) << "IPATP::GetProxyList got proxy list of length "
-                    << proxy_list.size();
-            std::move(callback).Run(std::move(proxy_list));
-          },
-          std::move(callback)));
+void IpProtectionConfigProvider::OnGetProxyConfigCompleted(
+    GetProxyListCallback callback,
+    absl::StatusOr<ip_protection::GetProxyConfigResponse> response) {
+  if (!response.ok()) {
+    VLOG(2) << "IPATP::GetProxyList failed: " << response.status();
+    std::move(callback).Run(std::nullopt);
+    return;
+  }
+
+  // Shortcut to create a ProxyServer with SCHEME_HTTPS from a string in the
+  // proto.
+  auto add_server = [](std::vector<net::ProxyServer>& proxies,
+                       std::string host) {
+    net::ProxyServer proxy_server = net::ProxySchemeHostAndPortToProxyServer(
+        net::ProxyServer::SCHEME_HTTPS, host);
+    if (!proxy_server.is_valid()) {
+      return false;
+    }
+    proxies.push_back(proxy_server);
+    return true;
+  };
+
+  std::vector<net::ProxyChain> proxy_list;
+  if (net::features::kIpPrivacyUseProxyChains.Get()) {
+    for (const auto& proxy_chain : response->proxy_chain()) {
+      std::vector<net::ProxyServer> proxies;
+      bool ok = true;
+      if (const std::string a_override =
+              net::features::kIpPrivacyProxyAHostnameOverride.Get();
+          a_override != "") {
+        ok = ok && add_server(proxies, a_override);
+      } else {
+        ok = ok && add_server(proxies, proxy_chain.proxy_a());
+      }
+      if (const std::string b_override =
+              net::features::kIpPrivacyProxyBHostnameOverride.Get();
+          ok && b_override != "") {
+        ok = ok && add_server(proxies, b_override);
+      } else {
+        // TODO(crbug.com/1491092): Remove check once proxy_b is
+        // populated by Phosphor.
+        if (!proxy_chain.proxy_b().empty()) {
+          ok = ok && add_server(proxies, proxy_chain.proxy_b());
+        }
+      }
+
+      // Create a new ProxyChain if the proxies were all valid.
+      if (ok) {
+        // If the `chain_id` is out of range, use the proxy chain anyway, but
+        // with the default `chain_id`. This allows adding new IDs on the server
+        // side without breaking older browsers.
+        int chain_id = proxy_chain.chain_id();
+        if (chain_id < 0 ||
+            chain_id > net::ProxyChain::kMaxIpProtectionChainId) {
+          chain_id = net::ProxyChain::kDefaultIpProtectionChainId;
+        }
+        proxy_list.push_back(
+            net::ProxyChain::ForIpProtection(std::move(proxies), chain_id));
+      }
+    }
+  } else {
+    for (const auto& hostname : response->first_hop_hostnames()) {
+      std::vector<net::ProxyServer> proxies;
+      if (add_server(proxies, hostname)) {
+        proxy_list.push_back(
+            net::ProxyChain::ForIpProtection(std::move(proxies)));
+      }
+    }
+  }
+
+  VLOG(2) << "IPATP::GetProxyList got proxy list of length "
+          << proxy_list.size();
+  std::move(callback).Run(std::move(proxy_list));
 }
 
 void IpProtectionConfigProvider::FetchBlindSignedToken(

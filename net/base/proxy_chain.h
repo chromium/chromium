@@ -67,15 +67,11 @@ class NET_EXPORT ProxyChain {
   static ProxyChain Direct() { return ProxyChain(std::vector<ProxyServer>()); }
 
   // Creates a `ProxyChain` for use by the IP Protection feature. This is used
-  // for metrics collection and for special handling (for instance, IP
-  // protection proxy chains will have an authorization header appended to the
-  // CONNECT requests sent to the proxy servers, and requests sent through an
-  // IP Protection proxy chain will have an "IP-Protection: 1" header added to
-  // them).
-  static ProxyChain ForIpProtection(
-      std::vector<ProxyServer> proxy_server_list) {
-    return ProxyChain(std::move(proxy_server_list),
-                      /*is_for_ip_protection=*/true);
+  // for metrics collection and for special handling.  If not give, the
+  // chain_id defaults to 0 which corresponds to an un-identified chain.
+  static ProxyChain ForIpProtection(std::vector<ProxyServer> proxy_server_list,
+                                    int chain_id = 0) {
+    return ProxyChain(std::move(proxy_server_list), chain_id);
   }
 
   // Get ProxyServer at index in chain. This is not valid for direct or invalid
@@ -139,30 +135,47 @@ class NET_EXPORT ProxyChain {
   // Returns true if a proxy server list is available.
   bool IsValid() const { return proxy_server_list_.has_value(); }
 
-  bool is_for_ip_protection() const { return is_for_ip_protection_; }
+  // A negative value for `ip_protection_chain_id()` indicating this is not an
+  // IP protection chain. All IP-Protection chain IDs are non-negative.
+  static constexpr int kNotIpProtectionChainId = -1;
+
+  // A value for `ip_protection_chain_id()` for IP protection chains for which
+  // no other chain ID was specified.
+  static constexpr int kDefaultIpProtectionChainId = 0;
+
+  // The largest allowed ip_protection_chain_id.
+  static constexpr int kMaxIpProtectionChainId = 3;
+
+  bool is_for_ip_protection() const {
+    return ip_protection_chain_id_ != kNotIpProtectionChainId;
+  }
+  int ip_protection_chain_id() const { return ip_protection_chain_id_; }
 
   bool operator==(const ProxyChain& other) const {
-    return std::tie(proxy_server_list_, is_for_ip_protection_) ==
-           std::tie(other.proxy_server_list_, other.is_for_ip_protection_);
+    return std::tie(proxy_server_list_, ip_protection_chain_id_) ==
+           std::tie(other.proxy_server_list_, other.ip_protection_chain_id_);
   }
 
   bool operator!=(const ProxyChain& other) const { return !(*this == other); }
 
   // Comparator function so this can be placed in a std::map.
   bool operator<(const ProxyChain& other) const {
-    return std::tie(proxy_server_list_, is_for_ip_protection_) <
-           std::tie(other.proxy_server_list_, other.is_for_ip_protection_);
+    return std::tie(proxy_server_list_, ip_protection_chain_id_) <
+           std::tie(other.proxy_server_list_, other.ip_protection_chain_id_);
   }
 
   std::string ToDebugString() const;
 
  private:
   explicit ProxyChain(std::vector<ProxyServer> proxy_server_list,
-                      bool is_for_ip_protection);
+                      int ip_protection_chain_id);
 
   std::optional<std::vector<ProxyServer>> proxy_server_list_;
 
-  bool is_for_ip_protection_ = false;
+  // If used for IP protection, this is the chain_id received from the server.
+  // A negative value indicates this chain is not used for IP protection.
+  int ip_protection_chain_id_ = kNotIpProtectionChainId;
+
   // Returns true if this chain is valid. A chain is considered valid if (1) is
   // a single valid proxy server. If single QUIC proxy, it must
   // also be an IP protection proxy chain. (2) is multi-proxy and

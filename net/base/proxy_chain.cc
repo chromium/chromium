@@ -10,6 +10,7 @@
 #include "base/check.h"
 #include "base/no_destructor.h"
 #include "base/ranges/algorithm.h"
+#include "base/strings/stringprintf.h"
 #include "net/base/proxy_server.h"
 #include "net/base/proxy_string_util.h"
 
@@ -31,7 +32,7 @@ ProxyChain& ProxyChain::operator=(const ProxyChain& other) = default;
 ProxyChain& ProxyChain::operator=(ProxyChain&& other) noexcept {
   if (this != &other) {
     proxy_server_list_ = std::move(other.proxy_server_list_);
-    is_for_ip_protection_ = other.is_for_ip_protection_;
+    ip_protection_chain_id_ = other.ip_protection_chain_id_;
   }
   return *this;
 }
@@ -66,8 +67,8 @@ std::pair<ProxyChain, const ProxyServer&> ProxyChain::SplitLast() const {
   DCHECK(IsValid());
   DCHECK_NE(length(), 0u);
   ProxyChain new_chain =
-      ProxyChain({proxy_server_list_->begin(), proxy_server_list_->end() - 1});
-  new_chain.is_for_ip_protection_ = is_for_ip_protection_;
+      ProxyChain({proxy_server_list_->begin(), proxy_server_list_->end() - 1},
+                 ip_protection_chain_id_);
   return std::make_pair(new_chain, std::ref(proxy_server_list_->back()));
 }
 
@@ -90,16 +91,19 @@ std::string ProxyChain::ToDebugString() const {
     debug_string += ProxyServerToProxyUri(proxy_server);
   }
   debug_string = "[" + debug_string + "]";
-  if (is_for_ip_protection()) {
+  if (ip_protection_chain_id_ == 0) {
     debug_string += " (IP Protection)";
+  } else if (ip_protection_chain_id_ >= 0) {
+    debug_string += base::StringPrintf(" (IP Protection chain %d)",
+                                       ip_protection_chain_id_);
   }
   return debug_string;
 }
 
 ProxyChain::ProxyChain(std::vector<ProxyServer> proxy_server_list,
-                       bool is_for_ip_protection)
+                       int ip_protection_chain_id)
     : proxy_server_list_(std::move(proxy_server_list)),
-      is_for_ip_protection_(is_for_ip_protection) {
+      ip_protection_chain_id_(ip_protection_chain_id) {
   CHECK(IsValidInternal());
 }
 
@@ -110,7 +114,7 @@ bool ProxyChain::IsValidInternal() const {
   if (is_single_proxy()) {
     bool is_valid = proxy_server_list_.value().at(0).is_valid();
     if (proxy_server_list_.value().at(0).is_quic()) {
-      is_valid = is_valid && is_for_ip_protection_;
+      is_valid = is_valid && is_for_ip_protection();
     }
     return is_valid;
   }
@@ -122,7 +126,7 @@ bool ProxyChain::IsValidInternal() const {
       proxy_server_list_.value(), [](const auto& proxy_server) {
         return proxy_server.is_valid() && proxy_server.is_quic();
       });
-  return all_https || (all_quic && is_for_ip_protection_);
+  return all_https || (all_quic && is_for_ip_protection());
 }
 
 std::ostream& operator<<(std::ostream& os, const ProxyChain& proxy_chain) {

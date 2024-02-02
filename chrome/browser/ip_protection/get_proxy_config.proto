@@ -23,6 +23,12 @@ message GetProxyConfigResponse {
   message ProxyChain {
     string proxy_a = 1;
     string proxy_b = 2;
+    // A `chain_id` greater than zero identifies a specific chain, as defined
+    // on the server. A `chain_id` of zero indicates an unidentified chain.
+    // Values less than zero are not allowed. Note that `chain_id` is not
+    // unique: chains with different `proxy_a` or `proxy_b` values may have the
+    // same `chain_id`.
+    int32 chain_id = 3;
   }
 
   // Hostnames for the first proxy hop. Ordered based on preference for use.

@@ -296,6 +296,8 @@ TEST(ProxyChainTest, ForIpProtection) {
       ProxyChain::ForIpProtection(std::vector<ProxyServer>());
   EXPECT_TRUE(ip_protection_proxy_chain1.is_direct());
   EXPECT_TRUE(ip_protection_proxy_chain1.is_for_ip_protection());
+  EXPECT_EQ(ip_protection_proxy_chain1.ip_protection_chain_id(),
+            ProxyChain::kDefaultIpProtectionChainId);
 
   auto regular_proxy_chain2 =
       ProxyChain({ProxyUriToProxyServer("foo:555", ProxyServer::SCHEME_HTTPS),
@@ -304,6 +306,8 @@ TEST(ProxyChainTest, ForIpProtection) {
       {ProxyUriToProxyServer("foo:555", ProxyServer::SCHEME_HTTPS),
        ProxyUriToProxyServer("foo:666", ProxyServer::SCHEME_HTTPS)});
   EXPECT_TRUE(ip_protection_proxy_chain2.is_for_ip_protection());
+  EXPECT_EQ(ip_protection_proxy_chain2.ip_protection_chain_id(),
+            ProxyChain::kDefaultIpProtectionChainId);
   EXPECT_EQ(regular_proxy_chain2.proxy_servers(),
             ip_protection_proxy_chain2.proxy_servers());
 
@@ -313,12 +317,24 @@ TEST(ProxyChainTest, ForIpProtection) {
   auto copied_proxy_chain = self_assignable_proxy_chain;
 
   EXPECT_FALSE(self_assignable_proxy_chain.is_for_ip_protection());
+  EXPECT_EQ(self_assignable_proxy_chain.ip_protection_chain_id(),
+            ProxyChain::kNotIpProtectionChainId);
 
   self_assignable_proxy_chain = ProxyChain::ForIpProtection(
       std::move(self_assignable_proxy_chain.proxy_servers()));
   EXPECT_TRUE(self_assignable_proxy_chain.is_for_ip_protection());
   EXPECT_EQ(self_assignable_proxy_chain.proxy_servers(),
             copied_proxy_chain.proxy_servers());
+  EXPECT_EQ(self_assignable_proxy_chain.ip_protection_chain_id(),
+            ProxyChain::kDefaultIpProtectionChainId);
+
+  auto chain_with_id = ProxyChain::ForIpProtection(
+      {ProxyUriToProxyServer("foo:555", ProxyServer::SCHEME_HTTPS),
+       ProxyUriToProxyServer("foo:666", ProxyServer::SCHEME_HTTPS)},
+      /*chain_id=*/3);
+  EXPECT_FALSE(chain_with_id.is_direct());
+  EXPECT_TRUE(chain_with_id.is_for_ip_protection());
+  EXPECT_EQ(chain_with_id.ip_protection_chain_id(), 3);
 }
 
 TEST(ProxyChainTest, IsGetToProxyAllowed) {

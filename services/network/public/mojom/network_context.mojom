@@ -935,7 +935,7 @@ interface IpProtectionConfigGetter {
   //
   // This method will return an up-to-date list, possibly fetching that list
   // remotely before returning it.
-  GetProxyList() => (array<array<string>>? proxy_list);
+  GetProxyList() => (array<ProxyChain>? proxy_list);
 };
 
 // Access to the IP Protection ProxyDelegate in the network service process.
