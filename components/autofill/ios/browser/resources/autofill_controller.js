@@ -154,7 +154,7 @@ __gCrWeb.autofill['extractForms'] = function(
  */
 __gCrWeb.autofill['fillActiveFormField'] = function(data) {
   const activeElement = document.activeElement;
-  const fieldID = data['unique_renderer_id'];
+  const fieldID = data['renderer_id'];
   if (typeof fieldID === 'undefined' ||
       fieldID.toString() !== __gCrWeb.fill.getUniqueID(activeElement)) {
     return false;
@@ -164,7 +164,7 @@ __gCrWeb.autofill['fillActiveFormField'] = function(data) {
 };
 
 /**
- * Fills data into the form field identified by `data['unique_renderer_id']`.
+ * Fills data into the form field identified by `data['renderer_id']`.
  * This is similar to `fillActiveFormField`, but does not require that the
  * target field be `document.activeElement`.
  *
@@ -172,7 +172,7 @@ __gCrWeb.autofill['fillActiveFormField'] = function(data) {
  * @return {boolean} Whether the field was filled successfully.
  */
 __gCrWeb.autofill['fillSpecificFormField'] = function(data) {
-  const fieldID = data['unique_renderer_id'];
+  const fieldID = data['renderer_id'];
   if (typeof fieldID === 'undefined') {
     return false;
   }

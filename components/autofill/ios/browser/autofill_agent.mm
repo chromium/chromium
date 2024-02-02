@@ -578,7 +578,7 @@ constexpr base::TimeDelta kA11yAnnouncementQueueDelay = base::Seconds(1);
                     withValue:(const std::u16string)value
                       inFrame:(web::WebFrame*)frame {
   base::Value::Dict data;
-  data.Set("unique_renderer_id", static_cast<int>(field.value()));
+  data.Set("renderer_id", static_cast<int>(field.value()));
   data.Set("value", value);
 
   __weak AutofillAgent* weakSelf = self;
@@ -1039,7 +1039,7 @@ constexpr base::TimeDelta kA11yAnnouncementQueueDelay = base::Seconds(1);
             value:(const std::u16string)value
           inFrame:(web::WebFrame*)frame {
   base::Value::Dict data;
-  data.Set("unique_renderer_id", static_cast<int>(uniqueFieldID.value()));
+  data.Set("renderer_id", static_cast<int>(uniqueFieldID.value()));
   data.Set("identifier", fieldIdentifier);
   data.Set("form", formName);
   data.Set("value", value);

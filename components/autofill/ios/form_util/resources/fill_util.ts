@@ -33,7 +33,7 @@ declare interface IndexableElement extends Element {
 declare interface AutofillFormFieldData {
   name: string;
   value: string;
-  unique_renderer_id: string;
+  renderer_id: string;
   form_control_type: string;
   autocomplete_attribute: string;
   max_length: number;
@@ -56,7 +56,7 @@ declare interface AutofillFormFieldData {
 
 declare interface AutofillFormData {
   name: string;
-  unique_renderer_id: string;
+  renderer_id: string;
   origin: string;
   action: string;
   fields: AutofillFormFieldData[];

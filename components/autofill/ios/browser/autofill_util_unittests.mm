@@ -66,7 +66,7 @@ TEST_F(AutofillUtilTest, ExtractFormFieldData_PropertiesMask) {
   field.Set("form_control_type", base::Value("text"));
 
   // Set field attribute to get mask.
-  field.Set("unique_renderer_id", base::Value("1"));
+  field.Set("renderer_id", base::Value("1"));
 
   const scoped_refptr<autofill::FieldDataManager> field_data_manager =
       base::MakeRefCounted<autofill::FieldDataManager>();

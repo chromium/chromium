@@ -215,7 +215,7 @@ TEST_F(AutofillAgentTests, FillSpecificFormField) {
                   withValue:u"mattwashere"
                     inFrame:fake_web_frames_manager_->GetMainWebFrame()];
   fake_web_state_.WasShown();
-  EXPECT_EQ(u"__gCrWeb.autofill.fillSpecificFormField({\"unique_renderer_id\":"
+  EXPECT_EQ(u"__gCrWeb.autofill.fillSpecificFormField({\"renderer_id\":"
             u"2,\"value\":\"mattwashere\"});",
             fake_main_frame_->GetLastJavaScriptCall());
 }
@@ -246,7 +246,7 @@ TEST_F(AutofillAgentTests, DriverFillSpecificFormField) {
       u"mattwashere");
 
   fake_web_state_.WasShown();
-  EXPECT_EQ(u"__gCrWeb.autofill.fillSpecificFormField({\"unique_renderer_id\":"
+  EXPECT_EQ(u"__gCrWeb.autofill.fillSpecificFormField({\"renderer_id\":"
             u"2,\"value\":\"mattwashere\"});",
             fake_main_frame_->GetLastJavaScriptCall());
 }

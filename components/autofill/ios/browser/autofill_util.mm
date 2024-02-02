@@ -202,7 +202,7 @@ bool ExtractFormData(const base::Value::Dict& form,
   // main_frame_origin is used for logging UKM.
   form_data->main_frame_origin = url::Origin::Create(main_frame_url);
 
-  const std::string* renderer_id = form.FindString("unique_renderer_id");
+  const std::string* renderer_id = form.FindString("renderer_id");
   if (renderer_id && !renderer_id->empty()) {
     StringToUint(*renderer_id, &form_data->renderer_id.value());
   } else {
@@ -286,7 +286,7 @@ bool ExtractFormFieldData(const base::Value::Dict& field,
   field_data->form_control_type = autofill::StringToFormControlTypeDiscouraged(
       *form_control_type, /*fallback=*/std::nullopt);
 
-  const std::string* renderer_id = field.FindString("unique_renderer_id");
+  const std::string* renderer_id = field.FindString("renderer_id");
   if (renderer_id && !renderer_id->empty()) {
     StringToUint(*renderer_id, &field_data->renderer_id.value());
   } else {

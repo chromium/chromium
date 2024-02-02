@@ -85,7 +85,7 @@ TEST_F(FormActivityTabHelperTest, TestObserverDocumentSubmitted) {
       std::string("[{\"name\":\"form-name\",\"origin\":\"https://chromium.test/"
                   "\",\"action\":\"https://chromium.test/\","
                   "\"name_attribute\":\"form-name\",\"id_attribute\":\"\","
-                  "\"unique_renderer_id\":\"1\",\"frame_id\":\"") +
+                  "\"renderer_id\":\"1\",\"frame_id\":\"") +
       mainFrameID + std::string("\"}]");
 
   ExecuteJavaScript(@"document.getElementById('submit').click();");
@@ -116,7 +116,7 @@ TEST_F(FormActivityTabHelperTest, TestFormSubmittedHook) {
       std::string("[{\"name\":\"form-name\",\"origin\":\"https://chromium.test/"
                   "\",\"action\":\"https://chromium.test/\","
                   "\"name_attribute\":\"form-name\",\"id_attribute\":\"form\","
-                  "\"unique_renderer_id\":\"1\",\"frame_id\":\"") +
+                  "\"renderer_id\":\"1\",\"frame_id\":\"") +
       mainFrameID + std::string("\"}]");
 
   ExecuteJavaScript(@"document.getElementById('form').submit();");

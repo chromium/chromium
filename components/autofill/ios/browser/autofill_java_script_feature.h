@@ -40,7 +40,7 @@ class AutofillJavaScriptFeature : public web::JavaScriptFeature {
                            base::Value::Dict data,
                            base::OnceCallback<void(BOOL)> callback);
 
-  // Fills `data` into the field identified by `data['unique_renderer_id']`,
+  // Fills `data` into the field identified by `data['renderer_id']`,
   // then executes callback. This is similar to `FillActiveFormField`, but does
   // not require that the target element be the active element.
   void FillSpecificFormField(web::WebFrame* frame,
