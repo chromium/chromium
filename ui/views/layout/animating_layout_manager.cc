@@ -512,7 +512,7 @@ bool AnimatingLayoutManager::OnViewAdded(View* host, View* view) {
   // Handle a case where we add a visible view that shouldn't be visible in the
   // layout. In this case, there is no animation, no invalidation, and we just
   // set the view to not be visible.
-  if (view->GetVisible() && cached_layout_size() && !is_animating_) {
+  if (IsChildIncludedInLayout(view) && cached_layout_size() && !is_animating_) {
     const gfx::Size target_size = GetAvailableTargetLayoutSize();
     ProposedLayout proposed_layout =
         target_layout_manager()->GetProposedLayout(target_size);
