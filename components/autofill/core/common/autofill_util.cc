@@ -23,6 +23,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "components/autofill/core/common/autofill_switches.h"
+#include "components/autofill/core/common/dense_set.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/unique_ids.h"
@@ -218,34 +219,71 @@ bool IsPasswordsAutofillManuallyTriggered(
 void DumpWithoutCrashingForDuplicateIds(const FormData& form,
                                         const base::Location& location) {
   SCOPED_CRASH_KEY_STRING64("AFCrash", "URL", form.url.possibly_invalid_spec());
-  SCOPED_CRASH_KEY_NUMBER("AFCrash", "IDs",
+  SCOPED_CRASH_KEY_NUMBER("AFCrash", "NumUniqueFieldIds",
                           base::MakeFlatSet<FieldGlobalId>(
                               form.fields, {}, &FormFieldData::global_id)
                               .size());
-  SCOPED_CRASH_KEY_NUMBER("AFCrash", "FIELDs", form.fields.size());
-  SCOPED_CRASH_KEY_NUMBER("AFCrash", "FRAMEs",
+  size_t num_field_ids2 =
+      base::MakeFlatSet<std::pair<FieldGlobalId, FormRendererId>>(
+          form.fields, {},
+          [](const FormFieldData& field) {
+            return std::make_pair(field.global_id(), field.host_form_id);
+          })
+          .size();
+  SCOPED_CRASH_KEY_NUMBER("AFCrash", "NumUniqueFieldIds2", num_field_ids2);
+  SCOPED_CRASH_KEY_NUMBER("AFCrash", "NumFields", form.fields.size());
+  SCOPED_CRASH_KEY_NUMBER("AFCrash", "NumFrames",
                           base::MakeFlatSet<LocalFrameToken>(
                               form.fields, {}, &FormFieldData::host_frame)
                               .size());
 
-  std::map<FieldGlobalId, std::vector<LocalFrameToken>> id_to_fields;
+  std::map<FieldGlobalId, std::vector<const FormFieldData*>> id_to_fields;
   for (const FormFieldData& field : form.fields) {
-    id_to_fields[field.global_id()].push_back(field.host_frame);
+    id_to_fields[field.global_id()].push_back(&field);
   }
-  size_t same_frame = 0;
-  size_t diff_frame = 0;
+  size_t num_null_id = 0;
+  DenseSet<FormControlType> form_control_types;
+  std::set<LocalFrameToken> frames_with_duplicates;
+  bool some_duplicate_from_flattened_form = false;
+  bool some_duplicate_from_unflattened_form = false;
+  bool some_field_from_flattened_form = false;
+  bool some_field_from_unflattened_form = false;
   for (auto& [field_id, duplicate_fields] : id_to_fields) {
+    auto is_flattened = [&form](const FormFieldData* field) {
+      return field->renderer_form_id() != form.global_id();
+    };
+    some_field_from_unflattened_form |=
+        base::ranges::any_of(duplicate_fields, is_flattened);
+    some_field_from_flattened_form |=
+        base::ranges::any_of(duplicate_fields, std::not_fn(is_flattened));
     if (duplicate_fields.size() > 1) {
-      ++(base::ranges::all_of(duplicate_fields,
-                              [&duplicate_fields](LocalFrameToken token) {
-                                return token == duplicate_fields.front();
-                              })
-             ? same_frame
-             : diff_frame);
+      some_duplicate_from_unflattened_form |=
+          base::ranges::any_of(duplicate_fields, is_flattened);
+      some_duplicate_from_flattened_form |=
+          base::ranges::any_of(duplicate_fields, std::not_fn(is_flattened));
+      frames_with_duplicates.insert(field_id.frame_token);
+      if (field_id.renderer_id.is_null()) {
+        num_null_id += duplicate_fields.size();
+      }
+      for (const FormFieldData* field : duplicate_fields) {
+        form_control_types.insert(field->form_control_type);
+      }
     }
   }
-  SCOPED_CRASH_KEY_NUMBER("AFCrash", "SameFrameDuplicateIDs", same_frame);
-  SCOPED_CRASH_KEY_NUMBER("AFCrash", "DiffFrameDuplicateIDs", diff_frame);
+  SCOPED_CRASH_KEY_NUMBER("AFCrash", "NumNullDuplicateIDs", num_null_id);
+  SCOPED_CRASH_KEY_NUMBER("AFCrash", "NumFramesWithDuplicates",
+                          frames_with_duplicates.size());
+  static_assert(form_control_types.data().size() == 1);
+  SCOPED_CRASH_KEY_NUMBER("AFCrash", "FormControlTypes",
+                          form_control_types.data()[0]);
+  SCOPED_CRASH_KEY_BOOL("AFCrash", "SomeFieldFromFlattenedForm",
+                        some_field_from_flattened_form);
+  SCOPED_CRASH_KEY_BOOL("AFCrash", "SomeFieldFromUnflattenedForm",
+                        some_field_from_unflattened_form);
+  SCOPED_CRASH_KEY_BOOL("AFCrash", "SomeDupeFromFlattenedForm",
+                        some_duplicate_from_flattened_form);
+  SCOPED_CRASH_KEY_BOOL("AFCrash", "SomeDupeFromUnflattenedForm",
+                        some_duplicate_from_unflattened_form);
   base::debug::DumpWithoutCrashing(location);
 }
 
