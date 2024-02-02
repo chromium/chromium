@@ -15,31 +15,52 @@
 
 namespace autofill::autofill_metrics {
 
-void LogStoredIbanMetrics(const std::vector<std::unique_ptr<Iban>>& local_ibans,
-                          const base::TimeDelta& disused_data_threshold) {
-  // Iterate over all of the IBANs and gather metrics.
-  size_t num_local_ibans_with_nickname = 0;
-  size_t num_disused_local_ibans = 0;
-  const base::Time now = AutofillClock::Now();
-  for (const auto& iban : local_ibans) {
-    const base::TimeDelta time_since_last_use = now - iban->use_date();
-    if (time_since_last_use > disused_data_threshold) {
-      num_disused_local_ibans++;
+void LogStoredIbanMetrics(
+    const std::vector<std::unique_ptr<Iban>>& local_ibans,
+    const std::vector<std::unique_ptr<Iban>>& server_ibans,
+    const base::TimeDelta& disused_data_threshold) {
+  auto LogStoredIban = [disused_data_threshold](
+                           const std::vector<std::unique_ptr<Iban>>& ibans) {
+    if (ibans.empty()) {
+      return;
     }
-    base::UmaHistogramCounts1000("Autofill.DaysSinceLastUse.StoredIban.Local",
-                                 time_since_last_use.InDays());
-    if (!iban->nickname().empty()) {
-      num_local_ibans_with_nickname++;
+    // Iterate over all of the IBANs and gather metrics.
+    size_t num_ibans_with_nickname = 0;
+    size_t num_disused_ibans = 0;
+    const base::Time now = AutofillClock::Now();
+    const std::string histogram_suffix =
+        ibans[0]->record_type() == Iban::kLocalIban ? "Local" : "Server";
+    for (const std::unique_ptr<Iban>& iban : ibans) {
+      const base::TimeDelta time_since_last_use = now - iban->use_date();
+      if (time_since_last_use > disused_data_threshold) {
+        num_disused_ibans++;
+      }
+      base::UmaHistogramCounts1000(
+          base::StrCat(
+              {"Autofill.DaysSinceLastUse.StoredIban.", histogram_suffix}),
+          time_since_last_use.InDays());
+      if (!iban->nickname().empty()) {
+        num_ibans_with_nickname++;
+      }
     }
-  }
 
-  base::UmaHistogramCounts100("Autofill.StoredIbanCount.Local",
-                              local_ibans.size());
-  base::UmaHistogramCounts100("Autofill.StoredIbanCount.Local.WithNickname",
-                              num_local_ibans_with_nickname);
+    base::UmaHistogramCounts100(
+        base::StrCat({"Autofill.StoredIbanCount.", histogram_suffix}),
+        ibans.size());
+    base::UmaHistogramCounts100(
+        base::StrCat(
+            {"Autofill.StoredIbanCount.", histogram_suffix, ".WithNickname"}),
+        num_ibans_with_nickname);
 
-  base::UmaHistogramCounts100("Autofill.StoredIbanDisusedCount.Local",
-                              num_disused_local_ibans);
+    base::UmaHistogramCounts100(
+        base::StrCat({"Autofill.StoredIbanDisusedCount.", histogram_suffix}),
+        num_disused_ibans);
+  };
+
+  LogStoredIban(local_ibans);
+  LogStoredIban(server_ibans);
+  base::UmaHistogramCounts100("Autofill.StoredIbanCount",
+                              local_ibans.size() + server_ibans.size());
 }
 
 void LogDaysSinceLastIbanUse(const Iban& iban) {

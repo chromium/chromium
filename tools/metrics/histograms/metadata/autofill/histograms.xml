@@ -4590,31 +4590,42 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Autofill.StoredIbanCount{IbanTypeToBeSaved}" units="ibans"
+<histogram name="Autofill.StoredIbanCount" units="ibans"
     expires_after="2024-07-01">
   <owner>qihuizhao@google.com</owner>
   <owner>jsaul@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
-    The number of local IBANs a user has stored, measured at Chrome profile
-    launch time. It's logged once per profile loaded.
+    The number of local and server IBANs a user has stored, measured at Chrome
+    profile launch time. It's logged once per profile load.
   </summary>
-  <token key="IbanTypeToBeSaved" variants="IbanTypeToBeSaved"/>
 </histogram>
 
-<histogram name="Autofill.StoredIbanCount{IbanTypeToBeSaved}.WithNickname"
+<histogram name="Autofill.StoredIbanCount.{IbanRecordType}" units="ibans"
+    expires_after="2024-07-01">
+  <owner>qihuizhao@google.com</owner>
+  <owner>jsaul@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    The number of local or server IBANs a user has stored, measured at Chrome
+    profile launch time. It's logged once per profile load.
+  </summary>
+  <token key="IbanRecordType" variants="IbanRecordType"/>
+</histogram>
+
+<histogram name="Autofill.StoredIbanCount.{IbanRecordType}.WithNickname"
     units="ibans" expires_after="2024-07-01">
   <owner>qihuizhao@google.com</owner>
   <owner>jsaul@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
-    The number of local IBANs with nickname a user has stored, measured at
-    Chrome profile launch time. It's logged one per profile loaded.
+    The number of local or server IBANs with nickname a user has stored,
+    measured at Chrome profile launch time. It's logged one per profile load.
   </summary>
-  <token key="IbanTypeToBeSaved" variants="IbanTypeToBeSaved"/>
+  <token key="IbanRecordType" variants="IbanRecordType"/>
 </histogram>
 
-<histogram name="Autofill.StoredIbanDisusedCount{IbanTypeToBeSaved}"
+<histogram name="Autofill.StoredIbanDisusedCount.{IbanRecordType}"
     units="ibans" expires_after="2024-07-01">
   <owner>qihuizhao@google.com</owner>
   <owner>jsaul@google.com</owner>
@@ -4624,7 +4635,7 @@ chromium-metrics-reviews@google.com.
     launch time. This is only reported for users who have at least one stored
     IBAN.
   </summary>
-  <token key="IbanTypeToBeSaved" variants="IbanTypeToBeSaved"/>
+  <token key="IbanRecordType" variants="IbanRecordType"/>
 </histogram>
 
 <histogram name="Autofill.StoredProfileCount.{Category}" units="Profiles"
