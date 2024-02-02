@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {NativeLayerImpl, PrintPreviewDestinationDialogCrosElement, State} from 'chrome://print/print_preview.js';
+import type {PrintPreviewDestinationDialogCrosElement} from 'chrome://print/print_preview.js';
+import {NativeLayerImpl, State} from 'chrome://print/print_preview.js';
 import {keyDownOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {fakeDataBind} from 'chrome://webui-test/polymer_test_util.js';

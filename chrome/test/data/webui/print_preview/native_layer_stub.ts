@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {CapabilitiesResponse, ExtensionDestinationInfo, GooglePromotedDestinationId, LocalDestinationInfo, NativeInitialSettings, NativeLayer, PageLayoutInfo, PrinterType} from 'chrome://print/print_preview.js';
+import type {CapabilitiesResponse, ExtensionDestinationInfo, LocalDestinationInfo, NativeInitialSettings, NativeLayer, PageLayoutInfo} from 'chrome://print/print_preview.js';
+import {GooglePromotedDestinationId, PrinterType} from 'chrome://print/print_preview.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';

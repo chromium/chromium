@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {DuplexMode, NativeInitialSettings, NativeLayerImpl, PluginProxyImpl, PrintPreviewAppElement} from 'chrome://print/print_preview.js';
+import type {NativeInitialSettings, PrintPreviewAppElement} from 'chrome://print/print_preview.js';
+import {DuplexMode, NativeLayerImpl, PluginProxyImpl} from 'chrome://print/print_preview.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 

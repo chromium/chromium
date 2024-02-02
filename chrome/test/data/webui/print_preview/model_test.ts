@@ -2,18 +2,31 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {ColorOption, Destination, DestinationOrigin, DpiOption, DuplexMode, DuplexOption, makeRecentDestination, MarginsType, PrinterType, PrintPreviewModelElement, PrintTicket, RecentDestination, ScalingType, Size} from 'chrome://print/print_preview.js';
-// <if expr="is_chromeos">
-import {ColorModeRestriction,  DuplexModeRestriction, GooglePromotedDestinationId, PinModeRestriction, PrinterStatusReason} from 'chrome://print/print_preview.js';
-// </if>
+import type {ColorOption, DpiOption, DuplexOption, PrintPreviewModelElement, PrintTicket, RecentDestination} from 'chrome://print/print_preview.js';
+import {
+  // <if expr="is_chromeos">
+  ColorModeRestriction,
+  // </if>
+  Destination, DestinationOrigin, DuplexMode,
+  // <if expr="is_chromeos">
+  DuplexModeRestriction, GooglePromotedDestinationId,
+  // </if>
+  makeRecentDestination, MarginsType,
+  // <if expr="is_chromeos">
+  PinModeRestriction, PrinterStatusReason,
+  // </if>
+  PrinterType, ScalingType, Size} from 'chrome://print/print_preview.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
-import {getCddTemplateWithAdvancedSettings} from './print_preview_test_utils.js';
-// <if expr="is_chromeos">
-import {getCddTemplate} from './print_preview_test_utils.js';
+import {
+  // <if expr="is_chromeos">
+  getCddTemplate,
+  // </if>
+  getCddTemplateWithAdvancedSettings} from './print_preview_test_utils.js';
+
 // </if>
 
 suite('ModelTest', function() {

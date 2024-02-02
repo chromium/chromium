@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {Destination, DestinationOrigin, NativeLayerCrosImpl, NativeLayerImpl, PrinterStatusReason, PrinterStatusSeverity, PrintPreviewDestinationDropdownCrosElement, PrintPreviewDestinationSelectCrosElement} from 'chrome://print/print_preview.js';
+import type {PrintPreviewDestinationDropdownCrosElement, PrintPreviewDestinationSelectCrosElement} from 'chrome://print/print_preview.js';
+import {Destination, DestinationOrigin, NativeLayerCrosImpl, NativeLayerImpl, PrinterStatusReason, PrinterStatusSeverity} from 'chrome://print/print_preview.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {MockController} from 'chrome://webui-test/mock_controller.js';

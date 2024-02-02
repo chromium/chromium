@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {CrButtonElement, NativeLayerImpl, PluginProxyImpl, PrintPreviewLinkContainerElement, PrintPreviewSidebarElement, ScalingType, whenReady} from 'chrome://print/print_preview.js';
+import type {CrButtonElement, PrintPreviewLinkContainerElement, PrintPreviewSidebarElement} from 'chrome://print/print_preview.js';
+import {NativeLayerImpl, PluginProxyImpl, ScalingType, whenReady} from 'chrome://print/print_preview.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitBeforeNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';

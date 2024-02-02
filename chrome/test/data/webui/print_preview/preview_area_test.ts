@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {Destination, DestinationOrigin, Error, Margins, MeasurementSystem, MeasurementSystemUnitType, NativeLayerImpl, PluginProxyImpl, PreviewAreaState, PrintPreviewPreviewAreaElement, Size, State} from 'chrome://print/print_preview.js';
+import type {PrintPreviewPreviewAreaElement} from 'chrome://print/print_preview.js';
+import {Destination, DestinationOrigin, Error, Margins, MeasurementSystem, MeasurementSystemUnitType, NativeLayerImpl, PluginProxyImpl, PreviewAreaState, Size, State} from 'chrome://print/print_preview.js';
 // <if expr="is_chromeos">
 // clang-format off
 import {PrinterSetupInfoMessageType, PrintPreviewPrinterSetupInfoCrosElement} from 'chrome://print/print_preview.js';
@@ -14,7 +15,8 @@ import {fakeDataBind} from 'chrome://webui-test/polymer_test_util.js';
 // <if expr="is_chromeos">
 import {isChildVisible} from 'chrome://webui-test/test_util.js';
 
-import {NativeLayerCrosStub, setNativeLayerCrosInstance} from './native_layer_cros_stub.js';
+import type {NativeLayerCrosStub} from './native_layer_cros_stub.js';
+import {setNativeLayerCrosInstance} from './native_layer_cros_stub.js';
 // </if>
 
 import {NativeLayerStub} from './native_layer_stub.js';

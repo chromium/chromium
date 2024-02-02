@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {CrIconButtonElement, FittingType, ViewerZoomButtonElement, ViewerZoomToolbarElement} from 'chrome://print/pdf/pdf_print_wrapper.js';
+import type {CrIconButtonElement, ViewerZoomButtonElement, ViewerZoomToolbarElement} from 'chrome://print/pdf/pdf_print_wrapper.js';
+import {FittingType} from 'chrome://print/pdf/pdf_print_wrapper.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 

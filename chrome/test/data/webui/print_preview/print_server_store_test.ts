@@ -3,11 +3,13 @@
 // found in the LICENSE file.
 
 import {PrintServerStore, PrintServerStoreEventType} from 'chrome://print/print_preview.js';
-import {addWebUiListener, removeWebUiListener, WebUiListener, webUIListenerCallback} from 'chrome://resources/js/cr.js';
+import type {WebUiListener} from 'chrome://resources/js/cr.js';
+import {addWebUiListener, removeWebUiListener, webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {assertDeepEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
-import {NativeLayerCrosStub, setNativeLayerCrosInstance} from './native_layer_cros_stub.js';
+import type {NativeLayerCrosStub} from './native_layer_cros_stub.js';
+import {setNativeLayerCrosInstance} from './native_layer_cros_stub.js';
 
 suite('PrintServerStoreTest', function() {
   let printServerStore: PrintServerStore;

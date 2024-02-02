@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {CrButtonElement, Destination, MeasurementSystemUnitType, NativeInitialSettings, NativeLayerImpl, PluginProxyImpl, PrintPreviewAppElement, State, whenReady} from 'chrome://print/print_preview.js';
+import type {CrButtonElement, Destination, NativeInitialSettings, PrintPreviewAppElement} from 'chrome://print/print_preview.js';
+import {MeasurementSystemUnitType, NativeLayerImpl, PluginProxyImpl, State, whenReady} from 'chrome://print/print_preview.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitBeforeNextRender} from 'chrome://webui-test/polymer_test_util.js';

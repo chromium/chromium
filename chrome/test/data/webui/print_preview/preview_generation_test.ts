@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {ColorMode, CustomMarginsOrientation, Destination, DestinationOrigin, DestinationState, Margins, MarginsType, NativeInitialSettings, NativeLayerImpl, PluginProxyImpl, PreviewTicket, PrintPreviewAppElement, PrintPreviewDestinationSettingsElement, Range, ScalingType} from 'chrome://print/print_preview.js';
+import type {NativeInitialSettings, PreviewTicket, PrintPreviewAppElement, PrintPreviewDestinationSettingsElement, Range} from 'chrome://print/print_preview.js';
+import {ColorMode, CustomMarginsOrientation, Destination, DestinationOrigin, DestinationState, Margins, MarginsType, NativeLayerImpl, PluginProxyImpl, ScalingType} from 'chrome://print/print_preview.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 // <if expr="is_chromeos">

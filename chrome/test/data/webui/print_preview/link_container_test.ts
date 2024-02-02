@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {Destination, DestinationOrigin, PrintPreviewLinkContainerElement} from 'chrome://print/print_preview.js';
+import type {PrintPreviewLinkContainerElement} from 'chrome://print/print_preview.js';
+import {Destination, DestinationOrigin} from 'chrome://print/print_preview.js';
 // <if expr="is_macosx">
 import {assert} from 'chrome://resources/js/assert.js';
 // </if>

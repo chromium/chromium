@@ -2,9 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {ColorModeRestriction, Destination, DestinationOrigin, DuplexModeRestriction, Margins, PrintPreviewModelElement, Size} from 'chrome://print/print_preview.js';
+import type {PrintPreviewModelElement} from 'chrome://print/print_preview.js';
+import {ColorModeRestriction, Destination, DestinationOrigin, DuplexModeRestriction, Margins,
+        // <if expr="is_chromeos">
+        PinModeRestriction,
+        // </if>
+        Size} from 'chrome://print/print_preview.js';
 // <if expr="is_chromeos">
-import {PinModeRestriction} from 'chrome://print/print_preview.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 // </if>
 
