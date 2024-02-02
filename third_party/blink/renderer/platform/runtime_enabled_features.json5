@@ -3176,11 +3176,6 @@
       base_feature: "none",
     },
     {
-      // See https://github.com/w3c/csswg-drafts/issues/9398
-      name: "RemoveZoomAdjustmentOfBoundingBox",
-      status: "test",
-    },
-    {
       // See https://github.com/whatwg/html/issues/10034
       name: "RenderBlockingInlineModuleScript",
       status: "stable",
@@ -3667,6 +3662,11 @@
       name: "StableBlinkFeatures",
       status: "stable",
       base_feature: "none",
+    },
+    {
+      // See https://github.com/w3c/csswg-drafts/issues/9398
+      name: "StandardizedBrowserZoom",
+      status: "test",
     },
     {
       name: "StorageAccessAPIBeyondCookies",

@@ -92,7 +92,7 @@ class AdjustForAbsoluteZoom {
       gfx::QuadF& quad,
       const LayoutObject& layout_object) {
     float zoom;
-    if (RuntimeEnabledFeatures::RemoveZoomAdjustmentOfBoundingBoxEnabled()) {
+    if (RuntimeEnabledFeatures::StandardizedBrowserZoomEnabled()) {
       zoom = layout_object.GetFrame()->PageZoomFactor();
     } else {
       zoom = layout_object.StyleRef().EffectiveZoom();
@@ -104,7 +104,7 @@ class AdjustForAbsoluteZoom {
       gfx::RectF& rect,
       const LayoutObject& layout_object) {
     float zoom;
-    if (RuntimeEnabledFeatures::RemoveZoomAdjustmentOfBoundingBoxEnabled()) {
+    if (RuntimeEnabledFeatures::StandardizedBrowserZoomEnabled()) {
       zoom = layout_object.GetFrame()->PageZoomFactor();
     } else {
       zoom = layout_object.StyleRef().EffectiveZoom();
