@@ -18369,6 +18369,9 @@
             "experiments": [
                 {
                     "name": "Enabled",
+                    "params": {
+                        "enable_non_split_mode_tab_drag_manufacturer_allowlist": "samsung"
+                    },
                     "enable_features": [
                         "TabAndLinkDragDropAndroid"
                     ],

@@ -17,6 +17,7 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -84,6 +85,9 @@ import org.chromium.ui.dragdrop.DragDropMetricUtils.DragDropType;
 import org.chromium.ui.dragdrop.DropDataAndroid;
 
 import java.lang.ref.WeakReference;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 /** Tests for {@link TabDragSource}. */
 @EnableFeatures(ChromeFeatureList.TAB_LINK_DRAG_DROP_ANDROID)
@@ -200,7 +204,7 @@ public class TabDragSourceTest {
         if (DragDropGlobalState.hasValue()) {
             DragDropGlobalState.clearForTesting();
         }
-        mSourceInstance.setIsDeviceSamsungForTesting(false);
+        mSourceInstance.setManufacturerAllowlistForTesting(null);
         ShadowToast.reset();
     }
 
@@ -302,10 +306,10 @@ public class TabDragSourceTest {
     @Test
     @DisableFeatures(ChromeFeatureList.TAB_DRAG_DROP_ANDROID)
     @EnableFeatures(ChromeFeatureList.TAB_LINK_DRAG_DROP_ANDROID)
-    public void test_startTabDragAction_returnFalseForNonSplitScreenNonSamsung() {
+    public void test_startTabDragAction_returnFalseForNonSplitScreen() {
         // Set params.
         when(mMultiWindowUtils.isInMultiWindowMode(mActivity)).thenReturn(false);
-        mSourceInstance.setIsDeviceSamsungForTesting(false);
+        mSourceInstance.setManufacturerAllowlistForTesting(new HashSet<String>());
 
         // verify.
         assertFalse(
@@ -318,14 +322,18 @@ public class TabDragSourceTest {
     @DisableFeatures(ChromeFeatureList.TAB_DRAG_DROP_ANDROID)
     @EnableFeatures(ChromeFeatureList.TAB_LINK_DRAG_DROP_ANDROID)
     public void test_startTabDragAction_returnTrueForNonSplitScreenSamsung() {
-        // Set params.
+        // Set params, add Samsung to allowed manufacturer list.
         when(mMultiWindowUtils.isInMultiWindowMode(mActivity)).thenReturn(false);
-        mSourceInstance.setIsDeviceSamsungForTesting(true);
+        Set<String> set = new HashSet<String>();
+        Collections.addAll(set, "samsung");
+        TabDragSource spySource = spy(mSourceInstance);
+        spySource.setManufacturerAllowlistForTesting(set);
+        when(spySource.getCurrManufacturer()).thenReturn("samsung");
 
         // Verify.
         assertTrue(
                 "Tab drag should start",
-                mSourceInstance.startTabDragAction(
+                spySource.startTabDragAction(
                         mTabsToolbarView, mTabBeingDragged, DRAG_START_POINT, TAB_POSITION_X));
     }
 

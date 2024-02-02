@@ -54,6 +54,7 @@ import org.chromium.ui.dragdrop.DragDropMetricUtils.DragDropType;
 import org.chromium.ui.widget.Toast;
 
 import java.util.Locale;
+import java.util.Set;
 
 /**
  * Manages initiating tab drag and drop and handles the events that are received during drag and
@@ -62,7 +63,6 @@ import java.util.Locale;
  */
 public class TabDragSource implements View.OnDragListener {
     private static final String TAG = "TabDragSource";
-    private static final String SAMSUNG_LOWER_CASE = "samsung";
     private final WindowAndroid mWindowAndroid;
     private MultiInstanceManager mMultiInstanceManager;
     private DragAndDropDelegate mDragAndDropDelegate;
@@ -90,7 +90,7 @@ public class TabDragSource implements View.OnDragListener {
     private float mLastXDp;
     private int mLastAction;
     private boolean mHoveringInStrip;
-    private boolean mIsDeviceSamsung;
+    private Set<String> mManufacturerAllowlist;
     // Local state used by Drag Drop metrics. Not-null when a tab dragging is in progress.
     private @Nullable DragLocalUmaState mUmaState;
 
@@ -133,8 +133,11 @@ public class TabDragSource implements View.OnDragListener {
         if (TabUiFeatureUtilities.isTabDragAsWindowEnabled()) {
             mAppIcon = context.getPackageManager().getApplicationIcon(context.getApplicationInfo());
         }
+        mManufacturerAllowlist = TabUiFeatureUtilities.getTabDragNonSplitModeAllowlist();
+    }
 
-        mIsDeviceSamsung = Build.MANUFACTURER.toLowerCase(Locale.US).equals(SAMSUNG_LOWER_CASE);
+    private boolean shouldAllowTabDrag() {
+        return mManufacturerAllowlist.contains(getCurrManufacturer());
     }
 
     /**
@@ -168,7 +171,7 @@ public class TabDragSource implements View.OnDragListener {
         // @TODO(crbug.com/1520080): Make this configurable via Finch in case we find more OEMs
         // where this works.
         if (!MultiWindowUtils.getInstance().isInMultiWindowMode(getActivity())
-                && !mIsDeviceSamsung) {
+                && !shouldAllowTabDrag()) {
             return false;
         }
 
@@ -193,8 +196,13 @@ public class TabDragSource implements View.OnDragListener {
         return res;
     }
 
-    void setIsDeviceSamsungForTesting(boolean isDeviceSamSung) {
-        mIsDeviceSamsung = isDeviceSamSung;
+    @VisibleForTesting
+    String getCurrManufacturer() {
+        return Build.MANUFACTURER.toLowerCase(Locale.US);
+    }
+
+    void setManufacturerAllowlistForTesting(Set<String> manufacturerList) {
+        mManufacturerAllowlist = manufacturerList;
     }
 
     @VisibleForTesting

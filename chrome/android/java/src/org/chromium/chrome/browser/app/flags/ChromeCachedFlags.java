@@ -125,6 +125,7 @@ public class ChromeCachedFlags {
                         TabUiFeatureUtilities.DISABLE_STRIP_TO_STRIP_DD,
                         TabUiFeatureUtilities.DISABLE_STRIP_TO_STRIP_DIFF_MODEL_DD,
                         TabUiFeatureUtilities.DISABLE_DRAG_TO_NEW_INSTANCE_DD,
+                        TabUiFeatureUtilities.ENABLE_NON_SPLIT_MODE_TAB_DRAG_MANUFACTURER_ALLOWLIST,
                         TabManagementFieldTrial.DELAY_TEMP_STRIP_TIMEOUT_MS,
                         ToolbarFeatures.DTC_TRANSITION_THRESHOLD_DP,
                         ToolbarFeatures.USE_TOOLBAR_BG_COLOR_FOR_STRIP_TRANSITION_SCRIM,
