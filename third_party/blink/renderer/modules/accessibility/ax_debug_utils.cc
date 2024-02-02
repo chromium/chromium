@@ -154,6 +154,7 @@ void CheckTreeConsistency(
     DCHECK(false) << msg.str();
   }
 
+#if EXPENSIVE_DCHECKS_ARE_ON()
   constexpr size_t kMaxNodesForDeepSlowConsistencyCheck = 100;
   if (included_node_count_from_cache > kMaxNodesForDeepSlowConsistencyCheck) {
     return;
@@ -163,6 +164,7 @@ void CheckTreeConsistency(
             RecursiveIncludedNodeCount(cache.Root()))
       << "\n* AXObjectCacheImpl's tree:\n"
       << TreeToStringHelper(cache.Root(), /* verbose */ true);
+#endif  // EXPENSIVE_DCHECKS_ARE_ON()
 }
 
 }  // namespace blink
