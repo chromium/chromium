@@ -38,6 +38,8 @@ found in the LICENSE file.
         android:layout_height="wrap_content"
         android:layout_marginEnd="@dimen/account_selection_sheet_horizontal_margin"
         android:orientation="vertical"
+        android:layoutDirection="locale"
+        android:textDirection="locale"
         android:visibility="gone">
         <include layout="@layout/error_summary_text_item"
             android:id="@+id/error_summary"/>
