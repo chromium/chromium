@@ -329,6 +329,16 @@ public class AwAutofillTest extends AwParameterizedTest {
                             mCnt, new Integer[] {AUTOFILL_VALUE_CHANGED, AUTOFILL_COMMIT});
         }
 
+        public void reload() throws Throwable {
+            mTest.executeJavaScriptAndWaitForResult("location.reload();");
+            mCnt +=
+                    mTest.waitForCallbackAndVerifyTypes(
+                            mCnt,
+                            new Integer[] {
+                                AUTOFILL_VIEW_EXITED, AUTOFILL_VALUE_CHANGED, AUTOFILL_COMMIT
+                            });
+        }
+
         public void startNewSession() throws Throwable {
             // Start a new session by moving focus to another form.
             mTest.executeJavaScriptAndWaitForResult("document.getElementById('text2').select();");
@@ -2227,6 +2237,200 @@ public class AwAutofillTest extends AwParameterizedTest {
         mUMATestHelper.simulateUserSelectSuggestion();
         mUMATestHelper.simulateUserChangeAutofilledField();
         mUMATestHelper.submitForm();
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    histograms.assertExpected();
+                });
+    }
+
+    /**
+     * Tests recording of the `PROBABLY_FORM_SUBMITTED` bucket for the
+     * "Autofill.WebView.SubmissionSource" histogram. This event is fired on a navigation not
+     * resulting from a link click (in this case the test uses a reload).
+     */
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    public void testUMAFormSubmissionProbablyFormSubmitted() throws Throwable {
+        var histograms =
+                TestThreadUtils.runOnUiThreadBlocking(
+                        () -> {
+                            return HistogramWatcher.newBuilder()
+                                    .expectIntRecord(
+                                            AutofillProviderUMA.UMA_AUTOFILL_SUBMISSION_SOURCE,
+                                            AutofillProviderUMA.PROBABLY_FORM_SUBMITTED)
+                                    .build();
+                        });
+        mUMATestHelper.triggerAutofill();
+        invokeOnProvideAutoFillVirtualStructure();
+        mUMATestHelper.reload();
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    histograms.assertExpected();
+                });
+    }
+
+    /**
+     * Tests recording of the `FRAME_DETACHED` bucket for the "Autofill.WebView.SubmissionSource"
+     * histogram. This event is fired when a non-main frame is detached.
+     */
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    public void testUMAFormSubmissionFrameDetached() throws Throwable {
+        var histograms =
+                TestThreadUtils.runOnUiThreadBlocking(
+                        () -> {
+                            return HistogramWatcher.newBuilder()
+                                    .expectIntRecord(
+                                            AutofillProviderUMA.UMA_AUTOFILL_SUBMISSION_SOURCE,
+                                            AutofillProviderUMA.FRAME_DETACHED)
+                                    .build();
+                        });
+        loadHTML(
+                """
+                    <div id='parent'>
+                        <iframe id='frame' srcdoc='<input id="username">'></iframe>
+                    </div>""");
+
+        int cnt = 0;
+        executeJavaScriptAndWaitForResult(
+                """
+                    var iframe = document.getElementById('frame');
+                    var frame_doc = iframe.contentDocument;
+                    frame_doc.getElementById('username').select();""");
+        dispatchDownAndUpKeyEvents(KeyEvent.KEYCODE_A);
+        cnt +=
+                waitForCallbackAndVerifyTypes(
+                        cnt,
+                        new Integer[] {
+                            AUTOFILL_CANCEL,
+                            AUTOFILL_VIEW_ENTERED,
+                            AUTOFILL_SESSION_STARTED,
+                            AUTOFILL_VALUE_CHANGED
+                        });
+        invokeOnProvideAutoFillVirtualStructure();
+        executeJavaScriptAndWaitForResult(
+                "document.getElementById('parent').removeChild(document.getElementById('frame'));");
+        cnt +=
+                waitForCallbackAndVerifyTypes(
+                        cnt,
+                        new Integer[] {
+                            AUTOFILL_VIEW_EXITED, AUTOFILL_VALUE_CHANGED, AUTOFILL_COMMIT
+                        });
+
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    histograms.assertExpected();
+                });
+    }
+
+    /**
+     * Tests recording of the `SAME_DOCUMENT_NAVIGATION` bucket for the
+     * "Autofill.WebView.SubmissionSource" histogram. This event is fired when clicking a link that
+     * jumps through the same document and the tracked element disappears.
+     */
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    public void testUMAFormSubmissionSameDocumentNavigation() throws Throwable {
+        var histograms =
+                TestThreadUtils.runOnUiThreadBlocking(
+                        () -> {
+                            return HistogramWatcher.newBuilder()
+                                    .expectIntRecord(
+                                            AutofillProviderUMA.UMA_AUTOFILL_SUBMISSION_SOURCE,
+                                            AutofillProviderUMA.SAME_DOCUMENT_NAVIGATION)
+                                    .build();
+                        });
+
+        loadHTML(
+                """
+                    <input id='username'>
+                    <a id='link' href='#destination'></a>
+                    <div id='destination'></div>""");
+
+        int cnt = 0;
+        executeJavaScriptAndWaitForResult("document.getElementById('username').select();");
+        dispatchDownAndUpKeyEvents(KeyEvent.KEYCODE_A);
+        cnt +=
+                waitForCallbackAndVerifyTypes(
+                        cnt,
+                        new Integer[] {
+                            AUTOFILL_CANCEL,
+                            AUTOFILL_VIEW_ENTERED,
+                            AUTOFILL_SESSION_STARTED,
+                            AUTOFILL_VALUE_CHANGED
+                        });
+        invokeOnProvideAutoFillVirtualStructure();
+        executeJavaScriptAndWaitForResult(
+                """
+                    document.getElementById('link').click();
+                    document.getElementById('username').remove();""");
+        cnt +=
+                waitForCallbackAndVerifyTypes(
+                        cnt,
+                        new Integer[] {
+                            AUTOFILL_VIEW_EXITED, AUTOFILL_VALUE_CHANGED, AUTOFILL_COMMIT
+                        });
+
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    histograms.assertExpected();
+                });
+    }
+
+    /**
+     * Tests recording of the `XHR_SUCCEEDED` bucket for the "Autofill.WebView.SubmissionSource"
+     * histogram. This event is fired when a successful XHR request occurs and the tracked element
+     * disappears.
+     */
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    public void testUMAFormSubmissionXHRSucceeded() throws Throwable {
+        var histograms =
+                TestThreadUtils.runOnUiThreadBlocking(
+                        () -> {
+                            return HistogramWatcher.newBuilder()
+                                    .expectIntRecord(
+                                            AutofillProviderUMA.UMA_AUTOFILL_SUBMISSION_SOURCE,
+                                            AutofillProviderUMA.XHR_SUCCEEDED)
+                                    .build();
+                        });
+
+        loadHTML("<input id='username'>");
+
+        int cnt = 0;
+        executeJavaScriptAndWaitForResult("document.getElementById('username').select();");
+        dispatchDownAndUpKeyEvents(KeyEvent.KEYCODE_A);
+        cnt +=
+                waitForCallbackAndVerifyTypes(
+                        cnt,
+                        new Integer[] {
+                            AUTOFILL_CANCEL,
+                            AUTOFILL_VIEW_ENTERED,
+                            AUTOFILL_SESSION_STARTED,
+                            AUTOFILL_VALUE_CHANGED
+                        });
+        invokeOnProvideAutoFillVirtualStructure();
+
+        final String xhrUrl = mWebServer.setEmptyResponse(FILE);
+        executeJavaScriptAndWaitForResult(
+                String.format(
+                        """
+                    document.getElementById('username').remove();
+                    const xhr = new XMLHttpRequest();
+                    xhr.open('GET', '%s', true);
+                    xhr.send(null);""",
+                        xhrUrl));
+        cnt +=
+                waitForCallbackAndVerifyTypes(
+                        cnt,
+                        new Integer[] {
+                            AUTOFILL_VIEW_EXITED, AUTOFILL_VALUE_CHANGED, AUTOFILL_COMMIT
+                        });
+
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     histograms.assertExpected();
