@@ -21738,9 +21738,8 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="Preloading.Attempt">
-  <owner>sreejakshetty@chromium.org</owner>
-  <owner>spelchat@chromium.org</owner>
-  <owner>chrome-brapp-loading@google.com</owner>
+  <owner>domenic@chromium.org</owner>
+  <owner>chrome-instant-ecosystem@google.com</owner>
   <summary>
     This event is logged for each preloading attempt i.e., for preloading
     features like Preresolve, Preconnect, Prerender, Prefetch, and others when
@@ -21862,9 +21861,8 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="Preloading.Attempt.PreviousPrimaryPage">
-  <owner>sreejakshetty@chromium.org</owner>
-  <owner>spelchat@chromium.org</owner>
-  <owner>chrome-brapp-loading@google.com</owner>
+  <owner>domenic@chromium.org</owner>
+  <owner>chrome-instant-ecosystem@google.com</owner>
   <summary>
     This is same as Preloading.Attempt but UKM is associated with the primary
     triggering page (if exists) and logged when the user navigates away or when
@@ -21983,9 +21981,8 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="Preloading.Prediction">
-  <owner>sreejakshetty@chromium.org</owner>
-  <owner>spelchat@chromium.org</owner>
-  <owner>chrome-brapp-loading@google.com</owner>
+  <owner>domenic@chromium.org</owner>
+  <owner>chrome-instant-ecosystem@google.com</owner>
   <summary>
     This event is logged for each preloading prediction and metrics related to
     the preloading predictors like OmniboxDirectURLInput, Speculation Rules and
@@ -22023,9 +22020,8 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="Preloading.Prediction.PreviousPrimaryPage">
-  <owner>sreejakshetty@chromium.org</owner>
-  <owner>spelchat@chromium.org</owner>
-  <owner>chrome-brapp-loading@google.com</owner>
+  <owner>domenic@chromium.org</owner>
+  <owner>chrome-instant-ecosystem@google.com</owner>
   <summary>
     This is the same as Preloading.Prediction but UKM is associated with the
     WebContents primary triggering page (if exists) and logged when the user
@@ -22063,8 +22059,8 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="PrerenderPageLoad" singular="True">
-  <owner>ksakamoto@chromium.org</owner>
   <owner>nhiroki@chromium.org</owner>
+  <owner>chrome-prerendering@google.com</owner>
   <summary>
     Metrics related to Prerender2
     (https://docs.google.com/document/d/1P2VKCLpmnNm_cRAjUeE-bqLL0bslL_zKqiNeCzNom_w/edit?usp=sharing).
