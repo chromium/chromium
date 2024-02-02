@@ -344,27 +344,16 @@ bool HttpStreamFactory::Job::HasAvailableQuicSession() const {
   }
   bool require_dns_https_alpn =
       (job_type_ == DNS_ALPN_H3) || (job_type_ == PRECONNECT_DNS_ALPN_H3);
-  SessionUsage session_usage;
-  ProxyChain proxy_chain;
-  // TODO(https://crbug.com/1520929): Remove support for sending GET requests to
-  // the proxy server when proxying HTTP requests and instead always tunnel
-  // them.
-  CHECK(!proxy_info_.proxy_chain().is_multi_proxy());
-  if (IsGetToProxy(proxy_info_.proxy_chain(), origin_url_)) {
-    session_usage = SessionUsage::kProxy;
-    proxy_chain = ProxyChain::Direct();
-  } else {
-    session_usage = SessionUsage::kDestination;
-    proxy_chain = proxy_info_.proxy_chain();
-    // TODO(https://crbug.com/1495793): Proxying QUIC over QUIC is not currently
-    // supported, but when it is we can remove this CHECK.
-    CHECK(proxy_chain.is_direct());
-  }
+
+  // TODO(https://crbug.com/1495793): Proxying QUIC over QUIC is not currently
+  // supported, but when it is we can remove this CHECK.
+  CHECK(proxy_info_.proxy_chain().is_direct());
 
   return quic_request_.CanUseExistingSession(
-      origin_url_, proxy_chain, request_info_.privacy_mode, session_usage,
-      request_info_.socket_tag, request_info_.network_anonymization_key,
-      request_info_.secure_dns_policy, require_dns_https_alpn, destination_);
+      origin_url_, proxy_info_.proxy_chain(), request_info_.privacy_mode,
+      SessionUsage::kDestination, request_info_.socket_tag,
+      request_info_.network_anonymization_key, request_info_.secure_dns_policy,
+      require_dns_https_alpn, destination_);
 }
 
 bool HttpStreamFactory::Job::TargettedSocketGroupHasActiveSocket() const {
@@ -408,7 +397,7 @@ void HttpStreamFactory::Job::GetSSLInfo(SSLInfo* ssl_info) {
 }
 
 bool HttpStreamFactory::Job::UsingHttpProxyWithoutTunnel() const {
-  return !using_ssl_ && !is_websocket_ &&
+  return !using_quic_ && !using_ssl_ && !is_websocket_ &&
          proxy_info_.proxy_chain().is_get_to_proxy_allowed();
 }
 
@@ -437,11 +426,10 @@ bool HttpStreamFactory::Job::ShouldForceQuic(
   if (is_websocket) {
     return false;
   }
-  // If this is going through a QUIC proxy, only force QUIC for insecure
-  // requests. If the request is secure, a tunnel will be needed, and those are
+  // If a QUIC proxy is being used then a tunnel will be needed, and those are
   // handled by the socket pools, using an HttpProxyConnectJob.
   if (proxy_info.is_quic()) {
-    return !using_ssl;
+    return false;
   }
   return OriginToForceQuicOn(*session->context().quic_context->params(),
                              destination) &&
@@ -486,9 +474,10 @@ SpdySessionKey HttpStreamFactory::Job::GetSpdySessionKey(
 // static
 bool HttpStreamFactory::Job::IsGetToProxy(const ProxyChain& proxy_chain,
                                           const GURL& origin_url) {
+  // Sending proxied GET requests to the last proxy server in the chain is no
+  // longer supported for QUIC.
   return proxy_chain.is_get_to_proxy_allowed() &&
-         proxy_chain.Last().is_secure_http_like() &&
-         origin_url.SchemeIs(url::kHttpScheme);
+         proxy_chain.Last().is_https() && origin_url.SchemeIs(url::kHttpScheme);
 }
 
 bool HttpStreamFactory::Job::CanUseExistingSpdySession() const {
@@ -919,45 +908,20 @@ int HttpStreamFactory::Job::DoInitConnectionImplQuic(
     int server_cert_verifier_flags) {
   url::SchemeHostPort destination;
   GURL url(request_info_.url);
-  int cert_verifier_flags;
-  SessionUsage session_usage;
 
-  if (proxy_info_.is_quic()) {
-    DCHECK(url.SchemeIs(url::kHttpScheme));
-    // Disable network fetches for QUIC proxies, since the network requests
-    // are probably going to need to go through the proxy chain too.
-    //
-    // Any proxy-specific SSL behavior here should also be configured for HTTPS
-    // proxies in ConnectJobFactory.
-    cert_verifier_flags = CertVerifier::VERIFY_DISABLE_NETWORK_FETCHES;
-
-    // TODO(https://crbug.com/1520929): Remove support for sending GET requests
-    // to the proxy server when proxying HTTP requests and instead always tunnel
-    // them.
-    CHECK(!proxy_info_.proxy_chain().is_multi_proxy());
-    const HostPortPair& proxy_endpoint =
-        proxy_info_.proxy_chain().Last().host_port_pair();
-    destination = url::SchemeHostPort(url::kHttpsScheme, proxy_endpoint.host(),
-                                      proxy_endpoint.port());
-    url = destination.GetURL();
-    session_usage = SessionUsage::kProxy;
-  } else {
-    DCHECK(using_ssl_);
-    destination = destination_;
-    cert_verifier_flags = server_cert_verifier_flags;
-    // This connection is to the destination and not to an intermediate proxy.
-    session_usage = SessionUsage::kDestination;
-  }
-  DCHECK(url.SchemeIs(url::kHttpsScheme));
   bool require_dns_https_alpn =
       (job_type_ == DNS_ALPN_H3) || (job_type_ == PRECONNECT_DNS_ALPN_H3);
 
+  // TODO(https://crbug.com/1495793): Proxying QUIC over QUIC is not currently
+  // supported, but when it is we can remove this CHECK.
+  CHECK(proxy_info_.proxy_chain().is_direct());
+
   int rv = quic_request_.Request(
-      std::move(destination), quic_version_, ProxyChain::Direct(),
-      session_usage, request_info_.privacy_mode, priority_,
+      destination_, quic_version_, proxy_info_.proxy_chain(),
+      SessionUsage::kDestination, request_info_.privacy_mode, priority_,
       request_info_.socket_tag, request_info_.network_anonymization_key,
       request_info_.secure_dns_policy, require_dns_https_alpn,
-      cert_verifier_flags, url, net_log_, &net_error_details_,
+      server_cert_verifier_flags, url, net_log_, &net_error_details_,
       base::BindOnce(&Job::OnFailedOnDefaultNetwork, ptr_factory_.GetWeakPtr()),
       io_callback_);
   if (rv == OK) {
