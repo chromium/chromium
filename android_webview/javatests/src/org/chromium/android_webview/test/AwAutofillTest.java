@@ -2086,6 +2086,37 @@ public class AwAutofillTest extends AwParameterizedTest {
                 });
     }
 
+    /**
+     * Tests that the "false" bucket of the
+     * "Autofill.WebView.AutofillState.NoVirtualStructureProvided" histogram is recorded. This can
+     * only be recorded if autofill unexpectedly gets disabled between session start and form
+     * submission.
+     */
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    public void testUMANoVirtualStructureAutofillDisabled() throws Throwable {
+        var histograms =
+                TestThreadUtils.runOnUiThreadBlocking(
+                        () -> {
+                            return HistogramWatcher.newSingleRecordWatcher(
+                                    AutofillProviderUMA
+                                            .UMA_AUTOFILL_STATE_NO_VIRTUAL_STRUCTURE_PROVIDED,
+                                    false);
+                        });
+        mUMATestHelper.triggerAutofill();
+        mTestAutofillManagerWrapper.setDisabled();
+        mUMATestHelper.submitForm();
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    histograms.assertExpected();
+                });
+    }
+
+    /**
+     * Tests that the proper histograms are reocrded when no virtual structure is provided before
+     * session start.
+     */
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
@@ -2097,6 +2128,10 @@ public class AwAutofillTest extends AwParameterizedTest {
                                     .expectIntRecord(
                                             AutofillProviderUMA.UMA_AUTOFILL_AUTOFILL_SESSION,
                                             AutofillProviderUMA.NO_STRUCTURE_PROVIDED)
+                                    .expectBooleanRecord(
+                                            AutofillProviderUMA
+                                                    .UMA_AUTOFILL_STATE_NO_VIRTUAL_STRUCTURE_PROVIDED,
+                                            true)
                                     .expectNoRecords(
                                             AutofillProviderUMA.UMA_AUTOFILL_SUBMISSION_SOURCE)
                                     .build();
