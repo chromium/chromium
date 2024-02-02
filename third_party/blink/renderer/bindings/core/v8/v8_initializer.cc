@@ -35,7 +35,6 @@
 #include "base/system/sys_info.h"
 #include "build/build_config.h"
 #include "components/crash/core/common/crash_key.h"
-#include "net/cookies/cookie_util.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "third_party/blink/public/common/switches.h"
 #include "third_party/blink/public/platform/platform.h"
@@ -172,9 +171,9 @@ void V8Initializer::MessageHandlerInMainThread(v8::Local<v8::Message> message,
 
   UseCounter::Count(context, WebFeature::kUnhandledExceptionCountInMainThread);
   base::UmaHistogramBoolean("V8.UnhandledExceptionCountInMainThread", true);
-  ukm::builders::ThirdPartyCookies_BreakageIndicator(context->UkmSourceID())
-      .SetBreakageIndicatorType(static_cast<int>(
-          net::cookie_util::BreakageIndicatorType::UNCAUGHT_JS_ERROR))
+  ukm::builders::ThirdPartyCookies_BreakageIndicator_UncaughtJSError(
+      context->UkmSourceID())
+      .SetHasOccurred(1)
       .Record(context->UkmRecorder());
 
   std::unique_ptr<SourceLocation> location =

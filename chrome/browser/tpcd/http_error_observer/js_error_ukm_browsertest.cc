@@ -21,7 +21,6 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
-#include "net/cookies/cookie_util.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/default_handlers.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom.h"
@@ -63,12 +62,10 @@ class JSErrProcBrowserTest : public InProcessBrowserTest {
                                  size_t index,
                                  const base::Location& location = FROM_HERE) {
     auto entries = ukm_recorder.GetEntries(
-        "ThirdPartyCookies.BreakageIndicator", {"BreakageIndicatorType"});
+        "ThirdPartyCookies.BreakageIndicator.UncaughtJSError", {"HasOccurred"});
     EXPECT_EQ(entries.size(), size)
         << "(expected at " << location.ToString() << ")";
-    EXPECT_EQ(entries.at(index).metrics.at("BreakageIndicatorType"),
-              static_cast<int>(
-                  net::cookie_util::BreakageIndicatorType::UNCAUGHT_JS_ERROR))
+    EXPECT_EQ(entries.at(index).metrics.at("HasOccurred"), 1)
         << "(expected at " << location.ToString() << ")";
   }
 
@@ -82,11 +79,12 @@ IN_PROC_BROWSER_TEST_F(JSErrProcBrowserTest, NoErr) {
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), https_server()->GetURL(kHostA, "/empty_script.html")));
-  EXPECT_EQ(ukm_recorder
-                .GetEntries("ThirdPartyCookies.BreakageIndicator",
-                            {"BreakageIndicatorType"})
-                .size(),
-            0u);
+  EXPECT_EQ(
+      ukm_recorder
+          .GetEntries("ThirdPartyCookies.BreakageIndicator.UncaughtJSError",
+                      {"HasOccurred"})
+          .size(),
+      0u);
 }
 
 // Test that JS Error is registered on HTML page containing uncaught JS error
@@ -124,9 +122,10 @@ IN_PROC_BROWSER_TEST_F(JSErrProcBrowserTest, HandledJSErr) {
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), https_server()->GetURL(kHostA, "/handles_error_script.html")));
-  EXPECT_EQ(ukm_recorder
-                .GetEntries("ThirdPartyCookies.BreakageIndicator",
-                            {"BreakageIndicatorType"})
-                .size(),
-            0u);
+  EXPECT_EQ(
+      ukm_recorder
+          .GetEntries("ThirdPartyCookies.BreakageIndicator.UncaughtJSError",
+                      {"HasOccurred"})
+          .size(),
+      0u);
 }

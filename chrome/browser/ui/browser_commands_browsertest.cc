@@ -25,7 +25,6 @@
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/common/content_paths.h"
 #include "content/public/test/browser_test.h"
-#include "net/cookies/cookie_util.h"
 #include "net/dns/mock_host_resolver.h"
 #include "ui/base/ui_base_features.h"
 
@@ -82,12 +81,9 @@ class BrowserCommandsTest : public InProcessBrowserTest {
                                   bool blocked,
                                   bool settings_blocked) {
     auto entries = ukm_recorder.GetEntries(
-        "ThirdPartyCookies.BreakageIndicator",
-        {"BreakageIndicatorType", "TPCBlocked", "TPCBlockedInSettings"});
+        "ThirdPartyCookies.BreakageIndicator.UserReload",
+        {"TPCBlocked", "TPCBlockedInSettings"});
     EXPECT_EQ(entries.size(), size);
-    EXPECT_EQ(
-        entries.at(index).metrics.at("BreakageIndicatorType"),
-        static_cast<int>(net::cookie_util::BreakageIndicatorType::USER_RELOAD));
     EXPECT_EQ(entries.at(index).metrics.at("TPCBlocked"), blocked);
     EXPECT_EQ(entries.at(index).metrics.at("TPCBlockedInSettings"),
               settings_blocked);

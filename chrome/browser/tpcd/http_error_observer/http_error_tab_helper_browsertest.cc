@@ -26,7 +26,6 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
-#include "net/cookies/cookie_util.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/controllable_http_response.h"
 #include "net/test/embedded_test_server/default_handlers.h"
@@ -88,14 +87,10 @@ class HTTPErrProcBrowserTest : public InProcessBrowserTest {
       bool blocked,
       bool settings_blocked,
       const base::Location& location = FROM_HERE) {
-    auto entries = ukm_recorder.GetEntries(
-        "ThirdPartyCookies.BreakageIndicator",
-        {"BreakageIndicatorType", "TPCBlocked", "TPCBlockedInSettings"});
+    auto entries =
+        ukm_recorder.GetEntries("ThirdPartyCookies.BreakageIndicator.HTTPError",
+                                {"TPCBlocked", "TPCBlockedInSettings"});
     EXPECT_EQ(entries.size(), size)
-        << "(expected at " << location.ToString() << ")";
-    EXPECT_EQ(
-        entries.at(index).metrics.at("BreakageIndicatorType"),
-        static_cast<int>(net::cookie_util::BreakageIndicatorType::HTTP_ERROR))
         << "(expected at " << location.ToString() << ")";
     EXPECT_EQ(entries.at(index).metrics.at("TPCBlocked"), blocked)
         << "(expected at " << location.ToString() << ")";
@@ -127,9 +122,8 @@ IN_PROC_BROWSER_TEST_F(HTTPErrProcBrowserTest, NoErr) {
       /*host=*/kHostA,
       /*iframe_url=*/https_server()->GetURL(kHostA, "/title1.html"));
   EXPECT_EQ(ukm_recorder
-                .GetEntries("ThirdPartyCookies.BreakageIndicator",
-                            {"BreakageIndicatorType", "TPCBlocked",
-                             "TPCBlockedInSettings"})
+                .GetEntries("ThirdPartyCookies.BreakageIndicator.HTTPError",
+                            {"TPCBlocked", "TPCBlockedInSettings"})
                 .size(),
             0u);
 }
