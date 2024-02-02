@@ -15,6 +15,7 @@
 #include "components/global_media_controls/public/constants.h"
 #include "components/global_media_controls/public/media_dialog_delegate.h"
 #include "components/global_media_controls/public/media_item_ui_observer.h"
+#include "components/media_message_center/notification_theme.h"
 #include "components/soda/constants.h"
 #include "components/soda/soda_installer.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -194,6 +195,9 @@ class MediaDialogView : public views::BubbleDialogDelegateView,
   const raw_ptr<content::WebContents, AcrossTasksDanglingUntriaged>
       web_contents_for_presentation_request_ = nullptr;
   const global_media_controls::GlobalMediaControlsEntryPoint entry_point_;
+
+  // Only sets colors for the updated UI if it is enabled.
+  std::optional<media_message_center::MediaColorTheme> media_color_theme_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_GLOBAL_MEDIA_CONTROLS_MEDIA_DIALOG_VIEW_H_

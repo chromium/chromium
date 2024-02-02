@@ -55,8 +55,10 @@ enum class MediaDisplayPage {
   kSystemShelfMediaDetailedView = 3,
   // Media will be displayed on the lock screen media view page.
   kLockScreenMediaView = 4,
+  // Media will be displayed on the Chrome browser media dialog view page.
+  kMediaDialogView = 5,
   // Special enumerator that must share the highest enumerator value.
-  kMaxValue = kLockScreenMediaView,
+  kMaxValue = kMediaDialogView,
 };
 
 // CrOS implementation of media notification view.

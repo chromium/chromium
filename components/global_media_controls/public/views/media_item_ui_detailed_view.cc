@@ -625,7 +625,8 @@ void MediaItemUIDetailedView::StartCastingButtonPressed() {
       break;
     }
     case MediaDisplayPage::kQuickSettingsMediaDetailedView:
-    case MediaDisplayPage::kSystemShelfMediaDetailedView: {
+    case MediaDisplayPage::kSystemShelfMediaDetailedView:
+    case MediaDisplayPage::kMediaDialogView: {
       // Clicking the button on the media detailed view will toggle the device
       // list in the device selector view.
       if (device_selector_view_->IsDeviceSelectorExpanded()) {

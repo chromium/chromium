@@ -21,6 +21,7 @@
 #include "components/sessions/content/session_tab_helper.h"
 #include "content/public/browser/media_session.h"
 #include "media/base/media_switches.h"
+#include "ui/color/material_ui_color_mixer.h"
 
 namespace {
 
@@ -176,9 +177,14 @@ std::unique_ptr<global_media_controls::MediaItemUIFooter> BuildFooter(
   if (item->GetSourceType() == media_message_center::SourceType::kCast &&
       media_router::GlobalMediaControlsCastStartStopEnabled(profile)) {
 #if BUILDFLAG(IS_CHROMEOS)
-    if (base::FeatureList::IsEnabled(
-            media::kGlobalMediaControlsCrOSUpdatedUI) &&
-        media_color_theme.has_value()) {
+    bool use_updated_ui =
+        base::FeatureList::IsEnabled(media::kGlobalMediaControlsCrOSUpdatedUI);
+#else
+    bool use_updated_ui =
+        base::FeatureList::IsEnabled(media::kGlobalMediaControlsUpdatedUI);
+#endif
+
+    if (use_updated_ui && media_color_theme.has_value()) {
       return std::make_unique<MediaItemUICastFooterView>(
           base::BindRepeating(
               &CastMediaNotificationItem::StopCasting,
@@ -186,7 +192,7 @@ std::unique_ptr<global_media_controls::MediaItemUIFooter> BuildFooter(
                   ->GetWeakPtr()),
           media_color_theme.value());
     }
-#endif
+
     return std::make_unique<MediaItemUILegacyCastFooterView>(
         base::BindRepeating(
             &CastMediaNotificationItem::StopCasting,
@@ -225,4 +231,29 @@ std::unique_ptr<global_media_controls::MediaItemUIFooter> BuildFooter(
       cast_mode);
   return std::make_unique<MediaItemUILegacyCastFooterView>(
       std::move(stop_casting_cb));
+}
+
+media_message_center::MediaColorTheme GetMediaColorTheme() {
+  media_message_center::MediaColorTheme theme;
+  theme.primary_foreground_color_id = ui::kColorPrimaryForeground;
+  theme.secondary_foreground_color_id = ui::kColorSecondaryForeground;
+
+  // Colors for the play/pause button.
+  theme.play_button_foreground_color_id = ui::kColorSysPrimary;
+  theme.play_button_container_color_id = ui::kColorSysPrimaryContainer;
+  theme.pause_button_foreground_color_id = ui::kColorSysPrimary;
+  theme.pause_button_container_color_id = ui::kColorSysPrimaryContainer;
+
+  // Colors for the progress view.
+  theme.playing_progress_foreground_color_id = ui::kColorSysPrimary;
+  theme.playing_progress_background_color_id = ui::kColorSysPrimaryContainer;
+  theme.paused_progress_foreground_color_id = ui::kColorSysPrimary;
+  theme.paused_progress_background_color_id = ui::kColorSysPrimaryContainer;
+
+  theme.background_color_id = ui::kColorSysOmniboxContainer;
+  theme.separator_color_id = ui::kColorIcon;
+  theme.error_foreground_color_id = ui::kColorSysError;
+  theme.error_container_color_id = ui::kColorSysErrorContainer;
+  theme.focus_ring_color_id = ui::kColorSysStateFocusRing;
+  return theme;
 }

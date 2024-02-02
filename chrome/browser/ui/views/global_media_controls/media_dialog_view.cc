@@ -32,6 +32,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/global_media_controls/public/constants.h"
 #include "components/global_media_controls/public/media_item_manager.h"
+#include "components/global_media_controls/public/views/media_item_ui_detailed_view.h"
 #include "components/global_media_controls/public/views/media_item_ui_list_view.h"
 #include "components/global_media_controls/public/views/media_item_ui_view.h"
 #include "components/live_caption/caption_util.h"
@@ -212,9 +213,11 @@ void MediaDialogView::RefreshMediaItem(
   }
   bool show_devices =
       entry_point_ == GlobalMediaControlsEntryPoint::kPresentation;
-  observed_items_[id]->UpdateFooterView(BuildFooter(id, item, profile_));
-  observed_items_[id]->UpdateDeviceSelector(BuildDeviceSelector(
-      id, item, service_, service_, profile_, entry_point_, show_devices));
+  observed_items_[id]->UpdateFooterView(
+      BuildFooter(id, item, profile_, media_color_theme_));
+  observed_items_[id]->UpdateDeviceSelector(
+      BuildDeviceSelector(id, item, service_, service_, profile_, entry_point_,
+                          show_devices, media_color_theme_));
 
   UpdateBubbleSize();
 }
@@ -400,6 +403,14 @@ MediaDialogView::MediaDialogView(
       prefs::kLiveTranslateEnabled,
       base::BindRepeating(&MediaDialogView::OnLiveTranslateEnabledChanged,
                           base::Unretained(this)));
+
+#if !BUILDFLAG(IS_CHROMEOS)
+  // MediaDialogView can be built on CrOS but the updated UI should only be
+  // enabled for non-CrOS platforms.
+  if (base::FeatureList::IsEnabled(media::kGlobalMediaControlsUpdatedUI)) {
+    media_color_theme_ = GetMediaColorTheme();
+  }
+#endif
 }
 
 MediaDialogView::~MediaDialogView() {
@@ -667,9 +678,11 @@ MediaDialogView::BuildMediaItemUIView(
   bool show_devices =
       entry_point_ == GlobalMediaControlsEntryPoint::kPresentation;
   return std::make_unique<global_media_controls::MediaItemUIView>(
-      id, item, BuildFooter(id, item, profile_),
+      id, item, BuildFooter(id, item, profile_, media_color_theme_),
       BuildDeviceSelector(id, item, service_, service_, profile_, entry_point_,
-                          show_devices));
+                          show_devices, media_color_theme_),
+      /*notification_theme=*/absl::nullopt, media_color_theme_,
+      global_media_controls::MediaDisplayPage::kMediaDialogView);
 }
 
 BEGIN_METADATA(MediaDialogView)

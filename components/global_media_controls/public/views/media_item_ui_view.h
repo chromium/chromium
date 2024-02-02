@@ -199,8 +199,8 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaItemUIView
   // Sets to true when the notification theme is provided on Chrome OS.
   const bool has_notification_theme_;
 
-  // Sets to true if the updated UI is enabled on Chrome OS.
-  bool use_cros_updated_ui_ = false;
+  // Sets to true if the updated UI is enabled.
+  bool use_updated_ui_ = false;
 };
 
 }  // namespace global_media_controls
