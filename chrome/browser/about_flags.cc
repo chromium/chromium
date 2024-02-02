@@ -11103,17 +11103,24 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(chromeos::features::kCaptivePortalPopupWindow)},
 #endif
 
-    // NOTE: Adding a new flag requires adding a corresponding entry to enum
-    // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
-    // Histograms" in tools/metrics/histograms/README.md (run the
-    // AboutFlagsHistogramTest unit test to verify this process).
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {"enable-display-performance-mode",
      flag_descriptions::kEnableDisplayPerformanceModeName,
      flag_descriptions::kEnableDisplayPerformanceModeDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kDisplayPerformanceMode)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(IS_ANDROID)
+    {"android-tab-group-stable-ids",
+     flag_descriptions::kAndroidTabGroupStableIdsName,
+     flag_descriptions::kAndroidTabGroupStableIdsDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kAndroidTabGroupStableIds)},
+#endif  // BUILDFLAG(IS_ANDROID)
+
+    // NOTE: Adding a new flag requires adding a corresponding entry to enum
+    // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
+    // Histograms" in tools/metrics/histograms/README.md (run the
+    // AboutFlagsHistogramTest unit test to verify this process).
 };
 
 class FlagsStateSingleton : public flags_ui::FlagsState::Delegate {

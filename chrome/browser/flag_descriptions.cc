@@ -3915,6 +3915,11 @@ const char kAndroidHubDescription[] =
     "Replaces the Tab Switcher with a UI surface containing more types of "
     "data.";
 
+const char kAndroidTabGroupStableIdsName[] = "Android Tab Group Stable IDs";
+const char kAndroidTabGroupStableIdsDescription[] =
+    "Replaces the tab group ID system on Android with stable IDs. A logical "
+    "consequence is support for tab groups with a single tab.";
+
 const char kAnimatedImageDragShadowName[] =
     "Enable animated image drag shadow on Android.";
 const char kAnimatedImageDragShadowDescription[] =
@@ -4226,10 +4231,13 @@ const char kNotificationPermissionRationaleBottomSheetDescription[] =
     "Only works with builds targeting Android T+.";
 
 const char kOfflineAutoFetchName[] = "Offline Auto Fetch";
-const char kOfflineAutoFetchDescription[]= "Enables auto fetch of content when Chrome is online";
+const char kOfflineAutoFetchDescription[] =
+    "Enables auto fetch of content when Chrome is online";
 
-const char kOfflineContentOnNetErrorName[] = "Offline Content allowed on net errors";
-const char kOfflineContentOnNetErrorDescription[]=  "Enables use of Offline Content on network errors";
+const char kOfflineContentOnNetErrorName[] =
+    "Offline Content allowed on net errors";
+const char kOfflineContentOnNetErrorDescription[] =
+    "Enables use of Offline Content on network errors";
 
 const char kOmniboxShortcutsAndroidName[] = "Omnibox shortcuts on Android";
 const char kOmniboxShortcutsAndroidDescription[] =
