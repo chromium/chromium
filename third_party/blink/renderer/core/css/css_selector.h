@@ -588,11 +588,15 @@ class CORE_EXPORT CSSSelector {
   Signal GetSignal() const { return static_cast<Signal>(signal_); }
 
   // Invisible Rules
-  // ===========
+  // ===============
   //
   // Invisible rules are rules which exist internally for use-counting
   // purposes, but don't have any author-visible effect on the cascade,
   // and are not otherwise reachable through APIs.
+  //
+  // Invisible rules are useful when used in conjunction with signaling rules
+  // (above), because it makes it possible to check if a given rule has
+  // any impact in the presence of some alternative/hypothetical rule.
   //
   // TODO(crbug.com/1517290): Remove invisible rules when we're done
   // use-counting.
