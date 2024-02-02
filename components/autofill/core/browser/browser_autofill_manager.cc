@@ -67,6 +67,7 @@
 #include "components/autofill/core/browser/data_model/autofill_data_model.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/autofill_profile_comparator.h"
+#include "components/autofill/core/browser/data_model/borrowed_transliterator.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/data_model/phone_number.h"
 #include "components/autofill/core/browser/field_filling_address_util.h"
@@ -3326,7 +3327,7 @@ void BrowserAutofillManager::GetAvailableSuggestions(
     if (context->focused_field &&
         context->focused_field->Type().group() == FieldTypeGroup::kEmail) {
       std::optional<Suggestion> maybe_plus_address_suggestion =
-          MaybeGetPlusAddressSuggestion();
+          MaybeGetPlusAddressSuggestion(field);
       if (maybe_plus_address_suggestion.has_value()) {
         suggestions->insert(suggestions->cbegin(),
                             maybe_plus_address_suggestion.value());
@@ -3552,8 +3553,8 @@ bool BrowserAutofillManager::ShouldUploadUkm(
   return true;
 }
 
-std::optional<Suggestion>
-BrowserAutofillManager::MaybeGetPlusAddressSuggestion() {
+std::optional<Suggestion> BrowserAutofillManager::MaybeGetPlusAddressSuggestion(
+    const FormFieldData& field) {
   AutofillPlusAddressDelegate* plus_address_delegate =
       client().GetPlusAddressDelegate();
   if (!plus_address_delegate ||
@@ -3567,19 +3568,23 @@ BrowserAutofillManager::MaybeGetPlusAddressSuggestion() {
           client().GetLastCommittedPrimaryMainFrameOrigin());
   if (maybe_address == std::nullopt) {
     Suggestion create_plus_address_suggestion(
-        plus_address_delegate->GetCreateSuggestionLabel());
-    create_plus_address_suggestion.popup_item_id =
-        PopupItemId::kCreateNewPlusAddress;
+        plus_address_delegate->GetCreateSuggestionLabel(),
+        PopupItemId::kCreateNewPlusAddress);
     plus_address_delegate->RecordAutofillSuggestionEvent(
         AutofillPlusAddressDelegate::SuggestionEvent::
             kCreateNewPlusAddressSuggested);
     create_plus_address_suggestion.icon = Suggestion::Icon::kPlusAddress;
     return create_plus_address_suggestion;
   }
+
+  // Only suggest filling a plus address whose prefix matches the field's value.
+  std::u16string address = base::UTF8ToUTF16(*maybe_address);
+  if (!address.starts_with(
+          RemoveDiacriticsAndConvertToLowerCase(field.value))) {
+    return std::nullopt;
+  }
   Suggestion existing_plus_address_suggestion(
-      base::UTF8ToUTF16(maybe_address.value()));
-  existing_plus_address_suggestion.popup_item_id =
-      PopupItemId::kFillExistingPlusAddress;
+      std::move(address), PopupItemId::kFillExistingPlusAddress);
   plus_address_delegate->RecordAutofillSuggestionEvent(
       AutofillPlusAddressDelegate::SuggestionEvent::
           kExistingPlusAddressSuggested);
