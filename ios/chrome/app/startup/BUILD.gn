@@ -131,6 +131,7 @@ group("chrome_app_startup_parameters_fuzzers_deps") {
   public_deps = [
     ":startup",
     "//base",
+    "//base:i18n",
     "//base/test:test_support",
     "//ios/chrome/app:tests_fake_hook",
     "//ios/chrome/browser/providers:chromium_providers",
