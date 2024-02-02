@@ -50,7 +50,7 @@ interface CrDummyLitElement {
 
 class CrDummyLitElement extends CrDummyLitElementBase {
   static get is() {
-    return 'cr-dummy-lit';
+    return 'cr-dummy-lit' as const;
   }
 
   override render() {
@@ -61,14 +61,49 @@ class CrDummyLitElement extends CrDummyLitElementBase {
   }
 }
 
-declare global {
-  interface HTMLElementTagNameMap {
-    'cr-dummy-lit': CrDummyLitElement;
-  }
-}
-
 customElements.define(CrDummyLitElement.is, CrDummyLitElement);
 
+class CrDummyPropertiesWithNotifyElement extends CrLitElement {
+  static get is() {
+    return 'cr-dummy-properties-with-notify' as const;
+  }
+
+  static override get properties() {
+    return {
+      prop1: {
+        type: Boolean,
+        notify: true,
+      },
+
+      prop2: {
+        type: Boolean,
+        notify: false,
+      },
+
+      prop3: {type: Boolean},
+
+      propFour: {
+        type: Boolean,
+        notify: true,
+      },
+    };
+  }
+
+  prop1: boolean = false;
+  prop2: boolean = false;
+  prop3: boolean = false;
+  propFour: boolean = false;
+}
+
+customElements.define(
+    CrDummyPropertiesWithNotifyElement.is, CrDummyPropertiesWithNotifyElement);
+
+declare global {
+  interface HTMLElementTagNameMap {
+    [CrDummyLitElement.is]: CrDummyLitElement;
+    [CrDummyPropertiesWithNotifyElement.is]: CrDummyPropertiesWithNotifyElement;
+  }
+}
 
 suite('CrLitElement', function() {
   setup(function() {
@@ -260,6 +295,99 @@ suite('CrLitElement', function() {
     assertTrue(element.fooBarBoolean);
     assertEquals('world', element.fooBarString);
     assertEquals('custom', element.fooBarStringCustom);
+  });
+
+  test('PropertiesWithNotify', async function() {
+    const element = document.createElement('cr-dummy-properties-with-notify');
+
+    // Ensure that properties without 'notify: true' don't trigger events.
+    function unexpectedEventListener(e: Event) {
+      assertNotReached(`Unexpected event caught: ${e.type}`);
+    }
+    element.addEventListener('prop2-changed', unexpectedEventListener);
+    element.addEventListener('prop3-changed', unexpectedEventListener);
+
+    // Ensure that properties with 'notify: true' trigger events.
+
+    // Case1: An event should be fired after the element is initialized to
+    // propagate the initial value of the reactive property.
+    const whenFired1 = Promise.all([
+      eventToPromise('prop1-changed', element),
+      eventToPromise('prop-four-changed', element),
+    ]) as Promise<Array<CustomEvent<{value: boolean}>>>;
+
+    document.body.appendChild(element);
+
+    const events = await whenFired1;
+    for (const event of events) {
+      assertTrue(event.bubbles);
+      assertTrue(event.composed);
+      assertDeepEquals({value: false}, event.detail);
+    }
+
+    // Case2: An event should be fired whenever the property changes.
+    let whenFired2 = eventToPromise('prop1-changed', element);
+    element.prop1 = true;
+    let event = await whenFired2;
+    assertTrue(event.bubbles);
+    assertTrue(event.composed);
+    assertDeepEquals({value: true}, event.detail);
+
+    whenFired2 = eventToPromise('prop-four-changed', element);
+    element.propFour = true;
+    event = await whenFired2;
+    assertTrue(event.bubbles);
+    assertTrue(event.composed);
+    assertDeepEquals({value: true}, event.detail);
+  });
+
+  // Test that a Lit child with 'notify: true' properties works with a Polymer
+  // parent that uses 2-way bindings for that property.
+  test('PropertiesWithNotifyTwoWayBinding', async function() {
+    class CrPolymerWrapperElement extends PolymerElement {
+      static get is() {
+        return 'cr-polymer-wrapper-with-two-way-binding';
+      }
+
+      static get template() {
+        return polymerHtml`
+            <cr-dummy-properties-with-notify prop1="{{myProp}}">
+            </cr-dummy-properties-with-notify>`;
+      }
+
+      static get properties() {
+        return {
+          myProp: Boolean,
+        };
+      }
+
+      myProp: boolean = false;
+    }
+
+    customElements.define(CrPolymerWrapperElement.is, CrPolymerWrapperElement);
+
+    const parent =
+        document.createElement('cr-polymer-wrapper-with-two-way-binding') as
+        CrPolymerWrapperElement;
+    document.body.appendChild(parent);
+
+    const child =
+        parent.shadowRoot!.querySelector('cr-dummy-properties-with-notify');
+    assertTrue(!!child);
+    assertFalse(child.prop1);
+    assertFalse(parent.myProp);
+
+    // Case1: Changes in child update parent's property.
+    let whenFired = eventToPromise('prop1-changed', child);
+    child.prop1 = true;
+    await whenFired;
+    assertTrue(parent.myProp);
+
+    // Case2: Changes in parent update child's property.
+    whenFired = eventToPromise('prop1-changed', child);
+    parent.myProp = false;
+    await whenFired;
+    assertFalse(child.prop1);
   });
 
   test('Fire', async function() {

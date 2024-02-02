@@ -6,8 +6,18 @@ import {LitElement, PropertyValues} from 'lit/index.js';
 
 type ElementCache = Record<string, HTMLElement>;
 
+// Converts a 'nameLikeThis' to 'name-like-this'.
+function toDashCase(name: string): string {
+  return name.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase();
+}
+
 export class CrLitElement extends LitElement {
   $: ElementCache;
+  private willUpdatePending_: boolean = false;
+
+  // Properties for which a '<property-name>-changed' event should be fired
+  // whenever they change.
+  private static notifyProps_: Set<PropertyKey>|null = null;
 
   constructor() {
     super();
@@ -68,8 +78,6 @@ export class CrLitElement extends LitElement {
     });
   }
 
-  private willUpdatePending_: boolean = false;
-
   override connectedCallback() {
     super.connectedCallback();
 
@@ -89,8 +97,19 @@ export class CrLitElement extends LitElement {
     this.willUpdatePending_ = true;
   }
 
-  override updated(_changedProperties: PropertyValues<this>) {
+  override updated(changedProperties: PropertyValues<this>) {
     this.willUpdatePending_ = false;
+
+    const notifyProps = (this.constructor as typeof CrLitElement).notifyProps_;
+    if (notifyProps !== null) {
+      for (const key of changedProperties.keys()) {
+        if (notifyProps.has(key)) {
+          this.fire(
+              `${toDashCase(key.toString())}-changed`,
+              {value: (this as Record<PropertyKey, any>)[key]});
+        }
+      }
+    }
   }
 
   fire(eventName: string, detail?: any) {
@@ -123,8 +142,7 @@ export class CrLitElement extends LitElement {
 
       // Specify a dash-case attribute name, derived from the property name,
       // similar to what Polymer did.
-      (value as Mutable<typeof value>).attribute =
-          key.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase();
+      (value as Mutable<typeof value>).attribute = toDashCase(key);
     }
 
     // Mutating the properties object alone isn't enough, in the case where
@@ -133,8 +151,25 @@ export class CrLitElement extends LitElement {
     Object.defineProperty(this, 'properties', {value: properties});
   }
 
+  private static populateNotifyProps(): void {
+    if (!this.hasOwnProperty('properties')) {
+      return;
+    }
+
+    for (const [key, value] of Object.entries(this.properties)) {
+      if ((value as {notify?: boolean}).notify) {
+        // Lazily create `notifyProps_` only if any such property exists.
+        if (this.notifyProps_ === null) {
+          this.notifyProps_ = new Set();
+        }
+        this.notifyProps_.add(key);
+      }
+    }
+  }
+
   protected static override finalize() {
     this.patchPropertiesObject();
+    this.populateNotifyProps();
     super.finalize();
   }
 }

@@ -143,7 +143,10 @@ export class CrActionMenuElement extends CrLitElement {
       // and reposition to its anchor accordingly.
       autoReposition: {type: Boolean},
 
-      open: {type: Boolean},
+      open: {
+        type: Boolean,
+        notify: true,
+      },
 
       // Descriptor of the menu. Should be something along the lines of "menu"
       roleDescription: {type: String},
@@ -298,8 +301,6 @@ export class CrActionMenuElement extends CrLitElement {
     if (this.lastConfig_) {
       this.lastConfig_ = null;
     }
-
-    this.fire('open-changed', {value: this.open});
   }
 
   /**
@@ -403,8 +404,6 @@ export class CrActionMenuElement extends CrLitElement {
         });
       }
     }
-
-    this.fire('open-changed', {value: this.open});
   }
 
   private resetStyle_() {
