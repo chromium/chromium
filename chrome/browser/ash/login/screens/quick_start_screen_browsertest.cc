@@ -242,7 +242,7 @@ class QuickStartBrowserTest : public OobeBaseTest {
   void AbortFlowFromPhoneSide() {
     connection_broker()->CloseConnection(
         quick_start::TargetDeviceConnectionBroker::ConnectionClosedReason::
-            kUserAborted);
+            kConnectionLost);
   }
 
   void SimulateUserVerification(bool simulate_failure = false) {

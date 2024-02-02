@@ -363,6 +363,8 @@ void QuickStartController::OnStatusChanged(
       }
       AbortFlow(AbortFlowReason::ERROR);
       return;
+    case Step::FLOW_ABORTED:
+      [[fallthrough]];
     case Step::SETUP_COMPLETE:
       return;
   }

@@ -180,10 +180,14 @@ void TargetDeviceBootstrapController::OnConnectionClosed(
             WifiTransferResultFailureReason::kConnectionDroppedDuringAttempt);
   }
 
-  // UI observer will automatically exit the QuickStartScreen if there's an
-  // error. We want the user to manually exit the Quick Start screen when the
-  // setup is complete, so don't update the status to Step::Error in this case.
-  if (status_.step != Step::SETUP_COMPLETE) {
+  if (reason == ConnectionClosedReason::kUserAborted) {
+    UpdateStatus(/*step=*/Step::FLOW_ABORTED,
+                 /*payload=*/absl::monostate());
+  } else if (status_.step != Step::SETUP_COMPLETE) {
+    // UI observer will automatically exit the QuickStartScreen if there's an
+    // error. We want the user to manually exit the Quick Start screen when the
+    // setup is complete, so don't update the status to Step::Error in this
+    // case.
     UpdateStatus(/*step=*/Step::ERROR,
                  /*payload=*/ErrorCode::CONNECTION_CLOSED);
   }
@@ -513,6 +517,9 @@ std::ostream& operator<<(std::ostream& stream,
       break;
     case TargetDeviceBootstrapController::Step::SETUP_COMPLETE:
       stream << "[setup complete]";
+      break;
+    case TargetDeviceBootstrapController::Step::FLOW_ABORTED:
+      stream << "[flow aborted]";
       break;
   }
 
