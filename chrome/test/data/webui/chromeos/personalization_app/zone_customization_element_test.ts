@@ -5,7 +5,7 @@
 import 'chrome://personalization/strings.m.js';
 
 import {BacklightColor, CurrentBacklightState, KeyboardBacklightActionName, KeyboardBacklightObserver, SetCurrentBacklightStateAction, staticColorIds, ZoneCustomizationElement} from 'chrome://personalization/js/personalization_app.js';
-import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertDeepEquals, assertEquals, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';

@@ -4,12 +4,12 @@
 
 import 'chrome://resources/ash/common/network_health/network_diagnostics.js';
 import 'chrome://resources/ash/common/network_health/network_health_summary.js';
-import 'chrome://resources/cr_elements/cr_shared_style.css.js';
+import 'chrome://resources/ash/common/cr_elements/cr_shared_style.css.js';
 import './strings.m.js';
 
 import {NetworkDiagnosticsElement} from 'chrome://resources/ash/common/network_health/network_diagnostics.js';
-import {CrContainerShadowMixin} from 'chrome://resources/cr_elements/cr_container_shadow_mixin.js';
-import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {CrContainerShadowMixin} from 'chrome://resources/ash/common/cr_elements/cr_container_shadow_mixin.js';
+import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {sendWithPromise} from 'chrome://resources/js/cr.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 

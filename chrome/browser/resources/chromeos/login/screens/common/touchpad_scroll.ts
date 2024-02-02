@@ -5,7 +5,7 @@
  * @fileoverview Polymer element for touchpad scroll screen.
  */
 
-import '//resources/cr_elements/chromeos/cros_color_overrides.css.js';
+import '//resources/ash/common/cr_elements/cros_color_overrides.css.js';
 import '//resources/polymer/v3_0/iron-iconset-svg/iron-iconset-svg.js';
 import '../../components/buttons/oobe_next_button.js';
 import '../../components/buttons/oobe_text_button.js';

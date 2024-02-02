@@ -7,8 +7,8 @@
  * voice match screen.
  */
 
-import '//resources/cr_elements/cr_lottie/cr_lottie.js';
-import '//resources/cr_elements/icons.html.js';
+import '//resources/ash/common/cr_elements/cr_lottie/cr_lottie.js';
+import '//resources/ash/common/cr_elements/icons.html.js';
 import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 import '../components/buttons/oobe_next_button.js';
 import '../components/buttons/oobe_text_button.js';

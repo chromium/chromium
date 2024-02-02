@@ -7,15 +7,15 @@
  * UI element which will show a dialog to create, view or edit APNs.
  */
 
-import '//resources/cr_elements/cr_button/cr_button.js';
-import '//resources/cr_elements/cr_checkbox/cr_checkbox.js';
-import '//resources/cr_elements/icons.html.js';
-import '//resources/cr_elements/cr_dialog/cr_dialog.js';
-import '//resources/cr_elements/cr_input/cr_input.js';
+import '//resources/ash/common/cr_elements/cr_button/cr_button.js';
+import '//resources/ash/common/cr_elements/cr_checkbox/cr_checkbox.js';
+import '//resources/ash/common/cr_elements/icons.html.js';
+import '//resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
+import '//resources/ash/common/cr_elements/cr_input/cr_input.js';
 import '//resources/polymer/v3_0/iron-collapse/iron-collapse.js';
-import '//resources/cr_elements/cr_expand_button/cr_expand_button.js';
-import '//resources/cr_elements/cr_shared_style.css.js';
-import '//resources/cr_elements/md_select.css.js';
+import '//resources/ash/common/cr_elements/cr_expand_button/cr_expand_button.js';
+import '//resources/ash/common/cr_elements/cr_shared_style.css.js';
+import '//resources/ash/common/cr_elements/md_select.css.js';
 
 import {assert} from '//resources/ash/common/assert.js';
 import {I18nBehavior, I18nBehaviorInterface} from '//resources/ash/common/i18n_behavior.js';

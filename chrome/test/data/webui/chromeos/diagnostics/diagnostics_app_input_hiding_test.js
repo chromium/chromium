@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import 'chrome://diagnostics/diagnostics_app.js';
-import 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
 import 'chrome://webui-test/chromeos/mojo_webui_test_support.js';
 
 import {DiagnosticsAppElement} from 'chrome://diagnostics/diagnostics_app.js';

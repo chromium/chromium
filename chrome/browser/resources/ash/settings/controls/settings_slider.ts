@@ -8,11 +8,11 @@
  * linear UI range to a range of real values.  When |value| does not map exactly
  * to a tick mark, it interpolates to the nearest tick.
  */
-import '//resources/cr_elements/cr_shared_vars.css.js';
-import '//resources/cr_elements/cr_slider/cr_slider.js';
-import '//resources/cr_elements/chromeos/cros_color_overrides.css.js';
+import '//resources/ash/common/cr_elements/cr_shared_vars.css.js';
+import '//resources/ash/common/cr_elements/cr_slider/cr_slider.js';
+import '//resources/ash/common/cr_elements/cros_color_overrides.css.js';
 
-import {CrSliderElement, SliderTick} from '//resources/cr_elements/cr_slider/cr_slider.js';
+import {CrSliderElement, SliderTick} from '//resources/ash/common/cr_elements/cr_slider/cr_slider.js';
 import {assert} from '//resources/js/assert.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';

@@ -9,7 +9,7 @@ import '../../widgets/xf_jellybean.js';
 
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
-import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
 import {assert, assertInstanceof} from 'chrome://resources/js/assert.js';
 
 import type {Crostini} from '../../background/js/crostini.js';

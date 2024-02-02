@@ -4,11 +4,11 @@
 
 import './shimless_rma_shared.css.js';
 import './base_page.js';
-import '//resources/cr_elements/cr_radio_button/cr_radio_button.js';
-import '//resources/cr_elements/cr_radio_group/cr_radio_group.js';
+import '//resources/ash/common/cr_elements/cr_radio_button/cr_radio_button.js';
+import '//resources/ash/common/cr_elements/cr_radio_group/cr_radio_group.js';
 
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 
 import {getShimlessRmaService} from './mojo_interface_provider.js';
 import {getTemplate} from './onboarding_choose_destination_page.html.js';

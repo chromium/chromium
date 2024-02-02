@@ -19,8 +19,8 @@
  *  document level.
  */
 
-import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
-import '//resources/cr_elements/icons.html.js';
+import '//resources/ash/common/cr_elements/cr_icon_button/cr_icon_button.js';
+import '//resources/ash/common/cr_elements/icons.html.js';
 import './common_styles/oobe_common_styles.css.js';
 
 import {loadTimeData} from '//resources/ash/common/load_time_data.m.js';

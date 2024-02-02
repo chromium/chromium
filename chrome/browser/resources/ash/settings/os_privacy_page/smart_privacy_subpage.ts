@@ -7,8 +7,8 @@
  * 'settings-smart-privacy-subpage' contains smart privacy settings.
  */
 
-import 'chrome://resources/cr_elements/cr_shared_style.css.js';
-import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
+import 'chrome://resources/ash/common/cr_elements/cr_shared_style.css.js';
+import 'chrome://resources/ash/common/cr_elements/cr_shared_vars.css.js';
 import '../controls/extension_controlled_indicator.js';
 import '../controls/settings_slider.js';
 import '../settings_shared.css.js';
@@ -17,7 +17,7 @@ import '../os_settings_page/os_settings_animated_pages.js';
 import '../os_settings_page/os_settings_subpage.js';
 
 import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
-import {SliderTick} from 'chrome://resources/cr_elements/cr_slider/cr_slider.js';
+import {SliderTick} from 'chrome://resources/ash/common/cr_elements/cr_slider/cr_slider.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 

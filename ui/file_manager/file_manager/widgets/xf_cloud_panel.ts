@@ -6,7 +6,7 @@
  * @fileoverview xf-cloud-panel element.
  */
 
-import type {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
+import type {CrActionMenuElement} from 'chrome://resources/ash/common/cr_elements/cr_action_menu/cr_action_menu.js';
 
 import {getCurrentLocaleOrDefault, secondsToRemainingTimeString, str, strf} from '../common/js/translations.js';
 import {ICON_TYPES} from '../foreground/js/constants.js';

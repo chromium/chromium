@@ -13,7 +13,7 @@ import 'chrome://resources/ash/common/personalization/personalization_shared_ico
 import 'chrome://resources/ash/common/sea_pen/sea_pen_icons.html.js';
 
 import {DomRepeat} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {AnchorAlignment} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
+import {AnchorAlignment} from 'chrome://resources/ash/common/cr_elements/cr_action_menu/cr_action_menu.js';
 import {assert} from 'chrome://resources/js/assert.js';
 
 import {getSeaPenTemplates, SeaPenOption, SeaPenTemplate} from './constants.js';

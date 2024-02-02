@@ -7,8 +7,8 @@
  */
 
 import 'chrome://resources/ash/common/personalization/common.css.js';
-import 'chrome://resources/cr_elements/cr_auto_img/cr_auto_img.js';
-import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
+import 'chrome://resources/ash/common/cr_elements/cr_auto_img/cr_auto_img.js';
+import 'chrome://resources/ash/common/cr_elements/cr_shared_vars.css.js';
 
 import {assertNotReached} from 'chrome://resources/js/assert.js';
 

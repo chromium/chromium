@@ -9,7 +9,7 @@
 
 import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 import '//resources/ash/common/quick_unlock/pin_keyboard.js';
-import '//resources/cr_elements/icons.html.js';
+import '//resources/ash/common/cr_elements/icons.html.js';
 import './oobe_icons.html.js';
 import './buttons/oobe_back_button.js';
 import './buttons/oobe_next_button.js';

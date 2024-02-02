@@ -7,8 +7,8 @@
  * opt-in screen.
  */
 
-import '//resources/cr_elements/chromeos/cros_color_overrides.css.js';
-import '//resources/cr_elements/cr_toggle/cr_toggle.js';
+import '//resources/ash/common/cr_elements/cros_color_overrides.css.js';
+import '//resources/ash/common/cr_elements/cr_toggle/cr_toggle.js';
 import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 import '//resources/polymer/v3_0/iron-iconset-svg/iron-iconset-svg.js';
 import '../../components/oobe_a11y_option.js';

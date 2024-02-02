@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import '//resources/cr_elements/chromeos/cros_color_overrides.css.js';
-import '//resources/cr_elements/cr_checkbox/cr_checkbox.js';
-import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
+import '//resources/ash/common/cr_elements/cros_color_overrides.css.js';
+import '//resources/ash/common/cr_elements/cr_checkbox/cr_checkbox.js';
+import '//resources/ash/common/cr_elements/cr_icon_button/cr_icon_button.js';
 import '//resources/ash/common/cr_scrollable_behavior.js';
-import '//resources/cr_elements/icons.html.js';
+import '//resources/ash/common/cr_elements/icons.html.js';
 
 import {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
 import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';

@@ -177,6 +177,12 @@ def getTargetPath(gen_dir, root_gen_dir):
 
 
 def isInAshFolder(path):
+  nested_lacros_folders = [
+    'chrome/browser/resources/chromeos/kerberos',
+  ]
+  if any(path.startswith(folder) for folder in nested_lacros_folders):
+    return False
+
   # TODO (https://crbug.com/1506296): Organize Ash WebUI code under fewer
   # directories.
   ash_folders = [
@@ -195,43 +201,17 @@ def isInAshFolder(path):
   return any(path.startswith(folder) for folder in ash_folders)
 
 
-# Check if the path is in an Ash WebUI folder that has been migrated to use the
-# Ash fork of cr_elements at ash/webui/common/resources/cr_elements/. Any such
-# path shouldn't add a dependency on Browser cr_elements, or the UI will end up
-# with 2 versions of cr_elements at once, which can cause runtime errors. See
-# https://crbug.com/1512231
-def isMigratedAshFolder(path):
-  migrated_ash_folders = [
-      "ash/webui/os_feedback_ui",
-      "ash/webui/scanning",
-      "chrome/browser/resources/chromeos/add_supervision",
-      "chrome/browser/resources/chromeos/app_install",
-      "chrome/browser/resources/chromeos/borealis_installer",
-      "chrome/browser/resources/chromeos/cloud_upload",
-      "chrome/browser/resources/chromeos/emoji_picker",
-      "chrome/browser/resources/chromeos/enterprise_reporting",
-      "chrome/browser/resources/chromeos/healthd_internals",
-      "chrome/browser/resources/chromeos/parent_access",
-      "chrome/browser/resources/chromeos/set_time_dialog",
-      "chrome/browser/resources/chromeos/vc_tray_tester",
-      "chrome/test/data/webui/chromeos/borealis_installer",
-      "chrome/test/data/webui/chromeos/emoji_picker",
-      "chrome/test/data/webui/chromeos/os_feedback_ui",
-      "chrome/test/data/webui/chromeos/parent_access",
-  ]
-  return any(path.startswith(folder) for folder in migrated_ash_folders)
-
-
 def isBrowserOnlyDep(dep):
   browser_only_deps = [
       '//ui/webui/resources/cr_elements',
       '//ui/webui/resources/cr_components/localized_link',
+      '//ui/webui/resources/cr_components/managed_footnote',
   ]
   return any(dep.startswith(dep_folder) for dep_folder in browser_only_deps)
 
 
 def isDependencyAllowed(is_ash_target, raw_dep, target_path):
-  if isMigratedAshFolder(target_path) and isBrowserOnlyDep(raw_dep):
+  if is_ash_target and isBrowserOnlyDep(raw_dep):
     return False
 
   is_ash_dep = isInAshFolder(raw_dep[2:])

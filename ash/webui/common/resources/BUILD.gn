@@ -236,7 +236,7 @@ ts_library("build_ts") {
     "//third_party/material_web_components:bundle_lit_ts",
     "//third_party/material_web_components:library",
     "//third_party/polymer/v3_0:library",
-    "//ui/webui/resources/cr_elements:build_ts",
+    "//ash/webui/common/resources/cr_elements:build_ts",
     "//ui/webui/resources/js:build_ts",
     "//ui/webui/resources/mojo:build_ts",
   ]
@@ -431,7 +431,7 @@ ts_definitions("generate_definitions") {
   out_dir = preprocessed_dir
   js_files = generate_definitions_js_files
   deps = [
-    "//ui/webui/resources/cr_elements:build_ts",
+    "//ash/webui/common/resources/cr_elements:build_ts",
     "//ui/webui/resources/js:build_ts",
     "//ui/webui/resources/mojo:build_ts",
   ]

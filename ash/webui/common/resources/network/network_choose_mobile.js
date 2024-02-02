@@ -7,9 +7,9 @@
  * mobile networks.
  */
 
-import '//resources/cr_elements/cr_button/cr_button.js';
-import '//resources/cr_elements/md_select.css.js';
-import '//resources/cr_elements/cr_shared_style.css.js';
+import '//resources/ash/common/cr_elements/cr_button/cr_button.js';
+import '//resources/ash/common/cr_elements/md_select.css.js';
+import '//resources/ash/common/cr_elements/cr_shared_style.css.js';
 import '//resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 import './network_shared.css.js';
 

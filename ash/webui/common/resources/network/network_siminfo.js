@@ -6,9 +6,9 @@
  * @fileoverview Polymer element for displaying and modifying cellular sim info.
  */
 
-import '//resources/cr_elements/cr_toggle/cr_toggle.js';
-import '//resources/cr_elements/icons.html.js';
-import '//resources/cr_elements/cr_button/cr_button.js';
+import '//resources/ash/common/cr_elements/cr_toggle/cr_toggle.js';
+import '//resources/ash/common/cr_elements/icons.html.js';
+import '//resources/ash/common/cr_elements/cr_button/cr_button.js';
 import '//resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 import '//resources/polymer/v3_0/paper-tooltip/paper-tooltip.js';

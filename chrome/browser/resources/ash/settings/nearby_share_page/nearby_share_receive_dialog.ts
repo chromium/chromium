@@ -20,9 +20,9 @@
  */
 
 import 'chrome://resources/cr_components/settings_prefs/prefs.js';
-import 'chrome://resources/cr_elements/cr_button/cr_button.js';
-import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
-import 'chrome://resources/cr_elements/cr_view_manager/cr_view_manager.js';
+import 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
+import 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
+import 'chrome://resources/ash/common/cr_elements/cr_view_manager/cr_view_manager.js';
 import '../settings_shared.css.js';
 import '/shared/nearby_onboarding_one_page.js';
 import '/shared/nearby_onboarding_page.js';
@@ -32,8 +32,8 @@ import './nearby_share_high_visibility_page.js';
 
 import {ReceiveManagerInterface, ReceiveObserverReceiver, RegisterReceiveSurfaceResult, ShareTarget, TransferMetadata, TransferStatus} from '/shared/nearby_share.mojom-webui.js';
 import {NearbySettings} from '/shared/nearby_share_settings_mixin.js';
-import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
-import {CrViewManagerElement} from 'chrome://resources/cr_elements/cr_view_manager/cr_view_manager.js';
+import {CrDialogElement} from 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
+import {CrViewManagerElement} from 'chrome://resources/ash/common/cr_elements/cr_view_manager/cr_view_manager.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';

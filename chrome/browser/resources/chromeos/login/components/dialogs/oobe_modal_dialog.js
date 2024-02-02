@@ -20,9 +20,9 @@
  *  trigger some action on their side by using 'on-close=myMethod'.
  */
 
-import '//resources/cr_elements/chromeos/cros_color_overrides.css.js';
-import '//resources/cr_elements/cr_dialog/cr_dialog.js';
-import '//resources/cr_elements/cr_shared_style.css.js';
+import '//resources/ash/common/cr_elements/cros_color_overrides.css.js';
+import '//resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
+import '//resources/ash/common/cr_elements/cr_shared_style.css.js';
 import '../buttons/oobe_text_button.js';
 import '../common_styles/oobe_common_styles.css.js';
 

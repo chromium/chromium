@@ -10,7 +10,7 @@
  * Event 'loaded' will be fired when the page has been successfully loaded.
  */
 
-import '//resources/cr_elements/cr_lottie/cr_lottie.js';
+import '//resources/ash/common/cr_elements/cr_lottie/cr_lottie.js';
 import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 import '../components/buttons/oobe_next_button.js';
 import '../components/buttons/oobe_text_button.js';

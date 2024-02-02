@@ -8,7 +8,7 @@
  */
 
 import './network_icons.html.js';
-import '//resources/cr_elements/cr_hidden_style.css.js';
+import '//resources/ash/common/cr_elements/cr_hidden_style.css.js';
 import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 
 import {I18nBehavior, I18nBehaviorInterface} from '//resources/ash/common/i18n_behavior.js';

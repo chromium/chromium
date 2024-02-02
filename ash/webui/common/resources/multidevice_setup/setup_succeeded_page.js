@@ -5,7 +5,7 @@
 import './multidevice_setup_shared.css.js';
 import './ui_page.js';
 import '//resources/ash/common/cr.m.js';
-import '//resources/cr_elements/chromeos/cros_color_overrides.css.js';
+import '//resources/ash/common/cr_elements/cros_color_overrides.css.js';
 import '//resources/polymer/v3_0/iron-media-query/iron-media-query.js';
 
 import {loadTimeData} from '//resources/ash/common/load_time_data.m.js';

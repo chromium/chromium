@@ -7,8 +7,8 @@
 import 'chrome://personalization/strings.m.js';
 
 import {ColorScheme, DynamicColorElement, emptyState, SetColorSchemeAction, SetSampleColorSchemesAction, SetStaticColorAction, ThemeActionName, ThemeObserver} from 'chrome://personalization/js/personalization_app.js';
-import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
-import {CrToggleElement} from 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
+import {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
+import {CrToggleElement} from 'chrome://resources/ash/common/cr_elements/cr_toggle/cr_toggle.js';
 import {hexColorToSkColor} from 'chrome://resources/js/color_utils.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';

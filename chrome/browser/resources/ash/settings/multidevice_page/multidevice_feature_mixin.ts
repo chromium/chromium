@@ -8,7 +8,7 @@
  * cleanly and concisely. It includes some constants and utility methods.
  */
 
-import {I18nMixin, I18nMixinInterface} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {I18nMixin, I18nMixinInterface} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {dedupingMixin, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {isRevampWayfindingEnabled} from '../common/load_time_booleans.js';

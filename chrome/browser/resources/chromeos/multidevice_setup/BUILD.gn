@@ -36,7 +36,7 @@ if (optimize_webui) {
       "//ash/webui/common/resources:preprocess",
       "//third_party/cros-components:cros_components_ts",
       "//third_party/material_web_components:library",
-      "//ui/webui/resources/cr_elements:build_ts",
+      "//ash/webui/common/resources/cr_elements:build_ts",
     ]
   }
 }

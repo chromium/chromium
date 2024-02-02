@@ -6,7 +6,7 @@
  * @fileoverview Polymer element for drive pinning screen.
  */
 
-import '//resources/cr_elements/chromeos/cros_color_overrides.css.js';
+import '//resources/ash/common/cr_elements/cros_color_overrides.css.js';
 import '//resources/polymer/v3_0/iron-iconset-svg/iron-iconset-svg.js';
 import '../../components/buttons/oobe_next_button.js';
 import '../../components/oobe_icons.html.js';

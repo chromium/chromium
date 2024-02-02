@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import './app_management_cros_shared_style.css.js';
-import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
+import '//resources/ash/common/cr_elements/cr_icon_button/cr_icon_button.js';
 
 import {App} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {BrowserProxy} from 'chrome://resources/cr_components/app_management/browser_proxy.js';

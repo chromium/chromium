@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 import 'chrome://resources/ash/common/network/network_icon.js';
-import 'chrome://resources/cr_elements/cr_button/cr_button.js';
-import 'chrome://resources/cr_elements/cr_shared_style.css.js';
+import 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
+import 'chrome://resources/ash/common/cr_elements/cr_shared_style.css.js';
 
 import {assert} from 'chrome://resources/ash/common/assert.js';
 import {NetworkIconElement} from 'chrome://resources/ash/common/network/network_icon.js';

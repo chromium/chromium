@@ -8,7 +8,7 @@
  * up screen lock.
  */
 
-import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
+import 'chrome://resources/ash/common/cr_elements/cr_shared_vars.css.js';
 import '../os_people_page/lock_screen_password_prompt_dialog.js';
 import '../os_people_page/setup_pin_dialog.js';
 

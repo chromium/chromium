@@ -7,10 +7,10 @@
  * Authenticate user screens.
  */
 
-import '//resources/cr_elements/chromeos/cros_color_overrides.css.js';
-import '//resources/cr_elements/cr_toggle/cr_toggle.js';
-import '//resources/cr_elements/icons.html.js';
-import '//resources/cr_elements/md_select.css.js';
+import '//resources/ash/common/cr_elements/cros_color_overrides.css.js';
+import '//resources/ash/common/cr_elements/cr_toggle/cr_toggle.js';
+import '//resources/ash/common/cr_elements/icons.html.js';
+import '//resources/ash/common/cr_elements/md_select.css.js';
 import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 import '../../components/oobe_icons.html.js';
 import '../../components/buttons/oobe_back_button.js';

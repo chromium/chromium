@@ -8,7 +8,7 @@
  * equivalent Browser Settings UI (in chrome://settings/captions).
  */
 
-import '//resources/cr_elements/cr_shared_style.css.js';
+import '//resources/ash/common/cr_elements/cr_shared_style.css.js';
 import '../controls/settings_slider.js';
 import '../settings_shared.css.js';
 import './live_caption_section.js';

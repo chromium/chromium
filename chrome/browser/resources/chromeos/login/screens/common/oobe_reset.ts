@@ -6,8 +6,8 @@
  * @fileoverview Polymer element for displaying material design reset screen.
  */
 
-import '//resources/cr_elements/chromeos/cros_color_overrides.css.js';
-import '//resources/cr_elements/cr_checkbox/cr_checkbox.js';
+import '//resources/ash/common/cr_elements/cros_color_overrides.css.js';
+import '//resources/ash/common/cr_elements/cr_checkbox/cr_checkbox.js';
 import '//resources/js/action_link.js';
 import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 import '../../components/oobe_icons.html.js';
@@ -15,8 +15,8 @@ import '../../components/common_styles/oobe_common_styles.css.js';
 import '../../components/common_styles/oobe_dialog_host_styles.css.js';
 import '../../components/buttons/oobe_text_button.js';
 
-import {getInstance as getAnnouncerInstance} from '//resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
-import type {CrCheckboxElement} from '//resources/cr_elements/cr_checkbox/cr_checkbox.js';
+import {getInstance as getAnnouncerInstance} from '//resources/ash/common/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
+import type {CrCheckboxElement} from '//resources/ash/common/cr_elements/cr_checkbox/cr_checkbox.js';
 import {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
 import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 

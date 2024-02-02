@@ -3,9 +3,9 @@
 // found in the LICENSE file.
 
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {ListPropertyUpdateMixin} from 'chrome://resources/cr_elements/list_property_update_mixin.js';
-import {makeStoreClientMixin} from 'chrome://resources/cr_elements/store_client/store_client.js';
+import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
+import {ListPropertyUpdateMixin} from 'chrome://resources/ash/common/cr_elements/list_property_update_mixin.js';
+import {makeStoreClientMixin} from 'chrome://resources/ash/common/cr_elements/store_client/store_client.js';
 import {Store} from 'chrome://resources/js/store.js';
 
 import {Actions} from './personalization_actions.js';

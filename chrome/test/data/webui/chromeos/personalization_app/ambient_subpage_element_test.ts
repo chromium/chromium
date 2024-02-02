@@ -5,7 +5,7 @@
 import 'chrome://personalization/strings.m.js';
 
 import {AlbumsSubpageElement, AmbientActionName, AmbientModeAlbum, AmbientObserver, AmbientSubpageElement, AmbientTheme, AmbientThemeItemElement, AmbientUiVisibility, emptyState, Paths, PersonalizationRouterElement, QueryParams, ScrollableTarget, SetAlbumsAction, SetAmbientModeEnabledAction, SetAmbientThemeAction, SetGeolocationPermissionEnabledActionForAmbient, SetScreenSaverDurationAction, SetTemperatureUnitAction, SetTopicSourceAction, TemperatureUnit, TopicSource, TopicSourceItemElement, WallpaperGridItemElement} from 'chrome://personalization/js/personalization_app.js';
-import {CrRadioButtonElement} from 'chrome://resources/cr_elements/cr_radio_button/cr_radio_button.js';
+import {CrRadioButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_radio_button/cr_radio_button.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
