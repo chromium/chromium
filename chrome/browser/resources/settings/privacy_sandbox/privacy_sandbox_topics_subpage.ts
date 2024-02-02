@@ -417,7 +417,6 @@ export class SettingsPrivacySandboxTopicsSubpageElement extends
   }
 
   private focusConfigChanged_(_newConfig: FocusConfig, oldConfig: FocusConfig) {
-    // TODO: focusConfig does not work for manage topics subpage
     assert(!oldConfig);
     if (routes.PRIVACY_SANDBOX_MANAGE_TOPICS) {
       this.focusConfig.set(routes.PRIVACY_SANDBOX_MANAGE_TOPICS.path, () => {

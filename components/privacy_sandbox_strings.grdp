@@ -222,7 +222,7 @@
     Topics you blocked
   </message>
   <message name="IDS_SETTINGS_TOPICS_PAGE_BLOCKED_TOPICS_HEADING_V2" desc="A label that serves as a button to open the 'Topics you blocked' page." translateable="false">
-    Blocked Topics
+    Blocked topics
   </message>
   <message name="IDS_SETTINGS_TOPICS_PAGE_BLOCKED_TOPICS_DESCRIPTION" desc="A description that appear beneath the 'Topics you blocked' title. * 'Add' is also the name used on the button that allows users to remove a topic from the blocked list.  * 'an item' could be replaced by 'a topic'. We didn't so as not to repeat 'topic' in the same sentence. * 'pool of topics': We want to express that by clicking 'Add', the user is making a topic eligible again for consideration. The full 'pool of topics' is published at https://github.com/patcg-individual-drafts/topics/blob/main/taxonomy_v1.md" formatter_data="android_java">
     Add an item back if you want it in the pool of topics that Chrome can choose from when estimating your interests
