@@ -289,6 +289,8 @@ web::WebStateID GetActiveNonPinnedTabID(WebStateList* web_state_list) {
   [self.consumer removeItemWithID:detachedWebState->GetUniqueIdentifier()
                    selectedItemID:GetActiveNonPinnedTabID(webStateList)];
 
+  [self removeFromSelectionItemID:detachedWebState->GetUniqueIdentifier()];
+
   // The pinned WebState could be detached only in case it was displayed in
   // the Tab Search and was closed from the context menu. In such a case
   // there were no observation added for it. Therefore, there is no need to
