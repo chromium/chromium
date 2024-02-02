@@ -94,11 +94,16 @@
 }
 
 - (void)notifyHandlerShowPromo {
+  PromosManagerSceneAgent* promosManagerSceneAgent =
+      [PromosManagerSceneAgent agentFromScene:self.sceneState];
+  if (!promosManagerSceneAgent) {
+    return;
+  }
+
   self.promosManager->RegisterPromoForSingleDisplay(
       promos_manager::Promo::DefaultBrowser);
 
-  [[PromosManagerSceneAgent agentFromScene:self.sceneState]
-      maybeForceDisplayPromo];
+  [promosManagerSceneAgent maybeForceDisplayPromo];
 }
 
 - (void)notifyHandlerDismissPromo:(BOOL)animated {

@@ -146,6 +146,7 @@
 #import "ios/chrome/browser/ui/policy/user_policy_scene_agent.h"
 #import "ios/chrome/browser/ui/policy/user_policy_util.h"
 #import "ios/chrome/browser/ui/promos_manager/promos_manager_scene_agent.h"
+#import "ios/chrome/browser/ui/promos_manager/utils.h"
 #import "ios/chrome/browser/ui/scoped_ui_blocker/scoped_ui_blocker.h"
 #import "ios/chrome/browser/ui/settings/password/password_checkup/password_checkup_coordinator.h"
 #import "ios/chrome/browser/ui/settings/password/passwords_coordinator.h"
@@ -1024,8 +1025,10 @@ void InjectNTP(Browser* browser) {
   // events.
   [GeolocationLogger sharedInstance];
 
-  [sceneState addAgent:[[PromosManagerSceneAgent alloc]
-                           initWithCommandDispatcher:mainCommandDispatcher]];
+  if (ShouldDisplayPromos()) {
+    [sceneState addAgent:[[PromosManagerSceneAgent alloc]
+                             initWithCommandDispatcher:mainCommandDispatcher]];
+  }
 
   if (IsAppStoreRatingEnabled()) {
     [sceneState addAgent:[[AppStoreRatingSceneAgent alloc]

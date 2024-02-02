@@ -25,12 +25,24 @@ source_set("promos") {
   ]
 }
 
+source_set("utils") {
+  sources = [
+    "utils.h",
+    "utils.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/chrome/browser/shared/model/application_context",
+  ]
+}
+
 source_set("promos_manager_scene_agent") {
   sources = [
     "promos_manager_scene_agent.h",
     "promos_manager_scene_agent.mm",
   ]
   deps = [
+    ":utils",
     "//ios/chrome/app/application_delegate:app_state_header",
     "//ios/chrome/browser/shared/coordinator/scene:observing_scene_agent",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
@@ -49,6 +61,7 @@ source_set("promos_manager") {
   frameworks = [ "Foundation.framework" ]
   public_deps = [
     ":promos",
+    ":utils",
     "//base",
     "//components/feature_engagement/public",
     "//ios/chrome/app:tests_hook",

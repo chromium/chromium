@@ -962,10 +962,9 @@ bool ShouldRegisterPromoWithPromoManager(bool is_signed_in,
     return YES;
   }
 
-  // Consider showing the default browser promo if (1) launch is not after a
-  // crash, (2) chrome is not likely set as default browser.
-  if (!GetApplicationContext()->WasLastShutdownClean() ||
-      IsChromeLikelyDefaultBrowser()) {
+  // Consider showing the default browser promo if chrome is not likely set as
+  // default browser.
+  if (IsChromeLikelyDefaultBrowser()) {
     return NO;
   }
 

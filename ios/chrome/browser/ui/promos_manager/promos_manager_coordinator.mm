@@ -50,6 +50,7 @@
 #import "ios/chrome/browser/ui/promos_manager/standard_promo_alert_provider.h"
 #import "ios/chrome/browser/ui/promos_manager/standard_promo_display_handler.h"
 #import "ios/chrome/browser/ui/promos_manager/standard_promo_view_provider.h"
+#import "ios/chrome/browser/ui/promos_manager/utils.h"
 #import "ios/chrome/browser/ui/whats_new/promo/whats_new_promo_display_handler.h"
 #import "ios/chrome/browser/ui/whats_new/whats_new_util.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
@@ -121,6 +122,7 @@
                                                credentialProviderPromoHandler
                        dockingPromoHandler:
                            (id<DockingPromoCommands>)dockingPromoHandler {
+  DCHECK(ShouldDisplayPromos());
   if (self = [super initWithBaseViewController:viewController
                                        browser:browser]) {
     _credentialProviderPromoCommandHandler = credentialProviderPromoHandler;
