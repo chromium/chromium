@@ -171,12 +171,6 @@ void DismissDefaultBrowserAndOmniboxPositionSelectionScreens() {
                                 unified_consent::prefs::
                                     kUrlKeyedAnonymizedDataCollectionEnabled)];
 
-  // Clear the "choice was made" timestamp pref.
-  [ChromeEarlGreyAppInterface
-      clearUserPrefWithName:
-          base::SysUTF8ToNSString(
-              prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp)];
-
   [super tearDown];
 }
 
@@ -1485,6 +1479,15 @@ void DismissDefaultBrowserAndOmniboxPositionSelectionScreens() {
                                    std::string(kSearchEngineForceEnabled));
   config.additional_args.push_back("true");
   return config;
+}
+
+- (void)tearDown {
+  // Clear the "choice was made" timestamp pref.
+  [ChromeEarlGreyAppInterface
+      clearUserPrefWithName:
+          base::SysUTF8ToNSString(
+              prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp)];
+  [super tearDown];
 }
 
 #pragma mark - Tests
