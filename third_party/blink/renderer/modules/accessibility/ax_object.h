@@ -30,13 +30,13 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_ACCESSIBILITY_AX_OBJECT_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_ACCESSIBILITY_AX_OBJECT_H_
 
+#include <optional>
 #include <ostream>
 #include <utility>
 
 #include "base/dcheck_is_on.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ref.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/web/web_ax_enums.h"
 #include "third_party/blink/renderer/core/accessibility/axid.h"
@@ -720,7 +720,7 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   // of this attribute. As an optimization, goes up until the deepest line
   // breaking object which, in most cases, is the paragraph containing this
   // object.
-  absl::optional<const DocumentMarker::MarkerType>
+  std::optional<const DocumentMarker::MarkerType>
   GetAriaSpellingOrGrammarMarker() const;
 
   // For all inline text objects: Returns the horizontal pixel offset of each
@@ -1558,7 +1558,7 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   // from the parent.
   bool ShouldDestroyWhenDetachingFromParent() const;
 
-  const absl::optional<ui::AXTreeID>& child_tree_id() const {
+  const std::optional<ui::AXTreeID>& child_tree_id() const {
     return child_tree_id_;
   }
   // Attaches the tree with the given ID to this object as a child tree and
@@ -1577,7 +1577,7 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   //
   // TODO(nektar): Use sparse data to store this value since it is not needed by
   // most objects taking up valuable space.
-  absl::optional<ui::AXTreeID> child_tree_id_;
+  std::optional<ui::AXTreeID> child_tree_id_;
 
   FRIEND_TEST_ALL_PREFIXES(AccessibilityTest, GetParentNodeForComputeParent);
 };

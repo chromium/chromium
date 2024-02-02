@@ -440,7 +440,7 @@ const ShapeResultView* ShapingLineBreaker::ShapeLine(
     reshape_line_end = false;
     if (break_opportunity.non_hangable_run_end &&
         range_end < break_opportunity.non_hangable_run_end) {
-      break_opportunity.non_hangable_run_end = absl::nullopt;
+      break_opportunity.non_hangable_run_end = std::nullopt;
     }
     if (IsBreakableSpace(text[range_end - 1])) {
       break_opportunity.non_hangable_run_end =

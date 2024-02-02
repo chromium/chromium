@@ -1202,7 +1202,7 @@ LayoutUnit LayoutBox::OverrideIntrinsicContentWidth() const {
   DCHECK(!intrinsic_length.IsNoOp());
   if (intrinsic_length.HasAuto() && ShouldUseAutoIntrinsicSize()) {
     if (const Element* elem = DynamicTo<Element>(GetNode())) {
-      const absl::optional<LayoutUnit> width =
+      const std::optional<LayoutUnit> width =
           StyleRef().IsHorizontalWritingMode()
               ? elem->LastRememberedInlineSize()
               : elem->LastRememberedBlockSize();
@@ -1227,7 +1227,7 @@ LayoutUnit LayoutBox::OverrideIntrinsicContentHeight() const {
   DCHECK(!intrinsic_length.IsNoOp());
   if (intrinsic_length.HasAuto() && ShouldUseAutoIntrinsicSize()) {
     if (const Element* elem = DynamicTo<Element>(GetNode())) {
-      const absl::optional<LayoutUnit> height =
+      const std::optional<LayoutUnit> height =
           StyleRef().IsHorizontalWritingMode()
               ? elem->LastRememberedBlockSize()
               : elem->LastRememberedInlineSize();
@@ -1360,7 +1360,7 @@ PhysicalRect LayoutBox::PhysicalBackgroundRect(
   if (rect_type == kBackgroundKnownOpaqueRect && BackgroundTransfersToView())
     return PhysicalRect();
 
-  absl::optional<EFillBox> background_box;
+  std::optional<EFillBox> background_box;
   Color background_color = ResolveColor(GetCSSPropertyBackgroundColor());
   // Find the largest background rect of the given opaqueness.
   for (const FillLayer* cur = &(StyleRef().BackgroundLayers()); cur;
@@ -2824,7 +2824,7 @@ const LayoutResult* LayoutBox::GetCachedLayoutResult(
 
 const LayoutResult* LayoutBox::GetCachedMeasureResult(
     const ConstraintSpace& space,
-    absl::optional<FragmentGeometry>* fragment_geometry) const {
+    std::optional<FragmentGeometry>* fragment_geometry) const {
   NOT_DESTROYED();
   if (!measure_cache_) {
     return nullptr;
@@ -3282,7 +3282,7 @@ void LayoutBox::SetScrollableOverflowFromLayoutResults() {
   ClearScrollableOverflow();
 
   const WritingMode writing_mode = StyleRef().GetWritingMode();
-  absl::optional<PhysicalRect> scrollable_overflow;
+  std::optional<PhysicalRect> scrollable_overflow;
   LayoutUnit consumed_block_size;
   LayoutUnit fragment_width_sum;
 
@@ -3380,7 +3380,7 @@ RecalcScrollableOverflowResult LayoutBox::RecalcScrollableOverflowNG() {
     for (auto& layout_result : layout_results_) {
       const auto& fragment =
           To<PhysicalBoxFragment>(layout_result->GetPhysicalFragment());
-      absl::optional<PhysicalRect> scrollable_overflow;
+      std::optional<PhysicalRect> scrollable_overflow;
 
       // Recalculate our scrollable-overflow if a child had its
       // scrollable-overflow changed, or if we are marked as dirty.
@@ -4357,10 +4357,10 @@ const LayoutObject* LayoutBox::AcceptableImplicitAnchor() const {
   return is_acceptable_anchor ? anchor_layout_object : nullptr;
 }
 
-absl::optional<wtf_size_t> LayoutBox::PositionFallbackIndex() const {
+std::optional<wtf_size_t> LayoutBox::PositionFallbackIndex() const {
   const auto& layout_results = GetLayoutResults();
   if (layout_results.empty()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   // We only need to check the first fragment, because when the box is
   // fragmented, position fallback results are duplicated on all fragments.

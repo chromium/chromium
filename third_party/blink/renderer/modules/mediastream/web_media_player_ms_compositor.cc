@@ -42,8 +42,8 @@
 namespace WTF {
 
 template <typename T>
-struct CrossThreadCopier<absl::optional<T>>
-    : public CrossThreadCopierPassThrough<absl::optional<T>> {
+struct CrossThreadCopier<std::optional<T>>
+    : public CrossThreadCopierPassThrough<std::optional<T>> {
   STATIC_ONLY(CrossThreadCopier);
 };
 
@@ -336,9 +336,9 @@ void WebMediaPlayerMSCompositor::SetVideoFrameProviderClient(
 }
 
 void WebMediaPlayerMSCompositor::RecordFrameDecodedStats(
-    absl::optional<base::TimeTicks> frame_received_time,
-    absl::optional<base::TimeDelta> frame_processing_time,
-    absl::optional<uint32_t> frame_rtp_timestamp) {
+    std::optional<base::TimeTicks> frame_received_time,
+    std::optional<base::TimeDelta> frame_processing_time,
+    std::optional<uint32_t> frame_rtp_timestamp) {
   DCHECK(video_task_runner_->RunsTasksInCurrentSequence());
   if (frame_received_time && last_enqueued_frame_receive_time_) {
     base::TimeDelta frame_receive_time_delta =
@@ -389,7 +389,7 @@ void WebMediaPlayerMSCompositor::EnqueueFrame(
                        frame->timestamp().InMicroseconds());
   ++total_frame_count_;
   ++frame_enqueued_since_last_vsync_;
-  absl::optional<uint32_t> enqueue_frame_rtp_timestamp;
+  std::optional<uint32_t> enqueue_frame_rtp_timestamp;
   if (frame->metadata().rtp_timestamp) {
     enqueue_frame_rtp_timestamp =
         static_cast<uint32_t>(frame->metadata().rtp_timestamp.value());
@@ -577,7 +577,7 @@ void WebMediaPlayerMSCompositor::OnContextLost() {
   }
   scoped_refptr<media::VideoFrame> black_frame =
       media::VideoFrame::CreateBlackFrame(current_frame_->natural_size());
-  SetCurrentFrame(std::move(black_frame), false, absl::nullopt);
+  SetCurrentFrame(std::move(black_frame), false, std::nullopt);
 }
 
 void WebMediaPlayerMSCompositor::StartRendering() {
@@ -678,7 +678,7 @@ void WebMediaPlayerMSCompositor::RenderWithoutAlgorithmOnCompositor(
         frame->timestamp() > current_frame_->timestamp()) {
       last_render_length_ = frame->timestamp() - current_frame_->timestamp();
     }
-    SetCurrentFrame(std::move(frame), is_copy, absl::nullopt);
+    SetCurrentFrame(std::move(frame), is_copy, std::nullopt);
   }
   if (video_frame_provider_client_)
     video_frame_provider_client_->DidReceiveFrame();
@@ -687,7 +687,7 @@ void WebMediaPlayerMSCompositor::RenderWithoutAlgorithmOnCompositor(
 void WebMediaPlayerMSCompositor::SetCurrentFrame(
     scoped_refptr<media::VideoFrame> frame,
     bool is_copy,
-    absl::optional<base::TimeTicks> expected_display_time) {
+    std::optional<base::TimeTicks> expected_display_time) {
   DCHECK(video_frame_compositor_task_runner_->BelongsToCurrentThread());
   current_frame_lock_.AssertAcquired();
   TRACE_EVENT_INSTANT1("media", "WebMediaPlayerMSCompositor::SetCurrentFrame",
@@ -703,12 +703,12 @@ void WebMediaPlayerMSCompositor::SetCurrentFrame(
   bool is_first_frame = true;
   bool has_frame_size_changed = false;
 
-  absl::optional<media::VideoTransformation> new_transform =
+  std::optional<media::VideoTransformation> new_transform =
       media::kNoTransformation;
   if (frame->metadata().transformation)
     new_transform = frame->metadata().transformation;
 
-  absl::optional<bool> new_opacity;
+  std::optional<bool> new_opacity;
   new_opacity = media::IsOpaque(frame->format());
 
   if (current_frame_) {
@@ -771,8 +771,8 @@ void WebMediaPlayerMSCompositor::SetCurrentFrame(
 void WebMediaPlayerMSCompositor::CheckForFrameChanges(
     bool is_first_frame,
     bool has_frame_size_changed,
-    absl::optional<media::VideoTransformation> new_frame_transform,
-    absl::optional<bool> new_frame_opacity) {
+    std::optional<media::VideoTransformation> new_frame_transform,
+    std::optional<bool> new_frame_opacity) {
   DCHECK(video_frame_compositor_task_runner_->BelongsToCurrentThread());
 
   if (is_first_frame) {

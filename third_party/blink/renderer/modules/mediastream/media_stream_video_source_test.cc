@@ -86,7 +86,7 @@ class MediaStreamVideoSourceTest : public testing::Test {
   WebMediaStreamTrack CreateTrack(
       const String& id,
       const VideoTrackAdapterSettings& adapter_settings,
-      const absl::optional<bool>& noise_reduction,
+      const std::optional<bool>& noise_reduction,
       bool is_screencast,
       double min_frame_rate) {
     bool enabled = true;
@@ -101,17 +101,17 @@ class MediaStreamVideoSourceTest : public testing::Test {
   WebMediaStreamTrack CreateTrack() {
     return CreateTrack("123",
                        VideoTrackAdapterSettings(gfx::Size(100, 100), 30.0),
-                       absl::optional<bool>(), false, 0.0);
+                       std::optional<bool>(), false, 0.0);
   }
 
   WebMediaStreamTrack CreateTrackAndStartSource(
       int width,
       int height,
-      absl::optional<double> frame_rate,
+      std::optional<double> frame_rate,
       bool detect_rotation = false) {
     WebMediaStreamTrack track = CreateTrack(
         "123", VideoTrackAdapterSettings(gfx::Size(width, height), frame_rate),
-        absl::optional<bool>(), false, 0.0);
+        std::optional<bool>(), false, 0.0);
 
     EXPECT_EQ(0, NumberOfSuccessConstraintsCallbacks());
     mock_stream_video_source_->StartMockedSource();
@@ -234,7 +234,7 @@ class MediaStreamVideoSourceTest : public testing::Test {
         "dummy",
         VideoTrackAdapterSettings(gfx::Size(expected_width2, expected_height2),
                                   MediaStreamVideoSource::kDefaultFrameRate),
-        absl::optional<bool>(), false, 0.0);
+        std::optional<bool>(), false, 0.0);
 
     MockMediaStreamVideoSink sink1;
     sink1.ConnectToTrack(track1);
@@ -348,8 +348,7 @@ TEST_F(MediaStreamVideoSourceTest, SourceChangeFrameSize) {
   // Expect the source to start capture with the supported resolution.
   // Disable frame-rate adjustment in spec-compliant mode to ensure no frames
   // are dropped.
-  WebMediaStreamTrack track =
-      CreateTrackAndStartSource(800, 700, absl::nullopt);
+  WebMediaStreamTrack track = CreateTrackAndStartSource(800, 700, std::nullopt);
 
   MockMediaStreamVideoSink sink;
   sink.ConnectToTrack(track);
@@ -384,7 +383,7 @@ TEST_F(MediaStreamVideoSourceTest, RotatedSourceDetectionDisabled) {
   // Disable frame-rate adjustment in spec-compliant mode to ensure no frames
   // are dropped.
   WebMediaStreamTrack track =
-      CreateTrackAndStartSource(1280, 720, absl::nullopt, true);
+      CreateTrackAndStartSource(1280, 720, std::nullopt, true);
 
   MockMediaStreamVideoSink sink;
   sink.ConnectToTrack(track);
@@ -413,7 +412,7 @@ TEST_F(MediaStreamVideoSourceTest, RotatedSourceDetectionEnabled) {
   // Disable frame-rate adjustment in spec-compliant mode to ensure no frames
   // are dropped.
   WebMediaStreamTrack track =
-      CreateTrackAndStartSource(1280, 720, absl::nullopt, true);
+      CreateTrackAndStartSource(1280, 720, std::nullopt, true);
 
   MockMediaStreamVideoSink sink;
   sink.ConnectToTrack(track);

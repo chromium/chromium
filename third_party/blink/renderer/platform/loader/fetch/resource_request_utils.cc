@@ -117,7 +117,7 @@ bool ShouldLoadIncremental(ResourceType type) {
   NOTREACHED_NORETURN();
 }
 
-absl::optional<ResourceRequestBlockedReason> PrepareResourceRequest(
+std::optional<ResourceRequestBlockedReason> PrepareResourceRequest(
     const ResourceType& resource_type,
     const FetchClientSettingsObject& fetch_client_settings_object,
     FetchParameters& params,
@@ -160,7 +160,7 @@ absl::optional<ResourceRequestBlockedReason> PrepareResourceRequest(
   // Before modifying the request for CSP, evaluate report-only headers. This
   // allows site owners to learn about requests that are being modified
   // (e.g. mixed content that is being upgraded by upgrade-insecure-requests).
-  const absl::optional<ResourceRequest::RedirectInfo>& redirect_info =
+  const std::optional<ResourceRequest::RedirectInfo>& redirect_info =
       resource_request.GetRedirectInfo();
   const KURL& url_before_redirects =
       redirect_info ? redirect_info->original_url : params.Url();
@@ -241,7 +241,7 @@ absl::optional<ResourceRequestBlockedReason> PrepareResourceRequest(
   }
 
   KURL url = MemoryCache::RemoveFragmentIdentifierIfNeeded(params.Url());
-  absl::optional<ResourceRequestBlockedReason> blocked_reason =
+  std::optional<ResourceRequestBlockedReason> blocked_reason =
       context.CanRequest(resource_type, resource_request,
                          MemoryCache::RemoveFragmentIdentifierIfNeeded(
                              bundle_url_for_uuid_resources.IsValid()
@@ -251,7 +251,7 @@ absl::optional<ResourceRequestBlockedReason> PrepareResourceRequest(
                          resource_request.GetRedirectInfo());
 
   if (context.CalculateIfAdSubresource(resource_request,
-                                       absl::nullopt /* alias_url */,
+                                       std::nullopt /* alias_url */,
                                        resource_type, options.initiator_info)) {
     resource_request.SetIsAdResource();
   }
@@ -269,7 +269,7 @@ absl::optional<ResourceRequestBlockedReason> PrepareResourceRequest(
     return ResourceRequestBlockedReason::kOther;
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 }  // namespace blink

@@ -24,12 +24,12 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PAGE_PAGE_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/check_op.h"
 #include "base/dcheck_is_on.h"
 #include "base/types/pass_key.h"
 #include "services/network/public/mojom/attribution.mojom-shared.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/fenced_frame/redacted_fenced_frame_config.h"
 #include "third_party/blink/public/common/metrics/document_update_reason.h"

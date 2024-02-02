@@ -5,7 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_SVG_SVG_TEXT_LAYOUT_ALGORITHM_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_SVG_SVG_TEXT_LAYOUT_ALGORITHM_H_
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include <optional>
+
 #include "third_party/blink/renderer/core/layout/inline/fragment_items_builder.h"
 
 namespace blink {
@@ -56,9 +57,9 @@ class SvgTextLayoutAlgorithm {
   bool horizontal_;
 
   struct SvgPerCharacterInfo {
-    absl::optional<float> x;
-    absl::optional<float> y;
-    absl::optional<float> rotate;
+    std::optional<float> x;
+    std::optional<float> y;
+    std::optional<float> rotate;
     bool hidden = false;
     bool middle = false;
     bool anchored_chunk = false;

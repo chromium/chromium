@@ -365,7 +365,7 @@ InkOverflow::Type InkOverflow::SetTextInkOverflow(
     PhysicalRect* ink_overflow_out) {
   CheckType(type);
   DCHECK(type == Type::kNotSet || type == Type::kInvalidated);
-  absl::optional<PhysicalRect> ink_overflow =
+  std::optional<PhysicalRect> ink_overflow =
       ComputeTextInkOverflow(cursor, text_info, style, style.GetFont(),
                              rect_in_container, inline_context);
   if (!ink_overflow) {
@@ -399,7 +399,7 @@ InkOverflow::Type InkOverflow::SetSvgTextInkOverflow(
           : PhysicalSize(LayoutUnit(rect.width()),
                          LayoutUnit(rect.height() / length_adjust_scale));
   // No |inline_context| because the decoration box is not supported for SVG.
-  absl::optional<PhysicalRect> ink_overflow =
+  std::optional<PhysicalRect> ink_overflow =
       ComputeTextInkOverflow(cursor, text_info, style, scaled_font,
                              PhysicalRect(PhysicalOffset(), item_size),
                              /* inline_context */ nullptr);
@@ -446,7 +446,7 @@ InkOverflow::Type InkOverflow::SetSvgTextInkOverflow(
 }
 
 // static
-absl::optional<PhysicalRect> InkOverflow::ComputeTextInkOverflow(
+std::optional<PhysicalRect> InkOverflow::ComputeTextInkOverflow(
     const InlineCursor& cursor,
     const TextFragmentPaintInfo& text_info,
     const ComputedStyle& style,
@@ -499,7 +499,7 @@ absl::optional<PhysicalRect> InkOverflow::ComputeTextInkOverflow(
   // Uniting the frame rect ensures that non-ink spaces such side bearings, or
   // even space characters, are included in the visual rect for decorations.
   if (!HasOverflow(local_ink_overflow, rect_in_container.size))
-    return absl::nullopt;
+    return std::nullopt;
 
   local_ink_overflow.Unite({{}, rect_in_container.size});
   return local_ink_overflow;
@@ -628,7 +628,7 @@ LogicalRect InkOverflow::ComputeAppliedDecorationOverflow(
   TextDecorationInfo decoration_info(
       LineRelativeOffset::CreateFromBoxOrigin(offset_in_container),
       ink_overflow.size.inline_size, style, inline_context,
-      /* selection_text_decoration */ absl::nullopt, decoration_override,
+      /* selection_text_decoration */ std::nullopt, decoration_override,
       &scaled_font, kMinimumThicknessIsOne);
   TextDecorationOffset decoration_offset(style);
   gfx::RectF accumulated_bound;

@@ -5217,7 +5217,7 @@ void AXObjectCacheImpl::SerializeDirtyObjectsAndEvents(
   // Provide the expected node count in the last update, so that
   // AXTree::Unserialize() can check for tree consistency on the browser side.
   if (!updates.back().tree_checks) {
-    updates.back().tree_checks = absl::make_optional<ui::AXTreeChecks>();
+    updates.back().tree_checks = std::make_optional<ui::AXTreeChecks>();
   }
   updates.back().tree_checks->node_count = included_node_count_;
 #endif  // DCHECK_IS_ON()

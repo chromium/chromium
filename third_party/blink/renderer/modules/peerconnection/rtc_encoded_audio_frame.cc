@@ -72,7 +72,7 @@ RTCEncodedAudioFrame::RTCEncodedAudioFrame(
           webrtc_audio_frame ? webrtc_audio_frame->GetContributingSources()
                              : Vector<uint32_t>(),
           webrtc_audio_frame ? webrtc_audio_frame->SequenceNumber()
-                             : absl::nullopt)) {}
+                             : std::nullopt)) {}
 
 RTCEncodedAudioFrame::RTCEncodedAudioFrame(
     scoped_refptr<RTCEncodedAudioFrameDelegate> delegate)

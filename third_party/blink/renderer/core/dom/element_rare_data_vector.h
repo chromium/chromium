@@ -159,7 +159,7 @@ class CORE_EXPORT ElementRareDataVector final : public NodeRareData {
   }
 
   template <typename T>
-  void SetOptionalField(FieldId field_id, absl::optional<T> data) {
+  void SetOptionalField(FieldId field_id, std::optional<T> data) {
     if (data) {
       SetWrappedField<T>(field_id, *data);
     } else {
@@ -168,11 +168,11 @@ class CORE_EXPORT ElementRareDataVector final : public NodeRareData {
   }
 
   template <typename T>
-  absl::optional<T> GetOptionalField(FieldId field_id) const {
+  std::optional<T> GetOptionalField(FieldId field_id) const {
     if (auto* value = GetWrappedField<T>(field_id)) {
       return *value;
     }
-    return absl::nullopt;
+    return std::nullopt;
   }
 
  public:
@@ -283,10 +283,10 @@ class CORE_EXPORT ElementRareDataVector final : public NodeRareData {
   void SetCustomElementDefinition(CustomElementDefinition* definition);
   CustomElementDefinition* GetCustomElementDefinition() const;
 
-  void SetLastRememberedBlockSize(absl::optional<LayoutUnit> size);
-  void SetLastRememberedInlineSize(absl::optional<LayoutUnit> size);
-  absl::optional<LayoutUnit> LastRememberedBlockSize() const;
-  absl::optional<LayoutUnit> LastRememberedInlineSize() const;
+  void SetLastRememberedBlockSize(std::optional<LayoutUnit> size);
+  void SetLastRememberedInlineSize(std::optional<LayoutUnit> size);
+  std::optional<LayoutUnit> LastRememberedBlockSize() const;
+  std::optional<LayoutUnit> LastRememberedInlineSize() const;
 
   PopoverData* GetPopoverData() const;
   PopoverData& EnsurePopoverData();

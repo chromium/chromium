@@ -5,8 +5,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_BINDINGS_SCRIPT_FORBIDDEN_SCOPE_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_BINDINGS_SCRIPT_FORBIDDEN_SCOPE_H_
 
+#include <optional>
+
 #include "base/auto_reset.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/platform/bindings/v8_throw_exception.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -42,7 +43,7 @@ class PLATFORM_EXPORT ScriptForbiddenScope final {
 
    private:
     base::AutoReset<unsigned> saved_counter_;
-    absl::optional<base::AutoReset<unsigned>> saved_blink_counter_;
+    std::optional<base::AutoReset<unsigned>> saved_blink_counter_;
   };
 
   static bool IsScriptForbidden() {

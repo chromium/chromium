@@ -1504,7 +1504,7 @@ void AXObject::SerializeChildTreeID(ui::AXNodeData* node_data) {
     return;
   }
 
-  absl::optional<base::UnguessableToken> child_token =
+  std::optional<base::UnguessableToken> child_token =
       child_frame->GetEmbeddingToken();
   if (!child_token)
     return;  // No child token means that the connection isn't ready yet.
@@ -4763,7 +4763,7 @@ AXObject* AXObject::PreviousOnLine() const {
   return nullptr;
 }
 
-absl::optional<const DocumentMarker::MarkerType>
+std::optional<const DocumentMarker::MarkerType>
 AXObject::GetAriaSpellingOrGrammarMarker() const {
   AtomicString aria_invalid_value;
   const AncestorsIterator iter = std::find_if(
@@ -4775,12 +4775,12 @@ AXObject::GetAriaSpellingOrGrammarMarker() const {
       });
 
   if (iter == UnignoredAncestorsEnd())
-    return absl::nullopt;
+    return std::nullopt;
   if (EqualIgnoringASCIICase(aria_invalid_value, "spelling"))
     return DocumentMarker::kSpelling;
   if (EqualIgnoringASCIICase(aria_invalid_value, "grammar"))
     return DocumentMarker::kGrammar;
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void AXObject::TextCharacterOffsets(Vector<int>&) const {}

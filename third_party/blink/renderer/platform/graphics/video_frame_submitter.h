@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_VIDEO_FRAME_SUBMITTER_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/read_only_shared_memory_region.h"
@@ -24,7 +25,6 @@
 #include "mojo/public/cpp/system/buffer.h"
 #include "services/viz/public/mojom/compositing/compositor_frame_sink.mojom-blink.h"
 #include "services/viz/public/mojom/compositing/frame_timing_details.mojom-blink.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/frame_sinks/embedded_frame_sink.mojom-blink.h"
 #include "third_party/blink/public/platform/web_video_frame_submitter.h"
 #include "third_party/blink/renderer/platform/graphics/video_frame_resource_provider.h"
@@ -208,7 +208,7 @@ class PLATFORM_EXPORT VideoFrameSubmitter
 
   base::OneShotTimer empty_frame_timer_;
 
-  absl::optional<media::VideoFrame::ID> last_frame_id_;
+  std::optional<media::VideoFrame::ID> last_frame_id_;
 
   // We use cc::FrameSorter directly, rather than via
   // cc::CompositorFrameReportingController because video frames do not progress

@@ -238,7 +238,7 @@ void LogicalAnchorQuery::SetFromPhysical(
   }
 }
 
-absl::optional<LayoutUnit> LogicalAnchorQuery::EvaluateAnchor(
+std::optional<LayoutUnit> LogicalAnchorQuery::EvaluateAnchor(
     const LogicalAnchorReference& reference,
     CSSAnchorValue anchor_value,
     float percentage,
@@ -266,7 +266,7 @@ absl::optional<LayoutUnit> LogicalAnchorQuery::EvaluateAnchor(
     }
     case CSSAnchorValue::kLeft:
       if (is_y_axis)
-        return absl::nullopt;  // Wrong axis.
+        return std::nullopt;  // Wrong axis.
       // Make the offset relative to the padding box, because the containing
       // block is formed by the padding edge.
       // https://www.w3.org/TR/CSS21/visudet.html#containing-block-details
@@ -274,19 +274,19 @@ absl::optional<LayoutUnit> LogicalAnchorQuery::EvaluateAnchor(
       break;
     case CSSAnchorValue::kRight:
       if (is_y_axis)
-        return absl::nullopt;  // Wrong axis.
+        return std::nullopt;  // Wrong axis.
       // See |CSSAnchorValue::kLeft|.
       value = anchor.Right() - offset_to_padding_box.left;
       break;
     case CSSAnchorValue::kTop:
       if (!is_y_axis)
-        return absl::nullopt;  // Wrong axis.
+        return std::nullopt;  // Wrong axis.
       // See |CSSAnchorValue::kLeft|.
       value = anchor.Y() - offset_to_padding_box.top;
       break;
     case CSSAnchorValue::kBottom:
       if (!is_y_axis)
-        return absl::nullopt;  // Wrong axis.
+        return std::nullopt;  // Wrong axis.
       // See |CSSAnchorValue::kLeft|.
       value = anchor.Bottom() - offset_to_padding_box.top;
       break;
@@ -319,7 +319,7 @@ absl::optional<LayoutUnit> LogicalAnchorQuery::EvaluateAnchor(
       // These logical values should have been converted to corresponding
       // physical values in `PhysicalAnchorValueFromLogicalOrAuto`.
       NOTREACHED();
-      return absl::nullopt;
+      return std::nullopt;
   }
 
   // The |value| is for the "start" side of insets. For the "end" side of
@@ -375,7 +375,7 @@ const LogicalAnchorQuery* AnchorEvaluatorImpl::AnchorQuery() const {
   return nullptr;
 }
 
-absl::optional<LayoutUnit> AnchorEvaluatorImpl::Evaluate(
+std::optional<LayoutUnit> AnchorEvaluatorImpl::Evaluate(
     const CalculationExpressionNode& node) const {
   DCHECK(node.IsAnchorQuery());
   const auto& anchor_query = To<CalculationExpressionAnchorQueryNode>(node);
@@ -490,26 +490,26 @@ bool AnchorEvaluatorImpl::ShouldUseScrollAdjustmentFor(
          DefaultAnchorScrollContainerLayer();
 }
 
-absl::optional<LayoutUnit> AnchorEvaluatorImpl::EvaluateAnchor(
+std::optional<LayoutUnit> AnchorEvaluatorImpl::EvaluateAnchor(
     const AnchorSpecifierValue& anchor_specifier,
     CSSAnchorValue anchor_value,
     float percentage) const {
   has_anchor_functions_ = true;
 
   if (!AllowAnchor()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   const LogicalAnchorReference* anchor_reference =
       ResolveAnchorReference(anchor_specifier);
   if (!anchor_reference) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   const bool is_y_axis = IsYAxis();
 
   DCHECK(AnchorQuery());
-  if (absl::optional<LayoutUnit> result = AnchorQuery()->EvaluateAnchor(
+  if (std::optional<LayoutUnit> result = AnchorQuery()->EvaluateAnchor(
           *anchor_reference, anchor_value, percentage, AvailableSizeAlongAxis(),
           container_converter_, self_writing_direction_, offset_to_padding_box_,
           is_y_axis, IsRightOrBottom())) {
@@ -521,22 +521,22 @@ absl::optional<LayoutUnit> AnchorEvaluatorImpl::EvaluateAnchor(
     }
     return result;
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
-absl::optional<LayoutUnit> AnchorEvaluatorImpl::EvaluateAnchorSize(
+std::optional<LayoutUnit> AnchorEvaluatorImpl::EvaluateAnchorSize(
     const AnchorSpecifierValue& anchor_specifier,
     CSSAnchorSizeValue anchor_size_value) const {
   has_anchor_functions_ = true;
 
   if (!AllowAnchorSize()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   const LogicalAnchorReference* anchor_reference =
       ResolveAnchorReference(anchor_specifier);
   if (!anchor_reference) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   DCHECK(AnchorQuery());
@@ -545,20 +545,20 @@ absl::optional<LayoutUnit> AnchorEvaluatorImpl::EvaluateAnchorSize(
                                      self_writing_direction_.GetWritingMode());
 }
 
-absl::optional<LogicalRect>
+std::optional<LogicalRect>
 AnchorEvaluatorImpl::GetAdditionalFallbackBoundsRect() const {
   if (!query_object_) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   const ScopedCSSName* position_fallback_bounds =
       query_object_->StyleRef().PositionFallbackBounds();
   if (!position_fallback_bounds || !AnchorQuery()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   const LogicalAnchorReference* reference =
       AnchorQuery()->AnchorReference(*query_object_, position_fallback_bounds);
   if (!reference) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   // `reference->rect` is in container's writing direction. Convert it to self
   // writing direction, but the offset is still relative to container.
@@ -568,7 +568,7 @@ AnchorEvaluatorImpl::GetAdditionalFallbackBoundsRect() const {
       container_converter_.ToPhysical(reference->rect));
 }
 
-absl::optional<LayoutUnit> AnchorEvaluatorImpl::GetPhysicalAnchorCenterOffset(
+std::optional<LayoutUnit> AnchorEvaluatorImpl::GetPhysicalAnchorCenterOffset(
     bool is_y_axis) {
   using AnchorScope = Length::AnchorScope;
   AnchorScope anchor_scope(

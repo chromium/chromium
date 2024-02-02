@@ -33,11 +33,11 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_MEDIASTREAM_MEDIA_STREAM_SOURCE_H_
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/memory/raw_ptr.h"
 #include "base/synchronization/lock.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/platform/modules/mediastream/web_media_stream_source.h"
 #include "third_party/blink/public/platform/modules/mediastream/web_media_stream_track.h"
 #include "third_party/blink/public/platform/modules/mediastream/web_platform_media_stream_source.h"
@@ -216,10 +216,10 @@ class PLATFORM_EXPORT MediaStreamSource final
       GUARDED_BY(audio_consumer_lock_);
   std::unique_ptr<WebPlatformMediaStreamSource> platform_source_;
   Capabilities capabilities_;
-  absl::optional<EchoCancellationMode> echo_cancellation_mode_;
-  absl::optional<bool> auto_gain_control_;
-  absl::optional<bool> noise_supression_;
-  absl::optional<bool> voice_isolation_;
+  std::optional<EchoCancellationMode> echo_cancellation_mode_;
+  std::optional<bool> auto_gain_control_;
+  std::optional<bool> noise_supression_;
+  std::optional<bool> voice_isolation_;
 };
 
 typedef HeapVector<Member<MediaStreamSource>> MediaStreamSourceVector;

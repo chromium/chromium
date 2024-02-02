@@ -115,7 +115,7 @@ void NonMainThreadTaskQueue::OnWebSchedulingPriorityChanged() {
 
   bool is_continuation =
       *web_scheduling_queue_type_ == WebSchedulingQueueType::kContinuationQueue;
-  absl::optional<TaskPriority> priority;
+  std::optional<TaskPriority> priority;
   switch (web_scheduling_priority_.value()) {
     case WebSchedulingPriority::kUserBlockingPriority:
       priority = is_continuation ? TaskPriority::kHighPriorityContinuation

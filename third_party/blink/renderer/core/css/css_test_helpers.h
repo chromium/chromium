@@ -5,8 +5,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_TEST_HELPERS_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_TEST_HELPERS_H_
 
+#include <optional>
+
 #include "base/memory/scoped_refptr.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/css/css_selector.h"
 #include "third_party/blink/renderer/core/css/css_selector_list.h"
 #include "third_party/blink/renderer/core/css/rule_set.h"
@@ -66,18 +67,18 @@ PropertyRegistration* CreateLengthRegistration(const String& name, int px);
 void RegisterProperty(Document& document,
                       const String& name,
                       const String& syntax,
-                      const absl::optional<String>& initial_value,
+                      const std::optional<String>& initial_value,
                       bool is_inherited);
 void RegisterProperty(Document& document,
                       const String& name,
                       const String& syntax,
-                      const absl::optional<String>& initial_value,
+                      const std::optional<String>& initial_value,
                       bool is_inherited,
                       ExceptionState&);
 void DeclareProperty(Document& document,
                      const String& name,
                      const String& syntax,
-                     const absl::optional<String>& initial_value,
+                     const std::optional<String>& initial_value,
                      bool is_inherited);
 
 scoped_refptr<CSSVariableData> CreateVariableData(String);

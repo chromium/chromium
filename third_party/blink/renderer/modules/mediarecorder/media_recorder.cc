@@ -40,9 +40,9 @@ namespace blink {
 namespace {
 
 struct MediaRecorderBitrates {
-  const absl::optional<uint32_t> audio_bps;
-  const absl::optional<uint32_t> video_bps;
-  const absl::optional<uint32_t> overall_bps;
+  const std::optional<uint32_t> audio_bps;
+  const std::optional<uint32_t> video_bps;
+  const std::optional<uint32_t> overall_bps;
 };
 
 // Boundaries of Opus SILK bitrate from https://www.opus-codec.org/.
@@ -150,15 +150,15 @@ MediaRecorderBitrates GetBitratesFromOptions(
   // or double, see https://github.com/w3c/mediacapture-record/issues/48.
   constexpr uint32_t kMaxIntAsUnsigned = std::numeric_limits<int>::max();
 
-  absl::optional<uint32_t> audio_bps;
+  std::optional<uint32_t> audio_bps;
   if (options->hasAudioBitsPerSecond()) {
     audio_bps = std::min(options->audioBitsPerSecond(), kMaxIntAsUnsigned);
   }
-  absl::optional<uint32_t> video_bps;
+  std::optional<uint32_t> video_bps;
   if (options->hasVideoBitsPerSecond()) {
     video_bps = std::min(options->videoBitsPerSecond(), kMaxIntAsUnsigned);
   }
-  absl::optional<uint32_t> overall_bps;
+  std::optional<uint32_t> overall_bps;
   if (options->hasBitsPerSecond()) {
     overall_bps = std::min(options->bitsPerSecond(), kMaxIntAsUnsigned);
     audio_bps = ClampAudioBitRate(context, overall_bps.value() / 10);

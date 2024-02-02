@@ -5,9 +5,10 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_XR_XR_FRAME_PROVIDER_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_XR_XR_FRAME_PROVIDER_H_
 
+#include <optional>
+
 #include "base/time/time.h"
 #include "device/vr/public/mojom/vr_service.mojom-blink.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
@@ -110,8 +111,8 @@ class XRFrameProvider final : public GarbageCollected<XRFrameProvider> {
   void OnPreDispatchInlineFrame(
       XRSession* session,
       double timestamp,
-      const absl::optional<gpu::MailboxHolder>& output_mailbox_holder,
-      const absl::optional<gpu::MailboxHolder>& camera_image_mailbox_holder);
+      const std::optional<gpu::MailboxHolder>& output_mailbox_holder,
+      const std::optional<gpu::MailboxHolder>& camera_image_mailbox_holder);
 
   // Updates the |first_immersive_frame_time_| and
   // |first_immersive_frame_time_delta_| members and returns the computed high
@@ -139,9 +140,9 @@ class XRFrameProvider final : public GarbageCollected<XRFrameProvider> {
 
   // Time the first immersive frame has arrived - used to align the monotonic
   // clock the devices use with the base::TimeTicks.
-  absl::optional<base::TimeTicks> first_immersive_frame_time_;
+  std::optional<base::TimeTicks> first_immersive_frame_time_;
   // The time_delta value of the first immersive frame that has arrived.
-  absl::optional<base::TimeDelta> first_immersive_frame_time_delta_;
+  std::optional<base::TimeDelta> first_immersive_frame_time_delta_;
 
   // Non-immersive session state
   HeapHashMap<Member<XRSession>,
@@ -160,8 +161,8 @@ class XRFrameProvider final : public GarbageCollected<XRFrameProvider> {
   bool pending_immersive_vsync_ = false;
   bool pending_non_immersive_vsync_ = false;
 
-  absl::optional<gpu::MailboxHolder> buffer_mailbox_holder_;
-  absl::optional<gpu::MailboxHolder> camera_image_mailbox_holder_;
+  std::optional<gpu::MailboxHolder> buffer_mailbox_holder_;
+  std::optional<gpu::MailboxHolder> camera_image_mailbox_holder_;
   bool last_has_focus_ = false;
 };
 

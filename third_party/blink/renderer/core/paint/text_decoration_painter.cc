@@ -50,10 +50,10 @@ TextDecorationPainter::~TextDecorationPainter() {
 }
 
 void TextDecorationPainter::UpdateDecorationInfo(
-    absl::optional<TextDecorationInfo>& result,
+    std::optional<TextDecorationInfo>& result,
     const FragmentItem& text_item,
     const ComputedStyle& style,
-    absl::optional<LineRelativeRect> decoration_rect_override,
+    std::optional<LineRelativeRect> decoration_rect_override,
     const AppliedTextDecoration* decoration_override) {
   result.reset();
 
@@ -64,10 +64,10 @@ void TextDecorationPainter::UpdateDecorationInfo(
     return;
   }
 
-  absl::optional<AppliedTextDecoration> effective_selection_decoration =
+  std::optional<AppliedTextDecoration> effective_selection_decoration =
       UNLIKELY(phase_ == kSelection)
           ? selection_->GetSelectionStyle().selection_text_decoration
-          : absl::nullopt;
+          : std::nullopt;
 
   if (text_item.IsSvgText() && paint_info_.IsRenderingResourceSubtree()) {
     // Need to recompute a scaled font and a scaling factor because they

@@ -21,7 +21,7 @@ namespace blink {
 
 namespace {
 
-absl::optional<V8AudioSampleFormat> MediaFormatToBlinkFormat(
+std::optional<V8AudioSampleFormat> MediaFormatToBlinkFormat(
     media::SampleFormat media_format) {
   using FormatEnum = V8AudioSampleFormat::Enum;
 
@@ -66,7 +66,7 @@ absl::optional<V8AudioSampleFormat> MediaFormatToBlinkFormat(
     case media::SampleFormat::kSampleFormatDtsxP2:
     case media::SampleFormat::kSampleFormatIECDts:
     case media::SampleFormat::kSampleFormatDtse:
-      return absl::nullopt;
+      return std::nullopt;
   }
 }
 
@@ -132,7 +132,7 @@ AudioData* AudioData::Create(ScriptState* script_state,
 AudioData::AudioData(ScriptState* script_state,
                      AudioDataInit* init,
                      ExceptionState& exception_state)
-    : format_(absl::nullopt), timestamp_(init->timestamp()) {
+    : format_(std::nullopt), timestamp_(init->timestamp()) {
   media::SampleFormat media_format = BlinkFormatToMediaFormat(init->format());
 
   if (init->numberOfChannels() == 0) {
@@ -279,14 +279,14 @@ AudioData* AudioData::clone(ExceptionState& exception_state) {
 void AudioData::close() {
   data_.reset();
   temp_bus_.reset();
-  format_ = absl::nullopt;
+  format_ = std::nullopt;
 }
 
 int64_t AudioData::timestamp() const {
   return timestamp_;
 }
 
-absl::optional<V8AudioSampleFormat> AudioData::format() const {
+std::optional<V8AudioSampleFormat> AudioData::format() const {
   return format_;
 }
 

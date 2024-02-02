@@ -32,6 +32,7 @@
 #include "third_party/blink/renderer/core/page/chrome_client_impl.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/debug/alias.h"
@@ -40,7 +41,6 @@
 #include "cc/animation/animation_timeline.h"
 #include "cc/layers/picture_layer.h"
 #include "cc/trees/paint_holding_reason.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/page/page_zoom.h"
 #include "third_party/blink/public/common/widget/constants.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom-blink.h"
@@ -1153,7 +1153,7 @@ std::unique_ptr<cc::ScopedPauseRendering> ChromeClientImpl::PauseRendering(
       ->PauseRendering();
 }
 
-absl::optional<int> ChromeClientImpl::GetMaxRenderBufferBounds(
+std::optional<int> ChromeClientImpl::GetMaxRenderBufferBounds(
     LocalFrame& frame) const {
   return WebLocalFrameImpl::FromFrame(frame)
       ->LocalRootFrameWidget()

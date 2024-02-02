@@ -59,7 +59,7 @@ WebGLRenderingContextBase* webglRenderingContextBaseFromUnion(
   return nullptr;
 }
 
-absl::optional<device::Pose> CreatePose(const gfx::Transform& matrix) {
+std::optional<device::Pose> CreatePose(const gfx::Transform& matrix) {
   return device::Pose::Create(matrix);
 }
 
@@ -179,7 +179,7 @@ String MojomHandJointToString(device::mojom::blink::XRHandJoint hand_joint) {
   }
 }
 
-absl::optional<device::mojom::XRSessionFeature> StringToXRSessionFeature(
+std::optional<device::mojom::XRSessionFeature> StringToXRSessionFeature(
     const String& feature_string) {
   if (feature_string == "viewer") {
     return device::mojom::XRSessionFeature::REF_SPACE_VIEWER;
@@ -217,7 +217,7 @@ absl::optional<device::mojom::XRSessionFeature> StringToXRSessionFeature(
     return device::mojom::XRSessionFeature::FRONT_FACING;
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 String XRSessionFeatureToString(device::mojom::XRSessionFeature feature) {

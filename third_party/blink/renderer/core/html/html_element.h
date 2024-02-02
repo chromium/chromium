@@ -23,7 +23,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_HTML_ELEMENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_HTML_ELEMENT_H_
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include <optional>
+
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_boolean_string_unrestricteddouble.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/element.h"

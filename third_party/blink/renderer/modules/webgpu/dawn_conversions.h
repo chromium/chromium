@@ -118,7 +118,7 @@ std::unique_ptr<DawnEnum[]> AsDawnEnum(const Vector<WebGPUEnum>& webgpu_enums) {
 // dawn_enums should be a pre-allocated array with a size of count
 template <typename DawnEnum, typename WebGPUEnum>
 std::unique_ptr<DawnEnum[]> AsDawnEnum(
-    const Vector<absl::optional<WebGPUEnum>>& webgpu_enums) {
+    const Vector<std::optional<WebGPUEnum>>& webgpu_enums) {
   wtf_size_t count = webgpu_enums.size();
   // TODO(enga): Pass in temporary memory or an allocator so we don't make a
   // separate memory allocation here.

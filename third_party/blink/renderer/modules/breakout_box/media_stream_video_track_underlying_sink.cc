@@ -185,14 +185,14 @@ void MediaStreamVideoTrackUnderlyingSink::CreateAcceleratedFramePool(
   }
 }
 
-absl::optional<ScriptPromise>
+std::optional<ScriptPromise>
 MediaStreamVideoTrackUnderlyingSink::MaybeConvertToNV12GMBVideoFrame(
     ScriptState* script_state,
     scoped_refptr<media::VideoFrame> video_frame,
     base::TimeTicks estimated_capture_time) {
   static constexpr int kMaxFailures = 5;
   if (convert_to_nv12_gmb_failure_count_ > kMaxFailures) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   DCHECK(video_frame);
   auto format = video_frame->format();
@@ -211,7 +211,7 @@ MediaStreamVideoTrackUnderlyingSink::MaybeConvertToNV12GMBVideoFrame(
       base::FeatureList::IsEnabled(kBreakoutBoxEagerConversion) &&
       frame_is_rgb && frame_can_be_converted && sink_wants_mapped_frame;
   if (!should_eagerly_convert) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   if (!accelerated_frame_pool_) {
@@ -243,13 +243,13 @@ MediaStreamVideoTrackUnderlyingSink::MaybeConvertToNV12GMBVideoFrame(
     }
     if (!gmb_manager) {
       convert_to_nv12_gmb_failure_count_++;
-      return absl::nullopt;
+      return std::nullopt;
     }
 
     CreateAcceleratedFramePool(gmb_manager);
     if (!accelerated_frame_pool_) {
       convert_to_nv12_gmb_failure_count_++;
-      return absl::nullopt;
+      return std::nullopt;
     }
   }
   DCHECK(accelerated_frame_pool_);

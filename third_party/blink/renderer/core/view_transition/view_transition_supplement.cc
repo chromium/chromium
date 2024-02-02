@@ -88,7 +88,7 @@ DOMViewTransition* ViewTransitionSupplement::StartViewTransitionInternal(
     ScriptState* script_state,
     Document& document,
     V8ViewTransitionCallback* callback,
-    const absl::optional<Vector<String>>& types,
+    const std::optional<Vector<String>>& types,
     ExceptionState& exception_state) {
   DCHECK(script_state);
   DCHECK(ThreadScheduler::Current());
@@ -112,7 +112,7 @@ DOMViewTransition* ViewTransitionSupplement::startViewTransition(
     V8ViewTransitionCallback* callback,
     ExceptionState& exception_state) {
   return StartViewTransitionInternal(script_state, document, callback,
-                                     absl::nullopt, exception_state);
+                                     std::nullopt, exception_state);
 }
 
 DOMViewTransition* ViewTransitionSupplement::startViewTransition(
@@ -123,7 +123,7 @@ DOMViewTransition* ViewTransitionSupplement::startViewTransition(
   CHECK(!options || (options->hasUpdate() && options->hasType()));
   return StartViewTransitionInternal(
       script_state, document, options ? options->update() : nullptr,
-      options ? options->type() : absl::nullopt, exception_state);
+      options ? options->type() : std::nullopt, exception_state);
 }
 
 DOMViewTransition* ViewTransitionSupplement::startViewTransition(
@@ -132,13 +132,13 @@ DOMViewTransition* ViewTransitionSupplement::startViewTransition(
     ExceptionState& exception_state) {
   return StartViewTransitionInternal(
       script_state, document, static_cast<V8ViewTransitionCallback*>(nullptr),
-      absl::nullopt, exception_state);
+      std::nullopt, exception_state);
 }
 
 DOMViewTransition* ViewTransitionSupplement::StartTransition(
     Document& document,
     V8ViewTransitionCallback* callback,
-    const absl::optional<Vector<String>>& types,
+    const std::optional<Vector<String>>& types,
     ExceptionState& exception_state) {
   // Disallow script initiated transitions during a navigation initiated
   // transition.

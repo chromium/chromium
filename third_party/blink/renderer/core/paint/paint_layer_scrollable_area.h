@@ -82,9 +82,9 @@ struct CORE_EXPORT PaintLayerScrollableAreaRareData final
 
   void Trace(Visitor* visitor) const {}
 
-  absl::optional<cc::SnapContainerData> snap_container_data_;
-  absl::optional<cc::SnappedTargetData> snapped_target_data_;
-  absl::optional<cc::SnappedTargetData> snapchanging_target_data_;
+  std::optional<cc::SnapContainerData> snap_container_data_;
+  std::optional<cc::SnappedTargetData> snapped_target_data_;
+  std::optional<cc::SnappedTargetData> snapchanging_target_data_;
   std::unique_ptr<cc::SnapSelectionStrategy> impl_snap_strategy_;
   Vector<gfx::Rect> tickmarks_override_;
 };
@@ -216,7 +216,7 @@ class CORE_EXPORT PaintLayerScrollableArea final
 
    private:
     PaintLayerScrollableArea* scrollable_area_;
-    absl::optional<FreezeScrollbarsScope> freezer_;
+    std::optional<FreezeScrollbarsScope> freezer_;
   };
 
   // If a DelayScrollOffsetClampScope object is alive, UpdateAfterLayout() will
@@ -538,19 +538,17 @@ class CORE_EXPORT PaintLayerScrollableArea final
   }
 
   const cc::SnapContainerData* GetSnapContainerData() const override;
-  void SetSnapContainerData(absl::optional<cc::SnapContainerData>) override;
+  void SetSnapContainerData(std::optional<cc::SnapContainerData>) override;
   bool SetTargetSnapAreaElementIds(cc::TargetSnapAreaElementIds) override;
 
-  absl::optional<gfx::PointF> GetSnapPositionAndSetTarget(
+  std::optional<gfx::PointF> GetSnapPositionAndSetTarget(
       const cc::SnapSelectionStrategy& strategy) override;
-  void SetSnappedTargetData(
-      absl::optional<cc::SnappedTargetData> data) override;
+  void SetSnappedTargetData(std::optional<cc::SnappedTargetData> data) override;
   const cc::SnappedTargetData* GetSnappedTargetData() const override;
   void UpdateSnappedTargetsAndEnqueueSnapChanged() override;
 
   const cc::SnappedTargetData* GetSnapChangingTargetData() const override;
-  void SetSnapChangingTargetData(
-      absl::optional<cc::SnappedTargetData>) override;
+  void SetSnapChangingTargetData(std::optional<cc::SnappedTargetData>) override;
   void UpdateSnapChangingTargetsAndEnqueueSnapChanging(
       const gfx::PointF&) override;
   const cc::SnapSelectionStrategy* GetImplSnapStrategy() const override;
@@ -821,7 +819,7 @@ class CORE_EXPORT PaintLayerScrollableArea final
           MakeGarbageCollected<ScrollingBackgroundDisplayItemClient>(*this);
   Member<ScrollCornerDisplayItemClient> scroll_corner_display_item_client_ =
       MakeGarbageCollected<ScrollCornerDisplayItemClient>(*this);
-  absl::optional<HistoryItem::ViewState> pending_view_state_;
+  std::optional<HistoryItem::ViewState> pending_view_state_;
 };
 
 }  // namespace blink

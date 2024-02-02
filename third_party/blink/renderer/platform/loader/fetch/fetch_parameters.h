@@ -116,11 +116,11 @@ class PLATFORM_EXPORT FetchParameters {
   DeferOption Defer() const { return defer_; }
   void SetDefer(DeferOption defer) { defer_ = defer; }
 
-  absl::optional<float> GetResourceWidth() const { return resource_width_; }
-  void SetResourceWidth(const absl::optional<float> resource_width);
+  std::optional<float> GetResourceWidth() const { return resource_width_; }
+  void SetResourceWidth(const std::optional<float> resource_width);
 
-  absl::optional<float> GetResourceHeight() const { return resource_height_; }
-  void SetResourceHeight(const absl::optional<float> resource_height);
+  std::optional<float> GetResourceHeight() const { return resource_height_; }
+  void SetResourceHeight(const std::optional<float> resource_height);
 
   bool IsSpeculativePreload() const {
     return speculative_preload_type_ != SpeculativePreloadType::kNotSpeculative;
@@ -230,8 +230,8 @@ class PLATFORM_EXPORT FetchParameters {
   SpeculativePreloadType speculative_preload_type_ =
       SpeculativePreloadType::kNotSpeculative;
   DeferOption defer_ = DeferOption::kNoDefer;
-  absl::optional<float> resource_width_;
-  absl::optional<float> resource_height_;
+  std::optional<float> resource_width_;
+  std::optional<float> resource_height_;
   ImageRequestBehavior image_request_behavior_ = ImageRequestBehavior::kNone;
   mojom::blink::ScriptType script_type_ = mojom::blink::ScriptType::kClassic;
   bool is_stale_revalidation_ = false;

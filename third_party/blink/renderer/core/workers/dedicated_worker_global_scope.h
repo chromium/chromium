@@ -175,7 +175,7 @@ class CORE_EXPORT DedicatedWorkerGlobalScope final : public WorkerGlobalScope {
 
   // Returns the ExecutionContextToken that uniquely identifies the parent
   // context that created this dedicated worker.
-  absl::optional<ExecutionContextToken> GetParentExecutionContextToken()
+  std::optional<ExecutionContextToken> GetParentExecutionContextToken()
       const final {
     return parent_token_;
   }

@@ -4,6 +4,7 @@
 
 #include "third_party/blink/public/common/interest_group/auction_config_mojom_traits.h"
 
+#include <optional>
 #include <string>
 #include <tuple>
 #include <vector>
@@ -15,7 +16,6 @@
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/common/interest_group/auction_config_test_util.h"
 #include "third_party/blink/public/common/interest_group/auction_config.h"
 #include "third_party/blink/public/common/interest_group/seller_capabilities.h"
@@ -336,7 +336,7 @@ TEST(AuctionConfigMojomTraitsTest,
   AuctionConfig auction_config = CreateFullAuctionConfig();
   auction_config.direct_from_seller_signals =
       AuctionConfig::MaybePromiseDirectFromSellerSignals::FromValue(
-          absl::nullopt);
+          std::nullopt);
   EXPECT_TRUE(SerializeAndDeserialize(auction_config));
 }
 
@@ -350,14 +350,14 @@ TEST(AuctionConfigMojomTraitsTest, DirectFromSellerSignalsNoPerBuyerSignals) {
 TEST(AuctionConfigMojomTraitsTest, DirectFromSellerSignalsNoSellerSignals) {
   AuctionConfig auction_config = CreateFullAuctionConfig();
   auction_config.direct_from_seller_signals.mutable_value_for_testing()
-      ->seller_signals = absl::nullopt;
+      ->seller_signals = std::nullopt;
   EXPECT_TRUE(SerializeAndDeserialize(auction_config));
 }
 
 TEST(AuctionConfigMojomTraitsTest, DirectFromSellerSignalsNoAuctionSignals) {
   AuctionConfig auction_config = CreateFullAuctionConfig();
   auction_config.direct_from_seller_signals.mutable_value_for_testing()
-      ->auction_signals = absl::nullopt;
+      ->auction_signals = std::nullopt;
   EXPECT_TRUE(SerializeAndDeserialize(auction_config));
 }
 
@@ -365,7 +365,7 @@ TEST(AuctionConfigMojomTraitsTest, DirectFromSellerSignalsHeaderAdSlot) {
   AuctionConfig auction_config = CreateFullAuctionConfig();
   auction_config.direct_from_seller_signals =
       AuctionConfig::MaybePromiseDirectFromSellerSignals::FromValue(
-          absl::nullopt);
+          std::nullopt);
   auction_config.expects_direct_from_seller_signals_header_ad_slot = true;
   EXPECT_TRUE(SerializeAndDeserialize(auction_config));
 }
@@ -397,7 +397,7 @@ TEST(AuctionConfigMojomTraitsTest, MaybePromiseJson) {
 
   {
     AuctionConfig::MaybePromiseJson nothing =
-        AuctionConfig::MaybePromiseJson::FromValue(absl::nullopt);
+        AuctionConfig::MaybePromiseJson::FromValue(std::nullopt);
     EXPECT_TRUE(
         SerializeAndDeserialize<blink::mojom::AuctionAdConfigMaybePromiseJson>(
             nothing));
@@ -414,7 +414,7 @@ TEST(AuctionConfigMojomTraitsTest, MaybePromiseJson) {
 
 TEST(AuctionConfigMojomTraitsTest, MaybePromisePerBuyerSignals) {
   {
-    absl::optional<base::flat_map<url::Origin, std::string>> value;
+    std::optional<base::flat_map<url::Origin, std::string>> value;
     value.emplace();
     value->emplace(url::Origin::Create(GURL("https://example.com")), "42");
     AuctionConfig::MaybePromisePerBuyerSignals signals =

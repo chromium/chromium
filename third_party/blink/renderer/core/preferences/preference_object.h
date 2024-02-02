@@ -24,11 +24,11 @@ class PreferenceObject final : public ScriptWrappable {
 
   ~PreferenceObject() override;
 
-  absl::optional<AtomicString> override(ScriptState*);
+  std::optional<AtomicString> override(ScriptState*);
 
   void clearOverride(ScriptState*);
 
-  ScriptPromise requestOverride(ScriptState*, absl::optional<AtomicString>);
+  ScriptPromise requestOverride(ScriptState*, std::optional<AtomicString>);
 
   const FrozenArray<IDLString>& validValues();
 

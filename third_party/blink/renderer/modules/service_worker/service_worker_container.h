@@ -131,7 +131,7 @@ class MODULES_EXPORT ServiceWorkerContainer final
   void RegisterServiceWorkerInternal(
       const KURL& scope_url,
       const KURL& script_url,
-      absl::optional<mojom::blink::ScriptType> script_type,
+      std::optional<mojom::blink::ScriptType> script_type,
       mojom::blink::ServiceWorkerUpdateViaCache update_via_cache,
       WebFetchClientSettingsObject fetch_client_settings_object,
       std::unique_ptr<CallbackPromiseAdapter<ServiceWorkerRegistration,

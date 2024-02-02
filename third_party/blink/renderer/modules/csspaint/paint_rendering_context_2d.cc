@@ -37,7 +37,7 @@ void PaintRenderingContext2D::InitializeForRecording(
 }
 
 void PaintRenderingContext2D::RecordingCleared() {
-  previous_frame_ = absl::nullopt;
+  previous_frame_ = std::nullopt;
 }
 
 int PaintRenderingContext2D::Width() const {

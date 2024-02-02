@@ -5,7 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_PAGE_GRID_FOCUSGROUP_STRUCTURE_INFO_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PAGE_GRID_FOCUSGROUP_STRUCTURE_INFO_H_
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include <optional>
+
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/focusgroup_flags.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -124,7 +125,7 @@ class CORE_EXPORT AutomaticGridFocusgroupStructureInfo final
   LayoutTableCell* TableCellAtIndexInRowRecursive(
       unsigned index,
       LayoutTableRow* row,
-      absl::optional<unsigned> expected_rowspan = absl::nullopt);
+      std::optional<unsigned> expected_rowspan = std::nullopt);
 
   Member<LayoutObject> table_;
 };

@@ -29,7 +29,7 @@ class MODULES_EXPORT WebIdentityRequester final
                        MediationRequirement requirement);
 
   void OnRequestToken(mojom::blink::RequestTokenStatus status,
-                      const absl::optional<KURL>& selected_idp_config_url,
+                      const std::optional<KURL>& selected_idp_config_url,
                       const WTF::String& token,
                       const mojom::blink::TokenErrorPtr error,
                       bool is_auto_selected);

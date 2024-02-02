@@ -91,7 +91,7 @@ class MODULES_EXPORT MediaStreamVideoCapturerSource
   void StopSourceImpl() override;
   void StopSourceForRestartImpl() override;
   void RestartSourceImpl(const media::VideoCaptureFormat& new_format) override;
-  absl::optional<media::VideoCaptureFormat> GetCurrentFormat() const override;
+  std::optional<media::VideoCaptureFormat> GetCurrentFormat() const override;
   void ChangeSourceImpl(const MediaStreamDevice& new_device) override;
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   void SendWheel(double relative_x,
@@ -99,7 +99,7 @@ class MODULES_EXPORT MediaStreamVideoCapturerSource
                  int wheel_delta_x,
                  int wheel_delta_y,
                  base::OnceCallback<void(DOMException*)> callback) override;
-  void GetZoomLevel(base::OnceCallback<void(absl::optional<int>, const String&)>
+  void GetZoomLevel(base::OnceCallback<void(std::optional<int>, const String&)>
                         callback) override;
   void SetZoomLevel(int zoom_level,
                     base::OnceCallback<void(DOMException*)> callback) override;
@@ -109,7 +109,7 @@ class MODULES_EXPORT MediaStreamVideoCapturerSource
       uint32_t sub_capture_target_version,
       base::OnceCallback<void(media::mojom::ApplySubCaptureTargetResult)>
           callback) override;
-  absl::optional<uint32_t> GetNextSubCaptureTargetVersion() override;
+  std::optional<uint32_t> GetNextSubCaptureTargetVersion() override;
 #endif
   uint32_t GetSubCaptureTargetVersion() const override;
   base::WeakPtr<MediaStreamVideoSource> GetWeakPtr() override;

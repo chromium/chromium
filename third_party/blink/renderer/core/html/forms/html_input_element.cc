@@ -648,17 +648,17 @@ bool HTMLInputElement::CanStartSelection() const {
   return TextControlElement::CanStartSelection();
 }
 
-absl::optional<uint32_t> HTMLInputElement::selectionStartForBinding(
+std::optional<uint32_t> HTMLInputElement::selectionStartForBinding(
     ExceptionState& exception_state) const {
   if (!input_type_->SupportsSelectionAPI())
-    return absl::nullopt;
+    return std::nullopt;
   return TextControlElement::selectionStart();
 }
 
-absl::optional<uint32_t> HTMLInputElement::selectionEndForBinding(
+std::optional<uint32_t> HTMLInputElement::selectionEndForBinding(
     ExceptionState& exception_state) const {
   if (!input_type_->SupportsSelectionAPI())
-    return absl::nullopt;
+    return std::nullopt;
   return TextControlElement::selectionEnd();
 }
 
@@ -671,7 +671,7 @@ String HTMLInputElement::selectionDirectionForBinding(
 }
 
 void HTMLInputElement::setSelectionStartForBinding(
-    absl::optional<uint32_t> start,
+    std::optional<uint32_t> start,
     ExceptionState& exception_state) {
   if (!input_type_->SupportsSelectionAPI()) {
     exception_state.ThrowDOMException(
@@ -684,7 +684,7 @@ void HTMLInputElement::setSelectionStartForBinding(
 }
 
 void HTMLInputElement::setSelectionEndForBinding(
-    absl::optional<uint32_t> end,
+    std::optional<uint32_t> end,
     ExceptionState& exception_state) {
   if (!input_type_->SupportsSelectionAPI()) {
     exception_state.ThrowDOMException(
@@ -1345,7 +1345,7 @@ void HTMLInputElement::UpdateView() {
 ScriptValue HTMLInputElement::valueAsDate(ScriptState* script_state) const {
   UseCounter::Count(GetDocument(), WebFeature::kInputElementValueAsDateGetter);
   // TODO(crbug.com/988343): InputType::ValueAsDate() should return
-  // absl::optional<base::Time>.
+  // std::optional<base::Time>.
   double date = input_type_->ValueAsDate();
   v8::Isolate* isolate = script_state->GetIsolate();
   if (!std::isfinite(date))
@@ -1360,7 +1360,7 @@ void HTMLInputElement::setValueAsDate(ScriptState* script_state,
                                       const ScriptValue& value,
                                       ExceptionState& exception_state) {
   UseCounter::Count(GetDocument(), WebFeature::kInputElementValueAsDateSetter);
-  absl::optional<base::Time> date =
+  std::optional<base::Time> date =
       NativeValueTraits<IDLNullable<IDLDate>>::NativeValue(
           script_state->GetIsolate(), value.V8Value(), exception_state);
   if (exception_state.HadException())

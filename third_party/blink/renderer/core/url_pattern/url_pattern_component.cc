@@ -368,7 +368,7 @@ bool Component::Match(StringView input,
   }
 
   // There is no regexp, so directly match against the pattern.
-  std::vector<std::pair<absl::string_view, absl::optional<absl::string_view>>>
+  std::vector<std::pair<absl::string_view, std::optional<absl::string_view>>>
       pattern_group_list;
   // Lossy UTF8 conversion is fine given the input has come through a
   // USVString webidl argument.

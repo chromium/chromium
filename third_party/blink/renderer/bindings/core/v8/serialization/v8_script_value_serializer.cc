@@ -837,7 +837,7 @@ bool V8ScriptValueSerializer::WriteDOMObject(ScriptWrappable* wrappable,
         config->GetAttributeVisibility<FencedFrameConfig::Attribute::kWidth>(
             PassKey())));
     WriteUint32(config->deprecated_should_freeze_initial_size(PassKey()));
-    absl::optional<KURL> urn_uuid = config->urn_uuid(PassKey());
+    std::optional<KURL> urn_uuid = config->urn_uuid(PassKey());
     WriteUTF8String(urn_uuid ? urn_uuid->GetString() : g_empty_string);
 
     // The serialization process does not distinguish between null and empty
@@ -848,15 +848,14 @@ bool V8ScriptValueSerializer::WriteDOMObject(ScriptWrappable* wrappable,
       WriteUTF8String(config->GetSharedStorageContext());
     }
 
-    absl::optional<gfx::Size> container_size =
-        config->container_size(PassKey());
+    std::optional<gfx::Size> container_size = config->container_size(PassKey());
     WriteUint32(container_size.has_value());
     if (container_size.has_value()) {
       WriteUint32(container_size ? container_size->width() : 0);
       WriteUint32(container_size ? container_size->height() : 0);
     }
 
-    absl::optional<gfx::Size> content_size = config->content_size(PassKey());
+    std::optional<gfx::Size> content_size = config->content_size(PassKey());
     WriteUint32(content_size.has_value());
     if (content_size.has_value()) {
       WriteUint32(content_size ? content_size->width() : 0);
@@ -890,7 +889,7 @@ bool V8ScriptValueSerializer::WriteFile(File* file,
     // hence always have this hardcoded 1.
     WriteUint32(1);
     WriteUint64(file->size());
-    absl::optional<base::Time> last_modified =
+    std::optional<base::Time> last_modified =
         file->LastModifiedTimeForSerialization();
     WriteDouble(last_modified
                     ? last_modified->InMillisecondsFSinceUnixEpochIgnoringNull()

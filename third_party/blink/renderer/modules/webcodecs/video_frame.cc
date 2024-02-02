@@ -118,7 +118,7 @@ media::VideoPixelFormat ToOpaqueMediaPixelFormat(media::VideoPixelFormat fmt) {
   }
 }
 
-absl::optional<V8VideoPixelFormat> ToV8VideoPixelFormat(
+std::optional<V8VideoPixelFormat> ToV8VideoPixelFormat(
     media::VideoPixelFormat fmt) {
   switch (fmt) {
     case media::PIXEL_FORMAT_I420:
@@ -141,7 +141,7 @@ absl::optional<V8VideoPixelFormat> ToV8VideoPixelFormat(
       return V8VideoPixelFormat(V8VideoPixelFormat::Enum::kBGRX);
     default:
       NOTREACHED();
-      return absl::nullopt;
+      return std::nullopt;
   }
 }
 
@@ -343,12 +343,12 @@ const char CanvasResourceProviderCache::kSupplementName[] =
 const base::TimeDelta CanvasResourceProviderCache::kIdleTimeout =
     base::Seconds(10);
 
-absl::optional<media::VideoPixelFormat> CopyToFormat(
+std::optional<media::VideoPixelFormat> CopyToFormat(
     const media::VideoFrame& frame) {
   const bool mappable = frame.IsMappable() || frame.HasGpuMemoryBuffer();
   const bool texturable = frame.HasTextures();
   if (!(mappable || texturable))
-    return absl::nullopt;
+    return std::nullopt;
 
   // The |frame|.BitDepth() restriction is to avoid treating a P016LE frame as a
   // low-bit depth frame.
@@ -369,7 +369,7 @@ absl::optional<media::VideoPixelFormat> CopyToFormat(
     case media::PIXEL_FORMAT_NV12:
       break;
     default:
-      return absl::nullopt;
+      return std::nullopt;
   }
 
   if (mappable) {
@@ -386,7 +386,7 @@ absl::optional<media::VideoPixelFormat> CopyToFormat(
           media::SharedImageFormatType::kSharedImageFormatExternalSampler ||
       (format_type == media::SharedImageFormatType::kLegacy &&
        frame.NumTextures() != media::VideoFrame::NumPlanes(frame.format()))) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return frame.format();
@@ -974,14 +974,14 @@ VideoFrame* VideoFrame::Create(ScriptState* script_state,
                                           ExecutionContext::From(script_state));
 }
 
-absl::optional<V8VideoPixelFormat> VideoFrame::format() const {
+std::optional<V8VideoPixelFormat> VideoFrame::format() const {
   auto local_frame = handle_->frame();
   if (!local_frame)
-    return absl::nullopt;
+    return std::nullopt;
 
   auto copy_to_format = CopyToFormat(*local_frame);
   if (!copy_to_format)
-    return absl::nullopt;
+    return std::nullopt;
 
   return ToV8VideoPixelFormat(*copy_to_format);
 }
@@ -1060,10 +1060,10 @@ int64_t VideoFrame::timestamp() const {
   return handle_->timestamp().InMicroseconds();
 }
 
-absl::optional<uint64_t> VideoFrame::duration() const {
+std::optional<uint64_t> VideoFrame::duration() const {
   if (auto duration = handle_->duration())
     return duration->InMicroseconds();
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 VideoColorSpace* VideoFrame::colorSpace() {
@@ -1366,7 +1366,7 @@ gfx::Size VideoFrame::BitmapSourceSize() const {
 }
 
 ScriptPromise VideoFrame::CreateImageBitmap(ScriptState* script_state,
-                                            absl::optional<gfx::Rect> crop_rect,
+                                            std::optional<gfx::Rect> crop_rect,
                                             const ImageBitmapOptions* options,
                                             ExceptionState& exception_state) {
   const auto local_handle = handle_->CloneForInternalUse();

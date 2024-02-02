@@ -61,7 +61,7 @@ net::SiteForCookies WorkerFetchContext::GetSiteForCookies() const {
 
 scoped_refptr<const SecurityOrigin> WorkerFetchContext::GetTopFrameOrigin()
     const {
-  absl::optional<WebSecurityOrigin> top_frame_origin =
+  std::optional<WebSecurityOrigin> top_frame_origin =
       web_context_->TopFrameOrigin();
 
   // The top frame origin of shared and service workers is null.
@@ -238,7 +238,7 @@ void WorkerFetchContext::AddResourceTiming(
 
 void WorkerFetchContext::PopulateResourceRequest(
     ResourceType type,
-    const absl::optional<float> resource_width,
+    const std::optional<float> resource_width,
     ResourceRequest& out_request,
     const ResourceLoaderOptions& options) {
   if (!GetResourceFetcherProperties().IsDetached())

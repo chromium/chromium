@@ -5,13 +5,14 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_WAKE_LOCK_WAKE_LOCK_TEST_UTILS_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WAKE_LOCK_WAKE_LOCK_TEST_UTILS_H_
 
+#include <optional>
+
 #include "base/functional/callback.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "services/device/public/mojom/wake_lock.mojom-blink.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/permissions/permission.mojom-blink.h"
 #include "third_party/blink/public/mojom/wake_lock/wake_lock.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_function.h"
@@ -143,7 +144,7 @@ class MockPermissionService final : public mojom::blink::PermissionService {
 
   mojo::Receiver<mojom::blink::PermissionService> receiver_{this};
 
-  absl::optional<mojom::blink::PermissionStatus>
+  std::optional<mojom::blink::PermissionStatus>
       permission_responses_[V8WakeLockType::kEnumSize];
 
   base::OnceClosure request_permission_callbacks_[V8WakeLockType::kEnumSize];

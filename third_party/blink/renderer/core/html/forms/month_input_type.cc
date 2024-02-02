@@ -62,7 +62,7 @@ double MonthInputType::ValueAsDate() const {
 }
 
 String MonthInputType::SerializeWithDate(
-    const absl::optional<base::Time>& value) const {
+    const std::optional<base::Time>& value) const {
   DateComponents date;
   if (!value || !date.SetMillisecondsSinceEpochForMonth(
                     value->InMillisecondsFSinceUnixEpochIgnoringNull())) {

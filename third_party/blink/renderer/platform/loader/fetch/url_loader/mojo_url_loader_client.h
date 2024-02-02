@@ -65,7 +65,7 @@ class BLINK_PLATFORM_EXPORT MojoURLLoaderClient final
   void OnReceiveResponse(
       network::mojom::URLResponseHeadPtr response_head,
       mojo::ScopedDataPipeConsumerHandle body,
-      absl::optional<mojo_base::BigBuffer> cached_metadata) override;
+      std::optional<mojo_base::BigBuffer> cached_metadata) override;
   void OnReceiveRedirect(
       const net::RedirectInfo& redirect_info,
       network::mojom::URLResponseHeadPtr response_head) override;

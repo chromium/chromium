@@ -644,7 +644,7 @@ void OnRequestToken(ScriptPromiseResolver* resolver,
                     std::unique_ptr<ScopedAbortState> scoped_abort_state,
                     const CredentialRequestOptions* options,
                     RequestTokenStatus status,
-                    const absl::optional<KURL>& selected_idp_config_url,
+                    const std::optional<KURL>& selected_idp_config_url,
                     const WTF::String& token,
                     mojom::blink::TokenErrorPtr error,
                     bool is_auto_selected) {
@@ -1447,7 +1447,7 @@ ScriptPromise CredentialsContainer::get(ScriptState* script_state,
 
     if (options->publicKey()->hasUserVerification() &&
         !mojo::ConvertTo<
-            absl::optional<mojom::blink::UserVerificationRequirement>>(
+            std::optional<mojom::blink::UserVerificationRequirement>>(
             options->publicKey()->userVerification())) {
       resolver->DomWindow()->AddConsoleMessage(
           MakeGarbageCollected<ConsoleMessage>(
@@ -1810,7 +1810,7 @@ ScriptPromise CredentialsContainer::create(
   }
 
   if (options->publicKey()->hasAttestation() &&
-      !mojo::ConvertTo<absl::optional<AttestationConveyancePreference>>(
+      !mojo::ConvertTo<std::optional<AttestationConveyancePreference>>(
           options->publicKey()->attestation())) {
     resolver->DomWindow()->AddConsoleMessage(
         MakeGarbageCollected<ConsoleMessage>(
@@ -1823,10 +1823,10 @@ ScriptPromise CredentialsContainer::create(
       options->publicKey()
           ->authenticatorSelection()
           ->hasAuthenticatorAttachment()) {
-    absl::optional<String> attachment = options->publicKey()
-                                            ->authenticatorSelection()
-                                            ->authenticatorAttachment();
-    if (!mojo::ConvertTo<absl::optional<AuthenticatorAttachment>>(attachment)) {
+    std::optional<String> attachment = options->publicKey()
+                                           ->authenticatorSelection()
+                                           ->authenticatorAttachment();
+    if (!mojo::ConvertTo<std::optional<AuthenticatorAttachment>>(attachment)) {
       resolver->DomWindow()->AddConsoleMessage(
           MakeGarbageCollected<ConsoleMessage>(
               mojom::blink::ConsoleMessageSource::kJavaScript,
@@ -1839,7 +1839,7 @@ ScriptPromise CredentialsContainer::create(
   if (options->publicKey()->hasAuthenticatorSelection() &&
       options->publicKey()->authenticatorSelection()->hasUserVerification() &&
       !mojo::ConvertTo<
-          absl::optional<mojom::blink::UserVerificationRequirement>>(
+          std::optional<mojom::blink::UserVerificationRequirement>>(
           options->publicKey()->authenticatorSelection()->userVerification())) {
     resolver->DomWindow()->AddConsoleMessage(
         MakeGarbageCollected<ConsoleMessage>(
@@ -1853,7 +1853,7 @@ ScriptPromise CredentialsContainer::create(
   if (options->publicKey()->hasAuthenticatorSelection() &&
       options->publicKey()->authenticatorSelection()->hasResidentKey()) {
     auto rk_requirement =
-        mojo::ConvertTo<absl::optional<mojom::blink::ResidentKeyRequirement>>(
+        mojo::ConvertTo<std::optional<mojom::blink::ResidentKeyRequirement>>(
             options->publicKey()->authenticatorSelection()->residentKey());
     if (!rk_requirement) {
       resolver->DomWindow()->AddConsoleMessage(

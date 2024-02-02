@@ -203,7 +203,7 @@ void ImagePainter::PaintReplaced(const PaintInfo& paint_info,
 
   // Disable cache in under-invalidation checking mode for animated image
   // because it may change before it's actually invalidated.
-  absl::optional<DisplayItemCacheSkipper> cache_skipper;
+  std::optional<DisplayItemCacheSkipper> cache_skipper;
   if (RuntimeEnabledFeatures::PaintUnderInvalidationCheckingEnabled() &&
       layout_image_.ImageResource() &&
       layout_image_.ImageResource()->MaybeAnimated())

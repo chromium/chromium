@@ -172,9 +172,9 @@ bool DeviceOrientationEventPump::SensorsReadyOrErrored() const {
 }
 
 DeviceOrientationData* DeviceOrientationEventPump::GetDataFromSharedMemory() {
-  absl::optional<double> alpha;
-  absl::optional<double> beta;
-  absl::optional<double> gamma;
+  std::optional<double> alpha;
+  std::optional<double> beta;
+  std::optional<double> gamma;
   bool absolute = false;
   bool got_reading = false;
   device::SensorReading reading;

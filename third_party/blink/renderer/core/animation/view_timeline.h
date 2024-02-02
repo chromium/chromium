@@ -58,9 +58,8 @@ class CORE_EXPORT ViewTimeline : public ScrollTimeline {
  private:
   double ToFractionalOffset(const TimelineOffset& timeline_offset) const;
 
-  absl::optional<gfx::SizeF> SubjectSize() const;
-  absl::optional<gfx::PointF> SubjectPosition(
-      LayoutBox* scroll_container) const;
+  std::optional<gfx::SizeF> SubjectSize() const;
+  std::optional<gfx::PointF> SubjectPosition(LayoutBox* scroll_container) const;
 
   void ApplyStickyAdjustments(ScrollOffsets& scroll_offsets,
                               ViewOffsets& view_offsets,

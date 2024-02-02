@@ -5,7 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_SCROLLABLE_OVERFLOW_CALCULATOR_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_SCROLLABLE_OVERFLOW_CALCULATOR_H_
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include <optional>
+
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/block_node.h"
 #include "third_party/blink/renderer/core/layout/geometry/logical_rect.h"
@@ -37,7 +38,7 @@ class CORE_EXPORT ScrollableOverflowCalculator {
 
   // Applies the final adjustments given the bounds of any inflow children
   // (|inflow_bounds|), and returns the final scrollable-overflow.
-  const PhysicalRect Result(const absl::optional<PhysicalRect> inflow_bounds);
+  const PhysicalRect Result(const std::optional<PhysicalRect> inflow_bounds);
 
   // Adds scrollable-overflow from |child_fragment|, at |offset|.
   void AddChild(const PhysicalBoxFragment& child_fragment,

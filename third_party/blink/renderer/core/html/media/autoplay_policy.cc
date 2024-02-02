@@ -284,7 +284,7 @@ bool AutoplayPolicy::HasTransientUserActivation() const {
   return false;
 }
 
-absl::optional<DOMExceptionCode> AutoplayPolicy::RequestPlay() {
+std::optional<DOMExceptionCode> AutoplayPolicy::RequestPlay() {
   if (!HasTransientUserActivation()) {
     autoplay_uma_helper_->OnAutoplayInitiated(AutoplaySource::kMethod);
     if (IsGestureNeededForPlayback())
@@ -295,7 +295,7 @@ absl::optional<DOMExceptionCode> AutoplayPolicy::RequestPlay() {
 
   MaybeSetAutoplayInitiated();
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 bool AutoplayPolicy::IsAutoplayingMutedInternal(bool muted) const {

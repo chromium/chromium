@@ -140,9 +140,9 @@ class GlobalFetchImpl final : public GarbageCollected<GlobalFetchImpl<T>>,
     MeasureFetchProperties(ec, request_data);
     // 6. If init is given and init ["activateAfter"] exists, then set
     // `activate_after` to init ["activateAfter"].
-    absl::optional<DOMHighResTimeStamp> activate_after =
-        (init->hasActivateAfter() ? absl::make_optional(init->activateAfter())
-                                  : absl::nullopt);
+    std::optional<DOMHighResTimeStamp> activate_after =
+        (init->hasActivateAfter() ? std::make_optional(init->activateAfter())
+                                  : std::nullopt);
     auto* result = fetch_later_manager_->FetchLater(script_state, request_data,
                                                     r->signal(), activate_after,
                                                     exception_state);

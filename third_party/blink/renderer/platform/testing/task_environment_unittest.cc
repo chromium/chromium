@@ -4,11 +4,12 @@
 
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 
+#include <optional>
+
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/platform/scheduler/public/main_thread.h"
 
 namespace blink {

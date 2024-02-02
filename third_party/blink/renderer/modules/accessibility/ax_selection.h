@@ -7,11 +7,11 @@
 
 #include <stdint.h>
 
+#include <optional>
 #include <ostream>
 
 #include "base/dcheck_is_on.h"
 #include "base/logging.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/editing/forward.h"
 #include "third_party/blink/renderer/core/html/forms/text_control_element.h"
@@ -102,7 +102,7 @@ class MODULES_EXPORT AXSelection final {
   // Determines whether this selection is targeted to the contents of a text
   // field, and returns the start and end text offsets, as well as its
   // direction. |start| should always be less than equal to |end|.
-  absl::optional<TextControlSelection> AsTextControlSelection() const;
+  std::optional<TextControlSelection> AsTextControlSelection() const;
 
   // The |AXPosition| where the selection starts.
   AXPosition base_;

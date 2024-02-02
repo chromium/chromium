@@ -50,9 +50,9 @@ class CORE_EXPORT SpeculationRuleSet final
     Source(base::PassKey<Source>,
            const String& source_text,
            Document*,
-           absl::optional<DOMNodeId> node_id,
-           absl::optional<KURL> base_url,
-           absl::optional<uint64_t> request_id);
+           std::optional<DOMNodeId> node_id,
+           std::optional<KURL> base_url,
+           std::optional<uint64_t> request_id);
 
     static Source* FromInlineScript(const String& source_text,
                                     Document&,
@@ -66,11 +66,11 @@ class CORE_EXPORT SpeculationRuleSet final
     const String& GetSourceText() const;
 
     // Has a value iff IsFromInlineScript() is true.
-    const absl::optional<DOMNodeId>& GetNodeId() const;
+    const std::optional<DOMNodeId>& GetNodeId() const;
 
     // Have values iff IsFromRequest() is true.
-    const absl::optional<KURL> GetSourceURL() const;
-    const absl::optional<uint64_t>& GetRequestId() const;
+    const std::optional<KURL> GetSourceURL() const;
+    const std::optional<uint64_t>& GetRequestId() const;
 
     KURL GetBaseURL() const;
 
@@ -86,13 +86,13 @@ class CORE_EXPORT SpeculationRuleSet final
 
     // Set by FromInlineScript()
     Member<Document> document_;
-    absl::optional<DOMNodeId> node_id_;
+    std::optional<DOMNodeId> node_id_;
 
     // Set by FromRequest() and FromBrowserInjected()
-    absl::optional<KURL> base_url_;
+    std::optional<KURL> base_url_;
 
     // Set by FromRequest()
-    absl::optional<uint64_t> request_id_;
+    std::optional<uint64_t> request_id_;
   };
 
   SpeculationRuleSet(base::PassKey<SpeculationRuleSet>, Source* source);

@@ -5,9 +5,10 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_COMMON_WIDGET_VISUAL_PROPERTIES_H_
 #define THIRD_PARTY_BLINK_PUBLIC_COMMON_WIDGET_VISUAL_PROPERTIES_H_
 
+#include <optional>
+
 #include "cc/trees/browser_controls_params.h"
 #include "components/viz/common/surfaces/local_surface_id.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/common_export.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
 #include "ui/base/ui_base_types.h"
@@ -99,7 +100,7 @@ struct BLINK_COMMON_EXPORT VisualProperties {
   bool scroll_focused_node_into_view = false;
 
   // The local surface ID to use (if valid).
-  absl::optional<viz::LocalSurfaceId> local_surface_id;
+  std::optional<viz::LocalSurfaceId> local_surface_id;
 
   // Indicates whether tab-initiated fullscreen was granted.
   bool is_fullscreen_granted = false;

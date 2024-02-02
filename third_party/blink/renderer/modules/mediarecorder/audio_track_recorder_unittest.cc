@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include <optional>
 #include <string>
 
 #include "base/memory/raw_ptr.h"
@@ -33,7 +34,6 @@
 #include "mojo/public/cpp/bindings/unique_receiver_set.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
@@ -315,7 +315,7 @@ class MockAudioTrackRecorderCallbackInterface
       OnEncodedAudio,
       (const media::AudioParameters& params,
        std::string encoded_data,
-       absl::optional<media::AudioEncoder::CodecDescription> codec_description,
+       std::optional<media::AudioEncoder::CodecDescription> codec_description,
        base::TimeTicks capture_time),
       (override));
   MOCK_METHOD(void, OnSourceReadyStateChanged, (), (override));
@@ -373,7 +373,7 @@ class AudioTrackRecorderTest : public testing::TestWithParam<ATRTestParams> {
         .WillRepeatedly(
             Invoke([this](const media::AudioParameters& params,
                           std::string encoded_data,
-                          absl::optional<media::AudioEncoder::CodecDescription>
+                          std::optional<media::AudioEncoder::CodecDescription>
                               codec_description,
                           base::TimeTicks capture_time) {
               OnEncodedAudio(params, encoded_data, std::move(codec_description),
@@ -658,7 +658,7 @@ class AudioTrackRecorderTest : public testing::TestWithParam<ATRTestParams> {
   void OnEncodedAudio(
       const media::AudioParameters& params,
       std::string encoded_data,
-      absl::optional<media::AudioEncoder::CodecDescription> codec_description,
+      std::optional<media::AudioEncoder::CodecDescription> codec_description,
       base::TimeTicks timestamp) {
     EXPECT_TRUE(!encoded_data.empty());
     switch (codec_) {

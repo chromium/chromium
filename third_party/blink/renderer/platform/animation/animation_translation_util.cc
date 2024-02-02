@@ -122,12 +122,12 @@ void ToGfxTransformOperations(
       case TransformOperation::kPerspective: {
         auto* transform =
             static_cast<const PerspectiveTransformOperation*>(operation.get());
-        absl::optional<double> depth = transform->Perspective();
+        std::optional<double> depth = transform->Perspective();
         if (depth) {
           out_transform_operations->AppendPerspective(
               SkDoubleToScalar(std::max(*depth, 1.0)));
         } else {
-          out_transform_operations->AppendPerspective(absl::nullopt);
+          out_transform_operations->AppendPerspective(std::nullopt);
         }
         break;
       }

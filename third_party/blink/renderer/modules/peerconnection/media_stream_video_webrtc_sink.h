@@ -51,7 +51,7 @@ class MODULES_EXPORT MediaStreamVideoWebRtcSink : public MediaStreamVideoSink {
     return video_track_.get();
   }
 
-  absl::optional<bool> SourceNeedsDenoisingForTesting() const;
+  std::optional<bool> SourceNeedsDenoisingForTesting() const;
 
   double GetRequiredMinFramesPerSec() const override { return 1; }
 
@@ -60,8 +60,8 @@ class MODULES_EXPORT MediaStreamVideoWebRtcSink : public MediaStreamVideoSink {
   void OnEnabledChanged(bool enabled) override;
   void OnContentHintChanged(
       WebMediaStreamTrack::ContentHintType content_hint) override;
-  void OnVideoConstraintsChanged(absl::optional<double> min_fps,
-                                 absl::optional<double> max_fps) override;
+  void OnVideoConstraintsChanged(std::optional<double> min_fps,
+                                 std::optional<double> max_fps) override;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(

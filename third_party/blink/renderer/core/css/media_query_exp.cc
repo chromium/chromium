@@ -447,7 +447,7 @@ CSSPrimitiveValue::UnitType MediaQueryExpValue::Unit() const {
   return numeric_.unit;
 }
 
-absl::optional<MediaQueryExpValue> MediaQueryExpValue::Consume(
+std::optional<MediaQueryExpValue> MediaQueryExpValue::Consume(
     const String& media_feature,
     CSSParserTokenRange& range,
     const CSSParserTokenOffsets& offsets,
@@ -468,7 +468,7 @@ absl::optional<MediaQueryExpValue> MediaQueryExpValue::Consume(
       }
       return MediaQueryExpValue(*value);
     }
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   DCHECK_EQ(media_feature, media_feature.LowerASCII())
@@ -493,18 +493,18 @@ absl::optional<MediaQueryExpValue> MediaQueryExpValue::Consume(
     if (CSSIdentifierValue* ident = css_parsing_utils::ConsumeIdent(range)) {
       CSSValueID ident_id = ident->GetValueID();
       if (!FeatureWithValidIdent(media_feature, ident_id)) {
-        return absl::nullopt;
+        return std::nullopt;
       }
       return MediaQueryExpValue(ident_id);
     }
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // Now we have |value| as a number, length or resolution
   // Create value for media query expression that must have 1 or more values.
   if (FeatureWithAspectRatio(media_feature)) {
     if (value->GetDoubleValue() < 0) {
-      return absl::nullopt;
+      return std::nullopt;
     }
     if (!css_parsing_utils::ConsumeSlashIncludingWhitespace(range)) {
       return MediaQueryExpValue(value->GetDoubleValue(), 1);
@@ -512,7 +512,7 @@ absl::optional<MediaQueryExpValue> MediaQueryExpValue::Consume(
     CSSPrimitiveValue* denominator = css_parsing_utils::ConsumeNumber(
         range, context, CSSPrimitiveValue::ValueRange::kNonNegative);
     if (!denominator) {
-      return absl::nullopt;
+      return std::nullopt;
     }
     if (value->GetDoubleValue() == 0 && denominator->GetDoubleValue() == 0) {
       return MediaQueryExpValue(1, 0);
@@ -556,7 +556,7 @@ absl::optional<MediaQueryExpValue> MediaQueryExpValue::Consume(
     return MediaQueryExpValue(*value);
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 namespace {

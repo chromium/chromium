@@ -34,7 +34,7 @@ void OnIsUserVerifyingComplete(
   scoped_resolver->Release()->Resolve(available);
 }
 
-absl::optional<std::string> AuthenticatorAttachmentToString(
+std::optional<std::string> AuthenticatorAttachmentToString(
     mojom::blink::AuthenticatorAttachment authenticator_attachment) {
   switch (authenticator_attachment) {
     case mojom::blink::AuthenticatorAttachment::PLATFORM:
@@ -42,7 +42,7 @@ absl::optional<std::string> AuthenticatorAttachmentToString(
     case mojom::blink::AuthenticatorAttachment::CROSS_PLATFORM:
       return "cross-platform";
     case mojom::blink::AuthenticatorAttachment::NO_PREFERENCE:
-      return absl::nullopt;
+      return std::nullopt;
   }
 }
 }  // namespace

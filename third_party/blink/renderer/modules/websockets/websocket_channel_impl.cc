@@ -170,7 +170,7 @@ void WebSocketChannelImpl::BlobLoader::Cancel() {
 }
 
 FileErrorCode WebSocketChannelImpl::BlobLoader::DidStartLoading(uint64_t) {
-  const absl::optional<uint64_t> size = loader_->TotalBytes();
+  const std::optional<uint64_t> size = loader_->TotalBytes();
   DCHECK(size);
   if (size.value() > std::numeric_limits<size_t>::max()) {
     blob_too_large_ = true;
@@ -349,7 +349,7 @@ bool WebSocketChannelImpl::Connect(const KURL& url, const String& protocol) {
       connector.BindNewPipeAndPassReceiver(
           execution_context_->GetTaskRunner(TaskType::kWebSocket)));
 
-  absl::optional<base::UnguessableToken> devtools_token;
+  std::optional<base::UnguessableToken> devtools_token;
   probe::WillCreateWebSocket(execution_context_, identifier_, url, protocol,
                              &devtools_token);
 
@@ -921,7 +921,7 @@ void WebSocketChannelImpl::HandleDidClose(bool was_clean,
 }
 
 void WebSocketChannelImpl::OnCompletion(
-    const absl::optional<WebString>& console_message) {
+    const std::optional<WebString>& console_message) {
   DCHECK(!throttle_passed_);
   DCHECK(handshake_throttle_);
   handshake_throttle_ = nullptr;

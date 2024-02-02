@@ -522,14 +522,14 @@ xnn_status DefineStaticXnnValue(xnn_subgraph_t subgraph,
 // XNNPACK requires input and static data buffers to have `XNN_EXTRA_BYTES`
 // bytes at the end. This method allocates a buffer with `XNN_EXTRA_BYTES` bytes
 // and copies the content of array buffer into the new buffer.
-absl::optional<DataBuffer> MakeBufferWithExtraBytes(
+std::optional<DataBuffer> MakeBufferWithExtraBytes(
     const DOMArrayBufferView* array_buffer_view) {
   CHECK(!array_buffer_view->IsDetached());
   // Allocate an initialized buffer with `XNN_EXTRA_BYTES` extra bytes.
   auto buffer_size =
       base::MakeCheckedNum(array_buffer_view->byteLength()) + XNN_EXTRA_BYTES;
   if (!buffer_size.IsValid()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   auto buffer = DataBuffer::WithSize(buffer_size.ValueOrDie());
   memcpy(buffer.data(), array_buffer_view->BaseAddress(),
@@ -2390,7 +2390,7 @@ xnn_status MLGraphXnnpack::CreateXnnSubgraph(
   return xnn_status_success;
 }
 
-absl::optional<std::pair<XnnExternalValuesPtr, Vector<DataBuffer>>>
+std::optional<std::pair<XnnExternalValuesPtr, Vector<DataBuffer>>>
 MLGraphXnnpack::CreateExternalValues(
     const MLNamedArrayBufferViews& inputs,
     const MLNamedArrayBufferViews& outputs) const {
@@ -2401,7 +2401,7 @@ MLGraphXnnpack::CreateExternalValues(
   for (const auto& [name, array_buffer_view] : inputs) {
     auto buffer = MakeBufferWithExtraBytes(array_buffer_view.Get());
     if (!buffer) {
-      return absl::nullopt;
+      return std::nullopt;
     }
     external_values->emplace_back(
         xnn_external_value{.id = input_external_value_id_map_.at(name),

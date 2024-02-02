@@ -374,44 +374,44 @@ TEST(BlinkStorageKeyTest, FromWireReturnValue) {
     RAW_PTR_EXCLUSION const BlinkSchemefulSite& top_level_site;
     RAW_PTR_EXCLUSION const BlinkSchemefulSite&
         top_level_site_if_third_party_enabled;
-    RAW_PTR_EXCLUSION const absl::optional<base::UnguessableToken>& nonce;
+    RAW_PTR_EXCLUSION const std::optional<base::UnguessableToken>& nonce;
     AncestorChainBit ancestor_chain_bit;
     AncestorChainBit ancestor_chain_bit_if_third_party_enabled;
     bool result;
   } test_cases[] = {
       // Passing cases:
-      {o1, site1, site1, absl::nullopt, AncestorChainBit::kSameSite,
+      {o1, site1, site1, std::nullopt, AncestorChainBit::kSameSite,
        AncestorChainBit::kSameSite, true},
       {o1, site1, site1, nonce1, AncestorChainBit::kCrossSite,
        AncestorChainBit::kCrossSite, true},
-      {o1, site1, site2, absl::nullopt, AncestorChainBit::kSameSite,
+      {o1, site1, site2, std::nullopt, AncestorChainBit::kSameSite,
        AncestorChainBit::kCrossSite, true},
-      {o1, site1, site1, absl::nullopt, AncestorChainBit::kSameSite,
+      {o1, site1, site1, std::nullopt, AncestorChainBit::kSameSite,
        AncestorChainBit::kCrossSite, true},
       {o1, site1, site1, nonce1, AncestorChainBit::kCrossSite,
        AncestorChainBit::kCrossSite, true},
-      {opaque, site1, site1, absl::nullopt, AncestorChainBit::kCrossSite,
+      {opaque, site1, site1, std::nullopt, AncestorChainBit::kCrossSite,
        AncestorChainBit::kCrossSite, true},
-      {o1, site1, opaque_site, absl::nullopt, AncestorChainBit::kSameSite,
+      {o1, site1, opaque_site, std::nullopt, AncestorChainBit::kSameSite,
        AncestorChainBit::kCrossSite, true},
-      {o1, opaque_site, opaque_site, absl::nullopt,
-       AncestorChainBit::kCrossSite, AncestorChainBit::kCrossSite, true},
-      {opaque, opaque_site, opaque_site, absl::nullopt,
+      {o1, opaque_site, opaque_site, std::nullopt, AncestorChainBit::kCrossSite,
+       AncestorChainBit::kCrossSite, true},
+      {opaque, opaque_site, opaque_site, std::nullopt,
        AncestorChainBit::kCrossSite, AncestorChainBit::kCrossSite, true},
       // Failing cases:
       // If a 3p key is indicated, the *if_third_party_enabled pieces should
       // match their counterparts.
-      {o1, site2, site3, absl::nullopt, AncestorChainBit::kSameSite,
+      {o1, site2, site3, std::nullopt, AncestorChainBit::kSameSite,
        AncestorChainBit::kSameSite, false},
-      {o1, site1, site1, absl::nullopt, AncestorChainBit::kCrossSite,
+      {o1, site1, site1, std::nullopt, AncestorChainBit::kCrossSite,
        AncestorChainBit::kSameSite, false},
       // If the top_level_site* is cross-site to the origin, the
       // ancestor_chain_bit* must indicate cross-site.
-      {o1, site2, site2, absl::nullopt, AncestorChainBit::kSameSite,
+      {o1, site2, site2, std::nullopt, AncestorChainBit::kSameSite,
        AncestorChainBit::kCrossSite, false},
-      {o1, site1, site2, absl::nullopt, AncestorChainBit::kSameSite,
+      {o1, site1, site2, std::nullopt, AncestorChainBit::kSameSite,
        AncestorChainBit::kSameSite, false},
-      {o1, site2, site2, absl::nullopt, AncestorChainBit::kSameSite,
+      {o1, site2, site2, std::nullopt, AncestorChainBit::kSameSite,
        AncestorChainBit::kSameSite, false},
       // If there is a nonce, all other values must indicate same-site to
       // origin.
@@ -423,16 +423,16 @@ TEST(BlinkStorageKeyTest, FromWireReturnValue) {
        AncestorChainBit::kCrossSite, false},
       // If the top_level_site* is opaque, the ancestor_chain_bit* must be
       // same-site.
-      {o1, site1, opaque_site, absl::nullopt, AncestorChainBit::kCrossSite,
+      {o1, site1, opaque_site, std::nullopt, AncestorChainBit::kCrossSite,
        AncestorChainBit::kSameSite, false},
-      {o1, opaque_site, opaque_site, absl::nullopt, AncestorChainBit::kSameSite,
+      {o1, opaque_site, opaque_site, std::nullopt, AncestorChainBit::kSameSite,
        AncestorChainBit::kSameSite, false},
       // If the origin is opaque, the ancestor_chain_bit* must be cross-site.
-      {opaque, opaque_site, opaque_site, absl::nullopt,
+      {opaque, opaque_site, opaque_site, std::nullopt,
        AncestorChainBit::kSameSite, AncestorChainBit::kSameSite, false},
-      {opaque, opaque_site, opaque_site, absl::nullopt,
+      {opaque, opaque_site, opaque_site, std::nullopt,
        AncestorChainBit::kCrossSite, AncestorChainBit::kSameSite, false},
-      {opaque, opaque_site, opaque_site, absl::nullopt,
+      {opaque, opaque_site, opaque_site, std::nullopt,
        AncestorChainBit::kSameSite, AncestorChainBit::kCrossSite, false},
   };
 
@@ -477,14 +477,14 @@ TEST(BlinkStorageKeyTest, WithOrigin) {
   const struct {
     BlinkStorageKey original_key;
     scoped_refptr<const SecurityOrigin> new_origin;
-    absl::optional<BlinkStorageKey> expected_key;
+    std::optional<BlinkStorageKey> expected_key;
   } kTestCases[] = {
       // No change in first-party key updated with same origin.
       {
           BlinkStorageKey::Create(origin, site,
                                   mojom::AncestorChainBit::kSameSite),
           origin,
-          absl::nullopt,
+          std::nullopt,
       },
       // Change in first-party key updated with new origin.
       {
@@ -499,7 +499,7 @@ TEST(BlinkStorageKeyTest, WithOrigin) {
           BlinkStorageKey::Create(origin, site,
                                   mojom::AncestorChainBit::kCrossSite),
           origin,
-          absl::nullopt,
+          std::nullopt,
       },
       // Change in third-party same-site key updated with same origin.
       {
@@ -514,7 +514,7 @@ TEST(BlinkStorageKeyTest, WithOrigin) {
           BlinkStorageKey::Create(origin, other_site,
                                   mojom::AncestorChainBit::kCrossSite),
           origin,
-          absl::nullopt,
+          std::nullopt,
       },
       // Change in third-party key updated with new origin.
       {
@@ -529,7 +529,7 @@ TEST(BlinkStorageKeyTest, WithOrigin) {
           BlinkStorageKey::Create(origin, opaque_site,
                                   mojom::AncestorChainBit::kCrossSite),
           origin,
-          absl::nullopt,
+          std::nullopt,
       },
       // Change in opaque tls key updated with new origin.
       {
@@ -543,7 +543,7 @@ TEST(BlinkStorageKeyTest, WithOrigin) {
       {
           BlinkStorageKey::CreateWithNonce(origin, nonce),
           origin,
-          absl::nullopt,
+          std::nullopt,
       },
       // Change in nonce key updated with new origin.
       {
@@ -562,7 +562,7 @@ TEST(BlinkStorageKeyTest, WithOrigin) {
   };
 
   for (const auto& test_case : kTestCases) {
-    if (test_case.expected_key == absl::nullopt) {
+    if (test_case.expected_key == std::nullopt) {
       EXPECT_EQ(test_case.original_key,
                 test_case.original_key.WithOrigin(test_case.new_origin));
     } else {

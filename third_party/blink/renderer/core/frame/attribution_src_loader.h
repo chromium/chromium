@@ -7,10 +7,11 @@
 
 #include <stdint.h>
 
+#include <optional>
+
 #include "components/attribution_reporting/registration_eligibility.mojom-blink-forward.h"
 #include "services/network/public/cpp/attribution_reporting_runtime_features.h"
 #include "services/network/public/mojom/attribution.mojom-forward.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/heap/forward.h"
@@ -73,8 +74,8 @@ class CORE_EXPORT AttributionSrcLoader
   // and notifies the browser to begin tracking it.
   //
   // If at least one URL is eligible or `navigation_url` is, returns a
-  // non-`absl::nullopt` `Impression` to live alongside the navigation.
-  [[nodiscard]] absl::optional<Impression> RegisterNavigation(
+  // non-`std::nullopt` `Impression` to live alongside the navigation.
+  [[nodiscard]] std::optional<Impression> RegisterNavigation(
       const KURL& navigation_url,
       const AtomicString& attribution_src,
       HTMLAnchorElement* element,
@@ -82,7 +83,7 @@ class CORE_EXPORT AttributionSrcLoader
 
   // Same as the above, but uses an already-tokenized attribution src for use
   // with `window.open`.
-  [[nodiscard]] absl::optional<Impression> RegisterNavigation(
+  [[nodiscard]] std::optional<Impression> RegisterNavigation(
       const KURL& navigation_url,
       const WebVector<WebString>& attribution_srcs,
       bool has_transient_user_activation);
@@ -96,7 +97,7 @@ class CORE_EXPORT AttributionSrcLoader
   // `log_issues` is true.
   [[nodiscard]] bool CanRegister(const KURL& url,
                                  HTMLElement* element,
-                                 absl::optional<uint64_t> request_id,
+                                 std::optional<uint64_t> request_id,
                                  bool log_issues = true);
 
   void Trace(Visitor* visitor) const;
@@ -111,9 +112,9 @@ class CORE_EXPORT AttributionSrcLoader
   Vector<KURL> ParseAttributionSrc(const AtomicString& attribution_src,
                                    HTMLElement*);
 
-  bool DoRegistration(const Vector<KURL>&, absl::optional<AttributionSrcToken>);
+  bool DoRegistration(const Vector<KURL>&, std::optional<AttributionSrcToken>);
 
-  [[nodiscard]] absl::optional<Impression> RegisterNavigationInternal(
+  [[nodiscard]] std::optional<Impression> RegisterNavigationInternal(
       const KURL& navigation_url,
       Vector<KURL> attribution_src_urls,
       HTMLAnchorElement*,
@@ -121,17 +122,17 @@ class CORE_EXPORT AttributionSrcLoader
 
   // Returns the reporting origin corresponding to `url` if its protocol is in
   // the HTTP family, its origin is potentially trustworthy, and attribution is
-  // allowed. Returns `absl::nullopt` otherwise, and reports a DevTools issue
+  // allowed. Returns `std::nullopt` otherwise, and reports a DevTools issue
   // using `element` and `request_id if `log_issues` is true.
-  absl::optional<attribution_reporting::SuitableOrigin>
+  std::optional<attribution_reporting::SuitableOrigin>
   ReportingOriginForUrlIfValid(const KURL& url,
                                HTMLElement* element,
-                               absl::optional<uint64_t> request_id,
+                               std::optional<uint64_t> request_id,
                                bool log_issues = true);
 
   bool CreateAndSendRequests(Vector<KURL>,
                              HTMLElement*,
-                             absl::optional<AttributionSrcToken>);
+                             std::optional<AttributionSrcToken>);
 
   struct AttributionHeaders;
 

@@ -25,10 +25,10 @@ CustomLayoutConstraints::CustomLayoutConstraints(
 
 CustomLayoutConstraints::~CustomLayoutConstraints() = default;
 
-absl::optional<double> CustomLayoutConstraints::fixedBlockSize() const {
+std::optional<double> CustomLayoutConstraints::fixedBlockSize() const {
   // Check if we've been passed an indefinite block-size.
   if (fixed_block_size_ < 0.0)
-    return absl::nullopt;
+    return std::nullopt;
   return fixed_block_size_;
 }
 

@@ -4,8 +4,9 @@
 
 #include "third_party/blink/renderer/core/timing/performance_observer.h"
 
+#include <optional>
+
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/origin_trials/scoped_test_origin_trial_policy.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
@@ -51,7 +52,7 @@ class PerformanceObserverTest : public testing::Test {
 
   bool IsRegistered() { return observer_->is_registered_; }
   int NumPerformanceEntries() { return observer_->performance_entries_.size(); }
-  void Deliver() { observer_->Deliver(absl::nullopt); }
+  void Deliver() { observer_->Deliver(std::nullopt); }
 
   test::TaskEnvironment task_environment_;
   Persistent<MockPerformance> base_;

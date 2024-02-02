@@ -6,8 +6,8 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_ML_ML_TRACE_H_
 
 #include <memory>
+#include <optional>
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier_base.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
@@ -43,10 +43,10 @@ class MODULES_EXPORT ScopedMLTrace {
 
   // The trace ID.
   //
-  // An 'absl::nullopt' means the trace has been transferred to another
+  // An 'std::nullopt' means the trace has been transferred to another
   // 'ScopedMLTrace' object, and stops 'this''s destruction from ending the
   // trace.
-  absl::optional<uint64_t> id_;
+  std::optional<uint64_t> id_;
   std::unique_ptr<ScopedMLTrace> step_;
 };
 

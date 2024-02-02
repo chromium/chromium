@@ -178,7 +178,7 @@ void FrameQueueUnderlyingSource<NativeFrameType>::Close() {
   auto frame_queue = frame_queue_handle_.Queue();
   if (frame_queue && should_clear_queue && MustUseMonitor()) {
     while (!frame_queue->IsEmpty()) {
-      absl::optional<NativeFrameType> popped_frame = frame_queue->Pop();
+      std::optional<NativeFrameType> popped_frame = frame_queue->Pop();
       base::AutoLock monitor_locker(GetMonitorLock());
       MonitorPopFrameLocked(popped_frame.value());
     }
@@ -208,12 +208,12 @@ void FrameQueueUnderlyingSource<NativeFrameType>::QueueFrame(
   if (MustUseMonitor()) {
     base::AutoLock queue_locker(frame_queue->GetLock());
     base::AutoLock monitor_locker(GetMonitorLock());
-    absl::optional<NativeFrameType> oldest_frame = frame_queue->PeekLocked();
+    std::optional<NativeFrameType> oldest_frame = frame_queue->PeekLocked();
     NewFrameAction action = AnalyzeNewFrameLocked(media_frame, oldest_frame);
     switch (action) {
       case NewFrameAction::kPush: {
         MonitorPushFrameLocked(media_frame);
-        absl::optional<NativeFrameType> replaced_frame =
+        std::optional<NativeFrameType> replaced_frame =
             frame_queue->PushLocked(std::move(media_frame));
         if (replaced_frame.has_value())
           MonitorPopFrameLocked(replaced_frame.value());
@@ -307,7 +307,7 @@ void FrameQueueUnderlyingSource<
       return;
   }
   while (true) {
-    absl::optional<NativeFrameType> media_frame = frame_queue->Pop();
+    std::optional<NativeFrameType> media_frame = frame_queue->Pop();
     if (!media_frame.has_value())
       return;
 
@@ -391,9 +391,9 @@ template <typename NativeFrameType>
 typename FrameQueueUnderlyingSource<NativeFrameType>::NewFrameAction
 FrameQueueUnderlyingSource<NativeFrameType>::AnalyzeNewFrameLocked(
     const NativeFrameType& new_frame,
-    const absl::optional<NativeFrameType>& oldest_frame) {
+    const std::optional<NativeFrameType>& oldest_frame) {
   DCHECK(MustUseMonitor());
-  absl::optional<media::VideoFrame::ID> oldest_frame_id;
+  std::optional<media::VideoFrame::ID> oldest_frame_id;
   if (oldest_frame.has_value())
     oldest_frame_id = GetFrameId(oldest_frame.value());
 

@@ -36,7 +36,7 @@ RealtimeAudioDestinationHandler::Create(
     AudioNode& node,
     const WebAudioSinkDescriptor& sink_descriptor,
     const WebAudioLatencyHint& latency_hint,
-    absl::optional<float> sample_rate) {
+    std::optional<float> sample_rate) {
   return base::AdoptRef(
       new RealtimeAudioDestinationHandler(node, sink_descriptor, latency_hint,
                                           sample_rate));
@@ -46,7 +46,7 @@ RealtimeAudioDestinationHandler::RealtimeAudioDestinationHandler(
     AudioNode& node,
     const WebAudioSinkDescriptor& sink_descriptor,
     const WebAudioLatencyHint& latency_hint,
-    absl::optional<float> sample_rate)
+    std::optional<float> sample_rate)
     : AudioDestinationHandler(node),
       sink_descriptor_(sink_descriptor),
       latency_hint_(latency_hint),

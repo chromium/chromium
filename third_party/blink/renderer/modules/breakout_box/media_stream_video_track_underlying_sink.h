@@ -55,7 +55,7 @@ class MODULES_EXPORT MediaStreamVideoTrackUnderlyingSink
   // not have arrived yet, and initializing the
   // WebGraphicsContext3DVideoFramePool may require a round-trip to the main
   // thread.
-  absl::optional<ScriptPromise> MaybeConvertToNV12GMBVideoFrame(
+  std::optional<ScriptPromise> MaybeConvertToNV12GMBVideoFrame(
       ScriptState* script_state,
       scoped_refptr<media::VideoFrame> video_frame,
       base::TimeTicks estimated_capture_time)

@@ -8,13 +8,13 @@
 
 namespace blink {
 
-absl::optional<double> NumberPropertyFunctions::GetInitialNumber(
+std::optional<double> NumberPropertyFunctions::GetInitialNumber(
     const CSSProperty& property,
     const ComputedStyle& initial_style) {
   return GetNumber(property, initial_style);
 }
 
-absl::optional<double> NumberPropertyFunctions::GetNumber(
+std::optional<double> NumberPropertyFunctions::GetNumber(
     const CSSProperty& property,
     const ComputedStyle& style) {
   switch (property.PropertyID()) {
@@ -44,17 +44,17 @@ absl::optional<double> NumberPropertyFunctions::GetNumber(
       return style.Widows();
     case CSSPropertyID::kColumnCount:
       if (style.HasAutoColumnCount())
-        return absl::optional<double>();
+        return std::optional<double>();
       return style.ColumnCount();
     case CSSPropertyID::kZIndex:
       if (style.HasAutoZIndex())
-        return absl::optional<double>();
+        return std::optional<double>();
       return style.ZIndex();
 
     case CSSPropertyID::kTextSizeAdjust: {
       const TextSizeAdjust& text_size_adjust = style.GetTextSizeAdjust();
       if (text_size_adjust.IsAuto())
-        return absl::optional<double>();
+        return std::optional<double>();
       return text_size_adjust.Multiplier() * 100;
     }
 
@@ -62,22 +62,22 @@ absl::optional<double> NumberPropertyFunctions::GetNumber(
       const Length& length = style.SpecifiedLineHeight();
       // Numbers are represented by percentages.
       if (!length.IsPercent())
-        return absl::optional<double>();
+        return std::optional<double>();
       double value = length.Value();
       // -100% represents the keyword "normal".
       if (value == -100)
-        return absl::optional<double>();
+        return std::optional<double>();
       return value / 100;
     }
 
     case CSSPropertyID::kTabSize: {
       if (!style.GetTabSize().IsSpaces())
-        return absl::nullopt;
+        return std::nullopt;
       return style.GetTabSize().float_value_;
     }
 
     default:
-      return absl::optional<double>();
+      return std::optional<double>();
   }
 }
 

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -30,7 +31,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/messaging/cloneable_message_mojom_traits.h"
 #include "third_party/blink/public/common/shared_storage/shared_storage_utils.h"
 #include "third_party/blink/public/mojom/blob/blob.mojom-blink.h"
@@ -302,7 +302,7 @@ std::unique_ptr<GlobalScopeCreationParams> MakeTestGlobalScopeCreationParams() {
       KURL("https://foo.com"),
       /*script_type=*/mojom::blink::ScriptType::kModule, "SharedStorageWorklet",
       /*user_agent=*/String(),
-      /*ua_metadata=*/absl::optional<UserAgentMetadata>(),
+      /*ua_metadata=*/std::optional<UserAgentMetadata>(),
       /*web_worker_fetch_context=*/nullptr,
       /*outside_content_security_policies=*/
       Vector<network::mojom::blink::ContentSecurityPolicyPtr>(),
@@ -428,7 +428,7 @@ class SharedStorageWorkletTest : public PageTestBase {
 
   Persistent<SharedStorageWorkletMessagingProxy> messaging_proxy_;
 
-  absl::optional<std::u16string> embedder_context_;
+  std::optional<std::u16string> embedder_context_;
   bool private_aggregation_permissions_policy_allowed_ = true;
 
   base::test::TestFuture<void> worklet_terminated_future_;
@@ -3380,8 +3380,8 @@ TEST_F(SharedStoragePrivateAggregationTest,
       register("enable-debug-mode", EnableDebugMode);
   )");
 
-  absl::optional<mojo::ReceiverId> contribute_to_histogram_pipe_id;
-  absl::optional<mojo::ReceiverId> enable_debug_mode_pipe_id;
+  std::optional<mojo::ReceiverId> contribute_to_histogram_pipe_id;
+  std::optional<mojo::ReceiverId> enable_debug_mode_pipe_id;
   base::RunLoop run_loop;
   base::RepeatingClosure closure =
       base::BarrierClosure(2, run_loop.QuitClosure());
@@ -3571,10 +3571,10 @@ TEST_F(SharedStorageWorkletThreadTest, DISABLED_SharedBackingThread) {
 
   // Start and terminate the threads, so that the test can terminate gracefully.
   thread1->Start(MakeTestGlobalScopeCreationParams(),
-                 /*thread_startup_data=*/absl::nullopt,
+                 /*thread_startup_data=*/std::nullopt,
                  std::make_unique<WorkerDevToolsParams>());
   thread2->Start(MakeTestGlobalScopeCreationParams(),
-                 /*thread_startup_data=*/absl::nullopt,
+                 /*thread_startup_data=*/std::nullopt,
                  std::make_unique<WorkerDevToolsParams>());
 
   thread1->TerminateForTesting();

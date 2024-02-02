@@ -117,9 +117,8 @@ namespace {
 
 constexpr const char kCategory[] = "media";
 
-int ComputeMaxActiveEncodes(
-    absl::optional<int> frame_delay = absl::nullopt,
-    absl::optional<int> input_capacity = absl::nullopt) {
+int ComputeMaxActiveEncodes(std::optional<int> frame_delay = std::nullopt,
+                            std::optional<int> input_capacity = std::nullopt) {
   constexpr int kDefaultEncoderFrameDelay = 0;
 
   // The maximum number of input frames above the encoder frame delay that we
@@ -1301,7 +1300,7 @@ void VideoEncoder::CallOutputCallback(
     ParsedConfig* active_config,
     uint32_t reset_count,
     media::VideoEncoderOutput output,
-    absl::optional<media::VideoEncoder::CodecDescription> codec_desc) {
+    std::optional<media::VideoEncoder::CodecDescription> codec_desc) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(active_config);
   if (!script_state_->ContextIsValid() || !output_callback_ ||

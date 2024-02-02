@@ -123,7 +123,7 @@ AlternateSignedExchangeResourceInfo::AlternateSignedExchangeResourceInfo(
 AlternateSignedExchangeResourceInfo::Entry*
 AlternateSignedExchangeResourceInfo::FindMatchingEntry(
     const KURL& url,
-    absl::optional<ResourceType> resource_type,
+    std::optional<ResourceType> resource_type,
     const Vector<String>& languages) const {
   return FindMatchingEntry(
       url,

@@ -8,10 +8,10 @@
 #include <unicode/ubidi.h>
 
 #include <iterator>
+#include <optional>
 
 #include "base/containers/span.h"
 #include "base/dcheck_is_on.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/editing/forward.h"
 #include "third_party/blink/renderer/core/layout/anchor_query.h"
@@ -508,7 +508,7 @@ class CORE_EXPORT PhysicalFragment : public GarbageCollected<PhysicalFragment> {
   // found, the subtree established by |target| will be dumped as well.
   String DumpFragmentTree(DumpFlags,
                           const PhysicalFragment* target = nullptr,
-                          absl::optional<PhysicalOffset> = absl::nullopt,
+                          std::optional<PhysicalOffset> = std::nullopt,
                           unsigned indent = 2) const;
 
   // Dump the fragment tree, starting at |root| (searching inside legacy

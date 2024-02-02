@@ -45,11 +45,11 @@ class PLATFORM_EXPORT AVIFImageDecoder final : public ImageDecoder {
   wtf_size_t DecodedYUVWidthBytes(cc::YUVIndex) const override;
   SkYUVColorSpace GetYUVColorSpace() const override;
   uint8_t GetYUVBitDepth() const override;
-  absl::optional<gfx::HDRMetadata> GetHDRMetadata() const override;
+  std::optional<gfx::HDRMetadata> GetHDRMetadata() const override;
   void DecodeToYUV() override;
   int RepetitionCount() const override;
   bool FrameIsReceivedAtIndex(wtf_size_t) const override;
-  absl::optional<base::TimeDelta> FrameTimestampAtIndex(
+  std::optional<base::TimeDelta> FrameTimestampAtIndex(
       wtf_size_t) const override;
   base::TimeDelta FrameDurationAtIndex(wtf_size_t) const override;
   bool ImageHasBothStillAndAnimatedSubImages() const override;
@@ -138,7 +138,7 @@ class PLATFORM_EXPORT AVIFImageDecoder final : public ImageDecoder {
   bool decode_to_half_float_ = false;
   uint8_t chroma_shift_x_ = 0;
   uint8_t chroma_shift_y_ = 0;
-  absl::optional<gfx::HDRMetadata> hdr_metadata_;
+  std::optional<gfx::HDRMetadata> hdr_metadata_;
   bool progressive_ = false;
   // Number of displayed rows for a non-progressive still image.
   int incrementally_displayed_height_ = 0;
@@ -149,7 +149,7 @@ class PLATFORM_EXPORT AVIFImageDecoder final : public ImageDecoder {
   // Used to call UpdateBppHistogram<"Avif">() at most once to record the
   // bits-per-pixel value of the image when the image is successfully decoded.
   base::OnceCallback<void(gfx::Size, size_t)> update_bpp_histogram_callback_;
-  absl::optional<AVIFCleanApertureType> clap_type_;
+  std::optional<AVIFCleanApertureType> clap_type_;
   // Whether the 'clap' (clean aperture) property should be ignored, e.g.
   // because the 'clap' property is invalid or unsupported.
   bool ignore_clap_ = false;

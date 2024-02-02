@@ -631,7 +631,7 @@ bool V8ScriptValueSerializerForModules::WriteMediaStreamTrack(
                                       message);
     return false;
   }
-  absl::optional<const MediaStreamDevice> device = track->device();
+  std::optional<const MediaStreamDevice> device = track->device();
   // TODO(crbug.com/1352414): Replace this UnguessableToken with a mojo
   // interface.
   auto transfer_id = base::UnguessableToken::Create();

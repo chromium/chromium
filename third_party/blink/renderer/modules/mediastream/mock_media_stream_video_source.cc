@@ -96,10 +96,10 @@ void MockMediaStreamVideoSource::StartSourceImpl(
 
 void MockMediaStreamVideoSource::StopSourceImpl() {}
 
-absl::optional<media::VideoCaptureFormat>
+std::optional<media::VideoCaptureFormat>
 MockMediaStreamVideoSource::GetCurrentFormat() const {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  return absl::optional<media::VideoCaptureFormat>(format_);
+  return std::optional<media::VideoCaptureFormat>(format_);
 }
 
 void MockMediaStreamVideoSource::DeliverVideoFrame(

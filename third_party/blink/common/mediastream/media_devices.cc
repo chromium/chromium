@@ -20,7 +20,7 @@ WebMediaDeviceInfo::WebMediaDeviceInfo(
     const std::string& group_id,
     const media::VideoCaptureControlSupport& video_control_support,
     blink::mojom::FacingMode video_facing,
-    absl::optional<media::CameraAvailability> availability)
+    std::optional<media::CameraAvailability> availability)
     : device_id(device_id),
       label(label),
       group_id(group_id),

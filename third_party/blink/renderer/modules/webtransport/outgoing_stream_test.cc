@@ -406,7 +406,7 @@ TEST(OutgoingStreamTest, AbortWithWebTransportError) {
 
   v8::Local<v8::Value> error =
       WebTransportError::Create(isolate,
-                                /*stream_error_code=*/absl::nullopt, "foobar",
+                                /*stream_error_code=*/std::nullopt, "foobar",
                                 WebTransportError::Source::kStream);
 
   auto* writer =

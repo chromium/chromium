@@ -385,14 +385,14 @@ TEST_P(ImagePaintTimingDetectorTest, LargestImagePaint_TraceEvent_Candidate) {
   EXPECT_GT(arg_dict.FindInt("DOMNodeId").value_or(-1), 0);
   EXPECT_GT(arg_dict.FindInt("size").value_or(-1), 0);
   EXPECT_EQ(arg_dict.FindInt("candidateIndex").value_or(-1), 1);
-  absl::optional<bool> isMainFrame = arg_dict.FindBool("isMainFrame");
+  std::optional<bool> isMainFrame = arg_dict.FindBool("isMainFrame");
   EXPECT_TRUE(isMainFrame.has_value());
   EXPECT_EQ(true, isMainFrame.value());
-  absl::optional<bool> is_outermost_main_frame =
+  std::optional<bool> is_outermost_main_frame =
       arg_dict.FindBool("isOutermostMainFrame");
   EXPECT_TRUE(is_outermost_main_frame.has_value());
   EXPECT_EQ(true, is_outermost_main_frame.value());
-  absl::optional<bool> is_embedded_frame = arg_dict.FindBool("isEmbeddedFrame");
+  std::optional<bool> is_embedded_frame = arg_dict.FindBool("isEmbeddedFrame");
   EXPECT_TRUE(is_embedded_frame.has_value());
   EXPECT_EQ(false, is_embedded_frame.value());
   EXPECT_EQ(arg_dict.FindInt("frame_x").value_or(-1), 8);
@@ -438,14 +438,14 @@ TEST_P(ImagePaintTimingDetectorTest,
   EXPECT_GT(arg_dict.FindInt("DOMNodeId").value_or(-1), 0);
   EXPECT_GT(arg_dict.FindInt("size").value_or(-1), 0);
   EXPECT_EQ(arg_dict.FindInt("candidateIndex").value_or(-1), 1);
-  absl::optional<bool> isMainFrame = arg_dict.FindBool("isMainFrame");
+  std::optional<bool> isMainFrame = arg_dict.FindBool("isMainFrame");
   EXPECT_TRUE(isMainFrame.has_value());
   EXPECT_EQ(false, isMainFrame.value());
-  absl::optional<bool> is_outermost_main_frame =
+  std::optional<bool> is_outermost_main_frame =
       arg_dict.FindBool("isOutermostMainFrame");
   EXPECT_TRUE(is_outermost_main_frame.has_value());
   EXPECT_EQ(false, is_outermost_main_frame.value());
-  absl::optional<bool> is_embedded_frame = arg_dict.FindBool("isEmbeddedFrame");
+  std::optional<bool> is_embedded_frame = arg_dict.FindBool("isEmbeddedFrame");
   EXPECT_TRUE(is_embedded_frame.has_value());
   EXPECT_EQ(false, is_embedded_frame.value());
   EXPECT_EQ(arg_dict.FindInt("frame_x").value_or(-1), 10);

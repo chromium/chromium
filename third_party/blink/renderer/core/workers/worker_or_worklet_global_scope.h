@@ -204,7 +204,7 @@ class CORE_EXPORT WorkerOrWorkletGlobalScope
                                    SourceLocation* location);
 
   // Called when BestEffortServiceWorker(crbug.com/1420517) is enabled.
-  virtual absl::optional<
+  virtual std::optional<
       mojo::PendingRemote<network::mojom::blink::URLLoaderFactory>>
   FindRaceNetworkRequestURLLoaderFactory(
       const base::UnguessableToken& token) = 0;

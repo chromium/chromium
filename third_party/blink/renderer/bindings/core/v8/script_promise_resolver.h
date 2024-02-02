@@ -428,7 +428,7 @@ class CORE_EXPORT ScriptPromiseResolver
 
   // Nullable
   template <typename InnerType>
-  static v8::Local<v8::Value> ToV8(const absl::optional<InnerType>& value,
+  static v8::Local<v8::Value> ToV8(const std::optional<InnerType>& value,
                                    v8::Local<v8::Object> creation_context,
                                    v8::Isolate* isolate) {
     if (!value) {

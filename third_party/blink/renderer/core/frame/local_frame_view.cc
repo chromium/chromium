@@ -809,7 +809,7 @@ void LocalFrameView::UpdateLayout() {
 
   Lifecycle().EnsureStateAtMost(DocumentLifecycle::kStyleClean);
 
-  absl::optional<RuntimeCallTimerScope> rcs_scope;
+  std::optional<RuntimeCallTimerScope> rcs_scope;
   probe::UpdateLayout probe(frame_->GetDocument());
   HeapVector<LayoutObjectWithDepth> layout_roots;
 
@@ -1006,7 +1006,7 @@ void LocalFrameView::RunIntersectionObserverSteps() {
 
   // Populating monotonic_time may be expensive, and may be unnecessary, so
   // allow it to be populated on demand.
-  absl::optional<base::TimeTicks> monotonic_time;
+  std::optional<base::TimeTicks> monotonic_time;
   bool needs_occlusion_tracking =
       UpdateViewportIntersectionsForSubtree(0, monotonic_time);
   if (FrameOwner* owner = frame_->Owner())
@@ -1024,7 +1024,7 @@ void LocalFrameView::ForceUpdateViewportIntersections() {
   DisallowThrottlingScope disallow_throttling(*this);
   UpdateLifecycleToPrePaintClean(
       DocumentUpdateReason::kIntersectionObservation);
-  absl::optional<base::TimeTicks> monotonic_time;
+  std::optional<base::TimeTicks> monotonic_time;
   UpdateViewportIntersectionsForSubtree(
       IntersectionObservation::kImplicitRootObserversNeedUpdate |
           IntersectionObservation::kIgnoreDelay,
@@ -1351,7 +1351,7 @@ bool LocalFrameView::RunPostLayoutIntersectionObserverSteps() {
   DCHECK(frame_->IsLocalRoot());
   DCHECK(Lifecycle().GetState() >= DocumentLifecycle::kPrePaintClean);
 
-  absl::optional<base::TimeTicks> monotonic_time;
+  std::optional<base::TimeTicks> monotonic_time;
   ComputePostLayoutIntersections(0, monotonic_time);
 
   bool needs_more_lifecycle_steps = false;
@@ -1375,7 +1375,7 @@ bool LocalFrameView::RunPostLayoutIntersectionObserverSteps() {
 
 void LocalFrameView::ComputePostLayoutIntersections(
     unsigned parent_flags,
-    absl::optional<base::TimeTicks>& monotonic_time) {
+    std::optional<base::TimeTicks>& monotonic_time) {
   if (ShouldThrottleRendering())
     return;
 
@@ -2153,7 +2153,7 @@ bool LocalFrameView::UpdateLifecyclePhases(
     }
   }
 
-  absl::optional<base::AutoReset<bool>> force_debug_info;
+  std::optional<base::AutoReset<bool>> force_debug_info;
   if (reason == DocumentUpdateReason::kTest)
     force_debug_info.emplace(&paint_debug_info_enabled_, true);
 
@@ -2409,8 +2409,8 @@ bool LocalFrameView::RunResizeObserverSteps(
 
   for (auto& element : disconnected_elements_with_remembered_size_) {
     if (!element->isConnected()) {
-      element->SetLastRememberedBlockSize(absl::nullopt);
-      element->SetLastRememberedInlineSize(absl::nullopt);
+      element->SetLastRememberedBlockSize(std::nullopt);
+      element->SetLastRememberedInlineSize(std::nullopt);
     }
   }
   disconnected_elements_with_remembered_size_.clear();
@@ -2776,7 +2776,7 @@ bool LocalFrameView::PaintTree(PaintBenchmarkMode benchmark_mode) {
 
   DCHECK(GetFrame().IsLocalRoot());
 
-  absl::optional<MobileFriendlinessChecker::PaintScope> mf_scope;
+  std::optional<MobileFriendlinessChecker::PaintScope> mf_scope;
   if (mobile_friendliness_checker_)
     mf_scope.emplace(*mobile_friendliness_checker_);
 
@@ -3862,7 +3862,7 @@ PaintController& LocalFrameView::EnsurePaintController() {
 bool LocalFrameView::CapturePaintPreview(
     GraphicsContext& context,
     const gfx::Vector2d& paint_offset) const {
-  absl::optional<base::UnguessableToken> maybe_embedding_token =
+  std::optional<base::UnguessableToken> maybe_embedding_token =
       GetFrame().GetEmbeddingToken();
 
   // Avoid crashing if a local frame doesn't have an embedding token.
@@ -3896,7 +3896,7 @@ void LocalFrameView::Paint(GraphicsContext& context,
                            const CullRect& cull_rect,
                            const gfx::Vector2d& paint_offset) const {
   const auto* owner_layout_object = GetFrame().OwnerLayoutObject();
-  absl::optional<Document::PaintPreviewScope> paint_preview;
+  std::optional<Document::PaintPreviewScope> paint_preview;
   if (owner_layout_object &&
       owner_layout_object->GetDocument().GetPaintPreviewState() !=
           Document::kNotPaintingPreview) {
@@ -4161,7 +4161,7 @@ void LocalFrameView::CollectAnnotatedRegions(
 
 bool LocalFrameView::UpdateViewportIntersectionsForSubtree(
     unsigned parent_flags,
-    absl::optional<base::TimeTicks>& monotonic_time) {
+    std::optional<base::TimeTicks>& monotonic_time) {
   // TODO(dcheng): Since LocalFrameView tree updates are deferred, FrameViews
   // might still be in the LocalFrameView hierarchy even though the associated
   // Document is already detached. Investigate if this check and a similar check

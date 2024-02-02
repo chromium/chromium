@@ -622,10 +622,10 @@ class CORE_EXPORT LocalFrame final
   // stack.
   bool IsAdScriptInStack() const;
 
-  // The evidence for or against a frame being an ad. `absl::nullopt` if not yet
+  // The evidence for or against a frame being an ad. `std::nullopt` if not yet
   // set or if the frame is a subfiltering root frame (outermost main frame or
   // portal) as only child frames can be tagged as ads.
-  const absl::optional<blink::FrameAdEvidence>& AdEvidence() const {
+  const std::optional<blink::FrameAdEvidence>& AdEvidence() const {
     return ad_evidence_;
   }
 
@@ -758,7 +758,7 @@ class CORE_EXPORT LocalFrame final
   void SaveImageAt(const gfx::Point& window_point);
   void AdvanceFocusForIME(mojom::blink::FocusType focus_type);
   void PostMessageEvent(
-      const absl::optional<RemoteFrameToken>& source_frame_token,
+      const std::optional<RemoteFrameToken>& source_frame_token,
       const String& source_origin,
       const String& target_origin,
       BlinkTransferableMessage message);
@@ -861,7 +861,7 @@ class CORE_EXPORT LocalFrame final
   void SetBackgroundColorPaintImageGeneratorForTesting(
       BackgroundColorPaintImageGenerator* generator);
 
-  absl::optional<SkColor> GetFrameOverlayColorForTesting() const;
+  std::optional<SkColor> GetFrameOverlayColorForTesting() const;
 
   // Returns a PendingRemote resolved via this frame's BrowserInterfaceBroker
   // for use when creating the PublicUrlManager instance in threaded worklets.
@@ -1079,7 +1079,7 @@ class CORE_EXPORT LocalFrame final
 
   Member<FrameOverlay> frame_color_overlay_;
 
-  absl::optional<base::UnguessableToken> embedding_token_;
+  std::optional<base::UnguessableToken> embedding_token_;
 
   std::unique_ptr<WebPrescientNetworking> prescient_networking_;
 
@@ -1136,7 +1136,7 @@ class CORE_EXPORT LocalFrame final
       window_controls_overlay_changed_delegate_;
 #endif
 
-  // The evidence for or against a frame being an ad frame. `absl::nullopt` if
+  // The evidence for or against a frame being an ad frame. `std::nullopt` if
   // not yet set or if the frame is a subfiltering root frame. (Only non-root
   // frames can be tagged as ad frames.) This is per-frame (as opposed to
   // per-document) as we want to decide whether a frame is an ad or not before
@@ -1145,7 +1145,7 @@ class CORE_EXPORT LocalFrame final
   // This is constructed directly in the renderer in the case of an initial
   // synchronous commit and otherwise is signaled from the browser process at
   // ready-to-commit time.
-  absl::optional<blink::FrameAdEvidence> ad_evidence_;
+  std::optional<blink::FrameAdEvidence> ad_evidence_;
 
   Member<LCPCriticalPathPredictor> lcpp_;
 
@@ -1158,7 +1158,7 @@ class CORE_EXPORT LocalFrame final
 
   // The identifier of the ad script at the time of frame creation. Kept to
   // defer instrumentation probe call till the frame is committed.
-  absl::optional<AdScriptIdentifier> ad_script_from_frame_creation_stack_;
+  std::optional<AdScriptIdentifier> ad_script_from_frame_creation_stack_;
 
   bool evict_cached_session_storage_on_freeze_or_unload_ = false;
 

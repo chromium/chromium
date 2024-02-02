@@ -6,10 +6,10 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_PEERCONNECTION_RESOLUTION_MONITOR_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/sequence_checker.h"
 #include "media/base/video_codecs.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -29,7 +29,7 @@ class PLATFORM_EXPORT ResolutionMonitor {
 
   static std::unique_ptr<ResolutionMonitor> Create(media::VideoCodec codec);
 
-  virtual absl::optional<gfx::Size> GetResolution(
+  virtual std::optional<gfx::Size> GetResolution(
       const media::DecoderBuffer& buffer) = 0;
   virtual media::VideoCodec codec() const = 0;
 };

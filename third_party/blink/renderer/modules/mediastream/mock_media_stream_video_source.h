@@ -42,7 +42,7 @@ class MockMediaStreamVideoSource : public blink::MediaStreamVideoSource {
           const base::Token&,
           uint32_t,
           base::OnceCallback<void(media::mojom::ApplySubCaptureTargetResult)>));
-  MOCK_METHOD0(GetNextSubCaptureTargetVersion, absl::optional<uint32_t>());
+  MOCK_METHOD0(GetNextSubCaptureTargetVersion, std::optional<uint32_t>());
   MOCK_METHOD(uint32_t, GetSubCaptureTargetVersion, (), (const, override));
 
   // Simulate that the underlying source start successfully.
@@ -95,7 +95,7 @@ class MockMediaStreamVideoSource : public blink::MediaStreamVideoSource {
 
   MOCK_METHOD(void,
               GetZoomLevel,
-              (base::OnceCallback<void(absl::optional<int>, const String&)>),
+              (base::OnceCallback<void(std::optional<int>, const String&)>),
               (override));
 
   MOCK_METHOD(void,
@@ -130,7 +130,7 @@ class MockMediaStreamVideoSource : public blink::MediaStreamVideoSource {
       VideoCaptureSubCaptureTargetVersionCB sub_capture_target_version_callback,
       VideoCaptureNotifyFrameDroppedCB frame_dropped_callback) override;
   void StopSourceImpl() override;
-  absl::optional<media::VideoCaptureFormat> GetCurrentFormat() const override;
+  std::optional<media::VideoCaptureFormat> GetCurrentFormat() const override;
   void StopSourceForRestartImpl() override;
   void RestartSourceImpl(const media::VideoCaptureFormat& new_format) override;
 

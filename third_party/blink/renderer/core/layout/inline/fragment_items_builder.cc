@@ -311,7 +311,7 @@ FragmentItemsBuilder::AddPreviousItems(const PhysicalBoxFragment& container,
         // |RebuildFragmentTreeSpine| does not rebuild spine if |NeedsLayout|.
         // Such block needs to copy PostLayout fragment while running simplified
         // layout.
-        absl::optional<PhysicalBoxFragment::AllowPostLayoutScope>
+        std::optional<PhysicalBoxFragment::AllowPostLayoutScope>
             allow_post_layout;
         if (line_child.IsRelayoutBoundary())
           allow_post_layout.emplace();
@@ -411,12 +411,12 @@ void FragmentItemsBuilder::MoveChildrenInBlockDirection(LayoutUnit delta) {
   }
 }
 
-absl::optional<PhysicalSize> FragmentItemsBuilder::ToFragmentItems(
+std::optional<PhysicalSize> FragmentItemsBuilder::ToFragmentItems(
     const PhysicalSize& outer_size,
     void* data) {
   DCHECK(text_content_);
   ConvertToPhysical(outer_size);
-  absl::optional<PhysicalSize> new_size;
+  std::optional<PhysicalSize> new_size;
   if (node_.IsSvgText()) {
     new_size = SvgTextLayoutAlgorithm(node_, GetWritingMode())
                    .Layout(TextContent(false), items_);

@@ -145,7 +145,7 @@ class MODULES_EXPORT OffscreenCanvasRenderingContext2D final
     return identifiability_study_helper_.encountered_partially_digested_image();
   }
 
-  absl::optional<cc::PaintRecord> FlushCanvas(FlushReason) override;
+  std::optional<cc::PaintRecord> FlushCanvas(FlushReason) override;
 
   int LayerCount() const override;
 

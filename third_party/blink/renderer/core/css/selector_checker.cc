@@ -1787,7 +1787,7 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
         // When the dialog is transitioning to closed, we have to check the
         // elements which are in the top layer but are pending removal to see if
         // this element used to be open as a dialog.
-        absl::optional<Document::TopLayerReason> top_layer_reason =
+        std::optional<Document::TopLayerReason> top_layer_reason =
             dialog->GetDocument().IsScheduledForTopLayerRemoval(dialog);
         return top_layer_reason &&
                *top_layer_reason == Document::TopLayerReason::kDialog;
@@ -1806,7 +1806,7 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
         // When the popover is transitioning to closed, popoverOpen won't return
         // true and we have to check the elements which are in the top layer but
         // are pending removal to see if this element used to be popoverOpen.
-        absl::optional<Document::TopLayerReason> top_layer_reason =
+        std::optional<Document::TopLayerReason> top_layer_reason =
             html_element->GetDocument().IsScheduledForTopLayerRemoval(
                 html_element);
         return top_layer_reason &&

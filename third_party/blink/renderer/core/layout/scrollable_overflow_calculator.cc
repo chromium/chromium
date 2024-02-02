@@ -105,7 +105,7 @@ ScrollableOverflowCalculator::ScrollableOverflowCalculator(
 }
 
 const PhysicalRect ScrollableOverflowCalculator::Result(
-    const absl::optional<PhysicalRect> inflow_bounds) {
+    const std::optional<PhysicalRect> inflow_bounds) {
   if (!inflow_bounds || !is_scroll_container_)
     return scrollable_overflow_;
 
@@ -279,7 +279,7 @@ PhysicalRect ScrollableOverflowCalculator::ScrollableOverflowForPropagation(
   }
 
   // Apply any transforms to the overflow.
-  if (absl::optional<gfx::Transform> transform =
+  if (std::optional<gfx::Transform> transform =
           node_.GetTransformForChildFragment(child_fragment, size_)) {
     overflow =
         PhysicalRect::EnclosingRect(transform->MapRect(gfx::RectF(overflow)));

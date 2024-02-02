@@ -4,13 +4,14 @@
 
 #include "third_party/blink/renderer/platform/peerconnection/webrtc_video_track_source.h"
 
+#include <optional>
+
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/trace_event/trace_event.h"
 #include "base/types/optional_util.h"
 #include "media/base/media_switches.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/platform/webrtc/convert_to_webrtc_video_frame_buffer.h"
 #include "third_party/blink/renderer/platform/webrtc/webrtc_video_utils.h"
@@ -92,7 +93,7 @@ namespace blink {
 
 WebRtcVideoTrackSource::WebRtcVideoTrackSource(
     bool is_screencast,
-    absl::optional<bool> needs_denoising,
+    std::optional<bool> needs_denoising,
     media::VideoCaptureFeedbackCB feedback_callback,
     base::RepeatingClosure request_refresh_frame_callback,
     media::GpuVideoAcceleratorFactories* gpu_factories)
@@ -132,7 +133,7 @@ bool WebRtcVideoTrackSource::is_screencast() const {
   return is_screencast_;
 }
 
-absl::optional<bool> WebRtcVideoTrackSource::needs_denoising() const {
+std::optional<bool> WebRtcVideoTrackSource::needs_denoising() const {
   return needs_denoising_;
 }
 
@@ -172,8 +173,8 @@ void WebRtcVideoTrackSource::OnFrameCaptured(
   // rtc::AdaptedVideoTrackSource::OnFrame(). This region is going to be
   // relative to the coded frame data, i.e.
   // [0, 0, frame->coded_size().width(), frame->coded_size().height()].
-  absl::optional<int> capture_counter = frame->metadata().capture_counter;
-  absl::optional<gfx::Rect> update_rect = frame->metadata().capture_update_rect;
+  std::optional<int> capture_counter = frame->metadata().capture_counter;
+  std::optional<gfx::Rect> update_rect = frame->metadata().capture_update_rect;
 
   const bool has_valid_update_rect =
       update_rect.has_value() && capture_counter.has_value() &&
@@ -189,7 +190,7 @@ void WebRtcVideoTrackSource::OnFrameCaptured(
       accumulated_update_rect_->Union(*update_rect);
     }
   } else {
-    accumulated_update_rect_ = absl::nullopt;
+    accumulated_update_rect_ = std::nullopt;
   }
 
   if (accumulated_update_rect_) {
@@ -223,7 +224,7 @@ void WebRtcVideoTrackSource::OnFrameCaptured(
     timestamp_us = frame->metadata().capture_begin_time->ToInternalValue();
   }
 
-  absl::optional<webrtc::Timestamp> capture_time_identifier;
+  std::optional<webrtc::Timestamp> capture_time_identifier;
   // Set |capture_time_identifier| only when frame->timestamp() is a valid
   // value (infinite values are invalid).
   if (!frame->timestamp().is_inf()) {
@@ -231,10 +232,10 @@ void WebRtcVideoTrackSource::OnFrameCaptured(
         webrtc::Timestamp::Micros(frame->timestamp().InMicroseconds());
   }
 
-  absl::optional<base::TimeTicks> reference_time_media =
+  std::optional<base::TimeTicks> reference_time_media =
       frame->metadata().reference_time;
 
-  absl::optional<webrtc::Timestamp> reference_time;
+  std::optional<webrtc::Timestamp> reference_time;
   if (reference_time_media.has_value()) {
     reference_time = webrtc::Timestamp::Micros(
         (*reference_time_media - base::TimeTicks()).InMicroseconds());
@@ -321,8 +322,8 @@ void WebRtcVideoTrackSource::DeliverFrame(
     scoped_refptr<media::VideoFrame> frame,
     gfx::Rect* update_rect,
     int64_t timestamp_us,
-    absl::optional<webrtc::Timestamp> capture_time_identifier,
-    absl::optional<webrtc::Timestamp> reference_time) {
+    std::optional<webrtc::Timestamp> capture_time_identifier,
+    std::optional<webrtc::Timestamp> reference_time) {
   if (update_rect) {
     DVLOG(3) << "update_rect = "
              << "[" << update_rect->x() << ", " << update_rect->y() << ", "

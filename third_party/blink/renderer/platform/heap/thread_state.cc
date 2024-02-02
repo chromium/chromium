@@ -218,8 +218,8 @@ class CustomSpaceStatisticsReceiverImpl final
   base::OnceCallback<void(size_t allocated_node_bytes,
                           size_t allocated_css_bytes)>
       callback_;
-  absl::optional<size_t> node_bytes_;
-  absl::optional<size_t> css_bytes_;
+  std::optional<size_t> node_bytes_;
+  std::optional<size_t> css_bytes_;
 };
 
 }  // anonymous namespace

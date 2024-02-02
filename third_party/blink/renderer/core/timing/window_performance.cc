@@ -31,10 +31,11 @@
 
 #include "third_party/blink/renderer/core/timing/window_performance.h"
 
+#include <optional>
+
 #include "base/trace_event/common/trace_event_common.h"
 #include "base/trace_event/trace_event.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/frame/frame_owner_element_type.h"
 #include "third_party/blink/public/platform/platform.h"
@@ -430,11 +431,11 @@ void WindowPerformance::RegisterEventTiming(const Event& event,
       event_target ? event_target->ToNode() : nullptr,
       DomWindow());  // TODO(haoliuk): Add WPT for Event Timing.
                      // See crbug.com/1320878.
-  absl::optional<PointerId> pointer_id;
+  std::optional<PointerId> pointer_id;
   if (pointer_event) {
     pointer_id = pointer_event->pointerId();
   }
-  absl::optional<int> key_code;
+  std::optional<int> key_code;
   if (event.IsKeyboardEvent()) {
     key_code = DynamicTo<KeyboardEvent>(event)->keyCode();
   }
@@ -507,8 +508,8 @@ void WindowPerformance::ReportEvent(InteractiveDetector* interactive_detector,
                                     base::TimeTicks presentation_timestamp) {
   PerformanceEventTiming* entry = event_data->GetEventTiming();
   base::TimeTicks event_timestamp = event_data->GetEventTimestamp();
-  absl::optional<int> key_code = event_data->GetKeyCode();
-  absl::optional<PointerId> pointer_id = event_data->GetPointerId();
+  std::optional<int> key_code = event_data->GetKeyCode();
+  std::optional<PointerId> pointer_id = event_data->GetPointerId();
 
   const bool is_artificial_pointerup_or_click =
       (entry->name() == event_type_names::kPointerup ||
@@ -634,8 +635,8 @@ void WindowPerformance::NotifyAndAddEventTimingBuffer(
 
 bool WindowPerformance::SetInteractionIdAndRecordLatency(
     PerformanceEventTiming* entry,
-    absl::optional<int> key_code,
-    absl::optional<PointerId> pointer_id,
+    std::optional<int> key_code,
+    std::optional<PointerId> pointer_id,
     ResponsivenessMetrics::EventTimestamps event_timestamps) {
   if (!IsEventTypeForInteractionId(entry->name()))
     return true;

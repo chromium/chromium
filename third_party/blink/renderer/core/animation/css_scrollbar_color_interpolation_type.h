@@ -38,7 +38,7 @@ class CORE_EXPORT CSSScrollbarColorInterpolationType
 
  private:
   InterpolableScrollbarColor* CreateScrollbarColorValue(
-      absl::optional<StyleScrollbarColor>) const;
+      std::optional<StyleScrollbarColor>) const;
   InterpolationValue MaybeConvertNeutral(const InterpolationValue& underlying,
                                          ConversionCheckers&) const final;
   InterpolationValue MaybeConvertInitial(const StyleResolverState&,

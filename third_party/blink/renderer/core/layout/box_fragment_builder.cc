@@ -44,7 +44,7 @@ const LayoutResult& BoxFragmentBuilder::LayoutResultForPropagation(
 }
 
 void BoxFragmentBuilder::AddBreakBeforeChild(LayoutInputNode child,
-                                             absl::optional<BreakAppeal> appeal,
+                                             std::optional<BreakAppeal> appeal,
                                              bool is_forced_break) {
   // If there's a pre-set break token, we shouldn't be here.
   DCHECK(!break_token_);
@@ -103,8 +103,8 @@ void BoxFragmentBuilder::AddBreakBeforeChild(LayoutInputNode child,
 void BoxFragmentBuilder::AddResult(
     const LayoutResult& child_layout_result,
     const LogicalOffset offset,
-    absl::optional<const BoxStrut> margins,
-    absl::optional<LogicalOffset> relative_offset,
+    std::optional<const BoxStrut> margins,
+    std::optional<LogicalOffset> relative_offset,
     const OofInlineContainer<LogicalOffset>* inline_container) {
   const auto& fragment = child_layout_result.GetPhysicalFragment();
 
@@ -157,7 +157,7 @@ void BoxFragmentBuilder::AddResult(
 
 void BoxFragmentBuilder::AddResult(const LayoutResult& child_layout_result,
                                    const LogicalOffset offset) {
-  AddResult(child_layout_result, offset, absl::nullopt, absl::nullopt, nullptr);
+  AddResult(child_layout_result, offset, std::nullopt, std::nullopt, nullptr);
 }
 
 void BoxFragmentBuilder::AddChild(
@@ -165,7 +165,7 @@ void BoxFragmentBuilder::AddChild(
     const LogicalOffset& child_offset,
     const MarginStrut* margin_strut,
     bool is_self_collapsing,
-    absl::optional<LogicalOffset> relative_offset,
+    std::optional<LogicalOffset> relative_offset,
     const OofInlineContainer<LogicalOffset>* inline_container) {
 #if DCHECK_IS_ON()
   needs_inflow_bounds_explicitly_set_ = !!relative_offset;

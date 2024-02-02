@@ -5,8 +5,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_NAVIGATION_API_NAVIGATE_EVENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_NAVIGATION_API_NAVIGATE_EVENT_H_
 
+#include <optional>
+
 #include "base/time/time.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/web/web_frame_load_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialized_script_value.h"
@@ -119,9 +120,9 @@ class NavigateEvent final : public Event,
   ScriptValue info_;
   bool has_ua_visual_transition_ = false;
   Member<Element> source_element_;
-  absl::optional<V8NavigationFocusReset> focus_reset_behavior_ = absl::nullopt;
-  absl::optional<V8NavigationScrollBehavior> scroll_behavior_ = absl::nullopt;
-  absl::optional<V8NavigationCommitBehavior> commit_behavior_ = absl::nullopt;
+  std::optional<V8NavigationFocusReset> focus_reset_behavior_ = std::nullopt;
+  std::optional<V8NavigationScrollBehavior> scroll_behavior_ = std::nullopt;
+  std::optional<V8NavigationCommitBehavior> commit_behavior_ = std::nullopt;
 
   Member<NavigateEventDispatchParams> dispatch_params_;
 

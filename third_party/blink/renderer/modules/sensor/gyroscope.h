@@ -21,9 +21,9 @@ class Gyroscope final : public Sensor {
 
   Gyroscope(ExecutionContext*, const SpatialSensorOptions*, ExceptionState&);
 
-  absl::optional<double> x() const;
-  absl::optional<double> y() const;
-  absl::optional<double> z() const;
+  std::optional<double> x() const;
+  std::optional<double> y() const;
+  std::optional<double> z() const;
 
   void Trace(Visitor*) const override;
 };

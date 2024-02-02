@@ -5,9 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_ANCHOR_QUERY_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_ANCHOR_QUERY_H_
 
-#include "third_party/blink/renderer/core/core_export.h"
+#include <optional>
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_anchor_query_enums.h"
@@ -233,7 +232,7 @@ class CORE_EXPORT LogicalAnchorQuery
 
   // Evaluate the |anchor_value| for the given reference. Returns |nullopt| if
   // the query is invalid (due to wrong axis).
-  absl::optional<LayoutUnit> EvaluateAnchor(
+  std::optional<LayoutUnit> EvaluateAnchor(
       const LogicalAnchorReference& reference,
       CSSAnchorValue anchor_value,
       float percentage,
@@ -316,16 +315,16 @@ class CORE_EXPORT AnchorEvaluatorImpl : public Length::AnchorEvaluator {
 
   // Evaluates the given anchor query. Returns nullopt if the query invalid
   // (e.g., no target or wrong axis).
-  absl::optional<LayoutUnit> Evaluate(
+  std::optional<LayoutUnit> Evaluate(
       const CalculationExpressionNode&) const override;
 
   // Finds the rect of the element referenced by the `position-fallback-bounds`
   // property, or nullopt if there's no such element.
-  absl::optional<LogicalRect> GetAdditionalFallbackBoundsRect() const;
+  std::optional<LogicalRect> GetAdditionalFallbackBoundsRect() const;
 
   // Returns the offset `anchor-center` aligns to in the current physical axis,
   // or nullopt if there's no default anchor.
-  absl::optional<LayoutUnit> GetPhysicalAnchorCenterOffset(bool is_y_axis);
+  std::optional<LayoutUnit> GetPhysicalAnchorCenterOffset(bool is_y_axis);
 
   bool HasDefaultAnchor() const { return DefaultAnchor() != nullptr; }
 
@@ -335,11 +334,11 @@ class CORE_EXPORT AnchorEvaluatorImpl : public Length::AnchorEvaluator {
       const AnchorSpecifierValue& anchor_specifier) const;
   bool ShouldUseScrollAdjustmentFor(const LayoutObject* anchor) const;
 
-  absl::optional<LayoutUnit> EvaluateAnchor(
+  std::optional<LayoutUnit> EvaluateAnchor(
       const AnchorSpecifierValue& anchor_specifier,
       CSSAnchorValue anchor_value,
       float percentage) const;
-  absl::optional<LayoutUnit> EvaluateAnchorSize(
+  std::optional<LayoutUnit> EvaluateAnchorSize(
       const AnchorSpecifierValue& anchor_specifier,
       CSSAnchorSizeValue anchor_size_value) const;
 
@@ -372,8 +371,8 @@ class CORE_EXPORT AnchorEvaluatorImpl : public Length::AnchorEvaluator {
   PhysicalSize available_size_;
 
   // These fields will be populated during `anchor()` evaluation if needed.
-  mutable absl::optional<const LayoutObject*> default_anchor_;
-  mutable absl::optional<const PaintLayer*>
+  mutable std::optional<const LayoutObject*> default_anchor_;
+  mutable std::optional<const PaintLayer*>
       default_anchor_scroll_container_layer_;
 
   mutable bool has_anchor_functions_ = false;

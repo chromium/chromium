@@ -229,23 +229,23 @@ class PLATFORM_EXPORT ShapeResultView final
     }
 
     template <typename RunType, typename ShapeResultType>
-    static absl::optional<std::pair<unsigned, unsigned>> ComputeStartEnd(
+    static std::optional<std::pair<unsigned, unsigned>> ComputeStartEnd(
         const RunType& run,
         const ShapeResultType& result,
         const Segment& segment) {
       if (!run.GetRunInfo()) {
-        return absl::nullopt;
+        return std::nullopt;
       }
       const unsigned part_start = ComputeStart(run, result);
       if (segment.end_index <= part_start) {
-        return absl::nullopt;
+        return std::nullopt;
       }
       if (!run.num_characters_) {
         return {{part_start, part_start}};
       }
       const unsigned part_end = part_start + run.num_characters_;
       if (segment.start_index >= part_end) {
-        return absl::nullopt;
+        return std::nullopt;
       }
       return {{part_start, part_end}};
     }

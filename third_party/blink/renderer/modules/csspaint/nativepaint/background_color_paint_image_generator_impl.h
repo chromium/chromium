@@ -29,12 +29,12 @@ class MODULES_EXPORT BackgroundColorPaintImageGeneratorImpl final
                              const Node*,
                              const Vector<Color>& animated_colors,
                              const Vector<double>& offsets,
-                             const absl::optional<double>& progress) final;
+                             const std::optional<double>& progress) final;
 
   bool GetBGColorPaintWorkletParams(Node* node,
                                     Vector<Color>* animated_colors,
                                     Vector<double>* offsets,
-                                    absl::optional<double>* progress) final;
+                                    std::optional<double>* progress) final;
 
   Animation* GetAnimationIfCompositable(const Element* element) final;
 

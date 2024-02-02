@@ -67,7 +67,7 @@ template <>
 struct BLINK_COMMON_EXPORT
     StructTraits<blink::mojom::ServiceWorkerRouterRequestConditionDataView,
                  blink::ServiceWorkerRouterRequestCondition> {
-  static const absl::optional<std::string>& method(
+  static const std::optional<std::string>& method(
       const blink::ServiceWorkerRouterRequestCondition& data) {
     return data.method;
   }
@@ -121,28 +121,29 @@ template <>
 struct BLINK_COMMON_EXPORT
     StructTraits<blink::mojom::ServiceWorkerRouterConditionDataView,
                  blink::ServiceWorkerRouterCondition> {
-  static const absl::optional<blink::SafeUrlPattern>& url_pattern(
+  static const std::optional<blink::SafeUrlPattern>& url_pattern(
       const blink::ServiceWorkerRouterCondition& data) {
-    return std::get<const absl::optional<blink::SafeUrlPattern>&>(data.get());
+    return std::get<const std::optional<blink::SafeUrlPattern>&>(data.get());
   }
 
-  static const absl::optional<blink::ServiceWorkerRouterRequestCondition>&
+  static const std::optional<blink::ServiceWorkerRouterRequestCondition>&
   request(const blink::ServiceWorkerRouterCondition& data) {
     return std::get<
-        const absl::optional<blink::ServiceWorkerRouterRequestCondition>&>(
+        const std::optional<blink::ServiceWorkerRouterRequestCondition>&>(
         data.get());
   }
 
-  static const absl::optional<blink::ServiceWorkerRouterRunningStatusCondition>&
+  static const std::optional<blink::ServiceWorkerRouterRunningStatusCondition>&
   running_status(const blink::ServiceWorkerRouterCondition& data) {
-    return std::get<const absl::optional<
-        blink::ServiceWorkerRouterRunningStatusCondition>&>(data.get());
+    return std::get<
+        const std::optional<blink::ServiceWorkerRouterRunningStatusCondition>&>(
+        data.get());
   }
 
-  static const absl::optional<blink::ServiceWorkerRouterOrCondition>&
+  static const std::optional<blink::ServiceWorkerRouterOrCondition>&
   or_condition(const blink::ServiceWorkerRouterCondition& data) {
     return std::get<
-        const absl::optional<blink::ServiceWorkerRouterOrCondition>&>(
+        const std::optional<blink::ServiceWorkerRouterOrCondition>&>(
         data.get());
   }
 
@@ -185,7 +186,7 @@ template <>
 struct BLINK_COMMON_EXPORT
     StructTraits<blink::mojom::ServiceWorkerRouterCacheSourceDataView,
                  blink::ServiceWorkerRouterCacheSource> {
-  static const absl::optional<std::string>& cache_name(
+  static const std::optional<std::string>& cache_name(
       const blink::ServiceWorkerRouterCacheSource& data) {
     return data.cache_name;
   }

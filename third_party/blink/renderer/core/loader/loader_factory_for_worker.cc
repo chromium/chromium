@@ -42,7 +42,7 @@ std::unique_ptr<URLLoader> LoaderFactoryForWorker::CreateURLLoader(
     scoped_refptr<base::SingleThreadTaskRunner> freezable_task_runner,
     scoped_refptr<base::SingleThreadTaskRunner> unfreezable_task_runner,
     BackForwardCacheLoaderHelper* back_forward_cache_loader_helper,
-    const absl::optional<base::UnguessableToken>&
+    const std::optional<base::UnguessableToken>&
         service_worker_race_network_request_token,
     bool is_from_origin_dirty_style_sheet) {
   Vector<std::unique_ptr<URLLoaderThrottle>> throttles;
@@ -110,7 +110,7 @@ std::unique_ptr<URLLoader> LoaderFactoryForWorker::CreateURLLoader(
     // URLLoader for RaceNetworkRequest
     if (service_worker_race_network_request_token.has_value()) {
       auto token = service_worker_race_network_request_token.value();
-      absl::optional<
+      std::optional<
           mojo::PendingRemote<network::mojom::blink::URLLoaderFactory>>
           race_network_request_url_loader_factory =
               global_scope_->FindRaceNetworkRequestURLLoaderFactory(token);

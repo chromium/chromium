@@ -90,7 +90,7 @@ class MockMediaDevicesDispatcherHost final
                media::CameraAvailability::kAvailable},
               {"fake_video_input_2", "Fake Video Input 2", "video_input_group",
                media::VideoCaptureControlSupport(),
-               blink::mojom::FacingMode::kUser, absl::nullopt},
+               blink::mojom::FacingMode::kUser, std::nullopt},
               {"fake_video_input_3", "Fake Video Input 3", "video_input_group 2",
                media::VideoCaptureControlSupport(),
                blink::mojom::FacingMode::kUser,

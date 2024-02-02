@@ -130,7 +130,7 @@ class BLINK_MODULES_EXPORT WebMediaPlayerMS
              const gfx::Rect& rect,
              cc::PaintFlags& flags) override;
   scoped_refptr<media::VideoFrame> GetCurrentFrameThenUpdate() override;
-  absl::optional<media::VideoFrame::ID> CurrentFrameId() const override;
+  std::optional<media::VideoFrame::ID> CurrentFrameId() const override;
   media::PaintCanvasVideoRenderer* GetPaintCanvasVideoRenderer() override;
   void ResetCanvasCache();
 
@@ -193,7 +193,7 @@ class BLINK_MODULES_EXPORT WebMediaPlayerMS
   void TrackRemoved(const WebString& track_id) override;
   void ActiveStateChanged(bool is_active) override;
   int GetDelegateId() override;
-  absl::optional<viz::SurfaceId> GetSurfaceId() override;
+  std::optional<viz::SurfaceId> GetSurfaceId() override;
 
   base::WeakPtr<WebMediaPlayer> AsWeakPtr() override;
 
@@ -257,7 +257,7 @@ class BLINK_MODULES_EXPORT WebMediaPlayerMS
   base::TimeDelta GetCurrentTimeInterval();
   media::PipelineStatistics GetPipelineStatistics();
 
-  absl::optional<media::mojom::MediaStreamType> GetMediaStreamType();
+  std::optional<media::mojom::MediaStreamType> GetMediaStreamType();
 
   std::unique_ptr<MediaStreamInternalFrameWrapper> internal_frame_;
 

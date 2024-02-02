@@ -46,7 +46,7 @@ class FakeLocalFrameHost : public mojom::blink::LocalFrameHost {
   void SetVirtualKeyboardMode(
       ui::mojom::blink::VirtualKeyboardMode mode) override;
   void VisibilityChanged(mojom::blink::FrameVisibility visibility) override;
-  void DidChangeThemeColor(absl::optional<::SkColor> theme_color) override;
+  void DidChangeThemeColor(std::optional<::SkColor> theme_color) override;
   void DidChangeBackgroundColor(const SkColor4f& background_color,
                                 bool color_adjust) override;
   void DidFailLoadWithError(const ::blink::KURL& url,
@@ -76,11 +76,11 @@ class FakeLocalFrameHost : public mojom::blink::LocalFrameHost {
   void GoToEntryAtOffset(
       int32_t offset,
       bool has_user_gesture,
-      absl::optional<blink::scheduler::TaskAttributionId>) override;
+      std::optional<blink::scheduler::TaskAttributionId>) override;
   void NavigateToNavigationApiKey(
       const WTF::String& key,
       bool has_user_gesture,
-      absl::optional<blink::scheduler::TaskAttributionId> task_id) override {}
+      std::optional<blink::scheduler::TaskAttributionId> task_id) override {}
   void NavigateEventHandlerPresenceChanged(bool present) override {}
   void UpdateTitle(const WTF::String& title,
                    base::i18n::TextDirection title_direction) override;
@@ -146,7 +146,7 @@ class FakeLocalFrameHost : public mojom::blink::LocalFrameHost {
       const blink::FrameToken& child_frame_token,
       mojom::blink::FrameOwnerPropertiesPtr frame_owner_properties) override;
   void DidChangeOpener(
-      const absl::optional<LocalFrameToken>& opener_frame) override;
+      const std::optional<LocalFrameToken>& opener_frame) override;
   void DidChangeIframeAttributes(const blink::FrameToken& child_frame_token,
                                  mojom::blink::IframeAttributesPtr) override;
   void DidChangeFramePolicy(const blink::FrameToken& child_frame_token,

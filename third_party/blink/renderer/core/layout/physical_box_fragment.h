@@ -5,8 +5,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_PHYSICAL_BOX_FRAGMENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_PHYSICAL_BOX_FRAGMENT_H_
 
+#include <optional>
+
 #include "base/dcheck_is_on.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/block_break_token.h"
 #include "third_party/blink/renderer/core/layout/geometry/box_sides.h"
@@ -53,7 +54,7 @@ class CORE_EXPORT PhysicalBoxFragment final : public PhysicalFragment {
                       const PhysicalBoxStrut& borders,
                       bool has_padding,
                       const PhysicalBoxStrut& padding,
-                      const absl::optional<PhysicalRect>& inflow_bounds,
+                      const std::optional<PhysicalRect>& inflow_bounds,
                       bool has_fragment_items,
                       WritingMode block_or_line_writing_mode);
 
@@ -139,16 +140,16 @@ class CORE_EXPORT PhysicalBoxFragment final : public PhysicalFragment {
     return HasItems() ? ComputeItemsAddress() : nullptr;
   }
 
-  absl::optional<LayoutUnit> FirstBaseline() const {
+  std::optional<LayoutUnit> FirstBaseline() const {
     if (has_first_baseline_)
       return first_baseline_;
-    return absl::nullopt;
+    return std::nullopt;
   }
 
-  absl::optional<LayoutUnit> LastBaseline() const {
+  std::optional<LayoutUnit> LastBaseline() const {
     if (has_last_baseline_)
       return last_baseline_;
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   bool UseLastBaselineForInlineBaseline() const {
@@ -189,12 +190,12 @@ class CORE_EXPORT PhysicalBoxFragment final : public PhysicalFragment {
         ->table_cell_column_index;
   }
 
-  absl::optional<wtf_size_t> TableSectionStartRowIndex() const {
+  std::optional<wtf_size_t> TableSectionStartRowIndex() const {
     DCHECK(IsTableSection());
     if (const auto* field = GetRareField(FieldId::kTableSectionStartRowIndex)) {
       return field->table_section_start_row_index;
     }
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   const Vector<LayoutUnit>* TableSectionRowOffsets() const {
@@ -260,18 +261,18 @@ class CORE_EXPORT PhysicalBoxFragment final : public PhysicalFragment {
   }
 
   // Returns the bounds of any inflow children for this fragment (specifically
-  // no out-of-flow positioned objects). This will return |absl::nullopt| if:
+  // no out-of-flow positioned objects). This will return |std::nullopt| if:
   //  - The fragment is *not* a scroll container.
   //  - The scroll container contains no inflow children.
   // This is normally the union of all inflow children's border-box rects
   // (without relative positioning applied), however for grid layout it is the
   // size and position of the grid instead.
   // This is used for scrollable overflow calculations.
-  const absl::optional<PhysicalRect> InflowBounds() const {
+  const std::optional<PhysicalRect> InflowBounds() const {
     if (const auto* field = GetRareField(FieldId::kInflowBounds)) {
       return field->inflow_bounds;
     }
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // Return true if this is either a container that establishes an inline

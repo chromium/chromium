@@ -69,8 +69,8 @@ class CORE_EXPORT PreloadRequest {
       const network::mojom::ReferrerPolicy referrer_policy,
       ResourceFetcher::IsImageSet is_image_set,
       const ExclusionInfo* exclusion_info,
-      const absl::optional<float> resource_width = absl::nullopt,
-      const absl::optional<float> resource_height = absl::nullopt,
+      const std::optional<float> resource_width = std::nullopt,
+      const std::optional<float> resource_height = std::nullopt,
       RequestType request_type = kRequestTypePreload);
 
   Resource* Start(Document*);
@@ -165,16 +165,16 @@ class CORE_EXPORT PreloadRequest {
     return is_potentially_lcp_influencer_;
   }
 
-  absl::optional<float> GetResourceWidth() const { return resource_width_; }
-  absl::optional<float> GetResourceHeight() const { return resource_height_; }
+  std::optional<float> GetResourceWidth() const { return resource_width_; }
+  std::optional<float> GetResourceHeight() const { return resource_height_; }
 
  private:
   PreloadRequest(const String& initiator_name,
                  const String& resource_url,
                  const KURL& base_url,
                  ResourceType resource_type,
-                 const absl::optional<float> resource_width,
-                 const absl::optional<float> resource_height,
+                 const std::optional<float> resource_width,
+                 const std::optional<float> resource_height,
                  RequestType request_type,
                  const network::mojom::ReferrerPolicy referrer_policy,
                  ResourceFetcher::IsImageSet is_image_set)
@@ -202,8 +202,8 @@ class CORE_EXPORT PreloadRequest {
       mojom::blink::FetchPriorityHint::kAuto;
   String nonce_;
   FetchParameters::DeferOption defer_ = FetchParameters::kNoDefer;
-  const absl::optional<float> resource_width_;
-  const absl::optional<float> resource_height_;
+  const std::optional<float> resource_width_;
+  const std::optional<float> resource_height_;
   const RequestType request_type_;
   const network::mojom::ReferrerPolicy referrer_policy_;
   IntegrityMetadataSet integrity_metadata_;

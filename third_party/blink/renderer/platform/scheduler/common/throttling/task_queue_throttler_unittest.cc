@@ -1177,8 +1177,8 @@ TEST_F(TaskQueueThrottlerTest,
       kShortDelay);
 
   // Pools did not observe wake ups yet whether they had pending tasks or not.
-  EXPECT_EQ(one_minute_pool->last_wake_up_for_testing(), absl::nullopt);
-  EXPECT_EQ(two_minutes_pool->last_wake_up_for_testing(), absl::nullopt);
+  EXPECT_EQ(one_minute_pool->last_wake_up_for_testing(), std::nullopt);
+  EXPECT_EQ(two_minutes_pool->last_wake_up_for_testing(), std::nullopt);
 
   // The first task should run after 1 minute, which is the wake up interval of
   // |one_minute_pool|.
@@ -1188,7 +1188,7 @@ TEST_F(TaskQueueThrottlerTest,
   EXPECT_THAT(run_times, ElementsAre(base::TimeTicks() + base::Minutes(1)));
 
   // The second pool should not have woken up since it had no tasks.
-  EXPECT_EQ(two_minutes_pool->last_wake_up_for_testing(), absl::nullopt);
+  EXPECT_EQ(two_minutes_pool->last_wake_up_for_testing(), std::nullopt);
 
   // No new task execution or wake-ups for the first queue since it did not
   // get new tasks executed.
@@ -1198,13 +1198,13 @@ TEST_F(TaskQueueThrottlerTest,
   EXPECT_THAT(run_times, ElementsAre(base::TimeTicks() + base::Minutes(1)));
 
   // The second pool should not have woken up since it had no tasks.
-  EXPECT_EQ(two_minutes_pool->last_wake_up_for_testing(), absl::nullopt);
+  EXPECT_EQ(two_minutes_pool->last_wake_up_for_testing(), std::nullopt);
 
   // Still no new executions so no update on the wake-up for the queues.
   test_task_runner_->FastForwardUntilNoTasksRemain();
   EXPECT_EQ(one_minute_pool->last_wake_up_for_testing(),
             base::TimeTicks() + base::Minutes(1));
-  EXPECT_EQ(two_minutes_pool->last_wake_up_for_testing(), absl::nullopt);
+  EXPECT_EQ(two_minutes_pool->last_wake_up_for_testing(), std::nullopt);
 
   // Clean up.
   two_minutes_pool->RemoveThrottler(test_task_runner_->NowTicks(),
@@ -1251,8 +1251,8 @@ TEST_F(TaskQueueThrottlerTest,
       kShortDelay);
 
   // Pools do not observe wake ups yet.
-  EXPECT_EQ(one_minute_pool->last_wake_up_for_testing(), absl::nullopt);
-  EXPECT_EQ(two_minutes_pool->last_wake_up_for_testing(), absl::nullopt);
+  EXPECT_EQ(one_minute_pool->last_wake_up_for_testing(), std::nullopt);
+  EXPECT_EQ(two_minutes_pool->last_wake_up_for_testing(), std::nullopt);
 
   // The first task should run after 1 minute, which is the wake up interval of
   // |one_minute_pool|. The second task should run after 2 minutes, which is the
@@ -1260,7 +1260,7 @@ TEST_F(TaskQueueThrottlerTest,
   test_task_runner_->FastForwardBy(base::Minutes(1));
   EXPECT_EQ(one_minute_pool->last_wake_up_for_testing(),
             base::TimeTicks() + base::Minutes(1));
-  EXPECT_EQ(two_minutes_pool->last_wake_up_for_testing(), absl::nullopt);
+  EXPECT_EQ(two_minutes_pool->last_wake_up_for_testing(), std::nullopt);
   EXPECT_THAT(run_times, ElementsAre(base::TimeTicks() + base::Minutes(1)));
 
   test_task_runner_->FastForwardBy(base::Minutes(1));
@@ -1332,7 +1332,7 @@ TEST_F(TaskQueueThrottlerTest,
   test_task_runner_->FastForwardBy(base::Seconds(2));
   EXPECT_EQ(one_minute_pool->last_wake_up_for_testing(),
             start_time + base::Seconds(2));
-  EXPECT_EQ(two_minutes_pool->last_wake_up_for_testing(), absl::nullopt);
+  EXPECT_EQ(two_minutes_pool->last_wake_up_for_testing(), std::nullopt);
   EXPECT_THAT(run_times, ElementsAre(start_time + base::Seconds(2)));
 
   test_task_runner_->FastForwardBy(base::Seconds(1));
@@ -1434,12 +1434,12 @@ TEST_F(TaskQueueThrottlerTest,
       base::Seconds(3));
 
   test_task_runner_->FastForwardBy(base::Seconds(2));
-  EXPECT_EQ(aligned_pool->last_wake_up_for_testing(), absl::nullopt);
-  EXPECT_EQ(unaligned_pool->last_wake_up_for_testing(), absl::nullopt);
+  EXPECT_EQ(aligned_pool->last_wake_up_for_testing(), std::nullopt);
+  EXPECT_EQ(unaligned_pool->last_wake_up_for_testing(), std::nullopt);
   EXPECT_THAT(run_times, ElementsAre());
 
   test_task_runner_->FastForwardBy(base::Seconds(1));
-  EXPECT_EQ(aligned_pool->last_wake_up_for_testing(), absl::nullopt);
+  EXPECT_EQ(aligned_pool->last_wake_up_for_testing(), std::nullopt);
   EXPECT_EQ(unaligned_pool->last_wake_up_for_testing(),
             start_time + base::Seconds(3));
   EXPECT_THAT(run_times, ElementsAre(start_time + base::Seconds(3)));

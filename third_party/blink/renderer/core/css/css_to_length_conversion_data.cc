@@ -45,8 +45,8 @@ namespace blink {
 
 namespace {
 
-absl::optional<double> FindSizeForContainerAxis(PhysicalAxes requested_axis,
-                                                Element* context_element) {
+std::optional<double> FindSizeForContainerAxis(PhysicalAxes requested_axis,
+                                               Element* context_element) {
   DCHECK(requested_axis == kPhysicalAxisHorizontal ||
          requested_axis == kPhysicalAxisVertical);
 
@@ -62,16 +62,16 @@ absl::optional<double> FindSizeForContainerAxis(PhysicalAxes requested_axis,
     ContainerQueryEvaluator& evaluator =
         container->EnsureContainerQueryEvaluator();
     evaluator.SetReferencedByUnit();
-    absl::optional<double> size = requested_axis == kPhysicalAxisHorizontal
-                                      ? evaluator.Width()
-                                      : evaluator.Height();
+    std::optional<double> size = requested_axis == kPhysicalAxisHorizontal
+                                     ? evaluator.Width()
+                                     : evaluator.Height();
     if (!size.has_value()) {
       continue;
     }
     return size;
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 }  // namespace
@@ -123,7 +123,7 @@ float CSSToLengthConversionData::FontSizes::Rch(float zoom) const {
 float CSSToLengthConversionData::FontSizes::Ic(float zoom) const {
   DCHECK(font_);
   const SimpleFontData* font_data = font_->PrimaryFont();
-  absl::optional<float> full_width;
+  std::optional<float> full_width;
   if (font_data) {
     full_width = font_data->IdeographicInlineSize();
   }
@@ -138,7 +138,7 @@ float CSSToLengthConversionData::FontSizes::Ic(float zoom) const {
 float CSSToLengthConversionData::FontSizes::Ric(float zoom) const {
   DCHECK(root_font_);
   const SimpleFontData* font_data = root_font_->PrimaryFont();
-  absl::optional<float> full_width;
+  std::optional<float> full_width;
   if (font_data) {
     full_width = font_data->IdeographicInlineSize();
   }
@@ -245,13 +245,12 @@ bool CSSToLengthConversionData::ContainerSizes::SizesEqual(
   return (Width() == other.Width()) && (Height() == other.Height());
 }
 
-absl::optional<double> CSSToLengthConversionData::ContainerSizes::Width()
-    const {
+std::optional<double> CSSToLengthConversionData::ContainerSizes::Width() const {
   CacheSizeIfNeeded(PhysicalAxes(kPhysicalAxisHorizontal), cached_width_);
   return cached_width_;
 }
 
-absl::optional<double> CSSToLengthConversionData::ContainerSizes::Height()
+std::optional<double> CSSToLengthConversionData::ContainerSizes::Height()
     const {
   CacheSizeIfNeeded(PhysicalAxes(kPhysicalAxisVertical), cached_height_);
   return cached_height_;
@@ -259,7 +258,7 @@ absl::optional<double> CSSToLengthConversionData::ContainerSizes::Height()
 
 void CSSToLengthConversionData::ContainerSizes::CacheSizeIfNeeded(
     PhysicalAxes requested_axis,
-    absl::optional<double>& cache) const {
+    std::optional<double>& cache) const {
   if ((cached_physical_axes_ & requested_axis) == requested_axis) {
     return;
   }

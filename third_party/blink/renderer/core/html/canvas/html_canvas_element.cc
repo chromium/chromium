@@ -1005,7 +1005,7 @@ void HTMLCanvasElement::PaintInternal(GraphicsContext& context,
       }
       // `FlushRecording` might be a no-op if a flush already happened before.
       // Fortunately, the last flush recording was kept by the provider.
-      const absl::optional<cc::PaintRecord>& last_recording =
+      const std::optional<cc::PaintRecord>& last_recording =
           provider->LastRecording();
       if (last_recording.has_value() &&
           FilterQuality() != cc::PaintFlags::FilterQuality::kNone) {
@@ -1677,7 +1677,7 @@ gfx::Size HTMLCanvasElement::BitmapSourceSize() const {
 
 ScriptPromise HTMLCanvasElement::CreateImageBitmap(
     ScriptState* script_state,
-    absl::optional<gfx::Rect> crop_rect,
+    std::optional<gfx::Rect> crop_rect,
     const ImageBitmapOptions* options,
     ExceptionState& exception_state) {
   if (ContextHasOpenLayers(context_)) {

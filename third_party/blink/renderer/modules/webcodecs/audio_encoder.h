@@ -93,7 +93,7 @@ class MODULES_EXPORT AudioEncoder final
       ParsedConfig* active_config,
       uint32_t reset_count,
       media::EncodedAudioBuffer encoded_buffer,
-      absl::optional<media::AudioEncoder::CodecDescription> codec_desc);
+      std::optional<media::AudioEncoder::CodecDescription> codec_desc);
   DOMException* MakeOperationError(std::string error_msg,
                                    media::EncoderStatus status);
   DOMException* MakeEncodingError(std::string error_msg,

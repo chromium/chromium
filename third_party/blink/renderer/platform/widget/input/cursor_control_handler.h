@@ -5,8 +5,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_WIDGET_INPUT_CURSOR_CONTROL_HANDLER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WIDGET_INPUT_CURSOR_CONTROL_HANDLER_H_
 
+#include <optional>
+
 #include "cc/input/touch_action.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/widget/input/input_handler_proxy.h"
 
@@ -25,15 +26,15 @@ class PLATFORM_EXPORT CursorControlHandler {
   CursorControlHandler(const CursorControlHandler&) = delete;
   CursorControlHandler& operator=(const CursorControlHandler&) = delete;
 
-  absl::optional<InputHandlerProxy::EventDisposition> ObserveInputEvent(
+  std::optional<InputHandlerProxy::EventDisposition> ObserveInputEvent(
       const WebInputEvent& event);
 
  private:
-  absl::optional<InputHandlerProxy::EventDisposition> HandleGestureScrollBegin(
+  std::optional<InputHandlerProxy::EventDisposition> HandleGestureScrollBegin(
       const WebGestureEvent& event);
-  absl::optional<InputHandlerProxy::EventDisposition> HandleGestureScrollUpdate(
+  std::optional<InputHandlerProxy::EventDisposition> HandleGestureScrollUpdate(
       const WebGestureEvent& event);
-  absl::optional<InputHandlerProxy::EventDisposition> HandleGestureScrollEnd(
+  std::optional<InputHandlerProxy::EventDisposition> HandleGestureScrollEnd(
       const WebGestureEvent& event);
 
   bool cursor_control_in_progress_ = false;

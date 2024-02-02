@@ -4,12 +4,12 @@
 
 #include "third_party/blink/renderer/core/dom/abort_signal.h"
 
+#include <optional>
 #include <utility>
 
 #include "base/functional/callback.h"
 #include "base/functional/function_ref.h"
 #include "base/time/time.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
 #include "third_party/blink/renderer/core/dom/abort_signal_composition_manager.h"
@@ -357,7 +357,7 @@ void AbortSignal::OnEventListenerAddedOrRemoved(const AtomicString& event_type,
   if (signal_type_ != SignalType::kComposite) {
     return;
   }
-  absl::optional<AbortSignalCompositionType> composition_type;
+  std::optional<AbortSignalCompositionType> composition_type;
   if (event_type == event_type_names::kAbort) {
     composition_type = AbortSignalCompositionType::kAbort;
   } else if (event_type == event_type_names::kPrioritychange) {

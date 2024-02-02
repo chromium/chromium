@@ -6,12 +6,12 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIARECORDER_AUDIO_TRACK_MOJO_ENCODER_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/containers/queue.h"
 #include "base/memory/weak_ptr.h"
 #include "media/base/audio_encoder.h"
 #include "media/base/encoder_status.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/modules/mediarecorder/audio_track_encoder.h"
 #include "third_party/blink/renderer/modules/mediarecorder/audio_track_recorder.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
@@ -74,7 +74,7 @@ class MODULES_EXPORT AudioTrackMojoEncoder : public AudioTrackEncoder {
   void OnEncodeDone(media::EncoderStatus status);
   void OnEncodeOutput(
       media::EncodedAudioBuffer encoded_buffer,
-      absl::optional<media::AudioEncoder::CodecDescription> codec_desc);
+      std::optional<media::AudioEncoder::CodecDescription> codec_desc);
 
   // The `media::AudioEncoder` interface requires the callback provided to
   // `Initialize` to be run before any further calls are made. So, we store any

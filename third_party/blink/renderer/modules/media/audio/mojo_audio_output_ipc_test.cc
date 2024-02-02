@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -21,7 +22,6 @@
 #include "mojo/public/cpp/system/platform_handle.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/utility/utility.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
@@ -70,7 +70,7 @@ class TestStreamProvider
       const media::AudioParameters& params,
       mojo::PendingRemote<media::mojom::blink::AudioOutputStreamProviderClient>
           pending_provider_client) override {
-    EXPECT_EQ(receiver_, absl::nullopt);
+    EXPECT_EQ(receiver_, std::nullopt);
     EXPECT_NE(stream_, nullptr);
     provider_client_.reset();
     provider_client_.Bind(std::move(pending_provider_client));
@@ -83,7 +83,7 @@ class TestStreamProvider
         base::CancelableSyncSocket::CreatePair(&socket_, &foreign_socket));
     provider_client_->Created(
         std::move(stream_pending_remote),
-        {absl::in_place, base::UnsafeSharedMemoryRegion::Create(kMemoryLength),
+        {std::in_place, base::UnsafeSharedMemoryRegion::Create(kMemoryLength),
          mojo::PlatformHandle(foreign_socket.Take())});
   }
 
@@ -98,7 +98,7 @@ class TestStreamProvider
   raw_ptr<media::mojom::blink::AudioOutputStream, ExperimentalRenderer> stream_;
   mojo::Remote<media::mojom::blink::AudioOutputStreamProviderClient>
       provider_client_;
-  absl::optional<mojo::Receiver<media::mojom::blink::AudioOutputStream>>
+  std::optional<mojo::Receiver<media::mojom::blink::AudioOutputStream>>
       receiver_;
   base::CancelableSyncSocket socket_;
 };
@@ -115,7 +115,7 @@ class TestRemoteFactory
   void RequestDeviceAuthorization(
       mojo::PendingReceiver<media::mojom::blink::AudioOutputStreamProvider>
           stream_provider_receiver,
-      const absl::optional<base::UnguessableToken>& session_id,
+      const std::optional<base::UnguessableToken>& session_id,
       const String& device_id,
       RequestDeviceAuthorizationCallback callback) override {
     EXPECT_EQ(session_id, expected_session_id_);
@@ -145,7 +145,7 @@ class TestRemoteFactory
     EXPECT_FALSE(expect_request_);
     expect_request_ = true;
     expected_session_id_ = session_id.is_empty()
-                               ? absl::optional<base::UnguessableToken>()
+                               ? std::optional<base::UnguessableToken>()
                                : session_id;
     expected_device_id_ = device_id;
     provider_receiver_.reset();
@@ -183,7 +183,7 @@ class TestRemoteFactory
   }
 
   bool expect_request_;
-  absl::optional<base::UnguessableToken> expected_session_id_;
+  std::optional<base::UnguessableToken> expected_session_id_;
   std::string expected_device_id_;
 
   mojo::Remote<blink::mojom::blink::RendererAudioOutputStreamFactory>
@@ -191,7 +191,7 @@ class TestRemoteFactory
   mojo::Receiver<blink::mojom::blink::RendererAudioOutputStreamFactory>
       receiver_{this};
   std::unique_ptr<TestStreamProvider> provider_;
-  absl::optional<mojo::Receiver<media::mojom::blink::AudioOutputStreamProvider>>
+  std::optional<mojo::Receiver<media::mojom::blink::AudioOutputStreamProvider>>
       provider_receiver_;
 };
 

@@ -4,8 +4,9 @@
 
 #include "third_party/blink/renderer/core/timing/event_timing.h"
 
+#include <optional>
+
 #include "base/time/tick_clock.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/events/keyboard_event.h"
 #include "third_party/blink/renderer/core/events/pointer_event.h"

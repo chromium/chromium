@@ -358,7 +358,7 @@ PermissionStatusListener* Permissions::GetOrCreatePermissionStatusListener(
   return listeners_.at(*type);
 }
 
-absl::optional<PermissionType> Permissions::GetPermissionType(
+std::optional<PermissionType> Permissions::GetPermissionType(
     const mojom::blink::PermissionDescriptor& descriptor) {
   return PermissionDescriptorInfoToPermissionType(
       descriptor.name,

@@ -59,7 +59,7 @@ class MockResourceRequestSender : public ResourceRequestSender {
 
   void OnReceivedResponse(network::mojom::URLResponseHeadPtr head,
                           mojo::ScopedDataPipeConsumerHandle body,
-                          absl::optional<mojo_base::BigBuffer> cached_metadata,
+                          std::optional<mojo_base::BigBuffer> cached_metadata,
                           base::TimeTicks response_ipc_arrival_time) override {
     EXPECT_FALSE(context_->cancelled);
     EXPECT_FALSE(context_->received_response);
@@ -208,7 +208,7 @@ class WebMojoURLLoaderClientTest : public ::testing::Test,
         std::vector<std::unique_ptr<blink::URLLoaderThrottle>>(), request_id_,
         /*loader_options=0*/ 0, request.get(), client_.get(),
         TRAFFIC_ANNOTATION_FOR_TESTS, std::move(loading_task_runner),
-        absl::make_optional(std::vector<std::string>()));
+        std::make_optional(std::vector<std::string>()));
 
     base::RunLoop().RunUntilIdle();
     EXPECT_TRUE(url_loader_client_);
@@ -264,7 +264,7 @@ class WebMojoURLLoaderClientTest : public ::testing::Test,
 TEST_P(WebMojoURLLoaderClientTest, OnReceiveResponse) {
   url_loader_client_->OnReceiveResponse(network::mojom::URLResponseHead::New(),
                                         mojo::ScopedDataPipeConsumerHandle(),
-                                        absl::nullopt);
+                                        std::nullopt);
 
   EXPECT_FALSE(context_->received_response);
   base::RunLoop().RunUntilIdle();
@@ -279,7 +279,7 @@ TEST_P(WebMojoURLLoaderClientTest, ResponseBody) {
                                                  data_pipe_consumer));
   url_loader_client_->OnReceiveResponse(network::mojom::URLResponseHead::New(),
                                         std::move(data_pipe_consumer),
-                                        absl::nullopt);
+                                        std::nullopt);
 
   EXPECT_FALSE(context_->received_response);
   base::RunLoop().RunUntilIdle();
@@ -326,7 +326,7 @@ TEST_P(WebMojoURLLoaderClientTest, OnReceiveResponseWithCachedMetadata) {
 TEST_P(WebMojoURLLoaderClientTest, OnTransferSizeUpdated) {
   url_loader_client_->OnReceiveResponse(network::mojom::URLResponseHead::New(),
                                         mojo::ScopedDataPipeConsumerHandle(),
-                                        absl::nullopt);
+                                        std::nullopt);
   url_loader_client_->OnTransferSizeUpdated(4);
   url_loader_client_->OnTransferSizeUpdated(4);
 
@@ -347,7 +347,7 @@ TEST_P(WebMojoURLLoaderClientTest, OnCompleteWithResponseBody) {
                                                  data_pipe_consumer));
   url_loader_client_->OnReceiveResponse(network::mojom::URLResponseHead::New(),
                                         std::move(data_pipe_consumer),
-                                        absl::nullopt);
+                                        std::nullopt);
   uint32_t size = 5;
   MojoResult result =
       data_pipe_producer->WriteData("hello", &size, MOJO_WRITE_DATA_FLAG_NONE);
@@ -384,7 +384,7 @@ TEST_P(WebMojoURLLoaderClientTest, OnCompleteShouldBeTheLastMessage) {
                                                  data_pipe_consumer));
   url_loader_client_->OnReceiveResponse(network::mojom::URLResponseHead::New(),
                                         std::move(data_pipe_consumer),
-                                        absl::nullopt);
+                                        std::nullopt);
   url_loader_client_->OnComplete(status);
 
   base::RunLoop().RunUntilIdle();
@@ -413,7 +413,7 @@ TEST_P(WebMojoURLLoaderClientTest, CancelOnReceiveResponse) {
                                                  data_pipe_consumer));
   url_loader_client_->OnReceiveResponse(network::mojom::URLResponseHead::New(),
                                         std::move(data_pipe_consumer),
-                                        absl::nullopt);
+                                        std::nullopt);
   url_loader_client_->OnComplete(status);
 
   EXPECT_FALSE(context_->received_response);
@@ -437,7 +437,7 @@ TEST_P(WebMojoURLLoaderClientTest, Defer) {
   data_pipe_producer.reset();  // Empty body.
   url_loader_client_->OnReceiveResponse(network::mojom::URLResponseHead::New(),
                                         std::move(data_pipe_consumer),
-                                        absl::nullopt);
+                                        std::nullopt);
   url_loader_client_->OnComplete(status);
 
   EXPECT_FALSE(context_->received_response);
@@ -475,7 +475,7 @@ TEST_P(WebMojoURLLoaderClientTest, DeferWithResponseBody) {
 
   url_loader_client_->OnReceiveResponse(network::mojom::URLResponseHead::New(),
                                         std::move(data_pipe_consumer),
-                                        absl::nullopt);
+                                        std::nullopt);
   url_loader_client_->OnComplete(status);
 
   EXPECT_FALSE(context_->received_response);
@@ -512,7 +512,7 @@ TEST_P(WebMojoURLLoaderClientTest,
             mojo::CreateDataPipe(nullptr, producer_handle, consumer_handle));
   url_loader_client_->OnReceiveResponse(network::mojom::URLResponseHead::New(),
                                         std::move(consumer_handle),
-                                        absl::nullopt);
+                                        std::nullopt);
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(context_->received_response);
   EXPECT_FALSE(context_->complete);
@@ -578,7 +578,7 @@ TEST_P(WebMojoURLLoaderClientTest,
             mojo::CreateDataPipe(nullptr, producer_handle, consumer_handle));
   url_loader_client_->OnReceiveResponse(network::mojom::URLResponseHead::New(),
                                         std::move(consumer_handle),
-                                        absl::nullopt);
+                                        std::nullopt);
   network::URLLoaderCompletionStatus status;
   url_loader_client_->OnComplete(status);
   base::RunLoop().RunUntilIdle();
@@ -638,7 +638,7 @@ TEST_P(WebMojoURLLoaderClientTest,
             mojo::CreateDataPipe(nullptr, producer_handle, consumer_handle));
   url_loader_client_->OnReceiveResponse(network::mojom::URLResponseHead::New(),
                                         std::move(consumer_handle),
-                                        absl::nullopt);
+                                        std::nullopt);
   network::URLLoaderCompletionStatus status;
   url_loader_client_->OnComplete(status);
   base::RunLoop().RunUntilIdle();
@@ -711,7 +711,7 @@ TEST_P(WebMojoURLLoaderClientTest, DeferWithTransferSizeUpdated) {
 
   url_loader_client_->OnReceiveResponse(network::mojom::URLResponseHead::New(),
                                         std::move(data_pipe_consumer),
-                                        absl::nullopt);
+                                        std::nullopt);
   url_loader_client_->OnTransferSizeUpdated(4);
   url_loader_client_->OnComplete(status);
 
@@ -763,7 +763,7 @@ TEST_P(WebMojoURLLoaderClientTest, SetDeferredDuringFlushingDeferredMessage) {
 
   url_loader_client_->OnReceiveResponse(network::mojom::URLResponseHead::New(),
                                         std::move(data_pipe_consumer),
-                                        absl::nullopt);
+                                        std::nullopt);
   url_loader_client_->OnTransferSizeUpdated(4);
   url_loader_client_->OnComplete(status);
 
@@ -821,7 +821,7 @@ TEST_P(WebMojoURLLoaderClientTest,
   data_pipe_producer.reset();  // Empty body.
   url_loader_client_->OnReceiveResponse(network::mojom::URLResponseHead::New(),
                                         std::move(data_pipe_consumer),
-                                        absl::nullopt);
+                                        std::nullopt);
 
   url_loader_client_->OnTransferSizeUpdated(4);
   url_loader_client_->OnComplete(status);

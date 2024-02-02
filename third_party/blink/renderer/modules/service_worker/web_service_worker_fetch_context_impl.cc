@@ -195,9 +195,9 @@ net::SiteForCookies WebServiceWorkerFetchContextImpl::SiteForCookies() const {
   return net::SiteForCookies::FromUrl(GURL(worker_script_url_));
 }
 
-absl::optional<WebSecurityOrigin>
+std::optional<WebSecurityOrigin>
 WebServiceWorkerFetchContextImpl::TopFrameOrigin() const {
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 std::unique_ptr<WebSocketHandshakeThrottle>

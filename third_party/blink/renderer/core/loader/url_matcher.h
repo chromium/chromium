@@ -43,7 +43,7 @@ class CORE_EXPORT UrlMatcher final {
 
  private:
   using UrlList = Vector<
-      std::pair<scoped_refptr<const SecurityOrigin>, absl::optional<String>>>;
+      std::pair<scoped_refptr<const SecurityOrigin>, std::optional<String>>>;
   UrlList url_list_;
 
   void ParseFieldTrialParam(const base::StringPiece& encoded_url_list_string);

@@ -8,9 +8,9 @@
 #include <string.h>
 
 #include <memory>
+#include <optional>
 #include <utility>
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_string_resource.h"
@@ -48,8 +48,8 @@ class TextEncoderStream::Transformer final : public TransformStreamTransformer {
     if (input.empty())
       return ScriptPromise::CastUndefined(script_state_.Get());
 
-    const absl::optional<UChar> high_surrogate = pending_high_surrogate_;
-    pending_high_surrogate_ = absl::nullopt;
+    const std::optional<UChar> high_surrogate = pending_high_surrogate_;
+    pending_high_surrogate_ = std::nullopt;
     std::string prefix;
     std::string result;
     if (input.Is8Bit()) {
@@ -121,7 +121,7 @@ class TextEncoderStream::Transformer final : public TransformStreamTransformer {
   // Returns true if either |*prefix| or |*result| have been set to a non-empty
   // value.
   bool Encode16BitString(const String& input,
-                         absl::optional<UChar> high_surrogate,
+                         std::optional<UChar> high_surrogate,
                          std::string* prefix,
                          std::string* result) {
     const UChar* begin = input.Characters16();
@@ -161,7 +161,7 @@ class TextEncoderStream::Transformer final : public TransformStreamTransformer {
   // There is no danger of ScriptState leaking across worlds because a
   // TextEncoderStream can only be accessed from the world that created it.
   Member<ScriptState> script_state_;
-  absl::optional<UChar> pending_high_surrogate_;
+  std::optional<UChar> pending_high_surrogate_;
 };
 
 TextEncoderStream* TextEncoderStream::Create(ScriptState* script_state,

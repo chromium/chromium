@@ -272,7 +272,7 @@ void LayerTreeView::OnCommitRequested() {
 void LayerTreeView::OnDeferCommitsChanged(
     bool status,
     cc::PaintHoldingReason reason,
-    absl::optional<cc::PaintHoldingCommitTrigger> trigger) {
+    std::optional<cc::PaintHoldingCommitTrigger> trigger) {
   if (!delegate_)
     return;
   delegate_->OnDeferCommitsChanged(status, reason, trigger);

@@ -585,7 +585,7 @@ MediaStreamTrack* V8ScriptValueDeserializerForModules::ReadMediaStreamTrack() {
     return nullptr;
   }
 
-  absl::optional<uint32_t> sub_capture_target_version;
+  std::optional<uint32_t> sub_capture_target_version;
   // Using `switch` to ensure new enum values are handled.
   switch (track_impl_subtype) {
     case SerializedTrackImplSubtype::kTrackImplSubtypeBase:

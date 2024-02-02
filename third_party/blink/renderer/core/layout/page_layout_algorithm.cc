@@ -69,7 +69,7 @@ const LayoutResult* PageLayoutAlgorithm::Layout() {
   // Compute the block-axis size now that we know our content size.
   LayoutUnit block_size = ComputeBlockSizeForFragment(
       GetConstraintSpace(), Style(), /* border_padding */ BoxStrut(),
-      intrinsic_block_size, absl::nullopt);
+      intrinsic_block_size, std::nullopt);
   container_builder_.SetFragmentsTotalBlockSize(block_size);
 
   OutOfFlowLayoutPart(Node(), GetConstraintSpace(), &container_builder_).Run();

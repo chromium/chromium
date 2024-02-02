@@ -94,7 +94,7 @@ void SimplifiedOofLayoutAlgorithm::AddChildFragment(
                            previous_physical_container_size_)
           .ToLogical(child.Offset(), fragment->Size());
   // Any relative offset will have already been applied, avoid re-adding one.
-  absl::optional<LogicalOffset> relative_offset = LogicalOffset();
+  std::optional<LogicalOffset> relative_offset = LogicalOffset();
 
   // Add the fragment to the builder.
   container_builder_.AddChild(*fragment, child_offset,

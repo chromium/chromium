@@ -5,10 +5,10 @@
 #include "third_party/blink/renderer/core/frame/ad_tracker.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/compiler_specific.h"
 #include "base/feature_list.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/core/core_probe_sink.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -270,7 +270,7 @@ void AdTracker::DidCreateAsyncTask(probe::AsyncTaskContext* task_context) {
   if (!async_stack_enabled_)
     return;
 
-  absl::optional<AdScriptIdentifier> id;
+  std::optional<AdScriptIdentifier> id;
   if (IsAdScriptInStack(StackType::kBottomAndTop, &id)) {
     task_context->SetAdTask(id);
   }
@@ -306,7 +306,7 @@ void AdTracker::DidFinishAsyncTask(probe::AsyncTaskContext* task_context) {
 
 bool AdTracker::IsAdScriptInStack(
     StackType stack_type,
-    absl::optional<AdScriptIdentifier>* out_ad_script) {
+    std::optional<AdScriptIdentifier>* out_ad_script) {
   // First check if async tasks are running, as `bottom_most_async_ad_script_`
   // is more likely to be what the caller is looking for than
   // `bottom_most_ad_script_`.

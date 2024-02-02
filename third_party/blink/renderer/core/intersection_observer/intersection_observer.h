@@ -180,7 +180,7 @@ class CORE_EXPORT IntersectionObserver final
   // Returns the number of IntersectionObservations that recomputed geometry.
   int64_t ComputeIntersections(
       unsigned flags,
-      absl::optional<base::TimeTicks>& monotonic_time,
+      std::optional<base::TimeTicks>& monotonic_time,
       gfx::Vector2dF accumulated_scroll_delta_since_last_update);
   gfx::Vector2dF MinScrollDeltaToUpdate() const;
 

@@ -279,7 +279,7 @@ mojo::PendingRemote<mojom::blink::Blob> DataURLToBlob(const String& data_url) {
 }
 
 RemoteFrame* SourceFrameForOptionalToken(
-    const absl::optional<RemoteFrameToken>& source_frame_token) {
+    const std::optional<RemoteFrameToken>& source_frame_token) {
   if (!source_frame_token)
     return nullptr;
   return RemoteFrame::FromFrameToken(source_frame_token.value());
@@ -1278,8 +1278,8 @@ void LocalFrame::DidChangeThemeColor(bool update_theme_color_cache) {
   if (update_theme_color_cache)
     GetDocument()->UpdateThemeColorCache();
 
-  absl::optional<Color> color = GetDocument()->ThemeColor();
-  absl::optional<SkColor> sk_color;
+  std::optional<Color> color = GetDocument()->ThemeColor();
+  std::optional<SkColor> sk_color;
   if (color)
     sk_color = color->Rgb();
 
@@ -2354,9 +2354,9 @@ void LocalFrame::SetOpener(Frame* opener_frame) {
   if (web_frame && Opener() != opener_frame) {
     GetLocalFrameHostRemote().DidChangeOpener(
         opener_frame
-            ? absl::optional<blink::LocalFrameToken>(
+            ? std::optional<blink::LocalFrameToken>(
                   opener_frame->GetFrameToken().GetAs<LocalFrameToken>())
-            : absl::nullopt);
+            : std::nullopt);
   }
   SetOpenerDoNotNotify(opener_frame);
 }
@@ -2742,9 +2742,9 @@ struct DowncastTraits<FrameColorOverlay> {
   }
 };
 
-absl::optional<SkColor> LocalFrame::GetFrameOverlayColorForTesting() const {
+std::optional<SkColor> LocalFrame::GetFrameOverlayColorForTesting() const {
   if (!frame_color_overlay_)
-    return absl::nullopt;
+    return std::nullopt;
   return DynamicTo<FrameColorOverlay>(frame_color_overlay_->GetDelegate())
       ->GetColorForTesting();
 }
@@ -3556,7 +3556,7 @@ void LocalFrame::AdvanceFocusForIME(mojom::blink::FocusType focus_type) {
 }
 
 void LocalFrame::PostMessageEvent(
-    const absl::optional<RemoteFrameToken>& source_frame_token,
+    const std::optional<RemoteFrameToken>& source_frame_token,
     const String& source_origin,
     const String& target_origin,
     BlinkTransferableMessage message) {

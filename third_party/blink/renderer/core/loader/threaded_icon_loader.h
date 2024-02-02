@@ -5,9 +5,10 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_THREADED_ICON_LOADER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_THREADED_ICON_LOADER_H_
 
+#include <optional>
+
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/loader/threadable_loader.h"
 #include "third_party/blink/renderer/core/loader/threadable_loader_client.h"
@@ -37,7 +38,7 @@ class CORE_EXPORT ThreadedIconLoader final
   // those dimensions.
   void Start(ExecutionContext* execution_context,
              const ResourceRequestHead& resource_request,
-             const absl::optional<gfx::Size>& resize_dimensions,
+             const std::optional<gfx::Size>& resize_dimensions,
              IconCallback callback);
 
   // Stops the background task. The provided callback will not be run if
@@ -64,7 +65,7 @@ class CORE_EXPORT ThreadedIconLoader final
 
   String response_mime_type_;
 
-  absl::optional<gfx::Size> resize_dimensions_;
+  std::optional<gfx::Size> resize_dimensions_;
 
   IconCallback icon_callback_;
 

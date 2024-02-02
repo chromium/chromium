@@ -26,13 +26,13 @@
 #include "third_party/blink/renderer/platform/graphics/deferred_image_decoder.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/time/time.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/platform/graphics/decoding_image_generator.h"

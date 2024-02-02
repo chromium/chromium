@@ -164,7 +164,7 @@ bool CullRect::ApplyPaintProperties(
     const PropertyTreeState& root,
     const PropertyTreeState& source,
     const PropertyTreeState& destination,
-    const absl::optional<CullRect>& old_cull_rect,
+    const std::optional<CullRect>& old_cull_rect,
     bool disable_expansion) {
   // The caller should check this before calling this function.
   DCHECK_NE(source, destination);
@@ -283,7 +283,7 @@ bool CullRect::ApplyPaintProperties(
   if (rect_.bottom() > kReasonablePixelLimit)
     rect_.set_height(kReasonablePixelLimit - rect_.y());
 
-  absl::optional<gfx::Rect> expansion_bounds;
+  std::optional<gfx::Rect> expansion_bounds;
   if (expanded) {
     DCHECK(last_transform->ScrollNode());
     expansion_bounds = last_transform->ScrollNode()->ContentsRect();
@@ -334,7 +334,7 @@ bool CullRect::ApplyPaintProperties(
 
 bool CullRect::ChangedEnough(
     const CullRect& old_cull_rect,
-    const absl::optional<gfx::Rect>& expansion_bounds) const {
+    const std::optional<gfx::Rect>& expansion_bounds) const {
   const auto& new_rect = Rect();
   const auto& old_rect = old_cull_rect.Rect();
   if (old_rect.Contains(new_rect))

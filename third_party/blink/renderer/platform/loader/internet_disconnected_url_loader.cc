@@ -46,7 +46,7 @@ void InternetDisconnectedURLLoader::LoadSynchronously(
     base::TimeDelta timeout_interval,
     URLLoaderClient*,
     WebURLResponse&,
-    absl::optional<WebURLError>&,
+    std::optional<WebURLError>&,
     scoped_refptr<SharedBuffer>&,
     int64_t& encoded_data_length,
     uint64_t& encoded_body_length,

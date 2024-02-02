@@ -10,6 +10,7 @@
 #include <atomic>
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -28,7 +29,6 @@
 #include "media/base/audio_pull_fifo.h"
 #include "media/base/audio_renderer_sink.h"
 #include "media/base/channel_layout.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/platform/modules/mediastream/web_media_stream_audio_renderer.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/allow_discouraged_type.h"
@@ -373,7 +373,7 @@ class MODULES_EXPORT WebRtcAudioRenderer
   // Used for keeping track of and logging stats for playing audio streams.
   // Created when a stream starts and destroyed when a stream stops.
   // See comments for AudioStreamTracker for more details.
-  absl::optional<AudioStreamTracker> audio_stream_tracker_;
+  std::optional<AudioStreamTracker> audio_stream_tracker_;
 
   base::RepeatingCallback<void()> on_render_error_callback_;
 

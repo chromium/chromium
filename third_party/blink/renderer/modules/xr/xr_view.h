@@ -48,8 +48,8 @@ class MODULES_EXPORT XRView final : public ScriptWrappable {
   // used for video streams from optically transparent AR headsets.
   bool isFirstPersonObserver() const;
 
-  absl::optional<double> recommendedViewportScale() const;
-  void requestViewportScale(absl::optional<double> scale);
+  std::optional<double> recommendedViewportScale() const;
+  void requestViewportScale(std::optional<double> scale);
 
   void Trace(Visitor*) const override;
 
@@ -101,12 +101,12 @@ class MODULES_EXPORT XRViewData final : public GarbageCollected<XRViewData> {
   const gfx::Rect& Viewport() const { return viewport_; }
   bool IsFirstPersonObserver() const { return is_first_person_observer_; }
 
-  absl::optional<double> recommendedViewportScale() const;
-  void SetRecommendedViewportScale(absl::optional<double> scale) {
+  std::optional<double> recommendedViewportScale() const;
+  void SetRecommendedViewportScale(std::optional<double> scale) {
     recommended_viewport_scale_ = scale;
   }
 
-  void requestViewportScale(absl::optional<double> scale);
+  void requestViewportScale(std::optional<double> scale);
 
   bool ViewportModifiable() const { return viewport_modifiable_; }
   void SetViewportModifiable(bool modifiable) {
@@ -128,7 +128,7 @@ class MODULES_EXPORT XRViewData final : public GarbageCollected<XRViewData> {
   bool inv_projection_dirty_ = true;
   gfx::Rect viewport_;
   bool is_first_person_observer_ = false;
-  absl::optional<double> recommended_viewport_scale_ = absl::nullopt;
+  std::optional<double> recommended_viewport_scale_ = std::nullopt;
   double requested_viewport_scale_ = 1.0;
   double current_viewport_scale_ = 1.0;
   bool viewport_modifiable_ = false;

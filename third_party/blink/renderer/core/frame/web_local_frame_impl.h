@@ -139,7 +139,7 @@ class CORE_EXPORT WebLocalFrameImpl final
   WebFrame* FindFrameByName(const WebString& name) override;
   void SetEmbeddingToken(
       const base::UnguessableToken& embedding_token) override;
-  const absl::optional<base::UnguessableToken>& GetEmbeddingToken()
+  const std::optional<base::UnguessableToken>& GetEmbeddingToken()
       const override;
   bool IsInFencedFrameTree() const override;
   void SendPings(const WebURL& destination_url) override;
@@ -329,7 +329,7 @@ class CORE_EXPORT WebLocalFrameImpl final
   bool IsAdFrame() const override;
   bool IsAdScriptInStack() const override;
   void SetAdEvidence(const FrameAdEvidence& ad_evidence) override;
-  const absl::optional<blink::FrameAdEvidence>& AdEvidence() override;
+  const std::optional<blink::FrameAdEvidence>& AdEvidence() override;
   bool IsFrameCreatedByAdScript() override;
   gfx::Size SpoolSizeInPixelsForTesting(
       const WebPrintParams&,
@@ -384,7 +384,7 @@ class CORE_EXPORT WebLocalFrameImpl final
       bool has_transient_user_activation,
       const WebSecurityOrigin& initiator_origin,
       bool is_browser_initiated,
-      absl::optional<scheduler::TaskAttributionId>
+      std::optional<scheduler::TaskAttributionId>
           soft_navigation_heuristics_task_id) override;
   void SetIsNotOnInitialEmptyDocument() override;
   bool IsOnInitialEmptyDocument() override;
@@ -552,7 +552,7 @@ class CORE_EXPORT WebLocalFrameImpl final
   void ShowContextMenu(
       mojo::PendingAssociatedRemote<mojom::blink::ContextMenuClient> client,
       const ContextMenuData& data,
-      const absl::optional<gfx::Point>& host_context_menu_location);
+      const std::optional<gfx::Point>& host_context_menu_location);
 
   virtual void Trace(Visitor*) const;
 

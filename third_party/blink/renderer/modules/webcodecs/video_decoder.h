@@ -89,12 +89,12 @@ class MODULES_EXPORT VideoDecoder : public DecoderTemplate<VideoDecoderTraits> {
       const ConfigType& config);
 
   // Returns parsed VideoType if the configuration is valid.
-  static absl::optional<media::VideoType> IsValidVideoDecoderConfig(
+  static std::optional<media::VideoType> IsValidVideoDecoderConfig(
       const VideoDecoderConfig& config,
       String* js_error_message);
 
   // For use by MediaSource
-  static absl::optional<media::VideoDecoderConfig> MakeMediaVideoDecoderConfig(
+  static std::optional<media::VideoDecoderConfig> MakeMediaVideoDecoderConfig(
       const ConfigType& config,
       String* js_error_message,
       bool* needs_converter_out = nullptr);
@@ -108,7 +108,7 @@ class MODULES_EXPORT VideoDecoder : public DecoderTemplate<VideoDecoderTraits> {
  protected:
   bool IsValidConfig(const ConfigType& config,
                      String* js_error_message) override;
-  absl::optional<media::VideoDecoderConfig> MakeMediaConfig(
+  std::optional<media::VideoDecoderConfig> MakeMediaConfig(
       const ConfigType& config,
       String* js_error_message) override;
   media::DecoderStatus::Or<scoped_refptr<media::DecoderBuffer>> MakeInput(
@@ -124,7 +124,7 @@ class MODULES_EXPORT VideoDecoder : public DecoderTemplate<VideoDecoderTraits> {
   bool GetLowDelayPreference(const ConfigType& config) override;
   void SetHardwarePreference(HardwarePreference preference) override;
   // For use by ::MakeMediaConfig
-  static absl::optional<media::VideoDecoderConfig>
+  static std::optional<media::VideoDecoderConfig>
   MakeMediaVideoDecoderConfigInternal(
       const ConfigType& config,
       std::unique_ptr<VideoDecoderHelper>& decoder_helper,

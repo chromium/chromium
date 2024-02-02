@@ -44,7 +44,7 @@ const LayoutResult* TableRowLayoutAlgorithm::Layout() {
       [this, &table_data](
           BlockNode cell, const BlockBreakToken* cell_break_token,
           const TableConstraintSpaceData::Cell& cell_data,
-          LayoutUnit row_block_size, absl::optional<LayoutUnit> row_baseline,
+          LayoutUnit row_block_size, std::optional<LayoutUnit> row_baseline,
           bool min_block_size_should_encompass_intrinsic_size) {
         bool has_rowspan = cell_data.rowspan_block_size != kIndefiniteSize;
         LayoutUnit cell_block_size =
@@ -130,7 +130,7 @@ const LayoutResult* TableRowLayoutAlgorithm::Layout() {
   HeapVector<ResultWithOffset> results;
   bool has_inflow_break_inside = false;
   auto PlaceCells = [&](LayoutUnit row_block_size,
-                        absl::optional<LayoutUnit> row_baseline) {
+                        std::optional<LayoutUnit> row_baseline) {
     // Reset our state.
     max_cell_block_size = LayoutUnit();
     row_break_before = EBreakBetween::kAuto;
@@ -207,11 +207,11 @@ const LayoutResult* TableRowLayoutAlgorithm::Layout() {
   //
   // We also don't perform baseline alignment if block-fragmentation is
   // present, as the alignment baseline may end up in another fragmentainer.
-  absl::optional<LayoutUnit> row_baseline;
+  std::optional<LayoutUnit> row_baseline;
   if (!has_block_fragmentation) {
     row_baseline = row.baseline;
     if (!row_baseline) {
-      PlaceCells(row.block_size, absl::nullopt);
+      PlaceCells(row.block_size, std::nullopt);
       row_baseline = row_baseline_tabulator.ComputeBaseline(row.block_size);
     }
   }
@@ -236,7 +236,7 @@ const LayoutResult* TableRowLayoutAlgorithm::Layout() {
   if (has_block_fragmentation) {
     // If we've expanded due to fragmentation, relayout with the new block-size.
     if (row.block_size != row_block_size) {
-      PlaceCells(row_block_size, absl::nullopt);
+      PlaceCells(row_block_size, std::nullopt);
     }
 
     for (auto& result : results)

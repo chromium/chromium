@@ -99,7 +99,7 @@ class MediaStreamAudioTrackUnderlyingSourceTest : public testing::Test {
   // beginning of the audio data to be pushed into |track|.
   void PushData(
       MediaStreamTrack* track,
-      const absl::optional<base::TimeDelta>& timestamp = absl::nullopt) {
+      const std::optional<base::TimeDelta>& timestamp = std::nullopt) {
     auto data = media::AudioBuffer::CreateEmptyBuffer(
         media::ChannelLayout::CHANNEL_LAYOUT_STEREO, /*channel_count=*/2,
         kSampleRate, kNumFrames, timestamp.value_or(base::Seconds(1)));

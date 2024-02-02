@@ -32,7 +32,7 @@ class MODULES_EXPORT TCPServerReadableStreamWrapper
   void OnAccept(
       mojo::PendingReceiver<network::mojom::blink::SocketObserver> observer,
       int result,
-      const absl::optional<net::IPEndPoint>& remote_addr,
+      const std::optional<net::IPEndPoint>& remote_addr,
       mojo::PendingRemote<network::mojom::blink::TCPConnectedSocket>
           connected_socket,
       mojo::ScopedDataPipeConsumerHandle receive_stream,

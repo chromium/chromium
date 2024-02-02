@@ -126,7 +126,7 @@ void SoftNavigationHeuristics::ResetHeuristic() {
   interaction_task_id_to_interaction_data_.clear();
   soft_navigation_interaction_data_ = nullptr;
   last_interaction_task_id_ = scheduler::TaskAttributionId();
-  last_soft_navigation_ancestor_task_ = absl::nullopt;
+  last_soft_navigation_ancestor_task_ = std::nullopt;
   soft_navigation_descendant_cache_.clear();
   SetIsTrackingSoftNavigationHeuristicsOnDocument(false);
   did_reset_paints_ = false;
@@ -177,12 +177,12 @@ void SoftNavigationHeuristics::UserInitiatedInteraction() {
   ResetPaintsIfNeeded();
 }
 
-absl::optional<scheduler::TaskAttributionId>
+std::optional<scheduler::TaskAttributionId>
 SoftNavigationHeuristics::GetUserInteractionAncestorTaskIfAny() {
   using IterationStatus = scheduler::TaskAttributionTracker::IterationStatus;
 
   if (potential_soft_navigation_tasks_.empty()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   ThreadScheduler* scheduler = ThreadScheduler::Current();
   DCHECK(scheduler);
@@ -191,14 +191,14 @@ SoftNavigationHeuristics::GetUserInteractionAncestorTaskIfAny() {
     scheduler::TaskAttributionInfo* task =
         tracker->RunningTask(GetExecutionContext()->GetIsolate());
     if (!task) {
-      return absl::nullopt;
+      return std::nullopt;
     }
     auto cached_result =
         soft_navigation_descendant_cache_.find(task->Id().value());
     if (cached_result != soft_navigation_descendant_cache_.end()) {
       return cached_result->value;
     }
-    absl::optional<scheduler::TaskAttributionId> ancestor_task_id;
+    std::optional<scheduler::TaskAttributionId> ancestor_task_id;
     // Check if any of `potential_soft_navigation_tasks_` is an ancestor of
     // `task`.
     tracker->ForEachAncestor(
@@ -213,20 +213,20 @@ SoftNavigationHeuristics::GetUserInteractionAncestorTaskIfAny() {
                                              ancestor_task_id);
     return ancestor_task_id;
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
-absl::optional<scheduler::TaskAttributionId>
+std::optional<scheduler::TaskAttributionId>
 SoftNavigationHeuristics::SetFlagIfDescendantAndCheck(FlagType type) {
-  absl::optional<scheduler::TaskAttributionId> result =
+  std::optional<scheduler::TaskAttributionId> result =
       GetUserInteractionAncestorTaskIfAny();
   if (!result) {
     // A non-descendent URL change should not set the flag.
-    return absl::nullopt;
+    return std::nullopt;
   }
   PerInteractionData* data = GetCurrentInteractionData(result.value());
   if (!data) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   data->flag_set.Put(type);
   CheckSoftNavigationConditions(*data);

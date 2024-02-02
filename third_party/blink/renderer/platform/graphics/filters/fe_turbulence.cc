@@ -122,7 +122,7 @@ sk_sp<PaintFilter> FETurbulence::CreateImageFilter() {
     base_frequency_x = base_frequency_y = 0;
   }
 
-  absl::optional<PaintFilter::CropRect> crop_rect = GetCropRect();
+  std::optional<PaintFilter::CropRect> crop_rect = GetCropRect();
   TurbulencePaintFilter::TurbulenceType type =
       GetType() == FETURBULENCE_TYPE_FRACTALNOISE
           ? TurbulencePaintFilter::TurbulenceType::kFractalNoise

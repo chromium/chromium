@@ -134,7 +134,7 @@ class MODULES_EXPORT MediaStreamTrackImpl : public MediaStreamTrack,
                  int wheel_delta_x,
                  int wheel_delta_y,
                  base::OnceCallback<void(DOMException*)> callback) override;
-  void GetZoomLevel(base::OnceCallback<void(absl::optional<int>, const String&)>
+  void GetZoomLevel(base::OnceCallback<void(std::optional<int>, const String&)>
                         callback) override;
   void SetZoomLevel(int zoom_level,
                     base::OnceCallback<void(DOMException*)> callback) override;
@@ -151,7 +151,7 @@ class MODULES_EXPORT MediaStreamTrackImpl : public MediaStreamTrack,
 
   ImageCapture* GetImageCapture() override { return image_capture_.Get(); }
 
-  absl::optional<const MediaStreamDevice> device() const override;
+  std::optional<const MediaStreamDevice> device() const override;
 
   void BeingTransferred(const base::UnguessableToken& transfer_id) override;
   bool TransferAllowed(String& message) const override;
@@ -225,7 +225,7 @@ class MODULES_EXPORT MediaStreamTrackImpl : public MediaStreamTrack,
   HeapHashSet<WeakMember<MediaStreamTrack::Observer>> observers_;
   bool muted_ = false;
   MediaConstraints constraints_;
-  absl::optional<bool> suppress_local_audio_playback_setting_;
+  std::optional<bool> suppress_local_audio_playback_setting_;
   Member<MediaStreamTrackVideoStats> video_stats_;
 };
 

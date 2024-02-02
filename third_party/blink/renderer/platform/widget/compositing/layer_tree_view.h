@@ -88,7 +88,7 @@ class PLATFORM_EXPORT LayerTreeView
   void OnDeferCommitsChanged(
       bool defer_status,
       cc::PaintHoldingReason reason,
-      absl::optional<cc::PaintHoldingCommitTrigger> trigger) override;
+      std::optional<cc::PaintHoldingCommitTrigger> trigger) override;
   void OnCommitRequested() override;
   void BeginMainFrameNotExpectedSoon() override;
   void BeginMainFrameNotExpectedUntil(base::TimeTicks time) override;

@@ -239,7 +239,7 @@ bool WebMessagePort::Accept(mojo::Message* mojo_message) {
   auto ports = std::move(transferable_message.ports);
   // Decode the string portion of the message.
   Message message;
-  absl::optional<WebMessagePayload> optional_payload =
+  std::optional<WebMessagePayload> optional_payload =
       blink::DecodeToWebMessagePayload(std::move(transferable_message));
   if (!optional_payload)
     return false;

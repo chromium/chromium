@@ -5,8 +5,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_INLINE_INLINE_ITEM_RESULT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_INLINE_INLINE_ITEM_RESULT_H_
 
+#include <optional>
+
 #include "base/dcheck_is_on.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/geometry/box_strut.h"
 #include "third_party/blink/renderer/core/layout/inline/hyphen_result.h"
@@ -95,7 +96,7 @@ struct CORE_EXPORT InlineItemResult {
   // positioned floats (not unpositioned). It indicates where it was placed
   // within the BFC.
   GC_PLUGIN_IGNORE("crbug.com/1146383")
-  absl::optional<PositionedFloat> positioned_float;
+  std::optional<PositionedFloat> positioned_float;
   ExclusionSpace exclusion_space_before_position_float;
 
   // Margins, borders, and padding for open tags.

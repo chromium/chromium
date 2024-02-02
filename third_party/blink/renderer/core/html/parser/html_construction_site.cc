@@ -125,7 +125,7 @@ static unsigned NextTextBreakPositionForContainer(
     const ContainerNode& node,
     unsigned current_position,
     unsigned string_length,
-    absl::optional<unsigned>& length_limit) {
+    std::optional<unsigned>& length_limit) {
   if (string_length < Text::kDefaultLengthLimit)
     return string_length;
   if (!length_limit) {
@@ -374,7 +374,7 @@ void HTMLConstructionSite::FlushPendingText() {
   // Lazily determine the line limit as it's non-trivial, and in the typical
   // case not necessary. Note that this is faster than using a ternary operator
   // to determine limit.
-  absl::optional<unsigned> length_limit;
+  std::optional<unsigned> length_limit;
 
   unsigned current_position = 0;
   const StringBuilder& string = pending_text_.string_builder;

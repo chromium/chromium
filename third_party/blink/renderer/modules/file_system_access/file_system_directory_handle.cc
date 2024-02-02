@@ -256,7 +256,7 @@ FileSystemDirectoryHandle::resolve(ScriptState* script_state,
              ScriptPromiseResolverTyped<IDLNullable<IDLSequence<IDLUSVString>>>*
                  resolver,
              FileSystemAccessErrorPtr result,
-             const absl::optional<Vector<String>>& path) {
+             const std::optional<Vector<String>>& path) {
             // Keep `this` alive so the handle will not be garbage-collected
             // before the promise is resolved.
             if (result->status != mojom::blink::FileSystemAccessStatus::kOk) {
@@ -364,7 +364,7 @@ void FileSystemDirectoryHandle::IsSameEntryImpl(
           [](base::OnceCallback<void(mojom::blink::FileSystemAccessErrorPtr,
                                      bool)> callback,
              FileSystemAccessErrorPtr result,
-             const absl::optional<Vector<String>>& path) {
+             const std::optional<Vector<String>>& path) {
             std::move(callback).Run(std::move(result),
                                     path.has_value() && path->empty());
           },

@@ -7,11 +7,11 @@
 
 #include <stdint.h>
 
+#include <optional>
 #include <string>
 #include <vector>
 
 #include "base/time/time.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/common_export.h"
 #include "third_party/blink/public/common/interest_group/ad_display_size.h"
 #include "third_party/blink/public/common/interest_group/interest_group.h"
@@ -28,32 +28,32 @@ struct BLINK_COMMON_EXPORT StructTraits<blink::mojom::InterestGroupAdDataView,
     return ad.render_url_;
   }
 
-  static const absl::optional<std::string>& size_group(
+  static const std::optional<std::string>& size_group(
       const blink::InterestGroup::Ad& ad) {
     return ad.size_group;
   }
 
-  static const absl::optional<std::string>& buyer_reporting_id(
+  static const std::optional<std::string>& buyer_reporting_id(
       const blink::InterestGroup::Ad& ad) {
     return ad.buyer_reporting_id;
   }
 
-  static const absl::optional<std::string>& buyer_and_seller_reporting_id(
+  static const std::optional<std::string>& buyer_and_seller_reporting_id(
       const blink::InterestGroup::Ad& ad) {
     return ad.buyer_and_seller_reporting_id;
   }
 
-  static const absl::optional<std::string>& metadata(
+  static const std::optional<std::string>& metadata(
       const blink::InterestGroup::Ad& ad) {
     return ad.metadata;
   }
 
-  static const absl::optional<std::string>& ad_render_id(
+  static const std::optional<std::string>& ad_render_id(
       const blink::InterestGroup::Ad& ad) {
     return ad.ad_render_id;
   }
 
-  static const absl::optional<std::vector<url::Origin>>&
+  static const std::optional<std::vector<url::Origin>>&
   allowed_reporting_origins(const blink::InterestGroup::Ad& ad) {
     return ad.allowed_reporting_origins;
   }
@@ -122,17 +122,17 @@ struct BLINK_COMMON_EXPORT
     return interest_group.enable_bidding_signals_prioritization;
   }
 
-  static const absl::optional<base::flat_map<std::string, double>>&
+  static const std::optional<base::flat_map<std::string, double>>&
   priority_vector(const blink::InterestGroup& interest_group) {
     return interest_group.priority_vector;
   }
 
-  static const absl::optional<base::flat_map<std::string, double>>&
+  static const std::optional<base::flat_map<std::string, double>>&
   priority_signals_overrides(const blink::InterestGroup& interest_group) {
     return interest_group.priority_signals_overrides;
   }
 
-  static const absl::optional<
+  static const std::optional<
       base::flat_map<url::Origin, blink::SellerCapabilitiesType>>&
   seller_capabilities(const blink::InterestGroup& interest_group) {
     return interest_group.seller_capabilities;
@@ -148,27 +148,27 @@ struct BLINK_COMMON_EXPORT
     return interest_group.execution_mode;
   }
 
-  static const absl::optional<GURL>& bidding_url(
+  static const std::optional<GURL>& bidding_url(
       const blink::InterestGroup& interest_group) {
     return interest_group.bidding_url;
   }
 
-  static const absl::optional<GURL>& bidding_wasm_helper_url(
+  static const std::optional<GURL>& bidding_wasm_helper_url(
       const blink::InterestGroup& interest_group) {
     return interest_group.bidding_wasm_helper_url;
   }
 
-  static const absl::optional<GURL>& update_url(
+  static const std::optional<GURL>& update_url(
       const blink::InterestGroup& interest_group) {
     return interest_group.update_url;
   }
 
-  static const absl::optional<GURL>& trusted_bidding_signals_url(
+  static const std::optional<GURL>& trusted_bidding_signals_url(
       const blink::InterestGroup& interest_group) {
     return interest_group.trusted_bidding_signals_url;
   }
 
-  static const absl::optional<std::vector<std::string>>&
+  static const std::optional<std::vector<std::string>>&
   trusted_bidding_signals_keys(const blink::InterestGroup& interest_group) {
     return interest_group.trusted_bidding_signals_keys;
   }
@@ -184,27 +184,27 @@ struct BLINK_COMMON_EXPORT
     return interest_group.max_trusted_bidding_signals_url_length;
   }
 
-  static const absl::optional<std::string>& user_bidding_signals(
+  static const std::optional<std::string>& user_bidding_signals(
       const blink::InterestGroup& interest_group) {
     return interest_group.user_bidding_signals;
   }
 
-  static const absl::optional<std::vector<blink::InterestGroup::Ad>>& ads(
+  static const std::optional<std::vector<blink::InterestGroup::Ad>>& ads(
       const blink::InterestGroup& interest_group) {
     return interest_group.ads;
   }
 
-  static const absl::optional<std::vector<blink::InterestGroup::Ad>>&
+  static const std::optional<std::vector<blink::InterestGroup::Ad>>&
   ad_components(const blink::InterestGroup& interest_group) {
     return interest_group.ad_components;
   }
 
-  static const absl::optional<base::flat_map<std::string, blink::AdSize>>&
+  static const std::optional<base::flat_map<std::string, blink::AdSize>>&
   ad_sizes(const blink::InterestGroup& interest_group) {
     return interest_group.ad_sizes;
   }
 
-  static const absl::optional<
+  static const std::optional<
       base::flat_map<std::string, std::vector<std::string>>>&
   size_groups(const blink::InterestGroup& interest_group) {
     return interest_group.size_groups;
@@ -215,12 +215,12 @@ struct BLINK_COMMON_EXPORT
     return interest_group.auction_server_request_flags;
   }
 
-  static const absl::optional<blink::InterestGroup::AdditionalBidKey>&
+  static const std::optional<blink::InterestGroup::AdditionalBidKey>&
   additional_bid_key(const blink::InterestGroup& interest_group) {
     return interest_group.additional_bid_key;
   }
 
-  static const absl::optional<url::Origin>& aggregation_coordinator_origin(
+  static const std::optional<url::Origin>& aggregation_coordinator_origin(
       const blink::InterestGroup& interest_group) {
     return interest_group.aggregation_coordinator_origin;
   }

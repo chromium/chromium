@@ -35,7 +35,7 @@ TEST(HTMLParsePerfTest, Speedometer) {
 
   scoped_refptr<SharedBuffer> serialized =
       test::ReadFromFile(test::CoreTestDataPath(filename));
-  absl::optional<base::Value> json = base::JSONReader::Read(
+  std::optional<base::Value> json = base::JSONReader::Read(
       base::StringPiece(serialized->Data(), serialized->size()));
   if (!json.has_value()) {
     char msg[256];

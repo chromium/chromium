@@ -36,10 +36,10 @@ class CORE_EXPORT NotRestoredReasons : public ScriptWrappable {
 
   const String url() const { return url_; }
 
-  const absl::optional<HeapVector<Member<NotRestoredReasonDetails>>> reasons()
+  const std::optional<HeapVector<Member<NotRestoredReasonDetails>>> reasons()
       const;
 
-  const absl::optional<HeapVector<Member<NotRestoredReasons>>> children() const;
+  const std::optional<HeapVector<Member<NotRestoredReasons>>> children() const;
 
   ScriptValue toJSON(ScriptState* script_state) const;
 

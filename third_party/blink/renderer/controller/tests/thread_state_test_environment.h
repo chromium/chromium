@@ -5,9 +5,10 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CONTROLLER_TESTS_THREAD_STATE_TEST_ENVIRONMENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CONTROLLER_TESTS_THREAD_STATE_TEST_ENVIRONMENT_H_
 
+#include <optional>
+
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/renderer/platform/heap/heap_test_utilities.h"
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
@@ -32,7 +33,7 @@ class ThreadStateTestEnvironment : public ::testing::Environment {
 
  private:
   STACK_ALLOCATED_IGNORE("https://crbug.com/1409156")
-  absl::optional<blink::HeapPointersOnStackScope> conservative_gc_scope_;
+  std::optional<blink::HeapPointersOnStackScope> conservative_gc_scope_;
 };
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CONTROLLER_TESTS_THREAD_STATE_TEST_ENVIRONMENT_H_

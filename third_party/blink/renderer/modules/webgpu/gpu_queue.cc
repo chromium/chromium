@@ -470,7 +470,7 @@ void GPUQueue::WriteBufferImpl(ScriptState* script_state,
                                const void* data_base_ptr,
                                unsigned data_bytes_per_element,
                                uint64_t data_element_offset,
-                               absl::optional<uint64_t> data_element_count,
+                               std::optional<uint64_t> data_element_count,
                                ExceptionState& exception_state) {
   CHECK_LE(data_bytes_per_element, 8u);
 

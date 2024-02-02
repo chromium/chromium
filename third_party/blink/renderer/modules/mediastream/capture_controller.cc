@@ -35,7 +35,7 @@ bool IsCaptureType(const MediaStreamTrack* track,
 
   MediaStreamTrackPlatform::Settings settings;
   video_track->GetSettings(settings);
-  const absl::optional<SurfaceType> display_surface = settings.display_surface;
+  const std::optional<SurfaceType> display_surface = settings.display_surface;
   return base::ranges::any_of(
       types, [display_surface](SurfaceType t) { return t == display_surface; });
 }

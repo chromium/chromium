@@ -98,7 +98,7 @@ void ServiceWorkerEventQueue::EnqueueNormal(
     int event_id,
     StartCallback start_callback,
     AbortCallback abort_callback,
-    absl::optional<base::TimeDelta> custom_timeout) {
+    std::optional<base::TimeDelta> custom_timeout) {
   EnqueueEvent(std::make_unique<Event>(
       event_id, Event::Type::Normal, std::move(start_callback),
       std::move(abort_callback), std::move(custom_timeout)));
@@ -108,7 +108,7 @@ void ServiceWorkerEventQueue::EnqueuePending(
     int event_id,
     StartCallback start_callback,
     AbortCallback abort_callback,
-    absl::optional<base::TimeDelta> custom_timeout) {
+    std::optional<base::TimeDelta> custom_timeout) {
   EnqueueEvent(std::make_unique<Event>(
       event_id, Event::Type::Pending, std::move(start_callback),
       std::move(abort_callback), std::move(custom_timeout)));
@@ -118,7 +118,7 @@ void ServiceWorkerEventQueue::EnqueueOffline(
     int event_id,
     StartCallback start_callback,
     AbortCallback abort_callback,
-    absl::optional<base::TimeDelta> custom_timeout) {
+    std::optional<base::TimeDelta> custom_timeout) {
   EnqueueEvent(std::make_unique<ServiceWorkerEventQueue::Event>(
       event_id, ServiceWorkerEventQueue::Event::Type::Offline,
       std::move(start_callback), std::move(abort_callback),
@@ -384,7 +384,7 @@ ServiceWorkerEventQueue::Event::Event(
     ServiceWorkerEventQueue::Event::Type type,
     StartCallback start_callback,
     AbortCallback abort_callback,
-    absl::optional<base::TimeDelta> custom_timeout)
+    std::optional<base::TimeDelta> custom_timeout)
     : event_id(event_id),
       type(type),
       start_callback(std::move(start_callback)),

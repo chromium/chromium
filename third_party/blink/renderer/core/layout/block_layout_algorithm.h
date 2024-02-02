@@ -5,8 +5,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_BLOCK_LAYOUT_ALGORITHM_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_BLOCK_LAYOUT_ALGORITHM_H_
 
+#include <optional>
+
 #include "base/memory/scoped_refptr.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/block_break_token.h"
 #include "third_party/blink/renderer/core/layout/block_node.h"
@@ -15,8 +16,8 @@
 #include "third_party/blink/renderer/core/layout/floats_utils.h"
 #include "third_party/blink/renderer/core/layout/geometry/margin_strut.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_child_layout_context.h"
-#include "third_party/blink/renderer/core/layout/layout_result.h"
 #include "third_party/blink/renderer/core/layout/layout_algorithm.h"
+#include "third_party/blink/renderer/core/layout/layout_result.h"
 #include "third_party/blink/renderer/core/layout/unpositioned_float.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 
@@ -120,7 +121,7 @@ class CORE_EXPORT BlockLayoutAlgorithm
       const InflowChildData& child_data,
       const LogicalSize child_available_size,
       bool is_new_fc,
-      const absl::optional<LayoutUnit> bfc_block_offset = absl::nullopt,
+      const std::optional<LayoutUnit> bfc_block_offset = std::nullopt,
       bool has_clearance_past_adjoining_floats = false,
       LayoutUnit block_start_annotation_space = LayoutUnit());
 
@@ -134,7 +135,7 @@ class CORE_EXPORT BlockLayoutAlgorithm
       const PreviousInflowPosition&,
       const LayoutInputNode child,
       const InflowChildData&,
-      const absl::optional<LayoutUnit>& child_bfc_block_offset,
+      const std::optional<LayoutUnit>& child_bfc_block_offset,
       const LogicalOffset&,
       const LayoutResult&,
       const LogicalFragment&,
@@ -279,7 +280,7 @@ class CORE_EXPORT BlockLayoutAlgorithm
   bool ResolveBfcBlockOffset(
       PreviousInflowPosition*,
       LayoutUnit bfc_block_offset,
-      const absl::optional<LayoutUnit> forced_bfc_block_offset);
+      const std::optional<LayoutUnit> forced_bfc_block_offset);
 
   // This passes in the |forced_bfc_block_offset| from the input constraints,
   // which is almost always desired.
@@ -329,7 +330,7 @@ class CORE_EXPORT BlockLayoutAlgorithm
   LogicalOffset CalculateLogicalOffset(
       const LogicalFragment& fragment,
       LayoutUnit child_bfc_line_offset,
-      const absl::optional<LayoutUnit>& child_bfc_block_offset);
+      const std::optional<LayoutUnit>& child_bfc_block_offset);
 
   // In quirks mode the body element will stretch to fit the viewport.
   //
@@ -339,7 +340,7 @@ class CORE_EXPORT BlockLayoutAlgorithm
   // This block-direction margin is non-trivial to calculate for the body
   // element, and is computed upfront for the |ClampIntrinsicBlockSize|
   // function.
-  absl::optional<LayoutUnit> CalculateQuirkyBodyMarginBlockSum(
+  std::optional<LayoutUnit> CalculateQuirkyBodyMarginBlockSum(
       const MarginStrut& end_margin_strut);
 
   // Return true if this is a list-item that may have to place a marker.
@@ -434,11 +435,11 @@ class CORE_EXPORT BlockLayoutAlgorithm
 
   // If set, this is the number of lines until a clamp. A value of 1 indicates
   // the current line should be clamped. This may go negative.
-  absl::optional<int> lines_until_clamp_;
+  std::optional<int> lines_until_clamp_;
 
   // If set, one of the lines was clamped and this is the intrinsic size at the
   // time of the clamp.
-  absl::optional<LayoutUnit> intrinsic_block_size_when_clamped_;
+  std::optional<LayoutUnit> intrinsic_block_size_when_clamped_;
 };
 
 }  // namespace blink

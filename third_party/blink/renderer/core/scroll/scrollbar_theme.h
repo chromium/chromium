@@ -78,7 +78,7 @@ class CORE_EXPORT ScrollbarTheme {
 
   virtual bool IsSolidColor() const { return false; }
   virtual SkColor4f GetSolidColor(
-      const absl::optional<Color>& css_thumb_color) const {
+      const std::optional<Color>& css_thumb_color) const {
     NOTREACHED_NORETURN();
   }
   virtual bool UsesOverlayScrollbars() const { return false; }

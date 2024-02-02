@@ -196,7 +196,7 @@ TEST(FormDataTest, CreateFromControlState) {
 TEST(FormDataTest, FilenameWithLoneSurrogates) {
   test::TaskEnvironment task_environment;
   UChar filename[] = {'a', 0xD800, 'b', 0};
-  auto* file = MakeGarbageCollected<File>(filename, absl::nullopt,
+  auto* file = MakeGarbageCollected<File>(filename, std::nullopt,
                                           BlobDataHandle::Create());
 
   auto* fd = MakeGarbageCollected<FormData>(UTF8Encoding());

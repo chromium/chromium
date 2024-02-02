@@ -1598,7 +1598,7 @@ const AtomicString& XMLHttpRequest::getResponseHeader(
 }
 
 AtomicString XMLHttpRequest::FinalResponseMIMETypeInternal() const {
-  absl::optional<std::string> overridden_type =
+  std::optional<std::string> overridden_type =
       net::ExtractMimeTypeFromMediaType(mime_type_override_.Utf8(),
                                         /*accept_comma_separated=*/false);
   if (overridden_type.has_value()) {
@@ -1607,7 +1607,7 @@ AtomicString XMLHttpRequest::FinalResponseMIMETypeInternal() const {
 
   if (response_.IsHTTP()) {
     AtomicString header = response_.HttpHeaderField(http_names::kContentType);
-    absl::optional<std::string> extracted_type =
+    std::optional<std::string> extracted_type =
         net::ExtractMimeTypeFromMediaType(header.Utf8(),
                                           /*accept_comma_separated=*/true);
     if (extracted_type.has_value()) {

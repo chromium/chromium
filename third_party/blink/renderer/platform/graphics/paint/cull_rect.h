@@ -6,8 +6,8 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_PAINT_CULL_RECT_H_
 
 #include <limits>
+#include <optional>
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/platform/geometry/infinite_int_rect.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -54,7 +54,7 @@ class PLATFORM_EXPORT CullRect {
   bool ApplyPaintProperties(const PropertyTreeState& root,
                             const PropertyTreeState& source,
                             const PropertyTreeState& destination,
-                            const absl::optional<CullRect>& old_cull_rect,
+                            const std::optional<CullRect>& old_cull_rect,
                             bool disable_expansion);
 
   const gfx::Rect& Rect() const { return rect_; }
@@ -81,7 +81,7 @@ class PLATFORM_EXPORT CullRect {
       const PropertyTreeState& destination);
 
   bool ChangedEnough(const CullRect& old_cull_rect,
-                     const absl::optional<gfx::Rect>& expansion_bounds) const;
+                     const std::optional<gfx::Rect>& expansion_bounds) const;
 
   gfx::Rect rect_;
 };

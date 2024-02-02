@@ -274,7 +274,7 @@ IntersectionGeometry::IntersectionGeometry(
     const Vector<Length>& target_margin,
     const Vector<Length>& scroll_margin,
     unsigned flags,
-    absl::optional<RootGeometry>& root_geometry,
+    std::optional<RootGeometry>& root_geometry,
     CachedRects* cached_rects)
     : flags_(flags & kConstructorFlagsMask) {
   // Only one of root_margin or target_margin can be specified.
@@ -701,7 +701,7 @@ bool IntersectionGeometry::ClipToRoot(const RootAndTarget& root_and_target,
     for (const LayoutBox* scroller : root_and_target.intermediate_scrollers) {
       gfx::RectF scroller_rect =
           gfx::RectF(scroller->OverflowClipRect(PhysicalOffset()));
-      if (absl::optional<gfx::RectF> clip_path_box =
+      if (std::optional<gfx::RectF> clip_path_box =
               ClipPathClipper::LocalClipPathBoundingBox(*scroller)) {
         scroller_rect.Intersect(*clip_path_box);
       }

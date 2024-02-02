@@ -65,7 +65,7 @@ ConstraintSpace CreateCaptionConstraintSpace(
     const ComputedStyle& table_style,
     const BlockNode& caption,
     LogicalSize available_size,
-    absl::optional<LayoutUnit> block_offset = absl::nullopt) {
+    std::optional<LayoutUnit> block_offset = std::nullopt) {
   ConstraintSpaceBuilder builder(table_constraint_space,
                                  caption.Style().GetWritingDirection(),
                                  /* is_new_fc */ true);
@@ -151,7 +151,7 @@ void ComputeCaptionFragments(
     //
     // TODO(mstensho): We can remove this if we only perform this operation once
     // per table node (and e.g. store the table data in the break tokens).
-    absl::optional<DisableLayoutSideEffectsScope> disable_side_effects;
+    std::optional<DisableLayoutSideEffectsScope> disable_side_effects;
     if ((!captions && !caption.GetLayoutBox()->NeedsLayout()) ||
         InvolvedInBlockFragmentation(table_builder)) {
       disable_side_effects.emplace();
@@ -499,7 +499,7 @@ LayoutUnit TableLayoutAlgorithm::ComputeTableInlineSize(
     const BoxStrut& table_border_padding) {
   const bool is_fixed_layout = table.Style().IsFixedTableLayout();
   // Tables need autosizer.
-  absl::optional<TextAutosizer::TableLayoutScope> text_autosizer;
+  std::optional<TextAutosizer::TableLayoutScope> text_autosizer;
   if (!is_fixed_layout)
     text_autosizer.emplace(To<LayoutTable>(table.GetLayoutBox()));
 
@@ -682,7 +682,7 @@ MinMaxSizesResult TableLayoutAlgorithm::ComputeMinMaxSizes(
     const MinMaxSizesFloatInput&) {
   const bool is_fixed_layout = Style().IsFixedTableLayout();
   // Tables need autosizer.
-  absl::optional<TextAutosizer::TableLayoutScope> text_autosizer;
+  std::optional<TextAutosizer::TableLayoutScope> text_autosizer;
   if (!is_fixed_layout)
     text_autosizer.emplace(To<LayoutTable>(Node().GetLayoutBox()));
 
@@ -1055,9 +1055,9 @@ const LayoutResult* TableLayoutAlgorithm::GenerateFragment(
   const LayoutUnit section_inline_offset =
       border_padding.inline_start + border_spacing.inline_size;
 
-  absl::optional<TableBoxExtent> table_box_extent;
-  absl::optional<LayoutUnit> first_baseline;
-  absl::optional<LayoutUnit> last_baseline;
+  std::optional<TableBoxExtent> table_box_extent;
+  std::optional<LayoutUnit> first_baseline;
+  std::optional<LayoutUnit> last_baseline;
 
   bool has_repeated_header = false;
   bool has_pending_repeated_footer = false;
@@ -1180,14 +1180,14 @@ const LayoutResult* TableLayoutAlgorithm::GenerateFragment(
 
     const BlockBreakToken* child_break_token = entry.GetBreakToken();
     const LayoutResult* child_result;
-    absl::optional<LayoutUnit> offset_before_repeated_header;
+    std::optional<LayoutUnit> offset_before_repeated_header;
     LayoutUnit child_inline_offset;
 
     // Captions allow margins.
     LayoutUnit child_block_start_margin;
     LayoutUnit child_block_end_margin;
 
-    absl::optional<TableBoxExtent> new_table_box_extent;
+    std::optional<TableBoxExtent> new_table_box_extent;
     bool is_repeated_section = false;
     bool has_overlapping_repeated_header = false;
 

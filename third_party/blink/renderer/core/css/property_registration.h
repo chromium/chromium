@@ -40,10 +40,10 @@ class CORE_EXPORT PropertyRegistration final
   static const PropertyRegistration* From(const ExecutionContext*,
                                           const AtomicString& property_name);
 
-  static absl::optional<CSSSyntaxDefinition> ConvertSyntax(
+  static std::optional<CSSSyntaxDefinition> ConvertSyntax(
       const CSSValue* value);
-  static absl::optional<bool> ConvertInherits(const CSSValue* value);
-  static absl::optional<const CSSValue*> ConvertInitial(
+  static std::optional<bool> ConvertInherits(const CSSValue* value);
+  static std::optional<const CSSValue*> ConvertInitial(
       const CSSValue* value,
       const CSSSyntaxDefinition& syntax,
       const CSSParserContext& parser_context);

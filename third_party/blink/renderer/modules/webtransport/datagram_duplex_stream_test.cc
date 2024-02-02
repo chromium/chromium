@@ -36,7 +36,7 @@ class StubWebTransport final : public network::mojom::blink::WebTransport {
           pending_receiver)
       : receiver_(this, std::move(pending_receiver)) {}
 
-  absl::optional<base::TimeDelta> OutgoingDatagramExpirationDurationValue() {
+  std::optional<base::TimeDelta> OutgoingDatagramExpirationDurationValue() {
     return outgoing_datagram_expiration_duration_value_;
   }
 
@@ -97,7 +97,7 @@ class StubWebTransport final : public network::mojom::blink::WebTransport {
   base::OnceCallback<void(uint32_t, mojo::ScopedDataPipeConsumerHandle)>
       ignored_unidirectional_stream_callback_;
   mojo::Receiver<network::mojom::blink::WebTransport> receiver_;
-  absl::optional<base::TimeDelta> outgoing_datagram_expiration_duration_value_;
+  std::optional<base::TimeDelta> outgoing_datagram_expiration_duration_value_;
 };
 
 // This class sets up a connected blink::WebTransport object using a
@@ -171,7 +171,7 @@ TEST(DatagramDuplexStreamTest, SetIncomingMaxAge) {
   ASSERT_TRUE(duplex->incomingMaxAge().has_value());
   EXPECT_EQ(duplex->incomingMaxAge().value(), 1.0);
 
-  duplex->setIncomingMaxAge(absl::nullopt);
+  duplex->setIncomingMaxAge(std::nullopt);
   ASSERT_FALSE(duplex->incomingMaxAge().has_value());
 
   duplex->setIncomingMaxAge(0.0);
@@ -195,7 +195,7 @@ TEST(DatagramDuplexStreamTest, SetOutgoingMaxAge) {
   ASSERT_TRUE(expiration_duration.has_value());
   EXPECT_EQ(expiration_duration.value(), base::Milliseconds(1.0));
 
-  duplex->setOutgoingMaxAge(absl::nullopt);
+  duplex->setOutgoingMaxAge(std::nullopt);
   ASSERT_FALSE(duplex->outgoingMaxAge().has_value());
   test::RunPendingTasks();
   expiration_duration = stub->OutgoingDatagramExpirationDurationValue();

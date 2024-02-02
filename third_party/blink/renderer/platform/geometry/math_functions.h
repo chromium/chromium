@@ -6,10 +6,10 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GEOMETRY_MATH_FUNCTIONS_H_
 
 #include <cfloat>
+#include <optional>
 #include <utility>
 
 #include "base/notreached.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace blink {
 
@@ -47,9 +47,9 @@ std::pair<ValueType, ValueType> GetNearestMultiples(ValueType a, ValueType b) {
 }
 
 template <class OperatorType, typename ValueType>
-absl::optional<ValueType> PreCheckSteppedValueFunctionArguments(OperatorType op,
-                                                                ValueType a,
-                                                                ValueType b) {
+std::optional<ValueType> PreCheckSteppedValueFunctionArguments(OperatorType op,
+                                                               ValueType a,
+                                                               ValueType b) {
   // In round(A, B), if B is 0, the result is NaN.
   // In mod(A, B) or rem(A, B), if B is 0, the result is NaN.
   // If A and B are both infinite, the result is NaN.
@@ -77,7 +77,7 @@ ValueType EvaluateSteppedValueFunction(OperatorType op,
                                        ValueType a,
                                        ValueType b) {
   // https://drafts.csswg.org/css-values/#round-infinities
-  absl::optional<ValueType> pre_check =
+  std::optional<ValueType> pre_check =
       PreCheckSteppedValueFunctionArguments(op, a, b);
   if (pre_check.has_value()) {
     return pre_check.value();

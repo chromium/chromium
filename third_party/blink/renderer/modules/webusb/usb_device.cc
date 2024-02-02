@@ -5,10 +5,10 @@
 #include "third_party/blink/renderer/modules/webusb/usb_device.h"
 
 #include <limits>
+#include <optional>
 #include <utility>
 
 #include "base/containers/span.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
@@ -113,13 +113,13 @@ String ConvertTransferStatus(const UsbTransferStatus& status) {
 }
 
 // Returns the sum of `packet_lengths`, or nullopt if the sum would overflow.
-absl::optional<uint32_t> TotalPacketLength(
+std::optional<uint32_t> TotalPacketLength(
     const Vector<unsigned>& packet_lengths) {
   uint32_t total_bytes = 0;
   for (const auto packet_length : packet_lengths) {
     // Check for overflow.
     if (std::numeric_limits<uint32_t>::max() - total_bytes < packet_length) {
-      return absl::nullopt;
+      return std::nullopt;
     }
     total_bytes += packet_length;
   }
@@ -575,7 +575,7 @@ ScriptPromise USBDevice::isochronousTransferIn(
   if (exception_state.HadException())
     return ScriptPromise();
 
-  absl::optional<uint32_t> total_bytes = TotalPacketLength(packet_lengths);
+  std::optional<uint32_t> total_bytes = TotalPacketLength(packet_lengths);
   if (!total_bytes.has_value()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
                                       kPacketLengthsTooBig);
@@ -613,7 +613,7 @@ ScriptPromise USBDevice::isochronousTransferOut(
     return ScriptPromise();
   }
 
-  absl::optional<uint32_t> total_bytes = TotalPacketLength(packet_lengths);
+  std::optional<uint32_t> total_bytes = TotalPacketLength(packet_lengths);
   if (!total_bytes.has_value()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
                                       kPacketLengthsTooBig);

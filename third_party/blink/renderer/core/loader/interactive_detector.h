@@ -5,9 +5,10 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_INTERACTIVE_DETECTOR_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_INTERACTIVE_DETECTOR_H_
 
+#include <optional>
+
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/core/loader/long_task_detector.h"
@@ -71,8 +72,8 @@ class CORE_EXPORT InteractiveDetector
   // Calls to base::TimeTicks::Now().since_origin().InSecondsF() is expensive,
   // so we try not to call it unless we really have to. If we already have the
   // event time available, we pass it in as an argument.
-  void OnResourceLoadBegin(absl::optional<base::TimeTicks> load_begin_time);
-  void OnResourceLoadEnd(absl::optional<base::TimeTicks> load_finish_time);
+  void OnResourceLoadBegin(std::optional<base::TimeTicks> load_begin_time);
+  void OnResourceLoadEnd(std::optional<base::TimeTicks> load_finish_time);
 
   void SetNavigationStartTime(base::TimeTicks navigation_start_time);
   void OnFirstContentfulPaint(base::TimeTicks first_contentful_paint);
@@ -83,19 +84,19 @@ class CORE_EXPORT InteractiveDetector
   // The duration between the hardware timestamp and being queued on the main
   // thread for the first click, tap, key press, cancelable touchstart, or
   // pointer down followed by a pointer up.
-  absl::optional<base::TimeDelta> GetFirstInputDelay() const;
+  std::optional<base::TimeDelta> GetFirstInputDelay() const;
 
-  WTF::Vector<absl::optional<base::TimeDelta>>
+  WTF::Vector<std::optional<base::TimeDelta>>
   GetFirstInputDelaysAfterBackForwardCacheRestore() const;
 
   // The timestamp of the event whose delay is reported by GetFirstInputDelay().
-  absl::optional<base::TimeTicks> GetFirstInputTimestamp() const;
+  std::optional<base::TimeTicks> GetFirstInputTimestamp() const;
 
   // The duration between the user's first scroll and display update.
-  absl::optional<base::TimeTicks> GetFirstScrollTimestamp() const;
+  std::optional<base::TimeTicks> GetFirstScrollTimestamp() const;
 
   // The hardware timestamp of the first scroll after a navigation.
-  absl::optional<base::TimeDelta> GetFirstScrollDelay() const;
+  std::optional<base::TimeDelta> GetFirstScrollDelay() const;
 
   // Process an input event, updating first_input_delay and
   // first_input_timestamp if needed. The event types we care about are
@@ -141,12 +142,12 @@ class CORE_EXPORT InteractiveDetector
     // Interactive computation. This is used when reporting Time To Interactive
     // on a trace event.
     base::TimeTicks first_invalidating_input;
-    absl::optional<base::TimeDelta> first_input_delay;
-    absl::optional<base::TimeTicks> first_input_timestamp;
-    absl::optional<base::TimeTicks> first_scroll_timestamp;
-    absl::optional<base::TimeDelta> frist_scroll_delay;
+    std::optional<base::TimeDelta> first_input_delay;
+    std::optional<base::TimeTicks> first_input_timestamp;
+    std::optional<base::TimeTicks> first_scroll_timestamp;
+    std::optional<base::TimeDelta> frist_scroll_delay;
 
-    WTF::Vector<absl::optional<base::TimeDelta>>
+    WTF::Vector<std::optional<base::TimeDelta>>
         first_input_delays_after_back_forward_cache_restore;
   } page_event_times_;
 
@@ -179,7 +180,7 @@ class CORE_EXPORT InteractiveDetector
   // Updates current network quietness tracking information. Opens and closes
   // network quiet windows as necessary.
   void UpdateNetworkQuietState(double request_count,
-                               absl::optional<base::TimeTicks> current_time);
+                               std::optional<base::TimeTicks> current_time);
 
   HeapTaskRunnerTimer<InteractiveDetector> time_to_interactive_timer_;
   base::TimeTicks time_to_interactive_timer_fire_time_;

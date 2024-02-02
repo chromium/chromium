@@ -6,9 +6,11 @@
 #define THIRD_PARTY_BLINK_PUBLIC_COMMON_SCHEDULER_WEB_SCHEDULER_TRACKED_FEATURE_H_
 
 #include <stdint.h>
+
+#include <optional>
 #include <string>
+
 #include "base/containers/enum_set.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/common_export.h"
 
 namespace blink {
@@ -174,7 +176,7 @@ BLINK_COMMON_EXPORT std::string FeatureToHumanReadableString(
 BLINK_COMMON_EXPORT std::string FeatureToShortString(
     WebSchedulerTrackedFeature feature);
 
-BLINK_COMMON_EXPORT absl::optional<WebSchedulerTrackedFeature> StringToFeature(
+BLINK_COMMON_EXPORT std::optional<WebSchedulerTrackedFeature> StringToFeature(
     const std::string& str);
 // Returns true if there was previously a feature by this name.
 // It is not comprehensive, just enough to cover what was used in finch,

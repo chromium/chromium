@@ -140,13 +140,13 @@ void DecoderTemplate<Traits>::configure(const ConfigType* config,
     return;
   }
 
-  absl::optional<MediaConfigType> media_config =
+  std::optional<MediaConfigType> media_config =
       MakeMediaConfig(*config, &js_error_message);
 
   // Audio/VideoDecoder don't yet support encryption.
   if (media_config && media_config->is_encrypted()) {
     js_error_message = "Encrypted content is not supported";
-    media_config = absl::nullopt;
+    media_config = std::nullopt;
   }
 
   MarkCodecActive();

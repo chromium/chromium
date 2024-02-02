@@ -23,9 +23,9 @@ ConstraintSpace CreateConstraintSpaceForMathChild(
     const ConstraintSpace& parent_space,
     const LayoutInputNode& child,
     LayoutResultCacheSlot cache_slot,
-    const absl::optional<ConstraintSpace::MathTargetStretchBlockSizes>
+    const std::optional<ConstraintSpace::MathTargetStretchBlockSizes>
         target_stretch_block_sizes,
-    const absl::optional<LayoutUnit> target_stretch_inline_size) {
+    const std::optional<LayoutUnit> target_stretch_inline_size) {
   const ComputedStyle& parent_style = parent_node.Style();
   const ComputedStyle& child_style = child.Style();
   DCHECK(child.CreatesNewFormattingContext());
@@ -386,11 +386,11 @@ MathMLOperatorElement* GetCoreOperator(const BlockNode& node) {
 
 }  // namespace
 
-absl::optional<MathMLEmbellishedOperatorProperties>
+std::optional<MathMLEmbellishedOperatorProperties>
 GetMathMLEmbellishedOperatorProperties(const BlockNode& node) {
   auto* core_operator = GetCoreOperator(node);
   if (!core_operator)
-    return absl::nullopt;
+    return std::nullopt;
   DCHECK(core_operator->GetLayoutObject());
   const auto& core_operator_style =
       core_operator->GetLayoutObject()->StyleRef();

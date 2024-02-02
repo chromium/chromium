@@ -6,11 +6,11 @@
 
 #include <stdint.h>
 
+#include <optional>
 #include <string>
 #include <vector>
 
 #include "base/time/time.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/common_export.h"
 #include "third_party/blink/public/common/interest_group/interest_group.h"
 #include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom.h"
@@ -54,13 +54,13 @@ TestInterestGroupBuilder::SetEnableBiddingSignalsPrioritization(
 }
 
 TestInterestGroupBuilder& TestInterestGroupBuilder::SetPriorityVector(
-    absl::optional<base::flat_map<std::string, double>> priority_vector) {
+    std::optional<base::flat_map<std::string, double>> priority_vector) {
   interest_group_.priority_vector = std::move(priority_vector);
   return *this;
 }
 
 TestInterestGroupBuilder& TestInterestGroupBuilder::SetPrioritySignalsOverrides(
-    absl::optional<base::flat_map<std::string, double>>
+    std::optional<base::flat_map<std::string, double>>
         priority_signals_overrides) {
   interest_group_.priority_signals_overrides =
       std::move(priority_signals_overrides);
@@ -68,7 +68,7 @@ TestInterestGroupBuilder& TestInterestGroupBuilder::SetPrioritySignalsOverrides(
 }
 
 TestInterestGroupBuilder& TestInterestGroupBuilder::SetSellerCapabilities(
-    absl::optional<base::flat_map<url::Origin, SellerCapabilitiesType>>
+    std::optional<base::flat_map<url::Origin, SellerCapabilitiesType>>
         seller_capabilities) {
   interest_group_.seller_capabilities = std::move(seller_capabilities);
   return *this;
@@ -88,25 +88,25 @@ TestInterestGroupBuilder& TestInterestGroupBuilder::SetExecutionMode(
 }
 
 TestInterestGroupBuilder& TestInterestGroupBuilder::SetBiddingUrl(
-    absl::optional<GURL> bidding_url) {
+    std::optional<GURL> bidding_url) {
   interest_group_.bidding_url = std::move(bidding_url);
   return *this;
 }
 
 TestInterestGroupBuilder& TestInterestGroupBuilder::SetBiddingWasmHelperUrl(
-    absl::optional<GURL> bidding_wasm_helper_url) {
+    std::optional<GURL> bidding_wasm_helper_url) {
   interest_group_.bidding_wasm_helper_url = std::move(bidding_wasm_helper_url);
   return *this;
 }
 
 TestInterestGroupBuilder& TestInterestGroupBuilder::SetUpdateUrl(
-    absl::optional<GURL> update_url) {
+    std::optional<GURL> update_url) {
   interest_group_.update_url = std::move(update_url);
   return *this;
 }
 
 TestInterestGroupBuilder& TestInterestGroupBuilder::SetTrustedBiddingSignalsUrl(
-    absl::optional<GURL> trusted_bidding_signals_url) {
+    std::optional<GURL> trusted_bidding_signals_url) {
   interest_group_.trusted_bidding_signals_url =
       std::move(trusted_bidding_signals_url);
   return *this;
@@ -123,14 +123,14 @@ TestInterestGroupBuilder::SetTrustedBiddingSignalsSlotSizeMode(
 
 TestInterestGroupBuilder&
 TestInterestGroupBuilder::SetTrustedBiddingSignalsKeys(
-    absl::optional<std::vector<std::string>> trusted_bidding_signals_keys) {
+    std::optional<std::vector<std::string>> trusted_bidding_signals_keys) {
   interest_group_.trusted_bidding_signals_keys =
       std::move(trusted_bidding_signals_keys);
   return *this;
 }
 
 TestInterestGroupBuilder& TestInterestGroupBuilder::SetUserBiddingSignals(
-    absl::optional<std::string> user_bidding_signals) {
+    std::optional<std::string> user_bidding_signals) {
   interest_group_.user_bidding_signals = std::move(user_bidding_signals);
   return *this;
 }
@@ -144,25 +144,25 @@ TestInterestGroupBuilder::SetMaxTrustedBiddingSignalsURLLength(
 }
 
 TestInterestGroupBuilder& TestInterestGroupBuilder::SetAds(
-    absl::optional<std::vector<InterestGroup::Ad>> ads) {
+    std::optional<std::vector<InterestGroup::Ad>> ads) {
   interest_group_.ads = std::move(ads);
   return *this;
 }
 
 TestInterestGroupBuilder& TestInterestGroupBuilder::SetAdComponents(
-    absl::optional<std::vector<InterestGroup::Ad>> ad_components) {
+    std::optional<std::vector<InterestGroup::Ad>> ad_components) {
   interest_group_.ad_components = std::move(ad_components);
   return *this;
 }
 
 TestInterestGroupBuilder& TestInterestGroupBuilder::SetAdSizes(
-    absl::optional<base::flat_map<std::string, blink::AdSize>> ad_sizes) {
+    std::optional<base::flat_map<std::string, blink::AdSize>> ad_sizes) {
   interest_group_.ad_sizes = std::move(ad_sizes);
   return *this;
 }
 
 TestInterestGroupBuilder& TestInterestGroupBuilder::SetSizeGroups(
-    absl::optional<base::flat_map<std::string, std::vector<std::string>>>
+    std::optional<base::flat_map<std::string, std::vector<std::string>>>
         size_groups) {
   interest_group_.size_groups = std::move(size_groups);
   return *this;
@@ -176,14 +176,14 @@ TestInterestGroupBuilder::SetAuctionServerRequestFlags(
 }
 
 TestInterestGroupBuilder& TestInterestGroupBuilder::SetAdditionalBidKey(
-    absl::optional<blink::InterestGroup::AdditionalBidKey> key) {
+    std::optional<blink::InterestGroup::AdditionalBidKey> key) {
   interest_group_.additional_bid_key = std::move(key);
   return *this;
 }
 
 TestInterestGroupBuilder&
 TestInterestGroupBuilder::SetAggregationCoordinatorOrigin(
-    absl::optional<url::Origin> agg_coordinator_origin) {
+    std::optional<url::Origin> agg_coordinator_origin) {
   interest_group_.aggregation_coordinator_origin = agg_coordinator_origin;
   return *this;
 }

@@ -151,7 +151,7 @@ class CORE_EXPORT HTMLImageElement final
 
   void SetIsFallbackImage() { is_fallback_image_ = true; }
 
-  absl::optional<float> GetResourceWidth() const;
+  std::optional<float> GetResourceWidth() const;
   float SourceSize(Element&);
 
   void ForceReload() const;

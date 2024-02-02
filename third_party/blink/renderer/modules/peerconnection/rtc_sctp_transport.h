@@ -45,7 +45,7 @@ class MODULES_EXPORT RTCSctpTransport final
   RTCDtlsTransport* transport() const;
   String state() const;
   double maxMessageSize() const;
-  absl::optional<int16_t> maxChannels() const;
+  std::optional<int16_t> maxChannels() const;
 
   DEFINE_ATTRIBUTE_EVENT_LISTENER(statechange, kStatechange)
 

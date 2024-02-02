@@ -34,10 +34,10 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_FRAME_LOADER_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/functional/callback_helpers.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-blink-forward.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 #include "third_party/blink/public/mojom/loader/code_cache.mojom-blink-forward.h"
@@ -148,7 +148,7 @@ class CORE_EXPORT FrameLoader final {
   void DidExplicitOpen();
 
   String UserAgent() const;
-  absl::optional<blink::UserAgentMetadata> UserAgentMetadata() const;
+  std::optional<blink::UserAgentMetadata> UserAgentMetadata() const;
 
   void DispatchDidClearWindowObjectInMainWorld();
   void DispatchDidClearDocumentOfWindowObject();
@@ -180,7 +180,7 @@ class CORE_EXPORT FrameLoader final {
   void ProcessScrollForSameDocumentNavigation(
       const KURL&,
       WebFrameLoadType,
-      absl::optional<HistoryItem::ViewState>,
+      std::optional<HistoryItem::ViewState>,
       mojom::blink::ScrollRestorationType);
 
   // This will attempt to detach the current document. It will dispatch unload

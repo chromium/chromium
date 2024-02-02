@@ -27,11 +27,11 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_PARSER_ATOMIC_HTML_TOKEN_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "base/notreached.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/attribute.h"
 #include "third_party/blink/renderer/core/html/parser/atomic_string_cache.h"

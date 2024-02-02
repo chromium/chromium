@@ -82,7 +82,7 @@ class IncomingStream::UnderlyingByteSource final
 
 IncomingStream::IncomingStream(
     ScriptState* script_state,
-    base::OnceCallback<void(absl::optional<uint8_t>)> on_abort,
+    base::OnceCallback<void(std::optional<uint8_t>)> on_abort,
     mojo::ScopedDataPipeConsumerHandle handle)
     : script_state_(script_state),
       on_abort_(std::move(on_abort)),
@@ -315,7 +315,7 @@ void IncomingStream::CloseAbortAndReset(ExceptionState& exception_state) {
     }
   }
 
-  AbortAndReset(absl::nullopt);
+  AbortAndReset(std::nullopt);
 }
 
 void IncomingStream::ErrorStreamAbortAndReset(ScriptValue exception) {
@@ -326,10 +326,10 @@ void IncomingStream::ErrorStreamAbortAndReset(ScriptValue exception) {
     controller_ = nullptr;
   }
 
-  AbortAndReset(absl::nullopt);
+  AbortAndReset(std::nullopt);
 }
 
-void IncomingStream::AbortAndReset(absl::optional<uint8_t> code) {
+void IncomingStream::AbortAndReset(std::optional<uint8_t> code) {
   DVLOG(1) << "IncomingStream::AbortAndReset() this=" << this;
 
   state_ = State::kAborted;

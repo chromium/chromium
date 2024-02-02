@@ -78,7 +78,7 @@ bool FELighting::SetSurfaceScale(float surface_scale) {
 sk_sp<PaintFilter> FELighting::CreateImageFilter() {
   if (!light_source_)
     return CreateTransparentBlack();
-  absl::optional<PaintFilter::CropRect> crop_rect = GetCropRect();
+  std::optional<PaintFilter::CropRect> crop_rect = GetCropRect();
   const PaintFilter::CropRect* rect = base::OptionalToPtr(crop_rect);
   Color light_color = AdaptColorToOperatingInterpolationSpace(lighting_color_);
   sk_sp<PaintFilter> input(paint_filter_builder::Build(

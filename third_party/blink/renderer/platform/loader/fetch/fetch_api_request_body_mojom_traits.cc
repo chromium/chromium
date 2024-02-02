@@ -90,7 +90,7 @@ bool StructTraits<blink::mojom::FetchAPIRequestBodyDataView,
       }
       case network::DataElement::Tag::kFile: {
         const auto& file = element.As<network::DataElementFile>();
-        absl::optional<base::Time> expected_modification_time;
+        std::optional<base::Time> expected_modification_time;
         if (!file.expected_modification_time().is_null()) {
           expected_modification_time = file.expected_modification_time();
         }

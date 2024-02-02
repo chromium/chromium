@@ -27,7 +27,8 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_TRANSFORMS_PERSPECTIVE_TRANSFORM_OPERATION_H_
 
 #include <algorithm>
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include <optional>
+
 #include "third_party/blink/renderer/platform/transforms/transform_operation.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 
@@ -37,11 +38,11 @@ class PLATFORM_EXPORT PerspectiveTransformOperation final
     : public TransformOperation {
  public:
   static scoped_refptr<PerspectiveTransformOperation> Create(
-      absl::optional<double> p) {
+      std::optional<double> p) {
     return base::AdoptRef(new PerspectiveTransformOperation(p));
   }
 
-  absl::optional<double> Perspective() const { return p_; }
+  std::optional<double> Perspective() const { return p_; }
 
   double UsedPerspective() const {
     DCHECK(p_.has_value());
@@ -86,11 +87,11 @@ class PLATFORM_EXPORT PerspectiveTransformOperation final
   // Perspective does not, by itself, specify a 3D transform.
   bool HasNonTrivial3DComponent() const override { return false; }
 
-  explicit PerspectiveTransformOperation(absl::optional<double> p) : p_(p) {}
+  explicit PerspectiveTransformOperation(std::optional<double> p) : p_(p) {}
 
   // !p_.has_value() means the value is `none`, which is equivalent to
   // infinity.
-  absl::optional<double> p_;
+  std::optional<double> p_;
 };
 
 template <>

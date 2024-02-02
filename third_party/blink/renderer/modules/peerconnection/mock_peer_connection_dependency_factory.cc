@@ -286,8 +286,8 @@ bool MockWebRtcVideoTrackSource::is_screencast() const {
   return false;
 }
 
-absl::optional<bool> MockWebRtcVideoTrackSource::needs_denoising() const {
-  return absl::nullopt;
+std::optional<bool> MockWebRtcVideoTrackSource::needs_denoising() const {
+  return std::nullopt;
 }
 
 bool MockWebRtcVideoTrackSource::GetStats(Stats* stats) {

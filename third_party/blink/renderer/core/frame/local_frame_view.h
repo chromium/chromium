@@ -967,7 +967,7 @@ class CORE_EXPORT LocalFrameView final
 
   bool UpdateViewportIntersectionsForSubtree(
       unsigned parent_flags,
-      absl::optional<base::TimeTicks>& monotonic_time) override;
+      std::optional<base::TimeTicks>& monotonic_time) override;
   void DeliverSynchronousIntersectionObservations();
 
   bool RunScrollSnapshotClientSteps();
@@ -990,7 +990,7 @@ class CORE_EXPORT LocalFrameView final
   // need to happen in post-layout.
   void ComputePostLayoutIntersections(
       unsigned parent_flags,
-      absl::optional<base::TimeTicks>& monotonic_time);
+      std::optional<base::TimeTicks>& monotonic_time);
 
   // Returns true if the root object was laid out. Returns false if the layout
   // was prevented (e.g. by ancestor display-lock) or not needed.
@@ -1051,7 +1051,7 @@ class CORE_EXPORT LocalFrameView final
 
   // Used for tracking the frame's size and replicating it to the browser
   // process when it changes.
-  absl::optional<gfx::Size> frame_size_;
+  std::optional<gfx::Size> frame_size_;
 
   AtomicString media_type_;
   AtomicString media_type_when_not_printing_;

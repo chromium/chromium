@@ -263,7 +263,7 @@ Vector<double> KeyframeEffectModelBase::GetComputedOffsets(
   offset_types.reserve(keyframes.size());
 
   for (const auto& keyframe : keyframes) {
-    absl::optional<double> offset = keyframe->Offset();
+    std::optional<double> offset = keyframe->Offset();
     if (offset && !keyframe->GetTimelineOffset()) {
       DCHECK_GE(offset.value(), last_offset);
       last_offset = offset.value();
@@ -525,9 +525,9 @@ void KeyframeEffectModelBase::ClearCachedData() {
   last_fraction_ = std::numeric_limits<double>::quiet_NaN();
   needs_compositor_keyframes_snapshot_ = true;
 
-  last_timeline_range_ = absl::nullopt;
-  last_range_start_ = absl::nullopt;
-  last_range_end_ = absl::nullopt;
+  last_timeline_range_ = std::nullopt;
+  last_range_start_ = std::nullopt;
+  last_range_end_ = std::nullopt;
 }
 
 bool KeyframeEffectModelBase::IsReplaceOnly() const {

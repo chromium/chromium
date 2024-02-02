@@ -159,7 +159,7 @@ void MLModel::OnComputeResult(
     ScriptState* script_state,
     ScriptPromiseResolverTyped<IDLRecord<IDLString, MLTensor>>* resolver,
     ComputeResult result,
-    const absl::optional<HashMap<String, Vector<uint8_t>>>& outputs) {
+    const std::optional<HashMap<String, Vector<uint8_t>>>& outputs) {
   if (result != ComputeResult::kOk || !outputs.has_value()) {
     resolver->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kOperationError,

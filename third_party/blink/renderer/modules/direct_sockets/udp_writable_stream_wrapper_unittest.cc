@@ -106,7 +106,7 @@ class StreamCreator : public GarbageCollected<StreamCreator> {
     close_called_with_ = !exception.IsEmpty();
   }
 
-  absl::optional<bool> close_called_with_;
+  std::optional<bool> close_called_with_;
   Member<FakeRestrictedUDPSocket> fake_udp_socket_;
   HeapMojoReceiver<network::mojom::blink::RestrictedUDPSocket,
                    FakeRestrictedUDPSocket>

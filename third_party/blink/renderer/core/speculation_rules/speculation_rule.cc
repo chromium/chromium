@@ -14,8 +14,8 @@ SpeculationRule::SpeculationRule(
     Vector<KURL> urls,
     DocumentRulePredicate* predicate,
     RequiresAnonymousClientIPWhenCrossOrigin requires_anonymous_client_ip,
-    absl::optional<mojom::blink::SpeculationTargetHint> target_hint,
-    absl::optional<network::mojom::ReferrerPolicy> referrer_policy,
+    std::optional<mojom::blink::SpeculationTargetHint> target_hint,
+    std::optional<network::mojom::ReferrerPolicy> referrer_policy,
     mojom::blink::SpeculationEagerness eagerness,
     network::mojom::blink::NoVarySearchPtr no_vary_search_expected,
     mojom::blink::SpeculationInjectionType injection_type)

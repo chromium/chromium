@@ -288,7 +288,7 @@ void MediaControlTimelineElement::RenderBarSegments() {
   // the current time.
   before_segment.width = current_position;
 
-  absl::optional<unsigned> current_buffered_time_range =
+  std::optional<unsigned> current_buffered_time_range =
       MediaControlsSharedHelpers::GetCurrentBufferedTimeRange(MediaElement());
 
   if (current_buffered_time_range) {

@@ -234,7 +234,7 @@ class CORE_EXPORT HTMLCanvasElement final
   // ImageBitmapSource implementation
   gfx::Size BitmapSourceSize() const override;
   ScriptPromise CreateImageBitmap(ScriptState*,
-                                  absl::optional<gfx::Rect> crop_rect,
+                                  std::optional<gfx::Rect> crop_rect,
                                   const ImageBitmapOptions*,
                                   ExceptionState&) override;
 

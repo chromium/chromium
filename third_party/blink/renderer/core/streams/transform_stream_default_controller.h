@@ -28,7 +28,7 @@ class CORE_EXPORT TransformStreamDefaultController : public ScriptWrappable {
   ~TransformStreamDefaultController() override;
 
   // https://streams.spec.whatwg.org/#ts-default-controller-desired-size
-  absl::optional<double> desiredSize() const;
+  std::optional<double> desiredSize() const;
 
   // https://streams.spec.whatwg.org/#ts-default-controller-enqueue
   void enqueue(ScriptState*, ExceptionState&);

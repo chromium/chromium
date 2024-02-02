@@ -776,7 +776,7 @@ TEST_F(BridgeIceControllerDeathTest, RejectUnsolicitedSwitchProposal) {
 
 TEST_F(BridgeIceControllerDeathTest, AcceptEmptySwitchProposal) {
   const IceControllerInterface::SwitchResult switch_result{
-      absl::nullopt, recheck_event, empty_conns_to_forget};
+      std::nullopt, recheck_event, empty_conns_to_forget};
   const IceSwitchProposal proposal(reason, switch_result,
                                    /*reply_expected=*/true);
   EXPECT_DCHECK_DEATH_WITH(interaction_agent->AcceptSwitchProposal(proposal),
@@ -785,7 +785,7 @@ TEST_F(BridgeIceControllerDeathTest, AcceptEmptySwitchProposal) {
 
 TEST_F(BridgeIceControllerDeathTest, AcceptNullSwitchProposal) {
   const IceControllerInterface::SwitchResult switch_result{
-      absl::optional<const Connection*>(nullptr), recheck_event,
+      std::optional<const Connection*>(nullptr), recheck_event,
       empty_conns_to_forget};
   const IceSwitchProposal proposal(reason, switch_result,
                                    /*reply_expected=*/true);

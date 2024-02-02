@@ -52,7 +52,7 @@ TEST_F(WorkerPerformanceTest, Mark) {
   ASSERT_TRUE(events[0]->HasDictArg("data"));
   base::Value::Dict arg_dict = events[0]->GetKnownArgAsDict("data");
 
-  absl::optional<double> start_time = arg_dict.FindDouble("startTime");
+  std::optional<double> start_time = arg_dict.FindDouble("startTime");
   ASSERT_TRUE(start_time.has_value());
 
   // The navigationId is NOT recorded when performance.mark is executed by a

@@ -5,7 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_CONTAINER_VALUES_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_CONTAINER_VALUES_H_
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include <optional>
+
 #include "third_party/blink/renderer/core/css/css_to_length_conversion_data.h"
 #include "third_party/blink/renderer/core/css/media_values_dynamic.h"
 
@@ -15,15 +16,15 @@ class CORE_EXPORT CSSContainerValues : public MediaValuesDynamic {
  public:
   explicit CSSContainerValues(Document& document,
                               Element& container,
-                              absl::optional<double> width,
-                              absl::optional<double> height,
+                              std::optional<double> width,
+                              std::optional<double> height,
                               ContainerStuckPhysical stuck_horizontal,
                               ContainerStuckPhysical stuck_vertical);
 
-  // Returns absl::nullopt if queries on the relevant axis is not
+  // Returns std::nullopt if queries on the relevant axis is not
   // supported.
-  absl::optional<double> Width() const override { return width_; }
-  absl::optional<double> Height() const override { return height_; }
+  std::optional<double> Width() const override { return width_; }
+  std::optional<double> Height() const override { return height_; }
 
   void Trace(Visitor*) const override;
 
@@ -62,9 +63,9 @@ class CORE_EXPORT CSSContainerValues : public MediaValuesDynamic {
   // The current computed style for the container.
   Member<Element> element_;
   // Container width in CSS pixels.
-  absl::optional<double> width_;
+  std::optional<double> width_;
   // Container height in CSS pixels.
-  absl::optional<double> height_;
+  std::optional<double> height_;
   // The writing-mode of the container.
   WritingDirectionMode writing_direction_;
   // Whether a sticky container is horizontally stuck and to which edge.

@@ -107,12 +107,12 @@ RTCDtlsTransport* RTCRtpReceiver::rtcpTransport() {
   return nullptr;
 }
 
-absl::optional<double> RTCRtpReceiver::playoutDelayHint() const {
+std::optional<double> RTCRtpReceiver::playoutDelayHint() const {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   return playout_delay_hint_;
 }
 
-void RTCRtpReceiver::setPlayoutDelayHint(absl::optional<double> hint,
+void RTCRtpReceiver::setPlayoutDelayHint(std::optional<double> hint,
                                          ExceptionState& exception_state) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   if (hint.has_value() && hint.value() < 0.0) {

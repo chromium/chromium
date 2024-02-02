@@ -31,10 +31,11 @@ n * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_FRAME_FETCH_CONTEXT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_FRAME_FETCH_CONTEXT_H_
 
+#include <optional>
+
 #include "base/task/single_thread_task_runner.h"
 #include "base/types/optional_ref.h"
 #include "services/network/public/mojom/web_client_hints_types.mojom-blink-forward.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/subresource_load_metrics.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink-forward.h"
@@ -85,7 +86,7 @@ class CORE_EXPORT FrameFetchContext final : public BaseFetchContext,
                     const DetachableResourceFetcherProperties&);
   ~FrameFetchContext() override = default;
 
-  absl::optional<ResourceRequestBlockedReason> CanRequest(
+  std::optional<ResourceRequestBlockedReason> CanRequest(
       ResourceType type,
       const ResourceRequest& resource_request,
       const KURL& url,
@@ -107,7 +108,7 @@ class CORE_EXPORT FrameFetchContext final : public BaseFetchContext,
   bool AllowImage(bool images_enabled, const KURL&) const override;
 
   void PopulateResourceRequest(ResourceType,
-                               const absl::optional<float> resource_width,
+                               const std::optional<float> resource_width,
                                ResourceRequest&,
                                const ResourceLoaderOptions&) override;
 
@@ -117,7 +118,7 @@ class CORE_EXPORT FrameFetchContext final : public BaseFetchContext,
 
   // Exposed for testing.
   void ModifyRequestForCSP(ResourceRequest&);
-  void AddClientHintsIfNecessary(const absl::optional<float> resource_width,
+  void AddClientHintsIfNecessary(const std::optional<float> resource_width,
                                  ResourceRequest&);
 
   void AddReducedAcceptLanguageIfNecessary(ResourceRequest&);
@@ -192,7 +193,7 @@ class CORE_EXPORT FrameFetchContext final : public BaseFetchContext,
   WebContentSettingsClient* GetContentSettingsClient() const;
   Settings* GetSettings() const;
   String GetUserAgent() const;
-  absl::optional<UserAgentMetadata> GetUserAgentMetadata() const;
+  std::optional<UserAgentMetadata> GetUserAgentMetadata() const;
   const PermissionsPolicy* GetPermissionsPolicy() const override;
   const ClientHintsPreferences GetClientHintsPreferences() const;
   float GetDevicePixelRatio() const;

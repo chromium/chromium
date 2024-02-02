@@ -2953,7 +2953,7 @@ void StyleResolver::PropagateStyleToViewport() {
     PROPAGATE_FROM(document_element_style, ScrollbarWidth, SetScrollbarWidth,
                    EScrollbarWidth::kAuto);
     PROPAGATE_FROM(document_element_style, ScrollbarColor, SetScrollbarColor,
-                   absl::nullopt);
+                   std::nullopt);
     PROPAGATE_FROM(document_element_style, ForcedColorAdjust,
                    SetForcedColorAdjust, EForcedColorAdjust::kAuto);
     if (RuntimeEnabledFeatures::UsedColorSchemeRootScrollbarsEnabled()) {

@@ -2877,7 +2877,7 @@ struct DisplayValidationResult {
 // Find <display-outside>, <display-inside>, and `list-item` in the unordered
 // keyword list `values`.  Returns nullopt if `values` contains an invalid
 // combination of keywords.
-absl::optional<DisplayValidationResult> ValidateDisplayKeywords(
+std::optional<DisplayValidationResult> ValidateDisplayKeywords(
     const CSSValueList& values) {
   const CSSIdentifierValue* outside = nullptr;
   const CSSIdentifierValue* inside = nullptr;
@@ -2892,7 +2892,7 @@ absl::optional<DisplayValidationResult> ValidateDisplayKeywords(
     } else if (!list_item && IsDisplayListItem(value_id)) {
       list_item = value;
     } else {
-      return absl::nullopt;
+      return std::nullopt;
     }
   }
   DisplayValidationResult result{outside, inside, list_item};
@@ -5858,7 +5858,7 @@ const CSSValue* ObjectPosition::ParseSingleValue(
     const CSSParserLocalContext&) const {
   return ConsumePosition(range, context,
                          css_parsing_utils::UnitlessQuirk::kForbid,
-                         absl::optional<WebFeature>());
+                         std::optional<WebFeature>());
 }
 
 const CSSValue* ObjectPosition::CSSValueFromComputedStyleInternal(
@@ -5914,7 +5914,7 @@ const CSSValue* OffsetAnchor::ParseSingleValue(
   }
   return css_parsing_utils::ConsumePosition(
       range, context, css_parsing_utils::UnitlessQuirk::kForbid,
-      absl::optional<WebFeature>());
+      std::optional<WebFeature>());
 }
 
 const CSSValue* OffsetAnchor::CSSValueFromComputedStyleInternal(
@@ -5999,7 +5999,7 @@ const CSSValue* OffsetPosition::ParseSingleValue(
   }
   CSSValue* value = css_parsing_utils::ConsumePosition(
       range, context, css_parsing_utils::UnitlessQuirk::kForbid,
-      absl::optional<WebFeature>());
+      std::optional<WebFeature>());
 
   // Count when we receive a valid position other than 'auto'.
   if (value && value->IsValuePair()) {
@@ -6757,7 +6757,7 @@ const CSSValue* PerspectiveOrigin::ParseSingleValue(
     const CSSParserLocalContext&) const {
   return ConsumePosition(range, context,
                          css_parsing_utils::UnitlessQuirk::kForbid,
-                         absl::optional<WebFeature>());
+                         std::optional<WebFeature>());
 }
 
 bool PerspectiveOrigin::IsLayoutDependent(const ComputedStyle* style,
@@ -6997,7 +6997,7 @@ const CSSValue* Rotate::ParseSingleValue(CSSParserTokenRange& range,
   CSSValueList* list = CSSValueList::CreateSpaceSeparated();
 
   CSSValue* rotation = css_parsing_utils::ConsumeAngle(
-      range, context, absl::optional<WebFeature>());
+      range, context, std::optional<WebFeature>());
 
   CSSValue* axis = css_parsing_utils::ConsumeAxis(range, context);
   if (axis) {
@@ -7011,7 +7011,7 @@ const CSSValue* Rotate::ParseSingleValue(CSSParserTokenRange& range,
 
   if (!rotation) {
     rotation = css_parsing_utils::ConsumeAngle(range, context,
-                                               absl::optional<WebFeature>());
+                                               std::optional<WebFeature>());
     if (!rotation) {
       return nullptr;
     }
@@ -7181,8 +7181,8 @@ const CSSValue* ScrollbarColor::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
     const LayoutObject*,
     bool allow_visited_style) const {
-  absl::optional<StyleScrollbarColor> scrollbar_color = style.ScrollbarColor();
-  if (scrollbar_color == absl::nullopt) {
+  std::optional<StyleScrollbarColor> scrollbar_color = style.ScrollbarColor();
+  if (scrollbar_color == std::nullopt) {
     return CSSIdentifierValue::Create(CSSValueID::kAuto);
   }
 

@@ -5,7 +5,8 @@
 #include "third_party/blink/renderer/core/css/selector_checker.h"
 
 #include <bitset>
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include <optional>
+
 #include "third_party/blink/renderer/core/css/css_test_helpers.h"
 #include "third_party/blink/renderer/core/css/selector_checker-inl.h"
 #include "third_party/blink/renderer/core/css/style_rule.h"
@@ -22,7 +23,7 @@ namespace blink {
 struct ScopeProximityTestData {
   const char* html;
   const char* rule;
-  absl::optional<unsigned> proximity;
+  std::optional<unsigned> proximity;
 };
 
 ScopeProximityTestData scope_proximity_test_data[] = {
@@ -196,7 +197,7 @@ TEST_P(ScopeProximityTest, All) {
   bool match = checker.Match(context, result);
 
   EXPECT_EQ(param.proximity,
-            match ? absl::optional<unsigned>(result.proximity) : absl::nullopt);
+            match ? std::optional<unsigned>(result.proximity) : std::nullopt);
 }
 
 struct MatchFlagsTestData {

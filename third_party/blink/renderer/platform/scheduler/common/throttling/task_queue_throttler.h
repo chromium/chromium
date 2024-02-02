@@ -5,10 +5,11 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_COMMON_THROTTLING_TASK_QUEUE_THROTTLER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_COMMON_THROTTLING_TASK_QUEUE_THROTTLER_H_
 
+#include <optional>
+
 #include "base/task/sequence_manager/task_queue.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/scheduler/common/tracing_helper.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
@@ -82,7 +83,7 @@ class PLATFORM_EXPORT TaskQueueThrottler final
  private:
   friend class BudgetPool;
 
-  absl::optional<QueueBlockType> GetBlockType(base::TimeTicks now) const;
+  std::optional<QueueBlockType> GetBlockType(base::TimeTicks now) const;
 
   // To be used by BudgetPool only, use BudgetPool::{Add,Remove}Queue
   // methods instead.
@@ -99,15 +100,15 @@ class PLATFORM_EXPORT TaskQueueThrottler final
   base::TimeTicks GetTimeTasksCanRunUntil(base::TimeTicks now) const;
 
   // See GetNextAllowedWakeUp().
-  absl::optional<base::sequence_manager::WakeUp> GetNextAllowedWakeUpImpl(
+  std::optional<base::sequence_manager::WakeUp> GetNextAllowedWakeUpImpl(
       base::LazyNow* lazy_now,
-      absl::optional<base::sequence_manager::WakeUp> next_wake_up,
+      std::optional<base::sequence_manager::WakeUp> next_wake_up,
       bool has_ready_task);
 
   // TaskQueue::Throttler implementation:
-  absl::optional<base::sequence_manager::WakeUp> GetNextAllowedWakeUp(
+  std::optional<base::sequence_manager::WakeUp> GetNextAllowedWakeUp(
       base::LazyNow* lazy_now,
-      absl::optional<base::sequence_manager::WakeUp> next_wake_up,
+      std::optional<base::sequence_manager::WakeUp> next_wake_up,
       bool has_ready_task) override;
   void OnWakeUp(base::LazyNow* lazy_now) override;
   void OnHasImmediateTask() override;

@@ -160,7 +160,7 @@ unsigned GetTextOffsetBefore(const Node& node) {
   // atomic inline box.
   DCHECK(node.GetLayoutObject()->IsAtomicInlineLevel());
   const Position before_node = Position::BeforeNode(node);
-  absl::optional<unsigned> maybe_offset_before =
+  std::optional<unsigned> maybe_offset_before =
       OffsetMapping::GetFor(before_node)->GetTextContentOffset(before_node);
   // We should have offset mapping for atomic inline boxes.
   DCHECK(maybe_offset_before.has_value());
@@ -191,7 +191,7 @@ InlineCaretPositionResolution TryResolveInlineCaretPositionByBoxFragmentSide(
   const InlineCaretPositionType position_type =
       offset == offset_before ? InlineCaretPositionType::kBeforeBox
                               : InlineCaretPositionType::kAfterBox;
-  InlineCaretPosition candidate{cursor, position_type, absl::nullopt};
+  InlineCaretPosition candidate{cursor, position_type, std::nullopt};
 
   if (offset == offset_before &&
       CanResolveInlineCaretPositionBeforeFragment(cursor, affinity)) {
@@ -327,11 +327,11 @@ InlineCaretPosition ComputeInlineCaretPositionAfterInline(
         line.Current().BaseDirection() == cursor.Current().ResolvedDirection()
             ? InlineCaretPositionType::kAfterBox
             : InlineCaretPositionType::kBeforeBox;
-    return AdjustInlineCaretPositionForBidiText({cursor, type, absl::nullopt});
+    return AdjustInlineCaretPositionForBidiText({cursor, type, std::nullopt});
   }
 
   return AdjustInlineCaretPositionForBidiText(
-      {cursor, InlineCaretPositionType::kAfterBox, absl::nullopt});
+      {cursor, InlineCaretPositionType::kAfterBox, std::nullopt});
 }
 InlineCaretPosition ComputeInlineCaretPositionBeforeInline(
     const PositionWithAffinity& position_with_affinity) {
@@ -370,11 +370,11 @@ InlineCaretPosition ComputeInlineCaretPositionBeforeInline(
         line.Current().BaseDirection() == cursor.Current().ResolvedDirection()
             ? InlineCaretPositionType::kBeforeBox
             : InlineCaretPositionType::kAfterBox;
-    return AdjustInlineCaretPositionForBidiText({cursor, type, absl::nullopt});
+    return AdjustInlineCaretPositionForBidiText({cursor, type, std::nullopt});
   }
 
   return AdjustInlineCaretPositionForBidiText(
-      {cursor, InlineCaretPositionType::kBeforeBox, absl::nullopt});
+      {cursor, InlineCaretPositionType::kBeforeBox, std::nullopt});
 }
 
 }  // namespace
@@ -458,7 +458,7 @@ InlineCaretPosition ComputeInlineCaretPosition(
     NOTREACHED() << context;
     return InlineCaretPosition();
   }
-  const absl::optional<unsigned> maybe_offset =
+  const std::optional<unsigned> maybe_offset =
       mapping->GetTextContentOffset(position);
   if (!maybe_offset.has_value()) {
     // We can reach here with empty text nodes.

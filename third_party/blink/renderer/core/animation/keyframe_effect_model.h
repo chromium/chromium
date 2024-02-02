@@ -246,9 +246,9 @@ class CORE_EXPORT KeyframeEffectModelBase : public EffectModel {
 
   // The timeline and animation ranges last used to resolve
   // named range offsets. (See ResolveTimelineOffsets).
-  absl::optional<TimelineRange> last_timeline_range_;
-  absl::optional<double> last_range_start_;
-  absl::optional<double> last_range_end_;
+  std::optional<TimelineRange> last_timeline_range_;
+  std::optional<double> last_range_start_;
+  std::optional<double> last_range_end_;
 
   friend class KeyframeEffectModelTest;
 };

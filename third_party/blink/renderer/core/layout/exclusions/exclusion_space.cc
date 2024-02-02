@@ -5,8 +5,8 @@
 #include "third_party/blink/renderer/core/layout/exclusions/exclusion_space.h"
 
 #include <algorithm>
+#include <optional>
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/layout/exclusions/exclusion_area.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 
@@ -350,7 +350,7 @@ void ExclusionSpaceInternal::DerivedGeometry::Add(
   for (wtf_size_t i = 0; i < shelves_.size(); ++i) {
     // We modify the current shelf in-place. However we need to keep a copy of
     // the shelf if we need to insert a new shelf later in the loop.
-    absl::optional<Shelf> shelf_copy;
+    std::optional<Shelf> shelf_copy;
 
     bool is_between_shelves;
 

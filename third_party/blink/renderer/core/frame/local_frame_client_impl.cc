@@ -557,7 +557,7 @@ void LocalFrameClientImpl::BeginNavigation(
     mojo::PendingRemote<mojom::blink::BlobURLToken> blob_url_token,
     base::TimeTicks input_start_time,
     const String& href_translate,
-    const absl::optional<Impression>& impression,
+    const std::optional<Impression>& impression,
     const LocalFrameToken* initiator_frame_token,
     std::unique_ptr<SourceLocation> source_location,
     mojo::PendingRemote<mojom::blink::PolicyContainerHostKeepAliveHandle>
@@ -741,7 +741,7 @@ void LocalFrameClientImpl::DidStopLoading() {
 
 bool LocalFrameClientImpl::NavigateBackForward(
     int offset,
-    absl::optional<scheduler::TaskAttributionId>
+    std::optional<scheduler::TaskAttributionId>
         soft_navigation_heuristics_task_id) const {
   WebViewImpl* webview = web_frame_->ViewImpl();
   DCHECK(webview->Client());
@@ -864,10 +864,10 @@ String LocalFrameClientImpl::UserAgent() {
   return user_agent_;
 }
 
-absl::optional<UserAgentMetadata> LocalFrameClientImpl::UserAgentMetadata() {
+std::optional<UserAgentMetadata> LocalFrameClientImpl::UserAgentMetadata() {
   bool ua_override_on = web_frame_->Client() &&
                         !web_frame_->Client()->UserAgentOverride().IsEmpty();
-  absl::optional<blink::UserAgentMetadata> user_agent_metadata =
+  std::optional<blink::UserAgentMetadata> user_agent_metadata =
       ua_override_on ? web_frame_->Client()->UserAgentMetadataOverride()
                      : Platform::Current()->UserAgentMetadata();
 

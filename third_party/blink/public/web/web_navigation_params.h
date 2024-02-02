@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_NAVIGATION_PARAMS_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/containers/flat_map.h"
 #include "base/containers/span.h"
@@ -17,7 +18,6 @@
 #include "services/network/public/mojom/url_loader_factory.mojom-shared.h"
 #include "services/network/public/mojom/url_response_head.mojom-shared.h"
 #include "services/network/public/mojom/web_client_hints_types.mojom-shared.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/fenced_frame/redacted_fenced_frame_config.h"
 #include "third_party/blink/public/common/frame/frame_policy.h"
 #include "third_party/blink/public/common/frame/view_transition_state.h"
@@ -175,7 +175,7 @@ struct BLINK_EXPORT WebNavigationInfo {
   // Optional impression associated with this navigation. This is attached when
   // a navigation results from a click on an anchor tag that has conversion
   // measurement attributes.
-  absl::optional<Impression> impression;
+  std::optional<Impression> impression;
 
   // The frame policy specified by the frame owner element.
   // For top-level window with no opener, this is the default lax FramePolicy.
@@ -184,7 +184,7 @@ struct BLINK_EXPORT WebNavigationInfo {
   FramePolicy frame_policy;
 
   // The frame token of the initiator Frame.
-  absl::optional<LocalFrameToken> initiator_frame_token;
+  std::optional<LocalFrameToken> initiator_frame_token;
 
   // A handle for keeping the initiator RenderFrameHost's PolicyContainerHost
   // alive until we create the NavigationRequest.
@@ -347,7 +347,7 @@ struct BLINK_EXPORT WebNavigationParams {
   bool is_client_redirect = false;
   // Cache mode to be used for subresources, instead of the one determined
   // by |frame_load_type|.
-  absl::optional<blink::mojom::FetchCacheMode> force_fetch_cache_mode;
+  std::optional<blink::mojom::FetchCacheMode> force_fetch_cache_mode;
 
   // Miscellaneous parameters.
 
@@ -444,8 +444,8 @@ struct BLINK_EXPORT WebNavigationParams {
   ukm::SourceId document_ukm_source_id = ukm::kInvalidSourceId;
 
   // The frame policy specified by the frame owner element.
-  // Should be absl::nullopt for top level navigations
-  absl::optional<FramePolicy> frame_policy;
+  // Should be std::nullopt for top level navigations
+  std::optional<FramePolicy> frame_policy;
 
   // A list of origin trial names to enable for the document being loaded.
   WebVector<WebString> force_enabled_origin_trials;
@@ -475,7 +475,7 @@ struct BLINK_EXPORT WebNavigationParams {
   // take precedence over any permissions policy constructed in blink. This is
   // useful for isolated applications, which use a different base permissions
   // policy than blink, which uses a fully permissive policy as its base.
-  absl::optional<blink::ParsedPermissionsPolicy> permissions_policy_override;
+  std::optional<blink::ParsedPermissionsPolicy> permissions_policy_override;
 
   // These are used to construct a subset of the back/forward list for the
   // window.navigation API. They only have the attributes that are needed for
@@ -493,7 +493,7 @@ struct BLINK_EXPORT WebNavigationParams {
   // If this is a navigation to fenced frame from an interest group auction,
   // contains URNs mapped to the ad components returned by the winning bid.
   // Null, otherwise.
-  absl::optional<WebVector<WebURL>> ad_auction_components;
+  std::optional<WebVector<WebURL>> ad_auction_components;
 
   // Whether the current context would be allowed to create an opaque-ads
   //  frame (based on the browser-side calculations). See
@@ -523,14 +523,14 @@ struct BLINK_EXPORT WebNavigationParams {
 
   // Provides cached state from the previous Document that will be replaced by
   // this navigation for a ViewTransition.
-  absl::optional<ViewTransitionState> view_transition_state;
+  std::optional<ViewTransitionState> view_transition_state;
 
   // If this is a navigation to an "opaque-ads" fenced frame through an ad
   // auction, this stores the collection of properties that were loaded into a
   // fenced frame to specify its behavior. This is read into an inner
   // `FencedFrameConfig` object to give a fenced frame access to the
   // components associated with the winning bid in an auction.
-  absl::optional<FencedFrame::RedactedFencedFrameProperties>
+  std::optional<FencedFrame::RedactedFencedFrameProperties>
       fenced_frame_properties;
 
   // Maps the blink runtime-enabled features modified in the browser process to
@@ -547,8 +547,8 @@ struct BLINK_EXPORT WebNavigationParams {
   // context group. Same browsing context group navigations never set this
   // because no update is required. Subframes navigations never set this,
   // because they cannot change browsing context group.
-  absl::optional<BrowsingContextGroupInfo> browsing_context_group_info =
-      absl::nullopt;
+  std::optional<BrowsingContextGroupInfo> browsing_context_group_info =
+      std::nullopt;
 
   // For each document, the browser passes along state for each
   // renderer-enforced content setting.

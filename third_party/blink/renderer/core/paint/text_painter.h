@@ -56,8 +56,8 @@ class CORE_EXPORT TextPainter : public TextPainterBase {
    private:
     const LayoutSVGInlineText& layout_svg_inline_text_;
     const ComputedStyle& style_;
-    absl::optional<AffineTransform> shader_transform_;
-    absl::optional<Color> text_match_color_;
+    std::optional<AffineTransform> shader_transform_;
+    std::optional<Color> text_match_color_;
     StyleVariant style_variant_ = StyleVariant::kStandard;
     PaintFlags paint_flags_ = PaintFlag::kNoFlag;
     bool is_painting_selection_ = false;
@@ -118,7 +118,7 @@ class CORE_EXPORT TextPainter : public TextPainterBase {
                             const AutoDarkMode& auto_dark_mode);
 
   const gfx::Rect visual_rect_;
-  absl::optional<SvgTextPaintState> svg_text_paint_state_;
+  std::optional<SvgTextPaintState> svg_text_paint_state_;
 };
 
 }  // namespace blink

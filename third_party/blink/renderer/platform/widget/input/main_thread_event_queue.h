@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WIDGET_INPUT_MAIN_THREAD_EVENT_QUEUE_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
@@ -14,7 +15,6 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "cc/input/touch_action.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/common/input/web_input_event_attribution.h"
 #include "third_party/blink/public/mojom/input/input_event_result.mojom-shared.h"
@@ -35,7 +35,7 @@ using HandledEventCallback =
     base::OnceCallback<void(mojom::blink::InputEventResultState ack_state,
                             const ui::LatencyInfo& latency_info,
                             mojom::blink::DidOverscrollParamsPtr,
-                            absl::optional<cc::TouchAction>)>;
+                            std::optional<cc::TouchAction>)>;
 
 // All interaction with the MainThreadEventQueueClient will occur
 // on the main thread.

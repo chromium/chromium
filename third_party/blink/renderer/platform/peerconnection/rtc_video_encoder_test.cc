@@ -609,7 +609,7 @@ class RTCVideoEncoderTest {
 
   raw_ptr<media::MockVideoEncodeAccelerator, DanglingUntriaged> mock_vea_;
   std::unique_ptr<RTCVideoEncoderWrapper> rtc_encoder_;
-  absl::optional<media::VideoEncodeAccelerator::Config> config_;
+  std::optional<media::VideoEncodeAccelerator::Config> config_;
   raw_ptr<media::VideoEncodeAccelerator::Client, DanglingUntriaged> client_;
   base::Thread encoder_thread_;
 

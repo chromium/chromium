@@ -130,7 +130,7 @@ bool HasAccent(const BlockNode& node, bool accent_under) {
          (accent_under && script_type == MathScriptType::kUnder) ||
          (!accent_under && script_type == MathScriptType::kOver));
 
-  absl::optional<bool> attribute_value =
+  std::optional<bool> attribute_value =
       accent_under ? underover->AccentUnder() : underover->Accent();
   return attribute_value && *attribute_value;
 }
@@ -255,7 +255,7 @@ const LayoutResult* MathUnderOverLayoutAlgorithm::Layout() {
       LayoutUnit zero_stretch_size;
       const auto child_constraint_space = CreateConstraintSpaceForMathChild(
           Node(), ChildAvailableSize(), constraint_space, child,
-          LayoutResultCacheSlot::kMeasure, absl::nullopt, zero_stretch_size);
+          LayoutResultCacheSlot::kMeasure, std::nullopt, zero_stretch_size);
       const auto* child_layout_result = To<BlockNode>(child).Layout(
           child_constraint_space, nullptr /* break_token */);
       UpdateInlineStretchSize(child_layout_result);
@@ -274,7 +274,7 @@ const LayoutResult* MathUnderOverLayoutAlgorithm::Layout() {
         IsInlineAxisStretchyOperator(To<BlockNode>(child))) {
       return CreateConstraintSpaceForMathChild(
           Node(), ChildAvailableSize(), constraint_space, child,
-          LayoutResultCacheSlot::kLayout, absl::nullopt,
+          LayoutResultCacheSlot::kLayout, std::nullopt,
           constraint_space.TargetStretchInlineSize());
     }
     if ((child != base || (!base_inherits_block_stretch_size_constraint &&
@@ -282,7 +282,7 @@ const LayoutResult* MathUnderOverLayoutAlgorithm::Layout() {
         IsInlineAxisStretchyOperator(To<BlockNode>(child))) {
       return CreateConstraintSpaceForMathChild(
           Node(), ChildAvailableSize(), constraint_space, child,
-          LayoutResultCacheSlot::kLayout, absl::nullopt, inline_stretch_size);
+          LayoutResultCacheSlot::kLayout, std::nullopt, inline_stretch_size);
     }
     return CreateConstraintSpaceForMathChild(Node(), ChildAvailableSize(),
                                              constraint_space, child,

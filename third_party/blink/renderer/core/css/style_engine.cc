@@ -3889,11 +3889,11 @@ void StyleEngine::UpdateColorScheme() {
   // overrides?
   if (const MediaFeatureOverrides* overrides =
           GetDocument().GetPage()->GetMediaFeatureOverrides()) {
-    if (absl::optional<ForcedColors> forced_color_override =
+    if (std::optional<ForcedColors> forced_color_override =
             overrides->GetForcedColors()) {
       forced_colors_ = forced_color_override.value();
     }
-    if (absl::optional<mojom::blink::PreferredColorScheme>
+    if (std::optional<mojom::blink::PreferredColorScheme>
             preferred_color_scheme_override =
                 overrides->GetPreferredColorScheme()) {
       preferred_color_scheme_ = preferred_color_scheme_override.value();
@@ -3904,7 +3904,7 @@ void StyleEngine::UpdateColorScheme() {
   const PreferenceOverrides* preference_overrides =
       GetDocument().GetPage()->GetPreferenceOverrides();
   if (preference_overrides && !media_feature_override_color_scheme) {
-    absl::optional<mojom::blink::PreferredColorScheme>
+    std::optional<mojom::blink::PreferredColorScheme>
         preferred_color_scheme_override =
             preference_overrides->GetPreferredColorScheme();
     if (preferred_color_scheme_override.has_value()) {

@@ -5,9 +5,10 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_PEERCONNECTION_RTC_RTP_RECEIVER_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_PEERCONNECTION_RTC_RTP_RECEIVER_H_
 
+#include <optional>
+
 #include "base/synchronization/lock.h"
 #include "base/task/single_thread_task_runner.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_rtp_contributing_source.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_rtp_receive_parameters.h"
@@ -67,8 +68,8 @@ class RTCRtpReceiver final : public ScriptWrappable,
   MediaStreamTrack* track() const;
   RTCDtlsTransport* transport();
   RTCDtlsTransport* rtcpTransport();
-  absl::optional<double> playoutDelayHint() const;
-  void setPlayoutDelayHint(absl::optional<double>, ExceptionState&);
+  std::optional<double> playoutDelayHint() const;
+  void setPlayoutDelayHint(std::optional<double>, ExceptionState&);
   RTCRtpReceiveParameters* getParameters();
   HeapVector<Member<RTCRtpSynchronizationSource>> getSynchronizationSources(
       ScriptState*,
@@ -139,7 +140,7 @@ class RTCRtpReceiver final : public ScriptWrappable,
   // Hint to the WebRTC Jitter Buffer about desired playout delay. Actual
   // observed delay may differ depending on the congestion control. |nullopt|
   // means default value must be used.
-  absl::optional<double> playout_delay_hint_;
+  std::optional<double> playout_delay_hint_;
 
   THREAD_CHECKER(thread_checker_);
 

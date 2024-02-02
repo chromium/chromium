@@ -5,7 +5,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_STYLE_VARIABLES_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_STYLE_VARIABLES_H_
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include <iosfwd>
+#include <optional>
+
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_value.h"
 #include "third_party/blink/renderer/core/css/css_variable_data.h"
@@ -15,8 +17,6 @@
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string_hash.h"
-
-#include <iosfwd>
 
 namespace blink {
 
@@ -33,9 +33,9 @@ namespace blink {
 // invalid at computed-value time [1] as such.
 //
 // If StyleVariables does not contain an entry at all for a given property,
-// absl::nullopt is returned. This allows us to differentiate between the case
+// std::nullopt is returned. This allows us to differentiate between the case
 // where we want to try to find the variable elsewhere (e.g. StyleInitialData,
-// in the case of absl::nullopt), or return nullptr without looking further.
+// in the case of std::nullopt), or return nullptr without looking further.
 //
 // Due to the subtleties introduced by the root-bucket optimization in
 // StyleInheritedVariables, there is deliberately no way to erase an entry
@@ -59,8 +59,8 @@ class CORE_EXPORT StyleVariables {
     return !(*this == other);
   }
 
-  using OptionalData = absl::optional<CSSVariableData*>;
-  using OptionalValue = absl::optional<const CSSValue*>;
+  using OptionalData = std::optional<CSSVariableData*>;
+  using OptionalValue = std::optional<const CSSValue*>;
 
   OptionalValue GetValue(const AtomicString&) const;
   OptionalData GetData(const AtomicString&) const;

@@ -5,7 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_MEASURE_CACHE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_MEASURE_CACHE_H_
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include <optional>
+
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
@@ -37,7 +38,7 @@ class MeasureCache final : public GarbageCollected<MeasureCache> {
   // potentially populating `fragment_geometry`.
   const LayoutResult* Find(const BlockNode& node,
                            const ConstraintSpace& new_space,
-                           absl::optional<FragmentGeometry>* fragment_geometry);
+                           std::optional<FragmentGeometry>* fragment_geometry);
 
   void Add(const LayoutResult* result);
 

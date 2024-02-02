@@ -50,7 +50,7 @@ namespace blink {
 
 namespace {
 
-absl::optional<V8GPUFeatureName::Enum> RequiredFeatureForTextureFormat(
+std::optional<V8GPUFeatureName::Enum> RequiredFeatureForTextureFormat(
     V8GPUTextureFormat::Enum format) {
   switch (format) {
     case V8GPUTextureFormat::Enum::kBc1RgbaUnorm:
@@ -115,7 +115,7 @@ absl::optional<V8GPUFeatureName::Enum> RequiredFeatureForTextureFormat(
       return V8GPUFeatureName::Enum::kDepth32FloatStencil8;
 
     default:
-      return absl::nullopt;
+      return std::nullopt;
   }
 }
 
@@ -376,7 +376,7 @@ void GPUDevice::OnDeviceLostError(WGPUDeviceLostReason reason,
 }
 
 void GPUDevice::OnCreateRenderPipelineAsyncCallback(
-    absl::optional<String> label,
+    std::optional<String> label,
     ScriptPromiseResolver* resolver,
     WGPUCreatePipelineAsyncStatus status,
     WGPURenderPipeline render_pipeline,
@@ -418,7 +418,7 @@ void GPUDevice::OnCreateRenderPipelineAsyncCallback(
 }
 
 void GPUDevice::OnCreateComputePipelineAsyncCallback(
-    absl::optional<String> label,
+    std::optional<String> label,
     ScriptPromiseResolver* resolver,
     WGPUCreatePipelineAsyncStatus status,
     WGPUComputePipeline compute_pipeline,
@@ -562,7 +562,7 @@ ScriptPromise GPUDevice::createRenderPipelineAsync(
   if (exception_state.HadException()) {
     resolver->Reject(exception_state);
   } else {
-    absl::optional<String> label = {};
+    std::optional<String> label = {};
     if (descriptor->hasLabel()) {
       label = descriptor->label();
     }
@@ -603,7 +603,7 @@ ScriptPromise GPUDevice::createComputePipelineAsync(
     dawn_desc.nextInChain = &fullSubgroupsOptions.chain;
   }
 
-  absl::optional<String> label = {};
+  std::optional<String> label = {};
   if (descriptor->hasLabel()) {
     label = descriptor->label();
   }

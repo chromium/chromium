@@ -31,7 +31,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_SCHEDULER_SCHEDULED_ACTION_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_SCHEDULER_SCHEDULED_ACTION_H_
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include <optional>
+
 #include "third_party/blink/renderer/platform/bindings/name_client.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"

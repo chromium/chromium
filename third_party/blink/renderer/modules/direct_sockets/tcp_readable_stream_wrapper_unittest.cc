@@ -136,7 +136,7 @@ class StreamCreator : public GarbageCollected<StreamCreator> {
     close_called_with_ = !exception.IsEmpty();
   }
 
-  absl::optional<bool> close_called_with_;
+  std::optional<bool> close_called_with_;
   mojo::ScopedDataPipeProducerHandle data_pipe_producer_;
   Member<TCPReadableStreamWrapper> stream_wrapper_;
 };

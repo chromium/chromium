@@ -229,7 +229,7 @@ class AbstractInlineBoxAndSideAffinity {
       return {cursor,
               is_at_start ? InlineCaretPositionType::kBeforeBox
                           : InlineCaretPositionType::kAfterBox,
-              absl::nullopt};
+              std::nullopt};
     }
 
     return {cursor, InlineCaretPositionType::kAtTextOffset,

@@ -30,9 +30,9 @@
 #include "third_party/blink/renderer/modules/service_worker/service_worker_container.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_error_type.mojom-blink.h"
 #include "third_party/blink/public/platform/web_fetch_client_settings_object.h"
 #include "third_party/blink/public/platform/web_string.h"
@@ -334,7 +334,7 @@ ScriptPromise ServiceWorkerContainer::registerServiceWorker(
 
   mojom::blink::ServiceWorkerUpdateViaCache update_via_cache =
       ParseUpdateViaCache(options->updateViaCache());
-  absl::optional<mojom::blink::ScriptType> script_type =
+  std::optional<mojom::blink::ScriptType> script_type =
       Script::ParseScriptType(options->type());
   DCHECK(script_type);
 
@@ -366,7 +366,7 @@ ScriptPromise ServiceWorkerContainer::registerServiceWorker(
 void ServiceWorkerContainer::RegisterServiceWorkerInternal(
     const KURL& scope_url,
     const KURL& script_url,
-    absl::optional<mojom::blink::ScriptType> script_type,
+    std::optional<mojom::blink::ScriptType> script_type,
     mojom::blink::ServiceWorkerUpdateViaCache update_via_cache,
     WebFetchClientSettingsObject fetch_client_settings_object,
     std::unique_ptr<CallbackPromiseAdapter<ServiceWorkerRegistration,

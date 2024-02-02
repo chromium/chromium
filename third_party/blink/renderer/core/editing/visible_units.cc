@@ -729,7 +729,7 @@ static PositionTemplate<Strategy> MostBackwardCaretPosition(
   }
   const bool start_editable = IsEditable(*last_node);
   bool boundary_crossed = false;
-  absl::optional<WritingMode> writing_mode;
+  std::optional<WritingMode> writing_mode;
   for (PositionIteratorAlgorithm<Strategy> current_pos = last_visible;
        !current_pos.AtStart(); current_pos.Decrement()) {
     Node* current_node = current_pos.GetNode();
@@ -913,7 +913,7 @@ PositionTemplate<Strategy> MostForwardCaretPosition(
   }
   const bool start_editable = IsEditable(*last_node);
   bool boundary_crossed = false;
-  absl::optional<WritingMode> writing_mode;
+  std::optional<WritingMode> writing_mode;
   for (PositionIteratorAlgorithm<Strategy> current_pos = last_visible;
        !current_pos.AtEnd(); current_pos.Increment()) {
     Node* current_node = current_pos.GetNode();

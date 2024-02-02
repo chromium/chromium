@@ -4,8 +4,9 @@
 
 #include "third_party/blink/renderer/core/paint/replaced_painter.h"
 
+#include <optional>
+
 #include "base/metrics/histogram_macros.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/highlight/highlight_style_utils.h"
@@ -47,7 +48,7 @@ class ScopedReplacedContentPaintState : public ScopedPaintState {
                                   const LayoutReplaced& replaced);
 
  private:
-  absl::optional<MobileFriendlinessChecker::IgnoreBeyondViewportScope>
+  std::optional<MobileFriendlinessChecker::IgnoreBeyondViewportScope>
       mf_ignore_scope_;
 };
 
@@ -204,7 +205,7 @@ void ReplacedPainter::Paint(const PaintInfo& paint_info) {
   if (!draw_selection_tint)
     return;
 
-  absl::optional<SelectionBoundsRecorder> selection_recorder;
+  std::optional<SelectionBoundsRecorder> selection_recorder;
   const FrameSelection& frame_selection =
       layout_replaced_.GetFrame()->Selection();
   SelectionState selection_state = layout_replaced_.GetSelectionState();
@@ -233,7 +234,7 @@ void ReplacedPainter::Paint(const PaintInfo& paint_info) {
                              selection_painting_int_rect);
     Color selection_bg = HighlightStyleUtils::HighlightBackgroundColor(
         layout_replaced_.GetDocument(), layout_replaced_.StyleRef(),
-        layout_replaced_.GetNode(), absl::nullopt, kPseudoIdSelection);
+        layout_replaced_.GetNode(), std::nullopt, kPseudoIdSelection);
     local_paint_info.context.FillRect(
         selection_painting_int_rect, selection_bg,
         PaintAutoDarkMode(layout_replaced_.StyleRef(),
@@ -313,7 +314,7 @@ void ReplacedPainter::PaintBoxDecorationBackground(
 
   PhysicalRect paint_rect;
   const DisplayItemClient* background_client = nullptr;
-  absl::optional<ScopedBoxContentsPaintState> contents_paint_state;
+  std::optional<ScopedBoxContentsPaintState> contents_paint_state;
   bool painting_background_in_contents_space =
       paint_info.IsPaintingBackgroundInContentsSpace();
   gfx::Rect visual_rect;
@@ -373,7 +374,7 @@ void ReplacedPainter::PaintBoxDecorationBackgroundWithRect(
     const DisplayItemClient& background_client) {
   const ComputedStyle& style = layout_replaced_.StyleRef();
 
-  absl::optional<DisplayItemCacheSkipper> cache_skipper;
+  std::optional<DisplayItemCacheSkipper> cache_skipper;
   if (RuntimeEnabledFeatures::PaintUnderInvalidationCheckingEnabled() &&
       BoxPainterBase::ShouldSkipPaintUnderInvalidationChecking(
           layout_replaced_)) {

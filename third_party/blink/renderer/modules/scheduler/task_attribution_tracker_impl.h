@@ -87,13 +87,13 @@ class MODULES_EXPORT TaskAttributionTrackerImpl
  private:
   struct TaskAttributionIdPair {
     TaskAttributionIdPair() = default;
-    TaskAttributionIdPair(absl::optional<TaskAttributionId> parent_id,
-                          absl::optional<TaskAttributionId> current_id)
+    TaskAttributionIdPair(std::optional<TaskAttributionId> parent_id,
+                          std::optional<TaskAttributionId> current_id)
         : parent(parent_id), current(current_id) {}
 
     explicit operator bool() const { return parent.has_value(); }
-    absl::optional<TaskAttributionId> parent;
-    absl::optional<TaskAttributionId> current;
+    std::optional<TaskAttributionId> parent;
+    std::optional<TaskAttributionId> current;
   };
 
   // The TaskScope class maintains information about a task. The task's lifetime
@@ -110,7 +110,7 @@ class MODULES_EXPORT TaskAttributionTrackerImpl
                   TaskAttributionInfo* running_task,
                   ScriptWrappableTaskState* continuation_task_state,
                   TaskScopeType,
-                  absl::optional<TaskAttributionId> parent_task_id);
+                  std::optional<TaskAttributionId> parent_task_id);
     ~TaskScopeImpl() override;
     TaskScopeImpl(const TaskScopeImpl&) = delete;
     TaskScopeImpl& operator=(const TaskScopeImpl&) = delete;

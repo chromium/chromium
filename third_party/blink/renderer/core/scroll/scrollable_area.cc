@@ -1298,8 +1298,7 @@ bool ScrollableArea::PerformSnapping(
     const cc::SnapSelectionStrategy& strategy,
     mojom::blink::ScrollBehavior scroll_behavior,
     base::ScopedClosureRunner on_finish) {
-  absl::optional<gfx::PointF> snap_point =
-      GetSnapPositionAndSetTarget(strategy);
+  std::optional<gfx::PointF> snap_point = GetSnapPositionAndSetTarget(strategy);
   if (!snap_point) {
     UpdateSnappedTargetsAndEnqueueSnapChanged();
     return false;

@@ -52,7 +52,7 @@ const LayoutResult* UnpositionedListMarker::Layout(
   return marker_layout_result;
 }
 
-absl::optional<LayoutUnit> UnpositionedListMarker::ContentAlignmentBaseline(
+std::optional<LayoutUnit> UnpositionedListMarker::ContentAlignmentBaseline(
     const ConstraintSpace& space,
     FontBaseline baseline_type,
     const PhysicalFragment& content) const {
@@ -64,7 +64,7 @@ absl::optional<LayoutUnit> UnpositionedListMarker::ContentAlignmentBaseline(
     // with the next non-empty line box produced. (This can occur with floats
     // producing empty line-boxes).
     if (line_box.IsEmptyLineBox() && line_box.GetBreakToken()) {
-      return absl::nullopt;
+      return std::nullopt;
     }
 
     return line_box.Metrics().ascent;

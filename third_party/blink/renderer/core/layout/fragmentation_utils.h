@@ -5,7 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_FRAGMENTATION_UTILS_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_FRAGMENTATION_UTILS_H_
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include <optional>
+
 #include "third_party/blink/renderer/core/layout/block_break_token.h"
 #include "third_party/blink/renderer/core/layout/block_node.h"
 #include "third_party/blink/renderer/core/layout/box_fragment_builder.h"
@@ -130,7 +131,7 @@ BreakAppeal CalculateBreakAppealBefore(
 BreakAppeal CalculateBreakAppealInside(
     const ConstraintSpace& space,
     const LayoutResult&,
-    absl::optional<BreakAppeal> hypothetical_appeal = absl::nullopt);
+    std::optional<BreakAppeal> hypothetical_appeal = std::nullopt);
 
 // To ensure content progression, we need fragmentainers to hold something
 // larger than 0. The spec says that fragmentainers have to accept at least 1px
@@ -347,10 +348,10 @@ void BreakBeforeChild(
     LayoutInputNode child,
     const LayoutResult*,
     LayoutUnit fragmentainer_block_offset,
-    absl::optional<BreakAppeal> appeal,
+    std::optional<BreakAppeal> appeal,
     bool is_forced_break,
     BoxFragmentBuilder*,
-    absl::optional<LayoutUnit> block_size_override = absl::nullopt);
+    std::optional<LayoutUnit> block_size_override = std::nullopt);
 
 // Propagate the block-size of unbreakable content. This is used to inflate the
 // initial minimal column block-size when balancing columns, before we calculate
@@ -379,7 +380,7 @@ void PropagateSpaceShortage(
     const LayoutResult*,
     LayoutUnit fragmentainer_block_offset,
     FragmentBuilder*,
-    absl::optional<LayoutUnit> block_size_override = absl::nullopt);
+    std::optional<LayoutUnit> block_size_override = std::nullopt);
 // Calculate how much we would need to stretch the column block-size to fit the
 // current result (if applicable). |block_size_override| should only be supplied
 // when you wish to propagate a different block-size than that of the provided
@@ -388,9 +389,9 @@ LayoutUnit CalculateSpaceShortage(
     const ConstraintSpace&,
     const LayoutResult*,
     LayoutUnit fragmentainer_block_offset,
-    absl::optional<LayoutUnit> block_size_override = absl::nullopt);
+    std::optional<LayoutUnit> block_size_override = std::nullopt);
 // Update |minimal_space_shortage| based on the current |space_shortage|.
-void UpdateMinimalSpaceShortage(absl::optional<LayoutUnit> space_shortage,
+void UpdateMinimalSpaceShortage(std::optional<LayoutUnit> space_shortage,
                                 LayoutUnit* minimal_space_shortage);
 
 // Move past the breakpoint before the child, if possible, and return true. Also
@@ -441,7 +442,7 @@ bool AttemptSoftBreak(
     LayoutUnit fragmentainer_block_offset,
     BreakAppeal appeal_before,
     BoxFragmentBuilder*,
-    absl::optional<LayoutUnit> block_size_override = absl::nullopt,
+    std::optional<LayoutUnit> block_size_override = std::nullopt,
     FlexColumnBreakInfo* flex_column_break_info = nullptr);
 
 // If we have an previously found break point, and we're entering an ancestor of

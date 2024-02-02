@@ -98,7 +98,7 @@ class FragmentTreeDumper {
       : builder_(builder), target_fragment_(target), flags_(flags) {}
 
   void Append(const PhysicalFragment* fragment,
-              absl::optional<PhysicalOffset> fragment_offset,
+              std::optional<PhysicalOffset> fragment_offset,
               unsigned indent = 2) {
     AppendIndentation(indent, fragment);
 
@@ -202,7 +202,7 @@ class FragmentTreeDumper {
         builder_->Append("(Fragment not found when searching the subtree)\n");
         builder_->Append("(Dumping detached fragment tree now:)\n");
       }
-      Append(target_fragment_, absl::nullopt);
+      Append(target_fragment_, std::nullopt);
     }
   }
 
@@ -216,7 +216,7 @@ class FragmentTreeDumper {
     }
     const LayoutBox& box_descendant = To<LayoutBox>(layout_object);
     DCHECK_EQ(box_descendant.PhysicalFragmentCount(), 1u);
-    Append(box_descendant.GetPhysicalFragment(0), absl::nullopt, indent + 4);
+    Append(box_descendant.GetPhysicalFragment(0), std::nullopt, indent + 4);
   }
 
  private:
@@ -261,7 +261,7 @@ class FragmentTreeDumper {
   }
 
   bool AppendOffsetAndSize(const PhysicalFragment* fragment,
-                           absl::optional<PhysicalOffset> fragment_offset,
+                           std::optional<PhysicalOffset> fragment_offset,
                            bool has_content) {
     if (flags_ & PhysicalFragment::DumpOffset) {
       if (has_content)
@@ -732,7 +732,7 @@ String PhysicalFragment::ToString() const {
 String PhysicalFragment::DumpFragmentTree(
     DumpFlags flags,
     const PhysicalFragment* target,
-    absl::optional<PhysicalOffset> fragment_offset,
+    std::optional<PhysicalOffset> fragment_offset,
     unsigned indent) const {
   StringBuilder string_builder;
   if (flags & DumpHeaderText)

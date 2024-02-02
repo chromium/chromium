@@ -5,7 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_INLINE_LINE_TRUNCATOR_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_INLINE_LINE_TRUNCATOR_H_
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include <optional>
+
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/inline/line_box_fragment_builder.h"
 #include "third_party/blink/renderer/platform/text/text_direction.h"
@@ -71,11 +72,11 @@ class CORE_EXPORT LineTruncator final {
                       LayoutUnit ellipsis_width,
                       bool is_first_child,
                       LogicalLineItem*,
-                      absl::optional<LogicalLineItem>* truncated_child);
+                      std::optional<LogicalLineItem>* truncated_child);
   bool TruncateChild(LayoutUnit space_for_this_child,
                      bool is_first_child,
                      const LogicalLineItem& child,
-                     absl::optional<LogicalLineItem>* truncated_child);
+                     std::optional<LogicalLineItem>* truncated_child);
   // Create |LogicalLineItem| by truncating text |item| at |offset_to_fit|.
   // |direction| specifies which side of the text is trimmed; if |kLtr|, it
   // keeps the left end and trims the right end.

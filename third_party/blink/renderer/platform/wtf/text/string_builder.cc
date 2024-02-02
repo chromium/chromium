@@ -27,8 +27,9 @@
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 #include <algorithm>
+#include <optional>
+
 #include "base/strings/string_util.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/platform/wtf/dtoa.h"
 #include "third_party/blink/renderer/platform/wtf/text/integer_to_string_conversion.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -84,8 +85,8 @@ StringView StringBuilder::SubstringView(unsigned start, unsigned length) const {
 }
 
 void StringBuilder::Swap(StringBuilder& builder) {
-  absl::optional<Buffer8> buffer8;
-  absl::optional<Buffer16> buffer16;
+  std::optional<Buffer8> buffer8;
+  std::optional<Buffer16> buffer16;
   if (has_buffer_) {
     if (is_8bit_) {
       buffer8 = std::move(buffer8_);

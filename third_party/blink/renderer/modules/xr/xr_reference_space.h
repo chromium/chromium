@@ -30,10 +30,10 @@ class XRReferenceSpace : public XRSpace {
                    device::mojom::blink::XRReferenceSpaceType type);
   ~XRReferenceSpace() override;
 
-  absl::optional<gfx::Transform> NativeFromViewer(
-      const absl::optional<gfx::Transform>& mojo_from_viewer) const override;
+  std::optional<gfx::Transform> NativeFromViewer(
+      const std::optional<gfx::Transform>& mojo_from_viewer) const override;
 
-  absl::optional<gfx::Transform> MojoFromNative() const override;
+  std::optional<gfx::Transform> MojoFromNative() const override;
 
   bool IsStationary() const override;
 

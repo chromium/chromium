@@ -124,7 +124,7 @@ KURL ModulatorImplBase::ResolveModuleSpecifier(const String& specifier,
   // errors, but should be supressed (i.e. |logger| should be null) in normal
   // cases.
 
-  absl::optional<KURL> mapped_url;
+  std::optional<KURL> mapped_url;
   if (GetImportMap()) {
     String import_map_debug_message;
     mapped_url = GetImportMap()->Resolve(parsed_specifier, base_url,

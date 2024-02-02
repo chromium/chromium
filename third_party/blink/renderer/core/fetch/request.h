@@ -5,8 +5,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_FETCH_REQUEST_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_FETCH_REQUEST_H_
 
+#include <optional>
+
 #include "services/network/public/mojom/fetch_api.mojom-blink-forward.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink-forward.h"
 #include "third_party/blink/public/platform/web_url_request.h"
 #include "third_party/blink/renderer/bindings/core/v8/dictionary.h"
@@ -62,7 +63,7 @@ class CORE_EXPORT Request final : public ScriptWrappable, public Body {
   Request(const Request&) = delete;
   Request& operator=(const Request&) = delete;
 
-  static absl::optional<network::mojom::CredentialsMode> ParseCredentialsMode(
+  static std::optional<network::mojom::CredentialsMode> ParseCredentialsMode(
       const String& credentials_mode);
 
   // From Request.idl:

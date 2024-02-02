@@ -86,7 +86,7 @@ StyleVariables::OptionalData StyleVariables::GetData(
   if (i != data_.end()) {
     return i->value.get();
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 StyleVariables::OptionalValue StyleVariables::GetValue(
@@ -95,7 +95,7 @@ StyleVariables::OptionalValue StyleVariables::GetValue(
   if (i != values_->end()) {
     return i->value.Get();
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void StyleVariables::SetData(const AtomicString& name,

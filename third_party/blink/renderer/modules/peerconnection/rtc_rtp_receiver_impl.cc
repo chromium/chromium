@@ -216,7 +216,7 @@ class RTCRtpReceiverImpl::RTCRtpReceiverInternal
         webrtc_receiver_->GetParameters());
   }
 
-  void SetJitterBufferMinimumDelay(absl::optional<double> delay_seconds) {
+  void SetJitterBufferMinimumDelay(std::optional<double> delay_seconds) {
     webrtc_receiver_->SetJitterBufferMinimumDelay(delay_seconds);
   }
 
@@ -355,7 +355,7 @@ std::unique_ptr<webrtc::RtpParameters> RTCRtpReceiverImpl::GetParameters()
 }
 
 void RTCRtpReceiverImpl::SetJitterBufferMinimumDelay(
-    absl::optional<double> delay_seconds) {
+    std::optional<double> delay_seconds) {
   internal_->SetJitterBufferMinimumDelay(delay_seconds);
 }
 

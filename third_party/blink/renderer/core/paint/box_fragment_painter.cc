@@ -438,8 +438,8 @@ void BoxFragmentPainter::PaintInternal(const PaintInfo& paint_info) {
 
   // For text-combine-upright:all, we need to realize canvas here for scaling
   // to fit text content in 1em and shear for "font-style: oblique -15deg".
-  absl::optional<DrawingRecorder> recorder;
-  absl::optional<GraphicsContextStateSaver> graphics_context_state_saver;
+  std::optional<DrawingRecorder> recorder;
+  std::optional<GraphicsContextStateSaver> graphics_context_state_saver;
   const auto* const text_combine =
       DynamicTo<LayoutTextCombine>(box_fragment_.GetLayoutObject());
   if (UNLIKELY(text_combine)) {
@@ -687,7 +687,7 @@ void BoxFragmentPainter::PaintCaretsIfNeeded(
 
   // Apply overflow clip if needed.
   // reveal-caret-of-multiline-contenteditable.html needs this.
-  absl::optional<ScopedPaintChunkProperties> paint_chunk_properties;
+  std::optional<ScopedPaintChunkProperties> paint_chunk_properties;
   if (const auto* fragment = paint_state.FragmentToPaint()) {
     if (const auto* properties = fragment->PaintProperties()) {
       if (const auto* overflow_clip = properties->OverflowClip()) {
@@ -753,7 +753,7 @@ void BoxFragmentPainter::PaintLineBoxes(const PaintInfo& paint_info,
   DCHECK(items_);
   EnsureInlineContext();
   InlineCursor children(box_fragment_, *items_);
-  absl::optional<ScopedSVGPaintState> paint_state;
+  std::optional<ScopedSVGPaintState> paint_state;
   if (box_fragment_.IsSvgText())
     paint_state.emplace(*box_fragment_.GetLayoutObject(), paint_info);
 
@@ -891,8 +891,8 @@ void BoxFragmentPainter::PaintFloatingChildren(
     const PaintInfo& paint_info) {
   DCHECK(container.HasFloatingDescendantsForPaint());
   const PaintInfo* local_paint_info = &paint_info;
-  absl::optional<ScopedPaintState> paint_state;
-  absl::optional<ScopedBoxContentsPaintState> contents_paint_state;
+  std::optional<ScopedPaintState> paint_state;
+  std::optional<ScopedBoxContentsPaintState> contents_paint_state;
   if (const auto* box = DynamicTo<LayoutBox>(container.GetLayoutObject())) {
     paint_state.emplace(To<PhysicalBoxFragment>(container), paint_info);
     contents_paint_state.emplace(*paint_state, *box);
@@ -1021,7 +1021,7 @@ void BoxFragmentPainter::PaintBoxDecorationBackground(
 
   PhysicalRect paint_rect;
   const DisplayItemClient* background_client = nullptr;
-  absl::optional<ScopedBoxContentsPaintState> contents_paint_state;
+  std::optional<ScopedBoxContentsPaintState> contents_paint_state;
   gfx::Rect visual_rect;
   if (paint_info.IsPaintingBackgroundInContentsSpace()) {
     // For the case where we are painting the background in the contents space,
@@ -1089,7 +1089,7 @@ void BoxFragmentPainter::PaintBoxDecorationBackgroundWithRect(
   }
 
   const auto& box = To<LayoutBox>(*box_fragment_.GetLayoutObject());
-  absl::optional<DisplayItemCacheSkipper> cache_skipper;
+  std::optional<DisplayItemCacheSkipper> cache_skipper;
   if (RuntimeEnabledFeatures::PaintUnderInvalidationCheckingEnabled() &&
       ShouldSkipPaintUnderInvalidationChecking(box)) {
     cache_skipper.emplace(paint_info.context);

@@ -59,7 +59,7 @@ WebBlob WebBlob::CreateFromFile(v8::Isolate* isolate,
   return MakeGarbageCollected<Blob>(BlobDataHandle::CreateForFile(
       FileBackedBlobFactoryDispatcher::GetFileBackedBlobFactory(
           ExecutionContext::From(isolate->GetCurrentContext())),
-      path, /*offset=*/0, size, /*expected_modification_time=*/absl::nullopt,
+      path, /*offset=*/0, size, /*expected_modification_time=*/std::nullopt,
       /*content_type=*/""));
 }
 

@@ -7,11 +7,11 @@
 
 #include <iosfwd>
 #include <memory>
+#include <optional>
 
 #include "base/check_op.h"
 #include "base/dcheck_is_on.h"
 #include "cc/input/hit_test_opaqueness.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/graphics/paint/display_item_client.h"
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_display_item.h"

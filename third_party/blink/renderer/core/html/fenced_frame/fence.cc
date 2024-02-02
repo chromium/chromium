@@ -4,9 +4,10 @@
 
 #include "third_party/blink/renderer/core/html/fenced_frame/fence.h"
 
+#include <optional>
+
 #include "base/feature_list.h"
 #include "base/ranges/algorithm.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/fenced_frame/fenced_frame_utils.h"
 #include "third_party/blink/public/common/frame/frame_policy.h"
@@ -47,7 +48,7 @@ blink::FencedFrame::ReportingDestination ToPublicDestination(
   }
 }
 
-absl::optional<mojom::blink::AutomaticBeaconType> GetAutomaticBeaconType(
+std::optional<mojom::blink::AutomaticBeaconType> GetAutomaticBeaconType(
     const WTF::String& input) {
   if (input == blink::kDeprecatedFencedFrameTopNavigationBeaconType) {
     return mojom::blink::AutomaticBeaconType::kDeprecatedTopNavigation;
@@ -61,7 +62,7 @@ absl::optional<mojom::blink::AutomaticBeaconType> GetAutomaticBeaconType(
       return mojom::blink::AutomaticBeaconType::kTopNavigationCommit;
     }
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 }  // namespace
@@ -225,7 +226,7 @@ void Fence::setReportEventDataForAutomaticBeacons(
     exception_state.ThrowTypeError("Missing required 'eventType' property.");
     return;
   }
-  absl::optional<mojom::blink::AutomaticBeaconType> beacon_type =
+  std::optional<mojom::blink::AutomaticBeaconType> beacon_type =
       GetAutomaticBeaconType(event->eventType());
   if (!beacon_type.has_value()) {
     AddConsoleMessage(event->eventType() +
@@ -274,7 +275,7 @@ void Fence::setReportEventDataForAutomaticBeacons(
 HeapVector<Member<FencedFrameConfig>> Fence::getNestedConfigs(
     ExceptionState& exception_state) {
   HeapVector<Member<FencedFrameConfig>> out;
-  const absl::optional<FencedFrame::RedactedFencedFrameProperties>&
+  const std::optional<FencedFrame::RedactedFencedFrameProperties>&
       fenced_frame_properties =
           DomWindow()->document()->Loader()->FencedFrameProperties();
   if (fenced_frame_properties.has_value() &&

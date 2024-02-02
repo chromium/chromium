@@ -39,8 +39,8 @@ const LayoutResult* TableSectionLayoutAlgorithm::Layout() {
   const LogicalSize available_size = {container_builder_.InlineSize(),
                                       kIndefiniteSize};
 
-  absl::optional<LayoutUnit> first_baseline;
-  absl::optional<LayoutUnit> last_baseline;
+  std::optional<LayoutUnit> first_baseline;
+  std::optional<LayoutUnit> last_baseline;
   LogicalOffset offset;
   LayoutUnit intrinsic_block_size;
   bool is_first_non_collapsed_row = true;

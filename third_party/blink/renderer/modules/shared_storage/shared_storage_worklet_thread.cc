@@ -126,11 +126,11 @@ void SharedStorageWorkletThread::InitializeSharedStorageWorkletService(
 }
 
 // static
-absl::optional<WorkerBackingThreadStartupData>
+std::optional<WorkerBackingThreadStartupData>
 SharedStorageWorkletThread::CreateThreadStartupData() {
   if (base::FeatureList::IsEnabled(
           features::kSharedStorageWorkletSharedBackingThreadImplementation)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // The owning-backing-thread-implementation needs to provide a

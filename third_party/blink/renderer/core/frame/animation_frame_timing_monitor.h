@@ -127,7 +127,7 @@ class CORE_EXPORT AnimationFrameTimingMonitor final
   void RecordLongAnimationFrameUKMAndTrace(const AnimationFrameTimingInfo&);
   void ApplyTaskDuration(base::TimeDelta task_duration);
 
-  absl::optional<PendingScriptInfo> pending_script_info_;
+  std::optional<PendingScriptInfo> pending_script_info_;
   Client& client_;
 
   enum class State {

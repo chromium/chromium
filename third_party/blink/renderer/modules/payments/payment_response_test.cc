@@ -152,7 +152,7 @@ TEST(PaymentResponseTest, PaymentResponseDetailsContainsSpcExtensionsPRF) {
   input->get_assertion_authenticator_response->extensions->echo_prf = true;
   input->get_assertion_authenticator_response->extensions->prf_results =
       mojom::blink::PRFValues::New(
-          /*id=*/absl::nullopt,
+          /*id=*/std::nullopt,
           /*first=*/WTF::Vector<uint8_t>{1, 2, 3},
           /*second=*/WTF::Vector<uint8_t>{4, 5, 6});
   MockPaymentStateResolver* complete_callback =

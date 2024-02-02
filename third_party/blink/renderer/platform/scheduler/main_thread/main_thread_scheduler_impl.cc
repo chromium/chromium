@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <optional>
 #include <type_traits>
 #include <utility>
 
@@ -31,7 +32,6 @@
 #include "build/build_config.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/common/input/web_input_event_attribution.h"
@@ -166,7 +166,7 @@ const char* RendererProcessTypeToString(WebRendererProcessType process_type) {
 }
 
 const char* OptionalTaskDescriptionToString(
-    absl::optional<MainThreadSchedulerImpl::TaskDescriptionForTracing> desc) {
+    std::optional<MainThreadSchedulerImpl::TaskDescriptionForTracing> desc) {
   if (!desc)
     return nullptr;
   if (desc->task_type != TaskType::kDeprecatedNone)
@@ -177,8 +177,7 @@ const char* OptionalTaskDescriptionToString(
       MainThreadTaskQueue::NameForQueueType(desc->queue_type.value()));
 }
 
-const char* OptionalTaskPriorityToString(
-    absl::optional<TaskPriority> priority) {
+const char* OptionalTaskPriorityToString(std::optional<TaskPriority> priority) {
   if (!priority)
     return nullptr;
   return TaskPriorityToString(*priority);
@@ -473,12 +472,12 @@ MainThreadSchedulerImpl::MainThreadOnly::MainThreadOnly(
                    &main_thread_scheduler_impl->tracing_controller_,
                    RendererProcessTypeToString),
       task_description_for_tracing(
-          absl::nullopt,
+          std::nullopt,
           "Scheduler.MainThreadTask",
           &main_thread_scheduler_impl->tracing_controller_,
           OptionalTaskDescriptionToString),
       task_priority_for_tracing(
-          absl::nullopt,
+          std::nullopt,
           "Scheduler.TaskPriority",
           &main_thread_scheduler_impl->tracing_controller_,
           OptionalTaskPriorityToString),
@@ -1650,7 +1649,7 @@ void MainThreadSchedulerImpl::UpdatePolicyLocked(UpdateType update_type) {
 }
 
 void MainThreadSchedulerImpl::UpdateStateForAllTaskQueues(
-    absl::optional<Policy> previous_policy) {
+    std::optional<Policy> previous_policy) {
   helper_.CheckOnValidThread();
 
   const Policy& current_policy = main_thread_only().current_policy;
@@ -2399,13 +2398,12 @@ void MainThreadSchedulerImpl::OnTaskStarted(
   main_thread_only().current_task_start_time = task_timing.start_time();
   main_thread_only().task_description_for_tracing = TaskDescriptionForTracing{
       static_cast<TaskType>(task.task_type),
-      queue
-          ? absl::optional<MainThreadTaskQueue::QueueType>(queue->queue_type())
-          : absl::nullopt};
+      queue ? std::optional<MainThreadTaskQueue::QueueType>(queue->queue_type())
+            : std::nullopt};
 
   main_thread_only().task_priority_for_tracing =
-      queue ? absl::optional<TaskPriority>(queue->GetQueuePriority())
-            : absl::nullopt;
+      queue ? std::optional<TaskPriority>(queue->GetQueuePriority())
+            : std::nullopt;
 }
 
 void MainThreadSchedulerImpl::OnTaskCompleted(
@@ -2448,10 +2446,10 @@ void MainThreadSchedulerImpl::OnTaskCompleted(
   // TODO(altimin): Per-page metrics should also be considered.
   main_thread_only().metrics_helper.RecordTaskMetrics(queue.get(), task,
                                                       *task_timing);
-  main_thread_only().task_description_for_tracing = absl::nullopt;
+  main_thread_only().task_description_for_tracing = std::nullopt;
 
   // Unset the state of |task_priority_for_tracing|.
-  main_thread_only().task_priority_for_tracing = absl::nullopt;
+  main_thread_only().task_priority_for_tracing = std::nullopt;
 
   RecordTaskUkm(queue.get(), task, *task_timing);
 
@@ -2633,9 +2631,9 @@ MainThreadSchedulerImpl::scheduling_settings() const {
 }
 
 TaskPriority MainThreadSchedulerImpl::ComputeCompositorPriority() const {
-  absl::optional<TaskPriority> targeted_main_frame_priority =
+  std::optional<TaskPriority> targeted_main_frame_priority =
       ComputeCompositorPriorityForMainFrame();
-  absl::optional<TaskPriority> use_case_priority =
+  std::optional<TaskPriority> use_case_priority =
       ComputeCompositorPriorityFromUseCase();
   if (!targeted_main_frame_priority && !use_case_priority) {
     return TaskPriority::kNormalPriority;
@@ -2773,7 +2771,7 @@ void MainThreadSchedulerImpl::MaybeUpdateIPCTaskQueuePriorityOnTaskCompleted() {
   }
 }
 
-absl::optional<TaskPriority>
+std::optional<TaskPriority>
 MainThreadSchedulerImpl::ComputeCompositorPriorityFromUseCase() const {
   switch (current_use_case()) {
     case UseCase::kCompositorGesture:
@@ -2802,7 +2800,7 @@ MainThreadSchedulerImpl::ComputeCompositorPriorityFromUseCase() const {
       // to the page's functionality or not.
       if (main_thread_only().main_thread_compositing_is_fast)
         return TaskPriority::kHighestPriority;
-      return absl::nullopt;
+      return std::nullopt;
 
     case UseCase::kMainThreadGesture:
     case UseCase::kTouchstart:
@@ -2815,19 +2813,19 @@ MainThreadSchedulerImpl::ComputeCompositorPriorityFromUseCase() const {
     case UseCase::kNone:
     case UseCase::kEarlyLoading:
     case UseCase::kLoading:
-      return absl::nullopt;
+      return std::nullopt;
 
     default:
       NOTREACHED();
-      return absl::nullopt;
+      return std::nullopt;
   }
 }
 
-absl::optional<TaskPriority>
+std::optional<TaskPriority>
 MainThreadSchedulerImpl::ComputeCompositorPriorityForMainFrame() const {
   switch (main_thread_only().main_frame_prioritization_state) {
     case RenderingPrioritizationState::kNone:
-      return absl::nullopt;
+      return std::nullopt;
     case RenderingPrioritizationState::kRenderingStarved:
       // Set higher than most tasks, but lower than render blocking tasks and
       // input.

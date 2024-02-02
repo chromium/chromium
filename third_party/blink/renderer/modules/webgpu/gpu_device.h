@@ -186,13 +186,13 @@ class GPUDevice final : public EventTarget,
                                WGPUErrorType type,
                                const char* message);
 
-  void OnCreateRenderPipelineAsyncCallback(absl::optional<String> label,
+  void OnCreateRenderPipelineAsyncCallback(std::optional<String> label,
                                            ScriptPromiseResolver* resolver,
                                            WGPUCreatePipelineAsyncStatus status,
                                            WGPURenderPipeline render_pipeline,
                                            const char* message);
   void OnCreateComputePipelineAsyncCallback(
-      absl::optional<String> label,
+      std::optional<String> label,
       ScriptPromiseResolver* resolver,
       WGPUCreatePipelineAsyncStatus status,
       WGPUComputePipeline compute_pipeline,

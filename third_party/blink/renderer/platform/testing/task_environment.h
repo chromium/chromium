@@ -5,8 +5,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_TESTING_TASK_ENVIRONMENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_TESTING_TASK_ENVIRONMENT_H_
 
+#include <optional>
+
 #include "base/test/task_environment.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/web/blink.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/main_thread_scheduler_impl.h"
 #include "third_party/blink/renderer/platform/testing/main_thread_isolate.h"
@@ -44,8 +45,8 @@ class TaskEnvironmentImpl : public base::test::TaskEnvironment {
   TaskEnvironmentImpl(base::test::TaskEnvironment&& scoped_task_environment);
 
   std::unique_ptr<scheduler::MainThreadSchedulerImpl> scheduler_;
-  absl::optional<MainThreadIsolate> main_thread_isolate_;
-  absl::optional<ScopedMainThreadOverrider> main_thread_overrider_;
+  std::optional<MainThreadIsolate> main_thread_isolate_;
+  std::optional<ScopedMainThreadOverrider> main_thread_overrider_;
 };
 
 }  // namespace internal
@@ -66,10 +67,9 @@ class TaskEnvironment {
   template <typename... Traits>
     requires base::trait_helpers::AreValidTraits<ValidTraits, Traits...>
   explicit TaskEnvironment(Traits... traits)
-      : impl_{
-            internal::TaskEnvironmentImpl::IsSupported()
-                ? absl::make_optional<internal::TaskEnvironmentImpl>(traits...)
-                : absl::nullopt} {}
+      : impl_{internal::TaskEnvironmentImpl::IsSupported()
+                  ? std::make_optional<internal::TaskEnvironmentImpl>(traits...)
+                  : std::nullopt} {}
 
   explicit operator bool() const { return impl_.has_value(); }
   internal::TaskEnvironmentImpl* operator->() { return impl_.operator->(); }
@@ -78,7 +78,7 @@ class TaskEnvironment {
   v8::Isolate* isolate();
 
  private:
-  absl::optional<internal::TaskEnvironmentImpl> impl_;
+  std::optional<internal::TaskEnvironmentImpl> impl_;
 };
 
 }  // namespace blink::test

@@ -508,7 +508,7 @@ void FrameLoader::DetachDocumentLoader(Member<DocumentLoader>& loader,
 void FrameLoader::ProcessScrollForSameDocumentNavigation(
     const KURL& url,
     WebFrameLoadType frame_load_type,
-    absl::optional<HistoryItem::ViewState> view_state,
+    std::optional<HistoryItem::ViewState> view_state,
     mojom::blink::ScrollRestorationType scroll_restoration_type) {
   if (view_state) {
     RestoreScrollPositionAndViewState(frame_load_type, *view_state,
@@ -721,7 +721,7 @@ void FrameLoader::StartNavigation(FrameLoadRequest& request,
         resource_request.HasUserGesture(), origin_window->GetSecurityOrigin(),
         /*is_synchronously_committed=*/true, request.GetSourceElement(),
         request.GetTriggeringEventInfo(), /*is_browser_initiated=*/false,
-        /*soft_navigation_heuristics_task_id=*/absl::nullopt);
+        /*soft_navigation_heuristics_task_id=*/std::nullopt);
     return;
   }
 
@@ -1406,8 +1406,7 @@ String FrameLoader::UserAgent() const {
   return ApplyUserAgentOverride(Client()->UserAgent());
 }
 
-absl::optional<blink::UserAgentMetadata> FrameLoader::UserAgentMetadata()
-    const {
+std::optional<blink::UserAgentMetadata> FrameLoader::UserAgentMetadata() const {
   return Client()->UserAgentMetadata();
 }
 

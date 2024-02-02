@@ -4,9 +4,9 @@
 
 #include "third_party/blink/renderer/modules/background_fetch/background_fetch_registration.h"
 
+#include <optional>
 #include <utility>
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_metric_builder.h"
 #include "third_party/blink/public/common/privacy_budget/identifiable_surface.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"

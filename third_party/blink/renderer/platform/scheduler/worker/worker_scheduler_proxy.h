@@ -5,12 +5,13 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_WORKER_WORKER_SCHEDULER_PROXY_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_WORKER_WORKER_SCHEDULER_PROXY_H_
 
+#include <optional>
+
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_checker.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/frame_origin_type.h"
 #include "third_party/blink/renderer/platform/scheduler/public/frame_or_worker_scheduler.h"
@@ -48,7 +49,7 @@ class PLATFORM_EXPORT WorkerSchedulerProxy {
   }
 
   // Accessed only during init.
-  absl::optional<FrameOriginType> parent_frame_type() const {
+  std::optional<FrameOriginType> parent_frame_type() const {
     DCHECK(!initialized_);
     return parent_frame_type_;
   }
@@ -79,7 +80,7 @@ class PLATFORM_EXPORT WorkerSchedulerProxy {
       throttling_observer_handle_;
 
   bool initialized_ = false;
-  absl::optional<FrameOriginType> parent_frame_type_;
+  std::optional<FrameOriginType> parent_frame_type_;
   FrameStatus initial_frame_status_ = FrameStatus::kNone;
   ukm::SourceId ukm_source_id_ = ukm::kInvalidSourceId;
 

@@ -5,7 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIASTREAM_CAPTURE_CONTROLLER_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIASTREAM_CAPTURE_CONTROLLER_H_
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include <optional>
+
 #include "third_party/blink/renderer/bindings/modules/v8/v8_capture_start_focus_behavior.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_captured_wheel_action.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
@@ -106,7 +107,7 @@ class MODULES_EXPORT CaptureController final
   // resolved. If left unset, the default behavior will be used.
   // The default behavior is not specified, and may change.
   // Presently, the default is to focus.
-  absl::optional<V8CaptureStartFocusBehavior> focus_behavior_;
+  std::optional<V8CaptureStartFocusBehavior> focus_behavior_;
 
   // Track whether the window of opportunity to call setFocusBehavior() is still
   // open. Once set to true, this never changes.
@@ -117,7 +118,7 @@ class MODULES_EXPORT CaptureController final
   // Set to a concrete value when capture starts.
   // Never changes back to nullopt.
   // Always stays at 100 (the default value) for window- and screen-capture.
-  absl::optional<int> zoom_level_;
+  std::optional<int> zoom_level_;
 #endif
 };
 

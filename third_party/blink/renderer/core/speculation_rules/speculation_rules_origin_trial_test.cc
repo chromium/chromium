@@ -287,7 +287,7 @@ TEST(SpeculationRulesPrefetchFutureOriginTrialTest,
   // fetched, so the mock URLs need to be registered. Otherwise it shouldn't be
   // fetched (and the lack of a registration will cause  an error if it is
   // fetched).
-  absl::optional<ScopedRegisterMockedURLLoads> mock_url_loads;
+  std::optional<ScopedRegisterMockedURLLoads> mock_url_loads;
   if (RuntimeEnabledFeatures::SpeculationRulesFetchFromHeaderEnabled(
           frame.DomWindow())) {
     mock_url_loads.emplace();

@@ -8,7 +8,7 @@
 
 namespace blink {
 
-absl::optional<InputHandlerProxy::EventDisposition>
+std::optional<InputHandlerProxy::EventDisposition>
 CursorControlHandler::ObserveInputEvent(const WebInputEvent& event) {
   switch (event.GetType()) {
     case WebInputEvent::Type::kGestureScrollBegin:
@@ -20,20 +20,20 @@ CursorControlHandler::ObserveInputEvent(const WebInputEvent& event) {
     case WebInputEvent::Type::kGestureScrollEnd:
       return HandleGestureScrollEnd(static_cast<const WebGestureEvent&>(event));
     default:
-      return absl::nullopt;
+      return std::nullopt;
   }
 }
 
-absl::optional<InputHandlerProxy::EventDisposition>
+std::optional<InputHandlerProxy::EventDisposition>
 CursorControlHandler::HandleGestureScrollBegin(const WebGestureEvent& event) {
   if (event.data.scroll_begin.cursor_control) {
     cursor_control_in_progress_ = true;
     return InputHandlerProxy::EventDisposition::DID_NOT_HANDLE;
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
-absl::optional<InputHandlerProxy::EventDisposition>
+std::optional<InputHandlerProxy::EventDisposition>
 CursorControlHandler::HandleGestureScrollUpdate(const WebGestureEvent& event) {
   if (cursor_control_in_progress_) {
     // Ignore if this event is for fling scroll.
@@ -42,16 +42,16 @@ CursorControlHandler::HandleGestureScrollUpdate(const WebGestureEvent& event) {
       return InputHandlerProxy::EventDisposition::DROP_EVENT;
     return InputHandlerProxy::EventDisposition::DID_NOT_HANDLE;
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
-absl::optional<InputHandlerProxy::EventDisposition>
+std::optional<InputHandlerProxy::EventDisposition>
 CursorControlHandler::HandleGestureScrollEnd(const WebGestureEvent& event) {
   if (cursor_control_in_progress_) {
     cursor_control_in_progress_ = false;
     return InputHandlerProxy::EventDisposition::DID_NOT_HANDLE;
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 }  // namespace blink

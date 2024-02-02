@@ -42,7 +42,7 @@ class CORE_EXPORT LoaderFactoryForFrame final
       scoped_refptr<base::SingleThreadTaskRunner>,
       scoped_refptr<base::SingleThreadTaskRunner>,
       BackForwardCacheLoaderHelper*,
-      const absl::optional<base::UnguessableToken>&
+      const std::optional<base::UnguessableToken>&
           service_worker_race_network_request_token,
       bool is_from_origin_dirty_style_sheet) override;
   CodeCacheHost* GetCodeCacheHost() override;

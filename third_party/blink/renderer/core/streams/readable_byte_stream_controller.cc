@@ -112,20 +112,20 @@ ReadableStreamBYOBRequest* ReadableByteStreamController::GetBYOBRequest(
   return controller->byob_request_.Get();
 }
 
-absl::optional<double> ReadableByteStreamController::desiredSize() {
+std::optional<double> ReadableByteStreamController::desiredSize() {
   // https://streams.spec.whatwg.org/#rbs-controller-desired-size
   // 1. Return ! ReadableByteStreamControllerGetDesiredSize(this).
   return GetDesiredSize(this);
 }
 
-absl::optional<double> ReadableByteStreamController::GetDesiredSize(
+std::optional<double> ReadableByteStreamController::GetDesiredSize(
     ReadableByteStreamController* controller) {
   // https://streams.spec.whatwg.org/#readable-byte-stream-controller-get-desired-size
   // 1. Let state be controller.[[stream]].[[state]].
   switch (controller->controlled_readable_stream_->state_) {
       // 2. If state is "errored", return null.
     case ReadableStream::kErrored:
-      return absl::nullopt;
+      return std::nullopt;
 
       // 3. If state is "closed", return 0.
     case ReadableStream::kClosed:
@@ -668,7 +668,7 @@ bool ReadableByteStreamController::ShouldCallPull(
   }
   // 7. Let desiredSize be !
   // ReadableByteStreamControllerGetDesiredSize(controller).
-  const absl::optional<double> desired_size = GetDesiredSize(controller);
+  const std::optional<double> desired_size = GetDesiredSize(controller);
   // 8. Assert: desiredSize is not null.
   DCHECK(desired_size);
   // 9. If desiredSize > 0, return true.

@@ -181,7 +181,7 @@ class StyleSheetHandler final : public CSSParserObserver {
       const String& parsed_text,
       Document* document,
       CSSRuleSourceDataList* result,
-      absl::optional<IssueReportingContext> issue_reporting_context = {})
+      std::optional<IssueReportingContext> issue_reporting_context = {})
       : parsed_text_(parsed_text),
         document_(document),
         result_(result),
@@ -222,7 +222,7 @@ class StyleSheetHandler final : public CSSParserObserver {
   CSSRuleSourceDataList* result_;
   CSSRuleSourceDataList current_rule_data_stack_;
   CSSRuleSourceData* current_rule_data_;
-  absl::optional<IssueReportingContext> issue_reporting_context_;
+  std::optional<IssueReportingContext> issue_reporting_context_;
   std::unique_ptr<LineEndings> line_endings_;
   // A property that fails to parse (ObserveProperty with is_parsed=false)
   // temporarily becomes a replaceable property. A replaceable property can be
@@ -237,7 +237,7 @@ class StyleSheetHandler final : public CSSParserObserver {
   // produced by ObserveProperty once we've seen a valid style rule at the same
   // offset. Note that we do not consider a rule valid until we see the
   // StartRuleBody event, so the actual replacement takes place there.
-  absl::optional<unsigned> replaceable_property_offset_;
+  std::optional<unsigned> replaceable_property_offset_;
 };
 
 void StyleSheetHandler::StartRuleHeader(StyleRule::RuleType type,
@@ -303,7 +303,7 @@ void StyleSheetHandler::StartRuleBody(unsigned offset) {
           *current_rule_data_stack_[current_rule_data_stack_.size() - 2];
       DCHECK(!outer_rule.property_data.empty());
       outer_rule.property_data.pop_back();
-      replaceable_property_offset_ = absl::nullopt;
+      replaceable_property_offset_ = std::nullopt;
     }
   }
 }
@@ -429,8 +429,8 @@ void StyleSheetHandler::ObserveProperty(unsigned start_offset,
   // A replaceable property can be replaced by a (valid) style rule
   // at the same offset.
   replaceable_property_offset_ = is_parsed
-                                     ? absl::optional<unsigned>()
-                                     : absl::optional<unsigned>(start_offset);
+                                     ? std::optional<unsigned>()
+                                     : std::optional<unsigned>(start_offset);
 }
 
 void StyleSheetHandler::ObserveComment(unsigned start_offset,

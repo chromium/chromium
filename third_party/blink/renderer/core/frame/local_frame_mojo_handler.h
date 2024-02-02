@@ -131,7 +131,7 @@ class LocalFrameMojoHandler
                            RequestVideoFrameAtCallback callback) final;
   void AdvanceFocusInFrame(
       mojom::blink::FocusType focus_type,
-      const absl::optional<RemoteFrameToken>& source_frame_token) final;
+      const std::optional<RemoteFrameToken>& source_frame_token) final;
   void AdvanceFocusForIME(mojom::blink::FocusType focus_type) final;
   void ReportContentSecurityPolicyViolation(
       network::mojom::blink::CSPViolationPtr csp_violation) final;
@@ -142,7 +142,7 @@ class LocalFrameMojoHandler
   // until the next navigation.
   void DidUpdateFramePolicy(const FramePolicy& frame_policy) final;
   void PostMessageEvent(
-      const absl::optional<RemoteFrameToken>& source_frame_token,
+      const std::optional<RemoteFrameToken>& source_frame_token,
       const String& source_origin,
       const String& target_origin,
       BlinkTransferableMessage message) final;
@@ -176,7 +176,7 @@ class LocalFrameMojoHandler
   void BindReportingObserver(
       mojo::PendingReceiver<mojom::blink::ReportingObserver> receiver) final;
   void UpdateOpener(
-      const absl::optional<blink::FrameToken>& opener_routing_id) final;
+      const std::optional<blink::FrameToken>& opener_routing_id) final;
   void GetSavableResourceLinks(GetSavableResourceLinksCallback callback) final;
   void MixedContentFound(
       const KURL& main_resource_url,

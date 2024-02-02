@@ -63,7 +63,7 @@ void IntersectionObserverController::DeliverNotifications(
 bool IntersectionObserverController::ComputeIntersections(
     unsigned flags,
     LocalFrameUkmAggregator* metrics_aggregator,
-    absl::optional<base::TimeTicks>& monotonic_time,
+    std::optional<base::TimeTicks>& monotonic_time,
     gfx::Vector2dF accumulated_scroll_delta_since_last_update) {
   needs_occlusion_tracking_ = false;
   if (!GetExecutionContext()) {
@@ -79,7 +79,7 @@ bool IntersectionObserverController::ComputeIntersections(
   int64_t internal_observation_count = 0;
   int64_t javascript_observation_count = 0;
   {
-    absl::optional<LocalFrameUkmAggregator::IterativeTimer> metrics_timer;
+    std::optional<LocalFrameUkmAggregator::IterativeTimer> metrics_timer;
     if (metrics_aggregator)
       metrics_timer.emplace(*metrics_aggregator);
     for (auto& observer : observers_to_process) {
@@ -101,7 +101,7 @@ bool IntersectionObserverController::ComputeIntersections(
     for (auto& observation : observations_to_process) {
       if (metrics_timer)
         metrics_timer->StartInterval(observation->Observer()->GetUkmMetricId());
-      absl::optional<IntersectionGeometry::RootGeometry> root_geometry;
+      std::optional<IntersectionGeometry::RootGeometry> root_geometry;
       int64_t count = observation->ComputeIntersection(
           flags, accumulated_scroll_delta_since_last_update, monotonic_time,
           root_geometry);

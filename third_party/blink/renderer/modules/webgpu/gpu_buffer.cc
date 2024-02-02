@@ -185,7 +185,7 @@ ScriptPromise GPUBuffer::mapAsync(ScriptState* script_state,
                                   uint32_t mode,
                                   uint64_t offset,
                                   ExceptionState& exception_state) {
-  return MapAsyncImpl(script_state, mode, offset, absl::nullopt,
+  return MapAsyncImpl(script_state, mode, offset, std::nullopt,
                       exception_state);
 }
 
@@ -200,7 +200,7 @@ ScriptPromise GPUBuffer::mapAsync(ScriptState* script_state,
 DOMArrayBuffer* GPUBuffer::getMappedRange(ScriptState* script_state,
                                           uint64_t offset,
                                           ExceptionState& exception_state) {
-  return GetMappedRangeImpl(script_state, offset, absl::nullopt,
+  return GetMappedRangeImpl(script_state, offset, std::nullopt,
                             exception_state);
 }
 
@@ -242,7 +242,7 @@ String GPUBuffer::mapState() const {
 ScriptPromise GPUBuffer::MapAsyncImpl(ScriptState* script_state,
                                       uint32_t mode,
                                       uint64_t offset,
-                                      absl::optional<uint64_t> size,
+                                      std::optional<uint64_t> size,
                                       ExceptionState& exception_state) {
   // Compute the defaulted size which is "until the end of the buffer" or 0 if
   // offset is past the end of the buffer.
@@ -282,7 +282,7 @@ ScriptPromise GPUBuffer::MapAsyncImpl(ScriptState* script_state,
 
 DOMArrayBuffer* GPUBuffer::GetMappedRangeImpl(ScriptState* script_state,
                                               uint64_t offset,
-                                              absl::optional<uint64_t> size,
+                                              std::optional<uint64_t> size,
                                               ExceptionState& exception_state) {
   // Compute the defaulted size which is "until the end of the buffer" or 0 if
   // offset is past the end of the buffer.

@@ -5,11 +5,12 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_TABLE_TABLE_BORDERS_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_TABLE_TABLE_BORDERS_H_
 
+#include <optional>
+
 #include "base/check_op.h"
 #include "base/dcheck_is_on.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"

@@ -93,7 +93,7 @@ PropertyRegistration* CreateLengthRegistration(const String& name, int px) {
 void RegisterProperty(Document& document,
                       const String& name,
                       const String& syntax,
-                      const absl::optional<String>& initial_value,
+                      const std::optional<String>& initial_value,
                       bool is_inherited) {
   DummyExceptionStateForTesting exception_state;
   RegisterProperty(document, name, syntax, initial_value, is_inherited,
@@ -104,7 +104,7 @@ void RegisterProperty(Document& document,
 void RegisterProperty(Document& document,
                       const String& name,
                       const String& syntax,
-                      const absl::optional<String>& initial_value,
+                      const std::optional<String>& initial_value,
                       bool is_inherited,
                       ExceptionState& exception_state) {
   DCHECK(!initial_value || !initial_value.value().IsNull());
@@ -122,7 +122,7 @@ void RegisterProperty(Document& document,
 void DeclareProperty(Document& document,
                      const String& name,
                      const String& syntax,
-                     const absl::optional<String>& initial_value,
+                     const std::optional<String>& initial_value,
                      bool is_inherited) {
   StringBuilder builder;
   builder.Append("@property ");

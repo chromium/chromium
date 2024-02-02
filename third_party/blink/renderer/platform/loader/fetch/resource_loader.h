@@ -144,7 +144,7 @@ class PLATFORM_EXPORT ResourceLoader final
   void DidReceiveResponse(
       const WebURLResponse&,
       mojo::ScopedDataPipeConsumerHandle body,
-      absl::optional<mojo_base::BigBuffer> cached_metadata) override;
+      std::optional<mojo_base::BigBuffer> cached_metadata) override;
   void DidReceiveData(const char*, size_t) override;
   void DidReceiveTransferSizeUpdate(int transfer_size_diff) override;
   void DidFinishLoading(base::TimeTicks response_end_time,
@@ -208,7 +208,7 @@ class PLATFORM_EXPORT ResourceLoader final
 
   void DidReceiveResponseInternal(
       const ResourceResponse&,
-      absl::optional<mojo_base::BigBuffer> cached_metadata);
+      std::optional<mojo_base::BigBuffer> cached_metadata);
 
   void DidStartLoadingResponseBodyInternal(BytesConsumer& bytes_consumer);
 
@@ -217,7 +217,7 @@ class PLATFORM_EXPORT ResourceLoader final
   void OnProgress(uint64_t delta) override;
   void FinishedCreatingBlob(const scoped_refptr<BlobDataHandle>&);
 
-  absl::optional<ResourceRequestBlockedReason> CheckResponseNosniff(
+  std::optional<ResourceRequestBlockedReason> CheckResponseNosniff(
       mojom::blink::RequestContextType,
       const ResourceResponse&);
 
@@ -275,7 +275,7 @@ class PLATFORM_EXPORT ResourceLoader final
   struct DeferredFinishLoadingInfo {
     base::TimeTicks response_end_time;
   };
-  absl::optional<DeferredFinishLoadingInfo> deferred_finish_loading_info_;
+  std::optional<DeferredFinishLoadingInfo> deferred_finish_loading_info_;
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_for_body_loader_;
 
   LoaderFreezeMode freeze_mode_ = LoaderFreezeMode::kNone;

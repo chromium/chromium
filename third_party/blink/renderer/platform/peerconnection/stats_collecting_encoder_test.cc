@@ -1,6 +1,9 @@
 // Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+#include "third_party/blink/renderer/platform/peerconnection/stats_collecting_encoder.h"
+
+#include <optional>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
@@ -8,8 +11,6 @@
 #include "base/test/task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/blink/renderer/platform/peerconnection/stats_collecting_encoder.h"
 #include "third_party/webrtc/api/make_ref_counted.h"
 #include "third_party/webrtc/api/video/i420_buffer.h"
 #include "third_party/webrtc/api/video/video_bitrate_allocation.h"

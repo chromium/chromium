@@ -146,7 +146,7 @@ class MODULES_EXPORT RTCRtpSenderImpl : public blink::RTCRtpSenderPlatform {
   std::unique_ptr<blink::RtcDtmfSenderHandler> GetDtmfSender() const override;
   std::unique_ptr<webrtc::RtpParameters> GetParameters() const override;
   void SetParameters(Vector<webrtc::RtpEncodingParameters>,
-                     absl::optional<webrtc::DegradationPreference>,
+                     std::optional<webrtc::DegradationPreference>,
                      blink::RTCVoidRequest*) override;
   void GetStats(RTCStatsReportCallback) override;
   void SetStreams(const Vector<String>& stream_ids) override;

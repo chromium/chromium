@@ -93,7 +93,7 @@ WebString WebString::FromUTF8(std::string_view s) {
   return String::FromUTF8(s.data(), s.length());
 }
 
-WebString WebString::FromUTF16(absl::optional<std::u16string_view> s) {
+WebString WebString::FromUTF16(std::optional<std::u16string_view> s) {
   if (!s.has_value()) {
     return WebString();
   }

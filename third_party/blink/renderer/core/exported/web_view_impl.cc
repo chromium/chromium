@@ -469,7 +469,7 @@ WebView* WebView::Create(
     bool is_hidden,
     bool is_prerendering,
     bool is_inside_portal,
-    absl::optional<blink::FencedFrame::DeprecatedFencedFrameMode>
+    std::optional<blink::FencedFrame::DeprecatedFencedFrameMode>
         fenced_frame_mode,
     bool compositing_enabled,
     bool widgets_never_composited,
@@ -478,7 +478,7 @@ WebView* WebView::Create(
         page_handle,
     scheduler::WebAgentGroupScheduler& agent_group_scheduler,
     const SessionStorageNamespaceId& session_storage_namespace_id,
-    absl::optional<SkColor> page_base_background_color,
+    std::optional<SkColor> page_base_background_color,
     const BrowsingContextGroupInfo& browsing_context_group_info) {
   return WebViewImpl::Create(
       client,
@@ -495,7 +495,7 @@ WebViewImpl* WebViewImpl::Create(
     mojom::blink::PageVisibilityState visibility,
     bool is_prerendering,
     bool is_inside_portal,
-    absl::optional<blink::FencedFrame::DeprecatedFencedFrameMode>
+    std::optional<blink::FencedFrame::DeprecatedFencedFrameMode>
         fenced_frame_mode,
     bool compositing_enabled,
     bool widgets_never_composited,
@@ -503,7 +503,7 @@ WebViewImpl* WebViewImpl::Create(
     mojo::PendingAssociatedReceiver<mojom::blink::PageBroadcast> page_handle,
     blink::scheduler::WebAgentGroupScheduler& agent_group_scheduler,
     const SessionStorageNamespaceId& session_storage_namespace_id,
-    absl::optional<SkColor> page_base_background_color,
+    std::optional<SkColor> page_base_background_color,
     const BrowsingContextGroupInfo& browsing_context_group_info) {
   // Take a self-reference for WebViewImpl that is released by calling Close(),
   // then return a raw pointer to the caller.
@@ -569,7 +569,7 @@ WebViewImpl::WebViewImpl(
     mojom::blink::PageVisibilityState visibility,
     bool is_prerendering,
     bool is_inside_portal,
-    absl::optional<blink::FencedFrame::DeprecatedFencedFrameMode>
+    std::optional<blink::FencedFrame::DeprecatedFencedFrameMode>
         fenced_frame_mode,
     bool does_composite,
     bool widgets_never_composited,
@@ -577,7 +577,7 @@ WebViewImpl::WebViewImpl(
     mojo::PendingAssociatedReceiver<mojom::blink::PageBroadcast> page_handle,
     blink::scheduler::WebAgentGroupScheduler& agent_group_scheduler,
     const SessionStorageNamespaceId& session_storage_namespace_id,
-    absl::optional<SkColor> page_base_background_color,
+    std::optional<SkColor> page_base_background_color,
     const BrowsingContextGroupInfo& browsing_context_group_info)
     : widgets_never_composited_(widgets_never_composited),
       web_view_client_(client),
@@ -1408,7 +1408,7 @@ void WebViewImpl::Resize(const gfx::Size& new_size) {
 }
 
 void WebViewImpl::SetScreenOrientationOverrideForTesting(
-    absl::optional<display::mojom::blink::ScreenOrientation> orientation) {
+    std::optional<display::mojom::blink::ScreenOrientation> orientation) {
   screen_orientation_override_ = orientation;
 
   // Since we updated the override value, notify all widgets.
@@ -1431,7 +1431,7 @@ void WebViewImpl::SetWindowRectSynchronouslyForTesting(
   web_widget_->SetWindowRectSynchronouslyForTesting(new_window_rect);
 }
 
-absl::optional<display::mojom::blink::ScreenOrientation>
+std::optional<display::mojom::blink::ScreenOrientation>
 WebViewImpl::ScreenOrientationOverride() {
   return screen_orientation_override_;
 }
@@ -3292,7 +3292,7 @@ Color WebViewImpl::BaseBackgroundColor() const {
   return Color::kWhite;
 }
 
-void WebViewImpl::SetPageBaseBackgroundColor(absl::optional<SkColor> color) {
+void WebViewImpl::SetPageBaseBackgroundColor(std::optional<SkColor> color) {
   SkColor new_color = color.value_or(SK_ColorWHITE);
   if (page_base_background_color_ == new_color)
     return;
@@ -3315,7 +3315,7 @@ void WebViewImpl::SetBaseBackgroundColorOverrideTransparent(
 }
 
 void WebViewImpl::SetBaseBackgroundColorOverrideForInspector(
-    absl::optional<SkColor> optional_color) {
+    std::optional<SkColor> optional_color) {
   if (base_background_color_override_for_inspector_ == optional_color)
     return;
   base_background_color_override_for_inspector_ = optional_color;
@@ -3516,7 +3516,7 @@ void WebViewImpl::SetHistoryOffsetAndLength(int32_t history_offset,
 
 void WebViewImpl::SetHistoryListFromNavigation(
     int32_t history_offset,
-    absl::optional<int32_t> history_length) {
+    std::optional<int32_t> history_length) {
   if (!history_length.has_value()) {
     history_list_offset_ = history_offset;
     return;
@@ -3736,7 +3736,7 @@ void WebViewImpl::TextAutosizerPageInfoChanged(
 }
 
 void WebViewImpl::SetBackgroundColorOverrideForFullscreenController(
-    absl::optional<SkColor> optional_color) {
+    std::optional<SkColor> optional_color) {
   DCHECK(does_composite_);
 
   background_color_override_for_fullscreen_controller_ = optional_color;
@@ -4045,7 +4045,7 @@ void WebViewImpl::MojoDisconnected() {
 
 void WebViewImpl::CreateRemoteMainFrame(
     const RemoteFrameToken& frame_token,
-    const absl::optional<FrameToken>& opener_frame_token,
+    const std::optional<FrameToken>& opener_frame_token,
     mojom::blink::FrameReplicationStatePtr replicated_state,
     bool is_loading,
     const base::UnguessableToken& devtools_frame_token,

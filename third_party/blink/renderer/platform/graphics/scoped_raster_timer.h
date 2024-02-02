@@ -5,9 +5,10 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_SCOPED_RASTER_TIMER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_SCOPED_RASTER_TIMER_H_
 
+#include <optional>
+
 #include "base/timer/elapsed_timer.h"
 #include "gpu/command_buffer/client/raster_interface.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -75,7 +76,7 @@ class PLATFORM_EXPORT ScopedRasterTimer {
   bool active_ = false;
   // Optional. nullptr indicates that raster work load is not GPU accelerated.
   gpu::raster::RasterInterface* const raster_interface_;
-  absl::optional<base::ElapsedTimer> timer_;
+  std::optional<base::ElapsedTimer> timer_;
   std::unique_ptr<AsyncGpuRasterTimer> gpu_timer_;
   Host& host_;
 };

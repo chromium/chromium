@@ -236,14 +236,14 @@ float ComputeStartForSide(float start,
 // that should be painted. The return value is relative to the element's border
 // box.
 // Returns null if the complete ink overflow rect should be painted.
-absl::optional<gfx::RectF> ComputeCaptureRect(
+std::optional<gfx::RectF> ComputeCaptureRect(
     const int max_capture_size,
     const PhysicalRect& ink_overflow_rect_in_border_box_space,
     const gfx::Transform& element_to_snapshot_root,
     const gfx::Size& snapshot_root_size) {
   if (ink_overflow_rect_in_border_box_space.Width() <= max_capture_size &&
       ink_overflow_rect_in_border_box_space.Height() <= max_capture_size) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // Compute the matrix to map the element's ink overflow rectangle to snapshot
@@ -288,7 +288,7 @@ absl::optional<gfx::RectF> ComputeCaptureRect(
 }
 
 int ComputeMaxCaptureSize(Document& document,
-                          absl::optional<int> max_texture_size,
+                          std::optional<int> max_texture_size,
                           const gfx::Size& snapshot_root_size) {
   // If the max texture size is not known yet, use the size of the snapshot
   // root.
@@ -1113,7 +1113,7 @@ bool ViewTransitionStyleTracker::RunPostPrePaintSteps() {
 
     ContainerProperties container_properties;
     PhysicalRect visual_overflow_rect_in_layout_space;
-    absl::optional<gfx::RectF> captured_rect_in_layout_space;
+    std::optional<gfx::RectF> captured_rect_in_layout_space;
 
     if (element_data->target_element->IsDocumentElement()) {
       auto layout_view_size = PhysicalSize(GetSnapshotRootSize());
@@ -1215,7 +1215,7 @@ void ViewTransitionStyleTracker::ComputeLiveElementGeometry(
     LayoutObject& layout_object,
     ContainerProperties& container_properties,
     PhysicalRect& visual_overflow_rect_in_layout_space,
-    absl::optional<gfx::RectF>& captured_rect_in_layout_space) const {
+    std::optional<gfx::RectF>& captured_rect_in_layout_space) const {
   DCHECK(!layout_object.IsLayoutView());
 
   // TODO(bokan): This doesn't account for the local offset of an inline

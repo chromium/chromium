@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/mediarecorder/h264_encoder.h"
 
+#include <optional>
 #include <utility>
 
 #include "base/containers/fixed_flat_map.h"
@@ -15,7 +16,6 @@
 #include "media/base/video_codecs.h"
 #include "media/base/video_encoder_metrics_provider.h"
 #include "media/base/video_frame.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier_base.h"
@@ -31,8 +31,7 @@
 namespace blink {
 namespace {
 
-absl::optional<EProfileIdc> ToOpenH264Profile(
-    media::VideoCodecProfile profile) {
+std::optional<EProfileIdc> ToOpenH264Profile(media::VideoCodecProfile profile) {
   static constexpr auto kProfileToEProfileIdc =
       base::MakeFixedFlatMap<media::VideoCodecProfile, EProfileIdc>({
           {media::H264PROFILE_BASELINE, PRO_BASELINE},
@@ -45,10 +44,10 @@ absl::optional<EProfileIdc> ToOpenH264Profile(
   if (it != kProfileToEProfileIdc.end()) {
     return it->second;
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
-absl::optional<ELevelIdc> ToOpenH264Level(uint8_t level) {
+std::optional<ELevelIdc> ToOpenH264Level(uint8_t level) {
   static constexpr auto kLevelToELevelIdc =
       base::MakeFixedFlatMap<uint8_t, ELevelIdc>({
           {10, LEVEL_1_0},
@@ -73,7 +72,7 @@ absl::optional<ELevelIdc> ToOpenH264Level(uint8_t level) {
   const auto* it = kLevelToELevelIdc.find(level);
   if (it != kLevelToELevelIdc.end())
     return it->second;
-  return absl::nullopt;
+  return std::nullopt;
 }
 }  // namespace
 
@@ -189,7 +188,7 @@ void H264Encoder::EncodeFrame(scoped_refptr<media::VideoFrame> frame,
   metrics_provider_->IncrementEncodedFrameCount();
   const bool is_key_frame = info.eFrameType == videoFrameTypeIDR;
   on_encoded_video_cb_.Run(video_params, std::move(data), std::string(),
-                           absl::nullopt, capture_timestamp, is_key_frame);
+                           std::nullopt, capture_timestamp, is_key_frame);
 }
 
 bool H264Encoder::ConfigureEncoder(const gfx::Size& size) {

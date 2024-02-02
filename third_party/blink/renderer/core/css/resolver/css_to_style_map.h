@@ -73,8 +73,8 @@ class CSSToStyleMap {
                                             const CSSValue&);
   static Timing::PlaybackDirection MapAnimationDirection(StyleResolverState&,
                                                          const CSSValue&);
-  static absl::optional<double> MapAnimationDuration(StyleResolverState&,
-                                                     const CSSValue&);
+  static std::optional<double> MapAnimationDuration(StyleResolverState&,
+                                                    const CSSValue&);
   static Timing::FillMode MapAnimationFillMode(StyleResolverState&,
                                                const CSSValue&);
   static double MapAnimationIterationCount(StyleResolverState&,
@@ -87,12 +87,11 @@ class CSSToStyleMap {
                                             const CSSValue&);
   static EAnimPlayState MapAnimationPlayState(StyleResolverState&,
                                               const CSSValue&);
-  static absl::optional<TimelineOffset> MapAnimationRangeStart(
+  static std::optional<TimelineOffset> MapAnimationRangeStart(
       StyleResolverState&,
       const CSSValue&);
-  static absl::optional<TimelineOffset> MapAnimationRangeEnd(
-      StyleResolverState&,
-      const CSSValue&);
+  static std::optional<TimelineOffset> MapAnimationRangeEnd(StyleResolverState&,
+                                                            const CSSValue&);
   static EffectModel::CompositeOperation MapAnimationComposition(
       StyleResolverState&,
       const CSSValue&);

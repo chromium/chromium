@@ -1032,7 +1032,7 @@ TaskPriority FrameSchedulerImpl::ComputePriority(
   // TODO(shaseley): This should use lower priorities if the frame is
   // deprioritized. Change this once we refactor and add frame policy/priorities
   // and add a range of new priorities less than low.
-  if (absl::optional<WebSchedulingQueueType> queue_type =
+  if (std::optional<WebSchedulingQueueType> queue_type =
           task_queue->GetWebSchedulingQueueType()) {
     bool is_continuation =
         *queue_type == WebSchedulingQueueType::kContinuationQueue;

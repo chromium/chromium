@@ -34,16 +34,16 @@ const blink::ContentDescription* CreateDescription(const WTF::String& category,
 }
 
 // Migration adapters for operator==(ContentIconDefinition).
-absl::optional<String> GetSizesOrNone(const ContentIconDefinition* cid) {
+std::optional<String> GetSizesOrNone(const ContentIconDefinition* cid) {
   if (cid->hasSizes())
     return cid->sizes();
-  return absl::nullopt;
+  return std::nullopt;
 }
 
-absl::optional<String> GetTypeOrNone(const ContentIconDefinition* cid) {
+std::optional<String> GetTypeOrNone(const ContentIconDefinition* cid) {
   if (cid->hasType())
     return cid->type();
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 }  // anonymous namespace

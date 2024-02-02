@@ -3211,7 +3211,7 @@ protocol::Response InspectorCSSAgent::setEffectivePropertyValueForNode(
         "Can't edit a node from a non-active document");
   }
 
-  absl::optional<CSSPropertyName> css_property_name =
+  std::optional<CSSPropertyName> css_property_name =
       CSSPropertyName::From(element->GetExecutionContext(), property_name);
   if (!css_property_name.has_value())
     return protocol::Response::ServerError("Invalid property name");

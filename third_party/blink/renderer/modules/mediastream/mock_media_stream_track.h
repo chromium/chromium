@@ -104,7 +104,7 @@ class MockMediaStreamTrack : public blink::MediaStreamTrack {
 
   ImageCapture* GetImageCapture() override { return nullptr; }
 
-  absl::optional<const MediaStreamDevice> device() const override {
+  std::optional<const MediaStreamDevice> device() const override {
     return device_;
   }
   void SetDevice(const MediaStreamDevice& device) { device_ = device; }
@@ -131,7 +131,7 @@ class MockMediaStreamTrack : public blink::MediaStreamTrack {
       void(double, double, int, int, base::OnceCallback<void(DOMException*)>));
   MOCK_METHOD1(
       GetZoomLevel,
-      void(base::OnceCallback<void(absl::optional<int>, const String&)>));
+      void(base::OnceCallback<void(std::optional<int>, const String&)>));
   MOCK_METHOD0(CloseFocusWindowOfOpportunity, void());
   MOCK_METHOD2(SetZoomLevel,
                void(int, base::OnceCallback<void(DOMException*)>));
@@ -164,7 +164,7 @@ class MockMediaStreamTrack : public blink::MediaStreamTrack {
   MediaStreamSource::ReadyState ready_state_enum_;
   Member<MediaStreamComponent> component_;
   bool ended_;
-  absl::optional<MediaStreamDevice> device_;
+  std::optional<MediaStreamDevice> device_;
   WeakMember<ExecutionContext> context_;
 };
 

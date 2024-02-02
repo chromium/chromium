@@ -38,7 +38,7 @@ class LayoutWordBreak : public LayoutText {
   explicit LayoutWordBreak(HTMLWBRElement& node);
 
   Position PositionForCaretOffset(unsigned offset) const final;
-  absl::optional<unsigned> CaretOffsetForPosition(const Position&) const final;
+  std::optional<unsigned> CaretOffsetForPosition(const Position&) const final;
 
   const char* GetName() const override {
     NOT_DESTROYED();

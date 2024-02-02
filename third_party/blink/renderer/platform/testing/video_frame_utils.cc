@@ -34,7 +34,7 @@ scoped_refptr<media::VideoFrame> CreateTestFrame(
       return media::VideoFrame::CreateZeroInitializedFrame(
           pixel_format, coded_size, visible_rect, natural_size, timestamp);
     case media::VideoFrame::STORAGE_GPU_MEMORY_BUFFER: {
-      absl::optional<gfx::BufferFormat> buffer_format =
+      std::optional<gfx::BufferFormat> buffer_format =
           media::VideoPixelFormatToGfxBufferFormat(pixel_format);
       CHECK(buffer_format) << "Pixel format "
                            << media::VideoPixelFormatToString(pixel_format)
@@ -47,7 +47,7 @@ scoped_refptr<media::VideoFrame> CreateTestFrame(
           base::NullCallback(), timestamp);
     }
     case media::VideoFrame::STORAGE_OPAQUE: {
-      absl::optional<gfx::BufferFormat> buffer_format =
+      std::optional<gfx::BufferFormat> buffer_format =
           media::VideoPixelFormatToGfxBufferFormat(pixel_format);
       CHECK(buffer_format) << "Pixel format "
                            << media::VideoPixelFormatToString(pixel_format)

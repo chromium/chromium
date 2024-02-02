@@ -26,7 +26,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_POD_INTERVAL_TREE_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_POD_INTERVAL_TREE_H_
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include <optional>
+
 #include "third_party/blink/renderer/platform/wtf/pod_arena.h"
 #include "third_party/blink/renderer/platform/wtf/pod_interval.h"
 #include "third_party/blink/renderer/platform/wtf/pod_red_black_tree.h"
@@ -133,8 +134,8 @@ class PODIntervalTree final : public PODRedBlackTree<PODInterval<T, UserData>> {
   }
 
   // Returns the next interval point (start or end) after the given starting
-  // point (non-inclusive). If there is no such point, returns |absl::nullopt|.
-  absl::optional<T> NextIntervalPoint(T start) const {
+  // point (non-inclusive). If there is no such point, returns |std::nullopt|.
+  std::optional<T> NextIntervalPoint(T start) const {
     return NextIntervalPoint(start, this->Root());
   }
 
@@ -174,12 +175,11 @@ class PODIntervalTree final : public PODRedBlackTree<PODInterval<T, UserData>> {
     SearchForOverlapsFrom(node->Right(), adapter);
   }
 
-  static absl::optional<T> NextIntervalPoint(T start,
-                                             IntervalNode const* node) {
+  static std::optional<T> NextIntervalPoint(T start, IntervalNode const* node) {
     // If this node doesn't exist or is entirely out of scope, just return. This
     // prevents recursing deeper than necessary on the left.
     if (!node || node->Data().MaxHigh() < start) {
-      return absl::nullopt;
+      return std::nullopt;
     }
     // Easy shortcut: If the lowest point in this subtree is in scope, just
     // return that. This prevents recursing deeper than necessary on the right.
@@ -201,7 +201,7 @@ class PODIntervalTree final : public PODRedBlackTree<PODInterval<T, UserData>> {
 
     // If the current node's high point is in scope, consider that against the
     // left branch
-    absl::optional<T> current_candidate;
+    std::optional<T> current_candidate;
     if (start < node->Data().High()) {
       if (left_candidate.has_value()) {
         current_candidate =

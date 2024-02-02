@@ -158,7 +158,7 @@ class CORE_EXPORT DocumentInit final {
   LocalDOMWindow* window_ = nullptr;
   // Mutable because the token is lazily-generated on demand if no token is
   // explicitly set.
-  mutable absl::optional<DocumentToken> token_;
+  mutable std::optional<DocumentToken> token_;
   ExecutionContext* execution_context_ = nullptr;
   KURL url_;
   Document* owner_document_ = nullptr;

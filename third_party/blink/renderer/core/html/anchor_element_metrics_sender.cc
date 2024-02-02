@@ -343,7 +343,7 @@ void AnchorElementMetricsSender::EnqueueLeftViewport(
   DCHECK(it != anchor_elements_timing_stats_.end());
   AnchorElementTimingStats& timing_stats = it->value;
   timing_stats.entered_viewport_should_be_enqueued_ = true;
-  absl::optional<base::TimeTicks>& entered_viewport =
+  std::optional<base::TimeTicks>& entered_viewport =
       timing_stats.viewport_entry_time_;
   if (!entered_viewport.has_value()) {
     return;

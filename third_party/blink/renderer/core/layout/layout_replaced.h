@@ -22,7 +22,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_LAYOUT_REPLACED_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_LAYOUT_REPLACED_H_
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include <optional>
+
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
@@ -190,7 +191,7 @@ class CORE_EXPORT LayoutReplaced : public LayoutBox {
   // Note that the intrinsic size for the element can be independent of its
   // content's natural size. For example, if contain-intrinsic-size is
   // specified. Returns null for these cases.
-  absl::optional<gfx::SizeF> ComputeObjectViewBoxSizeForIntrinsicSizing() const;
+  std::optional<gfx::SizeF> ComputeObjectViewBoxSizeForIntrinsicSizing() const;
 
   // ReplacedPainter doesn't support CompositeBackgroundAttachmentFixed yet.
   bool ComputeCanCompositeBackgroundAttachmentFixed() const override {
@@ -202,28 +203,28 @@ class CORE_EXPORT LayoutReplaced : public LayoutBox {
   // Computes a rect, relative to the element's content's natural size, that
   // should be used as the content source when rendering this element. This
   // value is used as the input for object-fit/object-position during painting.
-  absl::optional<PhysicalRect> ComputeObjectViewBoxRect(
+  std::optional<PhysicalRect> ComputeObjectViewBoxRect(
       const PhysicalSize* overridden_intrinsic_size = nullptr) const;
 
   PhysicalRect ComputeObjectFitAndPositionRect(
       const PhysicalRect& base_content_rect,
       const PhysicalSize* overridden_intrinsic_size) const;
 
-  absl::optional<LayoutUnit> IntrinsicWidthOverride() const {
+  std::optional<LayoutUnit> IntrinsicWidthOverride() const {
     NOT_DESTROYED();
     if (HasOverrideIntrinsicContentWidth())
       return OverrideIntrinsicContentWidth();
     else if (ShouldApplySizeContainment())
       return LayoutUnit();
-    return absl::nullopt;
+    return std::nullopt;
   }
-  absl::optional<LayoutUnit> IntrinsicHeightOverride() const {
+  std::optional<LayoutUnit> IntrinsicHeightOverride() const {
     NOT_DESTROYED();
     if (HasOverrideIntrinsicContentHeight())
       return OverrideIntrinsicContentHeight();
     else if (ShouldApplySizeContainment())
       return LayoutUnit();
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // The natural/intrinsic size for this replaced element based on the natural

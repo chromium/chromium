@@ -40,7 +40,7 @@ class PLATFORM_EXPORT WebRtcVideoTrackSource
   };
 
   WebRtcVideoTrackSource(bool is_screencast,
-                         absl::optional<bool> needs_denoising,
+                         std::optional<bool> needs_denoising,
                          media::VideoCaptureFeedbackCB feedback_callback,
                          base::RepeatingClosure request_refresh_frame_callback,
                          media::GpuVideoAcceleratorFactories* gpu_factories);
@@ -57,7 +57,7 @@ class PLATFORM_EXPORT WebRtcVideoTrackSource
 
   bool remote() const override;
   bool is_screencast() const override;
-  absl::optional<bool> needs_denoising() const override;
+  std::optional<bool> needs_denoising() const override;
   void OnFrameCaptured(scoped_refptr<media::VideoFrame> frame);
   void OnNotifyFrameDropped();
 
@@ -87,8 +87,8 @@ class PLATFORM_EXPORT WebRtcVideoTrackSource
   void DeliverFrame(scoped_refptr<media::VideoFrame> frame,
                     gfx::Rect* update_rect,
                     int64_t timestamp_us,
-                    absl::optional<webrtc::Timestamp> capture_time_identifier,
-                    absl::optional<webrtc::Timestamp> reference_time);
+                    std::optional<webrtc::Timestamp> capture_time_identifier,
+                    std::optional<webrtc::Timestamp> reference_time);
 
   // This checks if the colorspace information should be passed to webrtc. Avoid
   // sending unknown or unnecessary color space.
@@ -101,16 +101,16 @@ class PLATFORM_EXPORT WebRtcVideoTrackSource
   rtc::TimestampAligner timestamp_aligner_;
 
   const bool is_screencast_;
-  const absl::optional<bool> needs_denoising_;
+  const std::optional<bool> needs_denoising_;
 
   // Stores the accumulated value of CAPTURE_UPDATE_RECT in case that frames
   // are dropped.
-  absl::optional<gfx::Rect> accumulated_update_rect_;
-  absl::optional<int> previous_capture_counter_;
+  std::optional<gfx::Rect> accumulated_update_rect_;
+  std::optional<int> previous_capture_counter_;
   gfx::Rect cropping_rect_of_previous_delivered_frame_;
   gfx::Size natural_size_of_previous_delivered_frame_;
 
-  absl::optional<FrameAdaptationParams>
+  std::optional<FrameAdaptationParams>
       custom_frame_adaptation_params_for_testing_;
 
   const media::VideoCaptureFeedbackCB feedback_callback_;

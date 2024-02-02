@@ -140,7 +140,7 @@ base::span<CSSSelector> CSSSelectorParser::ConsumeSelector(
 }
 
 // static
-absl::optional<base::span<CSSSelector>> CSSSelectorParser::ParseScopeBoundary(
+std::optional<base::span<CSSSelector>> CSSSelectorParser::ParseScopeBoundary(
     CSSParserTokenRange range,
     const CSSParserContext* context,
     CSSNestingType nesting_type,
@@ -154,11 +154,11 @@ absl::optional<base::span<CSSSelector>> CSSSelectorParser::ParseScopeBoundary(
   DisallowPseudoElementsScope disallow_pseudo_elements(&parser);
 
   range.ConsumeWhitespace();
-  absl::optional<base::span<CSSSelector>> result =
+  std::optional<base::span<CSSSelector>> result =
       parser.ConsumeForgivingComplexSelectorList(range, nesting_type);
   DCHECK(result.has_value());
   if (!range.AtEnd()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   parser.RecordUsageAndDeprecations(result.value());
   return result;
@@ -323,7 +323,7 @@ CSSSelectorList* CSSSelectorParser::ConsumeForgivingNestedSelectorList(
     return ConsumeForgivingCompoundSelectorList(range);
   }
   ResetVectorAfterScope reset_vector(output_);
-  absl::optional<base::span<CSSSelector>> forgiving_list =
+  std::optional<base::span<CSSSelector>> forgiving_list =
       ConsumeForgivingComplexSelectorList(range, CSSNestingType::kNone);
   if (!forgiving_list.has_value()) {
     return nullptr;
@@ -331,7 +331,7 @@ CSSSelectorList* CSSSelectorParser::ConsumeForgivingNestedSelectorList(
   return CSSSelectorList::AdoptSelectorVector(forgiving_list.value());
 }
 
-absl::optional<base::span<CSSSelector>>
+std::optional<base::span<CSSSelector>>
 CSSSelectorParser::ConsumeForgivingComplexSelectorList(
     CSSParserTokenRange& range,
     CSSNestingType nesting_type) {
@@ -339,7 +339,7 @@ CSSSelectorParser::ConsumeForgivingComplexSelectorList(
     base::span<CSSSelector> selectors =
         ConsumeComplexSelectorList(range, nesting_type);
     if (selectors.empty()) {
-      return absl::nullopt;
+      return std::nullopt;
     } else {
       return selectors;
     }
@@ -637,7 +637,7 @@ static CSSSelector CreateImplicitScopeActivation() {
   return selector;
 }
 
-static absl::optional<CSSSelector> MaybeCreateImplicitDescendantAnchor(
+static std::optional<CSSSelector> MaybeCreateImplicitDescendantAnchor(
     CSSNestingType nesting_type,
     const StyleRule* parent_rule_for_nesting,
     const CSSSelector* selector) {
@@ -660,7 +660,7 @@ static absl::optional<CSSSelector> MaybeCreateImplicitDescendantAnchor(
       }
       break;
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 // A nested rule that starts with a combinator; very similar to
@@ -779,10 +779,9 @@ base::span<CSSSelector> CSSSelectorParser::ConsumeComplexSelector(
     // of GetNestingTypeForSelectorList().
     wtf_size_t last_index = output_.size() - 1;
     output_[last_index].SetLastInSelectorList(true);
-    if (absl::optional<CSSSelector> anchor =
-            MaybeCreateImplicitDescendantAnchor(
-                nesting_type, parent_rule_for_nesting_,
-                reset_vector.AddedElements().data())) {
+    if (std::optional<CSSSelector> anchor = MaybeCreateImplicitDescendantAnchor(
+            nesting_type, parent_rule_for_nesting_,
+            reset_vector.AddedElements().data())) {
       output_.back().SetRelation(CSSSelector::kDescendant);
       if (nesting_type != CSSNestingType::kNone && is_within_scope_) {
         output_.push_back(CreateImplicitScopeActivation());
@@ -1605,7 +1604,7 @@ bool CSSSelectorParser::ConsumePseudo(CSSParserTokenRange& range) {
     case CSSSelector::kPseudoViewTransitionOld:
     case CSSSelector::kPseudoViewTransitionNew: {
       const CSSParserToken& ident = block.Consume();
-      absl::optional<AtomicString> name_or_wildcard;
+      std::optional<AtomicString> name_or_wildcard;
       if (ident.GetType() == kIdentToken) {
         name_or_wildcard = ident.Value().ToAtomicString();
       } else if (ident.GetType() == kDelimiterToken &&

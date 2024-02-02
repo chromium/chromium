@@ -73,7 +73,7 @@ class FileReaderSync final : public ScriptWrappable {
   }
 
  private:
-  absl::optional<FileReaderData> Load(const Blob&, ExceptionState&);
+  std::optional<FileReaderData> Load(const Blob&, ExceptionState&);
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 };

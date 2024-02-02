@@ -7,8 +7,9 @@
 
 #include <stdint.h>
 
+#include <optional>
+
 #include "base/feature_list.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_pixel_format.h"
@@ -77,10 +78,10 @@ class MODULES_EXPORT VideoFrame final : public ScriptWrappable,
                             const VideoFrameBufferInit*,
                             ExceptionState&);
 
-  absl::optional<V8VideoPixelFormat> format() const;
+  std::optional<V8VideoPixelFormat> format() const;
 
   int64_t timestamp() const;
-  absl::optional<uint64_t> duration() const;
+  std::optional<uint64_t> duration() const;
 
   uint32_t codedWidth() const;
   uint32_t codedHeight() const;
@@ -147,7 +148,7 @@ class MODULES_EXPORT VideoFrame final : public ScriptWrappable,
   static constexpr uint64_t kCpuEfficientFrameSize = 320u * 240u;
   gfx::Size BitmapSourceSize() const override;
   ScriptPromise CreateImageBitmap(ScriptState*,
-                                  absl::optional<gfx::Rect> crop_rect,
+                                  std::optional<gfx::Rect> crop_rect,
                                   const ImageBitmapOptions*,
                                   ExceptionState&) override;
 

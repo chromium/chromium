@@ -285,7 +285,7 @@ TEST_P(TCPWritableStreamWrapperCloseTestWithMaybePendingWrite, TriggerClose) {
   auto* tcp_writable_stream_wrapper = stream_creator->Create(scope);
 
   bool pending_write = GetParam();
-  absl::optional<ScriptPromiseTester> tester;
+  std::optional<ScriptPromiseTester> tester;
   if (pending_write) {
     auto* script_state = scope.GetScriptState();
     auto* chunk = DOMArrayBuffer::Create("D", 2);
@@ -322,7 +322,7 @@ TEST_P(TCPWritableStreamWrapperCloseTestWithMaybePendingWrite,
   auto* tcp_writable_stream_wrapper = stream_creator->Create(scope);
 
   bool pending_write = GetParam();
-  absl::optional<ScriptPromiseTester> tester;
+  std::optional<ScriptPromiseTester> tester;
   if (pending_write) {
     auto* script_state = scope.GetScriptState();
     auto* chunk = DOMArrayBuffer::Create("D", 2);

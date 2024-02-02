@@ -58,7 +58,7 @@ void InlineBoxFragmentPainter::Paint(const PaintInfo& paint_info,
   ScopedDisplayItemFragment display_item_fragment(
       paint_info.context, inline_box_item_.FragmentId());
   const LayoutObject& layout_object = *inline_box_fragment_.GetLayoutObject();
-  absl::optional<ScopedSVGPaintState> svg_paint_state;
+  std::optional<ScopedSVGPaintState> svg_paint_state;
   const PhysicalOffset adjusted_paint_offset =
       paint_offset + inline_box_item_.OffsetInContainerFragment();
 

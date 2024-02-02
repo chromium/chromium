@@ -37,7 +37,7 @@ struct BLINK_COMMON_EXPORT AdSize {
 
 struct BLINK_COMMON_EXPORT AdDescriptor {
   AdDescriptor();
-  explicit AdDescriptor(GURL url, absl::optional<AdSize> size = absl::nullopt);
+  explicit AdDescriptor(GURL url, std::optional<AdSize> size = std::nullopt);
   AdDescriptor(const AdDescriptor&);
   AdDescriptor(AdDescriptor&&);
   AdDescriptor& operator=(const AdDescriptor&);
@@ -47,7 +47,7 @@ struct BLINK_COMMON_EXPORT AdDescriptor {
   ~AdDescriptor();
 
   GURL url;
-  absl::optional<AdSize> size;
+  std::optional<AdSize> size;
 };
 
 }  // namespace blink

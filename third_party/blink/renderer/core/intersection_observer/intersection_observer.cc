@@ -422,8 +422,8 @@ void IntersectionObserver::observe(Element* target,
       frame_view->ScheduleAnimation();
     }
   } else if (delegate_->NeedsInitialObservationWithDetachedTarget()) {
-    absl::optional<base::TimeTicks> monotonic_time;
-    absl::optional<IntersectionGeometry::RootGeometry> root_geometry;
+    std::optional<base::TimeTicks> monotonic_time;
+    std::optional<IntersectionGeometry::RootGeometry> root_geometry;
     observation->ComputeIntersection(
         IntersectionObservation::kImplicitRootObserversNeedUpdate |
             IntersectionObservation::kExplicitRootObserversNeedUpdate |
@@ -497,13 +497,13 @@ DOMHighResTimeStamp IntersectionObserver::GetTimeStamp(
 
 int64_t IntersectionObserver::ComputeIntersections(
     unsigned flags,
-    absl::optional<base::TimeTicks>& monotonic_time,
+    std::optional<base::TimeTicks>& monotonic_time,
     gfx::Vector2dF accumulated_scroll_delta_since_last_update) {
   DCHECK(!RootIsImplicit());
   if (!RootIsValid() || !GetExecutionContext() || observations_.empty())
     return 0;
 
-  absl::optional<IntersectionGeometry::RootGeometry> root_geometry;
+  std::optional<IntersectionGeometry::RootGeometry> root_geometry;
   int64_t result = 0;
   if (RuntimeEnabledFeatures::IntersectionOptimizationEnabled()) {
     for (auto& observation : observations_) {

@@ -112,7 +112,7 @@ bool BlinkStorageKey::FromWire(
     scoped_refptr<const SecurityOrigin> origin,
     const BlinkSchemefulSite& top_level_site,
     const BlinkSchemefulSite& top_level_site_if_third_party_enabled,
-    const absl::optional<base::UnguessableToken>& nonce,
+    const std::optional<base::UnguessableToken>& nonce,
     mojom::blink::AncestorChainBit ancestor_chain_bit,
     mojom::blink::AncestorChainBit ancestor_chain_bit_if_third_party_enabled,
     BlinkStorageKey& out) {

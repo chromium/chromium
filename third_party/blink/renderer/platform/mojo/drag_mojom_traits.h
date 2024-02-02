@@ -7,13 +7,14 @@
 
 #include <stdint.h>
 
+#include <optional>
+
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "mojo/public/cpp/base/file_path_mojom_traits.h"
 #include "mojo/public/cpp/bindings/string_traits_wtf.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
 #include "mojo/public/cpp/bindings/union_traits.h"
 #include "services/network/public/mojom/referrer_policy.mojom-forward.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/mojom/data_transfer/data_transfer.mojom-shared.h"
 #include "third_party/blink/public/mojom/drag/drag.mojom-shared.h"
@@ -39,7 +40,7 @@ struct PLATFORM_EXPORT StructTraits<blink::mojom::DragItemStringDataView,
   static WTF::String string_type(const blink::WebDragData::StringItem& item);
   static WTF::String string_data(const blink::WebDragData::StringItem& item);
   static WTF::String title(const blink::WebDragData::StringItem& item);
-  static absl::optional<blink::KURL> base_url(
+  static std::optional<blink::KURL> base_url(
       const blink::WebDragData::StringItem& item);
   static bool Read(blink::mojom::DragItemStringDataView data,
                    blink::WebDragData::StringItem* out);

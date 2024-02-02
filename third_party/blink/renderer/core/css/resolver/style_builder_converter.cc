@@ -1673,13 +1673,13 @@ LayoutUnit StyleBuilderConverter::ConvertLayoutUnit(
   return LayoutUnit::Clamp(ConvertComputedLength<float>(state, value));
 }
 
-absl::optional<Length> StyleBuilderConverter::ConvertGapLength(
+std::optional<Length> StyleBuilderConverter::ConvertGapLength(
     const StyleResolverState& state,
     const CSSValue& value) {
   auto* identifier_value = DynamicTo<CSSIdentifierValue>(value);
   if (identifier_value &&
       identifier_value->GetValueID() == CSSValueID::kNormal) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return ConvertLength(state, value);
@@ -2917,12 +2917,12 @@ RubyPosition StyleBuilderConverter::ConvertRubyPosition(
   return RubyPosition::kBefore;
 }
 
-absl::optional<StyleScrollbarColor>
-StyleBuilderConverter::ConvertScrollbarColor(StyleResolverState& state,
-                                             const CSSValue& value) {
+std::optional<StyleScrollbarColor> StyleBuilderConverter::ConvertScrollbarColor(
+    StyleResolverState& state,
+    const CSSValue& value) {
   auto* identifier_value = DynamicTo<CSSIdentifierValue>(value);
   if (identifier_value && identifier_value->GetValueID() == CSSValueID::kAuto) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   const CSSValueList& list = To<CSSValueList>(value);
@@ -2979,7 +2979,7 @@ StyleIntrinsicLength StyleBuilderConverter::ConvertIntrinsicDimension(
   auto* identifier_value = DynamicTo<CSSIdentifierValue>(value);
   if (identifier_value) {
     DCHECK(identifier_value->GetValueID() == CSSValueID::kNone);
-    return StyleIntrinsicLength(/*has_auto=*/false, absl::nullopt);
+    return StyleIntrinsicLength(/*has_auto=*/false, std::nullopt);
   }
 
   // Handle "<length> | auto && <length> | auto && none, which will all come
@@ -3012,7 +3012,7 @@ StyleIntrinsicLength StyleBuilderConverter::ConvertIntrinsicDimension(
   DCHECK(To<CSSIdentifierValue>(list->Item(1)).GetValueID() ==
          CSSValueID::kNone);
 
-  return StyleIntrinsicLength(/*has_auto=*/true, absl::nullopt);
+  return StyleIntrinsicLength(/*has_auto=*/true, std::nullopt);
 }
 
 ColorSchemeFlags StyleBuilderConverter::ExtractColorSchemes(
@@ -3055,7 +3055,7 @@ double StyleBuilderConverter::ConvertTimeValue(const StyleResolverState& state,
   return To<CSSPrimitiveValue>(value).ComputeSeconds();
 }
 
-absl::optional<StyleOverflowClipMargin>
+std::optional<StyleOverflowClipMargin>
 StyleBuilderConverter::ConvertOverflowClipMargin(StyleResolverState& state,
                                                  const CSSValue& value) {
   const auto& css_value_list = To<CSSValueList>(value);

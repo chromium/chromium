@@ -52,7 +52,7 @@ class MODULES_EXPORT ImageTrackList final : public ScriptWrappable {
  private:
   Member<ImageDecoderExternal> image_decoder_;
   HeapVector<Member<ImageTrack>> tracks_;
-  absl::optional<wtf_size_t> selected_track_id_;
+  std::optional<wtf_size_t> selected_track_id_;
 
   using ReadyProperty = ScriptPromiseProperty<IDLUndefined, DOMException>;
   Member<ReadyProperty> ready_property_;

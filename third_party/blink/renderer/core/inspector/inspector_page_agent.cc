@@ -31,12 +31,12 @@
 #include "third_party/blink/renderer/core/inspector/inspector_page_agent.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/containers/span.h"
 #include "base/numerics/safe_conversions.h"
 #include "build/build_config.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/frame/frame_ad_evidence.h"
 #include "third_party/blink/public/common/origin_trials/trial_token.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
@@ -898,7 +898,7 @@ protocol::Response InspectorPageAgent::getPermissionsPolicyState(
     if (blink::DisabledByOriginTrial(feature_name, frame->DomWindow()))
       continue;
 
-    absl::optional<blink::PermissionsPolicyBlockLocator> locator =
+    std::optional<blink::PermissionsPolicyBlockLocator> locator =
         blink::TracePermissionsPolicyBlockSource(frame, feature);
 
     std::unique_ptr<protocol::Page::PermissionsPolicyFeatureState>
@@ -1071,7 +1071,7 @@ void InspectorPageAgent::DidOpenDocument(LocalFrame* frame,
 
 void InspectorPageAgent::FrameAttachedToParent(
     LocalFrame* frame,
-    const absl::optional<AdScriptIdentifier>& ad_script_on_stack) {
+    const std::optional<AdScriptIdentifier>& ad_script_on_stack) {
   // TODO(crbug.com/1217041): If an ad script on the stack caused this frame to
   // be tagged as an ad, send the script's ID to the frontend.
   Frame* parent_frame = frame->Tree().Parent();
@@ -1499,7 +1499,7 @@ InspectorPageAgent::BuildObjectForResourceTree(LocalFrame* frame) {
             .setMimeType(cached_resource->GetResponse().MimeType())
             .setContentSize(cached_resource->GetResponse().DecodedBodyLength())
             .build();
-    absl::optional<base::Time> last_modified =
+    std::optional<base::Time> last_modified =
         cached_resource->GetResponse().LastModified();
     if (last_modified) {
       resource_object->setLastModified(

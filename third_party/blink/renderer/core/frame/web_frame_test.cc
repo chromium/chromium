@@ -28,9 +28,12 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#include "third_party/blink/public/web/web_frame.h"
+
 #include <initializer_list>
 #include <limits>
 #include <memory>
+#include <optional>
 #include <tuple>
 
 #include "base/functional/callback_helpers.h"
@@ -55,7 +58,6 @@
 #include "skia/public/mojom/skcolor.mojom-blink.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/common/context_menu_data/context_menu_data.h"
 #include "third_party/blink/public/common/context_menu_data/edit_flags.h"
@@ -87,7 +89,6 @@
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_document_loader.h"
 #include "third_party/blink/public/web/web_form_element.h"
-#include "third_party/blink/public/web/web_frame.h"
 #include "third_party/blink/public/web/web_frame_widget.h"
 #include "third_party/blink/public/web/web_history_item.h"
 #include "third_party/blink/public/web/web_local_frame.h"
@@ -583,23 +584,23 @@ class ScriptExecutionCallbackHelper final {
       ADD_FAILURE() << "Expected a single result, but found nullopt";
       return false;
     }
-    if (absl::optional<bool> b = result_->GetIfBool())
+    if (std::optional<bool> b = result_->GetIfBool()) {
       return *b;
+    }
 
     ADD_FAILURE() << "Type mismatch (not bool)";
     return false;
   }
 
  private:
-  void Completed(absl::optional<base::Value> value,
-                 base::TimeTicks start_time) {
+  void Completed(std::optional<base::Value> value, base::TimeTicks start_time) {
     did_complete_ = true;
     result_ = std::move(value);
   }
 
  private:
   bool did_complete_ = false;
-  absl::optional<base::Value> result_;
+  std::optional<base::Value> result_;
 };
 
 TEST_F(WebFrameTest, RequestExecuteScript) {
@@ -678,7 +679,7 @@ TEST_F(WebFrameTest, ExecuteScriptWithPromiseWithoutWait) {
   // be resolved, the callback should have completed normally and the result
   // value should be the promise.
   // As `V8ValueConverterForTest` fails to convert the promise to `base::Value`,
-  // the callback receives `absl::nullopt`.
+  // the callback receives `std::nullopt`.
   EXPECT_TRUE(callback_helper.DidComplete());
   EXPECT_FALSE(callback_helper.HasAnyResults());
 }
@@ -714,7 +715,7 @@ TEST_F(WebFrameTest, ExecuteScriptWithPromiseRejected) {
                            kScript, callback_helper.Callback());
   RunPendingTasks();
   EXPECT_TRUE(callback_helper.DidComplete());
-  // Promise rejection, similar to errors, are represented by `absl::nullopt`
+  // Promise rejection, similar to errors, are represented by `std::nullopt`
   // passed to the callback.
   EXPECT_FALSE(callback_helper.HasAnyResults());
 }
@@ -861,7 +862,7 @@ TEST_F(WebFrameTest, ExecuteScriptWithPromisesWhereOnlyFirstIsFulfilled) {
                             scripts, callback_helper.Callback());
   RunPendingTasks();
   EXPECT_TRUE(callback_helper.DidComplete());
-  // Promise rejection, similar to errors, are represented by `absl::nullopt`
+  // Promise rejection, similar to errors, are represented by `std::nullopt`
   // passed to the callback.
   EXPECT_FALSE(callback_helper.HasAnyResults());
 }
@@ -1645,13 +1646,13 @@ TEST_F(WebFrameTest, PostMessageEvent) {
   // Send a message with the correct origin.
   scoped_refptr<SecurityOrigin> correct_origin =
       SecurityOrigin::Create(ToKURL(base_url_));
-  frame->PostMessageEvent(absl::nullopt, g_empty_string,
+  frame->PostMessageEvent(std::nullopt, g_empty_string,
                           correct_origin->ToString(), make_message());
 
   // Send another message with incorrect origin.
   scoped_refptr<SecurityOrigin> incorrect_origin =
       SecurityOrigin::Create(ToKURL(chrome_url_));
-  frame->PostMessageEvent(absl::nullopt, g_empty_string,
+  frame->PostMessageEvent(std::nullopt, g_empty_string,
                           incorrect_origin->ToString(), make_message());
 
   // Verify that only the first addition is in the body of the page.
@@ -7668,8 +7669,8 @@ class TestNewWindowWebFrameClient
       network::mojom::blink::WebSandboxFlags,
       const SessionStorageNamespaceId&,
       bool& consumed_user_gesture,
-      const absl::optional<Impression>&,
-      const absl::optional<WebPictureInPictureWindowOptions>&,
+      const std::optional<Impression>&,
+      const std::optional<WebPictureInPictureWindowOptions>&,
       const WebURL&) override {
     EXPECT_TRUE(false);
     return nullptr;
@@ -8152,7 +8153,7 @@ TEST_F(WebFrameTest, SameDocumentHistoryNavigationCommitType) {
       /*is_synchronously_committed=*/false, /*source_element=*/nullptr,
       mojom::blink::TriggeringEventInfo::kNotFromEvent,
       /*is_browser_initiated=*/true,
-      /*soft_navigation_heuristics_task_id=*/absl::nullopt);
+      /*soft_navigation_heuristics_task_id=*/std::nullopt);
   EXPECT_EQ(kWebBackForwardCommit, client.LastCommitType());
 }
 
@@ -9157,7 +9158,7 @@ class ThemeColorTestLocalFrameHost : public FakeLocalFrameHost {
 
  private:
   // FakeLocalFrameHost:
-  void DidChangeThemeColor(absl::optional<::SkColor> theme_color) override {
+  void DidChangeThemeColor(std::optional<::SkColor> theme_color) override {
     did_notify_ = true;
   }
 
@@ -9212,7 +9213,7 @@ TEST_F(WebFrameTest, ThemeColor) {
       "document.getElementById('tc2').removeAttribute('name');"));
   RunPendingTasks();
   EXPECT_TRUE(host.DidNotify());
-  EXPECT_EQ(absl::nullopt, frame->GetDocument().ThemeColor());
+  EXPECT_EQ(std::nullopt, frame->GetDocument().ThemeColor());
 }
 
 // Make sure that an embedder-triggered detach with a remote frame parent
@@ -9601,7 +9602,7 @@ TEST_F(WebFrameSwapTest, AdHighlightEarlyApply) {
   // Assert that the local frame does not have any overlay color since it is not
   // in the frame tree yet.
   ASSERT_EQ(local_frame->GetFrame()->GetFrameOverlayColorForTesting(),
-            absl::nullopt);
+            std::nullopt);
 
   WebDocument doc_before_navigation = local_frame->GetDocument();
 
@@ -10063,7 +10064,7 @@ class RemoteToLocalSwapWebFrameClient
     return *history_commit_type_;
   }
 
-  absl::optional<WebHistoryCommitType> history_commit_type_;
+  std::optional<WebHistoryCommitType> history_commit_type_;
 };
 
 // The commit type should be Standard if we are swapping a RemoteFrame to a
@@ -11187,7 +11188,7 @@ class TestViewportIntersection : public FakeRemoteFrameHost {
   // FakeRemoteFrameHost:
   void UpdateViewportIntersection(
       mojom::blink::ViewportIntersectionStatePtr intersection_state,
-      const absl::optional<FrameVisualProperties>& visual_properties) override {
+      const std::optional<FrameVisualProperties>& visual_properties) override {
     intersection_state_ = std::move(intersection_state);
   }
 
@@ -13404,7 +13405,7 @@ class ContextMenuWebFrameClient
   // WebLocalFrameClient:
   void UpdateContextMenuDataForTesting(
       const ContextMenuData& data,
-      const absl::optional<gfx::Point>&) override {
+      const std::optional<gfx::Point>&) override {
     menu_data_ = data;
   }
 

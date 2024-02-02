@@ -1863,7 +1863,7 @@ const cc::SnapContainerData* PaintLayerScrollableArea::GetSnapContainerData()
 }
 
 void PaintLayerScrollableArea::SetSnapContainerData(
-    absl::optional<cc::SnapContainerData> data) {
+    std::optional<cc::SnapContainerData> data) {
   EnsureRareData().snap_container_data_ = data;
 }
 
@@ -1887,7 +1887,7 @@ const cc::SnappedTargetData* PaintLayerScrollableArea::GetSnappedTargetData()
 }
 
 void PaintLayerScrollableArea::SetSnappedTargetData(
-    absl::optional<cc::SnappedTargetData> data) {
+    std::optional<cc::SnappedTargetData> data) {
   EnsureRareData().snapped_target_data_ = data;
 }
 
@@ -1908,15 +1908,15 @@ void PaintLayerScrollableArea::SetImplSnapStrategy(
   EnsureRareData().impl_snap_strategy_ = std::move(strategy);
 }
 
-absl::optional<gfx::PointF>
+std::optional<gfx::PointF>
 PaintLayerScrollableArea::GetSnapPositionAndSetTarget(
     const cc::SnapSelectionStrategy& strategy) {
   if (!RareData() || !RareData()->snap_container_data_)
-    return absl::nullopt;
+    return std::nullopt;
 
   cc::SnapContainerData& data = RareData()->snap_container_data_.value();
   if (!data.size())
-    return absl::nullopt;
+    return std::nullopt;
 
   // If the document has a focused element that is coincident with the snap
   // target, update the snap target to point to the focused element. This
@@ -1930,7 +1930,7 @@ PaintLayerScrollableArea::GetSnapPositionAndSetTarget(
         CompositorElementIdFromDOMNodeId(active_element->GetDomNodeId());
   }
 
-  absl::optional<gfx::PointF> snap_point;
+  std::optional<gfx::PointF> snap_point;
   cc::SnapPositionData snap =
       data.FindSnapPosition(strategy, active_element_id);
   if (snap.type != cc::SnapPositionData::Type::kNone) {
@@ -3148,7 +3148,7 @@ void PaintLayerScrollableArea::UpdateSnappedTargetsAndEnqueueSnapChanged() {
 }
 
 void PaintLayerScrollableArea::SetSnapChangingTargetData(
-    absl::optional<cc::SnappedTargetData> data) {
+    std::optional<cc::SnappedTargetData> data) {
   EnsureRareData().snapchanging_target_data_ = data;
 }
 

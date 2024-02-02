@@ -32,13 +32,13 @@
 
 #include <algorithm>
 #include <memory>
+#include <optional>
 #include <queue>
 
 #include "base/auto_reset.h"
 #include "base/containers/contains.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/numerics/safe_conversions.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/input/web_keyboard_event.h"
 #include "third_party/blink/public/mojom/frame/user_activation_notification_type.mojom-blink.h"
@@ -647,7 +647,7 @@ AXObjectInclusion AXNodeObject::ShouldIncludeBasedOnSemantics(
   // Descendants are pruned: IsRelevantPseudoElementDescendant() returns false.
   // Note: this is duplicated from AXLayoutObject because CSS alt text may apply
   // to both Elements and pseudo-elements.
-  absl::optional<String> alt_text = GetCSSAltText(GetElement());
+  std::optional<String> alt_text = GetCSSAltText(GetElement());
   if (alt_text && !alt_text->empty())
     return kIncludeObject;
 
@@ -883,7 +883,7 @@ std::optional<String> AXNodeObject::GetCSSAltText(const Element* element) {
       if (content_data->IsAltText())
         return To<AltTextContentData>(content_data)->GetText();
     }
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // If the content property is used on a non-pseudo element, match the
@@ -895,7 +895,7 @@ std::optional<String> AXNodeObject::GetCSSAltText(const Element* element) {
     return To<AltTextContentData>(content_data->Next())->GetText();
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 // The following lists are for deciding whether the tags aside,
@@ -2427,7 +2427,7 @@ void AXNodeObject::SerializeMarkerAttributes(ui::AXNodeData* node_data) const {
   std::vector<int32_t> marker_ends;
 
   // First use ARIA markers for spelling/grammar if available.
-  absl::optional<DocumentMarker::MarkerType> aria_marker_type =
+  std::optional<DocumentMarker::MarkerType> aria_marker_type =
       GetAriaSpellingOrGrammarMarker();
   if (aria_marker_type) {
     AXRange range = AXRange::RangeOfContents(*this);
@@ -2850,13 +2850,13 @@ String AXNodeObject::ImageDataUrl(const gfx::Size& max_size) const {
   ImageBitmap* image_bitmap = nullptr;
   if (auto* image = DynamicTo<HTMLImageElement>(node)) {
     image_bitmap =
-        MakeGarbageCollected<ImageBitmap>(image, absl::nullopt, options);
+        MakeGarbageCollected<ImageBitmap>(image, std::nullopt, options);
   } else if (auto* canvas = DynamicTo<HTMLCanvasElement>(node)) {
     image_bitmap =
-        MakeGarbageCollected<ImageBitmap>(canvas, absl::nullopt, options);
+        MakeGarbageCollected<ImageBitmap>(canvas, std::nullopt, options);
   } else if (auto* video = DynamicTo<HTMLVideoElement>(node)) {
     image_bitmap =
-        MakeGarbageCollected<ImageBitmap>(video, absl::nullopt, options);
+        MakeGarbageCollected<ImageBitmap>(video, std::nullopt, options);
   }
   if (!image_bitmap)
     return String();

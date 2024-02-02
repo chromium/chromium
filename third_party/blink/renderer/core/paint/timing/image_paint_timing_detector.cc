@@ -79,9 +79,9 @@ double ImageRecord::EntropyForLCP() const {
   return media_timing->ContentSizeForEntropy() * 8.0 / recorded_size;
 }
 
-absl::optional<WebURLRequest::Priority> ImageRecord::RequestPriority() const {
+std::optional<WebURLRequest::Priority> ImageRecord::RequestPriority() const {
   if (!media_timing)
-    return absl::nullopt;
+    return std::nullopt;
   return media_timing->RequestPriority();
 }
 
@@ -177,9 +177,9 @@ ImagePaintTimingDetector::UpdateMetricsCandidate() {
   double bpp =
       largest_image_record ? largest_image_record->EntropyForLCP() : 0.0;
 
-  absl::optional<WebURLRequest::Priority> priority =
+  std::optional<WebURLRequest::Priority> priority =
       largest_image_record ? largest_image_record->RequestPriority()
-                           : absl::nullopt;
+                           : std::nullopt;
 
   PaintTimingDetector& detector = frame_view_->GetPaintTimingDetector();
   // Calling NotifyMetricsIfLargestImagePaintChanged only has an impact on
@@ -202,7 +202,7 @@ ImagePaintTimingDetector::UpdateMetricsCandidate() {
 }
 
 void ImagePaintTimingDetector::OnPaintFinished() {
-  viewport_size_ = absl::nullopt;
+  viewport_size_ = std::nullopt;
   if (!added_entry_in_latest_frame_)
     return;
 
@@ -338,7 +338,7 @@ bool ImagePaintTimingDetector::RecordImage(
     if (!record->loaded && media_timing.IsSufficientContentLoadedForPaint()) {
       records_manager_.OnImageLoaded(record_id_hash, frame_index_, style_image);
       added_entry_in_latest_frame_ = true;
-      if (absl::optional<PaintTimingVisualizer>& visualizer =
+      if (std::optional<PaintTimingVisualizer>& visualizer =
               frame_view_->GetPaintTimingDetector().Visualizer()) {
         gfx::RectF mapped_visual_rect =
             frame_view_->GetPaintTimingDetector().CalculateVisualRect(
@@ -393,7 +393,7 @@ uint64_t ImagePaintTimingDetector::ComputeImageRectSize(
     const PropertyTreeStateOrAlias& current_paint_chunk_properties,
     const LayoutObject& object,
     const MediaTiming& media_timing) {
-  if (absl::optional<PaintTimingVisualizer>& visualizer =
+  if (std::optional<PaintTimingVisualizer>& visualizer =
           frame_view_->GetPaintTimingDetector().Visualizer()) {
     visualizer->DumpImageDebuggingRect(
         object, mapped_visual_rect,

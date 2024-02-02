@@ -1014,7 +1014,7 @@ TEST_P(CanvasRenderingContext2DTest, PutImageData_FullCoverage) {
 
   // `putImageData` isn't included in the recording, keeping it empty.
   EXPECT_THAT(Context2D()->FlushCanvas(FlushReason::kTesting),
-              Eq(absl::nullopt));
+              Eq(std::nullopt));
 
   // `putImageData` overdraw isn't handled by
   // `BaseRenderingContext2D::CheckOverdraw` like other draw operations, so the
@@ -1049,7 +1049,7 @@ TEST_P(CanvasRenderingContext2DTest, PutImageData_PartialCoverage) {
 
   // `putImageData` isn't included in the recording, keeping it empty.
   EXPECT_THAT(Context2D()->FlushCanvas(FlushReason::kTesting),
-              Eq(absl::nullopt));
+              Eq(std::nullopt));
 
   // `putImageData` overdraw isn't handled by
   // `BaseRenderingContext2D::CheckOverdraw` like other draw operations, so the
@@ -1083,7 +1083,7 @@ TEST_P(CanvasRenderingContext2DTest, ImageResourceLifetime) {
   ImageBitmap* image_bitmap_derived = nullptr;
   {
     const ImageBitmapOptions* default_options = ImageBitmapOptions::Create();
-    absl::optional<gfx::Rect> crop_rect =
+    std::optional<gfx::Rect> crop_rect =
         gfx::Rect(0, 0, canvas->width(), canvas->height());
     auto* image_bitmap_from_canvas =
         MakeGarbageCollected<ImageBitmap>(canvas, crop_rect, default_options);

@@ -647,7 +647,7 @@ void CompositorAnimations::CancelIncompatibleAnimationsOnCompositor(
 void CompositorAnimations::StartAnimationOnCompositor(
     const Element& element,
     int group,
-    absl::optional<double> start_time,
+    std::optional<double> start_time,
     base::TimeDelta time_offset,
     const Timing& timing,
     const Timing::NormalizedTiming& normalized_timing,
@@ -956,7 +956,7 @@ void CompositorAnimations::GetAnimationOnCompositor(
     const Timing& timing,
     const Timing::NormalizedTiming& normalized_timing,
     int group,
-    absl::optional<double> start_time,
+    std::optional<double> start_time,
     base::TimeDelta time_offset,
     const KeyframeEffectModelBase& effect,
     Vector<std::unique_ptr<cc::KeyframeModel>>& keyframe_models,
@@ -984,8 +984,8 @@ void CompositorAnimations::GetAnimationOnCompositor(
 
     std::unique_ptr<gfx::AnimationCurve> curve;
     DCHECK(timing.timing_function);
-    absl::optional<cc::KeyframeModel::TargetPropertyId> target_property_id =
-        absl::nullopt;
+    std::optional<cc::KeyframeModel::TargetPropertyId> target_property_id =
+        std::nullopt;
     CSSPropertyID css_property_id = property.GetCSSProperty().PropertyID();
     switch (css_property_id) {
       case CSSPropertyID::kOpacity: {

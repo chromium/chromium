@@ -8,8 +8,8 @@ namespace blink {
 
 namespace {
 
-absl::optional<LayoutUnit> Negate(const absl::optional<LayoutUnit>& bound) {
-  return bound ? absl::optional<LayoutUnit>(-bound.value()) : absl::nullopt;
+std::optional<LayoutUnit> Negate(const std::optional<LayoutUnit>& bound) {
+  return bound ? std::optional<LayoutUnit>(-bound.value()) : std::nullopt;
 }
 
 }  // namespace

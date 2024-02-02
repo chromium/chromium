@@ -286,7 +286,7 @@ void TextPainter::PaintSelectedText(
   if (snapped_selection_rect.Contains(visual_rect_) ||
       (selection_start == fragment_paint_info.from &&
        selection_end == fragment_paint_info.to)) {
-    absl::optional<base::AutoReset<bool>> is_painting_selection_reset;
+    std::optional<base::AutoReset<bool>> is_painting_selection_reset;
     if (TextPainter::SvgTextPaintState* state = GetSvgState()) {
       is_painting_selection_reset.emplace(&state->is_painting_selection_, true);
     }
@@ -313,7 +313,7 @@ void TextPainter::PaintSelectedText(
   }
   // Then draw the glyphs inside the selection area, with the selection style.
   {
-    absl::optional<base::AutoReset<bool>> is_painting_selection_reset;
+    std::optional<base::AutoReset<bool>> is_painting_selection_reset;
     if (TextPainter::SvgTextPaintState* state = GetSvgState()) {
       is_painting_selection_reset.emplace(&state->is_painting_selection_, true);
     }

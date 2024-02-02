@@ -74,7 +74,7 @@ class StorageBucket final : public ScriptWrappable,
   void DidSetExpires(ScriptPromiseResolver* resolver, bool success);
   void DidGetExpires(
       ScriptPromiseResolverTyped<IDLNullable<IDLDOMHighResTimeStamp>>* resolver,
-      const absl::optional<base::Time> expires,
+      const std::optional<base::Time> expires,
       bool success);
   void GetSandboxedFileSystem(ScriptPromiseResolver* resolver);
   void GetSandboxedFileSystemForDevtools(

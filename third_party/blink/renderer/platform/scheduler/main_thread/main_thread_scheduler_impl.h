@@ -9,6 +9,7 @@
 #include <cstdint>
 #include <map>
 #include <memory>
+#include <optional>
 #include <stack>
 
 #include "base/dcheck_is_on.h"
@@ -26,7 +27,6 @@
 #include "base/time/time.h"
 #include "base/trace_event/trace_log.h"
 #include "build/build_config.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/platform/scheduler/web_thread_scheduler.h"
 #include "third_party/blink/renderer/platform/allow_discouraged_type.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
@@ -115,7 +115,7 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
   // Don't use except for tracing.
   struct TaskDescriptionForTracing {
     TaskType task_type;
-    absl::optional<MainThreadTaskQueue::QueueType> queue_type;
+    std::optional<MainThreadTaskQueue::QueueType> queue_type;
 
     // Required in order to wrap in TraceableState.
     constexpr bool operator!=(const TaskDescriptionForTracing& rhs) const {
@@ -589,7 +589,7 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
   // enabled/disabled state based on current policy. When triggered from a
   // policy update, |previous_policy| should be populated with the pre-update
   // policy.
-  void UpdateStateForAllTaskQueues(absl::optional<Policy> previous_policy);
+  void UpdateStateForAllTaskQueues(std::optional<Policy> previous_policy);
 
   void UpdateTaskQueueState(
       MainThreadTaskQueue* task_queue,
@@ -621,11 +621,11 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
 
   // Computes the priority for compositing based on the current use case.
   // Returns nullopt if the use case does not need to set the priority.
-  absl::optional<TaskPriority> ComputeCompositorPriorityFromUseCase() const;
+  std::optional<TaskPriority> ComputeCompositorPriorityFromUseCase() const;
 
   // Computes the compositor task queue priority for the next main frame based
   // on the current `RenderingPrioritizationState`.
-  absl::optional<TaskPriority> ComputeCompositorPriorityForMainFrame() const;
+  std::optional<TaskPriority> ComputeCompositorPriorityForMainFrame() const;
 
   void MaybeUpdateIPCTaskQueuePriorityOnTaskCompleted();
 
@@ -742,7 +742,7 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
         rail_mode_for_tracing;  // Don't use except for tracing.
 
     TraceableObjectState<bool, TracingCategory::kTopLevel> renderer_hidden;
-    absl::optional<base::ScopedSampleMetadata> renderer_hidden_metadata;
+    std::optional<base::ScopedSampleMetadata> renderer_hidden_metadata;
     TraceableObjectState<bool, TracingCategory::kTopLevel>
         renderer_backgrounded;
     TraceableState<bool, TracingCategory::kDefault>
@@ -762,10 +762,10 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
     MainThreadMetricsHelper metrics_helper;
     TraceableState<WebRendererProcessType, TracingCategory::kTopLevel>
         process_type;
-    TraceableState<absl::optional<TaskDescriptionForTracing>,
+    TraceableState<std::optional<TaskDescriptionForTracing>,
                    TracingCategory::kInfo>
         task_description_for_tracing;  // Don't use except for tracing.
-    TraceableState<absl::optional<TaskPriority>,
+    TraceableState<std::optional<TaskPriority>,
                    TracingCategory::kInfo>
         task_priority_for_tracing;  // Only used for tracing.
 

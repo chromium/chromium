@@ -179,7 +179,7 @@ base::TimeTicks UserTiming::GetPerformanceMarkUnsafeTimeForTraces(
 PerformanceMeasure* UserTiming::Measure(ScriptState* script_state,
                                         const AtomicString& measure_name,
                                         const V8UnionDoubleOrString* start,
-                                        const absl::optional<double>& duration,
+                                        const std::optional<double>& duration,
                                         const V8UnionDoubleOrString* end,
                                         const ScriptValue& detail,
                                         ExceptionState& exception_state,

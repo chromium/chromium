@@ -42,7 +42,7 @@ class CORE_EXPORT LargestContentfulPaintCalculator final
       uint64_t image_paint_size,
       ImageRecord* image_record,
       double image_bpp,
-      absl::optional<WebURLRequest::Priority> priority);
+      std::optional<WebURLRequest::Priority> priority);
 
   bool NotifyMetricsIfLargestTextPaintChanged(base::TimeTicks text_paint_time,
                                               uint64_t text_paint_size);

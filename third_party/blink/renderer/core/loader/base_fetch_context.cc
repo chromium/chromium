@@ -83,7 +83,7 @@ void SetHttpHeader(network::mojom::blink::WebClientHintsType hints_type,
 
 namespace blink {
 
-absl::optional<ResourceRequestBlockedReason> BaseFetchContext::CanRequest(
+std::optional<ResourceRequestBlockedReason> BaseFetchContext::CanRequest(
     ResourceType type,
     const ResourceRequest& resource_request,
     const KURL& url,
@@ -91,7 +91,7 @@ absl::optional<ResourceRequestBlockedReason> BaseFetchContext::CanRequest(
     ReportingDisposition reporting_disposition,
     base::optional_ref<const ResourceRequest::RedirectInfo> redirect_info)
     const {
-  absl::optional<ResourceRequestBlockedReason> blocked_reason =
+  std::optional<ResourceRequestBlockedReason> blocked_reason =
       CanRequestInternal(type, resource_request, url, options,
                          reporting_disposition, redirect_info);
   if (blocked_reason &&
@@ -102,7 +102,7 @@ absl::optional<ResourceRequestBlockedReason> BaseFetchContext::CanRequest(
   return blocked_reason;
 }
 
-absl::optional<ResourceRequestBlockedReason>
+std::optional<ResourceRequestBlockedReason>
 BaseFetchContext::CanRequestBasedOnSubresourceFilterOnly(
     ResourceType type,
     const ResourceRequest& resource_request,
@@ -123,7 +123,7 @@ BaseFetchContext::CanRequestBasedOnSubresourceFilterOnly(
     return ResourceRequestBlockedReason::kSubresourceFilter;
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 bool BaseFetchContext::CalculateIfAdSubresource(
@@ -146,7 +146,7 @@ void BaseFetchContext::AddClientHintsIfNecessary(
     const ClientHintsPreferences& hints_preferences,
     const url::Origin& resource_origin,
     bool is_1p_origin,
-    absl::optional<UserAgentMetadata> ua,
+    std::optional<UserAgentMetadata> ua,
     const PermissionsPolicy* policy,
     base::optional_ref<const ClientHintImageInfo> image_info,
     base::optional_ref<const WTF::AtomicString> prefers_color_scheme,
@@ -286,7 +286,7 @@ void BaseFetchContext::AddClientHintsIfNecessary(
   if (ShouldSendClientHint(policy, resource_origin, is_1p_origin,
                            WebClientHintsType::kRtt_DEPRECATED,
                            hints_preferences)) {
-    absl::optional<base::TimeDelta> http_rtt =
+    std::optional<base::TimeDelta> http_rtt =
         GetNetworkStateNotifier().GetWebHoldbackHttpRtt();
     if (!http_rtt) {
       http_rtt = GetNetworkStateNotifier().HttpRtt();
@@ -301,7 +301,7 @@ void BaseFetchContext::AddClientHintsIfNecessary(
   if (ShouldSendClientHint(policy, resource_origin, is_1p_origin,
                            WebClientHintsType::kDownlink_DEPRECATED,
                            hints_preferences)) {
-    absl::optional<double> throughput_mbps =
+    std::optional<double> throughput_mbps =
         GetNetworkStateNotifier().GetWebHoldbackDownlinkThroughputMbps();
     if (!throughput_mbps) {
       throughput_mbps = GetNetworkStateNotifier().DownlinkThroughputMbps();
@@ -316,7 +316,7 @@ void BaseFetchContext::AddClientHintsIfNecessary(
   if (ShouldSendClientHint(policy, resource_origin, is_1p_origin,
                            WebClientHintsType::kEct_DEPRECATED,
                            hints_preferences)) {
-    absl::optional<WebEffectiveConnectionType> holdback_ect =
+    std::optional<WebEffectiveConnectionType> holdback_ect =
         GetNetworkStateNotifier().GetWebHoldbackEffectiveType();
     if (!holdback_ect)
       holdback_ect = GetNetworkStateNotifier().EffectiveType();
@@ -447,7 +447,7 @@ void BaseFetchContext::PrintAccessDeniedMessage(const KURL& url) const {
       mojom::ConsoleMessageLevel::kError, message));
 }
 
-absl::optional<ResourceRequestBlockedReason>
+std::optional<ResourceRequestBlockedReason>
 BaseFetchContext::CheckCSPForRequest(
     mojom::blink::RequestContextType request_context,
     network::mojom::RequestDestination request_destination,
@@ -462,7 +462,7 @@ BaseFetchContext::CheckCSPForRequest(
       ContentSecurityPolicy::CheckHeaderType::kCheckReportOnly);
 }
 
-absl::optional<ResourceRequestBlockedReason>
+std::optional<ResourceRequestBlockedReason>
 BaseFetchContext::CheckCSPForRequestInternal(
     mojom::blink::RequestContextType request_context,
     network::mojom::RequestDestination request_destination,
@@ -474,7 +474,7 @@ BaseFetchContext::CheckCSPForRequestInternal(
     ContentSecurityPolicy::CheckHeaderType check_header_type) const {
   if (options.content_security_policy_option ==
       network::mojom::CSPDisposition::DO_NOT_CHECK) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   ContentSecurityPolicy* csp =
@@ -487,10 +487,10 @@ BaseFetchContext::CheckCSPForRequestInternal(
                          reporting_disposition, check_header_type)) {
     return ResourceRequestBlockedReason::kCSP;
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
-absl::optional<ResourceRequestBlockedReason>
+std::optional<ResourceRequestBlockedReason>
 BaseFetchContext::CanRequestInternal(
     ResourceType type,
     const ResourceRequest& resource_request,
@@ -541,7 +541,7 @@ BaseFetchContext::CanRequestInternal(
   // restricted to data urls.
   if (options.initiator_info.name == fetch_initiator_type_names::kUacss) {
     if (type == ResourceType::kImage && url.ProtocolIsData()) {
-      return absl::nullopt;
+      return std::nullopt;
     }
     return ResourceRequestBlockedReason::kOther;
   }
@@ -643,7 +643,7 @@ BaseFetchContext::CanRequestInternal(
     }
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 bool BaseFetchContext::ShouldSendClientHint(

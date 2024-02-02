@@ -585,12 +585,12 @@ bool LayoutBlock::HasLineIfEmpty() const {
   return FirstLineStyleRef().HasLineIfEmpty();
 }
 
-absl::optional<LayoutUnit> LayoutBlock::BaselineForEmptyLine() const {
+std::optional<LayoutUnit> LayoutBlock::BaselineForEmptyLine() const {
   NOT_DESTROYED();
   const ComputedStyle* style = FirstLineStyle();
   const SimpleFontData* font_data = style->GetFont().PrimaryFont();
   if (!font_data)
-    return absl::nullopt;
+    return std::nullopt;
   const auto& font_metrics = font_data->GetFontMetrics();
   const auto baseline_type = style->GetFontBaseline();
   const LayoutUnit line_height = FirstLineHeight();

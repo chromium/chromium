@@ -5,9 +5,10 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_FONT_VARIANT_ALTERNATES_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_FONT_VARIANT_ALTERNATES_H_
 
+#include <optional>
+
 #include "base/dcheck_is_on.h"
 #include "base/functional/function_ref.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/platform/fonts/resolved_font_features.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -77,10 +78,10 @@ class PLATFORM_EXPORT FontVariantAlternates
   static scoped_refptr<FontVariantAlternates> Clone(
       const FontVariantAlternates& other);
 
-  absl::optional<AtomicString> stylistic_ = absl::nullopt;
-  absl::optional<AtomicString> swash_ = absl::nullopt;
-  absl::optional<AtomicString> ornaments_ = absl::nullopt;
-  absl::optional<AtomicString> annotation_ = absl::nullopt;
+  std::optional<AtomicString> stylistic_ = std::nullopt;
+  std::optional<AtomicString> swash_ = std::nullopt;
+  std::optional<AtomicString> ornaments_ = std::nullopt;
+  std::optional<AtomicString> annotation_ = std::nullopt;
 
   Vector<AtomicString> styleset_;
   Vector<AtomicString> character_variant_;

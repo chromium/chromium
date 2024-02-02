@@ -400,10 +400,10 @@ void WebRtcAudioDeviceImpl::RemovePlayoutSink(
   playout_sinks_.remove(sink);
 }
 
-absl::optional<webrtc::AudioDeviceModule::Stats>
+std::optional<webrtc::AudioDeviceModule::Stats>
 WebRtcAudioDeviceImpl::GetStats() const {
   base::AutoLock auto_lock(lock_);
-  return absl::optional<webrtc::AudioDeviceModule::Stats>(
+  return std::optional<webrtc::AudioDeviceModule::Stats>(
       webrtc::AudioDeviceModule::Stats{
           .synthesized_samples_duration_s =
               cumulative_glitch_info_.duration.InSecondsF(),

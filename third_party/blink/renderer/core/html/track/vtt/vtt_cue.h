@@ -147,7 +147,7 @@ class CORE_EXPORT VTTCue final : public TextTrackCue {
 
   void UpdatePastAndFutureNodes(double movie_time) override;
 
-  absl::optional<double> GetNextIntraCueTime(double movie_time) const override;
+  std::optional<double> GetNextIntraCueTime(double movie_time) const override;
 
   void RemoveDisplayTree(RemovalNotification) override;
 

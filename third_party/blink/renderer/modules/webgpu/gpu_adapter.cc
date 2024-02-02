@@ -26,7 +26,7 @@ namespace blink {
 
 namespace {
 
-absl::optional<V8GPUFeatureName::Enum> ToV8FeatureNameEnum(WGPUFeatureName f) {
+std::optional<V8GPUFeatureName::Enum> ToV8FeatureNameEnum(WGPUFeatureName f) {
   switch (f) {
     case WGPUFeatureName_Depth32FloatStencil8:
       return V8GPUFeatureName::Enum::kDepth32FloatStencil8;
@@ -59,7 +59,7 @@ absl::optional<V8GPUFeatureName::Enum> ToV8FeatureNameEnum(WGPUFeatureName f) {
     case WGPUFeatureName_Float32Filterable:
       return V8GPUFeatureName::Enum::kFloat32Filterable;
     default:
-      return absl::nullopt;
+      return std::nullopt;
   }
 }
 

@@ -27,11 +27,12 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_RESOLVER_STYLE_BUILDER_CONVERTER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_RESOLVER_STYLE_BUILDER_CONVERTER_H_
 
+#include <optional>
+
 #include "base/check_op.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
 #include "cc/input/scroll_snap_data.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/css/css_function_value.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
@@ -199,8 +200,8 @@ class StyleBuilderConverter {
   static uint16_t ConvertColumnRuleWidth(StyleResolverState&, const CSSValue&);
   static LayoutUnit ConvertLayoutUnit(const StyleResolverState&,
                                       const CSSValue&);
-  static absl::optional<Length> ConvertGapLength(const StyleResolverState&,
-                                                 const CSSValue&);
+  static std::optional<Length> ConvertGapLength(const StyleResolverState&,
+                                                const CSSValue&);
   static Length ConvertLength(const StyleResolverState&, const CSSValue&);
   static UnzoomedLength ConvertUnzoomedLength(StyleResolverState&,
                                               const CSSValue&);
@@ -337,7 +338,7 @@ class StyleBuilderConverter {
   static RubyPosition ConvertRubyPosition(StyleResolverState& state,
                                           const CSSValue& value);
 
-  static absl::optional<StyleScrollbarColor> ConvertScrollbarColor(
+  static std::optional<StyleScrollbarColor> ConvertScrollbarColor(
       StyleResolverState& state,
       const CSSValue& value);
 
@@ -368,7 +369,7 @@ class StyleBuilderConverter {
   static double ConvertTimeValue(const StyleResolverState& state,
                                  const CSSValue& value);
 
-  static absl::optional<StyleOverflowClipMargin> ConvertOverflowClipMargin(
+  static std::optional<StyleOverflowClipMargin> ConvertOverflowClipMargin(
       StyleResolverState&,
       const CSSValue&);
 

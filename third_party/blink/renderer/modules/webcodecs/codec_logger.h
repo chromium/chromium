@@ -193,7 +193,7 @@ class MODULES_EXPORT CodecLogger final {
                                               detailed_message);
   }
 
-  absl::optional<typename StatusImpl::Codes> status_code_;
+  std::optional<typename StatusImpl::Codes> status_code_;
 
   // |parent_media_log_| must be destroyed if ever the ExecutionContext is
   // destroyed, since the blink::MediaInspectorContext* pointer given to

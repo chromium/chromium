@@ -6,9 +6,10 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_INSPECTOR_AUDITS_ISSUE_H_
 
 #include <memory>
+#include <optional>
+
 #include "base/unguessable_token.h"
 #include "services/network/public/mojom/blocked_by_response_reason.mojom-forward.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/devtools/inspector_issue.mojom-blink.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -121,7 +122,7 @@ class CORE_EXPORT AuditsIssue {
                               WTF::String url,
                               WTF::String initiator_origin,
                               WTF::String failedParameter,
-                              absl::optional<base::UnguessableToken> issue_id);
+                              std::optional<base::UnguessableToken> issue_id);
 
   static void ReportAttributionIssue(ExecutionContext* execution_context,
                                      AttributionReportingIssueType type,
@@ -165,7 +166,7 @@ class CORE_EXPORT AuditsIssue {
       LocalFrame* frame_ancestor,
       Element* element,
       SourceLocation* source_location,
-      absl::optional<base::UnguessableToken> issue_id);
+      std::optional<base::UnguessableToken> issue_id);
 
   static protocol::Audits::GenericIssueErrorType
   GenericIssueErrorTypeToProtocol(

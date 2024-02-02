@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIARECORDER_MEDIA_RECORDER_HANDLER_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/feature_list.h"
 #include "base/strings/string_piece.h"
@@ -14,7 +15,6 @@
 #include "base/time/time.h"
 #include "media/base/video_encoder.h"
 #include "media/muxers/muxer_timestamp_adapter.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/platform/modules/mediastream/web_media_stream.h"
 #include "third_party/blink/public/web/modules/mediastream/encoded_video_frame.h"
 #include "third_party/blink/renderer/modules/mediarecorder/audio_track_recorder.h"
@@ -113,7 +113,7 @@ class MODULES_EXPORT MediaRecorderHandler final
       const media::Muxer::VideoParameters& params,
       std::string encoded_data,
       std::string encoded_alpha,
-      absl::optional<media::VideoEncoder::CodecDescription> codec_description,
+      std::optional<media::VideoEncoder::CodecDescription> codec_description,
       base::TimeTicks timestamp,
       bool is_key_frame) override;
   void OnPassthroughVideo(const media::Muxer::VideoParameters& params,
@@ -128,7 +128,7 @@ class MODULES_EXPORT MediaRecorderHandler final
   void OnEncodedAudio(
       const media::AudioParameters& params,
       std::string encoded_data,
-      absl::optional<media::AudioEncoder::CodecDescription> codec_description,
+      std::optional<media::AudioEncoder::CodecDescription> codec_description,
       base::TimeTicks timestamp) override;
   // [Audio/Video]TrackRecorder::CallbackInterface overrides.
   void OnSourceReadyStateChanged() override;
@@ -139,7 +139,7 @@ class MODULES_EXPORT MediaRecorderHandler final
       const media::Muxer::VideoParameters& params,
       std::string encoded_data,
       std::string encoded_alpha,
-      absl::optional<media::VideoEncoder::CodecDescription> codec_description,
+      std::optional<media::VideoEncoder::CodecDescription> codec_description,
       base::TimeTicks timestamp,
       bool is_key_frame);
   void WriteData(base::StringPiece data);
@@ -189,7 +189,7 @@ class MODULES_EXPORT MediaRecorderHandler final
   base::TimeTicks slice_origin_timestamp_;
 
   // The last seen video codec of the last received encoded video frame.
-  absl::optional<media::VideoCodec> last_seen_codec_;
+  std::optional<media::VideoCodec> last_seen_codec_;
 
   bool invalidated_ = false;
   bool recording_ = false;

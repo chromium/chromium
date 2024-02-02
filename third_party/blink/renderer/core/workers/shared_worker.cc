@@ -31,8 +31,9 @@
 
 #include "third_party/blink/renderer/core/workers/shared_worker.h"
 
+#include <optional>
+
 #include "mojo/public/cpp/bindings/pending_remote.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/blob/blob_utils.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/mojom/worker/shared_worker_info.mojom-blink.h"
@@ -136,11 +137,11 @@ SharedWorker* SharedWorker::Create(
       SharedWorkerOptions* worker_options =
           name_or_options->GetAsSharedWorkerOptions();
       options->name = worker_options->name();
-      absl::optional<mojom::blink::ScriptType> type_result =
+      std::optional<mojom::blink::ScriptType> type_result =
           Script::ParseScriptType(worker_options->type());
       DCHECK(type_result);
       options->type = type_result.value();
-      absl::optional<network::mojom::CredentialsMode> credentials_result =
+      std::optional<network::mojom::CredentialsMode> credentials_result =
           Request::ParseCredentialsMode(worker_options->credentials());
       DCHECK(credentials_result);
       options->credentials = credentials_result.value();

@@ -1724,7 +1724,7 @@ void InlineCursor::MoveToVisualFirstForSameLayoutObject() {
 
 void InlineCursor::MoveToVisualFirstOrLastForCulledInline(bool last) {
   InlineCursorPosition found_position;
-  absl::optional<size_t> found_index;
+  std::optional<size_t> found_index;
 
   // Iterate through the remaining fragments to find the lowest/greatest index.
   for (; Current(); MoveToNextForSameLayoutObject()) {

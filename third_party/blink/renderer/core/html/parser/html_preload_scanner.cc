@@ -28,9 +28,9 @@
 #include "third_party/blink/renderer/core/html/parser/html_preload_scanner.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/task/sequenced_task_runner.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/mojom/script/script_type.mojom-blink.h"
@@ -249,15 +249,16 @@ class TokenPreloadScanner::StartTagScanner {
       bool is_potentially_lcp_element) {
     PreloadRequest::RequestType request_type =
         PreloadRequest::kRequestTypePreload;
-    absl::optional<ResourceType> type;
+    std::optional<ResourceType> type;
     if (ShouldPreconnect()) {
       request_type = PreloadRequest::kRequestTypePreconnect;
     } else {
       if (IsLinkRelPreload()) {
         request_type = PreloadRequest::kRequestTypeLinkRelPreload;
         type = ResourceTypeForLinkPreload();
-        if (type == absl::nullopt)
+        if (type == std::nullopt) {
           return nullptr;
+        }
       } else if (IsLinkRelModulePreload()) {
         request_type = PreloadRequest::kRequestTypeLinkRelPreload;
         type = ResourceType::kScript;
@@ -284,8 +285,9 @@ class TokenPreloadScanner::StartTagScanner {
       resource_width_ = source_size;
     }
 
-    if (type == absl::nullopt)
+    if (type == std::nullopt) {
       type = GetResourceType();
+    }
 
     // The element's 'referrerpolicy' attribute (if present) takes precedence
     // over the document's referrer policy.
@@ -639,7 +641,7 @@ class TokenPreloadScanner::StartTagScanner {
     return charset_;
   }
 
-  absl::optional<ResourceType> ResourceTypeForLinkPreload() const {
+  std::optional<ResourceType> ResourceTypeForLinkPreload() const {
     DCHECK(link_is_preload_);
     return PreloadHelper::GetResourceTypeFromAsAttribute(as_attribute_value_);
   }
@@ -674,7 +676,7 @@ class TokenPreloadScanner::StartTagScanner {
            !url_to_load_.empty();
   }
 
-  bool ShouldPreloadLink(absl::optional<ResourceType>& type) const {
+  bool ShouldPreloadLink(std::optional<ResourceType>& type) const {
     if (link_is_style_sheet_) {
       return type_attribute_value_.empty() ||
              MIMETypeRegistry::IsSupportedStyleSheetMIMEType(
@@ -701,7 +703,7 @@ class TokenPreloadScanner::StartTagScanner {
     return false;
   }
 
-  bool ShouldPreload(absl::optional<ResourceType>& type) const {
+  bool ShouldPreload(std::optional<ResourceType>& type) const {
     if (url_to_load_.empty())
       return false;
     if (!matched_)
@@ -815,8 +817,8 @@ class TokenPreloadScanner::StartTagScanner {
   const HashSet<String>* disabled_image_types_;
   bool attributionsrc_attr_set_ = false;
   bool shared_storage_writable_opted_in_ = false;
-  absl::optional<float> resource_width_;
-  absl::optional<float> resource_height_;
+  std::optional<float> resource_width_;
+  std::optional<float> resource_height_;
   features::LcppPreloadLazyLoadImageType preload_lazy_load_image_type_;
   bool use_data_src_attr_match_for_image_ = false;
 };
@@ -856,7 +858,7 @@ static void HandleMetaViewport(
     const String& attribute_value,
     const CachedDocumentParameters* document_parameters,
     MediaValuesCached* media_values,
-    absl::optional<ViewportDescription>* viewport) {
+    std::optional<ViewportDescription>* viewport) {
   if (!document_parameters->viewport_meta_enabled)
     return;
   ViewportDescription description(ViewportDescription::kViewportMeta);
@@ -890,7 +892,7 @@ static void HandleMetaReferrer(const String& attribute_value,
 void TokenPreloadScanner::HandleMetaNameAttribute(
     const HTMLToken& token,
     MetaCHValues& meta_ch_values,
-    absl::optional<ViewportDescription>* viewport) {
+    std::optional<ViewportDescription>* viewport) {
   const HTMLToken::Attribute* name_attribute =
       token.GetAttributeItem(html_names::kNameAttr);
   if (!name_attribute)
@@ -919,7 +921,7 @@ void TokenPreloadScanner::Scan(const HTMLToken& token,
                                const SegmentedString& source,
                                PreloadRequestStream& requests,
                                MetaCHValues& meta_ch_values,
-                               absl::optional<ViewportDescription>* viewport,
+                               std::optional<ViewportDescription>* viewport,
                                bool* is_csp_meta_tag) {
   if (!document_parameters_->do_html_preload_scanning)
     return;

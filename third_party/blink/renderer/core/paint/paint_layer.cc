@@ -1263,7 +1263,7 @@ PaintLayer* PaintLayer::HitTestLayer(
   }
 
   HitTestingTransformState* local_transform_state = nullptr;
-  STACK_UNINITIALIZED absl::optional<HitTestingTransformState> storage;
+  STACK_UNINITIALIZED std::optional<HitTestingTransformState> storage;
 
   if (applied_transform) {
     // We computed the correct state in the caller (above code), so just
@@ -1597,7 +1597,7 @@ PaintLayer* PaintLayer::HitTestLayerByApplyingTransform(
   // been flattened (losing z) by our container.
   gfx::PointF local_point = new_transform_state.MappedPoint();
   PhysicalRect bounds_of_mapped_area = new_transform_state.BoundsOfMappedArea();
-  absl::optional<HitTestLocation> new_location;
+  std::optional<HitTestLocation> new_location;
   if (recursion_data.location.IsRectBasedTest())
     new_location.emplace(local_point, new_transform_state.MappedQuad());
   else

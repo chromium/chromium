@@ -275,7 +275,7 @@ class MODULES_EXPORT RTCPeerConnectionHandler {
                       int component,
                       int address_family);
   void OnIceCandidateError(const String& address,
-                           absl::optional<uint16_t> port,
+                           std::optional<uint16_t> port,
                            const String& host_candidate,
                            const String& url,
                            int error_code,
@@ -338,12 +338,12 @@ class MODULES_EXPORT RTCPeerConnectionHandler {
           error_or_sender);
   // Helper function to remove a track on the signaling thread.
   // Updates the entire transceiver state.
-  // The result will be absl::nullopt if the operation is cancelled,
+  // The result will be std::nullopt if the operation is cancelled,
   // and no change to the state will be made.
   void RemoveTrackOnSignalingThread(
       webrtc::RtpSenderInterface* sender,
       blink::TransceiverStateSurfacer* transceiver_state_surfacer,
-      absl::optional<webrtc::RTCError>* result);
+      std::optional<webrtc::RTCError>* result);
   void CreateOfferOnSignalingThread(
       webrtc::CreateSessionDescriptionObserver* observer,
       webrtc::PeerConnectionInterface::RTCOfferAnswerOptions offer_options,

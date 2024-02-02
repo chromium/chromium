@@ -62,7 +62,7 @@ class CORE_EXPORT CSSMathInvert : public CSSMathValue {
  private:
   // From CSSNumericValue
   CSSNumericValue* Invert() final { return value_.Get(); }
-  absl::optional<CSSNumericSumValue> SumValue() const final;
+  std::optional<CSSNumericSumValue> SumValue() const final;
 
   void BuildCSSText(Nested, ParenLess, StringBuilder&) const final;
 

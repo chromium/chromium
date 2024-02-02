@@ -39,7 +39,7 @@ class MODULES_EXPORT AudioData final : public ScriptWrappable {
 
   void close();
 
-  absl::optional<V8AudioSampleFormat> format() const;
+  std::optional<V8AudioSampleFormat> format() const;
   float sampleRate() const;
   uint32_t numberOfFrames() const;
   uint32_t numberOfChannels() const;
@@ -59,7 +59,7 @@ class MODULES_EXPORT AudioData final : public ScriptWrappable {
  private:
   scoped_refptr<media::AudioBuffer> data_;
 
-  absl::optional<V8AudioSampleFormat> format_;
+  std::optional<V8AudioSampleFormat> format_;
 
   // Temporary space for converting to float32.
   std::unique_ptr<media::AudioBus> temp_bus_;

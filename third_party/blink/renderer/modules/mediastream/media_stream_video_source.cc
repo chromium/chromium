@@ -266,7 +266,7 @@ void MediaStreamVideoSource::StopForRestart(RestartCallback callback,
   restart_callback_ = std::move(callback);
 
   if (send_black_frame) {
-    const absl::optional<gfx::Size> source_size =
+    const std::optional<gfx::Size> source_size =
         GetTrackAdapter()->source_frame_size();
     scoped_refptr<media::VideoFrame> black_frame =
         media::VideoFrame::CreateBlackFrame(
@@ -405,10 +405,10 @@ base::SequencedTaskRunner* MediaStreamVideoSource::video_task_runner() const {
   return Platform::Current()->GetMediaStreamVideoSourceVideoTaskRunner().get();
 }
 
-absl::optional<media::VideoCaptureFormat>
+std::optional<media::VideoCaptureFormat>
 MediaStreamVideoSource::GetCurrentFormat() const {
   DCHECK(GetTaskRunner()->BelongsToCurrentThread());
-  return absl::optional<media::VideoCaptureFormat>();
+  return std::optional<media::VideoCaptureFormat>();
 }
 
 size_t MediaStreamVideoSource::CountEncodedSinks() const {
@@ -517,7 +517,7 @@ void MediaStreamVideoSource::FinalizeAddPendingTracks(
 
 void MediaStreamVideoSource::StartFrameMonitoring() {
   DCHECK(GetTaskRunner()->BelongsToCurrentThread());
-  absl::optional<media::VideoCaptureFormat> current_format = GetCurrentFormat();
+  std::optional<media::VideoCaptureFormat> current_format = GetCurrentFormat();
   double frame_rate = current_format ? current_format->frame_rate : 0.0;
   if (current_format && enable_device_rotation_detection_) {
     GetTrackAdapter()->SetSourceFrameSize(current_format->frame_size);
@@ -581,7 +581,7 @@ void MediaStreamVideoSource::SendWheel(
 }
 
 void MediaStreamVideoSource::GetZoomLevel(
-    base::OnceCallback<void(absl::optional<int>, const String&)> callback) {
+    base::OnceCallback<void(std::optional<int>, const String&)> callback) {
   std::move(callback).Run(false, "Unsupported.");
 }
 
@@ -602,9 +602,9 @@ void MediaStreamVideoSource::ApplySubCaptureTarget(
       media::mojom::ApplySubCaptureTargetResult::kErrorGeneric);
 }
 
-absl::optional<uint32_t>
+std::optional<uint32_t>
 MediaStreamVideoSource::GetNextSubCaptureTargetVersion() {
-  return absl::nullopt;
+  return std::nullopt;
 }
 #endif
 

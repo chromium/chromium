@@ -735,8 +735,8 @@ class UserMediaClientTest : public ::testing::Test {
     StartMockedVideoSource(user_media_processor_);
 
     EXPECT_EQ(kRequestSucceeded, request_state());
-    EXPECT_NE(absl::nullopt, mock_dispatcher_host_.devices().audio_device);
-    EXPECT_NE(absl::nullopt, mock_dispatcher_host_.devices().video_device);
+    EXPECT_NE(std::nullopt, mock_dispatcher_host_.devices().audio_device);
+    EXPECT_NE(std::nullopt, mock_dispatcher_host_.devices().video_device);
     // MockMojoMediaStreamDispatcherHost appends its internal session ID to its
     // internal device IDs.
     EXPECT_EQ(std::string(expected_audio_device_id) +
@@ -751,7 +751,7 @@ class UserMediaClientTest : public ::testing::Test {
       MediaStreamTrack* track,
       int width,
       int height,
-      const absl::optional<double>& frame_rate = absl::optional<double>()) {
+      const std::optional<double>& frame_rate = std::optional<double>()) {
     blink::MockConstraintFactory factory;
     factory.basic().width.SetExact(width);
     factory.basic().height.SetExact(height);
@@ -1080,7 +1080,7 @@ TEST_F(UserMediaClientTest, DefaultConstraintsPropagate) {
       1.0 / static_cast<double>(blink::MediaStreamVideoSource::kDefaultHeight));
   EXPECT_EQ(track_settings.max_aspect_ratio(),
             static_cast<double>(blink::MediaStreamVideoSource::kDefaultWidth));
-  EXPECT_EQ(track_settings.max_frame_rate(), absl::nullopt);
+  EXPECT_EQ(track_settings.max_frame_rate(), std::nullopt);
 }
 
 TEST_F(UserMediaClientTest, DefaultTabCapturePropagate) {
@@ -1132,7 +1132,7 @@ TEST_F(UserMediaClientTest, DefaultTabCapturePropagate) {
   EXPECT_EQ(track_settings.min_aspect_ratio(),
             1.0 / blink::kMaxScreenCastDimension);
   EXPECT_EQ(track_settings.max_aspect_ratio(), blink::kMaxScreenCastDimension);
-  EXPECT_EQ(track_settings.max_frame_rate(), absl::nullopt);
+  EXPECT_EQ(track_settings.max_frame_rate(), std::nullopt);
 }
 
 TEST_F(UserMediaClientTest, DefaultDesktopCapturePropagate) {
@@ -1185,7 +1185,7 @@ TEST_F(UserMediaClientTest, DefaultDesktopCapturePropagate) {
   EXPECT_EQ(track_settings.min_aspect_ratio(),
             1.0 / blink::kMaxScreenCastDimension);
   EXPECT_EQ(track_settings.max_aspect_ratio(), blink::kMaxScreenCastDimension);
-  EXPECT_EQ(track_settings.max_frame_rate(), absl::nullopt);
+  EXPECT_EQ(track_settings.max_frame_rate(), std::nullopt);
 }
 
 TEST_F(UserMediaClientTest, NonDefaultAudioConstraintsPropagate) {
@@ -1584,10 +1584,10 @@ TEST_F(UserMediaClientTest, DesktopCaptureChangeSourceWithoutAudio) {
       UserMediaRequest::CreateForTesting(audio_constraints, video_constraints);
   user_media_client_impl_->RequestUserMediaForTest(request);
   EXPECT_NE(
-      absl::nullopt,
+      std::nullopt,
       MediaStreamDispatcherHostForDisplayCapture().devices().audio_device);
   EXPECT_NE(
-      absl::nullopt,
+      std::nullopt,
       MediaStreamDispatcherHostForDisplayCapture().devices().video_device);
 
   // If the new desktop capture source doesn't have audio, the previous audio
@@ -1679,7 +1679,7 @@ TEST_F(UserMediaClientTest, MultiDeviceOnStreamsGenerated) {
       blink::mojom::blink::StreamDevicesSet::New();
   for (size_t stream_index = 0; stream_index < devices_count; ++stream_index) {
     stream_devices_set->stream_devices.emplace_back(
-        blink::mojom::blink::StreamDevices::New(absl::nullopt,
+        blink::mojom::blink::StreamDevices::New(std::nullopt,
                                                 blink::MediaStreamDevice()));
   }
   user_media_processor_->OnStreamsGenerated(

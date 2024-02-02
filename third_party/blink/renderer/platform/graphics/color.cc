@@ -26,12 +26,13 @@
 #include "third_party/blink/renderer/platform/graphics/color.h"
 
 #include <math.h>
+
+#include <optional>
 #include <tuple>
 
 #include "base/check_op.h"
 #include "base/notreached.h"
 #include "build/build_config.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/platform/geometry/blend.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
@@ -167,10 +168,10 @@ Color::Color(int r, int g, int b, int a) {
 }
 
 // static
-Color Color::FromRGBALegacy(absl::optional<int> r,
-                            absl::optional<int> g,
-                            absl::optional<int> b,
-                            absl::optional<int> a) {
+Color Color::FromRGBALegacy(std::optional<int> r,
+                            std::optional<int> g,
+                            std::optional<int> b,
+                            std::optional<int> a) {
   Color result = Color(
       ClampInt255(a.value_or(0.f)) << 24 | ClampInt255(r.value_or(0.f)) << 16 |
       ClampInt255(g.value_or(0.f)) << 8 | ClampInt255(b.value_or(0.f)));
@@ -184,10 +185,10 @@ Color Color::FromRGBALegacy(absl::optional<int> r,
 
 // static
 Color Color::FromColorSpace(ColorSpace color_space,
-                            absl::optional<float> param0,
-                            absl::optional<float> param1,
-                            absl::optional<float> param2,
-                            absl::optional<float> alpha) {
+                            std::optional<float> param0,
+                            std::optional<float> param1,
+                            std::optional<float> param2,
+                            std::optional<float> alpha) {
   Color result;
   result.color_space_ = color_space;
   result.param0_is_none_ = !param0;
@@ -222,24 +223,24 @@ Color Color::FromColorSpace(ColorSpace color_space,
 }
 
 // static
-Color Color::FromHSLA(absl::optional<float> h,
-                      absl::optional<float> s,
-                      absl::optional<float> l,
-                      absl::optional<float> a) {
+Color Color::FromHSLA(std::optional<float> h,
+                      std::optional<float> s,
+                      std::optional<float> l,
+                      std::optional<float> a) {
   return FromColorSpace(ColorSpace::kHSL, h, s, l, a);
 }
 
 // static
-Color Color::FromHWBA(absl::optional<float> h,
-                      absl::optional<float> w,
-                      absl::optional<float> b,
-                      absl::optional<float> a) {
+Color Color::FromHWBA(std::optional<float> h,
+                      std::optional<float> w,
+                      std::optional<float> b,
+                      std::optional<float> a) {
   return FromColorSpace(ColorSpace::kHWB, h, w, b, a);
 }
 
 // static
 Color Color::FromColorMix(Color::ColorSpace interpolation_space,
-                          absl::optional<HueInterpolationMethod> hue_method,
+                          std::optional<HueInterpolationMethod> hue_method,
                           Color color1,
                           Color color2,
                           float percentage,
@@ -395,12 +396,11 @@ bool Color::SubstituteMissingParameters(Color& color1, Color& color2) {
 }
 
 // static
-Color Color::InterpolateColors(
-    Color::ColorSpace interpolation_space,
-    absl::optional<HueInterpolationMethod> hue_method,
-    Color color1,
-    Color color2,
-    float percentage) {
+Color Color::InterpolateColors(Color::ColorSpace interpolation_space,
+                               std::optional<HueInterpolationMethod> hue_method,
+                               Color color1,
+                               Color color2,
+                               float percentage) {
   DCHECK(percentage >= 0.0f && percentage <= 1.0f);
 
   // https://www.w3.org/TR/css-color-4/#missing:
@@ -431,31 +431,31 @@ Color Color::InterpolateColors(
     hue_method = HueInterpolationMethod::kShorter;
   }
 
-  absl::optional<float> param0 =
+  std::optional<float> param0 =
       (color1.param0_is_none_ && color2.param0_is_none_)
-          ? absl::optional<float>(absl::nullopt)
+          ? std::optional<float>(std::nullopt)
       : (interpolation_space == ColorSpace::kHSL ||
          interpolation_space == ColorSpace::kHWB)
           ? HueInterpolation(color1.param0_, color2.param0_, percentage,
                              hue_method.value())
           : blink::Blend(color1.param0_, color2.param0_, percentage);
 
-  absl::optional<float> param1 =
+  std::optional<float> param1 =
       (color1.param1_is_none_ && color2.param1_is_none_)
-          ? absl::optional<float>(absl::nullopt)
+          ? std::optional<float>(std::nullopt)
           : blink::Blend(color1.param1_, color2.param1_, percentage);
 
-  absl::optional<float> param2 =
+  std::optional<float> param2 =
       (color1.param2_is_none_ && color2.param2_is_none_)
-          ? absl::optional<float>(absl::nullopt)
+          ? std::optional<float>(std::nullopt)
       : (IsChromaSecondComponent(interpolation_space))
           ? HueInterpolation(color1.param2_, color2.param2_, percentage,
                              hue_method.value())
           : blink::Blend(color1.param2_, color2.param2_, percentage);
 
-  absl::optional<float> alpha = (color1.alpha_is_none_ && color2.alpha_is_none_)
-                                    ? absl::optional<float>(absl::nullopt)
-                                    : blink::Blend(alpha1, alpha2, percentage);
+  std::optional<float> alpha = (color1.alpha_is_none_ && color2.alpha_is_none_)
+                                   ? std::optional<float>(std::nullopt)
+                                   : blink::Blend(alpha1, alpha2, percentage);
 
   Color result =
       FromColorSpace(interpolation_space, param0, param1, param2, alpha);

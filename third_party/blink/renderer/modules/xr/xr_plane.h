@@ -5,9 +5,10 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_XR_XR_PLANE_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_XR_XR_PLANE_H_
 
+#include <optional>
+
 #include "device/vr/public/mojom/pose.h"
 #include "device/vr/public/mojom/vr_service.mojom-blink-forward.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/core/geometry/dom_point_read_only.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -36,7 +37,7 @@ class XRPlane : public ScriptWrappable {
 
   XRSpace* planeSpace() const;
 
-  absl::optional<gfx::Transform> MojoFromObject() const;
+  std::optional<gfx::Transform> MojoFromObject() const;
 
   device::mojom::blink::XRNativeOriginInformationPtr NativeOrigin() const;
 
@@ -62,18 +63,18 @@ class XRPlane : public ScriptWrappable {
  private:
   XRPlane(uint64_t id,
           XRSession* session,
-          const absl::optional<Orientation>& orientation,
+          const std::optional<Orientation>& orientation,
           HeapVector<Member<DOMPointReadOnly>> polygon,
-          const absl::optional<device::Pose>& mojo_from_plane,
+          const std::optional<device::Pose>& mojo_from_plane,
           double timestamp);
 
   const uint64_t id_;
   Member<FrozenArray<DOMPointReadOnly>> polygon_;
-  absl::optional<Orientation> orientation_;
+  std::optional<Orientation> orientation_;
 
   // Plane center's pose in device (mojo) space.  Nullptr if the pose of the
   // anchor is unknown in the current frame.
-  absl::optional<device::Pose> mojo_from_plane_;
+  std::optional<device::Pose> mojo_from_plane_;
 
   Member<XRSession> session_;
 

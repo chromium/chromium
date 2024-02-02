@@ -6,7 +6,8 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_PARSER_CSS_SELECTOR_PARSER_H_
 
 #include <memory>
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include <optional>
+
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_selector.h"
 #include "third_party/blink/renderer/core/css/parser/css_nesting_type.h"
@@ -93,10 +94,10 @@ class CORE_EXPORT CSSSelectorParser {
   // https://drafts.csswg.org/css-cascade-6/#typedef-scope-start
   // https://drafts.csswg.org/css-cascade-6/#typedef-scope-end
   //
-  // Parse errors are signalled by returning absl::nullopt. Empty spans are
+  // Parse errors are signalled by returning std::nullopt. Empty spans are
   // normal and expected, since <scope-start> / <scope-end> are forgiving
   // selector lists.
-  static absl::optional<base::span<CSSSelector>> ParseScopeBoundary(
+  static std::optional<base::span<CSSSelector>> ParseScopeBoundary(
       CSSParserTokenRange,
       const CSSParserContext*,
       CSSNestingType,
@@ -139,7 +140,7 @@ class CORE_EXPORT CSSSelectorParser {
   CSSSelectorList* ConsumeNestedSelectorList(CSSParserTokenRange&);
   CSSSelectorList* ConsumeForgivingNestedSelectorList(CSSParserTokenRange&);
   // https://drafts.csswg.org/selectors/#typedef-forgiving-selector-list
-  absl::optional<base::span<CSSSelector>> ConsumeForgivingComplexSelectorList(
+  std::optional<base::span<CSSSelector>> ConsumeForgivingComplexSelectorList(
       CSSParserTokenRange&,
       CSSNestingType);
   CSSSelectorList* ConsumeForgivingCompoundSelectorList(CSSParserTokenRange&);

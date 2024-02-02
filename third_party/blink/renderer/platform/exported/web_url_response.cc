@@ -653,7 +653,7 @@ void WebURLResponse::SetWasCookieInRequest(bool was_cookie_in_request) {
 }
 
 void WebURLResponse::SetRecursivePrefetchToken(
-    const absl::optional<base::UnguessableToken>& token) {
+    const std::optional<base::UnguessableToken>& token) {
   resource_response_->SetRecursivePrefetchToken(token);
 }
 
@@ -726,12 +726,12 @@ void WebURLResponse::SetDnsAliases(const WebVector<WebString>& aliases) {
 }
 
 void WebURLResponse::SetAuthChallengeInfo(
-    const absl::optional<net::AuthChallengeInfo>& auth_challenge_info) {
+    const std::optional<net::AuthChallengeInfo>& auth_challenge_info) {
   resource_response_->SetAuthChallengeInfo(auth_challenge_info);
 }
 
-const absl::optional<net::AuthChallengeInfo>&
-WebURLResponse::AuthChallengeInfo() const {
+const std::optional<net::AuthChallengeInfo>& WebURLResponse::AuthChallengeInfo()
+    const {
   return resource_response_->AuthChallengeInfo();
 }
 

@@ -70,7 +70,7 @@ class MockBlob : public FakeBlob {
 };
 
 using MockRegisterBlobCallback = base::OnceCallback<
-    void(const String&, const KURL&, uint64_t, absl::optional<base::Time>)>;
+    void(const String&, const KURL&, uint64_t, std::optional<base::Time>)>;
 class MockFileSystemManager : public mojom::blink::FileSystemManager {
  public:
   explicit MockFileSystemManager(blink::BrowserInterfaceBrokerProxy& broker)
@@ -142,7 +142,7 @@ class MockFileSystemManager : public mojom::blink::FileSystemManager {
   void RegisterBlob(const String& content_type,
                     const KURL& url,
                     uint64_t length,
-                    absl::optional<base::Time> expected_modification_time,
+                    std::optional<base::Time> expected_modification_time,
                     RegisterBlobCallback callback) override {
     std::move(mock_register_blob_callback_)
         .Run(content_type, url, length, expected_modification_time);
@@ -217,7 +217,7 @@ TEST(FileTest, NativeFileWithApocalypseTimestamp) {
 
 TEST(FileTest, BlobBackingFileWithoutTimestamp) {
   test::TaskEnvironment task_environment;
-  auto* const file = MakeGarbageCollected<File>("name", absl::nullopt,
+  auto* const file = MakeGarbageCollected<File>("name", std::nullopt,
                                                 BlobDataHandle::Create());
   EXPECT_FALSE(file->HasBackingFile());
   EXPECT_TRUE(file->GetPath().empty());
@@ -417,7 +417,7 @@ TEST(FileTest, createForFileSystem) {
       document.GetFrame()->GetBrowserInterfaceBroker());
   manager.SetMockRegisterBlobCallback(base::BindLambdaForTesting(
       [&](const String& content_type, const KURL& url, uint64_t length,
-          absl::optional<base::Time> expected_modification_time) {
+          std::optional<base::Time> expected_modification_time) {
         EXPECT_EQ(metadata.length, static_cast<int64_t>(length));
         EXPECT_EQ("", content_type);
         EXPECT_EQ(url, filesystem_url);

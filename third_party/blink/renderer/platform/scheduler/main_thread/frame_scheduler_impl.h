@@ -279,7 +279,7 @@ class PLATFORM_EXPORT FrameSchedulerImpl : public FrameScheduler,
     return frame_task_queue_controller_.get();
   }
 
-  // Create the QueueTraits for a specific TaskType. This returns absl::nullopt
+  // Create the QueueTraits for a specific TaskType. This returns std::nullopt
   // for loading tasks and non-frame-level tasks.
   static MainThreadTaskQueue::QueueTraits CreateQueueTraitsForTaskType(
       TaskType);

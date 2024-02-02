@@ -199,8 +199,7 @@ class OffsetMappingTest : public RenderingTest {
     return GetOffsetMapping().GetMappingUnitForPosition(position);
   }
 
-  absl::optional<unsigned> GetTextContentOffset(
-      const Position& position) const {
+  std::optional<unsigned> GetTextContentOffset(const Position& position) const {
     return GetOffsetMapping().GetTextContentOffset(position);
   }
 

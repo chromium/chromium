@@ -4,10 +4,11 @@
 
 #include "third_party/blink/renderer/modules/shared_storage/shared_storage_worklet.h"
 
+#include <optional>
+
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/shared_storage/shared_storage_utils.h"
 #include "third_party/blink/public/mojom/origin_trial_feature/origin_trial_feature.mojom-shared.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
@@ -35,7 +36,7 @@ const char kSharedStorageWorkletExpiredMessage[] =
     "The sharedStorage worklet cannot execute further operations because the "
     "previous operation did not include the option \'keepAlive: true\'.";
 
-absl::optional<BlinkCloneableMessage> Serialize(
+std::optional<BlinkCloneableMessage> Serialize(
     const SharedStorageRunOperationMethodOptions* options,
     const ExecutionContext& execution_context,
     ExceptionState& exception_state) {
@@ -46,7 +47,7 @@ absl::optional<BlinkCloneableMessage> Serialize(
                 SerializedScriptValue::SerializeOptions(), exception_state)
           : SerializedScriptValue::UndefinedValue();
   if (exception_state.HadException()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   BlinkCloneableMessage output;
@@ -349,7 +350,7 @@ ScriptPromise SharedStorageWorklet::SelectURL(
     index++;
   }
 
-  absl::optional<BlinkCloneableMessage> serialized_data =
+  std::optional<BlinkCloneableMessage> serialized_data =
       Serialize(options, *execution_context, exception_state);
   if (!serialized_data) {
     LogSharedStorageWorkletError(
@@ -398,7 +399,7 @@ ScriptPromise SharedStorageWorklet::SelectURL(
              SharedStorageWorklet* shared_storage_worklet,
              base::TimeTicks start_time, bool resolve_to_config, bool success,
              const String& error_message,
-             const absl::optional<FencedFrame::RedactedFencedFrameConfig>&
+             const std::optional<FencedFrame::RedactedFencedFrameConfig>&
                  result_config) {
             DCHECK(resolver);
             ScriptState* script_state = resolver->GetScriptState();
@@ -449,7 +450,7 @@ ScriptPromise SharedStorageWorklet::Run(
     return ScriptPromise();
   }
 
-  absl::optional<BlinkCloneableMessage> serialized_data =
+  std::optional<BlinkCloneableMessage> serialized_data =
       Serialize(options, *execution_context, exception_state);
   if (!serialized_data) {
     LogSharedStorageWorkletError(SharedStorageWorkletErrorType::kRunWebVisible);

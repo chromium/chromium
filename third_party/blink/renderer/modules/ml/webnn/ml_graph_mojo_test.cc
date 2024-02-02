@@ -252,8 +252,8 @@ TEST_P(MLGraphTestMojo, CreateWebNNGraphTest) {
 struct ClampTester {
   OperandInfoBlink input;
   struct ClampOptions {
-    absl::optional<float> min_value;
-    absl::optional<float> max_value;
+    std::optional<float> min_value;
+    std::optional<float> max_value;
   };
   ClampOptions options;
   OperandInfoMojo expected_operand;
@@ -331,7 +331,7 @@ TEST_P(MLGraphTestMojo, ClampTest) {
     ClampTester{
         .input = {.data_type = V8MLOperandDataType::Enum::kFloat16,
                   .dimensions = {2, 4}},
-        .options = {0.0, absl::nullopt},
+        .options = {0.0, std::nullopt},
         .expected_operand = {.data_type =
                                  blink_mojom::Operand::DataType::kFloat16,
                              .dimensions = {2, 4}},
@@ -345,7 +345,7 @@ TEST_P(MLGraphTestMojo, ClampTest) {
     ClampTester{
         .input = {.data_type = V8MLOperandDataType::Enum::kInt32,
                   .dimensions = {3, 1, 6}},
-        .options = {absl::nullopt, 6.0},
+        .options = {std::nullopt, 6.0},
         .expected_operand = {.data_type =
                                  blink_mojom::Operand::DataType::kInt32,
                              .dimensions = {3, 1, 6}},
@@ -500,14 +500,14 @@ TEST_P(MLGraphTestMojo, ConcatTest) {
 
 struct Activation {
   MLOperator::OperatorKind kind;
-  absl::optional<ClampTester::ClampOptions> clamp_options;
-  absl::optional<float> hard_sigmoid_alpha;
-  absl::optional<float> hard_sigmoid_beta;
-  absl::optional<float> elu_alpha;
-  absl::optional<float> leaky_relu_alpha;
-  absl::optional<float> linear_alpha;
-  absl::optional<float> linear_beta;
-  absl::optional<float> softplus_steepness;
+  std::optional<ClampTester::ClampOptions> clamp_options;
+  std::optional<float> hard_sigmoid_alpha;
+  std::optional<float> hard_sigmoid_beta;
+  std::optional<float> elu_alpha;
+  std::optional<float> leaky_relu_alpha;
+  std::optional<float> linear_alpha;
+  std::optional<float> linear_beta;
+  std::optional<float> softplus_steepness;
 };
 
 MLActivation* CreateActivation(V8TestingScope& scope,
@@ -669,18 +669,18 @@ struct BatchNormalizationTester {
   OperandInfoBlink mean;
   OperandInfoBlink variance;
   struct BatchNormalizationOptions {
-    absl::optional<OperandInfoBlink> scale;
-    absl::optional<OperandInfoBlink> bias;
-    absl::optional<uint32_t> axis;
-    absl::optional<float> epsilon;
-    absl::optional<Activation> activation;
+    std::optional<OperandInfoBlink> scale;
+    std::optional<OperandInfoBlink> bias;
+    std::optional<uint32_t> axis;
+    std::optional<float> epsilon;
+    std::optional<Activation> activation;
   };
   struct BatchNormalizationAttributes {
-    absl::optional<OperandInfoMojo> scale;
-    absl::optional<OperandInfoMojo> bias;
+    std::optional<OperandInfoMojo> scale;
+    std::optional<OperandInfoMojo> bias;
     uint32_t axis = 1;
     float epsilon = 1e-5;
-    absl::optional<Activation> activation;
+    std::optional<Activation> activation;
   };
   BatchNormalizationOptions options;
   OperandInfoMojo expected_operand;
@@ -797,11 +797,11 @@ TEST_P(MLGraphTestMojo, BatchNormalizationTest) {
         .expected_operand = {.data_type =
                                  blink_mojom::Operand::DataType::kFloat32,
                              .dimensions = {1, 3, 5, 5}},
-        .expected_attributes = {.scale = absl::nullopt,
-                                .bias = absl::nullopt,
+        .expected_attributes = {.scale = std::nullopt,
+                                .bias = std::nullopt,
                                 .axis = 1,
                                 .epsilon = 1e-5,
-                                .activation = absl::nullopt}}
+                                .activation = std::nullopt}}
         .Test(*this, scope, builder);
   }
   {
@@ -817,11 +817,11 @@ TEST_P(MLGraphTestMojo, BatchNormalizationTest) {
         .expected_operand = {.data_type =
                                  blink_mojom::Operand::DataType::kFloat32,
                              .dimensions = {1, 3, 4, 5}},
-        .expected_attributes = {.scale = absl::nullopt,
-                                .bias = absl::nullopt,
+        .expected_attributes = {.scale = std::nullopt,
+                                .bias = std::nullopt,
                                 .axis = 3,
                                 .epsilon = 1e-5,
-                                .activation = absl::nullopt}}
+                                .activation = std::nullopt}}
         .Test(*this, scope, builder);
   }
   {
@@ -837,11 +837,11 @@ TEST_P(MLGraphTestMojo, BatchNormalizationTest) {
         .expected_operand = {.data_type =
                                  blink_mojom::Operand::DataType::kFloat32,
                              .dimensions = {1, 3, 4, 5}},
-        .expected_attributes = {.scale = absl::nullopt,
-                                .bias = absl::nullopt,
+        .expected_attributes = {.scale = std::nullopt,
+                                .bias = std::nullopt,
                                 .axis = 1,
                                 .epsilon = 0.01,
-                                .activation = absl::nullopt}}
+                                .activation = std::nullopt}}
         .Test(*this, scope, builder);
   }
   {
@@ -875,7 +875,7 @@ TEST_P(MLGraphTestMojo, BatchNormalizationTest) {
                      .dimensions = {3}},
              .axis = 1,
              .epsilon = 1e-5,
-             .activation = absl::nullopt}}
+             .activation = std::nullopt}}
         .Test(*this, scope, builder);
   }
   {
@@ -897,8 +897,8 @@ TEST_P(MLGraphTestMojo, BatchNormalizationTest) {
                                  blink_mojom::Operand::DataType::kFloat32,
                              .dimensions = {1, 3, 5, 5}},
         .expected_attributes =
-            {.scale = absl::nullopt,
-             .bias = absl::nullopt,
+            {.scale = std::nullopt,
+             .bias = std::nullopt,
              .axis = 1,
              .epsilon = 1e-5,
              .activation =
@@ -922,8 +922,8 @@ TEST_P(MLGraphTestMojo, BatchNormalizationTest) {
         .expected_operand = {.data_type =
                                  blink_mojom::Operand::DataType::kFloat32,
                              .dimensions = {1, 3, 5, 5}},
-        .expected_attributes = {.scale = absl::nullopt,
-                                .bias = absl::nullopt,
+        .expected_attributes = {.scale = std::nullopt,
+                                .bias = std::nullopt,
                                 .axis = 1,
                                 .epsilon = 1e-5,
                                 .activation =
@@ -947,8 +947,8 @@ TEST_P(MLGraphTestMojo, BatchNormalizationTest) {
         .expected_operand = {.data_type =
                                  blink_mojom::Operand::DataType::kFloat32,
                              .dimensions = {1, 3, 5, 5}},
-        .expected_attributes = {.scale = absl::nullopt,
-                                .bias = absl::nullopt,
+        .expected_attributes = {.scale = std::nullopt,
+                                .bias = std::nullopt,
                                 .axis = 1,
                                 .epsilon = 1e-5,
                                 .activation =
@@ -973,8 +973,8 @@ TEST_P(MLGraphTestMojo, BatchNormalizationTest) {
                                  blink_mojom::Operand::DataType::kFloat32,
                              .dimensions = {1, 3, 5, 5}},
         .expected_attributes =
-            {.scale = absl::nullopt,
-             .bias = absl::nullopt,
+            {.scale = std::nullopt,
+             .bias = std::nullopt,
              .axis = 1,
              .epsilon = 1e-5,
              .activation =
@@ -999,8 +999,8 @@ TEST_P(MLGraphTestMojo, BatchNormalizationTest) {
                                  blink_mojom::Operand::DataType::kFloat32,
                              .dimensions = {1, 3, 5, 5}},
         .expected_attributes =
-            {.scale = absl::nullopt,
-             .bias = absl::nullopt,
+            {.scale = std::nullopt,
+             .bias = std::nullopt,
              .axis = 1,
              .epsilon = 1e-5,
              .activation =
@@ -1024,8 +1024,8 @@ TEST_P(MLGraphTestMojo, BatchNormalizationTest) {
                                  blink_mojom::Operand::DataType::kFloat32,
                              .dimensions = {1, 3, 5, 5}},
         .expected_attributes =
-            {.scale = absl::nullopt,
-             .bias = absl::nullopt,
+            {.scale = std::nullopt,
+             .bias = std::nullopt,
              .axis = 1,
              .epsilon = 1e-5,
              .activation =
@@ -1048,8 +1048,8 @@ TEST_P(MLGraphTestMojo, BatchNormalizationTest) {
                                  blink_mojom::Operand::DataType::kFloat32,
                              .dimensions = {1, 3, 5, 5}},
         .expected_attributes =
-            {.scale = absl::nullopt,
-             .bias = absl::nullopt,
+            {.scale = std::nullopt,
+             .bias = std::nullopt,
              .axis = 1,
              .epsilon = 1e-5,
              .activation = Activation{.kind = MLOperator::OperatorKind::kRelu}}}
@@ -1070,8 +1070,8 @@ TEST_P(MLGraphTestMojo, BatchNormalizationTest) {
                                  blink_mojom::Operand::DataType::kFloat32,
                              .dimensions = {1, 3, 5, 5}},
         .expected_attributes =
-            {.scale = absl::nullopt,
-             .bias = absl::nullopt,
+            {.scale = std::nullopt,
+             .bias = std::nullopt,
              .axis = 1,
              .epsilon = 1e-5,
              .activation =
@@ -1093,8 +1093,8 @@ TEST_P(MLGraphTestMojo, BatchNormalizationTest) {
                                  blink_mojom::Operand::DataType::kFloat32,
                              .dimensions = {1, 3, 5, 5}},
         .expected_attributes =
-            {.scale = absl::nullopt,
-             .bias = absl::nullopt,
+            {.scale = std::nullopt,
+             .bias = std::nullopt,
              .axis = 1,
              .epsilon = 1e-5,
              .activation =
@@ -1116,8 +1116,8 @@ TEST_P(MLGraphTestMojo, BatchNormalizationTest) {
         .expected_operand = {.data_type =
                                  blink_mojom::Operand::DataType::kFloat32,
                              .dimensions = {1, 3, 5, 5}},
-        .expected_attributes = {.scale = absl::nullopt,
-                                .bias = absl::nullopt,
+        .expected_attributes = {.scale = std::nullopt,
+                                .bias = std::nullopt,
                                 .axis = 1,
                                 .epsilon = 1e-5,
                                 .activation =
@@ -1143,8 +1143,8 @@ TEST_P(MLGraphTestMojo, BatchNormalizationTest) {
                                  blink_mojom::Operand::DataType::kFloat32,
                              .dimensions = {1, 3, 5, 5}},
         .expected_attributes =
-            {.scale = absl::nullopt,
-             .bias = absl::nullopt,
+            {.scale = std::nullopt,
+             .bias = std::nullopt,
              .axis = 1,
              .epsilon = 1e-5,
              .activation =
@@ -1166,8 +1166,8 @@ TEST_P(MLGraphTestMojo, BatchNormalizationTest) {
                                  blink_mojom::Operand::DataType::kFloat32,
                              .dimensions = {1, 3, 5, 5}},
         .expected_attributes =
-            {.scale = absl::nullopt,
-             .bias = absl::nullopt,
+            {.scale = std::nullopt,
+             .bias = std::nullopt,
              .axis = 1,
              .epsilon = 1e-5,
              .activation = Activation{.kind = MLOperator::OperatorKind::kTanh}}}
@@ -1179,15 +1179,15 @@ struct Conv2dTester {
   OperandInfoBlink input;
   OperandInfoBlink filter;
   struct Conv2dOptions {
-    absl::optional<Vector<uint32_t>> padding;
-    absl::optional<Vector<uint32_t>> strides;
-    absl::optional<Vector<uint32_t>> dilations;
-    absl::optional<blink::V8MLAutoPad::Enum> auto_pad;
-    absl::optional<uint32_t> groups;
-    absl::optional<blink::V8MLInputOperandLayout::Enum> input_layout;
-    absl::optional<blink::V8MLConv2dFilterOperandLayout::Enum> filter_layout;
-    absl::optional<OperandInfoBlink> bias;
-    absl::optional<Activation> activation;
+    std::optional<Vector<uint32_t>> padding;
+    std::optional<Vector<uint32_t>> strides;
+    std::optional<Vector<uint32_t>> dilations;
+    std::optional<blink::V8MLAutoPad::Enum> auto_pad;
+    std::optional<uint32_t> groups;
+    std::optional<blink::V8MLInputOperandLayout::Enum> input_layout;
+    std::optional<blink::V8MLConv2dFilterOperandLayout::Enum> filter_layout;
+    std::optional<OperandInfoBlink> bias;
+    std::optional<Activation> activation;
   };
   struct Conv2dAttributes {
     Vector<uint32_t> padding = {0, 0, 0, 0};
@@ -1196,8 +1196,8 @@ struct Conv2dTester {
     uint32_t groups = 1;
     blink_mojom::InputOperandLayout input_layout =
         blink_mojom::InputOperandLayout::kChannelsFirst;
-    absl::optional<OperandInfoMojo> bias;
-    absl::optional<Activation> activation;
+    std::optional<OperandInfoMojo> bias;
+    std::optional<Activation> activation;
   };
   Conv2dOptions options;
   OperandInfoMojo expected_operand;
@@ -1963,7 +1963,7 @@ TEST_P(MLGraphTestMojo, ElementWiseBinaryTest) {
 
 struct EluTester {
   OperandInfoBlink input;
-  absl::optional<float> alpha;
+  std::optional<float> alpha;
   OperandInfoMojo expected_operand;
   float expected_alpha;
 
@@ -2182,7 +2182,7 @@ TEST_P(MLGraphTestMojo, ExpandTest) {
 struct GatherTester {
   OperandInfoBlink input;
   OperandInfoBlink indices;
-  absl::optional<uint32_t> axis;
+  std::optional<uint32_t> axis;
   OperandInfoMojo expected_operand;
   blink_mojom::Operand::DataType expected_indices_date_type;
   float expected_axis;
@@ -2323,16 +2323,16 @@ struct GemmTester {
   OperandInfoBlink a;
   OperandInfoBlink b;
   struct GemmOptions {
-    absl::optional<OperandInfoBlink> c;
-    absl::optional<float> alpha;
-    absl::optional<float> beta;
-    absl::optional<bool> a_transpose;
-    absl::optional<bool> b_transpose;
+    std::optional<OperandInfoBlink> c;
+    std::optional<float> alpha;
+    std::optional<float> beta;
+    std::optional<bool> a_transpose;
+    std::optional<bool> b_transpose;
   };
   GemmOptions options;
   OperandInfoMojo expected_operand;
   struct GemmAttributes {
-    absl::optional<OperandInfoMojo> c;
+    std::optional<OperandInfoMojo> c;
     float alpha;
     float beta;
     bool a_transpose;
@@ -2387,7 +2387,7 @@ struct GemmTester {
       EXPECT_EQ(c_operand_iter->value->dimensions,
                 expected_attributes.c->dimensions);
     } else {
-      EXPECT_EQ(gemm_mojo->c_operand_id, absl::nullopt);
+      EXPECT_EQ(gemm_mojo->c_operand_id, std::nullopt);
     }
     EXPECT_EQ(gemm_mojo->alpha, expected_attributes.alpha);
     EXPECT_EQ(gemm_mojo->beta, expected_attributes.beta);
@@ -2427,7 +2427,7 @@ TEST_P(MLGraphTestMojo, GemmTest) {
         .expected_operand = {.data_type =
                                  blink_mojom::Operand::DataType::kFloat32,
                              .dimensions = {2, 4}},
-        .expected_attributes = {.c = absl::nullopt,
+        .expected_attributes = {.c = std::nullopt,
                                 .alpha = 1.0,
                                 .beta = 1.0,
                                 .a_transpose = false,
@@ -2447,7 +2447,7 @@ TEST_P(MLGraphTestMojo, GemmTest) {
         .expected_operand = {.data_type =
                                  blink_mojom::Operand::DataType::kFloat32,
                              .dimensions = {3, 4}},
-        .expected_attributes = {.c = absl::nullopt,
+        .expected_attributes = {.c = std::nullopt,
                                 .alpha = 1.0,
                                 .beta = 1.0,
                                 .a_transpose = true,
@@ -2467,7 +2467,7 @@ TEST_P(MLGraphTestMojo, GemmTest) {
         .expected_operand = {.data_type =
                                  blink_mojom::Operand::DataType::kFloat32,
                              .dimensions = {2, 4}},
-        .expected_attributes = {.c = absl::nullopt,
+        .expected_attributes = {.c = std::nullopt,
                                 .alpha = 1.0,
                                 .beta = 1.0,
                                 .a_transpose = false,
@@ -2536,8 +2536,8 @@ TEST_P(MLGraphTestMojo, GemmTest) {
 
 struct HardSigmoidTester {
   OperandInfoBlink input;
-  absl::optional<float> alpha;
-  absl::optional<float> beta;
+  std::optional<float> alpha;
+  std::optional<float> beta;
   OperandInfoMojo expected_output;
   float expected_alpha;
   float expected_beta;
@@ -2644,14 +2644,14 @@ TEST_P(MLGraphTestMojo, HardSigmoidTest) {
 struct InstanceNormalizationTester {
   OperandInfoBlink input;
   struct InstanceNormalizationOptions {
-    absl::optional<OperandInfoBlink> scale;
-    absl::optional<OperandInfoBlink> bias;
-    absl::optional<float> epsilon;
-    absl::optional<blink::V8MLInputOperandLayout::Enum> layout;
+    std::optional<OperandInfoBlink> scale;
+    std::optional<OperandInfoBlink> bias;
+    std::optional<float> epsilon;
+    std::optional<blink::V8MLInputOperandLayout::Enum> layout;
   };
   struct InstanceNormalizationAttributes {
-    absl::optional<OperandInfoMojo> scale;
-    absl::optional<OperandInfoMojo> bias;
+    std::optional<OperandInfoMojo> scale;
+    std::optional<OperandInfoMojo> bias;
     float epsilon = 1e-5;
     blink_mojom::InputOperandLayout layout =
         blink_mojom::InputOperandLayout::kChannelsFirst;
@@ -2754,8 +2754,8 @@ TEST_P(MLGraphTestMojo, InstanceNormalizationTest) {
                                  blink_mojom::Operand::DataType::kFloat32,
                              .dimensions = {1, 3, 5, 5}},
         .expected_attributes =
-            {.scale = absl::nullopt,
-             .bias = absl::nullopt,
+            {.scale = std::nullopt,
+             .bias = std::nullopt,
              .epsilon = 1e-5,
              .layout = blink_mojom::InputOperandLayout::kChannelsFirst}}
         .Test(*this, scope, builder);
@@ -2770,8 +2770,8 @@ TEST_P(MLGraphTestMojo, InstanceNormalizationTest) {
                                  blink_mojom::Operand::DataType::kFloat32,
                              .dimensions = {1, 3, 4, 5}},
         .expected_attributes =
-            {.scale = absl::nullopt,
-             .bias = absl::nullopt,
+            {.scale = std::nullopt,
+             .bias = std::nullopt,
              .epsilon = 1e-5,
              .layout = blink_mojom::InputOperandLayout::kChannelsLast}}
         .Test(*this, scope, builder);
@@ -2786,8 +2786,8 @@ TEST_P(MLGraphTestMojo, InstanceNormalizationTest) {
                                  blink_mojom::Operand::DataType::kFloat32,
                              .dimensions = {1, 3, 4, 5}},
         .expected_attributes =
-            {.scale = absl::nullopt,
-             .bias = absl::nullopt,
+            {.scale = std::nullopt,
+             .bias = std::nullopt,
              .epsilon = 0.01,
              .layout = blink_mojom::InputOperandLayout::kChannelsFirst}}
         .Test(*this, scope, builder);
@@ -2826,14 +2826,14 @@ TEST_P(MLGraphTestMojo, InstanceNormalizationTest) {
 struct LayerNormalizationTester {
   OperandInfoBlink input;
   struct LayerNormalizationOptions {
-    absl::optional<OperandInfoBlink> scale;
-    absl::optional<OperandInfoBlink> bias;
-    absl::optional<Vector<uint32_t>> axes;
-    absl::optional<float> epsilon;
+    std::optional<OperandInfoBlink> scale;
+    std::optional<OperandInfoBlink> bias;
+    std::optional<Vector<uint32_t>> axes;
+    std::optional<float> epsilon;
   };
   struct LayerNormalizationAttributes {
-    absl::optional<OperandInfoMojo> scale;
-    absl::optional<OperandInfoMojo> bias;
+    std::optional<OperandInfoMojo> scale;
+    std::optional<OperandInfoMojo> bias;
     Vector<uint32_t> axes;
     float epsilon = 1e-5;
   };
@@ -3042,7 +3042,7 @@ TEST_P(MLGraphTestMojo, LayerNormalizationTest) {
 
 struct LeakyReluTester {
   OperandInfoBlink input;
-  absl::optional<float> alpha;
+  std::optional<float> alpha;
   OperandInfoMojo expected_operand;
   float expected_alpha;
 
@@ -3178,8 +3178,8 @@ TEST_P(MLGraphTestMojo, LeakyReluTest) {
 struct LinearTester {
   OperandInfoBlink input;
   struct LinearOptions {
-    absl::optional<float> alpha;
-    absl::optional<float> beta;
+    std::optional<float> alpha;
+    std::optional<float> beta;
   };
   LinearOptions options;
   OperandInfoMojo expected_operand;
@@ -3421,8 +3421,8 @@ struct PadTester {
   Vector<uint32_t> beginning_padding;
   Vector<uint32_t> ending_padding;
   struct PadOptions {
-    absl::optional<V8MLPaddingMode::Enum> mode;
-    absl::optional<float> value;
+    std::optional<V8MLPaddingMode::Enum> mode;
+    std::optional<float> value;
   };
   PadOptions options;
 
@@ -3569,14 +3569,14 @@ TEST_P(MLGraphTestMojo, PadTest) {
 struct Pool2dTester {
   OperandInfoBlink input;
   struct Pool2dOptions {
-    absl::optional<Vector<uint32_t>> window_dimensions;
-    absl::optional<Vector<uint32_t>> padding;
-    absl::optional<Vector<uint32_t>> strides;
-    absl::optional<Vector<uint32_t>> dilations;
-    absl::optional<blink::V8MLAutoPad::Enum> auto_pad;
-    absl::optional<blink::V8MLInputOperandLayout::Enum> layout;
-    absl::optional<blink::V8MLRoundingType::Enum> rounding_type;
-    absl::optional<Vector<uint32_t>> output_sizes;
+    std::optional<Vector<uint32_t>> window_dimensions;
+    std::optional<Vector<uint32_t>> padding;
+    std::optional<Vector<uint32_t>> strides;
+    std::optional<Vector<uint32_t>> dilations;
+    std::optional<blink::V8MLAutoPad::Enum> auto_pad;
+    std::optional<blink::V8MLInputOperandLayout::Enum> layout;
+    std::optional<blink::V8MLRoundingType::Enum> rounding_type;
+    std::optional<Vector<uint32_t>> output_sizes;
   };
   struct Pool2dAttributes {
     Vector<uint32_t> window_dimensions;
@@ -4062,10 +4062,10 @@ TEST_P(MLGraphTestMojo, ReluTest) {
 struct Resample2dTester {
   OperandInfoBlink input;
   struct Resample2dOptions {
-    absl::optional<blink::V8MLInterpolationMode::Enum> mode;
-    absl::optional<Vector<float>> scales;
-    absl::optional<Vector<uint32_t>> sizes;
-    absl::optional<Vector<uint32_t>> axes;
+    std::optional<blink::V8MLInterpolationMode::Enum> mode;
+    std::optional<Vector<float>> scales;
+    std::optional<Vector<uint32_t>> sizes;
+    std::optional<Vector<uint32_t>> axes;
   };
   Resample2dOptions options;
   OperandInfoMojo expected_operand;
@@ -4633,7 +4633,7 @@ TEST_P(MLGraphTestMojo, SoftmaxTest) {
 
 struct SoftplusTester {
   OperandInfoBlink input;
-  absl::optional<float> steepness;
+  std::optional<float> steepness;
   OperandInfoMojo expected_output;
   float expected_steepness;
 
@@ -4816,7 +4816,7 @@ TEST_P(MLGraphTestMojo, SoftsignTest) {
 
 struct TransposeTester {
   OperandInfoBlink input;
-  absl::optional<Vector<uint32_t>> permutation;
+  std::optional<Vector<uint32_t>> permutation;
   OperandInfoMojo expected_operand;
   Vector<uint32_t> expected_permutation;
 
@@ -5072,8 +5072,8 @@ TEST_P(MLGraphTestMojo, WhereTest) {
 
 struct ReduceTester {
   OperandInfoBlink input;
-  absl::optional<Vector<uint32_t>> axes;
-  absl::optional<bool> keep_dimensions;
+  std::optional<Vector<uint32_t>> axes;
+  std::optional<bool> keep_dimensions;
   OperandInfoMojo expected_operand;
   Vector<uint32_t> expected_axes;
   bool expected_keep_dimensions;
@@ -5362,7 +5362,7 @@ TEST_P(MLGraphTestMojo, ConstantTest) {
 struct SplitTester {
   OperandInfoBlink input;
   absl::variant<uint32_t, Vector<uint32_t>> splits;
-  absl::optional<uint32_t> axis;
+  std::optional<uint32_t> axis;
   Vector<OperandInfoMojo> expected;
 
   void Test(MLGraphTestMojo& helper,
@@ -5729,9 +5729,9 @@ TEST_P(MLGraphTestMojo, CastTester) {
 
 struct ArgMinMaxTester {
   OperandInfoBlink input;
-  absl::optional<Vector<uint32_t>> axes;
-  absl::optional<bool> keep_dimensions;
-  absl::optional<bool> select_last_index;
+  std::optional<Vector<uint32_t>> axes;
+  std::optional<bool> keep_dimensions;
+  std::optional<bool> select_last_index;
   OperandInfoMojo expected_input;
   OperandInfoMojo expected_output;
   Vector<uint32_t> expected_axes;

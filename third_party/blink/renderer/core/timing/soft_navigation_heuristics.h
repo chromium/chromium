@@ -123,9 +123,9 @@ class CORE_EXPORT SoftNavigationHeuristics
   void CheckSoftNavigationConditions(const PerInteractionData& data);
   void SetIsTrackingSoftNavigationHeuristicsOnDocument(bool value) const;
 
-  absl::optional<scheduler::TaskAttributionId>
+  std::optional<scheduler::TaskAttributionId>
   GetUserInteractionAncestorTaskIfAny();
-  absl::optional<scheduler::TaskAttributionId> SetFlagIfDescendantAndCheck(
+  std::optional<scheduler::TaskAttributionId> SetFlagIfDescendantAndCheck(
       FlagType);
   void ResetHeuristic();
   void ResetPaintsIfNeeded();
@@ -138,14 +138,14 @@ class CORE_EXPORT SoftNavigationHeuristics
   HeapHashSet<WeakMember<const scheduler::TaskAttributionInfo>>
       potential_soft_navigation_tasks_;
   WTF::HashMap<scheduler::TaskAttributionIdType,
-               absl::optional<scheduler::TaskAttributionId>>
+               std::optional<scheduler::TaskAttributionId>>
       soft_navigation_descendant_cache_;
   bool did_reset_paints_ = false;
   bool did_commit_previous_paints_ = false;
   HeapHashMap<scheduler::TaskAttributionIdType, Member<PerInteractionData>>
       interaction_task_id_to_interaction_data_;
   base::TimeTicks pending_interaction_timestamp_;
-  absl::optional<scheduler::TaskAttributionId>
+  std::optional<scheduler::TaskAttributionId>
       last_soft_navigation_ancestor_task_;
   Member<const PerInteractionData> soft_navigation_interaction_data_;
   WTF::HashMap<scheduler::TaskAttributionIdType,

@@ -156,7 +156,7 @@ void ReportViolation(
         ContentSecurityPolicyViolationType::kURLViolation,
     const String& sample = String(),
     const String& sample_prefix = String(),
-    absl::optional<base::UnguessableToken> issue_id = absl::nullopt) {
+    std::optional<base::UnguessableToken> issue_id = std::nullopt) {
   String message = CSPDirectiveListIsReportOnly(csp)
                        ? "[Report Only] " + console_message
                        : console_message;
@@ -635,7 +635,7 @@ bool CSPDirectiveListAllowTrustedTypeAssignmentFailure(
     const String& message,
     const String& sample,
     const String& sample_prefix,
-    absl::optional<base::UnguessableToken> issue_id) {
+    std::optional<base::UnguessableToken> issue_id) {
   if (!CSPDirectiveListRequiresTrustedTypes(csp))
     return true;
 
@@ -891,7 +891,7 @@ bool CSPDirectiveListAllowTrustedTypePolicy(
     const String& policy_name,
     bool is_duplicate,
     ContentSecurityPolicy::AllowTrustedTypePolicyDetails& violation_details,
-    absl::optional<base::UnguessableToken> issue_id) {
+    std::optional<base::UnguessableToken> issue_id) {
   if (!csp.trusted_types ||
       CSPTrustedTypesAllows(*csp.trusted_types, policy_name, is_duplicate,
                             violation_details)) {

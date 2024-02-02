@@ -5,10 +5,11 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_WEB_MODULES_MEDIASTREAM_ENCODED_VIDEO_FRAME_H_
 #define THIRD_PARTY_BLINK_PUBLIC_WEB_MODULES_MEDIASTREAM_ENCODED_VIDEO_FRAME_H_
 
+#include <optional>
+
 #include "base/containers/span.h"
 #include "media/base/video_codecs.h"
 #include "media/base/video_color_space.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/platform/wtf/thread_safe_ref_counted.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -29,7 +30,7 @@ class EncodedVideoFrame : public WTF::ThreadSafeRefCounted<EncodedVideoFrame> {
   virtual bool IsKeyFrame() const = 0;
 
   // Returns color space stored in the encoded frame.
-  virtual absl::optional<gfx::ColorSpace> ColorSpace() const = 0;
+  virtual std::optional<gfx::ColorSpace> ColorSpace() const = 0;
 
   // Returns resolution of encoded frame, or 0x0 if not set.
   virtual gfx::Size Resolution() const = 0;

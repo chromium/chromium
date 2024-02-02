@@ -616,7 +616,7 @@ void BodyStreamBuffer::ProcessData(ExceptionState& exception_state) {
           if (underlying_byte_source_) {
             auto* byte_controller =
                 To<ReadableByteStreamController>(stream_->GetController());
-            absl::optional<double> desired_size =
+            std::optional<double> desired_size =
                 ReadableByteStreamController::GetDesiredSize(byte_controller);
             DCHECK(desired_size.has_value());
             stream_needs_more_ = desired_size.value() > 0;

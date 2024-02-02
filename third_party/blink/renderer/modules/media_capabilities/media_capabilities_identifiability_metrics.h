@@ -5,7 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIA_CAPABILITIES_MEDIA_CAPABILITIES_IDENTIFIABILITY_METRICS_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIA_CAPABILITIES_MEDIA_CAPABILITIES_IDENTIFIABILITY_METRICS_H_
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include <optional>
+
 #include "third_party/blink/public/common/privacy_budget/identifiable_token.h"
 
 namespace blink {
@@ -28,17 +29,17 @@ void ReportDecodingInfoResult(ExecutionContext*,
 
 // Reports that a call to decodingInfo() occurred that had an input with a
 // digest of |input_token.value()|, resulted in |output| and was performed on
-// the |context|. However, |input_token| should be absl::nullopt if the study
+// the |context|. However, |input_token| should be std::nullopt if the study
 // is not active. These calls should be used when the input object may have
 // been destroyed by the time the output is determined. See
 // ComputeDecodingInfoInputToken below.
 void ReportDecodingInfoResult(ExecutionContext*,
-                              absl::optional<IdentifiableToken>,
+                              std::optional<IdentifiableToken>,
                               const MediaCapabilitiesDecodingInfo*);
 
 // Returns a digest of the |input| for use in ReportDecodingInfoResult()
-// above. Returns absl::nullopt if the identifiability study is not active.
-absl::optional<IdentifiableToken> ComputeDecodingInfoInputToken(
+// above. Returns std::nullopt if the identifiability study is not active.
+std::optional<IdentifiableToken> ComputeDecodingInfoInputToken(
     const MediaDecodingConfiguration*);
 
 }  // namespace media_capabilities_identifiability_metrics

@@ -2167,7 +2167,7 @@ ImageData* BaseRenderingContext2D::createImageData(
   ImageData::ValidateAndCreateParams params;
   params.context_2d_error_mode = true;
   return ImageData::ValidateAndCreate(
-      image_data->Size().width(), image_data->Size().height(), absl::nullopt,
+      image_data->Size().width(), image_data->Size().height(), std::nullopt,
       image_data->getSettings(), params, exception_state);
 }
 
@@ -2178,7 +2178,7 @@ ImageData* BaseRenderingContext2D::createImageData(
   ImageData::ValidateAndCreateParams params;
   params.context_2d_error_mode = true;
   params.default_color_space = GetDefaultImageDataColorSpace();
-  return ImageData::ValidateAndCreate(std::abs(sw), std::abs(sh), absl::nullopt,
+  return ImageData::ValidateAndCreate(std::abs(sw), std::abs(sh), std::nullopt,
                                       /*settings=*/nullptr, params,
                                       exception_state);
 }
@@ -2191,7 +2191,7 @@ ImageData* BaseRenderingContext2D::createImageData(
   ImageData::ValidateAndCreateParams params;
   params.context_2d_error_mode = true;
   params.default_color_space = GetDefaultImageDataColorSpace();
-  return ImageData::ValidateAndCreate(std::abs(sw), std::abs(sh), absl::nullopt,
+  return ImageData::ValidateAndCreate(std::abs(sw), std::abs(sh), std::nullopt,
                                       image_data_settings, params,
                                       exception_state);
 }
@@ -2280,7 +2280,7 @@ ImageData* BaseRenderingContext2D::getImageDataInternal(
 
   if (UNLIKELY(isContextLost() || !CanCreateCanvas2dResourceProvider())) {
     return ImageData::ValidateAndCreate(
-        sw, sh, absl::nullopt, image_data_settings, validate_and_create_params,
+        sw, sh, std::nullopt, image_data_settings, validate_and_create_params,
         exception_state);
   }
 
@@ -2365,7 +2365,7 @@ ImageData* BaseRenderingContext2D::getImageDataInternal(
   }
 
   ImageData* image_data =
-      ImageData::ValidateAndCreate(sw, sh, absl::nullopt, image_data_settings,
+      ImageData::ValidateAndCreate(sw, sh, std::nullopt, image_data_settings,
                                    validate_and_create_params, exception_state);
   if (!image_data)
     return nullptr;
@@ -3111,7 +3111,7 @@ void BaseRenderingContext2D::setTextRendering(
     setFont(font());
   }
 
-  absl::optional<blink::V8CanvasTextRendering> text_value =
+  std::optional<blink::V8CanvasTextRendering> text_value =
       V8CanvasTextRendering::Create(text_rendering_string);
 
   if (!text_value.has_value()) {
@@ -3161,7 +3161,7 @@ void BaseRenderingContext2D::setFontStretch(const String& font_stretch) {
     setFont(font());
   }
 
-  absl::optional<blink::V8CanvasFontStretch> font_value =
+  std::optional<blink::V8CanvasFontStretch> font_value =
       V8CanvasFontStretch::Create(font_stretch);
 
   if (!font_value.has_value()) {

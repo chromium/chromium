@@ -5,7 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_LINE_RELATIVE_RECT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_LINE_RELATIVE_RECT_H_
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include <optional>
+
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/geometry/logical_size.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
@@ -127,7 +128,7 @@ struct CORE_EXPORT LineRelativeRect {
   // rotation matrix (see ComputeRelativeToPhysicalTransform).
   static LineRelativeRect Create(
       const PhysicalRect& rect,
-      const absl::optional<AffineTransform>& rotation) {
+      const std::optional<AffineTransform>& rotation) {
     if (!rotation || rotation == AffineTransform()) {
       return {{rect.offset.left, rect.offset.top},
               {rect.size.width, rect.size.height}};

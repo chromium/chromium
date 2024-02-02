@@ -132,7 +132,7 @@ class EncoderAdapter : public webrtc::VideoEncoderFactory {
 
   webrtc::VideoEncoderFactory::CodecSupport QueryCodecSupport(
       const webrtc::SdpVideoFormat& format,
-      absl::optional<std::string> scalability_mode) const override {
+      std::optional<std::string> scalability_mode) const override {
     webrtc::VideoEncoderFactory::CodecSupport codec_support =
         hardware_encoder_factory_
             ? hardware_encoder_factory_->QueryCodecSupport(format,

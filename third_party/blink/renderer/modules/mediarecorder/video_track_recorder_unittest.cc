@@ -170,7 +170,7 @@ class MockVideoTrackRecorderCallbackInterface
       (const media::Muxer::VideoParameters& params,
        std::string encoded_data,
        std::string encoded_alpha,
-       absl::optional<media::VideoEncoder::CodecDescription> codec_description,
+       std::optional<media::VideoEncoder::CodecDescription> codec_description,
        base::TimeTicks timestamp,
        bool is_key_frame),
       (override));

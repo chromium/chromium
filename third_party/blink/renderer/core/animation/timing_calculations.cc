@@ -94,7 +94,7 @@ AnimationTimeDelta TimingCalculations::MultiplyZeroAlwaysGivesZero(
 // https://w3.org/TR/web-animations-1/#animation-effect-phases-and-states
 Timing::Phase TimingCalculations::CalculatePhase(
     const Timing::NormalizedTiming& normalized,
-    absl::optional<AnimationTimeDelta>& local_time,
+    std::optional<AnimationTimeDelta>& local_time,
     Timing::AnimationDirection direction) {
   DCHECK(GreaterThanOrEqualToWithinTimeTolerance(normalized.active_duration,
                                                  AnimationTimeDelta()));
@@ -147,10 +147,10 @@ Timing::Phase TimingCalculations::CalculatePhase(
 }
 
 // https://w3.org/TR/web-animations-1/#calculating-the-active-time
-absl::optional<AnimationTimeDelta> TimingCalculations::CalculateActiveTime(
+std::optional<AnimationTimeDelta> TimingCalculations::CalculateActiveTime(
     const Timing::NormalizedTiming& normalized,
     Timing::FillMode fill_mode,
-    absl::optional<AnimationTimeDelta> local_time,
+    std::optional<AnimationTimeDelta> local_time,
     Timing::Phase phase) {
   DCHECK(GreaterThanOrEqualToWithinTimeTolerance(normalized.active_duration,
                                                  AnimationTimeDelta()));
@@ -162,7 +162,7 @@ absl::optional<AnimationTimeDelta> TimingCalculations::CalculateActiveTime(
         return std::max(local_time.value() - normalized.start_delay,
                         AnimationTimeDelta());
       }
-      return absl::nullopt;
+      return std::nullopt;
     case Timing::kPhaseActive:
       DCHECK(local_time.has_value());
       return local_time.value() - normalized.start_delay;
@@ -174,28 +174,28 @@ absl::optional<AnimationTimeDelta> TimingCalculations::CalculateActiveTime(
                         std::min(normalized.active_duration,
                                  local_time.value() - normalized.start_delay));
       }
-      return absl::nullopt;
+      return std::nullopt;
     case Timing::kPhaseNone:
       DCHECK(!local_time.has_value());
-      return absl::nullopt;
+      return std::nullopt;
     default:
       NOTREACHED();
-      return absl::nullopt;
+      return std::nullopt;
   }
 }
 
 // Calculates the overall progress, which describes the number of iterations
 // that have completed (including partial iterations).
 // https://w3.org/TR/web-animations-1/#calculating-the-overall-progress
-absl::optional<double> TimingCalculations::CalculateOverallProgress(
+std::optional<double> TimingCalculations::CalculateOverallProgress(
     Timing::Phase phase,
-    absl::optional<AnimationTimeDelta> active_time,
+    std::optional<AnimationTimeDelta> active_time,
     AnimationTimeDelta iteration_duration,
     double iteration_count,
     double iteration_start) {
   // 1. If the active time is unresolved, return unresolved.
   if (!active_time) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // 2. Calculate an initial value for overall progress.
@@ -217,16 +217,16 @@ absl::optional<double> TimingCalculations::CalculateOverallProgress(
 // introduced by the playback direction or timing functions applied to the
 // effect.
 // https://w3.org/TR/web-animations-1/#calculating-the-simple-iteration-progress
-absl::optional<double> TimingCalculations::CalculateSimpleIterationProgress(
+std::optional<double> TimingCalculations::CalculateSimpleIterationProgress(
     Timing::Phase phase,
-    absl::optional<double> overall_progress,
+    std::optional<double> overall_progress,
     double iteration_start,
-    absl::optional<AnimationTimeDelta> active_time,
+    std::optional<AnimationTimeDelta> active_time,
     AnimationTimeDelta active_duration,
     double iteration_count) {
   // 1. If the overall progress is unresolved, return unresolved.
   if (!overall_progress) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // 2. If overall progress is infinity, let the simple iteration progress be
@@ -258,15 +258,15 @@ absl::optional<double> TimingCalculations::CalculateSimpleIterationProgress(
 }
 
 // https://w3.org/TR/web-animations-1/#calculating-the-current-iteration
-absl::optional<double> TimingCalculations::CalculateCurrentIteration(
+std::optional<double> TimingCalculations::CalculateCurrentIteration(
     Timing::Phase phase,
-    absl::optional<AnimationTimeDelta> active_time,
+    std::optional<AnimationTimeDelta> active_time,
     double iteration_count,
-    absl::optional<double> overall_progress,
-    absl::optional<double> simple_iteration_progress) {
+    std::optional<double> overall_progress,
+    std::optional<double> simple_iteration_progress) {
   // 1. If the active time is unresolved, return unresolved.
   if (!active_time) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // 2. If the animation effect is in the after phase and the iteration count
@@ -276,7 +276,7 @@ absl::optional<double> TimingCalculations::CalculateCurrentIteration(
   }
 
   if (!overall_progress) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // simple iteration progress can only be null if overall progress is null.
@@ -295,7 +295,7 @@ absl::optional<double> TimingCalculations::CalculateCurrentIteration(
 
 // https://w3.org/TR/web-animations-1/#calculating-the-directed-progress
 bool TimingCalculations::IsCurrentDirectionForwards(
-    absl::optional<double> current_iteration,
+    std::optional<double> current_iteration,
     Timing::PlaybackDirection direction) {
   const bool current_iteration_is_even =
       !current_iteration ? false
@@ -320,13 +320,13 @@ bool TimingCalculations::IsCurrentDirectionForwards(
 }
 
 // https://w3.org/TR/web-animations-1/#calculating-the-directed-progress
-absl::optional<double> TimingCalculations::CalculateDirectedProgress(
-    absl::optional<double> simple_iteration_progress,
-    absl::optional<double> current_iteration,
+std::optional<double> TimingCalculations::CalculateDirectedProgress(
+    std::optional<double> simple_iteration_progress,
+    std::optional<double> current_iteration,
     Timing::PlaybackDirection direction) {
   // 1. If the simple progress is unresolved, return unresolved.
   if (!simple_iteration_progress) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // 2. Calculate the current direction.
@@ -340,13 +340,13 @@ absl::optional<double> TimingCalculations::CalculateDirectedProgress(
 }
 
 // https://w3.org/TR/web-animations-1/#calculating-the-transformed-progress
-absl::optional<double> TimingCalculations::CalculateTransformedProgress(
+std::optional<double> TimingCalculations::CalculateTransformedProgress(
     Timing::Phase phase,
-    absl::optional<double> directed_progress,
+    std::optional<double> directed_progress,
     bool is_current_direction_forward,
     scoped_refptr<TimingFunction> timing_function) {
   if (!directed_progress) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // Set the before flag to indicate if at the leading edge of an iteration.
@@ -379,10 +379,9 @@ absl::optional<double> TimingCalculations::CalculateTransformedProgress(
 // product of the iteration start and iteration duration). This is not part of
 // the Web Animations spec; it is used for calculating the time until the next
 // iteration to optimize scheduling.
-absl::optional<AnimationTimeDelta>
-TimingCalculations::CalculateOffsetActiveTime(
+std::optional<AnimationTimeDelta> TimingCalculations::CalculateOffsetActiveTime(
     AnimationTimeDelta active_duration,
-    absl::optional<AnimationTimeDelta> active_time,
+    std::optional<AnimationTimeDelta> active_time,
     AnimationTimeDelta start_offset) {
   DCHECK(GreaterThanOrEqualToWithinTimeTolerance(active_duration,
                                                  AnimationTimeDelta()));
@@ -390,7 +389,7 @@ TimingCalculations::CalculateOffsetActiveTime(
                                                  AnimationTimeDelta()));
 
   if (!active_time) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   DCHECK(GreaterThanOrEqualToWithinTimeTolerance(active_time.value(),
@@ -411,10 +410,10 @@ TimingCalculations::CalculateOffsetActiveTime(
 // the time until the next iteration to optimize scheduling.
 //
 // [0] https://w3.org/TR/web-animations-1/#iteration-time-space
-absl::optional<AnimationTimeDelta> TimingCalculations::CalculateIterationTime(
+std::optional<AnimationTimeDelta> TimingCalculations::CalculateIterationTime(
     AnimationTimeDelta iteration_duration,
     AnimationTimeDelta active_duration,
-    absl::optional<AnimationTimeDelta> offset_active_time,
+    std::optional<AnimationTimeDelta> offset_active_time,
     AnimationTimeDelta start_offset,
     Timing::Phase phase,
     const Timing& specified) {
@@ -425,7 +424,7 @@ absl::optional<AnimationTimeDelta> TimingCalculations::CalculateIterationTime(
                                                    specified.iteration_count)));
 
   if (!offset_active_time) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   DCHECK(GreaterThanWithinTimeTolerance(offset_active_time.value(),
@@ -439,7 +438,7 @@ absl::optional<AnimationTimeDelta> TimingCalculations::CalculateIterationTime(
        specified.iteration_count &&
        EndsOnIterationBoundary(specified.iteration_count,
                                specified.iteration_start))) {
-    return absl::make_optional(iteration_duration);
+    return std::make_optional(iteration_duration);
   }
 
   DCHECK(!offset_active_time->is_max());
@@ -450,7 +449,7 @@ absl::optional<AnimationTimeDelta> TimingCalculations::CalculateIterationTime(
   // https://w3.org/TR/web-animations-1/#calculating-the-simple-iteration-progress
   if (iteration_time.is_zero() && phase == Timing::kPhaseAfter &&
       !active_duration.is_zero() && !offset_active_time.value().is_zero()) {
-    return absl::make_optional(iteration_duration);
+    return std::make_optional(iteration_duration);
   }
 
   return iteration_time;

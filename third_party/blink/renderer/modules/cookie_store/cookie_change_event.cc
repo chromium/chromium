@@ -109,7 +109,7 @@ CookieListItem* CookieChangeEvent::ToCookieListItem(
   if (!is_deleted) {
     list_item->setValue(String::FromUTF8(canonical_cookie.Value()));
     if (canonical_cookie.ExpiryDate().is_null()) {
-      list_item->setExpires(absl::nullopt);
+      list_item->setExpires(std::nullopt);
     } else {
       list_item->setExpires(
           ConvertTimeToDOMHighResTimeStamp(canonical_cookie.ExpiryDate()));

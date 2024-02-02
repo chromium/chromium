@@ -86,8 +86,8 @@ class WebrtcDecodingInfoHandlerTests : public ::testing::Test {
   void SetUp() override {}
 
   void VerifyDecodingInfo(
-      const absl::optional<webrtc::SdpAudioFormat> sdp_audio_format,
-      const absl::optional<webrtc::SdpVideoFormat> sdp_video_format,
+      const std::optional<webrtc::SdpAudioFormat> sdp_audio_format,
+      const std::optional<webrtc::SdpVideoFormat> sdp_video_format,
       const bool video_spatial_scalability,
       const CodecSupport support) {
     if (sdp_video_format) {
@@ -130,14 +130,14 @@ class WebrtcDecodingInfoHandlerTests : public ::testing::Test {
 
 TEST_F(WebrtcDecodingInfoHandlerTests, BasicAudio) {
   VerifyDecodingInfo(
-      kAudioFormatOpus, /*sdp_video_format=*/absl::nullopt,
+      kAudioFormatOpus, /*sdp_video_format=*/std::nullopt,
       /*video_spatial_scalability=*/false,
       CodecSupport{/*is_supported=*/true, /*is_power_efficient=*/true});
 }
 
 TEST_F(WebrtcDecodingInfoHandlerTests, UnsupportedAudio) {
   VerifyDecodingInfo(
-      kAudioFormatFoo, /*sdp_video_format=*/absl::nullopt,
+      kAudioFormatFoo, /*sdp_video_format=*/std::nullopt,
       /*video_spatial_scalability=*/false,
       CodecSupport{/*is_supported=*/false, /*is_power_efficient=*/false});
 }
@@ -148,28 +148,28 @@ TEST_F(WebrtcDecodingInfoHandlerTests, UnsupportedAudio) {
 // callback.
 TEST_F(WebrtcDecodingInfoHandlerTests, BasicVideo) {
   VerifyDecodingInfo(
-      /*sdp _audio_format=*/absl::nullopt, kVideoFormatVp9,
+      /*sdp _audio_format=*/std::nullopt, kVideoFormatVp9,
       /*video_spatial_scalability=*/false,
       CodecSupport{/*is_supported=*/true, /*is_power_efficient=*/false});
 }
 
 TEST_F(WebrtcDecodingInfoHandlerTests, BasicVideoPowerEfficient) {
   VerifyDecodingInfo(
-      /*sdp _audio_format=*/absl::nullopt, kVideoFormatVp9,
+      /*sdp _audio_format=*/std::nullopt, kVideoFormatVp9,
       /*video_spatial_scalability=*/false,
       CodecSupport{/*is_supported=*/true, /*is_power_efficient=*/true});
 }
 
 TEST_F(WebrtcDecodingInfoHandlerTests, UnsupportedVideo) {
   VerifyDecodingInfo(
-      /*sdp _audio_format=*/absl::nullopt, kVideoFormatFoo,
+      /*sdp _audio_format=*/std::nullopt, kVideoFormatFoo,
       /*video_spatial_scalability=*/false,
       CodecSupport{/*is_supported=*/true, /*is_power_efficient=*/false});
 }
 
 TEST_F(WebrtcDecodingInfoHandlerTests, VideoWithReferenceScaling) {
   VerifyDecodingInfo(
-      /*sdp _audio_format=*/absl::nullopt, kVideoFormatVp9,
+      /*sdp _audio_format=*/std::nullopt, kVideoFormatVp9,
       /*video_spatial_scalability=*/true,
       CodecSupport{/*is_supported=*/true, /*is_power_efficient=*/false});
 }

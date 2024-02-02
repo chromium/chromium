@@ -23,9 +23,9 @@ CSSAnimationData::CSSAnimationData() : CSSTimingData(InitialDuration()) {
 
 CSSAnimationData::CSSAnimationData(const CSSAnimationData& other) = default;
 
-absl::optional<double> CSSAnimationData::InitialDuration() {
+std::optional<double> CSSAnimationData::InitialDuration() {
   if (RuntimeEnabledFeatures::ScrollTimelineEnabled()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return 0;
 }

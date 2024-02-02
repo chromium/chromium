@@ -122,7 +122,7 @@ TEST_F(ImageBitmapTest, ImageResourceConsistency) {
           UnacceleratedStaticBitmapImage::Create(image).get());
   image_element->SetImageForTest(original_image_content);
 
-  absl::optional<gfx::Rect> crop_rect =
+  std::optional<gfx::Rect> crop_rect =
       gfx::Rect(0, 0, image_element->width(), image_element->height());
   auto* image_bitmap_no_crop = MakeGarbageCollected<ImageBitmap>(
       image_element, crop_rect, default_options);
@@ -192,7 +192,7 @@ TEST_F(ImageBitmapTest, ImageBitmapSourceChanged) {
   image->SetImageForTest(original_image_content);
 
   const ImageBitmapOptions* default_options = ImageBitmapOptions::Create();
-  absl::optional<gfx::Rect> crop_rect =
+  std::optional<gfx::Rect> crop_rect =
       gfx::Rect(0, 0, image->width(), image->height());
   auto* image_bitmap =
       MakeGarbageCollected<ImageBitmap>(image, crop_rect, default_options);

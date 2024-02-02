@@ -653,7 +653,7 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   const LayoutResult* GetCachedLayoutResult(const BlockBreakToken*) const;
   const LayoutResult* GetCachedMeasureResult(
       const ConstraintSpace&,
-      absl::optional<FragmentGeometry>* fragment_geometry) const;
+      std::optional<FragmentGeometry>* fragment_geometry) const;
 
   // Call in situations where we know that there's at most one fragment. A
   // DCHECK will fail if there are multiple fragments.
@@ -678,7 +678,7 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
       const BlockBreakToken*,
       const EarlyBreak*,
       const ColumnSpannerPath*,
-      absl::optional<FragmentGeometry>* initial_fragment_geometry,
+      std::optional<FragmentGeometry>* initial_fragment_geometry,
       LayoutCacheStatus* out_cache_status);
 
   using LayoutResultList = HeapVector<Member<const LayoutResult>, 1>;
@@ -1157,13 +1157,13 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
 
   // Returns the cached intrinsic logical widths if the initial block-size
   // matches.
-  absl::optional<MinMaxSizesResult> CachedIntrinsicLogicalWidths(
+  std::optional<MinMaxSizesResult> CachedIntrinsicLogicalWidths(
       LayoutUnit initial_block_size) const {
     NOT_DESTROYED();
     DCHECK(!IntrinsicLogicalWidthsDirty());
     if (initial_block_size == kIndefiniteSize) {
       if (IndefiniteIntrinsicLogicalWidthsDirty()) {
-        return absl::nullopt;
+        return std::nullopt;
       }
       return MinMaxSizesResult(
           intrinsic_logical_widths_,
@@ -1171,11 +1171,11 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
     }
     if (min_max_sizes_cache_) {
       if (DefiniteIntrinsicLogicalWidthsDirty()) {
-        return absl::nullopt;
+        return std::nullopt;
       }
       return min_max_sizes_cache_->Find(initial_block_size);
     }
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // Sets the min/max sizes for this box.
@@ -1265,7 +1265,7 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   const LayoutObject* AcceptableImplicitAnchor() const;
 
   // Returns position fallback results for anchor positioned element.
-  absl::optional<wtf_size_t> PositionFallbackIndex() const;
+  std::optional<wtf_size_t> PositionFallbackIndex() const;
   const Vector<NonOverflowingScrollRange>*
   PositionFallbackNonOverflowingRanges() const;
 

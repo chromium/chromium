@@ -32,7 +32,7 @@ class RealtimeAudioDestinationHandler final
       AudioNode&,
       const WebAudioSinkDescriptor&,
       const WebAudioLatencyHint&,
-      absl::optional<float> sample_rate);
+      std::optional<float> sample_rate);
   ~RealtimeAudioDestinationHandler() override;
 
   // For AudioHandler.
@@ -82,11 +82,10 @@ class RealtimeAudioDestinationHandler final
                          media::OutputDeviceStatusCB callback);
 
  private:
-  explicit RealtimeAudioDestinationHandler(
-      AudioNode&,
-      const WebAudioSinkDescriptor&,
-      const WebAudioLatencyHint&,
-      absl::optional<float> sample_rate);
+  explicit RealtimeAudioDestinationHandler(AudioNode&,
+                                           const WebAudioSinkDescriptor&,
+                                           const WebAudioLatencyHint&,
+                                           std::optional<float> sample_rate);
 
   void CreatePlatformDestination();
   void StartPlatformDestination();
@@ -117,7 +116,7 @@ class RealtimeAudioDestinationHandler final
 
   // Stores the user-provided (AudioContextOptions) sample rate. When `nullopt`
   // it is updated with the sample rate of the first platform destination.
-  absl::optional<float> sample_rate_;
+  std::optional<float> sample_rate_;
 
   // If true, the audio graph will be pulled to get new data.  Otherwise, the
   // graph is not pulled, even if the audio thread is still running and

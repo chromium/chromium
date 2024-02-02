@@ -495,7 +495,7 @@ bool HTMLVideoElement::IsDefaultPosterImageURL() const {
 
 scoped_refptr<StaticBitmapImage> HTMLVideoElement::CreateStaticBitmapImage(
     bool allow_accelerated_images,
-    absl::optional<gfx::Size> size) {
+    std::optional<gfx::Size> size) {
   media::PaintCanvasVideoRenderer* video_renderer = nullptr;
   scoped_refptr<media::VideoFrame> media_video_frame;
   if (auto* wmp = GetWebMediaPlayer()) {
@@ -576,7 +576,7 @@ gfx::Size HTMLVideoElement::BitmapSourceSize() const {
 
 ScriptPromise HTMLVideoElement::CreateImageBitmap(
     ScriptState* script_state,
-    absl::optional<gfx::Rect> crop_rect,
+    std::optional<gfx::Rect> crop_rect,
     const ImageBitmapOptions* options,
     ExceptionState& exception_state) {
   if (getNetworkState() == HTMLMediaElement::kNetworkEmpty) {

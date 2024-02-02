@@ -310,7 +310,7 @@ class SharedStorage::IterationSource final
   static constexpr int kBenchmarkStep = 10;
   // Start time of each call to GetTheNextIterationResult. Used to record a
   // timing histogram.
-  absl::optional<base::TimeTicks> next_start_time_;
+  std::optional<base::TimeTicks> next_start_time_;
 };
 
 SharedStorage::SharedStorage() = default;

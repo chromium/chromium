@@ -313,7 +313,7 @@ void StorageBucket::DidSetExpires(ScriptPromiseResolver* resolver,
 
 void StorageBucket::DidGetExpires(
     ScriptPromiseResolverTyped<IDLNullable<IDLDOMHighResTimeStamp>>* resolver,
-    const absl::optional<base::Time> expires,
+    const std::optional<base::Time> expires,
     bool success) {
   ScriptState* script_state = resolver->GetScriptState();
   if (!script_state->ContextIsValid())

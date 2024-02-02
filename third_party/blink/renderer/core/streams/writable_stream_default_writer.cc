@@ -440,7 +440,7 @@ v8::Local<v8::Promise> WritableStreamDefaultWriter::Write(
   return promise;
 }
 
-absl::optional<double> WritableStreamDefaultWriter::GetDesiredSizeInternal()
+std::optional<double> WritableStreamDefaultWriter::GetDesiredSizeInternal()
     const {
   // https://streams.spec.whatwg.org/#writable-stream-default-writer-get-desired-size
   //  1. Let stream be writer.[[ownerWritableStream]].
@@ -453,7 +453,7 @@ absl::optional<double> WritableStreamDefaultWriter::GetDesiredSizeInternal()
     //  3. If state is "errored" or "erroring", return null.
     case WritableStream::kErrored:
     case WritableStream::kErroring:
-      return absl::nullopt;
+      return std::nullopt;
 
       //  4. If state is "closed", return 0.
     case WritableStream::kClosed:
@@ -539,7 +539,7 @@ v8::Local<v8::Value> WritableStreamDefaultWriter::GetDesiredSize(
   //  1. Let stream be writer.[[ownerWritableStream]].
   //  2. Let state be stream.[[state]].
   //  3. If state is "errored" or "erroring", return null.
-  absl::optional<double> desired_size = writer->GetDesiredSizeInternal();
+  std::optional<double> desired_size = writer->GetDesiredSizeInternal();
   if (!desired_size.has_value()) {
     return v8::Null(isolate);
   }

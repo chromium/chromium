@@ -33,7 +33,7 @@ TransformStreamDefaultController::GetDefaultController(
       stream->readable_->GetController());
 }
 
-absl::optional<double> TransformStreamDefaultController::desiredSize() const {
+std::optional<double> TransformStreamDefaultController::desiredSize() const {
   // https://streams.spec.whatwg.org/#ts-default-controller-desired-size
   // 2. Let readableController be
   //    this.[[controlledTransformStream]].[[readable]].

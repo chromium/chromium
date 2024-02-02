@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/sync_load_context.h"
 
+#include <optional>
 #include <string>
 
 #include "base/check_op.h"
@@ -20,7 +21,6 @@
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/url_loader_completion_status.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/client_hints/client_hints.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
@@ -94,7 +94,7 @@ class SyncLoadContext::SignalHelper final {
       redirect_or_response_event_;
   raw_ptr<base::WaitableEvent, ExperimentalRenderer> abort_event_;
   base::WaitableEventWatcher abort_watcher_;
-  absl::optional<base::OneShotTimer> timeout_timer_;
+  std::optional<base::OneShotTimer> timeout_timer_;
 };
 
 // static
@@ -216,7 +216,7 @@ void SyncLoadContext::CancelRedirect() {
 void SyncLoadContext::OnReceivedResponse(
     network::mojom::URLResponseHeadPtr head,
     mojo::ScopedDataPipeConsumerHandle body,
-    absl::optional<mojo_base::BigBuffer> cached_metadata) {
+    std::optional<mojo_base::BigBuffer> cached_metadata) {
   DCHECK(!Completed());
   response_->head = std::move(head);
 

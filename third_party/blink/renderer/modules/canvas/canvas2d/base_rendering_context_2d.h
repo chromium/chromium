@@ -745,7 +745,7 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
     return false;
   }
 
-  virtual absl::optional<cc::PaintRecord> FlushCanvas(FlushReason) = 0;
+  virtual std::optional<cc::PaintRecord> FlushCanvas(FlushReason) = 0;
 
   // Only call if identifiability_study_helper_.ShouldUpdateBuilder() returns
   // true.

@@ -451,7 +451,7 @@ void WorkerGlobalScope::EvaluateClassicScript(
 
 void WorkerGlobalScope::WorkerScriptFetchFinished(
     Script& worker_script,
-    absl::optional<v8_inspector::V8StackTraceId> stack_id) {
+    std::optional<v8_inspector::V8StackTraceId> stack_id) {
   DCHECK(IsContextThread());
 
   DCHECK_NE(ScriptEvalState::kEvaluated, script_eval_state_);

@@ -35,7 +35,7 @@ class StaticDataNavigationBodyLoaderTest
       int64_t total_encoded_data_length,
       int64_t total_encoded_body_length,
       int64_t total_decoded_body_length,
-      const absl::optional<blink::WebURLError>& error) override {
+      const std::optional<blink::WebURLError>& error) override {
     ASSERT_TRUE(expecting_finished_);
     expecting_finished_ = false;
     ASSERT_TRUE(!did_finish_);

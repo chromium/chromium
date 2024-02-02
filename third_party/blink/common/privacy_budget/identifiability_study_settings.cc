@@ -5,6 +5,7 @@
 #include "third_party/blink/public/common/privacy_budget/identifiability_study_settings.h"
 
 #include <initializer_list>
+#include <optional>
 #include <random>
 
 #include "base/check.h"
@@ -14,7 +15,6 @@
 #include "base/threading/sequence_local_storage_slot.h"
 #include "base/trace_event/common/trace_event_common.h"
 #include "base/trace_event/trace_event.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_study_settings_provider.h"
 #include "third_party/blink/public/common/privacy_budget/identifiable_surface.h"
 
@@ -89,7 +89,7 @@ class ThreadsafeSettingsWrapper {
   }
 
  private:
-  absl::optional<IdentifiabilityStudySettings> initialized_settings_;
+  std::optional<IdentifiabilityStudySettings> initialized_settings_;
   const IdentifiabilityStudySettings default_settings_;
   base::AtomicFlag initialized_;
 };

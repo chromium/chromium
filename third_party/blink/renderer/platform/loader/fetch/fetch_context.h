@@ -32,10 +32,10 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_FETCH_CONTEXT_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/task/single_thread_task_runner.h"
 #include "base/types/optional_ref.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/subresource_load_metrics.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/loader/request_context_frame_type.mojom-blink-forward.h"
@@ -107,7 +107,7 @@ class PLATFORM_EXPORT FetchContext : public GarbageCollected<FetchContext> {
   virtual void AddResourceTiming(mojom::blink::ResourceTimingInfoPtr,
                                  const AtomicString& initiator_type);
   virtual bool AllowImage(bool, const KURL&) const { return false; }
-  virtual absl::optional<ResourceRequestBlockedReason> CanRequest(
+  virtual std::optional<ResourceRequestBlockedReason> CanRequest(
       ResourceType,
       const ResourceRequest&,
       const KURL&,
@@ -119,7 +119,7 @@ class PLATFORM_EXPORT FetchContext : public GarbageCollected<FetchContext> {
   }
   // In derived classes, performs *only* a SubresourceFilter check for whether
   // the request can go through or should be blocked.
-  virtual absl::optional<ResourceRequestBlockedReason>
+  virtual std::optional<ResourceRequestBlockedReason>
   CanRequestBasedOnSubresourceFilterOnly(
       ResourceType,
       const ResourceRequest&,
@@ -130,7 +130,7 @@ class PLATFORM_EXPORT FetchContext : public GarbageCollected<FetchContext> {
       const {
     return ResourceRequestBlockedReason::kOther;
   }
-  virtual absl::optional<ResourceRequestBlockedReason> CheckCSPForRequest(
+  virtual std::optional<ResourceRequestBlockedReason> CheckCSPForRequest(
       mojom::blink::RequestContextType,
       network::mojom::RequestDestination request_destination,
       const KURL&,
@@ -146,7 +146,7 @@ class PLATFORM_EXPORT FetchContext : public GarbageCollected<FetchContext> {
   // prepare a ResourceRequest instance at the start of resource loading.
   virtual void PopulateResourceRequest(
       ResourceType,
-      const absl::optional<float> resource_width,
+      const std::optional<float> resource_width,
       ResourceRequest&,
       const ResourceLoaderOptions&);
 

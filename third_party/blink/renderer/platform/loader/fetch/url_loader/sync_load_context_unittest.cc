@@ -149,7 +149,7 @@ class SyncLoadContextTest : public testing::Test {
     // Simulate the response.
     context->OnReceivedResponse(network::mojom::URLResponseHead::New(),
                                 std::move(consumer_handle),
-                                /*cached_metadata=*/absl::nullopt);
+                                /*cached_metadata=*/std::nullopt);
     context->OnCompletedRequest(network::URLLoaderCompletionStatus(net::OK));
 
     mojo::BlockingCopyFromString(expected_data, producer_handle);

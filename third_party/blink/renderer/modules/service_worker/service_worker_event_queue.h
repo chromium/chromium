@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_SERVICE_WORKER_SERVICE_WORKER_EVENT_QUEUE_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_SERVICE_WORKER_SERVICE_WORKER_EVENT_QUEUE_H_
 
+#include <optional>
 #include <set>
 
 #include "base/functional/callback.h"
@@ -13,7 +14,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker.mojom-blink.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_event_status.mojom-blink-forward.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
@@ -97,19 +97,19 @@ class MODULES_EXPORT ServiceWorkerEventQueue {
   void EnqueueNormal(int event_id,
                      StartCallback start_callback,
                      AbortCallback abort_callback,
-                     absl::optional<base::TimeDelta> custom_timeout);
+                     std::optional<base::TimeDelta> custom_timeout);
 
   // Similar to EnqueueNormal(), but enqueues a Pending event.
   void EnqueuePending(int event_id,
                       StartCallback start_callback,
                       AbortCallback abort_callback,
-                      absl::optional<base::TimeDelta> custom_timeout);
+                      std::optional<base::TimeDelta> custom_timeout);
 
   // Similar to EnqueueNormal(), but enqueues an Offline event.
   void EnqueueOffline(int event_id,
                       StartCallback start_callback,
                       AbortCallback abort_callback,
-                      absl::optional<base::TimeDelta> custom_timeout);
+                      std::optional<base::TimeDelta> custom_timeout);
 
   // Returns true if |event_id| was enqueued and hasn't ended.
   bool HasEvent(int event_id) const;
@@ -175,7 +175,7 @@ class MODULES_EXPORT ServiceWorkerEventQueue {
           Type type,
           StartCallback start_callback,
           AbortCallback abort_callback,
-          absl::optional<base::TimeDelta> custom_timeout);
+          std::optional<base::TimeDelta> custom_timeout);
     ~Event();
     const int event_id;
     Type type;
@@ -186,7 +186,7 @@ class MODULES_EXPORT ServiceWorkerEventQueue {
     // Callback which is run when a started event is aborted.
     AbortCallback abort_callback;
     // The custom timeout value.
-    absl::optional<base::TimeDelta> custom_timeout;
+    std::optional<base::TimeDelta> custom_timeout;
   };
 
   // Represents the type of the currently running events.

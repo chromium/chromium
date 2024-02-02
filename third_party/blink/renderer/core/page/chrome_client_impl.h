@@ -90,7 +90,7 @@ class CORE_EXPORT ChromeClientImpl final : public ChromeClient {
                             cc::PaintHoldingCommitTrigger) override;
   std::unique_ptr<cc::ScopedPauseRendering> PauseRendering(
       LocalFrame&) override;
-  absl::optional<int> GetMaxRenderBufferBounds(LocalFrame&) const override;
+  std::optional<int> GetMaxRenderBufferBounds(LocalFrame&) const override;
   void StartDragging(LocalFrame*,
                      const WebDragData&,
                      DragOperationsMask,
@@ -349,7 +349,7 @@ class CORE_EXPORT ChromeClientImpl final : public ChromeClient {
   bool cursor_overridden_;
   Member<ExternalDateTimeChooser> external_date_time_chooser_;
   bool did_request_non_empty_tool_tip_;
-  absl::optional<bool> before_unload_confirm_panel_result_for_testing_;
+  std::optional<bool> before_unload_confirm_panel_result_for_testing_;
   HeapHashSet<WeakMember<CommitObserver>> commit_observers_;
 
   FRIEND_TEST_ALL_PREFIXES(FileChooserQueueTest, DerefQueuedChooser);

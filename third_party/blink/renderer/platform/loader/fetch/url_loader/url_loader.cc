@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -37,7 +38,6 @@
 #include "services/network/public/mojom/url_loader_factory.mojom-forward.h"
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/loader/mime_sniffing_throttle.h"
 #include "third_party/blink/public/common/loader/referrer_utils.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
@@ -117,7 +117,7 @@ class URLLoader::Context : public ResourceRequestClient {
   void OnReceivedResponse(
       network::mojom::URLResponseHeadPtr head,
       mojo::ScopedDataPipeConsumerHandle body,
-      absl::optional<mojo_base::BigBuffer> cached_metadata) override;
+      std::optional<mojo_base::BigBuffer> cached_metadata) override;
   void OnTransferSizeUpdated(int transfer_size_diff) override;
   void OnCompletedRequest(
       const network::URLLoaderCompletionStatus& status) override;
@@ -346,7 +346,7 @@ void URLLoader::Context::OnReceivedRedirect(
 void URLLoader::Context::OnReceivedResponse(
     network::mojom::URLResponseHeadPtr head,
     mojo::ScopedDataPipeConsumerHandle body,
-    absl::optional<mojo_base::BigBuffer> cached_metadata) {
+    std::optional<mojo_base::BigBuffer> cached_metadata) {
   if (!client_) {
     return;
   }
@@ -431,7 +431,7 @@ void URLLoader::LoadSynchronously(
     base::TimeDelta timeout_interval,
     URLLoaderClient* client,
     WebURLResponse& response,
-    absl::optional<WebURLError>& error,
+    std::optional<WebURLError>& error,
     scoped_refptr<SharedBuffer>& data,
     int64_t& encoded_data_length,
     uint64_t& encoded_body_length,

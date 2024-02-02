@@ -17,9 +17,9 @@ class FakeCSSStyleImageValue : public CSSStyleImageValue {
       : cache_pending_(cache_pending), size_(size) {}
 
   // CSSStyleImageValue
-  absl::optional<gfx::Size> IntrinsicSize() const final {
+  std::optional<gfx::Size> IntrinsicSize() const final {
     if (cache_pending_) {
-      return absl::nullopt;
+      return std::nullopt;
     }
     return size_;
   }

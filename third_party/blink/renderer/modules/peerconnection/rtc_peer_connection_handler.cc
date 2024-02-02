@@ -676,8 +676,8 @@ class RTCPeerConnectionHandler::Observer
     if (handler_) {
       handler_->OnIceCandidateError(
           address,
-          port ? absl::optional<uint16_t>(static_cast<uint16_t>(port))
-               : absl::nullopt,
+          port ? std::optional<uint16_t>(static_cast<uint16_t>(port))
+               : std::nullopt,
           host_candidate, url, error_code, error_text);
     }
   }
@@ -1546,7 +1546,7 @@ RTCPeerConnectionHandler::RemoveTrack(blink::RTCRtpSenderPlatform* web_sender) {
 
   blink::TransceiverStateSurfacer transceiver_state_surfacer(
       task_runner_, signaling_thread());
-  absl::optional<webrtc::RTCError> result;
+  std::optional<webrtc::RTCError> result;
   RunSynchronousOnceClosureOnSignalingThread(
       base::BindOnce(&RTCPeerConnectionHandler::RemoveTrackOnSignalingThread,
                      base::Unretained(this),
@@ -1586,7 +1586,7 @@ RTCPeerConnectionHandler::RemoveTrack(blink::RTCRtpSenderPlatform* web_sender) {
 void RTCPeerConnectionHandler::RemoveTrackOnSignalingThread(
     webrtc::RtpSenderInterface* sender,
     blink::TransceiverStateSurfacer* transceiver_state_surfacer,
-    absl::optional<webrtc::RTCError>* result) {
+    std::optional<webrtc::RTCError>* result) {
   *result = native_peer_connection_->RemoveTrackOrError(
       rtc::scoped_refptr<webrtc::RtpSenderInterface>(sender));
   std::vector<rtc::scoped_refptr<webrtc::RtpTransceiverInterface>> transceivers;
@@ -1602,7 +1602,7 @@ void RTCPeerConnectionHandler::RemoveTrackOnSignalingThread(
     if (!transceiver_for_sender) {
       // If the transceiver doesn't exist, it must have been rolled back while
       // we were performing removeTrack(). Abort this operation.
-      *result = absl::nullopt;
+      *result = std::nullopt;
     } else {
       transceivers = {transceiver_for_sender};
     }
@@ -2024,13 +2024,12 @@ void RTCPeerConnectionHandler::OnIceCandidate(const String& sdp,
   }
 }
 
-void RTCPeerConnectionHandler::OnIceCandidateError(
-    const String& address,
-    absl::optional<uint16_t> port,
-    const String& host_candidate,
-    const String& url,
-    int error_code,
-    const String& error_text) {
+void RTCPeerConnectionHandler::OnIceCandidateError(const String& address,
+                                                   std::optional<uint16_t> port,
+                                                   const String& host_candidate,
+                                                   const String& url,
+                                                   int error_code,
+                                                   const String& error_text) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
   TRACE_EVENT0("webrtc", "RTCPeerConnectionHandler::OnIceCandidateError");
   if (peer_connection_tracker_) {

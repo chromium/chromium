@@ -625,8 +625,8 @@ NavigationResult* NavigationApi::traverseTo(ScriptState* script_state,
   }
   frame->GetLocalFrameHostRemote().NavigateToNavigationApiKey(
       key, LocalFrame::HasTransientUserActivation(frame),
-      task ? absl::optional<scheduler::TaskAttributionId>(task->Id())
-           : absl::nullopt);
+      task ? std::optional<scheduler::TaskAttributionId>(task->Id())
+           : std::nullopt);
   return api_method_tracker->GetNavigationResult();
 }
 

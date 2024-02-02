@@ -5,7 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_OUT_OF_FLOW_LAYOUT_PART_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_OUT_OF_FLOW_LAYOUT_PART_H_
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include <optional>
+
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/absolute_utils.h"
 #include "third_party/blink/renderer/core/layout/block_node.h"
@@ -207,7 +208,7 @@ class CORE_EXPORT OutOfFlowLayoutPart {
     // replaced in the final layout pass.
     Member<const LayoutResult> initial_layout_result;
     // The |block_estimate| is wrt. the candidate's writing mode.
-    absl::optional<LayoutUnit> block_estimate;
+    std::optional<LayoutUnit> block_estimate;
     LogicalOofDimensions node_dimensions;
 
     // The offset from the OOF to the top of the fragmentation context root.
@@ -216,7 +217,7 @@ class CORE_EXPORT OutOfFlowLayoutPart {
 
     // These fields are set only if this |OffsetInfo| is calculated from a
     // position fallback style, either from a @try rule or auto-generated.
-    absl::optional<wtf_size_t> fallback_index;
+    std::optional<wtf_size_t> fallback_index;
     Vector<NonOverflowingScrollRange> non_overflowing_ranges;
 
     bool inline_size_depends_on_min_max_sizes = false;
@@ -254,7 +255,7 @@ class CORE_EXPORT OutOfFlowLayoutPart {
     void Trace(Visitor* visitor) const;
   };
 
-  static absl::optional<LogicalSize> InitialContainingBlockFixedSize(
+  static std::optional<LogicalSize> InitialContainingBlockFixedSize(
       BlockNode container);
 
  private:
@@ -304,7 +305,7 @@ class CORE_EXPORT OutOfFlowLayoutPart {
       HeapVector<MulticolChildInfo>* multicol_children = nullptr);
 
   void CreateAnchorEvaluator(
-      absl::optional<AnchorEvaluatorImpl>& anchor_evaluator_storage,
+      std::optional<AnchorEvaluatorImpl>& anchor_evaluator_storage,
       const ContainingBlockInfo& container_info,
       const PhysicalSize& available_size,
       WritingDirectionMode self_writing_direction,
@@ -336,7 +337,7 @@ class CORE_EXPORT OutOfFlowLayoutPart {
   // Calculates offsets with the given ComputedStyle. Returns nullopt if
   // |try_fit_available_space| is true and the layout result does not fit the
   // available space.
-  absl::optional<OffsetInfo> TryCalculateOffset(
+  std::optional<OffsetInfo> TryCalculateOffset(
       const NodeInfo& node_info,
       const ComputedStyle& style,
       AnchorEvaluatorImpl*,
@@ -396,7 +397,7 @@ class CORE_EXPORT OutOfFlowLayoutPart {
   void ComputeStartFragmentIndexAndRelativeOffset(
       WritingMode default_writing_mode,
       LayoutUnit block_estimate,
-      absl::optional<LayoutUnit> clipped_container_block_offset,
+      std::optional<LayoutUnit> clipped_container_block_offset,
       wtf_size_t* start_index,
       LogicalOffset* offset) const;
 

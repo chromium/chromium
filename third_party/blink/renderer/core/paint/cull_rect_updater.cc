@@ -436,7 +436,7 @@ CullRect CullRectUpdater::ComputeFragmentCullRect(
   }
 
   if (parent_state != local_state) {
-    absl::optional<CullRect> old_cull_rect;
+    std::optional<CullRect> old_cull_rect;
     // Not using |old_cull_rect| will force the cull rect to be updated
     // (skipping |ChangedEnough|) in |ApplyPaintProperties|.
     if (!ShouldProactivelyUpdate(context, layer))
@@ -459,7 +459,7 @@ CullRect CullRectUpdater::ComputeFragmentContentsCullRect(
   CullRect contents_cull_rect = cull_rect;
   auto contents_state = fragment.ContentsProperties().Unalias();
   if (contents_state != local_state) {
-    absl::optional<CullRect> old_contents_cull_rect;
+    std::optional<CullRect> old_contents_cull_rect;
     // Not using |old_cull_rect| will force the cull rect to be updated
     // (skipping |CullRect::ChangedEnough|) in |ApplyPaintProperties|.
     if (!ShouldProactivelyUpdate(context, layer))

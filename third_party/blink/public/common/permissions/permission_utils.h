@@ -5,9 +5,9 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_COMMON_PERMISSIONS_PERMISSION_UTILS_H_
 #define THIRD_PARTY_BLINK_PUBLIC_COMMON_PERMISSIONS_PERMISSION_UTILS_H_
 
+#include <optional>
 #include <string>
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/common_export.h"
 #include "third_party/blink/public/mojom/permissions/permission.mojom-forward.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom-shared.h"
@@ -75,7 +75,7 @@ BLINK_COMMON_EXPORT std::string GetPermissionString(PermissionType permission);
 BLINK_COMMON_EXPORT const std::vector<PermissionType>& GetAllPermissionTypes();
 
 // Given |descriptor|, set |permission_type| to a corresponding PermissionType.
-BLINK_COMMON_EXPORT absl::optional<PermissionType>
+BLINK_COMMON_EXPORT std::optional<PermissionType>
 PermissionDescriptorToPermissionType(
     const mojom::PermissionDescriptorPtr& descriptor);
 
@@ -86,7 +86,7 @@ PermissionDescriptorToPermissionType(
 // dependency. Instead we provide this function that requires the relevant
 // information for making the decision and the caller needs to extract it from
 // the descriptor and provide it.
-BLINK_COMMON_EXPORT absl::optional<PermissionType>
+BLINK_COMMON_EXPORT std::optional<PermissionType>
 PermissionDescriptorInfoToPermissionType(mojom::PermissionName name,
                                          bool midi_sysex,
                                          bool camera_ptz,
@@ -95,7 +95,7 @@ PermissionDescriptorInfoToPermissionType(mojom::PermissionName name,
 
 // Converts `permission` type into the corresponding permission policy feature.
 // If there is no, returns nullopt.
-BLINK_COMMON_EXPORT absl::optional<mojom::PermissionsPolicyFeature>
+BLINK_COMMON_EXPORT std::optional<mojom::PermissionsPolicyFeature>
 PermissionTypeToPermissionsPolicyFeature(PermissionType permission);
 
 }  // namespace blink

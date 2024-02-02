@@ -411,11 +411,11 @@ void CanvasRenderingContext2D::WillDraw(
   }
 }
 
-absl::optional<cc::PaintRecord> CanvasRenderingContext2D::FlushCanvas(
+std::optional<cc::PaintRecord> CanvasRenderingContext2D::FlushCanvas(
     FlushReason reason) {
   CanvasResourceProvider* provider = ResourceProvider();
   if (UNLIKELY(provider == nullptr)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return provider->FlushCanvas(reason);
 }

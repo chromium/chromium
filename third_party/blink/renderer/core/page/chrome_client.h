@@ -221,7 +221,7 @@ class CORE_EXPORT ChromeClient : public GarbageCollected<ChromeClient> {
   // compositing.
   // Returns null if the compositing stack has not been initialized yet.
   // |frame| must be a local frame.
-  virtual absl::optional<int> GetMaxRenderBufferBounds(
+  virtual std::optional<int> GetMaxRenderBufferBounds(
       LocalFrame& frame) const = 0;
 
   // Start a system drag and drop operation.

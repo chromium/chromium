@@ -283,7 +283,7 @@ struct VideoCaptureImpl::VideoFrameInitData {
       frame_or_buffer;
 };
 
-absl::optional<VideoCaptureImpl::VideoFrameInitData>
+std::optional<VideoCaptureImpl::VideoFrameInitData>
 VideoCaptureImpl::CreateVideoFrameInitData(
     media::mojom::blink::ReadyBufferPtr ready_buffer) {
   const auto iter = client_buffers_.find(ready_buffer->buffer_id);
@@ -418,7 +418,7 @@ VideoCaptureImpl::CreateVideoFrameInitData(
         if (!video_frame_init_data.ready_buffer->info->is_premapped ||
             !buffer_context->data()) {
           // If the frame isn't premapped, can't do anything here.
-          return absl::nullopt;
+          return std::nullopt;
         }
 
         scoped_refptr<media::VideoFrame> frame =
@@ -432,7 +432,7 @@ VideoCaptureImpl::CreateVideoFrameInitData(
                 buffer_context->data_size(),
                 video_frame_init_data.ready_buffer->info->timestamp);
         if (!frame) {
-          return absl::nullopt;
+          return std::nullopt;
         }
         video_frame_init_data.frame_or_buffer = frame;
         break;
@@ -499,7 +499,7 @@ VideoCaptureImpl::CreateVideoFrameInitData(
               base::span<uint8_t>(premapped_data, buffer_context->data_size()));
       if (!buffer) {
         LOG(ERROR) << "Failed to open GpuMemoryBuffer handle";
-        return absl::nullopt;
+        return std::nullopt;
       }
       video_frame_init_data.frame_or_buffer = std::move(buffer);
     }
@@ -1065,7 +1065,7 @@ void VideoCaptureImpl::OnBufferReady(
 
   const int buffer_id = buffer->buffer_id;
   // Convert `buffer` into a media::VideoFrame or a gfx::GpuMemoryBuffer.
-  absl::optional<VideoFrameInitData> video_frame_init_data =
+  std::optional<VideoFrameInitData> video_frame_init_data =
       CreateVideoFrameInitData(std::move(buffer));
   if (!video_frame_init_data.has_value()) {
     // Error during initialization of the frame or buffer.

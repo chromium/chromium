@@ -5,8 +5,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_INTERSECTION_OBSERVER_INTERSECTION_OBSERVATION_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_INTERSECTION_OBSERVER_INTERSECTION_OBSERVATION_H_
 
+#include <optional>
+
 #include "base/functional/function_ref.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/dom_high_res_time_stamp.h"
 #include "third_party/blink/renderer/core/intersection_observer/intersection_geometry.h"
@@ -66,8 +67,8 @@ class CORE_EXPORT IntersectionObservation final
   int64_t ComputeIntersection(
       unsigned flags,
       gfx::Vector2dF accumulated_scroll_delta_since_last_update,
-      absl::optional<base::TimeTicks>& monotonic_time,
-      absl::optional<IntersectionGeometry::RootGeometry>& root_geometry);
+      std::optional<base::TimeTicks>& monotonic_time,
+      std::optional<IntersectionGeometry::RootGeometry>& root_geometry);
   gfx::Vector2dF MinScrollDeltaToUpdate() const;
   void TakeRecords(HeapVector<Member<IntersectionObserverEntry>>&);
   void Disconnect();

@@ -44,9 +44,9 @@ uint32_t NextDocumentTag() {
   return next_document_tag++;
 }
 
-absl::optional<Vector<String>> FilterTypes(
-    const absl::optional<Vector<String>>& types) {
-  absl::optional<Vector<String>> result;
+std::optional<Vector<String>> FilterTypes(
+    const std::optional<Vector<String>>& types) {
+  std::optional<Vector<String>> result;
   if (!types) {
     return result;
   }
@@ -129,7 +129,7 @@ const char* ViewTransition::StateToString(State state) {
 ViewTransition* ViewTransition::CreateFromScript(
     Document* document,
     V8ViewTransitionCallback* callback,
-    const absl::optional<Vector<String>>& types,
+    const std::optional<Vector<String>>& types,
     Delegate* delegate) {
   CHECK(document->GetExecutionContext());
   return MakeGarbageCollected<ViewTransition>(PassKey(), document, callback,
@@ -139,7 +139,7 @@ ViewTransition* ViewTransition::CreateFromScript(
 ViewTransition::ViewTransition(PassKey,
                                Document* document,
                                V8ViewTransitionCallback* update_dom_callback,
-                               const absl::optional<Vector<String>>& types,
+                               const std::optional<Vector<String>>& types,
                                Delegate* delegate)
     : ExecutionContextLifecycleObserver(document->GetExecutionContext()),
       creation_type_(CreationType::kScript),

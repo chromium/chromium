@@ -199,7 +199,7 @@ void SetupIDLIteratorTemplate(
   instance_template->SetInternalFieldCount(kV8DefaultWrapperInternalFieldCount);
 }
 
-absl::optional<size_t> FindIndexInEnumStringTable(
+std::optional<size_t> FindIndexInEnumStringTable(
     v8::Isolate* isolate,
     v8::Local<v8::Value> value,
     base::span<const char* const> enum_value_table,
@@ -208,9 +208,9 @@ absl::optional<size_t> FindIndexInEnumStringTable(
   const String& str_value = NativeValueTraits<IDLString>::NativeValue(
       isolate, value, exception_state);
   if (UNLIKELY(exception_state.HadException()))
-    return absl::nullopt;
+    return std::nullopt;
 
-  absl::optional<size_t> index =
+  std::optional<size_t> index =
       FindIndexInEnumStringTable(str_value, enum_value_table);
 
   if (UNLIKELY(!index.has_value())) {
@@ -221,14 +221,14 @@ absl::optional<size_t> FindIndexInEnumStringTable(
   return index;
 }
 
-absl::optional<size_t> FindIndexInEnumStringTable(
+std::optional<size_t> FindIndexInEnumStringTable(
     const String& str_value,
     base::span<const char* const> enum_value_table) {
   for (size_t i = 0; i < enum_value_table.size(); ++i) {
     if (Equal(str_value.Impl(), enum_value_table[i]))
       return i;
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void ReportInvalidEnumSetToAttribute(v8::Isolate* isolate,

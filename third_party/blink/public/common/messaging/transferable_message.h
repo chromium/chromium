@@ -48,7 +48,7 @@ struct BLINK_COMMON_EXPORT TransferableMessage : public CloneableMessage {
       mojom::DelegatedCapability::kNone;
 
   // The transferable message's parent task ID.
-  absl::optional<scheduler::TaskAttributionId> parent_task_id;
+  std::optional<scheduler::TaskAttributionId> parent_task_id;
 };
 
 }  // namespace blink

@@ -50,7 +50,7 @@ void UrlMatcher::ParseFieldTrialParam(
     it.Split("|", /*allow_empty_entries=*/false, site_info);
     DCHECK_LE(site_info.size(), 2u)
         << "Got unexpected format that UrlMatcher cannot handle: " << it;
-    absl::optional<String> match_string;
+    std::optional<String> match_string;
     if (site_info.size() == 2u)
       match_string = site_info[1];
     url_list_.push_back(std::make_pair(

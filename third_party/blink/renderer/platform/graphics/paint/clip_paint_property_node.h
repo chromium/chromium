@@ -6,10 +6,10 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_PAINT_CLIP_PAINT_PROPERTY_NODE_H_
 
 #include <algorithm>
+#include <optional>
 
 #include "base/check_op.h"
 #include "base/memory/scoped_refptr.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/platform/geometry/float_rounded_rect.h"
 #include "third_party/blink/renderer/platform/geometry/layout_rect.h"
 #include "third_party/blink/renderer/platform/graphics/paint/effect_paint_property_node.h"
@@ -115,8 +115,8 @@ class PLATFORM_EXPORT ClipPaintPropertyNode
 
     scoped_refptr<const TransformPaintPropertyNodeOrAlias>
         local_transform_space;
-    absl::optional<FloatClipRect> layout_clip_rect_excluding_overlay_scrollbars;
-    absl::optional<Path> clip_path;
+    std::optional<FloatClipRect> layout_clip_rect_excluding_overlay_scrollbars;
+    std::optional<Path> clip_path;
     // If this is not nullptr, this clip node will generate a cc clip node to
     // expand clip rect for a pixel-moving filter.
     scoped_refptr<const EffectPaintPropertyNode> pixel_moving_filter;
@@ -131,7 +131,7 @@ class PLATFORM_EXPORT ClipPaintPropertyNode
 
     PaintPropertyChangeType ComputeChange(const State& other) const;
 
-    bool ClipPathEquals(const absl::optional<Path>& p) const {
+    bool ClipPathEquals(const std::optional<Path>& p) const {
       return (!clip_path && !p) || (clip_path && p && *clip_path == *p);
     }
 
@@ -188,8 +188,8 @@ class PLATFORM_EXPORT ClipPaintPropertyNode
                : state_.layout_clip_rect_;
   }
 
-  const absl::optional<Path>& ClipPath() const { return state_.clip_path; }
-  bool ClipPathEquals(const absl::optional<Path>& p) const {
+  const std::optional<Path>& ClipPath() const { return state_.clip_path; }
+  bool ClipPathEquals(const std::optional<Path>& p) const {
     return state_.ClipPathEquals(p);
   }
 

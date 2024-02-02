@@ -132,7 +132,7 @@ StyleRule::RuleType RuleTypeForMutableDeclaration(
   }
 }
 
-absl::optional<StyleRuleFontFeature::FeatureType> ToStyleRuleFontFeatureType(
+std::optional<StyleRuleFontFeature::FeatureType> ToStyleRuleFontFeatureType(
     CSSAtRuleID rule_id) {
   switch (rule_id) {
     case CSSAtRuleID::kCSSAtRuleStylistic:
@@ -150,7 +150,7 @@ absl::optional<StyleRuleFontFeature::FeatureType> ToStyleRuleFontFeatureType(
     default:
       NOTREACHED();
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 }  // namespace
@@ -355,7 +355,7 @@ ParseSheetResult CSSParserImpl::ParseStyleSheet(
     StyleSheetContents* style_sheet,
     CSSDeferPropertyParsing defer_property_parsing,
     bool allow_import_rules) {
-  absl::optional<LocalFrameUkmAggregator::ScopedUkmHierarchicalTimer> timer;
+  std::optional<LocalFrameUkmAggregator::ScopedUkmHierarchicalTimer> timer;
   if (context->GetDocument() && context->GetDocument()->View()) {
     if (auto* metrics_aggregator =
             context->GetDocument()->View()->GetUkmAggregator()) {
@@ -1393,7 +1393,7 @@ StyleRuleKeyframes* CSSParserImpl::ConsumeKeyframesRule(
 StyleRuleFontFeature* CSSParserImpl::ConsumeFontFeatureRule(
     CSSAtRuleID rule_id,
     CSSParserTokenStream& stream) {
-  absl::optional<StyleRuleFontFeature::FeatureType> feature_type =
+  std::optional<StyleRuleFontFeature::FeatureType> feature_type =
       ToStyleRuleFontFeatureType(rule_id);
   if (!feature_type) {
     return nullptr;
@@ -1649,14 +1649,14 @@ StyleRuleProperty* CSSParserImpl::ConsumePropertyRule(
       name,
       CreateCSSPropertyValueSet(parsed_properties_, kCSSPropertyRuleMode));
 
-  absl::optional<CSSSyntaxDefinition> syntax =
+  std::optional<CSSSyntaxDefinition> syntax =
       PropertyRegistration::ConvertSyntax(rule->GetSyntax());
-  absl::optional<bool> inherits =
+  std::optional<bool> inherits =
       PropertyRegistration::ConvertInherits(rule->Inherits());
-  absl::optional<const CSSValue*> initial =
+  std::optional<const CSSValue*> initial =
       syntax.has_value() ? PropertyRegistration::ConvertInitial(
                                rule->GetInitialValue(), *syntax, *context_)
-                         : absl::nullopt;
+                         : std::nullopt;
 
   bool invalid_rule =
       !syntax.has_value() || !inherits.has_value() || !initial.has_value();
@@ -2351,7 +2351,7 @@ void CSSParserImpl::ConsumeDeclarationList(
       default:
         if (parent_rule_for_nesting != nullptr) {  // [1] (see function comment)
           StyleRuleBase* child =
-              ConsumeNestedRule(absl::nullopt, rule_type, stream, nesting_type,
+              ConsumeNestedRule(std::nullopt, rule_type, stream, nesting_type,
                                 parent_rule_for_nesting);
           if (child) {
             if (child_rules) {
@@ -2521,7 +2521,7 @@ void CSSParserImpl::ConsumeRuleListOrNestedDeclarationList(
 }
 
 StyleRuleBase* CSSParserImpl::ConsumeNestedRule(
-    absl::optional<CSSAtRuleID> id,
+    std::optional<CSSAtRuleID> id,
     StyleRule::RuleType parent_rule_type,
     CSSParserTokenStream& stream,
     CSSNestingType nesting_type,

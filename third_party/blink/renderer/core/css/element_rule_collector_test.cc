@@ -4,8 +4,9 @@
 
 #include "third_party/blink/renderer/core/css/element_rule_collector.h"
 
+#include <optional>
+
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/css/css_style_rule.h"
 #include "third_party/blink/renderer/core/css/css_test_helpers.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser.h"
@@ -58,10 +59,10 @@ class ElementRuleCollectorTest : public PageTestBase {
   // Matches an element against a selector via ElementRuleCollector.
   //
   // Upon successful match, the combined CSSSelector::LinkMatchMask of
-  // of all matched rules is returned, or absl::nullopt if no-match.
-  absl::optional<unsigned> Match(Element* element,
-                                 const String& selector,
-                                 const ContainerNode* scope = nullptr) {
+  // of all matched rules is returned, or std::nullopt if no-match.
+  std::optional<unsigned> Match(Element* element,
+                                const String& selector,
+                                const ContainerNode* scope = nullptr) {
     ElementResolveContext context(*element);
     SelectorFilter filter;
     MatchResult result;
@@ -71,7 +72,7 @@ class ElementRuleCollectorTest : public PageTestBase {
     String rule = selector + " { color: green }";
     RuleSet* rule_set = RuleSetFromSingleRule(GetDocument(), rule);
     if (!rule_set) {
-      return absl::nullopt;
+      return std::nullopt;
     }
 
     MatchRequest request(rule_set, scope);
@@ -83,7 +84,7 @@ class ElementRuleCollectorTest : public PageTestBase {
 
     const MatchedPropertiesVector& vector = result.GetMatchedProperties();
     if (!vector.size()) {
-      return absl::nullopt;
+      return std::nullopt;
     }
 
     // Either the normal rules matched, the visited dependent rules matched,
@@ -184,9 +185,9 @@ TEST_F(ElementRuleCollectorTest, LinkMatchType) {
   const auto kMatchVisited = CSSSelector::kMatchVisited;
   const auto kMatchAll = CSSSelector::kMatchAll;
 
-  EXPECT_EQ(Match(foo, "#bar"), absl::nullopt);
-  EXPECT_EQ(Match(visited, "#foo"), absl::nullopt);
-  EXPECT_EQ(Match(link, "#foo"), absl::nullopt);
+  EXPECT_EQ(Match(foo, "#bar"), std::nullopt);
+  EXPECT_EQ(Match(visited, "#foo"), std::nullopt);
+  EXPECT_EQ(Match(link, "#foo"), std::nullopt);
 
   EXPECT_EQ(Match(foo, "#foo"), kMatchLink);
   EXPECT_EQ(Match(link, ":visited"), kMatchVisited);
@@ -200,8 +201,8 @@ TEST_F(ElementRuleCollectorTest, LinkMatchType) {
 
   EXPECT_EQ(Match(visited, ":link"), kMatchLink);
   EXPECT_EQ(Match(visited, ":visited"), kMatchVisited);
-  EXPECT_EQ(Match(visited, ":link:visited"), absl::nullopt);
-  EXPECT_EQ(Match(visited, ":visited:link"), absl::nullopt);
+  EXPECT_EQ(Match(visited, ":link:visited"), std::nullopt);
+  EXPECT_EQ(Match(visited, ":visited:link"), std::nullopt);
   EXPECT_EQ(Match(visited, "#visited:visited"), kMatchVisited);
   EXPECT_EQ(Match(visited, ":visited#visited"), kMatchVisited);
   EXPECT_EQ(Match(visited, "body :link"), kMatchLink);
@@ -210,17 +211,17 @@ TEST_F(ElementRuleCollectorTest, LinkMatchType) {
   EXPECT_EQ(Match(visited_span, ":visited span"), kMatchVisited);
   EXPECT_EQ(Match(visited, ":not(:visited)"), kMatchLink);
   EXPECT_EQ(Match(visited, ":not(:link)"), kMatchVisited);
-  EXPECT_EQ(Match(visited, ":not(:link):not(:visited)"), absl::nullopt);
+  EXPECT_EQ(Match(visited, ":not(:link):not(:visited)"), std::nullopt);
   EXPECT_EQ(Match(visited, ":is(:not(:link))"), kMatchVisited);
   EXPECT_EQ(Match(visited, ":is(:not(:visited))"), kMatchLink);
   EXPECT_EQ(Match(visited, ":is(:link, :not(:link))"), kMatchAll);
   EXPECT_EQ(Match(visited, ":is(:not(:visited), :not(:link))"), kMatchAll);
-  EXPECT_EQ(Match(visited, ":is(:not(:visited):not(:link))"), absl::nullopt);
+  EXPECT_EQ(Match(visited, ":is(:not(:visited):not(:link))"), std::nullopt);
   EXPECT_EQ(Match(visited, ":is(:not(:visited):link)"), kMatchLink);
   EXPECT_EQ(Match(visited, ":not(:is(:link))"), kMatchVisited);
   EXPECT_EQ(Match(visited, ":not(:is(:visited))"), kMatchLink);
   EXPECT_EQ(Match(visited, ":not(:is(:not(:visited)))"), kMatchVisited);
-  EXPECT_EQ(Match(visited, ":not(:is(:link, :visited))"), absl::nullopt);
+  EXPECT_EQ(Match(visited, ":not(:is(:link, :visited))"), std::nullopt);
   EXPECT_EQ(Match(visited, ":not(:is(:link:visited))"), kMatchAll);
   EXPECT_EQ(Match(visited, ":not(:is(:not(:link):visited))"), kMatchLink);
   EXPECT_EQ(Match(visited, ":not(:is(:not(:link):not(:visited)))"), kMatchAll);
@@ -234,8 +235,8 @@ TEST_F(ElementRuleCollectorTest, LinkMatchType) {
   EXPECT_EQ(Match(visited, ":is(:link, #visited)"), kMatchAll);
   EXPECT_EQ(Match(visited, ":is(:visited)"), kMatchVisited);
   EXPECT_EQ(Match(visited, ":is(:link)"), kMatchLink);
-  EXPECT_EQ(Match(visited, ":is(:link):is(:visited)"), absl::nullopt);
-  EXPECT_EQ(Match(visited, ":is(:link:visited)"), absl::nullopt);
+  EXPECT_EQ(Match(visited, ":is(:link):is(:visited)"), std::nullopt);
+  EXPECT_EQ(Match(visited, ":is(:link:visited)"), std::nullopt);
   EXPECT_EQ(Match(visited, ":is(:link, :link)"), kMatchLink);
   EXPECT_EQ(Match(visited, ":is(:is(:link))"), kMatchLink);
   EXPECT_EQ(Match(visited, ":is(:link, :visited)"), kMatchAll);
@@ -248,10 +249,10 @@ TEST_F(ElementRuleCollectorTest, LinkMatchType) {
   // behavior for privacy reasons.
   // https://developer.mozilla.org/en-US/docs/Web/CSS/Privacy_and_the_:visited_selector
   EXPECT_EQ(Match(bar, ":link + #bar"), kMatchLink);
-  EXPECT_EQ(Match(bar, ":visited + #bar"), absl::nullopt);
+  EXPECT_EQ(Match(bar, ":visited + #bar"), std::nullopt);
   EXPECT_EQ(Match(bar, ":is(:link + #bar)"), kMatchLink);
-  EXPECT_EQ(Match(bar, ":is(:visited ~ #bar)"), absl::nullopt);
-  EXPECT_EQ(Match(bar, ":not(:is(:link + #bar))"), absl::nullopt);
+  EXPECT_EQ(Match(bar, ":is(:visited ~ #bar)"), std::nullopt);
+  EXPECT_EQ(Match(bar, ":not(:is(:link + #bar))"), std::nullopt);
   EXPECT_EQ(Match(bar, ":not(:is(:visited ~ #bar))"), kMatchLink);
 }
 
@@ -345,7 +346,7 @@ TEST_F(ElementRuleCollectorTest, MatchesNonUniversalHighlights) {
   // matches rules for originating element, then returns the non-universal flag
   // for ::highlight(x) or the given PseudoId.
   auto run = [&](Element& element, String selector,
-                 absl::optional<AtomicString> defaultNamespace) {
+                 std::optional<AtomicString> defaultNamespace) {
     auto* parser_context = MakeGarbageCollected<CSSParserContext>(
         kHTMLStandardMode, SecureContextMode::kInsecureContext);
     auto* sheet = MakeGarbageCollected<StyleSheetContents>(parser_context);
@@ -407,7 +408,7 @@ TEST_F(ElementRuleCollectorTest, MatchesNonUniversalHighlights) {
   EXPECT_TRUE(run(def, "*::highlight(x)", defNs));  // null|*::highlight(x)
 
   // Cases that are independent of whether there is a default @namespace.
-  for (auto& ns : Vector<absl::optional<AtomicString>>{{}, defNs}) {
+  for (auto& ns : Vector<std::optional<AtomicString>>{{}, defNs}) {
     // no default ::highlight(x), default *|*::highlight(x)
     EXPECT_FALSE(run(body, "*|*::highlight(x)", ns));
     // no default .foo::highlight(x), default *|*.foo::highlight(x)

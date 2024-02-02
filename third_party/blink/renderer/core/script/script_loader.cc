@@ -834,7 +834,7 @@ PendingScript* ScriptLoader::PrepareScript(
         context_window->GetFrame()->GetAttributionSrcLoader()->CanRegister(
             url,
             /*element=*/nullptr,
-            /*request_id=*/absl::nullopt)) {
+            /*request_id=*/std::nullopt)) {
       options.SetAttributionReportingEligibility(
           ScriptFetchOptions::AttributionReportingEligibility::kEligible);
     }

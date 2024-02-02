@@ -130,7 +130,7 @@ void PaintMaskLayer(const FillLayer& layer,
     return;
   }
 
-  absl::optional<ScopedMaskLuminanceLayer> mask_luminance_scope;
+  std::optional<ScopedMaskLuminanceLayer> mask_luminance_scope;
   SkBlendMode composite_op = SkBlendMode::kSrcOver;
   // Don't use the operator if this is the bottom layer.
   if (layer.Next()) {

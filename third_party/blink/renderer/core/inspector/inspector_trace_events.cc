@@ -1257,7 +1257,7 @@ void inspector_compile_script_event::Data(
     perfetto::TracedValue context,
     const String& url,
     const TextPosition& text_position,
-    absl::optional<V8ConsumeCacheResult> consume_cache_result,
+    std::optional<V8ConsumeCacheResult> consume_cache_result,
     bool eager,
     bool streamed,
     ScriptStreamer::NotStreamingReason not_streaming_reason) {

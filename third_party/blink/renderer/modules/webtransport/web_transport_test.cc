@@ -6,6 +6,7 @@
 
 #include <array>
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/containers/span.h"
@@ -16,7 +17,6 @@
 #include "services/network/public/mojom/web_transport.mojom-blink.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/mojom/webtransport/web_transport_connector.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/iterable.h"
@@ -1612,7 +1612,7 @@ TEST_F(WebTransportTest, ReceiveStreamGarbageCollectionCancel) {
 
   // Eagerly destroy the ScriptPromise as this test is using manual GC without
   // stack which is incompatible with ScriptValue.
-  absl::optional<ScriptPromise> cancel_promise;
+  std::optional<ScriptPromise> cancel_promise;
   {
     // Cancelling also creates v8 handles, so we need a new handle scope as
     // above.
@@ -1810,7 +1810,7 @@ TEST_F(WebTransportTest, CreateReceiveStreamThenClose) {
   ASSERT_TRUE(exception);
   EXPECT_EQ(exception->name(), "WebTransportError");
   EXPECT_EQ(exception->source(), "session");
-  EXPECT_EQ(exception->streamErrorCode(), absl::nullopt);
+  EXPECT_EQ(exception->streamErrorCode(), std::nullopt);
 }
 
 TEST_F(WebTransportTest, CreateReceiveStreamThenRemoteClose) {
@@ -1838,7 +1838,7 @@ TEST_F(WebTransportTest, CreateReceiveStreamThenRemoteClose) {
   ASSERT_TRUE(exception);
   EXPECT_EQ(exception->name(), "WebTransportError");
   EXPECT_EQ(exception->source(), "session");
-  EXPECT_EQ(exception->streamErrorCode(), absl::nullopt);
+  EXPECT_EQ(exception->streamErrorCode(), std::nullopt);
 }
 
 // BidirectionalStreams are thoroughly tested in bidirectional_stream_test.cc.

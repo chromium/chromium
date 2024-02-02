@@ -1816,7 +1816,7 @@ class UnifiedScrollingInputHandlerProxyTest : public testing::Test {
   using LatencyInfo = ui::LatencyInfo;
   using ScrollGranularity = ui::ScrollGranularity;
   using ScrollState = cc::ScrollState;
-  using ReturnedDisposition = absl::optional<EventDisposition>;
+  using ReturnedDisposition = std::optional<EventDisposition>;
 
   UnifiedScrollingInputHandlerProxyTest()
       : input_handler_proxy_(mock_input_handler_, &mock_client_) {}
@@ -2273,7 +2273,7 @@ TEST_F(UnifiedScrollingInputHandlerProxyTest, MainThreadHitTestFailed) {
     DispatchEvent(ScrollUpdate());
 
     EXPECT_EQ(InputHandlerProxy::DID_HANDLE, *disposition);
-    disposition = absl::nullopt;
+    disposition = std::nullopt;
 
     DispatchEvent(ScrollUpdate(), &disposition);
     EXPECT_FALSE(disposition);

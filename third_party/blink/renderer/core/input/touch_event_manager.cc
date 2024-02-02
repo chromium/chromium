@@ -669,7 +669,7 @@ void TouchEventManager::AllTouchesReleasedCleanup() {
   // we still get here and if |touch_sequence_document| was of the type which
   // cannot block scroll, then the flag is certainly set
   // (https://crbug.com/345372).
-  delayed_effective_touch_action_ = absl::nullopt;
+  delayed_effective_touch_action_ = std::nullopt;
   should_enforce_vertical_scroll_ = false;
 }
 
@@ -702,7 +702,7 @@ WebInputEventResult TouchEventManager::EnsureVerticalScrollIsPossible(
     // (https://crbug.com/844493).
     frame_->GetPage()->GetChromeClient().SetTouchAction(
         frame_, delayed_effective_touch_action_.value());
-    delayed_effective_touch_action_ = absl::nullopt;
+    delayed_effective_touch_action_ = std::nullopt;
   }
 
   // If the event was canceled the result is ignored to make sure vertical

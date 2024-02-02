@@ -5,6 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_MEDIA_POWER_STATUS_HELPER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_MEDIA_POWER_STATUS_HELPER_H_
 
+#include <optional>
+
 #include "base/functional/callback.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
@@ -12,7 +14,6 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/device/public/mojom/battery_monitor.mojom-blink.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -77,7 +78,7 @@ class PLATFORM_EXPORT PowerStatusHelper {
   void SetIsPlaying(bool is_playing);
   void SetMetadata(const media::PipelineMetadata& metadata);
   void SetIsFullscreen(bool is_fullscreen);
-  void SetAverageFrameRate(absl::optional<int> average_fps);
+  void SetAverageFrameRate(std::optional<int> average_fps);
 
   // Handle notifications about the experiment state from the power experiment.
   // manager.  |state| indicates whether our player is eligible to record power
@@ -90,13 +91,13 @@ class PLATFORM_EXPORT PowerStatusHelper {
 
   // Return the UMA bucket for the given video configuration, or nullopt if we
   // don't want to record it.
-  static absl::optional<int> BucketFor(bool is_playing,
-                                       bool has_video,
-                                       media::VideoCodec codec,
-                                       media::VideoCodecProfile profile,
-                                       gfx::Size natural_size,
-                                       bool is_fullscreen,
-                                       absl::optional<int> average_fps);
+  static std::optional<int> BucketFor(bool is_playing,
+                                      bool has_video,
+                                      media::VideoCodec codec,
+                                      media::VideoCodecProfile profile,
+                                      gfx::Size natural_size,
+                                      bool is_fullscreen,
+                                      std::optional<int> average_fps);
 
   // Recompute everything when playback state or power experiment state changes.
   void OnAnyStateChange();
@@ -123,13 +124,13 @@ class PLATFORM_EXPORT PowerStatusHelper {
   gfx::Size natural_size_;
   bool is_fullscreen_ = false;
   // For estimating fps.  Can be unset if we don't know.
-  absl::optional<int> average_fps_;
+  std::optional<int> average_fps_;
 
   // Current UMA bucket, if any.
-  absl::optional<int> current_bucket_;
+  std::optional<int> current_bucket_;
 
   // If set, our previous battery level, from 0-100.
-  absl::optional<float> battery_level_baseline_;
+  std::optional<float> battery_level_baseline_;
   // The time at which we last got an update from |battery_monitor_|.
   base::TimeTicks last_update_;
 

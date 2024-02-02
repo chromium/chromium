@@ -144,7 +144,7 @@ void WorkerClassicScriptLoader::LoadTopLevelScriptAsynchronously(
     RejectCoepUnsafeNone reject_coep_unsafe_none,
     mojo::PendingRemote<network::mojom::blink::URLLoaderFactory>
         blob_url_loader_factory,
-    absl::optional<uint64_t> main_script_identifier) {
+    std::optional<uint64_t> main_script_identifier) {
   DCHECK(fetch_client_settings_object_fetcher);
   DCHECK(response_callback || finished_callback);
   response_callback_ = std::move(response_callback);

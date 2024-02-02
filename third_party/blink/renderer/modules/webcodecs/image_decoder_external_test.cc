@@ -766,7 +766,7 @@ TEST_F(ImageDecoderTest, ReadableStreamAvifStillYuvDecoding) {
     auto* frame = result->image();
     EXPECT_EQ(frame->format(), "I420");
     EXPECT_EQ(frame->timestamp(), 0u);
-    EXPECT_EQ(frame->duration(), absl::nullopt);
+    EXPECT_EQ(frame->duration(), std::nullopt);
     EXPECT_EQ(frame->displayWidth(), 3u);
     EXPECT_EQ(frame->displayHeight(), 3u);
     EXPECT_EQ(frame->frame()->ColorSpace(),
@@ -969,7 +969,7 @@ TEST_F(ImageDecoderTest, DecodeYuv) {
     auto* frame = result->image();
     EXPECT_EQ(frame->format(), "I420");
     EXPECT_EQ(frame->timestamp(), 0u);
-    EXPECT_EQ(frame->duration(), absl::nullopt);
+    EXPECT_EQ(frame->duration(), std::nullopt);
     EXPECT_EQ(frame->displayWidth(), 99u);
     EXPECT_EQ(frame->displayHeight(), 99u);
     EXPECT_EQ(frame->frame()->ColorSpace(), gfx::ColorSpace::CreateJpeg());

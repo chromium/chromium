@@ -120,7 +120,7 @@ void ConsoleMessage::SetNodes(LocalFrame* frame, Vector<DOMNodeId> nodes) {
   nodes_ = std::move(nodes);
 }
 
-const absl::optional<mojom::blink::ConsoleMessageCategory>&
+const std::optional<mojom::blink::ConsoleMessageCategory>&
 ConsoleMessage::Category() const {
   return category_;
 }

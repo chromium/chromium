@@ -89,7 +89,7 @@ class NoopLoaderFactory final : public ResourceFetcher::LoaderFactory {
       scoped_refptr<base::SingleThreadTaskRunner> freezable_task_runner,
       scoped_refptr<base::SingleThreadTaskRunner> unfreezable_task_runner,
       BackForwardCacheLoaderHelper*,
-      const absl::optional<base::UnguessableToken>&
+      const std::optional<base::UnguessableToken>&
           service_worker_race_network_request_token,
       bool is_from_origin_dirty_style_sheet) override {
     return std::make_unique<NoopURLLoader>(std::move(freezable_task_runner));
@@ -110,7 +110,7 @@ class NoopLoaderFactory final : public ResourceFetcher::LoaderFactory {
         base::TimeDelta timeout_interval,
         URLLoaderClient*,
         WebURLResponse&,
-        absl::optional<WebURLError>&,
+        std::optional<WebURLError>&,
         scoped_refptr<SharedBuffer>&,
         int64_t& encoded_data_length,
         uint64_t& encoded_body_length,
@@ -183,7 +183,7 @@ class ScriptStreamingTest : public testing::Test {
 
     resource_->Loader()->DidReceiveResponse(WrappedResourceResponse(response),
                                             std::move(consumer_handle_),
-                                            /*cached_metadata=*/absl::nullopt);
+                                            /*cached_metadata=*/std::nullopt);
   }
 
   ClassicScript* CreateClassicScript() const {

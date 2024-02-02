@@ -7,7 +7,8 @@
 
 #include <hb.h>
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include <optional>
+
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -31,7 +32,7 @@ class PLATFORM_EXPORT FontFeatures {
   const hb_feature_t& operator[](wtf_size_t i) const { return features_[i]; }
   const hb_feature_t* data() const { return features_.data(); }
 
-  absl::optional<unsigned> FindValueForTesting(hb_tag_t tag) const;
+  std::optional<unsigned> FindValueForTesting(hb_tag_t tag) const;
 
   void Reserve(wtf_size_t new_capacity) { features_.reserve(new_capacity); }
 

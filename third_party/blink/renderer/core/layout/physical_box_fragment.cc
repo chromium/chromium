@@ -113,7 +113,7 @@ const PhysicalBoxFragment* PhysicalBoxFragment::Create(
       ToPhysicalSize(builder->Size(), builder->GetWritingMode());
   WritingModeConverter converter(writing_direction, physical_size);
 
-  absl::optional<PhysicalRect> inflow_bounds;
+  std::optional<PhysicalRect> inflow_bounds;
   if (builder->inflow_bounds_)
     inflow_bounds = converter.ToPhysical(*builder->inflow_bounds_);
 
@@ -275,7 +275,7 @@ PhysicalBoxFragment::PhysicalBoxFragment(
     const PhysicalBoxStrut& borders,
     bool has_padding,
     const PhysicalBoxStrut& padding,
-    const absl::optional<PhysicalRect>& inflow_bounds,
+    const std::optional<PhysicalRect>& inflow_bounds,
     bool has_fragment_items,
     WritingMode block_or_line_writing_mode)
     : PhysicalFragment(builder,
@@ -309,7 +309,7 @@ PhysicalBoxFragment::PhysicalBoxFragment(
     auto* items = const_cast<FragmentItems*>(ComputeItemsAddress());
     DCHECK_EQ(items_builder->GetWritingMode(), block_or_line_writing_mode);
     DCHECK_EQ(items_builder->Direction(), builder->Direction());
-    absl::optional<PhysicalSize> new_size =
+    std::optional<PhysicalSize> new_size =
         items_builder->ToFragmentItems(Size(), items);
     if (new_size)
       size_ = *new_size;

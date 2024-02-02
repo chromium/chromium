@@ -44,7 +44,7 @@ perfetto::protos::pbzero::BlinkTaskScope::TaskScopeType ToProtoEnum(
   }
 }
 
-int64_t TaskAttributionIdToInt(absl::optional<TaskAttributionId> id) {
+int64_t TaskAttributionIdToInt(std::optional<TaskAttributionId> id) {
   return id ? static_cast<int64_t>(id.value().value()) : -1;
 }
 
@@ -138,8 +138,8 @@ TaskAttributionTrackerImpl::CreateTaskScope(ScriptState* script_state,
       script_state, this, running_task_->Id(), running_task_to_be_restored,
       continuation_task_state_to_be_restored, type,
       running_task_->Parent()
-          ? absl::optional<TaskAttributionId>(running_task_->Parent()->Id())
-          : absl::nullopt);
+          ? std::optional<TaskAttributionId>(running_task_->Parent()->Id())
+          : std::nullopt);
 }
 
 void TaskAttributionTrackerImpl::TaskScopeCompleted(
@@ -189,7 +189,7 @@ TaskAttributionTrackerImpl::TaskScopeImpl::TaskScopeImpl(
     TaskAttributionInfo* running_task,
     ScriptWrappableTaskState* continuation_task_state,
     TaskScopeType type,
-    absl::optional<TaskAttributionId> parent_task_id)
+    std::optional<TaskAttributionId> parent_task_id)
     : task_tracker_(task_tracker),
       scope_task_id_(scope_task_id),
       running_task_to_be_restored_(running_task),
@@ -207,9 +207,9 @@ TaskAttributionTrackerImpl::TaskScopeImpl::TaskScopeImpl(
         data->set_continuation_task_id_to_be_restored(TaskAttributionIdToInt(
             continuation_state_to_be_restored_ &&
                     continuation_state_to_be_restored_->GetTask()
-                ? absl::optional<TaskAttributionId>(
+                ? std::optional<TaskAttributionId>(
                       continuation_state_to_be_restored_->GetTask()->Id())
-                : absl::nullopt));
+                : std::nullopt));
         data->set_parent_task_id(TaskAttributionIdToInt(parent_task_id));
       });
 }

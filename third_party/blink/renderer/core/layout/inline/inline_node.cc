@@ -500,7 +500,7 @@ bool SetParagraphTo(const String& text,
                     const ComputedStyle& block_style,
                     BidiParagraph& bidi) {
   if (UNLIKELY(block_style.GetUnicodeBidi() == UnicodeBidi::kPlaintext)) {
-    return bidi.SetParagraph(text, absl::nullopt);
+    return bidi.SetParagraph(text, std::nullopt);
   }
   return bidi.SetParagraph(text, block_style.Direction());
 }
@@ -1693,7 +1693,7 @@ static LayoutUnit ComputeContentSize(InlineNode node,
                                      const MinMaxSizesFloatInput& float_input,
                                      LineBreakerMode mode,
                                      LineBreaker::MaxSizeCache* max_size_cache,
-                                     absl::optional<LayoutUnit>* max_size_out,
+                                     std::optional<LayoutUnit>* max_size_out,
                                      bool* depends_on_block_constraints_out) {
   const ComputedStyle& style = node.Style();
   LayoutUnit available_inline_size =
@@ -2007,7 +2007,7 @@ MinMaxSizesResult InlineNode::ComputeMinMaxSizes(
   // break opportunity.
   LineBreaker::MaxSizeCache max_size_cache;
   MinMaxSizes sizes;
-  absl::optional<LayoutUnit> max_size;
+  std::optional<LayoutUnit> max_size;
   bool depends_on_block_constraints = false;
   sizes.min_size =
       ComputeContentSize(*this, container_writing_mode, space, float_input,

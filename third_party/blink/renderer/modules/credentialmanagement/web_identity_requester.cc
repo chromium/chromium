@@ -29,7 +29,7 @@ void WebIdentityRequester::ResolverAndProviders::Trace(Visitor* v) const {
 
 void WebIdentityRequester::OnRequestToken(
     mojom::blink::RequestTokenStatus status,
-    const absl::optional<KURL>& selected_idp_config_url,
+    const std::optional<KURL>& selected_idp_config_url,
     const WTF::String& token,
     mojom::blink::TokenErrorPtr error,
     bool is_auto_selected) {
@@ -225,7 +225,7 @@ void WebIdentityRequester::AbortRequest(ScriptState* script_state) {
 
   if (!is_requesting_token_) {
     OnRequestToken(mojom::blink::RequestTokenStatus::kErrorCanceled,
-                   absl::nullopt, "", nullptr, /*is_auto_selected=*/false);
+                   std::nullopt, "", nullptr, /*is_auto_selected=*/false);
     return;
   }
 

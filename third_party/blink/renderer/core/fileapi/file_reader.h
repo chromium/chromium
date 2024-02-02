@@ -136,7 +136,7 @@ class CORE_EXPORT FileReader final : public EventTarget,
   Member<FileReaderLoader> loader_;
   Member<V8UnionArrayBufferOrString> result_ = nullptr;
   Member<DOMException> error_;
-  absl::optional<base::ElapsedTimer> last_progress_notification_time_;
+  std::optional<base::ElapsedTimer> last_progress_notification_time_;
 };
 
 }  // namespace blink

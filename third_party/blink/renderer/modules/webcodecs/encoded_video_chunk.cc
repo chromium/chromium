@@ -88,9 +88,9 @@ int64_t EncodedVideoChunk::timestamp() const {
   return buffer_->timestamp().InMicroseconds();
 }
 
-absl::optional<uint64_t> EncodedVideoChunk::duration() const {
+std::optional<uint64_t> EncodedVideoChunk::duration() const {
   if (buffer_->duration() == media::kNoTimestamp)
-    return absl::nullopt;
+    return std::nullopt;
   return buffer_->duration().InMicroseconds();
 }
 

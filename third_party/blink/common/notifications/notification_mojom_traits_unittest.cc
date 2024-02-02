@@ -4,12 +4,13 @@
 
 #include "third_party/blink/public/common/notifications/notification_mojom_traits.h"
 
+#include <optional>
+
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/notifications/platform_notification_data.h"
 #include "third_party/blink/public/mojom/notifications/notification.mojom.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -62,7 +63,7 @@ TEST(NotificationStructTraitsTest, NotificationDataRoundtrip) {
   notification_data.actions[0]->action = "buttonAction";
   notification_data.actions[0]->title = u"Button Title!";
   notification_data.actions[0]->icon = GURL("https://example.com/aButton.png");
-  notification_data.actions[0]->placeholder = absl::nullopt;
+  notification_data.actions[0]->placeholder = std::nullopt;
 
   notification_data.actions[1] = blink::mojom::NotificationAction::New();
   notification_data.actions[1]->type =

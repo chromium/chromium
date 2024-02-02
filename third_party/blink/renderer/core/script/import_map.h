@@ -5,7 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_SCRIPT_IMPORT_MAP_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SCRIPT_IMPORT_MAP_H_
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include <optional>
+
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/script/import_map_error.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -28,7 +29,7 @@ class CORE_EXPORT ImportMap final : public GarbageCollected<ImportMap> {
   static ImportMap* Parse(const String& text,
                           const KURL& base_url,
                           ConsoleLogger& logger,
-                          absl::optional<ImportMapError>* error_to_rethrow);
+                          std::optional<ImportMapError>* error_to_rethrow);
 
   // <spec href="https://wicg.github.io/import-maps/#specifier-map">A specifier
   // map is an ordered map from strings to resolution results.</spec>
@@ -51,13 +52,13 @@ class CORE_EXPORT ImportMap final : public GarbageCollected<ImportMap> {
 
   // Return values of Resolve(), ResolveImportsMatch() and
   // ResolveImportsMatchInternal():
-  // - absl::nullopt: corresponds to returning a null in the spec,
+  // - std::nullopt: corresponds to returning a null in the spec,
   //   i.e. allowing fallback to a less specific scope etc.
   // - An invalid KURL: corresponds to throwing an error in the spec.
   // - A valid KURL: corresponds to returning a valid URL in the spec.
-  absl::optional<KURL> Resolve(const ParsedSpecifier&,
-                               const KURL& base_url,
-                               String* debug_message) const;
+  std::optional<KURL> Resolve(const ParsedSpecifier&,
+                              const KURL& base_url,
+                              String* debug_message) const;
 
   String ToString() const;
 
@@ -67,11 +68,11 @@ class CORE_EXPORT ImportMap final : public GarbageCollected<ImportMap> {
   using MatchResult = SpecifierMap::const_iterator;
 
   // https://wicg.github.io/import-maps/#resolve-an-imports-match
-  absl::optional<KURL> ResolveImportsMatch(const ParsedSpecifier&,
-                                           const SpecifierMap&,
-                                           String* debug_message) const;
-  absl::optional<MatchResult> MatchPrefix(const ParsedSpecifier&,
-                                          const SpecifierMap&) const;
+  std::optional<KURL> ResolveImportsMatch(const ParsedSpecifier&,
+                                          const SpecifierMap&,
+                                          String* debug_message) const;
+  std::optional<MatchResult> MatchPrefix(const ParsedSpecifier&,
+                                         const SpecifierMap&) const;
   static SpecifierMap SortAndNormalizeSpecifierMap(const JSONObject* imports,
                                                    const KURL& base_url,
                                                    ConsoleLogger&);

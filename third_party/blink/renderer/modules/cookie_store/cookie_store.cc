@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/cookie_store/cookie_store.h"
 
+#include <optional>
 #include <utility>
 
 #include "base/containers/contains.h"
@@ -11,7 +12,6 @@
 #include "net/cookies/canonical_cookie.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "services/network/public/mojom/restricted_cookie_manager.mojom-blink.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
@@ -154,7 +154,7 @@ std::unique_ptr<net::CanonicalCookie> ToCanonicalCookie(
     same_site = net::CookieSameSite::NO_RESTRICTION;
   }
 
-  absl::optional<net::CookiePartitionKey> cookie_partition_key = absl::nullopt;
+  std::optional<net::CookiePartitionKey> cookie_partition_key = std::nullopt;
   if (options->partitioned()) {
     // We don't trust the renderer to determine the cookie partition key, so we
     // use this factory to indicate we are using a temporary value here.

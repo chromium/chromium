@@ -62,7 +62,7 @@ void SimRequestBase::StartInternal() {
   started_ = true;
   client_->DidReceiveResponse(response_,
                               /*body=*/mojo::ScopedDataPipeConsumerHandle(),
-                              /*cached_metadata=*/absl::nullopt);
+                              /*cached_metadata=*/std::nullopt);
 }
 
 void SimRequestBase::Write(const String& data) {

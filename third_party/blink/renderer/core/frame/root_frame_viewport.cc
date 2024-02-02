@@ -704,7 +704,7 @@ const cc::SnapContainerData* RootFrameViewport::GetSnapContainerData() const {
 }
 
 void RootFrameViewport::SetSnapContainerData(
-    absl::optional<cc::SnapContainerData> data) {
+    std::optional<cc::SnapContainerData> data) {
   LayoutViewport().SetSnapContainerData(data);
 }
 
@@ -721,7 +721,7 @@ void RootFrameViewport::SetSnapContainerDataNeedsUpdate(bool needs_update) {
   LayoutViewport().SetSnapContainerDataNeedsUpdate(needs_update);
 }
 
-absl::optional<gfx::PointF> RootFrameViewport::GetSnapPositionAndSetTarget(
+std::optional<gfx::PointF> RootFrameViewport::GetSnapPositionAndSetTarget(
     const cc::SnapSelectionStrategy& strategy) {
   return LayoutViewport().GetSnapPositionAndSetTarget(strategy);
 }
@@ -752,7 +752,7 @@ const cc::SnappedTargetData* RootFrameViewport::GetSnapChangingTargetData()
 }
 
 void RootFrameViewport::SetSnapChangingTargetData(
-    absl::optional<cc::SnappedTargetData> data) {
+    std::optional<cc::SnappedTargetData> data) {
   LayoutViewport().SetSnapChangingTargetData(data);
 }
 

@@ -56,7 +56,7 @@ class PreCachedContainerSizes {
 
  private:
   const CSSToLengthConversionData* conversion_data_{nullptr};
-  mutable absl::optional<ContainerSizes> cache_;
+  mutable std::optional<ContainerSizes> cache_;
 };
 
 // Holds information about resources, requested by stylesheets.

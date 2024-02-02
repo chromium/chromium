@@ -112,12 +112,12 @@ void IceTransportAdapterImpl::OnStateChanged(
 }
 
 void IceTransportAdapterImpl::OnNetworkRouteChanged(
-    absl::optional<rtc::NetworkRoute> new_network_route) {
+    std::optional<rtc::NetworkRoute> new_network_route) {
   if (!ice_transport_channel()) {
     LOG(ERROR) << "OnNetworkRouteChanged called, but ICE transport released";
     return;
   }
-  const absl::optional<const cricket::CandidatePair> selected_pair =
+  const std::optional<const cricket::CandidatePair> selected_pair =
       ice_transport_channel()->GetSelectedCandidatePair();
   if (!selected_pair) {
     // The selected connection will only be null if the ICE connection has

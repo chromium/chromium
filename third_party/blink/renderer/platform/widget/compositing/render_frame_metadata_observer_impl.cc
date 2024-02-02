@@ -91,7 +91,7 @@ void RenderFrameMetadataObserverImpl::OnRenderFrameSubmission(
     // leave the browser process with out of date information. It is an
     // optional parameter which we clear here.
     if (!report_all_frame_submissions_for_testing_enabled_)
-      metadata_copy.root_scroll_offset = absl::nullopt;
+      metadata_copy.root_scroll_offset = std::nullopt;
 #endif
 
     last_frame_token_ = compositor_frame_metadata->frame_token;

@@ -310,7 +310,7 @@ class CORE_EXPORT VisualViewport : public GarbageCollected<VisualViewport>,
     overscroll_type_ = type;
     SetNeedsPaintPropertyUpdate();
   }
-  absl::optional<blink::Color> CSSScrollbarThumbColor() const;
+  std::optional<blink::Color> CSSScrollbarThumbColor() const;
 
  private:
   bool DidSetScaleOrLocation(float scale,

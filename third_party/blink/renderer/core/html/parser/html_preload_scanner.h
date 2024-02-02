@@ -28,13 +28,13 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_PARSER_HTML_PRELOAD_SCANNER_H_
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/memory/ptr_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "services/network/public/cpp/client_hints.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/media_values_cached.h"
@@ -72,7 +72,7 @@ using MetaCHValues = Vector<MetaCHValue>;
 // the main thread.
 struct PendingPreloadData {
   MetaCHValues meta_ch_values;
-  absl::optional<ViewportDescription> viewport;
+  std::optional<ViewportDescription> viewport;
   bool has_csp_meta_tag = false;
   bool has_located_potential_lcp_element = false;
   PreloadRequestStream requests;
@@ -121,7 +121,7 @@ class TokenPreloadScanner {
             const SegmentedString&,
             PreloadRequestStream& requests,
             MetaCHValues& meta_ch_values,
-            absl::optional<ViewportDescription>*,
+            std::optional<ViewportDescription>*,
             bool* is_csp_meta_tag);
 
   void SetPredictedBaseElementURL(const KURL& url) {
@@ -135,13 +135,13 @@ class TokenPreloadScanner {
 
   void HandleMetaNameAttribute(const HTMLToken& token,
                                MetaCHValues& meta_ch_values,
-                               absl::optional<ViewportDescription>* viewport);
+                               std::optional<ViewportDescription>* viewport);
 
   inline void ScanCommon(const HTMLToken&,
                          const SegmentedString&,
                          PreloadRequestStream& requests,
                          MetaCHValues& meta_ch_values,
-                         absl::optional<ViewportDescription>*,
+                         std::optional<ViewportDescription>*,
                          bool* is_csp_meta_tag);
 
   void UpdatePredictedBaseURL(const HTMLToken&);

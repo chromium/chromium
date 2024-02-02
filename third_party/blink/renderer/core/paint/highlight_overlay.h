@@ -163,7 +163,7 @@ class CORE_EXPORT HighlightOverlay {
       const Node*,
       const HighlightRegistry*,
       bool is_generated_text_fragment,
-      absl::optional<TextOffsetRange> dom_offsets,
+      std::optional<TextOffsetRange> dom_offsets,
       const LayoutSelectionStatus* selection,
       const DocumentMarkerVector& custom,
       const DocumentMarkerVector& grammar,

@@ -5,7 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_FRAGMENT_DATA_ITERATOR_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_FRAGMENT_DATA_ITERATOR_H_
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include <optional>
+
 #include "third_party/blink/renderer/core/layout/inline/inline_cursor.h"
 #include "third_party/blink/renderer/core/paint/fragment_data.h"
 
@@ -108,7 +109,7 @@ class AccompaniedFragmentIterator : public FragmentDataIterator {
   bool Advance();
 
  private:
-  absl::optional<InlineCursor> cursor_;
+  std::optional<InlineCursor> cursor_;
   const LayoutBox* ng_layout_box_ = nullptr;
 };
 

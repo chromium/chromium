@@ -43,7 +43,7 @@ BASE_FEATURE(kMediaFoundationVP9Encoding,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
-absl::optional<media::VideoCodecProfile> WebRTCFormatToCodecProfile(
+std::optional<media::VideoCodecProfile> WebRTCFormatToCodecProfile(
     const webrtc::SdpVideoFormat& sdp) {
   if (sdp.name == "H264") {
 #if !BUILDFLAG(IS_ANDROID)
@@ -56,7 +56,7 @@ absl::optional<media::VideoCodecProfile> WebRTCFormatToCodecProfile(
         blink::features::kWebRtcH264WithOpenH264FFmpeg);
 #endif  // BUILDFLAG(RTC_USE_H264) && BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
     if (!webrtc_h264_sw_enabled)
-      return absl::nullopt;
+      return std::nullopt;
 #endif
 
     return media::VideoCodecProfile::H264PROFILE_MIN;
@@ -67,12 +67,12 @@ absl::optional<media::VideoCodecProfile> WebRTCFormatToCodecProfile(
   } else if (sdp.name == "AV1") {
     return media::VideoCodecProfile::AV1PROFILE_MIN;
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 // Translate from media::VideoEncodeAccelerator::SupportedProfile to
 // webrtc::SdpVideoFormat, or return nothing if the profile isn't supported.
-absl::optional<webrtc::SdpVideoFormat> VEAToWebRTCFormat(
+std::optional<webrtc::SdpVideoFormat> VEAToWebRTCFormat(
     const media::VideoEncodeAccelerator::SupportedProfile& profile) {
   DCHECK_EQ(profile.max_framerate_denominator, 1U);
 
@@ -92,7 +92,7 @@ absl::optional<webrtc::SdpVideoFormat> VEAToWebRTCFormat(
         blink::features::kWebRtcH264WithOpenH264FFmpeg);
 #endif  // BUILDFLAG(RTC_USE_H264) && BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
     if (!webrtc_h264_sw_enabled)
-      return absl::nullopt;
+      return std::nullopt;
 #endif
 
     webrtc::H264Profile h264_profile;
@@ -116,7 +116,7 @@ absl::optional<webrtc::SdpVideoFormat> VEAToWebRTCFormat(
         break;
       default:
         // Unsupported H264 profile in WebRTC.
-        return absl::nullopt;
+        return std::nullopt;
     }
 
     const int width = profile.max_resolution.width();
@@ -124,7 +124,7 @@ absl::optional<webrtc::SdpVideoFormat> VEAToWebRTCFormat(
     const int fps = profile.max_framerate_numerator;
     DCHECK_EQ(1u, profile.max_framerate_denominator);
 
-    const absl::optional<webrtc::H264Level> h264_level =
+    const std::optional<webrtc::H264Level> h264_level =
         webrtc::H264SupportedLevel(width * height, fps);
     const webrtc::H264ProfileLevelId profile_level_id(
         h264_profile, h264_level.value_or(webrtc::H264Level::kLevel1));
@@ -150,7 +150,7 @@ absl::optional<webrtc::SdpVideoFormat> VEAToWebRTCFormat(
         break;
       default:
         // Unsupported VP9 profiles (profile1 & profile3) in WebRTC.
-        return absl::nullopt;
+        return std::nullopt;
     }
     webrtc::SdpVideoFormat format("VP9");
     format.parameters = {
@@ -164,7 +164,7 @@ absl::optional<webrtc::SdpVideoFormat> VEAToWebRTCFormat(
     return webrtc::SdpVideoFormat("AV1");
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }  // namespace
 
 struct SupportedFormats {
@@ -192,7 +192,7 @@ SupportedFormats GetSupportedFormatsInternal(
     if (base::Contains(disabled_profiles, profile.profile))
       continue;
 
-    absl::optional<webrtc::SdpVideoFormat> format = VEAToWebRTCFormat(profile);
+    std::optional<webrtc::SdpVideoFormat> format = VEAToWebRTCFormat(profile);
     if (format) {
       if (format->IsCodecInList(supported_formats.sdp_formats)) {
         continue;
@@ -234,7 +234,7 @@ bool IsConstrainedH264(const webrtc::SdpVideoFormat& format) {
   bool is_constrained_h264 = false;
 
   if (format.name == cricket::kH264CodecName) {
-    const absl::optional<webrtc::H264ProfileLevelId> profile_level_id =
+    const std::optional<webrtc::H264ProfileLevelId> profile_level_id =
         webrtc::ParseSdpForH264ProfileLevelId(format.parameters);
     if (profile_level_id &&
         profile_level_id->profile ==
@@ -342,7 +342,7 @@ RTCVideoEncoderFactory::GetSupportedFormats() const {
 webrtc::VideoEncoderFactory::CodecSupport
 RTCVideoEncoderFactory::QueryCodecSupport(
     const webrtc::SdpVideoFormat& format,
-    absl::optional<std::string> scalability_mode) const {
+    std::optional<std::string> scalability_mode) const {
   CheckAndWaitEncoderSupportStatusIfNeeded();
   SupportedFormats supported_formats =
       GetSupportedFormatsInternal(gpu_factories_, disabled_profiles_);

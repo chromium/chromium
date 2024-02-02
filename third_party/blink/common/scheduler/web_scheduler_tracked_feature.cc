@@ -172,12 +172,12 @@ std::string FeatureToShortString(WebSchedulerTrackedFeature feature) {
   return FeatureToNames(feature).short_name;
 }
 
-absl::optional<WebSchedulerTrackedFeature> StringToFeature(
+std::optional<WebSchedulerTrackedFeature> StringToFeature(
     const std::string& str) {
   auto map = ShortStringToFeatureMap();
   auto it = map.find(str);
   if (it == map.end()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return it->second;
 }

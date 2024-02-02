@@ -145,7 +145,7 @@ class ScrollAnchorTest : public SimTest {
     scrollbar_drag_point_.reset();
   }
 
-  absl::optional<gfx::PointF> scrollbar_drag_point_;
+  std::optional<gfx::PointF> scrollbar_drag_point_;
 };
 
 // TODO(skobes): Convert this to web-platform-tests when visual viewport API is

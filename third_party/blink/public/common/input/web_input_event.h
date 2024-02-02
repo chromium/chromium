@@ -34,10 +34,10 @@
 #include <string.h>
 
 #include <memory>
+#include <optional>
 
 #include "base/notreached.h"
 #include "base/time/time.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/common_export.h"
 #include "third_party/blink/public/mojom/input/input_event.mojom-shared.h"
 #include "ui/events/event_latency_metadata.h"

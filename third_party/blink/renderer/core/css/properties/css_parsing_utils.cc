@@ -165,12 +165,12 @@ CSSValue* ConsumeBaseline(CSSParserTokenRange& range) {
   return baseline;
 }
 
-absl::optional<cssvalue::CSSLinearStop> ConsumeLinearStop(
+std::optional<cssvalue::CSSLinearStop> ConsumeLinearStop(
     CSSParserTokenRange& range,
     const CSSParserContext& context) {
-  absl::optional<double> number;
-  absl::optional<double> length_a;
-  absl::optional<double> length_b;
+  std::optional<double> number;
+  std::optional<double> length_a;
+  std::optional<double> length_b;
   while (!range.AtEnd()) {
     if (range.Peek().GetType() == kCommaToken) {
       break;
@@ -206,7 +206,7 @@ CSSValue* ConsumeLinear(CSSParserTokenRange& range,
   CSSParserTokenRange range_copy = range;
   CSSParserTokenRange args = ConsumeFunction(range_copy);
   Vector<cssvalue::CSSLinearStop> stop_list{};
-  absl::optional<cssvalue::CSSLinearStop> linear_stop;
+  std::optional<cssvalue::CSSLinearStop> linear_stop;
   do {
     linear_stop = ConsumeLinearStop(args, context);
     if (!linear_stop.has_value()) {
@@ -410,7 +410,7 @@ cssvalue::CSSBasicShapeCircleValue* ConsumeBasicShapeCircle(
     CSSValue* center_x = nullptr;
     CSSValue* center_y = nullptr;
     if (!ConsumePosition(args, context, UnitlessQuirk::kForbid,
-                         absl::optional<WebFeature>(), center_x, center_y)) {
+                         std::optional<WebFeature>(), center_x, center_y)) {
       return nullptr;
     }
     shape->SetCenterX(center_x);
@@ -439,7 +439,7 @@ cssvalue::CSSBasicShapeEllipseValue* ConsumeBasicShapeEllipse(
     CSSValue* center_x = nullptr;
     CSSValue* center_y = nullptr;
     if (!ConsumePosition(args, context, UnitlessQuirk::kForbid,
-                         absl::optional<WebFeature>(), center_x, center_y)) {
+                         std::optional<WebFeature>(), center_x, center_y)) {
       return nullptr;
     }
     shape->SetCenterX(center_x);
@@ -1332,7 +1332,7 @@ CSSPrimitiveValue* ConsumeGradientLengthOrPercent(
 static CSSPrimitiveValue* ConsumeNumericLiteralAngle(
     CSSParserTokenRange& range,
     const CSSParserContext& context,
-    absl::optional<WebFeature> unitless_zero_feature) {
+    std::optional<WebFeature> unitless_zero_feature) {
   const CSSParserToken& token = range.Peek();
   if (token.GetType() == kDimensionToken) {
     switch (token.GetUnitType()) {
@@ -1396,12 +1396,11 @@ static CSSPrimitiveValue* ConsumeMathFunctionAngle(
   return math_parser.ConsumeValue();
 }
 
-CSSPrimitiveValue* ConsumeAngle(
-    CSSParserTokenRange& range,
-    const CSSParserContext& context,
-    absl::optional<WebFeature> unitless_zero_feature,
-    double minimum_value,
-    double maximum_value) {
+CSSPrimitiveValue* ConsumeAngle(CSSParserTokenRange& range,
+                                const CSSParserContext& context,
+                                std::optional<WebFeature> unitless_zero_feature,
+                                double minimum_value,
+                                double maximum_value) {
   if (auto* result =
           ConsumeNumericLiteralAngle(range, context, unitless_zero_feature)) {
     return result;
@@ -1413,7 +1412,7 @@ CSSPrimitiveValue* ConsumeAngle(
 CSSPrimitiveValue* ConsumeAngle(
     CSSParserTokenRange& range,
     const CSSParserContext& context,
-    absl::optional<WebFeature> unitless_zero_feature) {
+    std::optional<WebFeature> unitless_zero_feature) {
   if (auto* result =
           ConsumeNumericLiteralAngle(range, context, unitless_zero_feature)) {
     return result;
@@ -1628,7 +1627,7 @@ static bool ConsumeColorInterpolationSpace(
     return false;
   }
 
-  absl::optional<Color::ColorSpace> read_color_space;
+  std::optional<Color::ColorSpace> read_color_space;
   if (ConsumeIdent<CSSValueID::kXyz>(args)) {
     read_color_space = Color::ColorSpace::kXYZD65;
   } else if (ConsumeIdent<CSSValueID::kXyzD50>(args)) {
@@ -1655,7 +1654,7 @@ static bool ConsumeColorInterpolationSpace(
 
   if (read_color_space) {
     color_space = read_color_space.value();
-    absl::optional<Color::HueInterpolationMethod> read_hue;
+    std::optional<Color::HueInterpolationMethod> read_hue;
     if (color_space == Color::ColorSpace::kHSL ||
         color_space == Color::ColorSpace::kHWB ||
         color_space == Color::ColorSpace::kLch ||
@@ -1855,7 +1854,7 @@ CSSValue* ConsumeColorContrast(CSSParserTokenRange& range,
     return nullptr;
   }
 
-  absl::optional<double> target_contrast;
+  std::optional<double> target_contrast;
   if (ConsumeIdent<CSSValueID::kTo>(args)) {
     double target_contrast_temp;
     if (ConsumeIdent<CSSValueID::kAA>(args)) {
@@ -2126,7 +2125,7 @@ static void PositionFromThreeOrFourValues(CSSValue** values,
 bool ConsumePosition(CSSParserTokenRange& range,
                      const CSSParserContext& context,
                      UnitlessQuirk unitless,
-                     absl::optional<WebFeature> three_value_position,
+                     std::optional<WebFeature> three_value_position,
                      CSSValue*& result_x,
                      CSSValue*& result_y) {
   bool horizontal_edge = false;
@@ -2211,7 +2210,7 @@ bool ConsumePosition(CSSParserTokenRange& range,
 CSSValuePair* ConsumePosition(CSSParserTokenRange& range,
                               const CSSParserContext& context,
                               UnitlessQuirk unitless,
-                              absl::optional<WebFeature> three_value_position) {
+                              std::optional<WebFeature> three_value_position) {
   CSSValue* result_x = nullptr;
   CSSValue* result_y = nullptr;
   if (ConsumePosition(range, context, unitless, three_value_position, result_x,
@@ -2666,7 +2665,7 @@ static CSSValue* ConsumeRadialGradient(CSSParserTokenRange& args,
   if (args.Peek().Id() == CSSValueID::kAt) {
     args.ConsumeIncludingWhitespace();
     ConsumePosition(args, context, UnitlessQuirk::kForbid,
-                    absl::optional<WebFeature>(), center_x, center_y);
+                    std::optional<WebFeature>(), center_x, center_y);
     if (!(center_x && center_y)) {
       return nullptr;
     }
@@ -2789,7 +2788,7 @@ static CSSValue* ConsumeConicGradient(CSSParserTokenRange& args,
   CSSValue* center_y = nullptr;
   if (ConsumeIdent<CSSValueID::kAt>(args)) {
     if (!ConsumePosition(args, context, UnitlessQuirk::kForbid,
-                         absl::optional<WebFeature>(), center_x, center_y)) {
+                         std::optional<WebFeature>(), center_x, center_y)) {
       return nullptr;
     }
   }
@@ -4195,7 +4194,7 @@ CSSValue* ConsumeMaskMode(CSSParserTokenRange& range) {
 CSSPrimitiveValue* ConsumeLengthOrPercentCountNegative(
     CSSParserTokenRange& range,
     const CSSParserContext& context,
-    absl::optional<WebFeature> negative_size) {
+    std::optional<WebFeature> negative_size) {
   CSSPrimitiveValue* result = ConsumeLengthOrPercent(
       range, context, CSSPrimitiveValue::ValueRange::kNonNegative,
       UnitlessQuirk::kForbid);
@@ -4207,7 +4206,7 @@ CSSPrimitiveValue* ConsumeLengthOrPercentCountNegative(
 
 CSSValue* ConsumeBackgroundSize(CSSParserTokenRange& range,
                                 const CSSParserContext& context,
-                                absl::optional<WebFeature> negative_size,
+                                std::optional<WebFeature> negative_size,
                                 ParsingStyle parsing_style) {
   if (IdentMatches<CSSValueID::kContain, CSSValueID::kCover>(
           range.Peek().Id())) {
@@ -4252,7 +4251,7 @@ static void SetAllowsNegativePercentageReference(CSSValue* value) {
 bool ConsumeBackgroundPosition(CSSParserTokenRange& range,
                                const CSSParserContext& context,
                                UnitlessQuirk unitless,
-                               absl::optional<WebFeature> three_value_position,
+                               std::optional<WebFeature> three_value_position,
                                const CSSValue*& result_x,
                                const CSSValue*& result_y) {
   HeapVector<Member<const CSSValue>, 4> values_x;
@@ -4313,7 +4312,7 @@ CSSValue* ParseBackgroundBox(CSSParserTokenRange& range,
 CSSValue* ParseBackgroundSize(CSSParserTokenRange& range,
                               const CSSParserContext& context,
                               const CSSParserLocalContext& local_context,
-                              absl::optional<WebFeature> negative_size) {
+                              std::optional<WebFeature> negative_size) {
   return ConsumeCommaSeparatedList(
       ConsumeBackgroundSize, range, context, negative_size,
       local_context.UseAliasParsing() ? ParsingStyle::kLegacy
@@ -4323,7 +4322,7 @@ CSSValue* ParseBackgroundSize(CSSParserTokenRange& range,
 CSSValue* ParseMaskSize(CSSParserTokenRange& range,
                         const CSSParserContext& context,
                         const CSSParserLocalContext& local_context,
-                        absl::optional<WebFeature> negative_size) {
+                        std::optional<WebFeature> negative_size) {
   return ConsumeCommaSeparatedList(ConsumeBackgroundSize, range, context,
                                    negative_size, ParsingStyle::kNotLegacy);
 }
@@ -5188,7 +5187,7 @@ CSSValue* ConsumeFontStyle(CSSParserTokenRange& range,
       ConsumeIdent<CSSValueID::kOblique>(range);
 
   CSSPrimitiveValue* start_angle = ConsumeAngle(
-      range, context, absl::nullopt, kMinObliqueValue, kMaxObliqueValue);
+      range, context, std::nullopt, kMinObliqueValue, kMaxObliqueValue);
   if (!start_angle) {
     return oblique_identifier;
   }
@@ -5204,7 +5203,7 @@ CSSValue* ConsumeFontStyle(CSSParserTokenRange& range,
   }
 
   CSSPrimitiveValue* end_angle = ConsumeAngle(
-      range, context, absl::nullopt, kMinObliqueValue, kMaxObliqueValue);
+      range, context, std::nullopt, kMinObliqueValue, kMaxObliqueValue);
   if (!end_angle || !IsAngleWithinLimits(end_angle)) {
     return nullptr;
   }
@@ -6281,8 +6280,7 @@ CSSValue* ConsumeRay(CSSParserTokenRange& range,
   CSSValue* y = nullptr;
   while (!function_args.AtEnd()) {
     if (!angle) {
-      angle =
-          ConsumeAngle(function_args, context, absl::optional<WebFeature>());
+      angle = ConsumeAngle(function_args, context, std::optional<WebFeature>());
       if (angle) {
         continue;
       }
@@ -6304,7 +6302,7 @@ CSSValue* ConsumeRay(CSSParserTokenRange& range,
     }
     if (!position && ConsumeIdent<CSSValueID::kAt>(function_args)) {
       position = ConsumePosition(function_args, context, UnitlessQuirk::kForbid,
-                                 absl::optional<WebFeature>(), x, y);
+                                 std::optional<WebFeature>(), x, y);
       if (position) {
         continue;
       }
@@ -6472,7 +6470,7 @@ CSSValue* ConsumePathOrNone(CSSParserTokenRange& range) {
 
 CSSValue* ConsumeOffsetRotate(CSSParserTokenRange& range,
                               const CSSParserContext& context) {
-  CSSValue* angle = ConsumeAngle(range, context, absl::optional<WebFeature>());
+  CSSValue* angle = ConsumeAngle(range, context, std::optional<WebFeature>());
   CSSValue* keyword =
       ConsumeIdent<CSSValueID::kAuto, CSSValueID::kReverse>(range);
   if (!angle && !keyword) {
@@ -6480,7 +6478,7 @@ CSSValue* ConsumeOffsetRotate(CSSParserTokenRange& range,
   }
 
   if (!angle) {
-    angle = ConsumeAngle(range, context, absl::optional<WebFeature>());
+    angle = ConsumeAngle(range, context, std::optional<WebFeature>());
   }
 
   CSSValueList* list = CSSValueList::CreateSpaceSeparated();

@@ -184,7 +184,7 @@ class AudioTrackMojoEncoderTest : public testing::Test {
       base::BindLambdaForTesting(
           [this](const media::AudioParameters& /*params*/,
                  std::string /*encoded_data*/,
-                 absl::optional<
+                 std::optional<
                      media::AudioEncoder::CodecDescription> /*codec_desc*/,
                  base::TimeTicks /*capture_time*/) { ++output_count_; })};
 };

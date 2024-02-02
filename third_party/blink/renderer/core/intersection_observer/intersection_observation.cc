@@ -38,8 +38,8 @@ IntersectionObservation::IntersectionObservation(IntersectionObserver& observer,
 int64_t IntersectionObservation::ComputeIntersection(
     unsigned compute_flags,
     gfx::Vector2dF accumulated_scroll_delta_since_last_update,
-    absl::optional<base::TimeTicks>& monotonic_time,
-    absl::optional<IntersectionGeometry::RootGeometry>& root_geometry) {
+    std::optional<base::TimeTicks>& monotonic_time,
+    std::optional<IntersectionGeometry::RootGeometry>& root_geometry) {
   DCHECK(Observer());
   cached_rects_.min_scroll_delta_to_update -=
       accumulated_scroll_delta_since_last_update;
@@ -177,7 +177,7 @@ bool IntersectionObservation::CanUseCachedRectsForTesting() const {
   // This is to avoid the side effects of IntersectionGeometry.
   IntersectionGeometry::CachedRects cached_rects_copy = cached_rects_;
 
-  absl::optional<IntersectionGeometry::RootGeometry> root_geometry;
+  std::optional<IntersectionGeometry::RootGeometry> root_geometry;
   IntersectionGeometry geometry(observer_->root(), *target_,
                                 /* root_margin */ {},
                                 /* thresholds */ {0},

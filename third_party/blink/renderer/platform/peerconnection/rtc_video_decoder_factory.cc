@@ -60,7 +60,7 @@ constexpr std::array<CodecConfig, 9> kCodecConfigs = {{
 
 // Translate from media::VideoDecoderConfig to webrtc::SdpVideoFormat, or return
 // nothing if the profile isn't supported.
-absl::optional<webrtc::SdpVideoFormat> VdcToWebRtcFormat(
+std::optional<webrtc::SdpVideoFormat> VdcToWebRtcFormat(
     const media::VideoDecoderConfig& config) {
   switch (config.codec()) {
     case media::VideoCodec::kAV1:
@@ -81,7 +81,7 @@ absl::optional<webrtc::SdpVideoFormat> VdcToWebRtcFormat(
           break;
         default:
           // Unsupported profile in WebRTC.
-          return absl::nullopt;
+          return std::nullopt;
       }
       return webrtc::SdpVideoFormat(
           cricket::kVp9CodecName, {{webrtc::kVP9FmtpProfileId,
@@ -104,13 +104,13 @@ absl::optional<webrtc::SdpVideoFormat> VdcToWebRtcFormat(
           break;
         default:
           // Unsupported H264 profile in WebRTC.
-          return absl::nullopt;
+          return std::nullopt;
       }
 
       const int width = config.visible_rect().width();
       const int height = config.visible_rect().height();
 
-      const absl::optional<webrtc::H264Level> h264_level =
+      const std::optional<webrtc::H264Level> h264_level =
           webrtc::H264SupportedLevel(width * height, kDefaultFps);
       const webrtc::H264ProfileLevelId profile_level_id(
           h264_profile, h264_level.value_or(webrtc::H264Level::kLevel1));
@@ -123,7 +123,7 @@ absl::optional<webrtc::SdpVideoFormat> VdcToWebRtcFormat(
       return format;
     }
     default:
-      return absl::nullopt;
+      return std::nullopt;
   }
 }
 
@@ -212,7 +212,7 @@ RTCVideoDecoderFactory::GetSupportedFormats() const {
         gfx::Rect(kDefaultSize), kDefaultSize, media::EmptyExtraData(),
         media::EncryptionScheme::kUnencrypted);
     config.set_is_rtc(true);
-    absl::optional<webrtc::SdpVideoFormat> format;
+    std::optional<webrtc::SdpVideoFormat> format;
 
     // The RTCVideoDecoderAdapter is for HW decoders only, so ignore it if there
     // are no gpu_factories_.

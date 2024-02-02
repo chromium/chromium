@@ -27,8 +27,8 @@ OpenTypeBaselineMetrics::OpenTypeBaselineMetrics(HarfBuzzFace* harf_buzz_face,
   font_ = harf_buzz_face->GetScaledFont();
 }
 
-absl::optional<float> OpenTypeBaselineMetrics::OpenTypeAlphabeticBaseline() {
-  absl::optional<float> result;
+std::optional<float> OpenTypeBaselineMetrics::OpenTypeAlphabeticBaseline() {
+  std::optional<float> result;
   DCHECK(font_);
 
   hb_position_t position;
@@ -41,8 +41,8 @@ absl::optional<float> OpenTypeBaselineMetrics::OpenTypeAlphabeticBaseline() {
   return result;
 }
 
-absl::optional<float> OpenTypeBaselineMetrics::OpenTypeHangingBaseline() {
-  absl::optional<float> result;
+std::optional<float> OpenTypeBaselineMetrics::OpenTypeHangingBaseline() {
+  std::optional<float> result;
   DCHECK(font_);
 
   hb_position_t position;
@@ -55,8 +55,8 @@ absl::optional<float> OpenTypeBaselineMetrics::OpenTypeHangingBaseline() {
   return result;
 }
 
-absl::optional<float> OpenTypeBaselineMetrics::OpenTypeIdeographicBaseline() {
-  absl::optional<float> result;
+std::optional<float> OpenTypeBaselineMetrics::OpenTypeIdeographicBaseline() {
+  std::optional<float> result;
   DCHECK(font_);
 
   hb_position_t position;

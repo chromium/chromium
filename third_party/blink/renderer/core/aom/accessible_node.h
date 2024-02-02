@@ -5,7 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_AOM_ACCESSIBLE_NODE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_AOM_ACCESSIBLE_NODE_H_
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include <optional>
+
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/element_rare_data_field.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
@@ -146,14 +147,14 @@ class CORE_EXPORT AccessibleNode : public EventTarget,
                           HeapVector<Member<Element>>&);
 
   // Returns the given boolean property.
-  absl::optional<bool> GetProperty(AOMBooleanProperty) const;
+  std::optional<bool> GetProperty(AOMBooleanProperty) const;
 
   // Returns the value of the given property if the
   // Element has an AccessibleNode. Sets |isNull| if the property and
   // attribute are not present.
-  static absl::optional<int32_t> GetProperty(Element*, AOMIntProperty);
-  static absl::optional<uint32_t> GetProperty(Element*, AOMUIntProperty);
-  static absl::optional<float> GetProperty(Element*, AOMFloatProperty);
+  static std::optional<int32_t> GetProperty(Element*, AOMIntProperty);
+  static std::optional<uint32_t> GetProperty(Element*, AOMUIntProperty);
+  static std::optional<float> GetProperty(Element*, AOMFloatProperty);
 
   // Does the attribute value match one of the ARIA undefined patterns for
   // boolean and token properties?
@@ -207,14 +208,14 @@ class CORE_EXPORT AccessibleNode : public EventTarget,
   AccessibleNode* activeDescendant() const;
   void setActiveDescendant(AccessibleNode*);
 
-  absl::optional<bool> atomic() const;
-  void setAtomic(absl::optional<bool>);
+  std::optional<bool> atomic() const;
+  void setAtomic(std::optional<bool>);
 
   AtomicString autocomplete() const;
   void setAutocomplete(const AtomicString&);
 
-  absl::optional<bool> busy() const;
-  void setBusy(absl::optional<bool>);
+  std::optional<bool> busy() const;
+  void setBusy(std::optional<bool>);
 
   AtomicString brailleLabel() const;
   void setBrailleLabel(const AtomicString&);
@@ -225,14 +226,14 @@ class CORE_EXPORT AccessibleNode : public EventTarget,
   AtomicString checked() const;
   void setChecked(const AtomicString&);
 
-  absl::optional<int32_t> colCount() const;
-  void setColCount(absl::optional<int32_t>);
+  std::optional<int32_t> colCount() const;
+  void setColCount(std::optional<int32_t>);
 
-  absl::optional<uint32_t> colIndex() const;
-  void setColIndex(absl::optional<uint32_t>);
+  std::optional<uint32_t> colIndex() const;
+  void setColIndex(std::optional<uint32_t>);
 
-  absl::optional<uint32_t> colSpan() const;
-  void setColSpan(absl::optional<uint32_t>);
+  std::optional<uint32_t> colSpan() const;
+  void setColSpan(std::optional<uint32_t>);
 
   AccessibleNodeList* controls() const;
   void setControls(AccessibleNodeList*);
@@ -249,14 +250,14 @@ class CORE_EXPORT AccessibleNode : public EventTarget,
   AccessibleNodeList* details() const;
   void setDetails(AccessibleNodeList*);
 
-  absl::optional<bool> disabled() const;
-  void setDisabled(absl::optional<bool>);
+  std::optional<bool> disabled() const;
+  void setDisabled(std::optional<bool>);
 
   AccessibleNodeList* errorMessage() const;
   void setErrorMessage(AccessibleNodeList*);
 
-  absl::optional<bool> expanded() const;
-  void setExpanded(absl::optional<bool>);
+  std::optional<bool> expanded() const;
+  void setExpanded(std::optional<bool>);
 
   AccessibleNodeList* flowTo() const;
   void setFlowTo(AccessibleNodeList*);
@@ -264,8 +265,8 @@ class CORE_EXPORT AccessibleNode : public EventTarget,
   AtomicString hasPopup() const;
   void setHasPopup(const AtomicString&);
 
-  absl::optional<bool> hidden() const;
-  void setHidden(absl::optional<bool>);
+  std::optional<bool> hidden() const;
+  void setHidden(std::optional<bool>);
 
   AtomicString invalid() const;
   void setInvalid(const AtomicString&);
@@ -279,20 +280,20 @@ class CORE_EXPORT AccessibleNode : public EventTarget,
   AccessibleNodeList* labeledBy();
   void setLabeledBy(AccessibleNodeList*);
 
-  absl::optional<uint32_t> level() const;
-  void setLevel(absl::optional<uint32_t>);
+  std::optional<uint32_t> level() const;
+  void setLevel(std::optional<uint32_t>);
 
   AtomicString live() const;
   void setLive(const AtomicString&);
 
-  absl::optional<bool> modal() const;
-  void setModal(absl::optional<bool>);
+  std::optional<bool> modal() const;
+  void setModal(std::optional<bool>);
 
-  absl::optional<bool> multiline() const;
-  void setMultiline(absl::optional<bool>);
+  std::optional<bool> multiline() const;
+  void setMultiline(std::optional<bool>);
 
-  absl::optional<bool> multiselectable() const;
-  void setMultiselectable(absl::optional<bool>);
+  std::optional<bool> multiselectable() const;
+  void setMultiselectable(std::optional<bool>);
 
   AtomicString orientation() const;
   void setOrientation(const AtomicString&);
@@ -303,20 +304,20 @@ class CORE_EXPORT AccessibleNode : public EventTarget,
   AtomicString placeholder() const;
   void setPlaceholder(const AtomicString&);
 
-  absl::optional<uint32_t> posInSet() const;
-  void setPosInSet(absl::optional<uint32_t>);
+  std::optional<uint32_t> posInSet() const;
+  void setPosInSet(std::optional<uint32_t>);
 
   AtomicString pressed() const;
   void setPressed(const AtomicString&);
 
-  absl::optional<bool> readOnly() const;
-  void setReadOnly(absl::optional<bool>);
+  std::optional<bool> readOnly() const;
+  void setReadOnly(std::optional<bool>);
 
   AtomicString relevant() const;
   void setRelevant(const AtomicString&);
 
-  absl::optional<bool> required() const;
-  void setRequired(absl::optional<bool>);
+  std::optional<bool> required() const;
+  void setRequired(std::optional<bool>);
 
   AtomicString role() const;
   void setRole(const AtomicString&);
@@ -324,32 +325,32 @@ class CORE_EXPORT AccessibleNode : public EventTarget,
   AtomicString roleDescription() const;
   void setRoleDescription(const AtomicString&);
 
-  absl::optional<int32_t> rowCount() const;
-  void setRowCount(absl::optional<int32_t>);
+  std::optional<int32_t> rowCount() const;
+  void setRowCount(std::optional<int32_t>);
 
-  absl::optional<uint32_t> rowIndex() const;
-  void setRowIndex(absl::optional<uint32_t>);
+  std::optional<uint32_t> rowIndex() const;
+  void setRowIndex(std::optional<uint32_t>);
 
-  absl::optional<uint32_t> rowSpan() const;
-  void setRowSpan(absl::optional<uint32_t>);
+  std::optional<uint32_t> rowSpan() const;
+  void setRowSpan(std::optional<uint32_t>);
 
-  absl::optional<bool> selected() const;
-  void setSelected(absl::optional<bool>);
+  std::optional<bool> selected() const;
+  void setSelected(std::optional<bool>);
 
-  absl::optional<int32_t> setSize() const;
-  void setSetSize(absl::optional<int32_t>);
+  std::optional<int32_t> setSize() const;
+  void setSetSize(std::optional<int32_t>);
 
   AtomicString sort() const;
   void setSort(const AtomicString&);
 
-  absl::optional<float> valueMax() const;
-  void setValueMax(absl::optional<float>);
+  std::optional<float> valueMax() const;
+  void setValueMax(std::optional<float>);
 
-  absl::optional<float> valueMin() const;
-  void setValueMin(absl::optional<float>);
+  std::optional<float> valueMin() const;
+  void setValueMin(std::optional<float>);
 
-  absl::optional<float> valueNow() const;
-  void setValueNow(absl::optional<float>);
+  std::optional<float> valueNow() const;
+  void setValueNow(std::optional<float>);
 
   AtomicString valueText() const;
   void setValueText(const AtomicString&);
@@ -393,10 +394,10 @@ class CORE_EXPORT AccessibleNode : public EventTarget,
   void SetStringProperty(AOMStringProperty, const AtomicString&);
   void SetRelationProperty(AOMRelationProperty, AccessibleNode*);
   void SetRelationListProperty(AOMRelationListProperty, AccessibleNodeList*);
-  void SetBooleanProperty(AOMBooleanProperty, absl::optional<bool> value);
-  void SetIntProperty(AOMIntProperty, absl::optional<int32_t> value);
-  void SetUIntProperty(AOMUIntProperty, absl::optional<uint32_t> value);
-  void SetFloatProperty(AOMFloatProperty, absl::optional<float> value);
+  void SetBooleanProperty(AOMBooleanProperty, std::optional<bool> value);
+  void SetIntProperty(AOMIntProperty, std::optional<int32_t> value);
+  void SetUIntProperty(AOMUIntProperty, std::optional<uint32_t> value);
+  void SetFloatProperty(AOMFloatProperty, std::optional<float> value);
   void NotifyAttributeChanged(const blink::QualifiedName&);
   AXObjectCache* GetAXObjectCache();
 

@@ -81,9 +81,9 @@ std::unique_ptr<cc::ScopedPauseRendering> EmptyChromeClient::PauseRendering(
   return nullptr;
 }
 
-absl::optional<int> EmptyChromeClient::GetMaxRenderBufferBounds(
+std::optional<int> EmptyChromeClient::GetMaxRenderBufferBounds(
     LocalFrame& frame) const {
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void EmptyChromeClient::OpenTextDataListChooser(HTMLInputElement&) {}
@@ -123,7 +123,7 @@ void EmptyLocalFrameClient::BeginNavigation(
     mojo::PendingRemote<mojom::blink::BlobURLToken>,
     base::TimeTicks,
     const String&,
-    const absl::optional<Impression>&,
+    const std::optional<Impression>&,
     const LocalFrameToken* initiator_frame_token,
     std::unique_ptr<SourceLocation>,
     mojo::PendingRemote<mojom::blink::PolicyContainerHostKeepAliveHandle>,

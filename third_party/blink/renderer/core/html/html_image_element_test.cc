@@ -65,7 +65,7 @@ TEST_F(HTMLImageElementTest, width) {
   image->setAttribute(html_names::kWidthAttr, AtomicString("400"));
   // TODO(yoav): `width` does not impact resourceWidth until we resolve
   // https://github.com/ResponsiveImagesCG/picture-element/issues/268
-  EXPECT_EQ(absl::nullopt, image->GetResourceWidth());
+  EXPECT_EQ(std::nullopt, image->GetResourceWidth());
   image->setAttribute(html_names::kSizesAttr, AtomicString("100vw"));
   EXPECT_EQ(500, image->GetResourceWidth());
 }

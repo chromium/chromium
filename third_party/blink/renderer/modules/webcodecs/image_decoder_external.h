@@ -98,7 +98,7 @@ class MODULES_EXPORT ImageDecoderExternal final
   String mime_type_;
 
   // Copy of |preferAnimation| from |init_data_|.
-  absl::optional<bool> prefer_animation_;
+  std::optional<bool> prefer_animation_;
 
   // Currently configured AnimationOption for |decoder_|.
   ImageDecoder::AnimationOption animation_option_ =
@@ -151,11 +151,11 @@ class MODULES_EXPORT ImageDecoderExternal final
     uint32_t frame_index;
     bool complete_frames_only;
     bool pending = false;
-    absl::optional<size_t> bytes_read_index;
+    std::optional<size_t> bytes_read_index;
     Member<ImageDecodeResult> result;
     std::unique_ptr<base::AtomicFlag> abort_flag;
 
-    absl::optional<String> range_error_message;
+    std::optional<String> range_error_message;
     Member<DOMException> exception;
   };
   HeapVector<Member<DecodeRequest>> pending_decodes_;

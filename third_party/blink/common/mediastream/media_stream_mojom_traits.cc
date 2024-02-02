@@ -33,7 +33,7 @@ bool StructTraits<blink::mojom::MediaStreamDeviceDataView,
     return false;
   if (!input.ReadInput(&out->input))
     return false;
-  absl::optional<base::UnguessableToken> session_id;
+  std::optional<base::UnguessableToken> session_id;
   if (input.ReadSessionId(&session_id)) {
     out->set_session_id(session_id ? *session_id : base::UnguessableToken());
   } else {

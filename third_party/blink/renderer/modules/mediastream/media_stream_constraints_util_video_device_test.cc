@@ -5,12 +5,12 @@
 #include "third_party/blink/renderer/modules/mediastream/media_stream_constraints_util_video_device.h"
 
 #include <algorithm>
+#include <optional>
 #include <utility>
 
 #include "base/memory/raw_ptr.h"
 #include "media/base/limits.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/web/modules/mediastream/media_stream_video_source.h"
 #include "third_party/blink/renderer/modules/mediastream/media_constraints.h"
@@ -46,7 +46,7 @@ void CheckTrackAdapterSettingsEqualsResolution(
 
 void CheckTrackAdapterSettingsEqualsFrameRate(
     const VideoCaptureSettings& settings,
-    absl::optional<double> value = absl::nullopt) {
+    std::optional<double> value = std::nullopt) {
   EXPECT_EQ(value, settings.track_adapter_settings().max_frame_rate());
 }
 
@@ -181,9 +181,9 @@ class MediaStreamConstraintsUtilVideoDeviceTest : public testing::Test {
     capabilities_.device_capabilities.push_back(std::move(device));
 
     capabilities_.noise_reduction_capabilities = {
-        absl::optional<bool>(),
-        absl::optional<bool>(true),
-        absl::optional<bool>(false),
+        std::optional<bool>(),
+        std::optional<bool>(true),
+        std::optional<bool>(false),
     };
 
     default_device_ = &capabilities_.device_capabilities[0];
@@ -253,7 +253,7 @@ TEST_F(MediaStreamConstraintsUtilVideoDeviceTest, Unconstrained) {
   EXPECT_EQ(default_device_->device_id.Utf8(), result.device_id());
   EXPECT_EQ(*default_closest_format_, result.Format());
   // Should select default settings for other constraints.
-  EXPECT_EQ(absl::optional<bool>(), result.noise_reduction());
+  EXPECT_EQ(std::optional<bool>(), result.noise_reduction());
 }
 
 // The "Overconstrained" tests verify that failure of any single required
@@ -426,7 +426,7 @@ TEST_F(MediaStreamConstraintsUtilVideoDeviceTest,
                                 media::PIXEL_FORMAT_I420),
   };
   capabilities.device_capabilities.push_back(std::move(device));
-  capabilities.noise_reduction_capabilities = {absl::optional<bool>(false)};
+  capabilities.noise_reduction_capabilities = {std::optional<bool>(false)};
 
   constraint_factory_.Reset();
   constraint_factory_.basic().goog_noise_reduction.SetExact(true);
@@ -2007,9 +2007,9 @@ TEST_F(MediaStreamConstraintsUtilVideoDeviceTest,
   device.control_support.zoom = false;
   capabilities.device_capabilities.push_back(std::move(device));
   capabilities.noise_reduction_capabilities = {
-      absl::optional<bool>(),
-      absl::optional<bool>(true),
-      absl::optional<bool>(false),
+      std::optional<bool>(),
+      std::optional<bool>(true),
+      std::optional<bool>(false),
   };
 
   for (auto& constraint : PanTiltZoomConstraints()) {
@@ -2725,7 +2725,7 @@ TEST_F(MediaStreamConstraintsUtilVideoDeviceTest,
   // Height gets adjusted as well to maintain the aspect ratio.
   EXPECT_EQ(result.track_adapter_settings().target_height(), 479);
   // Using native frame rate because the advanced set is ignored.
-  EXPECT_EQ(result.track_adapter_settings().max_frame_rate(), absl::nullopt);
+  EXPECT_EQ(result.track_adapter_settings().max_frame_rate(), std::nullopt);
 
   // The low-res device at 640x480@30Hz is the
   EXPECT_EQ(result.device_id(), low_res_device_->device_id.Utf8());

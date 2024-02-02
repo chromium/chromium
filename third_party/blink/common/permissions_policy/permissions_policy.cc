@@ -48,7 +48,7 @@ void PermissionsPolicy::Allowlist::Add(
   allowed_origins_.push_back(origin);
 }
 
-void PermissionsPolicy::Allowlist::AddSelf(absl::optional<url::Origin> self) {
+void PermissionsPolicy::Allowlist::AddSelf(std::optional<url::Origin> self) {
   self_if_matches_ = std::move(self);
 }
 
@@ -73,7 +73,7 @@ bool PermissionsPolicy::Allowlist::Contains(const url::Origin& origin) const {
   return matches_all_origins_;
 }
 
-const absl::optional<url::Origin>& PermissionsPolicy::Allowlist::SelfIfMatches()
+const std::optional<url::Origin>& PermissionsPolicy::Allowlist::SelfIfMatches()
     const {
   return self_if_matches_;
 }
@@ -266,7 +266,7 @@ const PermissionsPolicy::Allowlist PermissionsPolicy::GetAllowlistForFeature(
       default_allowlist.AddAll();
       break;
     case PermissionsPolicyFeatureDefault::EnableForSelf: {
-      absl::optional<blink::OriginWithPossibleWildcards>
+      std::optional<blink::OriginWithPossibleWildcards>
           origin_with_possible_wildcards =
               blink::OriginWithPossibleWildcards::FromOrigin(origin_);
       if (origin_with_possible_wildcards.has_value()) {
@@ -280,28 +280,28 @@ const PermissionsPolicy::Allowlist PermissionsPolicy::GetAllowlistForFeature(
   return default_allowlist;
 }
 
-absl::optional<const PermissionsPolicy::Allowlist>
+std::optional<const PermissionsPolicy::Allowlist>
 PermissionsPolicy::GetAllowlistForFeatureIfExists(
     mojom::PermissionsPolicyFeature feature) const {
   // Return an empty allowlist when disabled through inheritance.
   if (!IsFeatureEnabledByInheritedPolicy(feature))
-    return absl::nullopt;
+    return std::nullopt;
 
   // Only return allowlist if actually in `allowlists_`.
   allowlists_checked_ = true;
   auto allowlist = allowlists_.find(feature);
   if (allowlist != allowlists_.end())
     return allowlist->second;
-  return absl::nullopt;
+  return std::nullopt;
 }
 
-absl::optional<std::string> PermissionsPolicy::GetEndpointForFeature(
+std::optional<std::string> PermissionsPolicy::GetEndpointForFeature(
     mojom::PermissionsPolicyFeature feature) const {
   auto endpoint = reporting_endpoints_.find(feature);
   if (endpoint != reporting_endpoints_.end()) {
     return endpoint->second;
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void PermissionsPolicy::SetHeaderPolicy(

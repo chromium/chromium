@@ -252,7 +252,7 @@ void PlaceholderImage::SetIconAndTextScaleFactor(
     return;
   icon_and_text_scale_factor_ = icon_and_text_scale_factor;
   cached_text_width_.reset();
-  paint_record_for_current_frame_ = absl::nullopt;
+  paint_record_for_current_frame_ = std::nullopt;
 }
 
 void PlaceholderImage::Draw(cc::PaintCanvas* canvas,

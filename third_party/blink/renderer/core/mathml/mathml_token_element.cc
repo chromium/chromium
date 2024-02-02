@@ -13,7 +13,7 @@ namespace blink {
 MathMLTokenElement::MathMLTokenElement(const QualifiedName& tagName,
                                        Document& document)
     : MathMLElement(tagName, document) {
-  token_content_ = absl::nullopt;
+  token_content_ = std::nullopt;
 }
 
 namespace {
@@ -85,7 +85,7 @@ const MathMLTokenElement::TokenContent& MathMLTokenElement::GetTokenContent() {
 
 void MathMLTokenElement::ChildrenChanged(
     const ChildrenChange& children_change) {
-  token_content_ = absl::nullopt;
+  token_content_ = std::nullopt;
   MathMLElement::ChildrenChanged(children_change);
 }
 

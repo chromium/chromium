@@ -25,10 +25,10 @@
 
 #include <cmath>
 #include <cstring>
+#include <optional>
 
 #include "base/check_op.h"
 #include "base/notreached.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -388,7 +388,7 @@ class PLATFORM_EXPORT Length {
     // CalculationExpressionNode. Returns |nullopt| if the query is invalid
     // (e.g., no targets or wrong axis.), in which case the fallback should
     // be used.
-    virtual absl::optional<LayoutUnit> Evaluate(
+    virtual std::optional<LayoutUnit> Evaluate(
         const CalculationExpressionNode&) const = 0;
 
    protected:

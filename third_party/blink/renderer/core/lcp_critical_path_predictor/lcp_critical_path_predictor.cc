@@ -166,8 +166,8 @@ void LCPCriticalPathPredictor::OnLargestContentfulPaintUpdated(
         GetHost().SetLcpElementLocator(
             lcp_element_locator_string,
             predicted_lcp_index == kNotFound
-                ? absl::nullopt
-                : absl::optional<wtf_size_t>(predicted_lcp_index));
+                ? std::nullopt
+                : std::optional<wtf_size_t>(predicted_lcp_index));
       }
     }
   }

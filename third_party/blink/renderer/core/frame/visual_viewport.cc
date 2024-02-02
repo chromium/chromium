@@ -677,7 +677,7 @@ EScrollbarWidth VisualViewport::CSSScrollbarWidth() const {
   return EScrollbarWidth::kAuto;
 }
 
-absl::optional<blink::Color> VisualViewport::CSSScrollbarThumbColor() const {
+std::optional<blink::Color> VisualViewport::CSSScrollbarThumbColor() const {
   DCHECK(IsActiveViewport());
   if (Document* main_document = LocalMainFrame().GetDocument()) {
     return main_document->GetLayoutView()
@@ -685,7 +685,7 @@ absl::optional<blink::Color> VisualViewport::CSSScrollbarThumbColor() const {
         .ScrollbarThumbColorResolved();
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 int VisualViewport::ScrollbarThickness() const {

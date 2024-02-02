@@ -127,7 +127,7 @@ TEST_F(TimerBasedTickProviderTest,
 TEST_F(TimerBasedTickProviderTest, MultipleTickProvidersAreAligned) {
   TimerBasedTickProvider tick_provider2(kTickPeriod);
   base::MockOnceCallback<void()> callback;
-  absl::optional<base::TimeTicks> callback_time;
+  std::optional<base::TimeTicks> callback_time;
 
   // Request 2 callbacks that should be called on the same tick instant.
   // Nudge time between the requests to guard against too simplistic

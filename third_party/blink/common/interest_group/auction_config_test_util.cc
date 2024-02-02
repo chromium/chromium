@@ -43,7 +43,7 @@ AuctionConfig CreateFullAuctionConfig() {
       AuctionConfig::MaybePromiseJson::FromValue("[5]");
   non_shared_params.seller_timeout = base::Seconds(6);
 
-  absl::optional<base::flat_map<url::Origin, std::string>> per_buyer_signals;
+  std::optional<base::flat_map<url::Origin, std::string>> per_buyer_signals;
   per_buyer_signals.emplace();
   (*per_buyer_signals)[buyer] = "[7]";
   non_shared_params.per_buyer_signals =

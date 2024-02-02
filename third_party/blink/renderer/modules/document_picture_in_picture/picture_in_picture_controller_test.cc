@@ -245,13 +245,13 @@ class PictureInPictureControllerPlayer final : public EmptyWebMediaPlayer {
   ReadyState GetReadyState() const override { return kReadyStateHaveMetadata; }
   bool HasVideo() const override { return true; }
   void OnRequestPictureInPicture() override { surface_id_ = TestSurfaceId(); }
-  absl::optional<viz::SurfaceId> GetSurfaceId() override { return surface_id_; }
+  std::optional<viz::SurfaceId> GetSurfaceId() override { return surface_id_; }
 
   void set_infinity_duration(bool value) { infinity_duration_ = value; }
 
  private:
   bool infinity_duration_ = false;
-  absl::optional<viz::SurfaceId> surface_id_;
+  std::optional<viz::SurfaceId> surface_id_;
 };
 
 class PictureInPictureTestWebFrameClient

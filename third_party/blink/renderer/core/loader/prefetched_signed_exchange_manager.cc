@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/loader/prefetched_signed_exchange_manager.h"
 
+#include <optional>
 #include <queue>
 #include <utility>
 
@@ -16,7 +17,6 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/wrapper_shared_url_loader_factory.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-blink.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/resource_load_info_notifier_wrapper.h"
@@ -98,7 +98,7 @@ class PrefetchedSignedExchangeManager::PrefetchedSignedExchangeLoader
                          base::TimeDelta timeout_interval,
                          URLLoaderClient* client,
                          WebURLResponse& response,
-                         absl::optional<WebURLError>& error,
+                         std::optional<WebURLError>& error,
                          scoped_refptr<SharedBuffer>& data,
                          int64_t& encoded_data_length,
                          uint64_t& encoded_body_length,

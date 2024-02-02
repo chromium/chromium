@@ -112,7 +112,7 @@ class MODULES_EXPORT HID : public EventTarget,
   HeapHashSet<Member<ScriptPromiseResolver>> get_devices_promises_;
   HeapHashSet<Member<ScriptPromiseResolver>> request_device_promises_;
   HeapHashMap<String, WeakMember<HIDDevice>> device_cache_;
-  absl::optional<FrameOrWorkerScheduler::SchedulingAffectingFeatureHandle>
+  std::optional<FrameOrWorkerScheduler::SchedulingAffectingFeatureHandle>
       feature_handle_for_scheduler_;
 };
 

@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_CANVAS_RESOURCE_PROVIDER_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
@@ -13,7 +14,6 @@
 #include "cc/paint/skia_paint_canvas.h"
 #include "cc/raster/playback_image_provider.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_host.h"
 #include "third_party/blink/renderer/platform/graphics/image_orientation.h"
@@ -164,7 +164,7 @@ class PLATFORM_EXPORT CanvasResourceProvider
   void ReleaseLockedImages();
   // FlushCanvas and preserve recording only if IsPrinting or
   // FlushReason indicates printing in progress.
-  absl::optional<cc::PaintRecord> FlushCanvas(FlushReason);
+  std::optional<cc::PaintRecord> FlushCanvas(FlushReason);
   const SkImageInfo& GetSkImageInfo() const { return info_; }
   SkSurfaceProps GetSkSurfaceProps() const;
   gfx::ColorSpace GetColorSpace() const;
@@ -272,7 +272,7 @@ class PLATFORM_EXPORT CanvasResourceProvider
     always_enable_raster_timers_for_testing_ = value;
   }
 
-  const absl::optional<cc::PaintRecord>& LastRecording() {
+  const std::optional<cc::PaintRecord>& LastRecording() {
     return last_recording_;
   }
 
@@ -403,7 +403,7 @@ class PLATFORM_EXPORT CanvasResourceProvider
   bool clear_frame_ = true;
   FlushReason last_flush_reason_ = FlushReason::kNone;
   FlushReason printing_fallback_reason_ = FlushReason::kNone;
-  absl::optional<cc::PaintRecord> last_recording_;
+  std::optional<cc::PaintRecord> last_recording_;
 
   base::WeakPtrFactory<CanvasResourceProvider> weak_ptr_factory_{this};
 };

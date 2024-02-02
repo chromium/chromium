@@ -42,7 +42,7 @@ TEST_F(ScrollTimelineUtilTest, ToCompositorScrollTimeline) {
   )HTML");
 
   Element* scroller = GetElementById("scroller");
-  absl::optional<CompositorElementId> element_id =
+  std::optional<CompositorElementId> element_id =
       GetCompositorScrollElementId(scroller);
   ASSERT_TRUE(element_id.has_value());
 
@@ -54,7 +54,7 @@ TEST_F(ScrollTimelineUtilTest, ToCompositorScrollTimeline) {
 
   scoped_refptr<CompositorScrollTimeline> compositor_timeline =
       ToCompositorScrollTimeline(timeline);
-  EXPECT_EQ(compositor_timeline->GetActiveIdForTest(), absl::nullopt);
+  EXPECT_EQ(compositor_timeline->GetActiveIdForTest(), std::nullopt);
   EXPECT_EQ(compositor_timeline->GetPendingIdForTest(), element_id);
   EXPECT_EQ(compositor_timeline->GetDirectionForTest(),
             CompositorScrollTimeline::ScrollDown);
@@ -83,7 +83,7 @@ TEST_F(ScrollTimelineUtilTest, ToCompositorScrollTimelineNullSource) {
   scoped_refptr<CompositorScrollTimeline> compositor_timeline =
       ToCompositorScrollTimeline(timeline);
   ASSERT_TRUE(compositor_timeline.get());
-  EXPECT_EQ(compositor_timeline->GetPendingIdForTest(), absl::nullopt);
+  EXPECT_EQ(compositor_timeline->GetPendingIdForTest(), std::nullopt);
 }
 
 TEST_F(ScrollTimelineUtilTest, ToCompositorScrollTimelineNullLayoutBox) {
@@ -200,20 +200,20 @@ TEST_F(ScrollTimelineUtilTest, ConvertOrientationNullStyle) {
 }
 
 TEST_F(ScrollTimelineUtilTest, GetCompositorScrollElementIdNullNode) {
-  EXPECT_EQ(GetCompositorScrollElementId(nullptr), absl::nullopt);
+  EXPECT_EQ(GetCompositorScrollElementId(nullptr), std::nullopt);
 }
 
 TEST_F(ScrollTimelineUtilTest, GetCompositorScrollElementIdNullLayoutObject) {
   auto* div = MakeGarbageCollected<HTMLDivElement>(GetDocument());
   ASSERT_FALSE(div->GetLayoutObject());
-  EXPECT_EQ(GetCompositorScrollElementId(nullptr), absl::nullopt);
+  EXPECT_EQ(GetCompositorScrollElementId(nullptr), std::nullopt);
 }
 
 TEST_F(ScrollTimelineUtilTest, GetCompositorScrollElementIdNoUniqueId) {
   SetBodyInnerHTML("<div id='test'></div>");
   Element* test = GetElementById("test");
   ASSERT_TRUE(test->GetLayoutObject());
-  EXPECT_EQ(GetCompositorScrollElementId(test), absl::nullopt);
+  EXPECT_EQ(GetCompositorScrollElementId(test), std::nullopt);
 }
 
 }  // namespace scroll_timeline_util

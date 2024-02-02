@@ -147,7 +147,7 @@ class TestRenderingContext2D final
   }
   void RecordingCleared() override {}
 
-  absl::optional<cc::PaintRecord> FlushCanvas(FlushReason) override {
+  std::optional<cc::PaintRecord> FlushCanvas(FlushReason) override {
     return recorder_.finishRecordingAsPicture();
   }
 

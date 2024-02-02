@@ -28,7 +28,7 @@ inline float HarfBuzzUnitsToFloat(hb_position_t value) {
   return kFloatToHbRatio * value;
 }
 
-absl::optional<OpenTypeMathStretchData::AssemblyParameters>
+std::optional<OpenTypeMathStretchData::AssemblyParameters>
 GetAssemblyParameters(const HarfBuzzFace* harfbuzz_face,
                       Glyph base_glyph,
                       OpenTypeMathStretchData::StretchAxis stretch_axis,
@@ -38,7 +38,7 @@ GetAssemblyParameters(const HarfBuzzFace* harfbuzz_face,
       OpenTypeMathSupport::GetGlyphPartRecords(harfbuzz_face, base_glyph,
                                                stretch_axis, italic_correction);
   if (parts.empty())
-    return absl::nullopt;
+    return std::nullopt;
 
   hb_font_t* const hb_font = harfbuzz_face->GetScaledFont();
 
@@ -83,7 +83,7 @@ GetAssemblyParameters(const HarfBuzzFace* harfbuzz_face,
       extender_advance_sum - min_connector_overlap * extender_count;
   if (extender_count == 0 || max_connector_overlap < min_connector_overlap ||
       extender_non_overlapping_advance_sum <= 0)
-    return absl::nullopt;
+    return std::nullopt;
 
   // Calculate the minimal number of repetitions needed to obtain an assembly
   // size of size at least target size (r_min in MathML Core). Use a saturated
@@ -122,7 +122,7 @@ GetAssemblyParameters(const HarfBuzzFace* harfbuzz_face,
                        repetition_count * extender_advance_sum -
                        connector_overlap * (glyph_count - 1);
 
-  return absl::optional<OpenTypeMathStretchData::AssemblyParameters>(
+  return std::optional<OpenTypeMathStretchData::AssemblyParameters>(
       {connector_overlap, repetition_count, glyph_count, stretch_size,
        std::move(parts)});
 }

@@ -59,7 +59,7 @@ class WebNavigationControl : public WebLocalFrame {
       bool has_transient_user_activation,
       const WebSecurityOrigin& initiator_origin,
       bool is_browser_initiated,
-      absl::optional<scheduler::TaskAttributionId>
+      std::optional<scheduler::TaskAttributionId>
           soft_navigation_heuristics_task_id) = 0;
 
   // Override the normal rules that determine whether the frame is on the

@@ -145,7 +145,7 @@ class CORE_EXPORT ImageResourceContent final
   AtomicString MediaType() const override;
   bool IsAccessAllowed() const;
   const ResourceResponse& GetResponse() const;
-  absl::optional<ResourceError> GetResourceError() const;
+  std::optional<ResourceError> GetResourceError() const;
   // DEPRECATED: ImageResourceContents consumers shouldn't need to worry about
   // whether the underlying Resource is being revalidated.
   bool IsCacheValidator() const;
@@ -203,7 +203,7 @@ class CORE_EXPORT ImageResourceContent final
   // priority. This is NOT the current Resource's priority.
   std::pair<ResourcePriority, ResourcePriority> PriorityFromObservers() const;
   // Returns the current Resource's priroity used by MediaTiming.
-  absl::optional<WebURLRequest::Priority> RequestPriority() const override;
+  std::optional<WebURLRequest::Priority> RequestPriority() const override;
   scoped_refptr<const SharedBuffer> ResourceBuffer() const;
   bool ShouldUpdateImageImmediately() const;
   bool HasObservers() const {

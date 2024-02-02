@@ -140,7 +140,7 @@ sk_sp<PaintFilter> FilterEffect::CreateTransparentBlack() const {
                                             base::OptionalToPtr(GetCropRect()));
 }
 
-absl::optional<PaintFilter::CropRect> FilterEffect::GetCropRect() const {
+std::optional<PaintFilter::CropRect> FilterEffect::GetCropRect() const {
   if (!ClipsToBounds()) {
     return {};
   }

@@ -5,7 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_BINDINGS_V8_SET_RETURN_VALUE_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_BINDINGS_V8_SET_RETURN_VALUE_H_
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include <optional>
+
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/renderer/platform/bindings/dom_data_store.h"
 #include "third_party/blink/renderer/platform/bindings/dom_wrapper_world.h"
@@ -443,7 +444,7 @@ void V8SetReturnValue(const CallbackInfo& info,
 // Nullable types
 template <typename CallbackInfo, typename T, typename... ExtraArgs>
 void V8SetReturnValue(const CallbackInfo& info,
-                      absl::optional<T> value,
+                      std::optional<T> value,
                       ExtraArgs... extra_args) {
   if (value.has_value()) {
     V8SetReturnValue(info, value.value(),

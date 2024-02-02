@@ -146,7 +146,7 @@ class MODULES_EXPORT PeerConnectionTracker
   // Sends an update when an Ice candidate error is receiver.
   virtual void TrackIceCandidateError(RTCPeerConnectionHandler* pc_handler,
                                       const String& address,
-                                      absl::optional<uint16_t> port,
+                                      std::optional<uint16_t> port,
                                       const String& host_candidate,
                                       const String& url,
                                       int error_code,

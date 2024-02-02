@@ -4,11 +4,12 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/v8_code_cache.h"
 
+#include <optional>
+
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "build/build_config.h"
 #include "components/miracle_parameter/common/public/miracle_parameter.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/v8_cache_options.mojom-blink.h"
 #include "third_party/blink/public/web/web_settings.h"
@@ -497,7 +498,7 @@ scoped_refptr<CachedMetadata> V8CodeCache::GenerateFullCodeCache(
       [&](perfetto::TracedValue context) {
         inspector_compile_script_event::Data(
             std::move(context), file_name, TextPosition::MinimumPosition(),
-            absl::nullopt, true, false,
+            std::nullopt, true, false,
             ScriptStreamer::NotStreamingReason::kStreamingDisabled);
       });
 

@@ -567,7 +567,7 @@ void AudioEncoder::CallOutputCallback(
     ParsedConfig* active_config,
     uint32_t reset_count,
     media::EncodedAudioBuffer encoded_buffer,
-    absl::optional<media::AudioEncoder::CodecDescription> codec_desc) {
+    std::optional<media::AudioEncoder::CodecDescription> codec_desc) {
   DCHECK(active_config);
   if (!script_state_->ContextIsValid() || !output_callback_ ||
       state_.AsEnum() != V8CodecState::Enum::kConfigured ||

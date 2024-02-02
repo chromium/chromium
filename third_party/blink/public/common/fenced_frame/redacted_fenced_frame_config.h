@@ -8,12 +8,12 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_COMMON_FENCED_FRAME_REDACTED_FENCED_FRAME_CONFIG_H_
 #define THIRD_PARTY_BLINK_PUBLIC_COMMON_FENCED_FRAME_REDACTED_FENCED_FRAME_CONFIG_H_
 
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
 
 #include "net/base/schemeful_site.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/common_export.h"
 #include "third_party/blink/public/mojom/fenced_frame/fenced_frame_config.mojom-forward.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom.h"
@@ -80,17 +80,17 @@ struct BLINK_COMMON_EXPORT ParentPermissionsInfo {
 
 // Represents a potentially opaque (redacted) value.
 // (If the value is redacted, `potentially_opaque_value` will be
-// `absl::nullopt`.)
+// `std::nullopt`.)
 template <class T>
 struct BLINK_COMMON_EXPORT RedactedFencedFrameProperty {
  public:
-  RedactedFencedFrameProperty() : potentially_opaque_value(absl::nullopt) {}
+  RedactedFencedFrameProperty() : potentially_opaque_value(std::nullopt) {}
   explicit RedactedFencedFrameProperty(
-      const absl::optional<T>& potentially_opaque_value)
+      const std::optional<T>& potentially_opaque_value)
       : potentially_opaque_value(potentially_opaque_value) {}
   ~RedactedFencedFrameProperty() = default;
 
-  absl::optional<T> potentially_opaque_value;
+  std::optional<T> potentially_opaque_value;
 };
 
 // Represents a fenced frame config that has been redacted for a particular
@@ -103,33 +103,32 @@ struct BLINK_COMMON_EXPORT RedactedFencedFrameConfig {
   RedactedFencedFrameConfig();
   ~RedactedFencedFrameConfig();
 
-  const absl::optional<GURL>& urn_uuid() const { return urn_uuid_; }
-  const absl::optional<RedactedFencedFrameProperty<GURL>>& mapped_url() const {
+  const std::optional<GURL>& urn_uuid() const { return urn_uuid_; }
+  const std::optional<RedactedFencedFrameProperty<GURL>>& mapped_url() const {
     return mapped_url_;
   }
-  const absl::optional<RedactedFencedFrameProperty<gfx::Size>>& container_size()
+  const std::optional<RedactedFencedFrameProperty<gfx::Size>>& container_size()
       const {
     return container_size_;
   }
-  const absl::optional<RedactedFencedFrameProperty<gfx::Size>>& content_size()
+  const std::optional<RedactedFencedFrameProperty<gfx::Size>>& content_size()
       const {
     return content_size_;
   }
-  const absl::optional<RedactedFencedFrameProperty<bool>>&
+  const std::optional<RedactedFencedFrameProperty<bool>>&
   deprecated_should_freeze_initial_size() const {
     return deprecated_should_freeze_initial_size_;
   }
-  const absl::optional<RedactedFencedFrameProperty<AdAuctionData>>&
+  const std::optional<RedactedFencedFrameProperty<AdAuctionData>>&
   ad_auction_data() const {
     return ad_auction_data_;
   }
-  const absl::optional<
+  const std::optional<
       RedactedFencedFrameProperty<std::vector<RedactedFencedFrameConfig>>>&
   nested_configs() const {
     return nested_configs_;
   }
-  const absl::optional<
-      RedactedFencedFrameProperty<SharedStorageBudgetMetadata>>&
+  const std::optional<RedactedFencedFrameProperty<SharedStorageBudgetMetadata>>&
   shared_storage_budget_metadata() const {
     return shared_storage_budget_metadata_;
   }
@@ -138,7 +137,7 @@ struct BLINK_COMMON_EXPORT RedactedFencedFrameConfig {
   effective_enabled_permissions() const {
     return effective_enabled_permissions_;
   }
-  const absl::optional<ParentPermissionsInfo> parent_permissions_info() const {
+  const std::optional<ParentPermissionsInfo> parent_permissions_info() const {
     return parent_permissions_info_;
   }
 
@@ -148,17 +147,17 @@ struct BLINK_COMMON_EXPORT RedactedFencedFrameConfig {
       blink::mojom::FencedFrameConfigDataView,
       blink::FencedFrame::RedactedFencedFrameConfig>;
 
-  absl::optional<GURL> urn_uuid_;
-  absl::optional<RedactedFencedFrameProperty<GURL>> mapped_url_;
-  absl::optional<RedactedFencedFrameProperty<gfx::Size>> container_size_;
-  absl::optional<RedactedFencedFrameProperty<gfx::Size>> content_size_;
-  absl::optional<RedactedFencedFrameProperty<bool>>
+  std::optional<GURL> urn_uuid_;
+  std::optional<RedactedFencedFrameProperty<GURL>> mapped_url_;
+  std::optional<RedactedFencedFrameProperty<gfx::Size>> container_size_;
+  std::optional<RedactedFencedFrameProperty<gfx::Size>> content_size_;
+  std::optional<RedactedFencedFrameProperty<bool>>
       deprecated_should_freeze_initial_size_;
-  absl::optional<RedactedFencedFrameProperty<AdAuctionData>> ad_auction_data_;
-  absl::optional<
+  std::optional<RedactedFencedFrameProperty<AdAuctionData>> ad_auction_data_;
+  std::optional<
       RedactedFencedFrameProperty<std::vector<RedactedFencedFrameConfig>>>
       nested_configs_;
-  absl::optional<RedactedFencedFrameProperty<SharedStorageBudgetMetadata>>
+  std::optional<RedactedFencedFrameProperty<SharedStorageBudgetMetadata>>
       shared_storage_budget_metadata_;
 
   // TODO(crbug.com/1347953): Not yet used.
@@ -174,7 +173,7 @@ struct BLINK_COMMON_EXPORT RedactedFencedFrameConfig {
   // permissions policies are, this will not work for MPArch. Instead, the
   // browser gives the renderer this information through the fenced frame
   // config.
-  absl::optional<ParentPermissionsInfo> parent_permissions_info_;
+  std::optional<ParentPermissionsInfo> parent_permissions_info_;
 };
 
 // Represents a set of fenced frame properties (instantiated from a config) that
@@ -187,32 +186,31 @@ struct BLINK_COMMON_EXPORT RedactedFencedFrameProperties {
   RedactedFencedFrameProperties();
   ~RedactedFencedFrameProperties();
 
-  const absl::optional<RedactedFencedFrameProperty<GURL>>& mapped_url() const {
+  const std::optional<RedactedFencedFrameProperty<GURL>>& mapped_url() const {
     return mapped_url_;
   }
-  const absl::optional<RedactedFencedFrameProperty<gfx::Size>>& container_size()
+  const std::optional<RedactedFencedFrameProperty<gfx::Size>>& container_size()
       const {
     return container_size_;
   }
-  const absl::optional<RedactedFencedFrameProperty<gfx::Size>>& content_size()
+  const std::optional<RedactedFencedFrameProperty<gfx::Size>>& content_size()
       const {
     return content_size_;
   }
-  const absl::optional<RedactedFencedFrameProperty<bool>>&
+  const std::optional<RedactedFencedFrameProperty<bool>>&
   deprecated_should_freeze_initial_size() const {
     return deprecated_should_freeze_initial_size_;
   }
-  const absl::optional<RedactedFencedFrameProperty<AdAuctionData>>&
+  const std::optional<RedactedFencedFrameProperty<AdAuctionData>>&
   ad_auction_data() const {
     return ad_auction_data_;
   }
-  const absl::optional<RedactedFencedFrameProperty<
+  const std::optional<RedactedFencedFrameProperty<
       std::vector<std::pair<GURL, RedactedFencedFrameConfig>>>>&
   nested_urn_config_pairs() const {
     return nested_urn_config_pairs_;
   }
-  const absl::optional<
-      RedactedFencedFrameProperty<SharedStorageBudgetMetadata>>&
+  const std::optional<RedactedFencedFrameProperty<SharedStorageBudgetMetadata>>&
   shared_storage_budget_metadata() const {
     return shared_storage_budget_metadata_;
   }
@@ -224,7 +222,7 @@ struct BLINK_COMMON_EXPORT RedactedFencedFrameProperties {
   effective_enabled_permissions() const {
     return effective_enabled_permissions_;
   }
-  const absl::optional<ParentPermissionsInfo> parent_permissions_info() const {
+  const std::optional<ParentPermissionsInfo> parent_permissions_info() const {
     return parent_permissions_info_;
   }
   bool can_disable_untrusted_network() const {
@@ -237,22 +235,22 @@ struct BLINK_COMMON_EXPORT RedactedFencedFrameProperties {
       blink::mojom::FencedFramePropertiesDataView,
       blink::FencedFrame::RedactedFencedFrameProperties>;
 
-  absl::optional<RedactedFencedFrameProperty<GURL>> mapped_url_;
-  absl::optional<RedactedFencedFrameProperty<gfx::Size>> container_size_;
-  absl::optional<RedactedFencedFrameProperty<gfx::Size>> content_size_;
-  absl::optional<RedactedFencedFrameProperty<bool>>
+  std::optional<RedactedFencedFrameProperty<GURL>> mapped_url_;
+  std::optional<RedactedFencedFrameProperty<gfx::Size>> container_size_;
+  std::optional<RedactedFencedFrameProperty<gfx::Size>> content_size_;
+  std::optional<RedactedFencedFrameProperty<bool>>
       deprecated_should_freeze_initial_size_;
-  absl::optional<RedactedFencedFrameProperty<AdAuctionData>> ad_auction_data_;
-  absl::optional<RedactedFencedFrameProperty<
+  std::optional<RedactedFencedFrameProperty<AdAuctionData>> ad_auction_data_;
+  std::optional<RedactedFencedFrameProperty<
       std::vector<std::pair<GURL, RedactedFencedFrameConfig>>>>
       nested_urn_config_pairs_;
-  absl::optional<RedactedFencedFrameProperty<SharedStorageBudgetMetadata>>
+  std::optional<RedactedFencedFrameProperty<SharedStorageBudgetMetadata>>
       shared_storage_budget_metadata_;
   bool has_fenced_frame_reporting_ = false;
   DeprecatedFencedFrameMode mode_ = DeprecatedFencedFrameMode::kDefault;
   std::vector<blink::mojom::PermissionsPolicyFeature>
       effective_enabled_permissions_;
-  absl::optional<ParentPermissionsInfo> parent_permissions_info_;
+  std::optional<ParentPermissionsInfo> parent_permissions_info_;
   bool can_disable_untrusted_network_ = false;
 };
 

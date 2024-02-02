@@ -93,7 +93,7 @@ void TCPServerReadableStreamWrapper::OnAccept(
     mojo::PendingReceiver<network::mojom::blink::SocketObserver>
         socket_observer,
     int result,
-    const absl::optional<net::IPEndPoint>& remote_addr,
+    const std::optional<net::IPEndPoint>& remote_addr,
     mojo::PendingRemote<network::mojom::blink::TCPConnectedSocket>
         tcp_socket_remote,
     mojo::ScopedDataPipeConsumerHandle receive_stream,

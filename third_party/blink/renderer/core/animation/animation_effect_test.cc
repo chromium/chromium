@@ -107,14 +107,14 @@ class TestAnimationEffect : public AnimationEffect {
   }
   AnimationTimeDelta CalculateTimeToEffectChange(
       bool forwards,
-      absl::optional<AnimationTimeDelta> local_time,
+      std::optional<AnimationTimeDelta> local_time,
       AnimationTimeDelta time_to_next_iteration) const override {
     local_time_ = local_time;
     time_to_next_iteration_ = time_to_next_iteration;
     return AnimationTimeDelta::Max();
   }
-  absl::optional<AnimationTimeDelta> TimelineDuration() const override {
-    return absl::nullopt;
+  std::optional<AnimationTimeDelta> TimelineDuration() const override {
+    return std::nullopt;
   }
   double TakeLocalTime() {
     DCHECK(local_time_);
@@ -123,8 +123,8 @@ class TestAnimationEffect : public AnimationEffect {
     return result;
   }
 
-  absl::optional<AnimationTimeDelta> TakeTimeToNextIteration() {
-    const absl::optional<AnimationTimeDelta> result = time_to_next_iteration_;
+  std::optional<AnimationTimeDelta> TakeTimeToNextIteration() {
+    const std::optional<AnimationTimeDelta> result = time_to_next_iteration_;
     time_to_next_iteration_.reset();
     return result;
   }
@@ -136,8 +136,8 @@ class TestAnimationEffect : public AnimationEffect {
 
  private:
   Member<TestAnimationEffectEventDelegate> event_delegate_;
-  mutable absl::optional<AnimationTimeDelta> local_time_;
-  mutable absl::optional<AnimationTimeDelta> time_to_next_iteration_;
+  mutable std::optional<AnimationTimeDelta> local_time_;
+  mutable std::optional<AnimationTimeDelta> time_to_next_iteration_;
 };
 
 TEST(AnimationAnimationEffectTest, Sanity) {
@@ -751,7 +751,7 @@ TEST(AnimationAnimationEffectTest, TimeToEffectChange) {
 
   animation_node->UpdateInheritedTime(0);
   EXPECT_EQ(0, animation_node->TakeLocalTime());
-  absl::optional<AnimationTimeDelta> time_to_next_iteration =
+  std::optional<AnimationTimeDelta> time_to_next_iteration =
       animation_node->TakeTimeToNextIteration();
   EXPECT_TRUE(time_to_next_iteration);
   EXPECT_TRUE(time_to_next_iteration->is_max());

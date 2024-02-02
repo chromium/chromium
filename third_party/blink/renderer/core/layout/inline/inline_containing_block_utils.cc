@@ -56,7 +56,7 @@ void GatherInlineContainerFragmentsFromItems(
     if (it == inline_containing_block_map->end())
       continue;
 
-    absl::optional<InlineContainingBlockUtils::InlineContainingBlockGeometry>&
+    std::optional<InlineContainingBlockUtils::InlineContainingBlockGeometry>&
         containing_block_geometry = it->value;
     LineBoxPair& containing_lineboxes =
         containing_linebox_map->insert(key, LineBoxPair{nullptr, nullptr})

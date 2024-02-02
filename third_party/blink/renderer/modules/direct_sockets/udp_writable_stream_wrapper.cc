@@ -86,7 +86,7 @@ ScriptPromise UDPWritableStreamWrapper::Write(ScriptValue chunk,
     return ScriptPromise();
   }
 
-  absl::optional<net::HostPortPair> dest_addr;
+  std::optional<net::HostPortPair> dest_addr;
   if (message->hasRemoteAddress() && message->hasRemotePort()) {
     if (mode_ == network::mojom::RestrictedUDPSocketMode::CONNECTED) {
       exception_state.ThrowTypeError(

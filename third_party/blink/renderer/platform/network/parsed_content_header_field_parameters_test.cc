@@ -80,7 +80,7 @@ TEST(ParsedContentHeaderFieldParametersTest, ParameterName) {
 
   CheckValidity(true, input);
 
-  absl::optional<ParsedContentHeaderFieldParameters> t =
+  std::optional<ParsedContentHeaderFieldParameters> t =
       ParsedContentHeaderFieldParameters::Parse(HeaderFieldTokenizer(input),
                                                 Mode::kNormal);
   ASSERT_TRUE(t);
@@ -105,7 +105,7 @@ TEST(ParsedContentHeaderFieldParametersTest, RelaxedParameterName) {
 
   CheckValidity(true, input, Mode::kRelaxed);
 
-  absl::optional<ParsedContentHeaderFieldParameters> t =
+  std::optional<ParsedContentHeaderFieldParameters> t =
       ParsedContentHeaderFieldParameters::Parse(HeaderFieldTokenizer(input),
                                                 Mode::kRelaxed);
   ASSERT_TRUE(t);
@@ -118,7 +118,7 @@ TEST(ParsedContentHeaderFieldParametersTest, RelaxedParameterName) {
 TEST(ParsedContentHeaderFieldParametersTest, BeginEnd) {
   String input = "; a=b; a=c; b=d";
 
-  absl::optional<ParsedContentHeaderFieldParameters> t =
+  std::optional<ParsedContentHeaderFieldParameters> t =
       ParsedContentHeaderFieldParameters::Parse(HeaderFieldTokenizer(input),
                                                 Mode::kNormal);
   ASSERT_TRUE(t);
@@ -147,7 +147,7 @@ TEST(ParsedContentHeaderFieldParametersTest, BeginEnd) {
 TEST(ParsedContentHeaderFieldParametersTest, RBeginEnd) {
   String input = "; a=B; A=c; b=d";
 
-  absl::optional<ParsedContentHeaderFieldParameters> t =
+  std::optional<ParsedContentHeaderFieldParameters> t =
       ParsedContentHeaderFieldParameters::Parse(HeaderFieldTokenizer(input),
                                                 Mode::kNormal);
   ASSERT_TRUE(t);

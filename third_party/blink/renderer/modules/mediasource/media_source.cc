@@ -287,7 +287,7 @@ SourceBuffer* MediaSource::AddSourceBufferUsingConfig(
       return nullptr;
     }
 
-    absl::optional<media::AudioDecoderConfig> out_audio_config =
+    std::optional<media::AudioDecoderConfig> out_audio_config =
         AudioDecoder::MakeMediaAudioDecoderConfig(*(config->audioConfig()),
                                                   &console_message /* out */);
 
@@ -309,7 +309,7 @@ SourceBuffer* MediaSource::AddSourceBufferUsingConfig(
     }
 
     bool converter_needed = false;
-    absl::optional<media::VideoDecoderConfig> out_video_config =
+    std::optional<media::VideoDecoderConfig> out_video_config =
         VideoDecoder::MakeMediaVideoDecoderConfig(*(config->videoConfig()),
                                                   &console_message /* out */,
                                                   &converter_needed /* out */);
@@ -317,7 +317,7 @@ SourceBuffer* MediaSource::AddSourceBufferUsingConfig(
     // TODO(crbug.com/1144908): Initial prototype does not support h264
     // buffering. See above.
     if (out_video_config && converter_needed) {
-      out_video_config = absl::nullopt;
+      out_video_config = std::nullopt;
       console_message =
           "H.264/H.265 EncodedVideoChunk buffering is not yet supported in "
           "MSE.See https://crbug.com/1144908.";

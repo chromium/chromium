@@ -136,8 +136,7 @@ static bool ParseOptionalConstraintsVectorElement(
     return false;
   }
   const String& key = local_names[0];
-  absl::optional<String> value =
-      constraint.Get<IDLString>(key, exception_state);
+  std::optional<String> value = constraint.Get<IDLString>(key, exception_state);
   if (exception_state.HadException() || !value) {
     return false;
   }

@@ -265,7 +265,7 @@ const AXPosition AXPosition::FromPosition(
     // subtract the text offset of our |container| from the beginning of the
     // same formatting context.
     int container_offset = container->TextOffsetInFormattingContext(0);
-    absl::optional<unsigned> content_offset =
+    std::optional<unsigned> content_offset =
         container_offset_mapping->GetTextContentOffset(
             parent_anchored_position);
     int text_offset = 0;

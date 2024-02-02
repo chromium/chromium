@@ -282,7 +282,7 @@ class ClientMessageLoopAdapter : public MainThreadDebugger::ClientMessageLoop {
     paused_frame_ = nullptr;
   }
 
-  absl::optional<MessageLoopKind> running_for_debug_break_kind_;
+  std::optional<MessageLoopKind> running_for_debug_break_kind_;
   bool running_for_page_wait_ = false;
   std::unique_ptr<Platform::NestedMessageLoopRunner> message_loop_;
   std::unique_ptr<ScopedInputEventsDisabler> input_events_disabler_;

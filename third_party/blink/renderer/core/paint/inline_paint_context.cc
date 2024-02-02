@@ -212,7 +212,7 @@ wtf_size_t InlinePaintContext::SyncDecoratingBox(
 
     InlinePaintContext* inline_context_;
     const Vector<AppliedTextDecoration, 1>* stop_at_;
-    absl::optional<InlineCursor> line_cursor_;
+    std::optional<InlineCursor> line_cursor_;
     DecoratingBoxList* saved_decorating_boxes_;
     StyleVariant style_variant_;
   };

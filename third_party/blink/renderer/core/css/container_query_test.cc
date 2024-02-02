@@ -4,7 +4,8 @@
 
 #include "third_party/blink/renderer/core/css/container_query.h"
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include <optional>
+
 #include "third_party/blink/renderer/core/animation/document_animations.h"
 #include "third_party/blink/renderer/core/animation/element_animations.h"
 #include "third_party/blink/renderer/core/css/css_container_rule.h"
@@ -63,12 +64,12 @@ class ContainerQueryTest : public PageTestBase {
     return &container->GetContainerQuery();
   }
 
-  absl::optional<MediaQueryExpNode::FeatureFlags> FeatureFlagsFrom(
+  std::optional<MediaQueryExpNode::FeatureFlags> FeatureFlagsFrom(
       String query_string) {
     ContainerQuery* query =
         ParseContainerQuery(query_string, UnknownHandling::kAllow);
     if (!query) {
-      return absl::nullopt;
+      return std::nullopt;
     }
     return GetInnerQuery(*query).CollectFeatureFlags();
   }

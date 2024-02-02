@@ -13,7 +13,7 @@ namespace {
 const HitTestLocation* InverseTransformLocationIfNeeded(
     const HitTestLocation& location,
     const AffineTransform& transform,
-    absl::optional<HitTestLocation>& storage) {
+    std::optional<HitTestLocation>& storage) {
   if (transform.IsIdentity())
     return &location;
   if (!transform.IsInvertible())

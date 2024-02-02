@@ -187,7 +187,7 @@ inline bool IsAllBreakableSpaces(const String& string,
 inline LayoutUnit HyphenAdvance(const ComputedStyle& style,
                                 bool is_ltr,
                                 const HyphenResult& hyphen_result,
-                                absl::optional<LayoutUnit>& cache) {
+                                std::optional<LayoutUnit>& cache) {
   if (cache) {
     return *cache;
   }
@@ -1610,7 +1610,7 @@ bool LineBreaker::HandleTextForFastMinContent(InlineItemResult* item_result,
   if (fast_min_content_item_ == &item)
     return false;
 
-  absl::optional<LineBreakType> saved_line_break_type;
+  std::optional<LineBreakType> saved_line_break_type;
   if (break_anywhere_if_overflow_ && !override_break_anywhere_) {
     saved_line_break_type = break_iterator_.BreakType();
     break_iterator_.SetBreakType(LineBreakType::kBreakCharacter);
@@ -1625,7 +1625,7 @@ bool LineBreaker::HandleTextForFastMinContent(InlineItemResult* item_result,
   float min_width = 0;
   unsigned last_end_offset = 0;
   unsigned end_offset = start_offset + 1;
-  absl::optional<LayoutUnit> hyphen_inline_size;
+  std::optional<LayoutUnit> hyphen_inline_size;
   while (start_offset < item.EndOffset()) {
     end_offset =
         break_iterator_.NextBreakOpportunity(end_offset, item.EndOffset());
@@ -1876,7 +1876,7 @@ void LineBreaker::AppendCandidates(const InlineItemResult& item_result,
   SetCurrentStyle(*item.Style());
 
   // Find all break opportunities in `item_result`.
-  absl::optional<LayoutUnit> hyphen_advance_cache;
+  std::optional<LayoutUnit> hyphen_advance_cache;
   for (;;) {
     // Compute the offset of the next break opportunity.
     wtf_size_t next_offset;
@@ -3164,7 +3164,7 @@ void LineBreaker::HandleOverflow(LineInfo* line_info) {
 
   // Save the hyphenation states before we may make changes.
   InlineItemResults* item_results = line_info->MutableResults();
-  absl::optional<wtf_size_t> hyphen_index_before = hyphen_index_;
+  std::optional<wtf_size_t> hyphen_index_before = hyphen_index_;
   if (UNLIKELY(HasHyphen()))
     position_ -= RemoveHyphen(item_results);
 

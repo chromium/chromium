@@ -30,6 +30,7 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/auto_reset.h"
@@ -58,7 +59,6 @@
 #include "services/network/public/cpp/web_sandbox_flags.h"
 #include "services/network/public/mojom/trust_tokens.mojom-blink.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-blink.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/permissions_policy/document_policy_features.h"
@@ -6393,7 +6393,7 @@ void Document::setDomain(const String& raw_domain,
   }
 }
 
-absl::optional<base::Time> Document::lastModifiedTime() const {
+std::optional<base::Time> Document::lastModifiedTime() const {
   AtomicString http_last_modified = override_last_modified_;
   if (http_last_modified.empty()) {
     if (DocumentLoader* document_loader = Loader()) {
@@ -6404,7 +6404,7 @@ absl::optional<base::Time> Document::lastModifiedTime() const {
   if (!http_last_modified.empty()) {
     return ParseDate(http_last_modified);
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 // https://html.spec.whatwg.org/C#dom-document-lastmodified
@@ -7854,7 +7854,7 @@ void Document::UpdateThemeColorCache() {
   }
 }
 
-absl::optional<Color> Document::ThemeColor() {
+std::optional<Color> Document::ThemeColor() {
   // Returns the color of the first meta[name=theme-color] element in
   // tree order that matches and is valid.
   // https://html.spec.whatwg.org/multipage/semantics.html#meta-theme-color
@@ -7871,7 +7871,7 @@ absl::optional<Color> Document::ThemeColor() {
       return color;
     }
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void Document::UpdateAppTitle() {
@@ -8203,7 +8203,7 @@ void Document::ScheduleForTopLayerRemoval(Element* element,
     return;
   }
 
-  absl::optional<TopLayerReason> existing_pending_removal = absl::nullopt;
+  std::optional<TopLayerReason> existing_pending_removal = std::nullopt;
   for (const auto& pending_removal : top_layer_elements_pending_removal_) {
     if (pending_removal->element == element) {
       existing_pending_removal = pending_removal->reason;
@@ -8256,14 +8256,14 @@ void Document::RemoveFromTopLayerImmediately(Element* element) {
   probe::TopLayerElementsChanged(this);
 }
 
-absl::optional<Document::TopLayerReason>
-Document::IsScheduledForTopLayerRemoval(Element* element) const {
+std::optional<Document::TopLayerReason> Document::IsScheduledForTopLayerRemoval(
+    Element* element) const {
   for (const auto& entry : top_layer_elements_pending_removal_) {
     if (entry->element == element) {
       return entry->reason;
     }
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 HTMLDialogElement* Document::ActiveModalDialog() const {

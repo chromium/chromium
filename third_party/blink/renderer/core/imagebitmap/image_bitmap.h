@@ -40,7 +40,7 @@ class CORE_EXPORT ImageBitmap final : public ScriptWrappable,
   // Expects the ImageElementBase to return/have an SVGImage.
   static ScriptPromise CreateAsync(
       ImageElementBase*,
-      absl::optional<gfx::Rect>,
+      std::optional<gfx::Rect>,
       ScriptState*,
       scoped_refptr<base::SequencedTaskRunner> task_runner,
       mojom::blink::PreferredColorScheme,
@@ -49,26 +49,26 @@ class CORE_EXPORT ImageBitmap final : public ScriptWrappable,
   static sk_sp<SkImage> GetSkImageFromDecoder(std::unique_ptr<ImageDecoder>);
 
   ImageBitmap(ImageElementBase*,
-              absl::optional<gfx::Rect>,
+              std::optional<gfx::Rect>,
               const ImageBitmapOptions* = ImageBitmapOptions::Create());
   ImageBitmap(HTMLVideoElement*,
-              absl::optional<gfx::Rect>,
+              std::optional<gfx::Rect>,
               const ImageBitmapOptions* = ImageBitmapOptions::Create());
   ImageBitmap(HTMLCanvasElement*,
-              absl::optional<gfx::Rect>,
+              std::optional<gfx::Rect>,
               const ImageBitmapOptions* = ImageBitmapOptions::Create());
   ImageBitmap(OffscreenCanvas*,
-              absl::optional<gfx::Rect>,
+              std::optional<gfx::Rect>,
               const ImageBitmapOptions* = ImageBitmapOptions::Create());
   ImageBitmap(ImageData*,
-              absl::optional<gfx::Rect>,
+              std::optional<gfx::Rect>,
               const ImageBitmapOptions* = ImageBitmapOptions::Create());
   ImageBitmap(ImageBitmap*,
-              absl::optional<gfx::Rect>,
+              std::optional<gfx::Rect>,
               const ImageBitmapOptions* = ImageBitmapOptions::Create());
   ImageBitmap(scoped_refptr<StaticBitmapImage>);
   ImageBitmap(scoped_refptr<StaticBitmapImage>,
-              absl::optional<gfx::Rect>,
+              std::optional<gfx::Rect>,
               const ImageBitmapOptions* = ImageBitmapOptions::Create());
   // This constructor may called by structured-cloning an ImageBitmap.
   // isImageBitmapOriginClean indicates whether the original ImageBitmap is
@@ -123,7 +123,7 @@ class CORE_EXPORT ImageBitmap final : public ScriptWrappable,
   // ImageBitmapSource implementation
   gfx::Size BitmapSourceSize() const override { return Size(); }
   ScriptPromise CreateImageBitmap(ScriptState*,
-                                  absl::optional<gfx::Rect>,
+                                  std::optional<gfx::Rect>,
                                   const ImageBitmapOptions*,
                                   ExceptionState&) override;
 

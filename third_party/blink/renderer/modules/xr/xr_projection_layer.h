@@ -5,7 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_XR_XR_PROJECTION_LAYER_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_XR_XR_PROJECTION_LAYER_H_
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include <optional>
+
 #include "third_party/blink/renderer/modules/xr/xr_composition_layer.h"
 
 namespace blink {
@@ -26,8 +27,8 @@ class XRProjectionLayer final : public XRCompositionLayer {
   uint16_t textureArrayLength() const;
 
   bool ignoreDepthValues() const;
-  absl::optional<float> fixedFoveation() const;
-  void setFixedFoveation(absl::optional<float> value);
+  std::optional<float> fixedFoveation() const;
+  void setFixedFoveation(std::optional<float> value);
   XRRigidTransform* deltaPose() const;
   void setDeltaPose(XRRigidTransform* value);
 
@@ -38,7 +39,7 @@ class XRProjectionLayer final : public XRCompositionLayer {
   uint16_t texture_height_{0L};
   uint16_t texture_array_length_{1L};
   bool ignore_depth_values_{true};
-  absl::optional<float> fixed_foveation_{absl::nullopt};
+  std::optional<float> fixed_foveation_{std::nullopt};
   Member<XRRigidTransform> delta_pose_{nullptr};
 };
 

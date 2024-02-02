@@ -5,7 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_SCRIPT_SCRIPT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SCRIPT_SCRIPT_H_
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include <optional>
+
 #include "third_party/blink/public/mojom/script/script_type.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_script_runner.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -27,7 +28,7 @@ class CORE_EXPORT Script : public GarbageCollected<Script> {
   virtual ~Script() {}
 
   virtual mojom::blink::ScriptType GetScriptType() const = 0;
-  static absl::optional<mojom::blink::ScriptType> ParseScriptType(
+  static std::optional<mojom::blink::ScriptType> ParseScriptType(
       const String& script_type);
 
   // https://html.spec.whatwg.org/C/#run-a-classic-script

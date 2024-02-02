@@ -8,10 +8,11 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <optional>
+
 #include "base/functional/callback.h"
 #include "base/time/time.h"
 #include "media/base/video_frame.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/wtf/deque.h"
 
@@ -79,7 +80,7 @@ class MODULES_EXPORT LowLatencyVideoRendererAlgorithm {
   VideoFrameQueue frame_queue_;
 
   // Render deadline min for when the last frame was rendered.
-  absl::optional<base::TimeTicks> last_render_deadline_min_;
+  std::optional<base::TimeTicks> last_render_deadline_min_;
 
   // Stores the number of fractional frames that were not rendered as of
   // |last_render_deadline_min_|. This is needed in case the display refresh
@@ -114,7 +115,7 @@ class MODULES_EXPORT LowLatencyVideoRendererAlgorithm {
     int max_size_drop_queue;
   };
   Stats stats_;
-  absl::optional<base::TimeTicks> last_deadline_min_stats_recorded_;
+  std::optional<base::TimeTicks> last_deadline_min_stats_recorded_;
   void RecordAndResetStats();
   // Maximum post decode queue size which should trigger a max queue size
   // reduction.

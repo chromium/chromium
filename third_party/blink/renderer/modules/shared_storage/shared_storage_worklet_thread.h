@@ -30,7 +30,7 @@ class MODULES_EXPORT SharedStorageWorkletThread : public WorkerThread {
       mojo::PendingReceiver<mojom::blink::SharedStorageWorkletService> receiver,
       base::OnceClosure disconnect_handler);
 
-  static absl::optional<WorkerBackingThreadStartupData>
+  static std::optional<WorkerBackingThreadStartupData>
   CreateThreadStartupData();
 
  protected:

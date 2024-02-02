@@ -5,11 +5,11 @@
 #include "third_party/blink/renderer/core/html/lazy_load_frame_observer.h"
 
 #include <memory>
+#include <optional>
 #include <tuple>
 
 #include "base/ranges/algorithm.h"
 #include "base/test/scoped_feature_list.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/platform/web_effective_connection_type.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/exported/web_view_impl.h"
@@ -399,7 +399,7 @@ TEST_P(LazyLoadFramesParamsTest,
 TEST_P(LazyLoadFramesParamsTest,
        LoadSameOriginFrameFarFromViewportWithLoadingAttributeLazy) {
   SimRequest main_resource("https://example.com/", "text/html");
-  absl::optional<SimRequest> child_frame_resource;
+  std::optional<SimRequest> child_frame_resource;
 
   LoadURL("https://example.com/");
 
@@ -462,7 +462,7 @@ TEST_P(LazyLoadFramesParamsTest,
 TEST_P(LazyLoadFramesParamsTest,
        LoadCrossOriginFrameFarFromViewportThenSetLoadingAttributeEager) {
   SimRequest main_resource("https://example.com/", "text/html");
-  absl::optional<SimRequest> child_frame_resource;
+  std::optional<SimRequest> child_frame_resource;
 
   LoadURL("https://example.com/");
 

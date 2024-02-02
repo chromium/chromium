@@ -63,8 +63,8 @@ class PLATFORM_EXPORT StatsCollectingDecoder
   // Implementation of webrtc::DecodedImageCallback.
   int32_t Decoded(webrtc::VideoFrame& decodedImage) override;
   void Decoded(webrtc::VideoFrame& decodedImage,
-               absl::optional<int32_t> decode_time_ms,
-               absl::optional<uint8_t> qp) override;
+               std::optional<int32_t> decode_time_ms,
+               std::optional<uint8_t> qp) override;
 
   const std::unique_ptr<webrtc::VideoDecoder> decoder_;
   raw_ptr<webrtc::DecodedImageCallback, ExperimentalRenderer> decoded_callback_{

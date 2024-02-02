@@ -32,6 +32,7 @@
 #define THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_URL_RESPONSE_H_
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
@@ -42,7 +43,6 @@
 #include "net/cert/ct_policy_status.h"
 #include "net/http/alternate_protocol_usage.h"
 #include "net/http/http_connection_info.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/security/security_style.h"
 #include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/platform/web_string.h"
@@ -275,7 +275,7 @@ class BLINK_PLATFORM_EXPORT WebURLResponse {
   void SetIsWebBundleInnerResponse(bool);
   void SetWasInPrefetchCache(bool);
   void SetWasCookieInRequest(bool);
-  void SetRecursivePrefetchToken(const absl::optional<base::UnguessableToken>&);
+  void SetRecursivePrefetchToken(const std::optional<base::UnguessableToken>&);
 
   // Whether this resource is from a MHTML archive.
   bool FromArchive() const;
@@ -285,8 +285,8 @@ class BLINK_PLATFORM_EXPORT WebURLResponse {
   // through to query name.
   void SetDnsAliases(const WebVector<WebString>&);
 
-  void SetAuthChallengeInfo(const absl::optional<net::AuthChallengeInfo>&);
-  const absl::optional<net::AuthChallengeInfo>& AuthChallengeInfo() const;
+  void SetAuthChallengeInfo(const std::optional<net::AuthChallengeInfo>&);
+  const std::optional<net::AuthChallengeInfo>& AuthChallengeInfo() const;
 
   // The request's |includeCredentials| value from the "HTTP-network fetch"
   // algorithm.

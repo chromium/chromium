@@ -30,7 +30,7 @@ class LoaderFactoryForWorker : public ResourceFetcher::LoaderFactory {
       scoped_refptr<base::SingleThreadTaskRunner> freezable_task_runner,
       scoped_refptr<base::SingleThreadTaskRunner> unfreezable_task_runner,
       BackForwardCacheLoaderHelper*,
-      const absl::optional<base::UnguessableToken>&
+      const std::optional<base::UnguessableToken>&
           service_worker_race_network_request_token,
       bool is_from_origin_dirty_style_sheet) override;
   CodeCacheHost* GetCodeCacheHost() override;

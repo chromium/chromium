@@ -27,8 +27,8 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_ENCRYPTEDMEDIA_MEDIA_KEY_SESSION_H_
 
 #include <memory>
+#include <optional>
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/platform/web_content_decryption_module_session.h"
 #include "third_party/blink/public/platform/web_encrypted_media_types.h"
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"

@@ -42,7 +42,7 @@ BlockChildIterator::Entry BlockChildIterator::NextChild(
   if (previous_inline_break_token) {
     DCHECK(!child_idx_);
     return Entry(previous_inline_break_token->InputNode(),
-                 previous_inline_break_token, absl::nullopt);
+                 previous_inline_break_token, std::nullopt);
   }
 
   if (did_handle_first_child_) {
@@ -65,7 +65,7 @@ BlockChildIterator::Entry BlockChildIterator::NextChild(
   }
 
   const BreakToken* current_child_break_token = nullptr;
-  absl::optional<wtf_size_t> current_child_idx;
+  std::optional<wtf_size_t> current_child_idx;
   LayoutInputNode current_child = next_unstarted_child_;
   if (break_token_) {
     // If we're resuming layout after a fragmentainer break, we'll first resume

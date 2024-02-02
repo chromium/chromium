@@ -5,8 +5,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_FRAME_VIEW_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_FRAME_VIEW_H_
 
+#include <optional>
+
 #include "base/time/time.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/frame/lifecycle.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/frame/viewport_intersection_state.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -31,7 +32,7 @@ class CORE_EXPORT FrameView : public EmbeddedContentView {
   // is true for any tracked observer in the frame subtree).
   virtual bool UpdateViewportIntersectionsForSubtree(
       unsigned parent_flags,
-      absl::optional<base::TimeTicks>& monotonic_time) = 0;
+      std::optional<base::TimeTicks>& monotonic_time) = 0;
 
   virtual bool GetIntrinsicSizingInfo(IntrinsicSizingInfo&) const = 0;
   virtual bool HasIntrinsicSizingInfo() const = 0;

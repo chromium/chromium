@@ -149,7 +149,7 @@ double NumericRangeNativeFitness(const NumericConstraint& constraint,
 // Returns the fitness distance between the ideal value of |constraint| and
 // an optional boolean |value|.
 // Based on https://w3c.github.io/mediacapture-main/#dfn-fitness-distance.
-double OptionalBoolFitness(const absl::optional<bool>& value,
+double OptionalBoolFitness(const std::optional<bool>& value,
                            const BooleanConstraint& constraint) {
   if (!constraint.HasIdeal())
     return 0.0;
@@ -233,10 +233,10 @@ class CandidateFormat {
   }
 
   // Convenience accessors for constrained_frame_rate() fields.
-  const absl::optional<double>& MinFrameRateConstraint() const {
+  const std::optional<double>& MinFrameRateConstraint() const {
     return constrained_frame_rate_.Min();
   }
-  const absl::optional<double>& MaxFrameRateConstraint() const {
+  const std::optional<double>& MaxFrameRateConstraint() const {
     return constrained_frame_rate_.Max();
   }
 
@@ -258,10 +258,10 @@ class CandidateFormat {
   // a nullopt is returned, and the name of one of the constraints that
   // could not be satisfied is returned in |failed_constraint_name| if
   // |failed_constraint_name| is not null.
-  absl::optional<ApplyConstraintSetResult> TryToApplyConstraintSet(
+  std::optional<ApplyConstraintSetResult> TryToApplyConstraintSet(
       const MediaTrackConstraintSetPlatform& constraint_set,
       const char** failed_constraint_name = nullptr) const {
-    absl::optional<ApplyConstraintSetResult> result(absl::in_place);
+    std::optional<ApplyConstraintSetResult> result(std::in_place);
 
     result->rescale_intersection_ =
         rescale_set_.Intersection(media_constraints::RescaleSetFromConstraint(
@@ -269,7 +269,7 @@ class CandidateFormat {
     if (result->rescale_intersection_.IsEmpty()) {
       UpdateFailedConstraintName(constraint_set.resize_mode,
                                  failed_constraint_name);
-      return absl::nullopt;
+      return std::nullopt;
     }
 
     result->resolution_intersection_ = resolution_set_.Intersection(
@@ -283,22 +283,22 @@ class CandidateFormat {
     }
     if (result->resolution_intersection_.IsWidthEmpty()) {
       UpdateFailedConstraintName(constraint_set.width, failed_constraint_name);
-      return absl::nullopt;
+      return std::nullopt;
     }
     if (result->resolution_intersection_.IsHeightEmpty()) {
       UpdateFailedConstraintName(constraint_set.height, failed_constraint_name);
-      return absl::nullopt;
+      return std::nullopt;
     }
     if (result->resolution_intersection_.IsAspectRatioEmpty()) {
       UpdateFailedConstraintName(constraint_set.aspect_ratio,
                                  failed_constraint_name);
-      return absl::nullopt;
+      return std::nullopt;
     }
 
     if (!SatisfiesFrameRateConstraint(constraint_set.frame_rate)) {
       UpdateFailedConstraintName(constraint_set.frame_rate,
                                  failed_constraint_name);
-      return absl::nullopt;
+      return std::nullopt;
     }
 
     result->constrained_frame_rate_ = constrained_frame_rate_.Intersection(
@@ -345,7 +345,7 @@ class CandidateFormat {
           static_cast<double>(track_settings_with_rescale.target_width()) /
           track_settings_with_rescale.target_height();
       DCHECK(!std::isnan(target_aspect_ratio));
-      absl::optional<double> best_supported_frame_rate =
+      std::optional<double> best_supported_frame_rate =
           track_settings_with_rescale.max_frame_rate();
       if (!best_supported_frame_rate.has_value() ||
           *best_supported_frame_rate > NativeFrameRate()) {
@@ -375,7 +375,7 @@ class CandidateFormat {
             basic_constraint_set, resolution_set(), constrained_frame_rate(),
             format(), false /* enable_rescale */);
         DCHECK(!track_settings_without_rescale.target_size().has_value());
-        absl::optional<double> best_supported_frame_rate =
+        std::optional<double> best_supported_frame_rate =
             track_settings_without_rescale.max_frame_rate();
         if (!best_supported_frame_rate.has_value() ||
             *best_supported_frame_rate > NativeFrameRate()) {
@@ -541,19 +541,19 @@ class PTZDeviceState {
     return nullptr;
   }
 
-  absl::optional<double> SelectPan(
+  std::optional<double> SelectPan(
       const MediaTrackConstraintSetPlatform& basic_set) const {
     return SelectProperty(&PTZDeviceState::pan_set_, basic_set,
                           &MediaTrackConstraintSetPlatform::pan);
   }
 
-  absl::optional<double> SelectTilt(
+  std::optional<double> SelectTilt(
       const MediaTrackConstraintSetPlatform& basic_set) const {
     return SelectProperty(&PTZDeviceState::tilt_set_, basic_set,
                           &MediaTrackConstraintSetPlatform::tilt);
   }
 
-  absl::optional<double> SelectZoom(
+  std::optional<double> SelectZoom(
       const MediaTrackConstraintSetPlatform& basic_set) const {
     return SelectProperty(&PTZDeviceState::zoom_set_, basic_set,
                           &MediaTrackConstraintSetPlatform::zoom);
@@ -568,7 +568,7 @@ class PTZDeviceState {
   // * If minimum is provided, return minimum.
   // * Otherwise, if maximum is provided, return maximum.
   // * Otherwise, return nullopt.
-  absl::optional<double> SelectProperty(
+  std::optional<double> SelectProperty(
       DoubleRangeSet PTZDeviceState::*ptz_field,
       const MediaTrackConstraintSetPlatform& basic_set,
       DoubleConstraint MediaTrackConstraintSetPlatform::*basic_set_field)
@@ -605,18 +605,18 @@ class ImageCaptureDeviceState {
    private:
     friend class ImageCaptureDeviceState;
 
-    absl::optional<BoolSet> torch_intersection_;
-    absl::optional<BoolSet> background_blur_intersection_;
-    absl::optional<BoolSet> eye_gaze_correction_intersection_;
-    absl::optional<BoolSet> face_framing_intersection_;
+    std::optional<BoolSet> torch_intersection_;
+    std::optional<BoolSet> background_blur_intersection_;
+    std::optional<BoolSet> eye_gaze_correction_intersection_;
+    std::optional<BoolSet> face_framing_intersection_;
   };
 
   explicit ImageCaptureDeviceState(const DeviceInfo& device) {}
 
-  absl::optional<ApplyConstraintSetResult> TryToApplyConstraintSet(
+  std::optional<ApplyConstraintSetResult> TryToApplyConstraintSet(
       const MediaTrackConstraintSetPlatform& constraint_set,
       const char** failed_constraint_name = nullptr) const {
-    absl::optional<ApplyConstraintSetResult> result(absl::in_place);
+    std::optional<ApplyConstraintSetResult> result(std::in_place);
 
     if (!(TryToApplyConstraint(constraint_set.torch, torch_set_,
                                result->torch_intersection_,
@@ -662,10 +662,10 @@ class ImageCaptureDeviceState {
            BoolSetFitness(basic_constraint_set.face_framing, face_framing_set_);
   }
 
-  absl::optional<ImageCaptureDeviceSettings> SelectSettings(
+  std::optional<ImageCaptureDeviceSettings> SelectSettings(
       const MediaTrackConstraintSetPlatform& basic_constraint_set,
       const PTZDeviceState& ptz_state) const {
-    absl::optional<ImageCaptureDeviceSettings> settings(absl::in_place);
+    std::optional<ImageCaptureDeviceSettings> settings(std::in_place);
 
     settings->pan = ptz_state.SelectPan(basic_constraint_set);
     settings->tilt = ptz_state.SelectTilt(basic_constraint_set);
@@ -689,8 +689,8 @@ class ImageCaptureDeviceState {
   }
 
  private:
-  absl::optional<bool> SelectSetting(const BooleanConstraint& basic_constraint,
-                                     const BoolSet& set) const {
+  std::optional<bool> SelectSetting(const BooleanConstraint& basic_constraint,
+                                    const BoolSet& set) const {
     if (basic_constraint.HasIdeal()) {
       auto ideal = basic_constraint.Ideal();
       if (set.Contains(ideal)) {
@@ -698,7 +698,7 @@ class ImageCaptureDeviceState {
       }
     }
     if (set.is_universal()) {
-      return absl::nullopt;
+      return std::nullopt;
     }
     return set.FirstElement();
   }
@@ -706,7 +706,7 @@ class ImageCaptureDeviceState {
   bool TryToApplyConstraint(
       const BooleanConstraint& constraint,
       const BoolSet& current_set,
-      absl::optional<BoolSet>& intersection,
+      std::optional<BoolSet>& intersection,
       const char** failed_constraint_name = nullptr) const {
     BoolSet set_from_constraint =
         media_constraints::BoolSetFromConstraint(constraint);
@@ -775,7 +775,7 @@ bool DeviceSatisfiesConstraintSet(
 // If |constraint| is not satisfied and |failed_constraint_name| is not null,
 // |failed_constraint_name| is set to |constraints|'s name.
 bool OptionalBoolSatisfiesConstraint(
-    const absl::optional<bool>& value,
+    const std::optional<bool>& value,
     const BooleanConstraint& constraint,
     const char** failed_constraint_name = nullptr) {
   if (!constraint.HasExact())
@@ -808,7 +808,7 @@ double CandidateFitness(
     const PTZDeviceState& ptz_state,
     const CandidateFormat& candidate_format,
     const ImageCaptureDeviceState& image_capture_device_state,
-    const absl::optional<bool>& noise_reduction,
+    const std::optional<bool>& noise_reduction,
     const MediaTrackConstraintSetPlatform& constraint_set,
     VideoTrackAdapterSettings* track_settings) {
   return DeviceFitness(device, constraint_set) +
@@ -828,7 +828,7 @@ double CandidateFitness(
 void AppendDistancesFromDefault(
     const DeviceInfo& device,
     const CandidateFormat& candidate_format,
-    const absl::optional<bool>& noise_reduction,
+    const std::optional<bool>& noise_reduction,
     const VideoDeviceCaptureCapabilities& capabilities,
     int default_width,
     int default_height,

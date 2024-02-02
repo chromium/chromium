@@ -58,7 +58,7 @@ double DateTimeLocalInputType::ValueAsDate() const {
 }
 
 void DateTimeLocalInputType::SetValueAsDate(
-    const absl::optional<base::Time>& value,
+    const std::optional<base::Time>& value,
     ExceptionState& exception_state) const {
   // valueAsDate doesn't work for the datetime-local type according to the
   // standard.

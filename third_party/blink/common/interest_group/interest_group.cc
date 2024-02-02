@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include <cmath>
+#include <optional>
 #include <string>
 #include <tuple>
 #include <utility>
@@ -15,7 +16,6 @@
 #include "base/containers/contains.h"
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/common_export.h"
 #include "third_party/blink/public/common/interest_group/ad_display_size_utils.h"
 #include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom.h"
@@ -71,12 +71,12 @@ InterestGroup::Ad::Ad(base::PassKey<content::InterestGroupStorage>,
     : render_url_(render_url) {}
 InterestGroup::Ad::Ad(
     GURL render_gurl,
-    absl::optional<std::string> metadata,
-    absl::optional<std::string> size_group,
-    absl::optional<std::string> buyer_reporting_id,
-    absl::optional<std::string> buyer_and_seller_reporting_id,
-    absl::optional<std::string> ad_render_id,
-    absl::optional<std::vector<url::Origin>> allowed_reporting_origins)
+    std::optional<std::string> metadata,
+    std::optional<std::string> size_group,
+    std::optional<std::string> buyer_reporting_id,
+    std::optional<std::string> buyer_and_seller_reporting_id,
+    std::optional<std::string> ad_render_id,
+    std::optional<std::vector<url::Origin>> allowed_reporting_origins)
     : size_group(std::move(size_group)),
       metadata(std::move(metadata)),
       buyer_reporting_id(std::move(buyer_reporting_id)),

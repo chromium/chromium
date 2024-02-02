@@ -234,9 +234,9 @@ void History::go(ScriptState* script_state,
     }
     DCHECK(frame->Client());
     if (frame->Client()->NavigateBackForward(
-            delta,
-            task ? absl::optional<scheduler::TaskAttributionId>(task->Id())
-                 : absl::nullopt)) {
+            delta, task
+                       ? std::optional<scheduler::TaskAttributionId>(task->Id())
+                       : std::nullopt)) {
       if (Page* page = frame->GetPage())
         page->HistoryNavigationVirtualTimePauser().PauseVirtualTime();
     }

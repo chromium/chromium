@@ -259,8 +259,8 @@ class ViewTransitionStyleTracker
     // A subset of the element's visual overflow rect which is painted into its
     // snapshot. Only populated if the element's painting needs to be clipped.
     // This rect is in layout space.
-    absl::optional<gfx::RectF> captured_rect_in_layout_space;
-    absl::optional<gfx::RectF> cached_captured_rect_in_layout_space;
+    std::optional<gfx::RectF> captured_rect_in_layout_space;
+    std::optional<gfx::RectF> cached_captured_rect_in_layout_space;
 
     // For the following properties, they are initially set to the outgoing
     // element's value, and then switch to the incoming element's value, if one
@@ -303,7 +303,7 @@ class ViewTransitionStyleTracker
       LayoutObject& layout_object,
       ContainerProperties&,
       PhysicalRect& visual_overflow_rect_in_layout_space,
-      absl::optional<gfx::RectF>& captured_rect_in_layout_space) const;
+      std::optional<gfx::RectF>& captured_rect_in_layout_space) const;
 
   Member<Document> document_;
 
@@ -326,7 +326,7 @@ class ViewTransitionStyleTracker
   // be empty until the kCapturing phase. For a cross-document transition, this
   // will be initialized from the cached state at creation but is currently
   // unset.
-  absl::optional<gfx::Size> snapshot_root_layout_size_at_capture_;
+  std::optional<gfx::Size> snapshot_root_layout_size_at_capture_;
 
   // Map of the CSS |view-transition-name| property to state for that tag.
   HeapHashMap<AtomicString, Member<ElementData>> element_data_map_;

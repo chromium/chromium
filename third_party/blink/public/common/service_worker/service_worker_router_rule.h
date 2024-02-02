@@ -5,9 +5,9 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_COMMON_SERVICE_WORKER_SERVICE_WORKER_ROUTER_RULE_H_
 #define THIRD_PARTY_BLINK_PUBLIC_COMMON_SERVICE_WORKER_SERVICE_WORKER_ROUTER_RULE_H_
 
+#include <optional>
 #include <vector>
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/common_export.h"
 #include "third_party/blink/public/common/safe_url_pattern.h"
 
@@ -31,11 +31,11 @@ struct ServiceWorkerRouterRequestCondition {
   // https://fetch.spec.whatwg.org/#concept-request-method
   // Technically, it can be an arbitrary string, but Chromium would set
   // k*Method in net/http/http_request_headers.h
-  absl::optional<std::string> method;
+  std::optional<std::string> method;
   // RequestMode in services/network/public/mojom/fetch_api.mojom
-  absl::optional<network::mojom::RequestMode> mode;
+  std::optional<network::mojom::RequestMode> mode;
   // RequestDestination in services/network/public/mojom/fetch_api.mojom
-  absl::optional<network::mojom::RequestDestination> destination;
+  std::optional<network::mojom::RequestDestination> destination;
 
   bool operator==(const ServiceWorkerRouterRequestCondition& other) const;
 };
@@ -69,15 +69,15 @@ class BLINK_COMMON_EXPORT ServiceWorkerRouterCondition {
   // the callers when other conditions are added in the future
  public:
   using MemberRef =
-      std::tuple<absl::optional<SafeUrlPattern>&,
-                 absl::optional<ServiceWorkerRouterRequestCondition>&,
-                 absl::optional<ServiceWorkerRouterRunningStatusCondition>&,
-                 absl::optional<ServiceWorkerRouterOrCondition>&>;
+      std::tuple<std::optional<SafeUrlPattern>&,
+                 std::optional<ServiceWorkerRouterRequestCondition>&,
+                 std::optional<ServiceWorkerRouterRunningStatusCondition>&,
+                 std::optional<ServiceWorkerRouterOrCondition>&>;
   using MemberConstRef = std::tuple<
-      const absl::optional<SafeUrlPattern>&,
-      const absl::optional<ServiceWorkerRouterRequestCondition>&,
-      const absl::optional<ServiceWorkerRouterRunningStatusCondition>&,
-      const absl::optional<ServiceWorkerRouterOrCondition>&>;
+      const std::optional<SafeUrlPattern>&,
+      const std::optional<ServiceWorkerRouterRequestCondition>&,
+      const std::optional<ServiceWorkerRouterRunningStatusCondition>&,
+      const std::optional<ServiceWorkerRouterOrCondition>&>;
 
   ServiceWorkerRouterCondition() = default;
   ServiceWorkerRouterCondition(const ServiceWorkerRouterCondition&) = default;
@@ -88,11 +88,11 @@ class BLINK_COMMON_EXPORT ServiceWorkerRouterCondition {
       default;
 
   ServiceWorkerRouterCondition(
-      const absl::optional<SafeUrlPattern>& url_pattern,
-      const absl::optional<ServiceWorkerRouterRequestCondition>& request,
-      const absl::optional<ServiceWorkerRouterRunningStatusCondition>&
+      const std::optional<SafeUrlPattern>& url_pattern,
+      const std::optional<ServiceWorkerRouterRequestCondition>& request,
+      const std::optional<ServiceWorkerRouterRunningStatusCondition>&
           running_status,
-      const absl::optional<ServiceWorkerRouterOrCondition>& or_condition)
+      const std::optional<ServiceWorkerRouterOrCondition>& or_condition)
       : url_pattern_(url_pattern),
         request_(request),
         running_status_(running_status),
@@ -121,34 +121,34 @@ class BLINK_COMMON_EXPORT ServiceWorkerRouterCondition {
 
   static ServiceWorkerRouterCondition WithUrlPattern(
       const SafeUrlPattern& url_pattern) {
-    return {url_pattern, absl::nullopt, absl::nullopt, absl::nullopt};
+    return {url_pattern, std::nullopt, std::nullopt, std::nullopt};
   }
   static ServiceWorkerRouterCondition WithRequest(
       const ServiceWorkerRouterRequestCondition& request) {
-    return {absl::nullopt, request, absl::nullopt, absl::nullopt};
+    return {std::nullopt, request, std::nullopt, std::nullopt};
   }
   static ServiceWorkerRouterCondition WithRunningStatus(
       const ServiceWorkerRouterRunningStatusCondition& running_status) {
-    return {absl::nullopt, absl::nullopt, running_status, absl::nullopt};
+    return {std::nullopt, std::nullopt, running_status, std::nullopt};
   }
   static ServiceWorkerRouterCondition WithOrCondition(
       const ServiceWorkerRouterOrCondition& or_condition) {
-    return {absl::nullopt, absl::nullopt, absl::nullopt, or_condition};
+    return {std::nullopt, std::nullopt, std::nullopt, or_condition};
   }
 
  private:
   // URLPattern to be used for matching.
-  absl::optional<SafeUrlPattern> url_pattern_;
+  std::optional<SafeUrlPattern> url_pattern_;
 
   // Request to be used for matching.
-  absl::optional<ServiceWorkerRouterRequestCondition> request_;
+  std::optional<ServiceWorkerRouterRequestCondition> request_;
 
   // Running status to be used for matching.
-  absl::optional<ServiceWorkerRouterRunningStatusCondition> running_status_;
+  std::optional<ServiceWorkerRouterRunningStatusCondition> running_status_;
 
   // `Or` condition to be used for matching
   // We need `_condition` suffix to avoid conflict with reserved keywords in C++
-  absl::optional<ServiceWorkerRouterOrCondition> or_condition_;
+  std::optional<ServiceWorkerRouterOrCondition> or_condition_;
 };
 
 // Network source structure.
@@ -178,7 +178,7 @@ struct BLINK_COMMON_EXPORT ServiceWorkerRouterCacheSource {
   // A name of the Cache object.
   // If the field is not set, any of the Cache objects that the CacheStorage
   // tracks are used for matching as if CacheStorage.match().
-  absl::optional<std::string> cache_name;
+  std::optional<std::string> cache_name;
 
   bool operator==(const ServiceWorkerRouterCacheSource& other) const;
 };
@@ -203,10 +203,10 @@ struct BLINK_COMMON_EXPORT ServiceWorkerRouterSource {
   };
   Type type;
 
-  absl::optional<ServiceWorkerRouterNetworkSource> network_source;
-  absl::optional<ServiceWorkerRouterRaceSource> race_source;
-  absl::optional<ServiceWorkerRouterFetchEventSource> fetch_event_source;
-  absl::optional<ServiceWorkerRouterCacheSource> cache_source;
+  std::optional<ServiceWorkerRouterNetworkSource> network_source;
+  std::optional<ServiceWorkerRouterRaceSource> race_source;
+  std::optional<ServiceWorkerRouterFetchEventSource> fetch_event_source;
+  std::optional<ServiceWorkerRouterCacheSource> cache_source;
 
   bool operator==(const ServiceWorkerRouterSource& other) const;
 };

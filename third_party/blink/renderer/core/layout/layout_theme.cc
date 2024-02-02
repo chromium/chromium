@@ -777,7 +777,7 @@ Color LayoutTheme::SystemColorFromNativeTheme(
     default:
       return DefaultSystemColor(css_value_id, color_scheme);
   }
-  const absl::optional<SkColor> system_color =
+  const std::optional<SkColor> system_color =
       WebThemeEngineHelper::GetNativeThemeEngine()->GetSystemColor(theme_color);
   if (system_color)
     return Color::FromSkColor((system_color.value()));

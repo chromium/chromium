@@ -187,13 +187,13 @@ void DidCloneMediaStreamTrack(MediaStreamComponent* clone) {
 }
 
 // Returns the DisplayCaptureSurfaceType for display-capture tracks,
-// absl::nullopt for non-display-capture tracks.
-absl::optional<media::mojom::DisplayCaptureSurfaceType> GetDisplayCaptureType(
+// std::nullopt for non-display-capture tracks.
+std::optional<media::mojom::DisplayCaptureSurfaceType> GetDisplayCaptureType(
     const MediaStreamComponent* component) {
   const MediaStreamTrackPlatform* const platform_track =
       component->GetPlatformTrack();
   if (!platform_track) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   MediaStreamTrackPlatform::Settings settings;
@@ -223,7 +223,7 @@ MediaStreamTrack* MediaStreamTrackImpl::Create(ExecutionContext* context,
   DCHECK(context);
   DCHECK(component);
 
-  const absl::optional<media::mojom::DisplayCaptureSurfaceType>
+  const std::optional<media::mojom::DisplayCaptureSurfaceType>
       display_surface_type = GetDisplayCaptureType(component);
   const bool is_tab_capture =
       (display_surface_type ==
@@ -557,7 +557,7 @@ MediaTrackCapabilities* MediaStreamTrackImpl::getCapabilities() const {
     capabilities->setFacingMode(facing_mode);
     capabilities->setResizeMode({WebMediaStreamTrack::kResizeModeNone,
                                  WebMediaStreamTrack::kResizeModeRescale});
-    const absl::optional<const MediaStreamDevice> source_device = device();
+    const std::optional<const MediaStreamDevice> source_device = device();
     if (source_device && source_device->display_media_info) {
       capabilities->setDisplaySurface(GetDisplaySurfaceString(
           source_device->display_media_info->display_surface));
@@ -686,7 +686,7 @@ MediaStreamTrackVideoStats* MediaStreamTrackImpl::stats() {
       // `MediaStreamTrack.stats` is not supported for audio tracks.
       return nullptr;
     case MediaStreamSource::kTypeVideo: {
-      absl::optional<const MediaStreamDevice> source_device = device();
+      std::optional<const MediaStreamDevice> source_device = device();
       if (!source_device.has_value() ||
           source_device->type == mojom::blink::MediaStreamType::NO_SERVICE) {
         // If the track is backed by a getUserMedia or getDisplayMedia device,
@@ -934,8 +934,8 @@ void MediaStreamTrackImpl::SendWheel(
 }
 
 void MediaStreamTrackImpl::GetZoomLevel(
-    base::OnceCallback<void(absl::optional<int>, const String&)> callback) {
-  std::move(callback).Run(absl::nullopt, "Unsupported.");
+    base::OnceCallback<void(std::optional<int>, const String&)> callback) {
+  std::move(callback).Run(std::nullopt, "Unsupported.");
 }
 
 void MediaStreamTrackImpl::SetZoomLevel(
@@ -970,9 +970,9 @@ std::unique_ptr<AudioSourceProvider> MediaStreamTrackImpl::CreateWebAudioSource(
                                                context_buffer_size));
 }
 
-absl::optional<const MediaStreamDevice> MediaStreamTrackImpl::device() const {
+std::optional<const MediaStreamDevice> MediaStreamTrackImpl::device() const {
   if (!component_->Source()->GetPlatformSource()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return component_->Source()->GetPlatformSource()->device();
 }

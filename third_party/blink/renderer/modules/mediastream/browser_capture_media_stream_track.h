@@ -42,7 +42,7 @@ class MODULES_EXPORT BrowserCaptureMediaStreamTrack
                  int wheel_delta_x,
                  int wheel_delta_y,
                  base::OnceCallback<void(DOMException*)> callback) override;
-  void GetZoomLevel(base::OnceCallback<void(absl::optional<int>, const String&)>
+  void GetZoomLevel(base::OnceCallback<void(std::optional<int>, const String&)>
                         callback) override;
   void SetZoomLevel(int zoom_level,
                     base::OnceCallback<void(DOMException*)> callback) override;
@@ -96,7 +96,7 @@ class MODULES_EXPORT BrowserCaptureMediaStreamTrack
 
     const Member<ScriptPromiseResolverWithTracker<ApplySubCaptureTargetResult>>
         promise_resolver;
-    absl::optional<media::mojom::ApplySubCaptureTargetResult> result;
+    std::optional<media::mojom::ApplySubCaptureTargetResult> result;
     bool sub_capture_target_version_observed = false;
   };
 

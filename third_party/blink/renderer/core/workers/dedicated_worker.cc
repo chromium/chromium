@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/workers/dedicated_worker.h"
 
+#include <optional>
 #include <utility>
 
 #include "base/feature_list.h"
@@ -12,7 +13,6 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/network/public/cpp/cross_origin_embedder_policy.h"
 #include "services/network/public/mojom/fetch_api.mojom-blink.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/blob/blob_utils.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/browser_interface_broker.mojom-blink.h"
@@ -199,7 +199,7 @@ void DedicatedWorker::Start() {
     // https://html.spec.whatwg.org/C/#workeroptions
     auto credentials_mode = network::mojom::CredentialsMode::kSameOrigin;
     if (options_->type() == script_type_names::kModule) {
-      absl::optional<network::mojom::CredentialsMode> result =
+      std::optional<network::mojom::CredentialsMode> result =
           Request::ParseCredentialsMode(options_->credentials());
       DCHECK(result);
       credentials_mode = result.value();

@@ -5,8 +5,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_TABLE_TABLE_LAYOUT_ALGORITHM_TYPES_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_TABLE_TABLE_LAYOUT_ALGORITHM_TYPES_H_
 
+#include <optional>
+
 #include "base/memory/scoped_refptr.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/block_node.h"
 #include "third_party/blink/renderer/core/layout/geometry/box_strut.h"
@@ -32,7 +33,7 @@ class CORE_EXPORT TableTypes {
     DISALLOW_NEW();
     LayoutUnit min_inline_size;
     LayoutUnit max_inline_size;
-    absl::optional<float> percent;      // 100% is stored as 100.0f
+    std::optional<float> percent;       // 100% is stored as 100.0f
     LayoutUnit percent_border_padding;  // Border/padding used for percentage
                                         // size resolution.
     bool is_constrained;  // True if this cell has a specified inline-size.
@@ -57,9 +58,9 @@ class CORE_EXPORT TableTypes {
   // Constraint for a column.
   struct Column {
     DISALLOW_NEW();
-    Column(const absl::optional<LayoutUnit>& min_inline_size,
-           const absl::optional<LayoutUnit>& max_inline_size,
-           const absl::optional<float>& percent,
+    Column(const std::optional<LayoutUnit>& min_inline_size,
+           const std::optional<LayoutUnit>& max_inline_size,
+           const std::optional<float>& percent,
            LayoutUnit percent_border_padding,
            bool is_constrained,
            bool is_collapsed,
@@ -89,9 +90,9 @@ class CORE_EXPORT TableTypes {
 
     // These members are initialized from <col> and <colgroup>, then they
     // accumulate data from |CellInlineConstraint|s.
-    absl::optional<LayoutUnit> min_inline_size;
-    absl::optional<LayoutUnit> max_inline_size;
-    absl::optional<float> percent;      // 100% is stored as 100.0f
+    std::optional<LayoutUnit> min_inline_size;
+    std::optional<LayoutUnit> max_inline_size;
+    std::optional<float> percent;       // 100% is stored as 100.0f
     LayoutUnit percent_border_padding;  // Border/padding used for percentage
                                         // size resolution.
     // True if any cell for this column is constrained.
@@ -100,7 +101,7 @@ class CORE_EXPORT TableTypes {
     bool is_table_fixed = false;
     bool is_mergeable = false;
 
-    void Encompass(const absl::optional<TableTypes::CellInlineConstraint>&);
+    void Encompass(const std::optional<TableTypes::CellInlineConstraint>&);
     LayoutUnit ResolvePercentInlineSize(
         LayoutUnit percentage_resolution_inline_size) const {
       return std::max(
@@ -184,8 +185,8 @@ class CORE_EXPORT TableTypes {
     LayoutUnit block_size;
     wtf_size_t start_cell_index;
     wtf_size_t cell_count;
-    absl::optional<LayoutUnit> baseline;
-    absl::optional<float> percent;  // 100% is stored as 100.0f
+    std::optional<LayoutUnit> baseline;
+    std::optional<float> percent;  // 100% is stored as 100.0f
     // |is_constrained| is true if row has specified block-size, or contains
     // constrained cells.
     bool is_constrained;
@@ -197,14 +198,14 @@ class CORE_EXPORT TableTypes {
     wtf_size_t start_row;
     wtf_size_t row_count;
     LayoutUnit block_size;
-    absl::optional<float> percent;
+    std::optional<float> percent;
     bool is_constrained;
     bool is_tbody;
     bool needs_redistribution;
   };
 
   static Column CreateColumn(const ComputedStyle&,
-                             absl::optional<LayoutUnit> default_inline_size,
+                             std::optional<LayoutUnit> default_inline_size,
                              bool is_table_fixed);
 
   static CellInlineConstraint CreateCellInlineConstraint(
@@ -224,7 +225,7 @@ class CORE_EXPORT TableTypes {
   typedef base::RefCountedData<WTF::Vector<Column>> Columns;
   // Inline constraints are optional because we need to distinguish between an
   // empty cell, and a non-existent cell.
-  using CellInlineConstraints = Vector<absl::optional<CellInlineConstraint>>;
+  using CellInlineConstraints = Vector<std::optional<CellInlineConstraint>>;
   using ColspanCells = Vector<ColspanCell>;
   using Caption = MinMaxSizes;
   using CellBlockConstraints = Vector<CellBlockConstraint>;

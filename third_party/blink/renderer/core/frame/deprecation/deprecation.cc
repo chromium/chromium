@@ -127,7 +127,7 @@ void Deprecation::CountDeprecation(ExecutionContext* context,
   // Send the deprecation report to the Reporting API and any
   // ReportingObservers.
   DeprecationReportBody* body = MakeGarbageCollected<DeprecationReportBody>(
-      info.type_, absl::nullopt, info.message_);
+      info.type_, std::nullopt, info.message_);
   Report* report = MakeGarbageCollected<Report>(ReportType::kDeprecation,
                                                 context->Url(), body);
   ReportingContext::From(context)->QueueReport(report);

@@ -101,7 +101,7 @@ class CORE_EXPORT LineInfo {
   }
   void RemoveParallelFlowBreakToken(unsigned item_index);
 
-  absl::optional<LayoutUnit> MinimumSpaceShortage() const {
+  std::optional<LayoutUnit> MinimumSpaceShortage() const {
     return minimum_space_shortage_;
   }
   void PropagateMinimumSpaceShortage(LayoutUnit shortage) {
@@ -267,7 +267,7 @@ class CORE_EXPORT LineInfo {
 
   const LayoutResult* block_in_inline_layout_result_ = nullptr;
 
-  absl::optional<LayoutUnit> minimum_space_shortage_;
+  std::optional<LayoutUnit> minimum_space_shortage_;
 
   LayoutUnit available_width_;
   LayoutUnit width_;

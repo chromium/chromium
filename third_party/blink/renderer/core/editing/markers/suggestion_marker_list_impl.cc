@@ -140,7 +140,7 @@ bool SuggestionMarkerListImpl::ShiftMarkersForSuggestionReplacement(
 
     std::optional<DocumentMarker::MarkerOffsets> result =
         marker->ComputeOffsetsAfterShift(offset, old_length, new_length);
-    if (result == absl::nullopt) {
+    if (result == std::nullopt) {
       did_shift_marker = true;
       continue;
     }

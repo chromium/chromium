@@ -16,7 +16,7 @@ CustomLayoutFragment::CustomLayoutFragment(
     CustomLayoutToken* token,
     const LayoutResult* layout_result,
     const LogicalSize& size,
-    const absl::optional<LayoutUnit> baseline,
+    const std::optional<LayoutUnit> baseline,
     v8::Isolate* isolate)
     : child_(child),
       token_(token),

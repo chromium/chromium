@@ -5,7 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_SHAPING_SHAPING_LINE_BREAKER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_SHAPING_SHAPING_LINE_BREAKER_H_
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include <optional>
+
 #include "third_party/blink/renderer/platform/fonts/shaping/run_segmenter.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_options.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/text_spacing_trim.h"
@@ -46,7 +47,7 @@ class PLATFORM_EXPORT ShapingLineBreaker {
 
    public:
     // Indicates the limits of the space run.
-    absl::optional<unsigned> non_hangable_run_end;
+    std::optional<unsigned> non_hangable_run_end;
 
     // Indicates the resulting break offset.
     unsigned break_offset;
@@ -122,7 +123,7 @@ class PLATFORM_EXPORT ShapingLineBreaker {
           is_hyphenated(hyphenated) {}
 
     unsigned offset = 0;
-    absl::optional<unsigned> non_hangable_run_end;
+    std::optional<unsigned> non_hangable_run_end;
     bool is_hyphenated = false;
   };
   BreakOpportunity PreviousBreakOpportunity(unsigned offset,

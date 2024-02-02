@@ -39,14 +39,14 @@ class FakeBackgroundColorPaintImageGenerator
                              const Node* node,
                              const Vector<Color>& animated_colors,
                              const Vector<double>& offsets,
-                             const absl::optional<double>& progress) override {
+                             const std::optional<double>& progress) override {
     return BitmapImage::Create();
   }
 
   bool GetBGColorPaintWorkletParams(Node* node,
                                     Vector<Color>* animated_colors,
                                     Vector<double>* offsets,
-                                    absl::optional<double>* progress) override {
+                                    std::optional<double>* progress) override {
     return BackgroundColorPaintDefinition::GetBGColorPaintWorkletParams(
         node, animated_colors, offsets, progress);
   }
@@ -127,7 +127,7 @@ TEST_F(BackgroundColorPaintDefinitionTest, SimpleBGColorAnimationNotFallback) {
   EXPECT_EQ(element->GetElementAnimations()->Animations().size(), 1u);
   Vector<Color> animated_colors;
   Vector<double> offsets;
-  absl::optional<double> progress;
+  std::optional<double> progress;
   EXPECT_TRUE(BackgroundColorPaintDefinition::GetBGColorPaintWorkletParams(
       element, &animated_colors, &offsets, &progress));
   EXPECT_EQ(
@@ -270,7 +270,7 @@ TEST_F(BackgroundColorPaintDefinitionTest, FallbackToMainNoAnimation) {
   EXPECT_FALSE(element->GetElementAnimations());
   Vector<Color> animated_colors;
   Vector<double> offsets;
-  absl::optional<double> progress;
+  std::optional<double> progress;
   EXPECT_FALSE(BackgroundColorPaintDefinition::GetBGColorPaintWorkletParams(
       element, &animated_colors, &offsets, &progress));
 }
@@ -319,7 +319,7 @@ TEST_F(BackgroundColorPaintDefinitionTest, NoBGColorAnimationFallback) {
   EXPECT_EQ(element->GetElementAnimations()->Animations().size(), 1u);
   Vector<Color> animated_colors;
   Vector<double> offsets;
-  absl::optional<double> progress;
+  std::optional<double> progress;
   EXPECT_FALSE(BackgroundColorPaintDefinition::GetBGColorPaintWorkletParams(
       element, &animated_colors, &offsets, &progress));
   EXPECT_TRUE(animated_colors.empty());
@@ -368,7 +368,7 @@ TEST_F(BackgroundColorPaintDefinitionTest, FallbackToMainCompositeAccumulate) {
   EXPECT_EQ(element->GetElementAnimations()->Animations().size(), 1u);
   Vector<Color> animated_colors;
   Vector<double> offsets;
-  absl::optional<double> progress;
+  std::optional<double> progress;
   EXPECT_FALSE(BackgroundColorPaintDefinition::GetBGColorPaintWorkletParams(
       element, &animated_colors, &offsets, &progress));
 }
@@ -426,7 +426,7 @@ TEST_F(BackgroundColorPaintDefinitionTest, MultipleAnimationsFallback) {
   EXPECT_EQ(element->GetElementAnimations()->Animations().size(), 2u);
   Vector<Color> animated_colors;
   Vector<double> offsets;
-  absl::optional<double> progress;
+  std::optional<double> progress;
   EXPECT_FALSE(BackgroundColorPaintDefinition::GetBGColorPaintWorkletParams(
       element, &animated_colors, &offsets, &progress));
 }

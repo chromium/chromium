@@ -16,7 +16,7 @@ void WebThemeEngineMac::Paint(cc::PaintCanvas* canvas,
                               const WebThemeEngine::ExtraParams* extra_params,
                               mojom::ColorScheme color_scheme,
                               const ui::ColorProvider* color_provider,
-                              const absl::optional<SkColor>& accent_color) {
+                              const std::optional<SkColor>& accent_color) {
   if (IsScrollbarPart(part)) {
     PaintMacScrollBarParts(canvas, GetColorProviderForPainting(color_scheme),
                            part, state, rect, extra_params, color_scheme);

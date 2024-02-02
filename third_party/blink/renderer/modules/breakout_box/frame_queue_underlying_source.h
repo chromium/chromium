@@ -114,7 +114,7 @@ class FrameQueueUnderlyingSource : public UnderlyingSourceBase {
   enum class NewFrameAction { kPush, kReplace, kDrop };
   NewFrameAction AnalyzeNewFrameLocked(
       const NativeFrameType& media_frame,
-      const absl::optional<NativeFrameType>& old_frame);
+      const std::optional<NativeFrameType>& old_frame);
 
   // Creates a JS frame (VideoFrame or AudioData) backed by |media_frame|.
   // Must be called on |realm_task_runner_|.

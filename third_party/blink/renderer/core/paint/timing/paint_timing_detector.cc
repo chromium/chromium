@@ -83,7 +83,7 @@ void ReportImagePixelInaccuracy(HTMLImageElement* image_element) {
   float document_dpr = document.DevicePixelRatio();
 
   // Get the size attribute calculated width, if any
-  absl::optional<float> sizes_width = image_element->GetResourceWidth();
+  std::optional<float> sizes_width = image_element->GetResourceWidth();
   // Report offset in pixels between intrinsic and layout dimensions
   const float kDPRCap = 2.0;
   float capped_dpr = std::min(document_dpr, kDPRCap);

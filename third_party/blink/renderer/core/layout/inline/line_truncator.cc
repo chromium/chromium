@@ -136,7 +136,7 @@ LayoutUnit LineTruncator::TruncateLine(LayoutUnit line_width,
   // to place the ellipsis. Children maybe truncated or moved as part of the
   // process.
   LogicalLineItem* ellipsized_child = nullptr;
-  absl::optional<LogicalLineItem> truncated_child;
+  std::optional<LogicalLineItem> truncated_child;
   if (IsLtr(line_direction_)) {
     LogicalLineItem* first_child = line_box->FirstInFlowChild();
     for (auto& child : base::Reversed(*line_box)) {
@@ -438,7 +438,7 @@ bool LineTruncator::EllipsizeChild(
     LayoutUnit ellipsis_width,
     bool is_first_child,
     LogicalLineItem* child,
-    absl::optional<LogicalLineItem>* truncated_child) {
+    std::optional<LogicalLineItem>* truncated_child) {
   DCHECK(truncated_child && !*truncated_child);
 
   // Leave out-of-flow children as is.
@@ -493,7 +493,7 @@ bool LineTruncator::TruncateChild(
     LayoutUnit space_for_child,
     bool is_first_child,
     const LogicalLineItem& child,
-    absl::optional<LogicalLineItem>* truncated_child) {
+    std::optional<LogicalLineItem>* truncated_child) {
   DCHECK(truncated_child && !*truncated_child);
 
   // If the space is not enough, try the next child.

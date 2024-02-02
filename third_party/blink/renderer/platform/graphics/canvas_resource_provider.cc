@@ -122,8 +122,8 @@ class CanvasResourceProvider::CanvasImageProvider : public cc::ImageProvider {
   cc::PlaybackImageProvider::RasterMode raster_mode_;
   bool cleanup_task_pending_ = false;
   Vector<ScopedResult> locked_images_;
-  absl::optional<cc::PlaybackImageProvider> playback_image_provider_n32_;
-  absl::optional<cc::PlaybackImageProvider> playback_image_provider_f16_;
+  std::optional<cc::PlaybackImageProvider> playback_image_provider_n32_;
+  std::optional<cc::PlaybackImageProvider> playback_image_provider_f16_;
 
   base::WeakPtrFactory<CanvasImageProvider> weak_factory_{this};
 };
@@ -1157,7 +1157,7 @@ CanvasResourceProvider::CanvasImageProvider::CanvasImageProvider(
     SkColorType canvas_color_type,
     cc::PlaybackImageProvider::RasterMode raster_mode)
     : raster_mode_(raster_mode) {
-  absl::optional<cc::PlaybackImageProvider::Settings> settings =
+  std::optional<cc::PlaybackImageProvider::Settings> settings =
       cc::PlaybackImageProvider::Settings();
   settings->raster_mode = raster_mode_;
 
@@ -1514,10 +1514,10 @@ gfx::ColorSpace CanvasResourceProvider::GetColorSpace() const {
                      : gfx::ColorSpace::CreateSRGB();
 }
 
-absl::optional<cc::PaintRecord> CanvasResourceProvider::FlushCanvas(
+std::optional<cc::PaintRecord> CanvasResourceProvider::FlushCanvas(
     FlushReason reason) {
   if (!recorder_->HasRecordedDrawOps()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   ScopedRasterTimer timer(IsAccelerated() ? RasterInterface() : nullptr, *this,
                           always_enable_raster_timers_for_testing_);
@@ -1542,7 +1542,7 @@ absl::optional<cc::PaintRecord> CanvasResourceProvider::FlushCanvas(
   cc::PaintRecord recording = recorder_->finishRecordingAsPicture();
   RasterRecord(recording);
   last_recording_ =
-      preserve_recording ? absl::optional(recording) : absl::nullopt;
+      preserve_recording ? std::optional(recording) : std::nullopt;
   return recording;
 }
 
@@ -1617,7 +1617,7 @@ bool CanvasResourceProvider::WritePixels(const SkImageInfo& orig_info,
     // WritePixels content is not saved in recording. Calling WritePixels
     // therefore invalidates `last_recording_` because it's now missing that
     // information.
-    last_recording_ = absl::nullopt;
+    last_recording_ = std::nullopt;
   }
   return wrote_pixels;
 }

@@ -417,7 +417,7 @@ KeyframeEffect::CheckCanStartAnimationOnCompositor(
 
 void KeyframeEffect::StartAnimationOnCompositor(
     int group,
-    absl::optional<double> start_time,
+    std::optional<double> start_time,
     base::TimeDelta time_offset,
     double animation_playback_rate,
     CompositorAnimation* compositor_animation,
@@ -628,7 +628,7 @@ void KeyframeEffect::ApplyEffects() {
     GetAnimation()->CancelAnimationOnCompositor();
   }
 
-  absl::optional<double> iteration = CurrentIteration();
+  std::optional<double> iteration = CurrentIteration();
   DCHECK(iteration);
   DCHECK_GE(iteration.value(), 0);
   bool changed = false;
@@ -723,7 +723,7 @@ void KeyframeEffect::DetachTarget(Animation* animation) {
 
 AnimationTimeDelta KeyframeEffect::CalculateTimeToEffectChange(
     bool forwards,
-    absl::optional<AnimationTimeDelta> local_time,
+    std::optional<AnimationTimeDelta> local_time,
     AnimationTimeDelta time_to_next_iteration) const {
   const AnimationTimeDelta start_time = NormalizedTiming().start_delay;
 
@@ -774,11 +774,11 @@ AnimationTimeDelta KeyframeEffect::CalculateTimeToEffectChange(
   }
 }
 
-absl::optional<AnimationTimeDelta> KeyframeEffect::TimelineDuration() const {
+std::optional<AnimationTimeDelta> KeyframeEffect::TimelineDuration() const {
   if (GetAnimation() && GetAnimation()->TimelineInternal()) {
     return GetAnimation()->TimelineInternal()->GetDuration();
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 // Returns true if transform, translate, rotate or scale is composited

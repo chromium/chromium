@@ -111,7 +111,7 @@ class CORE_EXPORT HTMLVideoElement final
   // scaled to it, otherwise the image will be in its natural size.
   scoped_refptr<StaticBitmapImage> CreateStaticBitmapImage(
       bool allow_accelerated_images = true,
-      absl::optional<gfx::Size> size = absl::nullopt);
+      std::optional<gfx::Size> size = std::nullopt);
 
   // CanvasImageSource implementation
   scoped_refptr<Image> GetSourceImageForCanvas(
@@ -132,7 +132,7 @@ class CORE_EXPORT HTMLVideoElement final
   // ImageBitmapSource implementation
   gfx::Size BitmapSourceSize() const override;
   ScriptPromise CreateImageBitmap(ScriptState*,
-                                  absl::optional<gfx::Rect> crop_rect,
+                                  std::optional<gfx::Rect> crop_rect,
                                   const ImageBitmapOptions*,
                                   ExceptionState&) override;
 

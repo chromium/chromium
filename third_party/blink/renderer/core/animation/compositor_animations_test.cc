@@ -233,7 +233,7 @@ class AnimationCompositorAnimationsTest : public PaintTestConfigurations,
       Vector<std::unique_ptr<cc::KeyframeModel>>& keyframe_models,
       double animation_playback_rate) {
     CompositorAnimations::GetAnimationOnCompositor(
-        *element_, timing, NormalizedTiming(timing), 0, absl::nullopt,
+        *element_, timing, NormalizedTiming(timing), 0, std::nullopt,
         base::TimeDelta(), effect, keyframe_models, animation_playback_rate,
         /*is_monotonic_timeline=*/true, /*is_boundary_aligned=*/false);
   }

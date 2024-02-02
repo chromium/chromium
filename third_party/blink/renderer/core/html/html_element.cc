@@ -2581,7 +2581,7 @@ HTMLElement::ElementIfAutoDirectionalityFormAssociatedOrNull(
 bool HTMLElement::CalculateAndAdjustAutoDirectionality() {
   bool is_deferred = false;
   TextDirection text_direction;
-  absl::optional<TextDirection> resolve_result =
+  std::optional<TextDirection> resolve_result =
       ResolveAutoDirectionality(is_deferred);
   if (resolve_result) {
     text_direction = *resolve_result;
@@ -3026,7 +3026,7 @@ void HTMLElement::OnDirAttrChanged(const AttributeModificationParams& params) {
       ClearDirAutoInheritsFromParent();
     }
 
-    absl::optional<TextDirection> text_direction;
+    std::optional<TextDirection> text_direction;
     if (EqualIgnoringASCIICase(params.new_value, "ltr")) {
       text_direction = TextDirection::kLtr;
     } else if (EqualIgnoringASCIICase(params.new_value, "rtl")) {

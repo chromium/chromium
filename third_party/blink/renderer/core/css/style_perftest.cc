@@ -189,7 +189,7 @@ static StylePerfResult MeasureStyleForDumpedPage(
       result.skipped = true;
       return result;
     }
-    absl::optional<base::Value> json = base::JSONReader::Read(
+    std::optional<base::Value> json = base::JSONReader::Read(
         base::StringPiece(serialized->Data(), serialized->size()));
     CHECK(json.has_value());
     page = LoadDumpedPage(json->GetDict(), result.parse_time, reporter);

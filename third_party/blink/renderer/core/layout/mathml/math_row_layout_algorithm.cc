@@ -126,9 +126,9 @@ void MathRowLayoutAlgorithm::LayoutRowItems(ChildrenVector* children,
       continue;
     }
 
-    absl::optional<ConstraintSpace::MathTargetStretchBlockSizes>
+    std::optional<ConstraintSpace::MathTargetStretchBlockSizes>
         target_stretch_block_sizes;
-    absl::optional<LayoutUnit> target_stretch_inline_size;
+    std::optional<LayoutUnit> target_stretch_inline_size;
     if (inherits_block_stretch_size_constraint &&
         IsBlockAxisStretchyOperator(To<BlockNode>(child))) {
       target_stretch_block_sizes = *constraint_space.TargetStretchBlockSizes();

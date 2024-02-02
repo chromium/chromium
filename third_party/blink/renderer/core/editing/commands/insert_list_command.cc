@@ -596,11 +596,11 @@ void InsertListCommand::ListifyParagraph(const VisiblePosition& original_start,
 
   // If original_start is of type kOffsetInAnchor, then the offset can become
   // invalid when inserting the <li>. So use a RelocatablePosition.
-  absl::optional<RelocatablePosition> relocatable_original_start(
+  std::optional<RelocatablePosition> relocatable_original_start(
       original_start.DeepEquivalent().IsOffsetInAnchor()
-          ? absl::optional<RelocatablePosition>(
+          ? std::optional<RelocatablePosition>(
                 RelocatablePosition(original_start.DeepEquivalent()))
-          : absl::nullopt);
+          : std::nullopt);
 
   // Check for adjoining lists.
   HTMLElement* const previous_list = AdjacentEnclosingList(

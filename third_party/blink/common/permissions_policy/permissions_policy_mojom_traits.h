@@ -60,7 +60,7 @@ class BLINK_COMMON_EXPORT
       const blink::ParsedPermissionsPolicyDeclaration& policy) {
     return policy.allowed_origins;
   }
-  static const absl::optional<url::Origin>& self_if_matches(
+  static const std::optional<url::Origin>& self_if_matches(
       const blink::ParsedPermissionsPolicyDeclaration& policy) {
     return policy.self_if_matches;
   }
@@ -72,7 +72,7 @@ class BLINK_COMMON_EXPORT
       const blink::ParsedPermissionsPolicyDeclaration& policy) {
     return policy.matches_opaque_src;
   }
-  static const absl::optional<std::string>& reporting_endpoint(
+  static const std::optional<std::string>& reporting_endpoint(
       const blink::ParsedPermissionsPolicyDeclaration& policy) {
     return policy.reporting_endpoint;
   }

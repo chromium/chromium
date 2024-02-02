@@ -59,7 +59,7 @@ class CORE_EXPORT MarkerRangeMappingContext {
 
   // Computes the text fragment offsets for the given marker’s start and end,
   // or returns nullopt if the marker is completely outside the fragment.
-  absl::optional<TextOffsetRange> GetTextContentOffsets(
+  std::optional<TextOffsetRange> GetTextContentOffsets(
       const DocumentMarker&) const;
 
   void Reset() const { mapper_.Reset(); }

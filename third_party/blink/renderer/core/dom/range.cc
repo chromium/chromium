@@ -1741,7 +1741,7 @@ void Range::GetBorderAndTextQuads(Vector<gfx::QuadF>& quads) const {
 }
 
 gfx::RectF Range::BoundingRect() const {
-  absl::optional<DisplayLockUtilities::ScopedForcedUpdate> force_locks;
+  std::optional<DisplayLockUtilities::ScopedForcedUpdate> force_locks;
   if (!collapsed()) {
     force_locks = DisplayLockUtilities::ScopedForcedUpdate(
         this, DisplayLockContext::ForcedPhase::kLayout);

@@ -94,7 +94,7 @@ class PLATFORM_EXPORT FontPalette : public RefCounted<FontPalette> {
       double normalized_percentage,
       double alpha_multiplier,
       Color::ColorSpace color_interpolation_space,
-      absl::optional<Color::HueInterpolationMethod> hue_interpolation_method) {
+      std::optional<Color::HueInterpolationMethod> hue_interpolation_method) {
     return base::AdoptRef(new FontPalette(
         start, end, NonNormalizedPercentages(start_percentage, end_percentage),
         normalized_percentage, alpha_multiplier, color_interpolation_space,
@@ -185,7 +185,7 @@ class PLATFORM_EXPORT FontPalette : public RefCounted<FontPalette> {
     return color_interpolation_space_;
   }
 
-  absl::optional<Color::HueInterpolationMethod> GetHueInterpolationMethod()
+  std::optional<Color::HueInterpolationMethod> GetHueInterpolationMethod()
       const {
     DCHECK(RuntimeEnabledFeatures::FontPaletteAnimationEnabled());
     DCHECK(IsInterpolablePalette());
@@ -213,7 +213,7 @@ class PLATFORM_EXPORT FontPalette : public RefCounted<FontPalette> {
       double normalized_percentage,
       double alpha_multiplier,
       Color::ColorSpace color_interpoaltion_space,
-      absl::optional<Color::HueInterpolationMethod> hue_interpolation_method)
+      std::optional<Color::HueInterpolationMethod> hue_interpolation_method)
       : palette_keyword_(kInterpolablePalette),
         start_(start),
         end_(end),
@@ -236,7 +236,7 @@ class PLATFORM_EXPORT FontPalette : public RefCounted<FontPalette> {
   double normalized_percentage_;
   double alpha_multiplier_;
   Color::ColorSpace color_interpolation_space_;
-  absl::optional<Color::HueInterpolationMethod> hue_interpolation_method_;
+  std::optional<Color::HueInterpolationMethod> hue_interpolation_method_;
 };
 
 }  // namespace blink

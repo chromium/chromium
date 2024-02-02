@@ -5,11 +5,11 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_COMMON_MANIFEST_MANIFEST_UTIL_H_
 #define THIRD_PARTY_BLINK_PUBLIC_COMMON_MANIFEST_MANIFEST_UTIL_H_
 
+#include <optional>
 #include <string>
 
 #include "base/strings/string_piece.h"
 #include "services/device/public/mojom/screen_orientation_lock_types.mojom-shared.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/common_export.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/blink/public/mojom/manifest/capture_links.mojom-forward.h"
@@ -61,7 +61,7 @@ WebScreenOrientationLockTypeFromString(const std::string& orientation);
 BLINK_COMMON_EXPORT mojom::CaptureLinks CaptureLinksFromString(
     const std::string& capture_links);
 
-BLINK_COMMON_EXPORT absl::optional<mojom::ManifestLaunchHandler::ClientMode>
+BLINK_COMMON_EXPORT std::optional<mojom::ManifestLaunchHandler::ClientMode>
 ClientModeFromString(const std::string& client_mode);
 
 }  // namespace blink

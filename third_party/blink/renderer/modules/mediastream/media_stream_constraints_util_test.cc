@@ -138,7 +138,7 @@ TEST_F(MediaStreamConstraintsUtilTest, VideoTrackAdapterSettingsUnconstrained) {
     EXPECT_EQ(kSourceWidth, result.target_width());
     EXPECT_EQ(0.0, result.min_aspect_ratio());
     EXPECT_EQ(HUGE_VAL, result.max_aspect_ratio());
-    EXPECT_EQ(absl::nullopt, result.max_frame_rate());
+    EXPECT_EQ(std::nullopt, result.max_frame_rate());
   }
 
   // Ideal height.
@@ -154,7 +154,7 @@ TEST_F(MediaStreamConstraintsUtilTest, VideoTrackAdapterSettingsUnconstrained) {
               result.target_width());
     EXPECT_EQ(0.0, result.min_aspect_ratio());
     EXPECT_EQ(HUGE_VAL, result.max_aspect_ratio());
-    EXPECT_EQ(absl::nullopt, result.max_frame_rate());
+    EXPECT_EQ(std::nullopt, result.max_frame_rate());
   }
 
   // Ideal width.
@@ -170,7 +170,7 @@ TEST_F(MediaStreamConstraintsUtilTest, VideoTrackAdapterSettingsUnconstrained) {
     EXPECT_EQ(kIdealWidth, result.target_width());
     EXPECT_EQ(0.0, result.min_aspect_ratio());
     EXPECT_EQ(HUGE_VAL, result.max_aspect_ratio());
-    EXPECT_EQ(absl::nullopt, result.max_frame_rate());
+    EXPECT_EQ(std::nullopt, result.max_frame_rate());
   }
 
   // Ideal aspect ratio.
@@ -186,7 +186,7 @@ TEST_F(MediaStreamConstraintsUtilTest, VideoTrackAdapterSettingsUnconstrained) {
               result.target_width());
     EXPECT_EQ(0.0, result.min_aspect_ratio());
     EXPECT_EQ(HUGE_VAL, result.max_aspect_ratio());
-    EXPECT_EQ(absl::nullopt, result.max_frame_rate());
+    EXPECT_EQ(std::nullopt, result.max_frame_rate());
   }
 
   // Ideal frame rate.
@@ -581,7 +581,7 @@ TEST_F(MediaStreamConstraintsUtilTest,
     EXPECT_EQ(kSourceWidth, result.target_width());
     EXPECT_EQ(0.0, result.min_aspect_ratio());
     EXPECT_EQ(HUGE_VAL, result.max_aspect_ratio());
-    EXPECT_EQ(absl::nullopt, result.max_frame_rate());
+    EXPECT_EQ(std::nullopt, result.max_frame_rate());
   }
 
   {
@@ -593,7 +593,7 @@ TEST_F(MediaStreamConstraintsUtilTest,
     EXPECT_EQ(kSourceWidth, result.target_width());
     EXPECT_EQ(0.0, result.min_aspect_ratio());
     EXPECT_EQ(HUGE_VAL, result.max_aspect_ratio());
-    EXPECT_EQ(absl::nullopt, result.max_frame_rate());
+    EXPECT_EQ(std::nullopt, result.max_frame_rate());
   }
 
   // Ideals supplied.
@@ -636,7 +636,7 @@ TEST_F(MediaStreamConstraintsUtilTest,
     EXPECT_EQ(0.0, result.min_aspect_ratio());
     EXPECT_EQ(HUGE_VAL, result.max_aspect_ratio());
     // No max frame rate since there is no ideal or max value.
-    EXPECT_EQ(absl::nullopt, result.max_frame_rate());
+    EXPECT_EQ(std::nullopt, result.max_frame_rate());
   }
 
   // Ideals supplied.

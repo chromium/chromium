@@ -523,7 +523,7 @@ V8AlgorithmIdentifier* GetAlgorithmIdentifier(v8::Isolate* isolate,
         ScriptValue(isolate, dictionary.V8Value()));
   }
 
-  absl::optional<String> algorithm_name =
+  std::optional<String> algorithm_name =
       raw.Get<IDLString>(property_name, exception_state);
   if (exception_state.HadException()) {
     return nullptr;
@@ -832,7 +832,7 @@ bool ParseNamedCurve(const Dictionary& raw,
                      WebCryptoNamedCurve& named_curve,
                      ErrorContext context,
                      ExceptionState& exception_state) {
-  absl::optional<String> named_curve_string =
+  std::optional<String> named_curve_string =
       raw.Get<IDLString>("namedCurve", exception_state);
   if (exception_state.HadException()) {
     return false;
@@ -1162,7 +1162,7 @@ bool ParseAlgorithmIdentifier(v8::Isolate* isolate,
     return false;
   }
 
-  absl::optional<String> algorithm_name =
+  std::optional<String> algorithm_name =
       params.Get<IDLString>("name", exception_state);
   if (exception_state.HadException()) {
     return false;

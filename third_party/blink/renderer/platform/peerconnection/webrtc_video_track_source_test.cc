@@ -45,7 +45,7 @@ TEST(WebRtcVideoTrackSourceRefreshFrameTest, CallsRefreshFrame) {
   scoped_refptr<WebRtcVideoTrackSource> track_source =
       new rtc::RefCountedObject<WebRtcVideoTrackSource>(
           /*is_screencast=*/false,
-          /*needs_denoising=*/absl::nullopt,
+          /*needs_denoising=*/std::nullopt,
           base::BindLambdaForTesting([](const media::VideoCaptureFeedback&) {}),
           base::BindLambdaForTesting([&called] { called = true; }),
           /*gpu_factories=*/nullptr);
@@ -60,7 +60,7 @@ class WebRtcVideoTrackSourceTest
   WebRtcVideoTrackSourceTest()
       : track_source_(new rtc::RefCountedObject<WebRtcVideoTrackSource>(
             /*is_screencast=*/false,
-            /*needs_denoising=*/absl::nullopt,
+            /*needs_denoising=*/std::nullopt,
             base::BindRepeating(&WebRtcVideoTrackSourceTest::ProcessFeedback,
                                 base::Unretained(this)),
             base::BindLambdaForTesting([] {}),

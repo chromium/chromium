@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/media_capabilities/media_capabilities.h"
 
 #include <memory>
+#include <optional>
 #include <sstream>
 #include <utility>
 
@@ -25,7 +26,6 @@
 #include "media/mojo/mojom/media_metrics_provider.mojom-blink.h"
 #include "media/mojo/mojom/media_types.mojom-blink.h"
 #include "media/video/gpu_video_accelerator_factories.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom-blink.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-blink.h"
@@ -811,7 +811,7 @@ MediaCapabilities::PendingCallbackState::PendingCallbackState(
     ScriptPromiseResolver* resolver,
     MediaKeySystemAccess* access,
     const base::TimeTicks& request_time,
-    absl::optional<IdentifiableToken> input_token)
+    std::optional<IdentifiableToken> input_token)
     : resolver(resolver),
       key_system_access(access),
       request_time(request_time),
@@ -863,14 +863,14 @@ ScriptPromise MediaCapabilities::decodingInfo(
       pending_cb_map_.insert(
           callback_id,
           MakeGarbageCollected<MediaCapabilities::PendingCallbackState>(
-              resolver, nullptr, request_time, absl::nullopt));
+              resolver, nullptr, request_time, std::nullopt));
 
-      absl::optional<webrtc::SdpAudioFormat> sdp_audio_format =
+      std::optional<webrtc::SdpAudioFormat> sdp_audio_format =
           config->hasAudio()
-              ? absl::make_optional(ToSdpAudioFormat(config->audio()))
-              : absl::nullopt;
+              ? std::make_optional(ToSdpAudioFormat(config->audio()))
+              : std::nullopt;
 
-      absl::optional<webrtc::SdpVideoFormat> sdp_video_format;
+      std::optional<webrtc::SdpVideoFormat> sdp_video_format;
       bool spatial_scalability = false;
       media::VideoCodecProfile codec_profile =
           media::VIDEO_CODEC_PROFILE_UNKNOWN;
@@ -878,7 +878,7 @@ ScriptPromise MediaCapabilities::decodingInfo(
       int frames_per_second = 0;
       if (config->hasVideo()) {
         sdp_video_format =
-            absl::make_optional(ToSdpVideoFormat(config->video()));
+            std::make_optional(ToSdpVideoFormat(config->video()));
         spatial_scalability = config->video()->hasSpatialScalability()
                                   ? config->video()->spatialScalability()
                                   : false;
@@ -1075,26 +1075,26 @@ ScriptPromise MediaCapabilities::encodingInfo(
       pending_cb_map_.insert(
           callback_id,
           MakeGarbageCollected<MediaCapabilities::PendingCallbackState>(
-              resolver, nullptr, request_time, absl::nullopt));
+              resolver, nullptr, request_time, std::nullopt));
 
-      absl::optional<webrtc::SdpAudioFormat> sdp_audio_format =
+      std::optional<webrtc::SdpAudioFormat> sdp_audio_format =
           config->hasAudio()
-              ? absl::make_optional(ToSdpAudioFormat(config->audio()))
-              : absl::nullopt;
+              ? std::make_optional(ToSdpAudioFormat(config->audio()))
+              : std::nullopt;
 
-      absl::optional<webrtc::SdpVideoFormat> sdp_video_format;
-      absl::optional<String> scalability_mode;
+      std::optional<webrtc::SdpVideoFormat> sdp_video_format;
+      std::optional<String> scalability_mode;
       media::VideoCodecProfile codec_profile =
           media::VIDEO_CODEC_PROFILE_UNKNOWN;
       int video_pixels = 0;
       int frames_per_second = 0;
       if (config->hasVideo()) {
         sdp_video_format =
-            absl::make_optional(ToSdpVideoFormat(config->video()));
+            std::make_optional(ToSdpVideoFormat(config->video()));
         scalability_mode =
             config->video()->hasScalabilityMode()
-                ? absl::make_optional(config->video()->scalabilityMode())
-                : absl::nullopt;
+                ? std::make_optional(config->video()->scalabilityMode())
+                : std::nullopt;
 
         // Additional information needed for lookup in WebrtcVideoPerfHistory.
         codec_profile =
@@ -1625,7 +1625,7 @@ void MediaCapabilities::ResolveCallbackIfReady(int callback_id) {
 
 void MediaCapabilities::OnBadWindowPrediction(
     int callback_id,
-    const absl::optional<::media::learning::TargetHistogram>& histogram) {
+    const std::optional<::media::learning::TargetHistogram>& histogram) {
   DCHECK(pending_cb_map_.Contains(callback_id));
   PendingCallbackState* pending_cb = pending_cb_map_.at(callback_id);
 
@@ -1649,7 +1649,7 @@ void MediaCapabilities::OnBadWindowPrediction(
 
 void MediaCapabilities::OnNnrPrediction(
     int callback_id,
-    const absl::optional<::media::learning::TargetHistogram>& histogram) {
+    const std::optional<::media::learning::TargetHistogram>& histogram) {
   DCHECK(pending_cb_map_.Contains(callback_id));
   PendingCallbackState* pending_cb = pending_cb_map_.at(callback_id);
 

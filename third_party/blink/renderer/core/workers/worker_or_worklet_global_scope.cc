@@ -116,10 +116,10 @@ class OutsideSettingsCSPDelegate final
     return nullptr;
   }
 
-  absl::optional<uint16_t> GetStatusCode() override {
+  std::optional<uint16_t> GetStatusCode() override {
     DCHECK_CALLED_ON_VALID_THREAD(worker_thread_checker_);
     // TODO(crbug/928965): Plumb the status code of the parent Document if any.
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   String GetDocumentReferrer() override {

@@ -256,7 +256,7 @@ TEST_F(ImageResourceTest, MultipartImage) {
   image_resource->Loader()->DidReceiveResponse(
       WrappedResourceResponse(multipart_response),
       /*body=*/mojo::ScopedDataPipeConsumerHandle(),
-      /*cached_metadata=*/absl::nullopt);
+      /*cached_metadata=*/std::nullopt);
   EXPECT_FALSE(image_resource->ResourceBuffer());
   EXPECT_FALSE(image_resource->GetContent()->HasImage());
   EXPECT_EQ(0, observer->ImageChangedCount());
@@ -344,7 +344,7 @@ TEST_F(ImageResourceTest, BitmapMultipartImage) {
   image_resource->Loader()->DidReceiveResponse(
       WrappedResourceResponse(multipart_response),
       /*body=*/mojo::ScopedDataPipeConsumerHandle(),
-      /*cached_metadata=*/absl::nullopt);
+      /*cached_metadata=*/std::nullopt);
   EXPECT_FALSE(image_resource->GetContent()->HasImage());
 
   const char kBoundary[] = "--boundary\n";
@@ -829,7 +829,7 @@ TEST_F(ImageResourceTest, CancelOnDecodeError) {
   image_resource->Loader()->DidReceiveResponse(
       WrappedResourceResponse(resource_response),
       /*body=*/mojo::ScopedDataPipeConsumerHandle(),
-      /*cached_metadata=*/absl::nullopt);
+      /*cached_metadata=*/std::nullopt);
 
   EXPECT_EQ(0, observer->ImageChangedCount());
 
@@ -859,7 +859,7 @@ TEST_F(ImageResourceTest, DecodeErrorWithEmptyBody) {
   image_resource->Loader()->DidReceiveResponse(
       WrappedResourceResponse(resource_response),
       /*body=*/mojo::ScopedDataPipeConsumerHandle(),
-      /*cached_metadata=*/absl::nullopt);
+      /*cached_metadata=*/std::nullopt);
 
   EXPECT_EQ(ResourceStatus::kPending, image_resource->GetStatus());
   EXPECT_FALSE(observer->ImageNotifyFinishedCalled());
@@ -904,7 +904,7 @@ TEST_F(ImageResourceTest, PartialContentWithoutDimensions) {
   image_resource->Loader()->DidReceiveResponse(
       WrappedResourceResponse(partial_response),
       /*body=*/mojo::ScopedDataPipeConsumerHandle(),
-      /*cached_metadata=*/absl::nullopt);
+      /*cached_metadata=*/std::nullopt);
   image_resource->Loader()->DidReceiveData(
       reinterpret_cast<const char*>(kJpegImage),
       kJpegImageSubrangeWithoutDimensionsLength);

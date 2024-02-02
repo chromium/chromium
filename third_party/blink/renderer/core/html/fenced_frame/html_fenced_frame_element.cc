@@ -392,9 +392,9 @@ void HTMLFencedFrameElement::CollectStyleForPresentationAttribute(
 
 void HTMLFencedFrameElement::Navigate(
     const KURL& url,
-    absl::optional<bool> deprecated_should_freeze_initial_size,
-    absl::optional<gfx::Size> container_size,
-    absl::optional<gfx::Size> content_size,
+    std::optional<bool> deprecated_should_freeze_initial_size,
+    std::optional<gfx::Size> container_size,
+    std::optional<gfx::Size> content_size,
     String embedder_shared_storage_context) {
   TRACE_EVENT0("navigation", "HTMLFencedFrameElement::Navigate");
   if (!isConnected())
@@ -707,10 +707,10 @@ PhysicalSize HTMLFencedFrameElement::CoerceFrameSize(
   return PhysicalSize(best_size);
 }
 
-const absl::optional<PhysicalSize> HTMLFencedFrameElement::FrozenFrameSize()
+const std::optional<PhysicalSize> HTMLFencedFrameElement::FrozenFrameSize()
     const {
   if (!frozen_frame_size_)
-    return absl::nullopt;
+    return std::nullopt;
   const float ratio = GetDocument().DevicePixelRatio();
   return PhysicalSize(
       LayoutUnit::FromFloatRound(frozen_frame_size_->width * ratio),
@@ -726,7 +726,7 @@ void HTMLFencedFrameElement::UnfreezeFrameSize() {
   }
 
   // Otherwise, the frame previously had a frozen size. Unfreeze it.
-  frozen_frame_size_ = absl::nullopt;
+  frozen_frame_size_ = std::nullopt;
   frame_delegate_->MarkFrozenFrameSizeStale();
 }
 
@@ -741,7 +741,7 @@ void HTMLFencedFrameElement::FreezeCurrentFrameSize() {
   }
 
   // Otherwise, we need to change the frozen size of the frame.
-  frozen_frame_size_ = absl::nullopt;
+  frozen_frame_size_ = std::nullopt;
 
   // If we know the current outer frame size, freeze the inner frame to it.
   if (content_rect_) {

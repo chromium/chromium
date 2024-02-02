@@ -267,7 +267,7 @@ void ExecutionContext::AddConsoleMessageImpl(
     mojom::blink::ConsoleMessageLevel level,
     const String& message,
     bool discard_duplicates,
-    absl::optional<mojom::ConsoleMessageCategory> category) {
+    std::optional<mojom::ConsoleMessageCategory> category) {
   auto* console_message =
       MakeGarbageCollected<ConsoleMessage>(source, level, message);
   if (category)

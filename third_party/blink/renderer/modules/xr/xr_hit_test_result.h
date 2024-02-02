@@ -5,8 +5,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_XR_XR_HIT_TEST_RESULT_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_XR_XR_HIT_TEST_RESULT_H_
 
+#include <optional>
+
 #include "device/vr/public/mojom/vr_service.mojom-blink.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 
@@ -38,7 +39,7 @@ class XRHitTestResult : public ScriptWrappable {
   // Hit test results do not have origin-offset so mojo_from_this_ contains
   // mojo_from_this with origin-offset (identity) already applied.
   device::Pose mojo_from_this_;
-  absl::optional<uint64_t> plane_id_;
+  std::optional<uint64_t> plane_id_;
 };
 
 }  // namespace blink

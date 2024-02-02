@@ -5,10 +5,11 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_INK_OVERFLOW_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_INK_OVERFLOW_H_
 
+#include <optional>
+
 #include "base/check_op.h"
 #include "base/dcheck_is_on.h"
 #include "build/build_config.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/editing/markers/document_marker.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
@@ -142,7 +143,7 @@ class CORE_EXPORT InkOverflow {
                              const AffineTransform& transform,
                              PhysicalRect* ink_overflow_out);
 
-  static absl::optional<PhysicalRect> ComputeTextInkOverflow(
+  static std::optional<PhysicalRect> ComputeTextInkOverflow(
       const InlineCursor& cursor,
       const TextFragmentPaintInfo& text_info,
       const ComputedStyle& style,

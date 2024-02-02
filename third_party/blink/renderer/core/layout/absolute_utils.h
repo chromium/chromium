@@ -5,7 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_ABSOLUTE_UTILS_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_ABSOLUTE_UTILS_H_
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include <optional>
+
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/geometry/logical_size.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_size.h"
@@ -40,10 +41,10 @@ struct CORE_EXPORT LogicalOofDimensions {
 };
 
 struct CORE_EXPORT LogicalOofInsets {
-  absl::optional<LayoutUnit> inline_start;
-  absl::optional<LayoutUnit> inline_end;
-  absl::optional<LayoutUnit> block_start;
-  absl::optional<LayoutUnit> block_end;
+  std::optional<LayoutUnit> inline_start;
+  std::optional<LayoutUnit> inline_end;
+  std::optional<LayoutUnit> block_start;
+  std::optional<LayoutUnit> block_end;
 };
 
 // The resolved alignment in the candidate's writing-direction.
@@ -64,8 +65,8 @@ LogicalAlignment ComputeAlignment(
 // Represents the position that `anchor-center` alignment keyword resolves to.
 // A nullopt means that anchor-center alignment doesn't apply to the axis.
 struct LogicalAnchorCenterPosition {
-  absl::optional<LayoutUnit> inline_offset;
-  absl::optional<LayoutUnit> block_offset;
+  std::optional<LayoutUnit> inline_offset;
+  std::optional<LayoutUnit> block_offset;
 };
 
 LogicalAnchorCenterPosition ComputeAnchorCenterPosition(
@@ -107,8 +108,8 @@ struct CORE_EXPORT InsetModifiedContainingBlock {
   // If safe alignment is specified (e.g. "align-self: safe end") and the
   // object overflows its containing block it'll become start aligned instead.
   // This field indicates the "start" edge of the containing block.
-  absl::optional<InsetBias> safe_inline_inset_bias;
-  absl::optional<InsetBias> safe_block_inset_bias;
+  std::optional<InsetBias> safe_inline_inset_bias;
+  std::optional<InsetBias> safe_block_inset_bias;
 
   LayoutUnit InlineEndOffset() const {
     return available_size.inline_size - inline_end;
@@ -171,7 +172,7 @@ CORE_EXPORT bool ComputeOofInlineDimensions(
     const InsetModifiedContainingBlock&,
     const LogicalAlignment&,
     const BoxStrut& border_padding,
-    const absl::optional<LogicalSize>& replaced_size,
+    const std::optional<LogicalSize>& replaced_size,
     WritingDirectionMode container_writing_direction,
     const AnchorEvaluatorImpl* anchor_evaluator,
     LogicalOofDimensions* dimensions);
@@ -185,7 +186,7 @@ CORE_EXPORT const LayoutResult* ComputeOofBlockDimensions(
     const InsetModifiedContainingBlock&,
     const LogicalAlignment&,
     const BoxStrut& border_padding,
-    const absl::optional<LogicalSize>& replaced_size,
+    const std::optional<LogicalSize>& replaced_size,
     WritingDirectionMode container_writing_direction,
     const AnchorEvaluatorImpl* anchor_evaluator,
     LogicalOofDimensions* dimensions);

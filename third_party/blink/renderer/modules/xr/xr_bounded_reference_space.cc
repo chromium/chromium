@@ -105,11 +105,11 @@ void XRBoundedReferenceSpace::EnsureUpdated() const {
       *XRReferenceSpaceEvent::Create(event_type_names::kReset, mutable_this));
 }
 
-absl::optional<gfx::Transform> XRBoundedReferenceSpace::MojoFromNative() const {
+std::optional<gfx::Transform> XRBoundedReferenceSpace::MojoFromNative() const {
   EnsureUpdated();
 
   if (!mojo_from_bounded_native_)
-    return absl::nullopt;
+    return std::nullopt;
 
   return *mojo_from_bounded_native_;
 }

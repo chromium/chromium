@@ -85,7 +85,7 @@ class CORE_EXPORT PerformanceMark final : public PerformanceEntry {
   GetUseCounterMappingForTesting() {
     return GetUseCounterMapping();
   }
-  static absl::optional<mojom::blink::WebFeature>
+  static std::optional<mojom::blink::WebFeature>
   GetWebFeatureForUserFeatureName(const String& feature_name);
 
  private:

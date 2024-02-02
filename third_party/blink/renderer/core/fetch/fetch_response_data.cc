@@ -402,7 +402,7 @@ FetchResponseData::FetchResponseData(Type type,
       request_include_credentials_(true) {}
 
 void FetchResponseData::SetAuthChallengeInfo(
-    const absl::optional<net::AuthChallengeInfo>& auth_challenge_info) {
+    const std::optional<net::AuthChallengeInfo>& auth_challenge_info) {
   if (auth_challenge_info) {
     auth_challenge_info_ =
         std::make_unique<net::AuthChallengeInfo>(*auth_challenge_info);

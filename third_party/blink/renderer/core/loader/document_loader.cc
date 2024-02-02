@@ -30,6 +30,7 @@
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/auto_reset.h"
@@ -50,7 +51,6 @@
 #include "services/network/public/cpp/web_sandbox_flags.h"
 #include "services/network/public/mojom/url_response_head.mojom-shared.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-blink.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/client_hints/client_hints.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/loader/javascript_framework_detection.h"
@@ -238,7 +238,7 @@ struct SameSizeAsDocumentLoader
   Member<MHTMLArchive> archive;
   std::unique_ptr<WebNavigationParams> params;
   std::unique_ptr<PolicyContainer> policy_container;
-  absl::optional<ParsedPermissionsPolicy> isolated_app_permissions_policy;
+  std::optional<ParsedPermissionsPolicy> isolated_app_permissions_policy;
   DocumentToken token;
   KURL url;
   KURL original_url;
@@ -251,7 +251,7 @@ struct SameSizeAsDocumentLoader
   KURL pre_redirect_url_for_failed_navigations;
   std::unique_ptr<WebNavigationBodyLoader> body_loader;
   bool grant_load_local_resources;
-  absl::optional<blink::mojom::FetchCacheMode> force_fetch_cache_mode;
+  std::optional<blink::mojom::FetchCacheMode> force_fetch_cache_mode;
   FramePolicy frame_policy;
   Member<LocalFrame> frame;
   Member<HistoryItem> history_item;
@@ -325,16 +325,16 @@ struct SameSizeAsDocumentLoader
   mojo::PendingRemote<mojom::blink::CodeCacheHost>
       pending_code_cache_host_for_background;
   HashMap<KURL, EarlyHintsPreloadEntry> early_hints_preloaded_resources;
-  absl::optional<Vector<KURL>> ad_auction_components;
+  std::optional<Vector<KURL>> ad_auction_components;
   std::unique_ptr<ExtraData> extra_data;
   AtomicString reduced_accept_language;
   network::mojom::NavigationDeliveryType navigation_delivery_type;
-  absl::optional<ViewTransitionState> view_transition_state;
-  absl::optional<FencedFrame::RedactedFencedFrameProperties>
+  std::optional<ViewTransitionState> view_transition_state;
+  std::optional<FencedFrame::RedactedFencedFrameProperties>
       fenced_frame_properties;
   bool has_storage_access;
   mojom::blink::ParentResourceTimingAccess parent_resource_timing_access;
-  const absl::optional<BrowsingContextGroupInfo> browsing_context_group_info;
+  const std::optional<BrowsingContextGroupInfo> browsing_context_group_info;
   const base::flat_map<mojom::blink::RuntimeFeature, bool>
       modified_runtime_features;
   AtomicString cookie_deprecation_label;
@@ -878,7 +878,7 @@ void DocumentLoader::RunURLAndHistoryUpdateSteps(
   UpdateForSameDocumentNavigation(
       new_url, history_item, same_document_navigation_type, std::move(data),
       type, frame_->DomWindow()->GetSecurityOrigin(), is_browser_initiated,
-      is_synchronously_committed, absl::nullopt);
+      is_synchronously_committed, std::nullopt);
 }
 
 void DocumentLoader::UpdateForSameDocumentNavigation(
@@ -890,7 +890,7 @@ void DocumentLoader::UpdateForSameDocumentNavigation(
     const SecurityOrigin* initiator_origin,
     bool is_browser_initiated,
     bool is_synchronously_committed,
-    absl::optional<scheduler::TaskAttributionId>
+    std::optional<scheduler::TaskAttributionId>
         soft_navigation_heuristics_task_id) {
   CHECK_EQ(IsBackForwardOrRestore(type), !!history_item);
 
@@ -1207,7 +1207,7 @@ void DocumentLoader::BodyLoadingFinished(
     int64_t total_encoded_data_length,
     int64_t total_encoded_body_length,
     int64_t total_decoded_body_length,
-    const absl::optional<WebURLError>& error) {
+    const std::optional<WebURLError>& error) {
   TRACE_EVENT0("loading", "DocumentLoader::BodyLoadingFinished");
 
   DCHECK(frame_);
@@ -1475,7 +1475,7 @@ mojom::CommitResult DocumentLoader::CommitSameDocumentNavigation(
     Element* source_element,
     mojom::blink::TriggeringEventInfo triggering_event_info,
     bool is_browser_initiated,
-    absl::optional<scheduler::TaskAttributionId>
+    std::optional<scheduler::TaskAttributionId>
         soft_navigation_heuristics_task_id) {
   DCHECK(!IsReloadLoadType(frame_load_type));
   DCHECK(frame_->GetDocument());
@@ -1594,7 +1594,7 @@ void DocumentLoader::CommitSameDocumentNavigationInternal(
     bool is_browser_initiated,
     bool is_synchronously_committed,
     mojom::blink::TriggeringEventInfo triggering_event_info,
-    absl::optional<scheduler::TaskAttributionId>
+    std::optional<scheduler::TaskAttributionId>
         soft_navigation_heuristics_task_id) {
   // If this function was scheduled to run asynchronously, this DocumentLoader
   // might have been detached before the task ran.
@@ -1638,7 +1638,7 @@ void DocumentLoader::CommitSameDocumentNavigationInternal(
 
   // Events fired in UpdateForSameDocumentNavigation() might change view state,
   // so stash for later restore.
-  absl::optional<HistoryItem::ViewState> view_state;
+  std::optional<HistoryItem::ViewState> view_state;
   mojom::blink::ScrollRestorationType scroll_restoration_type =
       mojom::blink::ScrollRestorationType::kAuto;
   if (history_item) {
@@ -1762,7 +1762,7 @@ const KURL& DocumentLoader::UnreachableURL() const {
   return unreachable_url_;
 }
 
-const absl::optional<blink::mojom::FetchCacheMode>&
+const std::optional<blink::mojom::FetchCacheMode>&
 DocumentLoader::ForceFetchCacheMode() const {
   return force_fetch_cache_mode_;
 }

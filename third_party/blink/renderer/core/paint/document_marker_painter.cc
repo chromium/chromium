@@ -226,7 +226,7 @@ void DocumentMarkerPainter::PaintDocumentMarker(
     const ComputedStyle& style,
     DocumentMarker::MarkerType marker_type,
     const LineRelativeRect& local_rect,
-    absl::optional<Color> custom_marker_color) {
+    std::optional<Color> custom_marker_color) {
   // IMPORTANT: The misspelling underline is not considered when calculating the
   // text bounds, so we have to make sure to fit within those bounds.  This
   // means the top pixel(s) of the underline will overlap the bottom pixel(s) of

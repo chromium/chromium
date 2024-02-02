@@ -55,7 +55,7 @@ class MODULES_EXPORT NavigatorAuction final
   // TODO(crbug.com/1441988): Make `const AuctionAdInterestGroup*` after rename.
   ScriptPromise joinAdInterestGroup(ScriptState*,
                                     AuctionAdInterestGroup*,
-                                    absl::optional<double>,
+                                    std::optional<double>,
                                     ExceptionState&);
   static ScriptPromise joinAdInterestGroup(ScriptState*,
                                            Navigator&,
@@ -265,10 +265,10 @@ class MODULES_EXPORT NavigatorAuction final
                     const WTF::String& ads_guid);
   // Completion callback for finalizeAd() Mojo call.
   void FinalizeAdComplete(ScriptPromiseResolver* resolver,
-                          const absl::optional<KURL>& creative_url);
+                          const std::optional<KURL>& creative_url);
   // Completion callback for Mojo call made by deprecatedURNToURL().
   void GetURLFromURNComplete(ScriptPromiseResolver*,
-                             const absl::optional<KURL>&);
+                             const std::optional<KURL>&);
   // Completion callback for Mojo call made by deprecatedReplaceInURNComplete().
   void ReplaceInURNComplete(ScriptPromiseResolver* resolver);
 
@@ -276,7 +276,7 @@ class MODULES_EXPORT NavigatorAuction final
       base::TimeTicks start_time,
       ScriptPromiseResolver* resolver,
       mojo_base::BigBuffer request,
-      const absl::optional<base::Uuid>& request_id,
+      const std::optional<base::Uuid>& request_id,
       const WTF::String& error_message);
 
   // Manage queues of cross-site join and leave operations that have yet to be

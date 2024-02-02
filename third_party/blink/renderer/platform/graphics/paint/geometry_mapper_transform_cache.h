@@ -5,10 +5,11 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_PAINT_GEOMETRY_MAPPER_TRANSFORM_CACHE_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_PAINT_GEOMETRY_MAPPER_TRANSFORM_CACHE_H_
 
+#include <optional>
+
 #include "base/check_op.h"
 #include "base/dcheck_is_on.h"
 #include "base/memory/raw_ptr_exclusion.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "ui/gfx/geometry/transform.h"
@@ -217,7 +218,7 @@ class PLATFORM_EXPORT GeometryMapperTransformCache {
     bool has_animation = false;
     USING_FAST_MALLOC(PlaneRootTransform);
   };
-  absl::optional<PlaneRootTransform> plane_root_transform_;
+  std::optional<PlaneRootTransform> plane_root_transform_;
 
   struct ScreenTransform {
     gfx::Transform to_screen;
@@ -226,7 +227,7 @@ class PLATFORM_EXPORT GeometryMapperTransformCache {
     bool has_animation = false;
     USING_FAST_MALLOC(ScreenTransform);
   };
-  absl::optional<ScreenTransform> screen_transform_;
+  std::optional<ScreenTransform> screen_transform_;
 
   const TransformPaintPropertyNode* nearest_scroll_translation_ = nullptr;
   const TransformPaintPropertyNode* scroll_translation_state_ = nullptr;

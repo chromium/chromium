@@ -86,7 +86,7 @@ class Permissions final : public ScriptWrappable,
   PermissionStatusListener* GetOrCreatePermissionStatusListener(
       mojom::blink::PermissionStatus status,
       mojom::blink::PermissionDescriptorPtr descriptor);
-  absl::optional<PermissionType> GetPermissionType(
+  std::optional<PermissionType> GetPermissionType(
       const mojom::blink::PermissionDescriptor& descriptor);
   mojom::blink::PermissionDescriptorPtr CreatePermissionVerificationDescriptor(
       PermissionType descriptor_type);

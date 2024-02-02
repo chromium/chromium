@@ -51,13 +51,13 @@ class MediaStreamDeviceObserverTest : public ::testing::Test {
     blink::mojom::blink::StreamDevicesSet stream_devices_set;
     stream_devices_set.stream_devices.push_back(
         blink::mojom::blink::StreamDevices::New(
-            absl::nullopt,
+            std::nullopt,
             MediaStreamDevice(
                 blink::mojom::blink::MediaStreamType::DISPLAY_VIDEO_CAPTURE_SET,
                 "device_0_id", "device_0_name")));
     stream_devices_set.stream_devices.push_back(
         blink::mojom::blink::StreamDevices::New(
-            absl::nullopt,
+            std::nullopt,
             MediaStreamDevice(
                 blink::mojom::blink::MediaStreamType::DISPLAY_VIDEO_CAPTURE_SET,
                 "device_1_id", "device_1_name")));
@@ -410,7 +410,7 @@ TEST_F(MediaStreamDeviceObserverTest, OnZoomLevelChange) {
 
   blink::mojom::blink::StreamDevicesSet stream_devices_set;
   stream_devices_set.stream_devices.push_back(
-      blink::mojom::blink::StreamDevices::New(absl::nullopt, device));
+      blink::mojom::blink::StreamDevices::New(std::nullopt, device));
   observer_->AddStreams(
       kStreamLabel, stream_devices_set,
       {

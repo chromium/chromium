@@ -287,7 +287,7 @@ gfx::Size OffscreenCanvas::BitmapSourceSize() const {
 
 ScriptPromise OffscreenCanvas::CreateImageBitmap(
     ScriptState* script_state,
-    absl::optional<gfx::Rect> crop_rect,
+    std::optional<gfx::Rect> crop_rect,
     const ImageBitmapOptions* options,
     ExceptionState& exception_state) {
   if (ContextHasOpenLayers(context_)) {

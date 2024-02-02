@@ -104,7 +104,7 @@ void MockMojoMediaStreamDispatcherHost::CancelRequest(int32_t request_id) {
 
 void MockMojoMediaStreamDispatcherHost::StopStreamDevice(
     const String& device_id,
-    const absl::optional<base::UnguessableToken>& session_id) {
+    const std::optional<base::UnguessableToken>& session_id) {
   if (stream_devices_.audio_device.has_value()) {
     const MediaStreamDevice& device = stream_devices_.audio_device.value();
     if (device.id == device_id.Utf8() && device.session_id() == session_id) {

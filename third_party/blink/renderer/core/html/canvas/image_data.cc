@@ -40,8 +40,8 @@ namespace blink {
 
 ImageData* ImageData::ValidateAndCreate(
     unsigned width,
-    absl::optional<unsigned> height,
-    absl::optional<NotShared<DOMArrayBufferView>> data,
+    std::optional<unsigned> height,
+    std::optional<NotShared<DOMArrayBufferView>> data,
     const ImageDataSettings* settings,
     ValidateAndCreateParams params,
     ExceptionState& exception_state) {
@@ -290,7 +290,7 @@ ImageData* ImageData::CreateForTest(const gfx::Size& size,
 }
 
 ScriptPromise ImageData::CreateImageBitmap(ScriptState* script_state,
-                                           absl::optional<gfx::Rect> crop_rect,
+                                           std::optional<gfx::Rect> crop_rect,
                                            const ImageBitmapOptions* options,
                                            ExceptionState& exception_state) {
   if (IsBufferBaseDetached()) {

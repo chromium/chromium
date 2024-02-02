@@ -181,7 +181,7 @@ void BlobBytesProvider::RequestAsFile(uint64_t source_offset,
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!file.IsValid()) {
-    std::move(callback).Run(absl::nullopt);
+    std::move(callback).Run(std::nullopt);
     return;
   }
 
@@ -189,7 +189,7 @@ void BlobBytesProvider::RequestAsFile(uint64_t source_offset,
                                     base::checked_cast<int64_t>(file_offset));
   bool seek_failed = seek_distance < 0;
   if (seek_failed) {
-    std::move(callback).Run(absl::nullopt);
+    std::move(callback).Run(std::nullopt);
     return;
   }
 
@@ -222,7 +222,7 @@ void BlobBytesProvider::RequestAsFile(uint64_t source_offset,
           data->data() + data_offset + written, writing_size);
       bool write_failed = actual_written < 0;
       if (write_failed) {
-        std::move(callback).Run(absl::nullopt);
+        std::move(callback).Run(std::nullopt);
         return;
       }
       written += actual_written;
@@ -232,12 +232,12 @@ void BlobBytesProvider::RequestAsFile(uint64_t source_offset,
   }
 
   if (!file.Flush()) {
-    std::move(callback).Run(absl::nullopt);
+    std::move(callback).Run(std::nullopt);
     return;
   }
   base::File::Info info;
   if (!file.GetInfo(&info)) {
-    std::move(callback).Run(absl::nullopt);
+    std::move(callback).Run(std::nullopt);
     return;
   }
   std::move(callback).Run(info.last_modified);

@@ -4,8 +4,9 @@
 
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_tflite_converter.h"
 
+#include <optional>
+
 #include "base/ranges/algorithm.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_clamp_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_conv_2d_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_elu_options.h"
@@ -647,7 +648,7 @@ uint32_t MLGraphTfLiteConverter::SerializeBuffer(const MLOperand* constant) {
 
 int32_t MLGraphTfLiteConverter::SerializeTensor(
     const MLOperand* operand,
-    absl::optional<String> graph_output_name) {
+    std::optional<String> graph_output_name) {
   // The buffer index 0 represents input and output operand because there is no
   // data buffer associated.
   uint32_t buffer_index = 0;
@@ -658,7 +659,7 @@ int32_t MLGraphTfLiteConverter::SerializeTensor(
   CHECK_GE(tensor_index, int32_t(0));
   // The name identifies the tensor for inference, so only inputs and outputs of
   // graph have this attribute.
-  absl::optional<String> name;
+  std::optional<String> name;
   switch (operand->Kind()) {
     case MLOperand::OperandKind::kInput: {
       name = operand->Name();

@@ -28,9 +28,9 @@ XRImageTrackingResult::XRImageTrackingResult(
   }
 }
 
-absl::optional<gfx::Transform> XRImageTrackingResult::MojoFromObject() const {
+std::optional<gfx::Transform> XRImageTrackingResult::MojoFromObject() const {
   if (!mojo_from_this_) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return mojo_from_this_->ToTransform();

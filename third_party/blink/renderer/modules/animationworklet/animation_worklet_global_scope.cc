@@ -4,8 +4,9 @@
 
 #include "third_party/blink/renderer/modules/animationworklet/animation_worklet_global_scope.h"
 
+#include <optional>
+
 #include "base/time/time.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/bindings/core/v8/generated_code_helper.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialized_script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_function.h"
@@ -24,7 +25,6 @@
 #include "third_party/blink/renderer/platform/bindings/v8_binding_macros.h"
 #include "third_party/blink/renderer/platform/bindings/v8_object_constructor.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
-
 #include "v8/include/v8.h"
 
 namespace blink {
@@ -72,7 +72,7 @@ Animator* AnimationWorkletGlobalScope::CreateAnimatorFor(
     const String& name,
     WorkletAnimationOptions options,
     scoped_refptr<SerializedScriptValue> serialized_state,
-    const Vector<absl::optional<base::TimeDelta>>& local_times,
+    const Vector<std::optional<base::TimeDelta>>& local_times,
     const Vector<Timing>& timings,
     const Vector<Timing::NormalizedTiming>& normalized_timings) {
   DCHECK(!animators_.Contains(animation_id));
@@ -118,8 +118,8 @@ void AnimationWorkletGlobalScope::UpdateAnimatorsList(
         effect_timings->GetNormalizedTimings()->data;
     DCHECK_GE(normalized_timings.size(), 1u);
 
-    Vector<absl::optional<base::TimeDelta>> local_times(
-        static_cast<int>(timings.size()), absl::nullopt);
+    Vector<std::optional<base::TimeDelta>> local_times(
+        static_cast<int>(timings.size()), std::nullopt);
 
     CreateAnimatorFor(id, name, options, nullptr /* serialized_state */,
                       local_times, timings, normalized_timings);
@@ -242,7 +242,7 @@ Animator* AnimationWorkletGlobalScope::CreateInstance(
     const String& name,
     WorkletAnimationOptions options,
     scoped_refptr<SerializedScriptValue> serialized_state,
-    const Vector<absl::optional<base::TimeDelta>>& local_times,
+    const Vector<std::optional<base::TimeDelta>>& local_times,
     const Vector<Timing>& timings,
     const Vector<Timing::NormalizedTiming>& normalized_timings) {
   DCHECK(IsContextThread());
@@ -328,7 +328,7 @@ void AnimationWorkletGlobalScope::MigrateAnimatorsTo(
       }
     }
 
-    Vector<absl::optional<base::TimeDelta>> local_times;
+    Vector<std::optional<base::TimeDelta>> local_times;
     animator->GetLocalTimes(local_times);
     target_global_scope->CreateAnimatorFor(
         animation_id, animator->name(), animator->options(), serialized_state,

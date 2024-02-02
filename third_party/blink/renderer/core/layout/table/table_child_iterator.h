@@ -5,7 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_TABLE_TABLE_CHILD_ITERATOR_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_TABLE_TABLE_CHILD_ITERATOR_H_
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include <optional>
+
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/block_node.h"
 #include "third_party/blink/renderer/core/layout/table/table_layout_algorithm_types.h"
@@ -65,7 +66,7 @@ class CORE_EXPORT TableChildIterator {
   // order, i.e. table header, table bodies, table footer. If it is unset, it
   // means that we're processing top captions. If it's at end(), it means that
   // we should look for bottom captions.
-  absl::optional<TableGroupedChildrenIterator> section_iterator_;
+  std::optional<TableGroupedChildrenIterator> section_iterator_;
 
   // An index into break_token_'s ChildBreakTokens() vector. Used for keeping
   // track of the next child break token to inspect.

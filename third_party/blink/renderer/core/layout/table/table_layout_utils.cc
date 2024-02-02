@@ -192,7 +192,7 @@ TableTypes::Row ComputeMinimumRowBlockSize(
   // will be cached. Needs to be fixed in NG framework.
 
   LayoutUnit max_cell_block_size;
-  absl::optional<float> row_percent;
+  std::optional<float> row_percent;
   bool is_constrained = false;
   bool has_rowspan_start = false;
   wtf_size_t start_cell_index = cell_block_constraints->size();
@@ -224,7 +224,7 @@ TableTypes::Row ComputeMinimumRowBlockSize(
     SetupTableCellConstraintSpaceBuilder(
         table_writing_direction, cell, cell_borders, column_locations,
         /* cell_block_size */ kIndefiniteSize, cell_percentage_inline_size,
-        /* alignment_baseline */ absl::nullopt,
+        /* alignment_baseline */ std::nullopt,
         colspan_cell_tabulator->CurrentColumn(),
         /* is_initial_block_size_indefinite */ true,
         is_table_block_size_specified, has_collapsed_borders,
@@ -263,8 +263,8 @@ TableTypes::Row ComputeMinimumRowBlockSize(
         has_descendant_that_depends_on_percentage_block_size);
 
     // Compute cell's css block size.
-    absl::optional<LayoutUnit> cell_css_block_size;
-    absl::optional<float> cell_css_percent;
+    std::optional<LayoutUnit> cell_css_block_size;
+    std::optional<float> cell_css_percent;
 
     // TODO(1105272) Handle cell_specified_block_length.IsCalculated()
     if (cell_specified_block_length.IsPercent()) {
@@ -319,7 +319,7 @@ TableTypes::Row ComputeMinimumRowBlockSize(
 
   const LayoutUnit row_block_size =
       row_baseline_tabulator.ComputeRowBlockSize(max_cell_block_size);
-  absl::optional<LayoutUnit> row_baseline;
+  std::optional<LayoutUnit> row_baseline;
   if (!row_baseline_tabulator.BaselineDependsOnPercentageBlockDescendant())
     row_baseline = row_baseline_tabulator.ComputeBaseline(row_block_size);
 
@@ -347,7 +347,7 @@ class ColumnConstraintsBuilder {
         TableTypes::CreateColumn(column.Style(),
                                  !is_fixed_layout_ && colgroup_constraint_
                                      ? colgroup_constraint_->max_inline_size
-                                     : absl::nullopt,
+                                     : std::nullopt,
                                  is_fixed_layout_);
     for (wtf_size_t i = 0; i < span; ++i)
       column_constraints_->data.push_back(col_constraint);
@@ -357,7 +357,7 @@ class ColumnConstraintsBuilder {
   void EnterColgroup(const LayoutInputNode& colgroup,
                      wtf_size_t start_column_index) {
     colgroup_constraint_ = TableTypes::CreateColumn(
-        colgroup.Style(), absl::nullopt, is_fixed_layout_);
+        colgroup.Style(), std::nullopt, is_fixed_layout_);
   }
 
   void LeaveColgroup(const LayoutInputNode& colgroup,
@@ -382,7 +382,7 @@ class ColumnConstraintsBuilder {
  private:
   TableTypes::Columns* column_constraints_;
   bool is_fixed_layout_;
-  absl::optional<TableTypes::Column> colgroup_constraint_;
+  std::optional<TableTypes::Column> colgroup_constraint_;
 };
 
 // Computes constraints specified on column elements.
@@ -436,7 +436,7 @@ void ComputeSectionInlineConstraints(
                 cell, table_writing_direction, is_fixed_layout, cell_border,
                 cell_padding);
         if (colspan == 1) {
-          absl::optional<TableTypes::CellInlineConstraint>& constraint =
+          std::optional<TableTypes::CellInlineConstraint>& constraint =
               (*cell_inline_constraints)[colspan_cell_tabulator
                                              .CurrentColumn()];
           // Standard cell, update final column inline size values.
@@ -981,7 +981,7 @@ void DistributeColspanCellToColumnsFixed(
                                        static_cast<float>(effective_span));
   LayoutUnit new_max_size = LayoutUnit(colspan_cell_max_inline_size /
                                        static_cast<float>(effective_span));
-  absl::optional<float> new_percent;
+  std::optional<float> new_percent;
   if (colspan_cell.cell_inline_constraint.percent) {
     new_percent = *colspan_cell.cell_inline_constraint.percent / effective_span;
   }
@@ -1054,7 +1054,7 @@ void DistributeColspanCellToColumnsAuto(
       (colspan_cell.cell_inline_constraint.max_inline_size -
        total_inner_border_spacing)
           .ClampNegativeToZero();
-  absl::optional<float> colspan_cell_percent =
+  std::optional<float> colspan_cell_percent =
       colspan_cell.cell_inline_constraint.percent;
 
   if (colspan_cell_percent.has_value()) {
@@ -1390,7 +1390,7 @@ void SetupTableCellConstraintSpaceBuilder(
     const Vector<TableColumnLocation>& column_locations,
     LayoutUnit cell_block_size,
     LayoutUnit percentage_inline_size,
-    absl::optional<LayoutUnit> alignment_baseline,
+    std::optional<LayoutUnit> alignment_baseline,
     wtf_size_t start_column,
     bool is_initial_block_size_indefinite,
     bool is_table_block_size_specified,
@@ -1522,7 +1522,7 @@ void ComputeSectionMinimumRowBlockSizes(
   // In rare circumstances we need to know the total row count before we've
   // visited all them (for computing effective rowspans). We don't want to
   // perform this unnecessarily.
-  absl::optional<wtf_size_t> row_count;
+  std::optional<wtf_size_t> row_count;
   auto RowCountFunc = [&]() -> wtf_size_t {
     if (!row_count) {
       row_count = 0;

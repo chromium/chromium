@@ -32,6 +32,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_LOCAL_FRAME_CLIENT_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/time/time.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
@@ -39,7 +40,6 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/network/public/mojom/content_security_policy.mojom-blink-forward.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-blink-forward.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/loader/loading_behavior_flag.h"
 #include "third_party/blink/public/common/loader/url_loader_factory_bundle.h"
 #include "third_party/blink/public/common/performance/performance_timeline_constants.h"
@@ -186,7 +186,7 @@ class CORE_EXPORT LocalFrameClient : public FrameClient {
       mojo::PendingRemote<mojom::blink::BlobURLToken>,
       base::TimeTicks input_start_time,
       const String& href_translate,
-      const absl::optional<Impression>& impression,
+      const std::optional<Impression>& impression,
       const LocalFrameToken* initiator_frame_token,
       std::unique_ptr<SourceLocation> source_location,
       mojo::PendingRemote<mojom::blink::PolicyContainerHostKeepAliveHandle>
@@ -201,7 +201,7 @@ class CORE_EXPORT LocalFrameClient : public FrameClient {
 
   virtual bool NavigateBackForward(
       int offset,
-      absl::optional<scheduler::TaskAttributionId>
+      std::optional<scheduler::TaskAttributionId>
           soft_navigation_heuristics_task_id) const = 0;
 
   virtual void DidDispatchPingLoader(const KURL&) = 0;
@@ -256,7 +256,7 @@ class CORE_EXPORT LocalFrameClient : public FrameClient {
 
   virtual String UserAgentOverride() = 0;
   virtual String UserAgent() = 0;
-  virtual absl::optional<blink::UserAgentMetadata> UserAgentMetadata() = 0;
+  virtual std::optional<blink::UserAgentMetadata> UserAgentMetadata() = 0;
 
   virtual String DoNotTrackValue() = 0;
 

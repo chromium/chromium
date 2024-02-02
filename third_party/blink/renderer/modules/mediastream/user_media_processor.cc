@@ -126,7 +126,7 @@ void SendLogMessage(const std::string& message) {
 
 void MaybeLogStreamDevice(const int32_t& request_id,
                           const String& label,
-                          const absl::optional<MediaStreamDevice>& device) {
+                          const std::optional<MediaStreamDevice>& device) {
   if (!device.has_value()) {
     return;
   }
@@ -746,7 +746,7 @@ void UserMediaProcessor::SelectAudioSettings(
   SetupVideoInput();
 }
 
-absl::optional<base::UnguessableToken>
+std::optional<base::UnguessableToken>
 UserMediaProcessor::DetermineExistingAudioSessionId() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(current_request_info_->request()->Audio());
@@ -783,7 +783,7 @@ UserMediaProcessor::DetermineExistingAudioSessionId() {
     }
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void UserMediaProcessor::SetupVideoInput() {
@@ -793,7 +793,7 @@ void UserMediaProcessor::SetupVideoInput() {
   UserMediaRequest* const request = current_request_info_->request();
 
   if (!request->Video()) {
-    absl::optional<base::UnguessableToken> audio_session_id =
+    std::optional<base::UnguessableToken> audio_session_id =
         DetermineExistingAudioSessionId();
     GenerateStreamForCurrentRequestInfo(
         audio_session_id, audio_session_id.has_value()
@@ -888,9 +888,9 @@ void UserMediaProcessor::SelectVideoDeviceSettings(
   blink::VideoDeviceCaptureCapabilities capabilities;
   capabilities.device_capabilities =
       ToVideoInputDeviceCapabilities(video_input_capabilities);
-  capabilities.noise_reduction_capabilities = {absl::optional<bool>(),
-                                               absl::optional<bool>(true),
-                                               absl::optional<bool>(false)};
+  capabilities.noise_reduction_capabilities = {std::optional<bool>(),
+                                               std::optional<bool>(true),
+                                               std::optional<bool>(false)};
   blink::VideoCaptureSettings settings = SelectSettingsVideoDeviceCapture(
       std::move(capabilities), user_media_request->VideoConstraints(),
       blink::MediaStreamVideoSource::kDefaultWidth,
@@ -911,7 +911,7 @@ void UserMediaProcessor::SelectVideoDeviceSettings(
       settings, false /* is_content_capture */);
 
   if (current_request_info_->request()->Audio()) {
-    absl::optional<base::UnguessableToken> audio_session_id =
+    std::optional<base::UnguessableToken> audio_session_id =
         DetermineExistingAudioSessionId();
     GenerateStreamForCurrentRequestInfo(
         audio_session_id, audio_session_id.has_value()
@@ -959,7 +959,7 @@ void UserMediaProcessor::SelectVideoContentSettings() {
 }
 
 void UserMediaProcessor::GenerateStreamForCurrentRequestInfo(
-    absl::optional<base::UnguessableToken> requested_audio_capture_session_id,
+    std::optional<base::UnguessableToken> requested_audio_capture_session_id,
     blink::mojom::StreamSelectionStrategy strategy) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(current_request_info_);
@@ -1672,7 +1672,7 @@ void UserMediaProcessor::StartTracks(const String& label) {
 }
 
 MediaStreamComponent* UserMediaProcessor::CreateVideoTrack(
-    const absl::optional<MediaStreamDevice>& device) {
+    const std::optional<MediaStreamDevice>& device) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(current_request_info_);
   if (!device) {
@@ -1688,7 +1688,7 @@ MediaStreamComponent* UserMediaProcessor::CreateVideoTrack(
 }
 
 MediaStreamComponent* UserMediaProcessor::CreateAudioTrack(
-    const absl::optional<MediaStreamDevice>& device) {
+    const std::optional<MediaStreamDevice>& device) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(current_request_info_);
   if (!device) {

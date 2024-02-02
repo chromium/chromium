@@ -5,7 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIASTREAM_MOCK_MEDIA_STREAM_REGISTRY_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIASTREAM_MOCK_MEDIA_STREAM_REGISTRY_H_
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include <optional>
+
 #include "third_party/blink/renderer/modules/mediastream/mock_media_stream_video_source.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_descriptor.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -27,7 +28,7 @@ class MockMediaStreamRegistry final {
   MockMediaStreamVideoSource* AddVideoTrack(
       const String& track_id,
       const VideoTrackAdapterSettings& adapter_settings,
-      const absl::optional<bool>& noise_reduction,
+      const std::optional<bool>& noise_reduction,
       bool is_screen_cast,
       double min_frame_rate);
   MockMediaStreamVideoSource* AddVideoTrack(const String& track_id);

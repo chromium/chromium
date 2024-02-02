@@ -32,6 +32,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -45,7 +46,6 @@
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
@@ -1288,7 +1288,7 @@ ScriptPromise RTCPeerConnection::generateCertificate(
 
   // Check if |keygenAlgorithm| contains the optional DOMTimeStamp |expires|
   // attribute.
-  absl::optional<DOMTimeStamp> expires;
+  std::optional<DOMTimeStamp> expires;
   if (keygen_algorithm->IsObject()) {
     Dictionary keygen_algorithm_dict(script_state->GetIsolate(),
                                      keygen_algorithm->GetAsObject().V8Value(),
@@ -1322,7 +1322,7 @@ ScriptPromise RTCPeerConnection::generateCertificate(
   const char* unsupported_params_string =
       "The 1st argument provided is an AlgorithmIdentifier with a supported "
       "algorithm name, but the parameters are not supported.";
-  absl::optional<rtc::KeyParams> key_params;
+  std::optional<rtc::KeyParams> key_params;
   switch (crypto_algorithm.Id()) {
     case kWebCryptoAlgorithmIdRsaSsaPkcs1v1_5:
       // name: "RSASSA-PKCS1-v1_5"
@@ -1508,19 +1508,19 @@ String RTCPeerConnection::connectionState() const {
       webrtc::PeerConnectionInterface::AsString(peer_connection_state_).data());
 }
 
-absl::optional<bool> RTCPeerConnection::canTrickleIceCandidates() const {
+std::optional<bool> RTCPeerConnection::canTrickleIceCandidates() const {
   if (closed_ || !remoteDescription()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   webrtc::PeerConnectionInterface* native_connection =
       peer_handler_->NativePeerConnection();
   if (!native_connection) {
-    return absl::nullopt;
+    return std::nullopt;
   }
-  absl::optional<bool> can_trickle =
+  std::optional<bool> can_trickle =
       native_connection->can_trickle_ice_candidates();
   if (!can_trickle) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return *can_trickle;
 }
@@ -1693,7 +1693,7 @@ RtpContributingSourceCache& RTCPeerConnection::GetRtpContributingSourceCache() {
   return rtp_contributing_source_cache_.value();
 }
 
-absl::optional<webrtc::RtpTransceiverInit> ValidateRtpTransceiverInit(
+std::optional<webrtc::RtpTransceiverInit> ValidateRtpTransceiverInit(
     ExecutionContext* execution_context,
     ExceptionState& exception_state,
     const RTCRtpTransceiverInit* init,
@@ -1703,14 +1703,14 @@ absl::optional<webrtc::RtpTransceiverInit> ValidateRtpTransceiverInit(
   for (auto& encoding : webrtc_init.send_encodings) {
     if (encoding.rid.length() > 16) {
       exception_state.ThrowTypeError("Illegal length of rid");
-      return absl::nullopt;
+      return std::nullopt;
     }
     // Allowed characters: a-z 0-9 _ and -
     if (encoding.rid.find_first_not_of("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLM"
                                        "NOPQRSTUVWXYZ0123456789-_") !=
         std::string::npos) {
       exception_state.ThrowTypeError("Illegal character in rid");
-      return absl::nullopt;
+      return std::nullopt;
     }
   }
   return webrtc_init;
@@ -2204,7 +2204,7 @@ void RTCPeerConnection::DidGenerateICECandidate(
 }
 
 void RTCPeerConnection::DidFailICECandidate(const String& address,
-                                            absl::optional<uint16_t> port,
+                                            std::optional<uint16_t> port,
                                             const String& host_candidate,
                                             const String& url,
                                             int error_code,

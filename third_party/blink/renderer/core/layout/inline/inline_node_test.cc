@@ -688,8 +688,8 @@ struct StyleChangeData {
     kAll = kText | kParentAndAbove,
   };
   unsigned needs_collect_inlines;
-  absl::optional<bool> is_line_dirty;
-  absl::optional<bool> invalidate_ink_overflow;
+  std::optional<bool> is_line_dirty;
+  std::optional<bool> invalidate_ink_overflow;
 } style_change_data[] = {
     // Changing color, text-decoration, outline, etc. should not re-run
     // |CollectInlines()|.

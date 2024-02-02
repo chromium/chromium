@@ -27,8 +27,8 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_DEFERRED_IMAGE_DECODER_H_
 
 #include <memory>
+#include <optional>
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/platform/graphics/image_orientation.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_image.h"
 #include "third_party/blink/renderer/platform/graphics/parkable_image.h"
@@ -132,7 +132,7 @@ class PLATFORM_EXPORT DeferredImageDecoder final {
   sk_sp<SkColorSpace> color_space_for_sk_images_;
   gfx::Point hot_spot_;
   const PaintImage::ContentId complete_frame_content_id_;
-  absl::optional<bool> incremental_decode_needed_;
+  std::optional<bool> incremental_decode_needed_;
 
   // Set to true if the image is detected to be invalid after parsing the
   // metadata.
@@ -140,7 +140,7 @@ class PLATFORM_EXPORT DeferredImageDecoder final {
 
   // Caches an image's metadata so it can outlive |metadata_decoder_| after all
   // data is received in cases where multiple generators are created.
-  absl::optional<cc::ImageHeaderMetadata> image_metadata_;
+  std::optional<cc::ImageHeaderMetadata> image_metadata_;
 
   // Caches frame state information.
   Vector<DeferredFrameData> frame_data_;

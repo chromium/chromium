@@ -317,9 +317,9 @@ static inline std::unique_ptr<ColorProfile> ReadColorProfile(png_structp png,
 static inline void ReadHDRMetadata(
     png_structp png,
     png_infop info,
-    absl::optional<gfx::HDRMetadata>* hdr_metadata) {
-  absl::optional<gfx::HdrMetadataCta861_3> clli;
-  absl::optional<gfx::HdrMetadataSmpteSt2086> mdcv;
+    std::optional<gfx::HDRMetadata>* hdr_metadata) {
+  std::optional<gfx::HdrMetadataCta861_3> clli;
+  std::optional<gfx::HdrMetadataSmpteSt2086> mdcv;
   png_unknown_chunkp unknown_chunks;
   size_t num_unknown_chunks =
       png_get_unknown_chunks(png, info, &unknown_chunks);
@@ -424,7 +424,7 @@ bool PNGImageDecoder::ImageIsHighBitDepth() {
          repetition_count_ == kAnimationNone;
 }
 
-absl::optional<gfx::HDRMetadata> PNGImageDecoder::GetHDRMetadata() const {
+std::optional<gfx::HDRMetadata> PNGImageDecoder::GetHDRMetadata() const {
   return hdr_metadata_;
 }
 

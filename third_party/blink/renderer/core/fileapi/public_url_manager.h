@@ -109,7 +109,7 @@ class CORE_EXPORT PublicURLManager final
   // Records which execution context type instantiated this PublicURLManager,
   // for collecting metrics. This is only set when the SupportPartitionedBlobUrl
   // feature is enabled, and is only set for frame or worker execution contexts.
-  absl::optional<ExecutionContextIdForHistogram> execution_context_type_;
+  std::optional<ExecutionContextIdForHistogram> execution_context_type_;
 
   bool is_stopped_ = false;
 

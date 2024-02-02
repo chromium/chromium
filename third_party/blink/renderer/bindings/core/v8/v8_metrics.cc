@@ -431,25 +431,25 @@ void V8MetricsRecorder::NotifyIsolateDisposal() {
   isolate_ = nullptr;
 }
 
-absl::optional<V8MetricsRecorder::UkmRecorderAndSourceId>
+std::optional<V8MetricsRecorder::UkmRecorderAndSourceId>
 V8MetricsRecorder::GetUkmRecorderAndSourceId(
     v8::metrics::Recorder::ContextId context_id) {
   if (!isolate_)
-    return absl::optional<UkmRecorderAndSourceId>();
+    return std::optional<UkmRecorderAndSourceId>();
   v8::HandleScope handle_scope(isolate_);
   v8::MaybeLocal<v8::Context> maybe_context =
       v8::metrics::Recorder::GetContext(isolate_, context_id);
   if (maybe_context.IsEmpty())
-    return absl::optional<UkmRecorderAndSourceId>();
+    return std::optional<UkmRecorderAndSourceId>();
   ExecutionContext* context =
       ExecutionContext::From(maybe_context.ToLocalChecked());
   if (!context)
-    return absl::optional<UkmRecorderAndSourceId>();
+    return std::optional<UkmRecorderAndSourceId>();
   ukm::UkmRecorder* ukm_recorder = context->UkmRecorder();
   if (!ukm_recorder)
-    return absl::optional<UkmRecorderAndSourceId>();
-  return absl::optional<UkmRecorderAndSourceId>(absl::in_place, ukm_recorder,
-                                                context->UkmSourceID());
+    return std::optional<UkmRecorderAndSourceId>();
+  return std::optional<UkmRecorderAndSourceId>(std::in_place, ukm_recorder,
+                                               context->UkmSourceID());
 }
 
 }  // namespace blink

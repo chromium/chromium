@@ -5,7 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_CUSTOM_CUSTOM_LAYOUT_CONSTRAINTS_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_CUSTOM_CUSTOM_LAYOUT_CONSTRAINTS_H_
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include <optional>
+
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/bindings/trace_wrapper_v8_reference.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
@@ -32,7 +33,7 @@ class CustomLayoutConstraints : public ScriptWrappable {
 
   // LayoutConstraints.idl
   double fixedInlineSize() const { return fixed_inline_size_; }
-  absl::optional<double> fixedBlockSize() const;
+  std::optional<double> fixedBlockSize() const;
   ScriptValue data(ScriptState*) const;
 
   void Trace(Visitor*) const override;

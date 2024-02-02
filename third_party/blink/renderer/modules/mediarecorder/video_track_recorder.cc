@@ -311,8 +311,8 @@ VideoTrackRecorderImpl::CodecProfile::CodecProfile(CodecId codec_id)
 
 VideoTrackRecorderImpl::CodecProfile::CodecProfile(
     CodecId codec_id,
-    absl::optional<media::VideoCodecProfile> opt_profile,
-    absl::optional<media::VideoCodecLevel> opt_level)
+    std::optional<media::VideoCodecProfile> opt_profile,
+    std::optional<media::VideoCodecLevel> opt_level)
     : codec_id(codec_id), profile(opt_profile), level(opt_level) {}
 
 VideoTrackRecorderImpl::CodecProfile::CodecProfile(
@@ -1180,7 +1180,7 @@ void VideoTrackRecorderPassthrough::HandleEncodedVideoFrame(
     RequestKeyFrame();
   }
 
-  absl::optional<gfx::ColorSpace> color_space;
+  std::optional<gfx::ColorSpace> color_space;
   if (encoded_frame->ColorSpace()) {
     color_space = encoded_frame->ColorSpace();
   }

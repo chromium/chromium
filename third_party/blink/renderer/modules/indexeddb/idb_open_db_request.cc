@@ -26,10 +26,10 @@
 #include "third_party/blink/renderer/modules/indexeddb/idb_open_db_request.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/metrics/histogram_macros.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
@@ -98,7 +98,7 @@ void IDBOpenDBRequest::OnBlocked(int64_t old_version) {
   if (!CanStillSendResult()) {
     return;
   }
-  absl::optional<uint64_t> new_version_nullable;
+  std::optional<uint64_t> new_version_nullable;
   if (version_ != IDBDatabaseMetadata::kDefaultVersion) {
     new_version_nullable = version_;
   }
@@ -194,7 +194,7 @@ void IDBOpenDBRequest::OnDeleteDBSuccess(int64_t old_version) {
   }
   SetResult(MakeGarbageCollected<IDBAny>(IDBAny::kUndefinedType));
   DispatchEvent(*MakeGarbageCollected<IDBVersionChangeEvent>(
-      event_type_names::kSuccess, old_version, absl::nullopt));
+      event_type_names::kSuccess, old_version, std::nullopt));
 }
 
 void IDBOpenDBRequest::OnDBFactoryError(DOMException* error) {

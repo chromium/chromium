@@ -127,7 +127,7 @@ class XRFrame final : public ScriptWrappable {
       ScriptState* script_state,
       const gfx::Transform& native_origin_from_anchor,
       XRSpace* space,
-      absl::optional<uint64_t> maybe_plane_id,
+      std::optional<uint64_t> maybe_plane_id,
       ExceptionState& exception_state);
   // Helper for checking if space and frame have the same session.
   // Sets kInvalidStateError exception state if sessions are different.

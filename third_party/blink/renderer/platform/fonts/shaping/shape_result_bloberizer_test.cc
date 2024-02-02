@@ -5,9 +5,10 @@
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_bloberizer.h"
 
 #include <memory>
+#include <optional>
+
 #include "skia/ext/font_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/platform/fonts/character_range.h"
 #include "third_party/blink/renderer/platform/fonts/font.h"
 #include "third_party/blink/renderer/platform/fonts/opentype/open_type_vertical_data.h"

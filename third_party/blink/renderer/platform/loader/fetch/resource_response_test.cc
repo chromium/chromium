@@ -74,7 +74,7 @@ TEST(ResourceResponseTest, TreatExpiresZeroAsExpired) {
 
   response.SetHttpHeaderField(http_names::kExpires, AtomicString("0"));
 
-  absl::optional<base::Time> expires = response.Expires();
+  std::optional<base::Time> expires = response.Expires();
   EXPECT_EQ(base::Time::Min(), expires);
 
   base::Time creation_time = base::Time::UnixEpoch();

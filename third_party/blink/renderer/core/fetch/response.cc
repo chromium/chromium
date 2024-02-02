@@ -5,10 +5,10 @@
 #include "third_party/blink/renderer/core/fetch/response.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/memory/scoped_refptr.h"
 #include "services/network/public/cpp/header_util.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_response.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/dictionary.h"
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"

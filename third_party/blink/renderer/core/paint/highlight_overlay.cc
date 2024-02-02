@@ -267,7 +267,7 @@ Vector<HighlightEdge> HighlightOverlay::ComputeEdges(
     const Node* node,
     const HighlightRegistry* registry,
     bool is_generated_text_fragment,
-    absl::optional<TextOffsetRange> dom_offsets,
+    std::optional<TextOffsetRange> dom_offsets,
     const LayoutSelectionStatus* selection,
     const DocumentMarkerVector& custom,
     const DocumentMarkerVector& grammar,
@@ -307,7 +307,7 @@ Vector<HighlightEdge> HighlightOverlay::ComputeEdges(
     DCHECK(dom_offsets);
     MarkerRangeMappingContext mapping_context(*text_node, *dom_offsets);
     for (const auto& marker : custom) {
-      absl::optional<TextOffsetRange> marker_offsets =
+      std::optional<TextOffsetRange> marker_offsets =
           mapping_context.GetTextContentOffsets(*marker);
       if (!marker_offsets) {
         continue;
@@ -329,7 +329,7 @@ Vector<HighlightEdge> HighlightOverlay::ComputeEdges(
 
     mapping_context.Reset();
     for (const auto& marker : grammar) {
-      absl::optional<TextOffsetRange> marker_offsets =
+      std::optional<TextOffsetRange> marker_offsets =
           mapping_context.GetTextContentOffsets(*marker);
       if (!marker_offsets) {
         continue;
@@ -348,7 +348,7 @@ Vector<HighlightEdge> HighlightOverlay::ComputeEdges(
 
     mapping_context.Reset();
     for (const auto& marker : spelling) {
-      absl::optional<TextOffsetRange> marker_offsets =
+      std::optional<TextOffsetRange> marker_offsets =
           mapping_context.GetTextContentOffsets(*marker);
       if (!marker_offsets) {
         continue;
@@ -367,7 +367,7 @@ Vector<HighlightEdge> HighlightOverlay::ComputeEdges(
 
     mapping_context.Reset();
     for (const auto& marker : target) {
-      absl::optional<TextOffsetRange> marker_offsets =
+      std::optional<TextOffsetRange> marker_offsets =
           mapping_context.GetTextContentOffsets(*marker);
       if (!marker_offsets) {
         continue;
@@ -401,8 +401,8 @@ Vector<HighlightPart> HighlightOverlay::ComputeParts(
   const HighlightDecoration originating_decoration{
       originating_layer, {content_offsets.from, content_offsets.to}};
   Vector<HighlightPart> result{};
-  Vector<absl::optional<HighlightRange>> active(layers.size());
-  absl::optional<unsigned> prev_offset{};
+  Vector<std::optional<HighlightRange>> active(layers.size());
+  std::optional<unsigned> prev_offset{};
   if (edges.empty()) {
     result.push_back(HighlightPart{originating_layer,
                                    {content_offsets.from, content_offsets.to},

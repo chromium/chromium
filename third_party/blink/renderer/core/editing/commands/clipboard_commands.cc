@@ -92,7 +92,7 @@ class ExecutionContextClipboardEventState
 
   struct State {
     const AtomicString* event_type = nullptr;
-    absl::optional<EditorCommandSource> source;
+    std::optional<EditorCommandSource> source;
   };
 
   base::AutoReset<State> SetState(const AtomicString& event_type,

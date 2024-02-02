@@ -5,7 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_XR_XR_COMPOSITION_LAYER_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_XR_XR_COMPOSITION_LAYER_H_
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include <optional>
+
 #include "third_party/blink/renderer/modules/xr/xr_layer.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -23,8 +24,8 @@ class XRCompositionLayer : public XRLayer {
   const String& layout() const;
   bool blendTextureSourceAlpha() const;
   void setBlendTextureSourceAlpha(bool value);
-  absl::optional<bool> chromaticAberrationCorrection() const;
-  void setChromaticAberrationCorrection(absl::optional<bool> value);
+  std::optional<bool> chromaticAberrationCorrection() const;
+  void setChromaticAberrationCorrection(std::optional<bool> value);
   bool forceMonoPresentation() const;
   void setForceMonoPresentation(bool value);
   float opacity() const;
@@ -38,7 +39,7 @@ class XRCompositionLayer : public XRLayer {
  private:
   const String layout_{"default"};
   bool blend_texture_source_alpha_{false};
-  absl::optional<bool> chromatic_aberration_correction_{absl::nullopt};
+  std::optional<bool> chromatic_aberration_correction_{std::nullopt};
   bool force_mono_presentation_{false};
   float opacity_{1.0};
   uint16_t mip_levels_{1};

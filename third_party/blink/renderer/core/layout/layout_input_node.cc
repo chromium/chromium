@@ -149,8 +149,8 @@ BlockNode LayoutInputNode::ListMarkerBlockNodeIfListItem() const {
 }
 
 void LayoutInputNode::IntrinsicSize(
-    absl::optional<LayoutUnit>* computed_inline_size,
-    absl::optional<LayoutUnit>* computed_block_size) const {
+    std::optional<LayoutUnit>* computed_inline_size,
+    std::optional<LayoutUnit>* computed_block_size) const {
   DCHECK(IsReplaced());
 
   GetOverrideIntrinsicSize(computed_inline_size, computed_block_size);
@@ -161,16 +161,16 @@ void LayoutInputNode::IntrinsicSize(
   To<LayoutReplaced>(box_.Get())
       ->ComputeIntrinsicSizingInfo(legacy_sizing_info);
 
-  absl::optional<LayoutUnit> intrinsic_inline_size =
+  std::optional<LayoutUnit> intrinsic_inline_size =
       legacy_sizing_info.has_width
-          ? absl::make_optional(
+          ? std::make_optional(
                 LayoutUnit::FromFloatRound(legacy_sizing_info.size.width()))
-          : absl::nullopt;
-  absl::optional<LayoutUnit> intrinsic_block_size =
+          : std::nullopt;
+  std::optional<LayoutUnit> intrinsic_block_size =
       legacy_sizing_info.has_height
-          ? absl::make_optional(
+          ? std::make_optional(
                 LayoutUnit::FromFloatRound(legacy_sizing_info.size.height()))
-          : absl::nullopt;
+          : std::nullopt;
   if (!IsHorizontalWritingMode(Style().GetWritingMode())) {
     std::swap(intrinsic_inline_size, intrinsic_block_size);
   }
@@ -232,8 +232,8 @@ void LayoutInputNode::ShowNodeTreeFromRoot() const {
 #endif
 
 void LayoutInputNode::GetOverrideIntrinsicSize(
-    absl::optional<LayoutUnit>* computed_inline_size,
-    absl::optional<LayoutUnit>* computed_block_size) const {
+    std::optional<LayoutUnit>* computed_inline_size,
+    std::optional<LayoutUnit>* computed_block_size) const {
   DCHECK(IsReplaced());
 
   LayoutUnit override_inline_size = OverrideIntrinsicContentInlineSize();

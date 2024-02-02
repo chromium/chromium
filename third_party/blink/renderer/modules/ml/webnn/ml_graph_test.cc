@@ -1008,7 +1008,7 @@ template <typename T>
 struct Conv2dTester {
   OperandInfo<T> input;
   OperandInfo<T> filter;
-  absl::optional<OperandInfo<T>> bias = absl::nullopt;
+  std::optional<OperandInfo<T>> bias = std::nullopt;
   Vector<T> expected;
 
   void Test(MLGraphTest& helper,
@@ -1172,7 +1172,7 @@ template <typename T>
 struct ConvTranspose2dTester {
   OperandInfo<T> input;
   OperandInfo<T> filter;
-  absl::optional<OperandInfo<T>> bias = absl::nullopt;
+  std::optional<OperandInfo<T>> bias = std::nullopt;
   Vector<T> expected;
 
   void Test(
@@ -1343,7 +1343,7 @@ template <typename T>
 struct GemmTester {
   OperandInfo<T> a;
   OperandInfo<T> b;
-  absl::optional<OperandInfo<T>> c = absl::nullopt;
+  std::optional<OperandInfo<T>> c = std::nullopt;
   Vector<T> expected;
 
   void Test(MLGraphTest& helper,

@@ -17,7 +17,7 @@ constexpr char kWebNNTraceCategory[] = "webnn";
 // prematurely on destruction.
 ScopedMLTrace::ScopedMLTrace(ScopedMLTrace&& other)
     : name_(other.name_),
-      id_(std::exchange(other.id_, absl::nullopt)),
+      id_(std::exchange(other.id_, std::nullopt)),
       step_(std::move(other.step_)) {}
 
 ScopedMLTrace::~ScopedMLTrace() {
@@ -30,7 +30,7 @@ ScopedMLTrace::~ScopedMLTrace() {
 ScopedMLTrace& ScopedMLTrace::operator=(ScopedMLTrace&& other) {
   if (this != &other) {
     name_ = other.name_;
-    id_ = std::exchange(other.id_, absl::nullopt);
+    id_ = std::exchange(other.id_, std::nullopt);
     step_ = std::move(other.step_);
   }
   return *this;

@@ -5,11 +5,11 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_STYLE_RULE_FONT_PALETTE_VALUES_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_STYLE_RULE_FONT_PALETTE_VALUES_H_
 
+#include <optional>
+
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/parser/at_rule_descriptors.h"
 #include "third_party/blink/renderer/core/css/style_rule.h"
-
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/platform/fonts/font_palette.h"
 
 namespace blink {

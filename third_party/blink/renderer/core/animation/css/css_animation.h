@@ -64,8 +64,8 @@ class CORE_EXPORT CSSAnimation : public Animation {
   // Conditionally updates both boundaries of the animation range.
   // If the corresponding boundary has been explicitly set via WAAPI
   // the new value will be ignored.
-  void SetRange(const absl::optional<TimelineOffset>& range_start,
-                const absl::optional<TimelineOffset>& range_end) override;
+  void SetRange(const std::optional<TimelineOffset>& range_start,
+                const std::optional<TimelineOffset>& range_end) override;
 
   // When set, subsequent changes to animation-<property> no longer affect
   // <property>.

@@ -90,13 +90,13 @@ String MakeReferrerWarning(mojom::blink::SpeculationAction action,
 }
 
 // Computes a referrer based on a Speculation Rule, and its URL or the link it
-// is matched against. Return absl::nullopt if the computed referrer policy is
+// is matched against. Return std::nullopt if the computed referrer policy is
 // not acceptable (see AcceptableReferrerPolicy above).
-absl::optional<Referrer> GetReferrer(SpeculationRule* rule,
-                                     ExecutionContext* execution_context,
-                                     mojom::blink::SpeculationAction action,
-                                     HTMLAnchorElement* link,
-                                     absl::optional<KURL> opt_url) {
+std::optional<Referrer> GetReferrer(SpeculationRule* rule,
+                                    ExecutionContext* execution_context,
+                                    mojom::blink::SpeculationAction action,
+                                    HTMLAnchorElement* link,
+                                    std::optional<KURL> opt_url) {
   DCHECK(link || opt_url);
   bool using_link_referrer_policy = false;
   network::mojom::ReferrerPolicy referrer_policy;
@@ -135,7 +135,7 @@ absl::optional<Referrer> GetReferrer(SpeculationRule* rule,
                                 {link->GetDomNodeId()});
     }
     execution_context->AddConsoleMessage(console_message);
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return referrer;
@@ -606,7 +606,7 @@ void DocumentSpeculationRules::UpdateSpeculationCandidates() {
                              const HeapVector<Member<SpeculationRule>>& rules) {
     for (SpeculationRule* rule : rules) {
       for (const KURL& url : rule->urls()) {
-        absl::optional<Referrer> referrer =
+        std::optional<Referrer> referrer =
             GetReferrer(rule, execution_context, action, /*link=*/nullptr, url);
         if (!referrer)
           continue;
@@ -758,9 +758,9 @@ void DocumentSpeculationRules::AddLinkBasedSpeculationCandidates(
             if (!rule->predicate()->Matches(*link))
               continue;
 
-            absl::optional<Referrer> referrer =
+            std::optional<Referrer> referrer =
                 GetReferrer(rule, execution_context, action, link,
-                            /*opt_url=*/absl::nullopt);
+                            /*opt_url=*/std::nullopt);
             if (!referrer)
               continue;
 

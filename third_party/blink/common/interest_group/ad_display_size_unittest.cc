@@ -55,19 +55,19 @@ TEST(AdSizeTest, OperatorCompare) {
 TEST(AdDescriptorTest, Constructor) {
   AdDescriptor default_constructed;
   EXPECT_EQ(default_constructed.url, GURL());
-  EXPECT_EQ(default_constructed.size, absl::nullopt);
+  EXPECT_EQ(default_constructed.size, std::nullopt);
 
-  // The constructor should construct AdSize as absl::nullopt if only url is
+  // The constructor should construct AdSize as std::nullopt if only url is
   // provided.
   AdDescriptor constructed_with_url(kUrl1);
 
   EXPECT_EQ(constructed_with_url.url, kUrl1);
-  EXPECT_EQ(constructed_with_url.size, absl::nullopt);
+  EXPECT_EQ(constructed_with_url.size, std::nullopt);
 
-  AdDescriptor constructed_with_url_ond_nullopt(kUrl1, absl::nullopt);
+  AdDescriptor constructed_with_url_ond_nullopt(kUrl1, std::nullopt);
 
   EXPECT_EQ(constructed_with_url_ond_nullopt.url, kUrl1);
-  EXPECT_EQ(constructed_with_url_ond_nullopt.size, absl::nullopt);
+  EXPECT_EQ(constructed_with_url_ond_nullopt.size, std::nullopt);
 
   AdSize ad_size(100, AdSize::LengthUnit::kPixels, 50,
                  AdSize::LengthUnit::kScreenWidth);

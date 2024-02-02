@@ -55,7 +55,7 @@ TEST(LineRelativeRectTest, ComputeRelativeToPhysicalTransformAtOrigin) {
                                {LayoutUnit(20), LayoutUnit(30)}};
 
   WritingMode writing_mode = WritingMode::kHorizontalTb;
-  absl::optional<AffineTransform> rotation =
+  std::optional<AffineTransform> rotation =
       r_origin.ComputeRelativeToPhysicalTransform(writing_mode);
   EXPECT_EQ(rotation, AffineTransform());
 
@@ -74,7 +74,7 @@ TEST(LineRelativeRectTest, ComputeRelativeToPhysicalTransformNotAtOrigin) {
                                {LayoutUnit(10), LayoutUnit(100)}};
 
   WritingMode writing_mode = WritingMode::kHorizontalTb;
-  absl::optional<AffineTransform> rotation =
+  std::optional<AffineTransform> rotation =
       r_origin.ComputeRelativeToPhysicalTransform(writing_mode);
   EXPECT_EQ(rotation, AffineTransform());
 
@@ -98,7 +98,7 @@ TEST(LineRelativeRectTest, Create_kHorizontalTB) {
 
   const LineRelativeRect rotated_box =
       LineRelativeRect::CreateFromLineBox(r, is_horizontal);
-  absl::optional<AffineTransform> rotation =
+  std::optional<AffineTransform> rotation =
       rotated_box.ComputeRelativeToPhysicalTransform(writing_mode);
 
   EXPECT_EQ(rotation, AffineTransform());
@@ -133,7 +133,7 @@ TEST(LineRelativeRectTest, Create_kSidewaysLr) {
   EXPECT_FALSE(is_horizontal);
   const LineRelativeRect rotated_box =
       LineRelativeRect::CreateFromLineBox(r, is_horizontal);
-  absl::optional<AffineTransform> rotation =
+  std::optional<AffineTransform> rotation =
       rotated_box.ComputeRelativeToPhysicalTransform(writing_mode);
 
   // AffineTransform ("translation(-9000,11100), scale(1,1), angle(-90deg),
@@ -174,7 +174,7 @@ TEST(LineRelativeRectTest, Create_kVerticalRl) {
   EXPECT_FALSE(is_horizontal);
   const LineRelativeRect rotated_box =
       LineRelativeRect::CreateFromLineBox(r, is_horizontal);
-  absl::optional<AffineTransform> rotation =
+  std::optional<AffineTransform> rotation =
       rotated_box.ComputeRelativeToPhysicalTransform(writing_mode);
 
   // AffineTransform ("translation(11010,9000), scale(1,1), angle(90deg),

@@ -51,21 +51,21 @@ bool DeviceMotionEventAcceleration::HasAccelerationData() const {
   return !std::isnan(x_) || !std::isnan(y_) || !std::isnan(z_);
 }
 
-absl::optional<double> DeviceMotionEventAcceleration::x() const {
+std::optional<double> DeviceMotionEventAcceleration::x() const {
   if (std::isnan(x_))
-    return absl::nullopt;
+    return std::nullopt;
   return x_;
 }
 
-absl::optional<double> DeviceMotionEventAcceleration::y() const {
+std::optional<double> DeviceMotionEventAcceleration::y() const {
   if (std::isnan(y_))
-    return absl::nullopt;
+    return std::nullopt;
   return y_;
 }
 
-absl::optional<double> DeviceMotionEventAcceleration::z() const {
+std::optional<double> DeviceMotionEventAcceleration::z() const {
   if (std::isnan(z_))
-    return absl::nullopt;
+    return std::nullopt;
   return z_;
 }
 

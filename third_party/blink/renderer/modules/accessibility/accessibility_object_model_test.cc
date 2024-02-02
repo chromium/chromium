@@ -146,7 +146,7 @@ TEST_F(AccessibilityObjectModelTest, AOMPropertiesCanBeCleared) {
   // Null the AOM properties.
   button->accessibleNode()->setRole(g_null_atom);
   button->accessibleNode()->setLabel(g_null_atom);
-  button->accessibleNode()->setDisabled(absl::nullopt);
+  button->accessibleNode()->setDisabled(std::nullopt);
   cache->UpdateAXForAllDocuments();
 
   // The AX Object should now revert to ARIA.

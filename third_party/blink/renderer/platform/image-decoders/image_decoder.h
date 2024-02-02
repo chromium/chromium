@@ -28,6 +28,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_IMAGE_DECODERS_IMAGE_DECODER_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/check_op.h"
 #include "base/memory/raw_ptr.h"
@@ -36,7 +37,6 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/platform/graphics/color_behavior.h"
 #include "third_party/blink/renderer/platform/graphics/image_orientation_enum.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_image.h"
@@ -314,7 +314,7 @@ class PLATFORM_EXPORT ImageDecoder {
   virtual uint8_t GetYUVBitDepth() const;
 
   // Image decoders that support HDR metadata can override this.
-  virtual absl::optional<gfx::HDRMetadata> GetHDRMetadata() const;
+  virtual std::optional<gfx::HDRMetadata> GetHDRMetadata() const;
 
   // Returns the information required to decide whether or not hardware
   // acceleration can be used to decode this image. Callers of this function
@@ -358,7 +358,7 @@ class PLATFORM_EXPORT ImageDecoder {
 
   // Timestamp for displaying a frame. This method is only used by animated
   // images. Only formats with timestamps (like AVIF) should implement this.
-  virtual absl::optional<base::TimeDelta> FrameTimestampAtIndex(
+  virtual std::optional<base::TimeDelta> FrameTimestampAtIndex(
       wtf_size_t) const;
 
   // Duration for displaying a frame. This method is only used by animated

@@ -225,8 +225,8 @@ class AdTrackerTest : public testing::Test {
     return ad_tracker_->IsAdScriptInStack(stack_type);
   }
 
-  absl::optional<AdScriptIdentifier> BottommostAdScript() {
-    absl::optional<AdScriptIdentifier> bottom_most_ad_script;
+  std::optional<AdScriptIdentifier> BottommostAdScript() {
+    std::optional<AdScriptIdentifier> bottom_most_ad_script;
     ad_tracker_->IsAdScriptInStack(AdTracker::StackType::kBottomAndTop,
                                    /*out_ad_script=*/&bottom_most_ad_script);
     return bottom_most_ad_script;
