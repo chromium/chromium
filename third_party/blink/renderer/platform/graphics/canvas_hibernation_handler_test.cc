@@ -103,10 +103,9 @@ std::map<std::string, uint64_t> GetEntries(
 }
 
 void DrawSomething(Canvas2DLayerBridge* bridge) {
-  bridge->GetPaintCanvas()->drawLine(0, 0, 2, 2, cc::PaintFlags());
-  bridge->FinalizeFrame(FlushReason::kTesting);
-  // Grabbing an image forces a flush
-  bridge->NewImageSnapshot(FlushReason::kTesting);
+  CanvasResourceProvider* provider = bridge->GetOrCreateResourceProvider();
+  provider->Canvas().drawLine(0, 0, 2, 2, cc::PaintFlags());
+  provider->FlushCanvas(FlushReason::kTesting);
 }
 
 class TestSingleThreadTaskRunner : public base::SingleThreadTaskRunner {

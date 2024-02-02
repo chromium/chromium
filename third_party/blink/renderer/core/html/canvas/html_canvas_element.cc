@@ -1860,8 +1860,7 @@ void HTMLCanvasElement::ReplaceExisting2dLayerBridge(
   // replacement.
   CanvasResourceProvider* provider =
       canvas2d_bridge_->GetOrCreateResourceProvider();
-  cc::PaintCanvas* canvas = canvas2d_bridge_->GetPaintCanvas();
-  if (!provider || !canvas) {
+  if (!provider) {
     if (old_layer_bridge) {
       canvas2d_bridge_ = std::move(old_layer_bridge);
       canvas2d_bridge_->SetCanvasResourceHost(this);
