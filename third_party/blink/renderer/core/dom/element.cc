@@ -398,6 +398,15 @@ bool IsElementReflectionAttribute(const QualifiedName& name) {
   if (name == html_names::kAriaOwnsAttr) {
     return true;
   }
+  if (name == html_names::kPopovertargetAttr) {
+    return true;
+  }
+  if (name == html_names::kAnchorAttr) {
+    return true;
+  }
+  if (name == html_names::kInvoketargetAttr) {
+    return true;
+  }
   return false;
 }
 
@@ -822,6 +831,10 @@ void Element::SynchronizeContentAttributeAndElementReference(
 }
 
 void Element::SetElementAttribute(const QualifiedName& name, Element* element) {
+  DCHECK(IsElementReflectionAttribute(name))
+      << " Element attributes must be added to IsElementReflectionAttribute. "
+         "name: "
+      << name;
   ExplicitlySetAttrElementsMap* explicitly_set_attr_elements_map =
       GetDocument().GetExplicitlySetAttrElementsMap(this);
 
