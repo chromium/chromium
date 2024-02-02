@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/input_method/editor_text_actuator.h"
+#include "chrome/browser/ash/input_method/editor_text_inserter.h"
 
 #include "base/strings/utf_string_conversions.h"
 #include "ui/base/ime/ash/ime_bridge.h"
