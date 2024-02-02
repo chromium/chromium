@@ -215,7 +215,8 @@ bool IsPasswordsAutofillManuallyTriggered(
          AutofillSuggestionTriggerSource::kManualFallbackPasswords;
 }
 
-void DumpWithoutCrashingForDuplicateIds(const FormData& form) {
+void DumpWithoutCrashingForDuplicateIds(const FormData& form,
+                                        const base::Location& location) {
   SCOPED_CRASH_KEY_STRING64("AFCrash", "URL", form.url.possibly_invalid_spec());
   SCOPED_CRASH_KEY_NUMBER("AFCrash", "IDs",
                           base::MakeFlatSet<FieldGlobalId>(
@@ -245,7 +246,7 @@ void DumpWithoutCrashingForDuplicateIds(const FormData& form) {
   }
   SCOPED_CRASH_KEY_NUMBER("AFCrash", "SameFrameDuplicateIDs", same_frame);
   SCOPED_CRASH_KEY_NUMBER("AFCrash", "DiffFrameDuplicateIDs", diff_frame);
-  base::debug::DumpWithoutCrashing();
+  base::debug::DumpWithoutCrashing(location);
 }
 
 }  // namespace autofill
