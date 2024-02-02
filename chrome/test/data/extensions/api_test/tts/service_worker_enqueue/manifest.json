@@ -1,0 +1,10 @@
+{
+  "name": "chrome.tts",
+  "version": "0.1",
+  "manifest_version": 3,
+  "description": "browser test for chrome.tts API with MV3",
+  "background": {
+      "service_worker": "test.js"
+    },
+  "permissions": ["tts"]
+}
