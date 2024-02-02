@@ -23,6 +23,8 @@
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/dcheck_is_on.h"
+#include "base/debug/crash_logging.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
@@ -372,6 +374,9 @@ void SystemWebAppManager::Start() {
     LOG(ERROR)
         << "Exceeded SWA install retry attempts.  Skipping installation, will "
            "retry on next OS update or when locale changes.";
+    SCOPED_CRASH_KEY_BOOL("SystemWebAppManager", "broken_icons",
+                          PreviousSessionHadBrokenIcons());
+    base::debug::DumpWithoutCrashing();
     return;
   }
 
