@@ -50,13 +50,19 @@ void aom_vertical_band_5_4_scale_c(unsigned char *source, int src_pitch, unsigne
 void aom_yv12_copy_frame_c(const struct yv12_buffer_config *src_bc, struct yv12_buffer_config *dst_bc, const int num_planes);
 #define aom_yv12_copy_frame aom_yv12_copy_frame_c
 
-void aom_yv12_copy_u_c(const struct yv12_buffer_config *src_bc, struct yv12_buffer_config *dst_bc);
+void aom_yv12_copy_u_c(const struct yv12_buffer_config* src_bc,
+                       struct yv12_buffer_config* dst_bc,
+                       int use_crop);
 #define aom_yv12_copy_u aom_yv12_copy_u_c
 
-void aom_yv12_copy_v_c(const struct yv12_buffer_config *src_bc, struct yv12_buffer_config *dst_bc);
+void aom_yv12_copy_v_c(const struct yv12_buffer_config* src_bc,
+                       struct yv12_buffer_config* dst_bc,
+                       int use_crop);
 #define aom_yv12_copy_v aom_yv12_copy_v_c
 
-void aom_yv12_copy_y_c(const struct yv12_buffer_config *src_ybc, struct yv12_buffer_config *dst_ybc);
+void aom_yv12_copy_y_c(const struct yv12_buffer_config* src_ybc,
+                       struct yv12_buffer_config* dst_ybc,
+                       int use_crop);
 #define aom_yv12_copy_y aom_yv12_copy_y_c
 
 void aom_yv12_extend_frame_borders_c(struct yv12_buffer_config *ybf, const int num_planes);
