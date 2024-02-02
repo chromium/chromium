@@ -51,8 +51,6 @@ This is a testharness.js-based test.
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
 [FAIL] matmul float32 3D and 3D tensors / async
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-[FAIL] matmul float32 4D and 4D tensors / async
-  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
 [FAIL] matmul float32 3D and 3D (broadcast) tensors / async
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
 [FAIL] matmul float32 3D and 2D tensors / async
