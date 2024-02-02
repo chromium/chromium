@@ -1956,6 +1956,23 @@ TEST_F(OnDeviceModelServiceControllerTest, IgnoresNonRepeatingText) {
       false, 1);
 }
 
+TEST_F(OnDeviceModelServiceControllerTest,
+       InitWithNoOnDeviceComponentStateManager) {
+  access_controller_ = nullptr;
+  test_controller_ = nullptr;
+
+  auto access_controller =
+      std::make_unique<OnDeviceModelAccessController>(pref_service_);
+  access_controller_ = access_controller.get();
+  test_controller_ = base::MakeRefCounted<FakeOnDeviceModelServiceController>(
+      std::move(access_controller),
+      on_device_component_state_manager_.get()->GetWeakPtr());
+
+  on_device_component_state_manager_.Reset();
+  // Init should not crash.
+  test_controller_->Init();
+}
+
 class OnDeviceModelServiceControllerTsIntervalTest
     : public OnDeviceModelServiceControllerTest,
       public ::testing::WithParamInterface<int> {};
