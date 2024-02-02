@@ -63,7 +63,6 @@ group("closure_compile") {
     ":quick_start_entry_point",
     ":quick_start_pin",
     ":security_token_pin",
-    ":throbber_notice",
     ":web_view_loader",
   ]
 }
@@ -253,12 +252,6 @@ js_library("security_token_pin") {
   ]
 }
 
-js_library("throbber_notice") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/throbber_notice.js" ]
-  deps = [ "./behaviors:oobe_i18n_behavior" ]
-  extra_deps = [ ":web_components" ]
-}
-
 js_library("web_view_loader") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/web_view_loader.js" ]
   deps = []
@@ -304,6 +297,5 @@ html_to_js("web_components_local") {
     "quick_start_pin.js",
     "quick_start_entry_point.js",
     "security_token_pin.js",
-    "throbber_notice.js",
   ]
 }
