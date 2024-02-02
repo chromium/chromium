@@ -1,5 +1,5 @@
-Tests target info reported by paint worklet.
-{
+Tests auto-attach of worklets.
+Attached to worklet{
     sessionId : <string>
     targetInfo : {
         attached : true
@@ -10,6 +10,7 @@ Tests target info reported by paint worklet.
         type : worklet
         url : http://127.0.0.1:8000/inspector-protocol/resources/inspector-protocol-page.html
     }
-    waitingForDebugger : false
+    waitingForDebugger : true
 }
+SUCCESS: addModule resolved
 
