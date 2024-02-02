@@ -30,6 +30,7 @@
 #include "chrome/browser/profiles/profile_observer.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/device_info_sync_service_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_navigator.h"
@@ -55,7 +56,10 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/primary_account_access_token_fetcher.h"
 #include "components/sync/base/features.h"
+#include "components/sync/base/user_selectable_type.h"
 #include "components/sync/protocol/webauthn_credential_specifics.pb.h"
+#include "components/sync/service/sync_service.h"
+#include "components/sync/service/sync_user_settings.h"
 #include "components/trusted_vault/frontend_trusted_vault_connection.h"
 #include "components/trusted_vault/trusted_vault_server_constants.h"
 #include "components/user_prefs/user_prefs.h"
@@ -501,12 +505,20 @@ bool ChromeWebAuthenticationDelegate::IsEnclaveAuthenticatorAvailable(
   if (!base::FeatureList::IsEnabled(device::kWebAuthnEnclaveAuthenticator)) {
     return false;
   }
-  // TODO(enclave): this should be conditioned on being signed into Sync too
-  // otherwise people can create local credentials and we hit a CHECK in
-  // PasskeySyncBridge::MergeFullSyncData if they ever try to sync.
-  auto* const identity_manager = IdentityManagerFactory::GetForProfile(
-      Profile::FromBrowserContext(browser_context));
-  return identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin);
+
+  auto* profile = Profile::FromBrowserContext(browser_context);
+  auto* const identity_manager = IdentityManagerFactory::GetForProfile(profile);
+  if (!identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
+    return false;
+  }
+
+  auto* const sync_service = SyncServiceFactory::GetForProfile(profile);
+  // TODO(crbug.com/1462552): Remove this call once IsSyncFeatureEnabled()
+  // is fully deprecated, see ConsentLevel::kSync documentation for details,
+  // in components/signin/public/base/consent_level.h.
+  return sync_service && sync_service->IsSyncFeatureEnabled() &&
+         sync_service->GetUserSettings()->GetSelectedTypes().Has(
+             syncer::UserSelectableType::kPasswords);
 #endif
 }
 
