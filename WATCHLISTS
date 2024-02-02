@@ -39,6 +39,9 @@
                   '|content/renderer/accessibility/render_accessibility_impl' \
                   '|content/browser/accessibility/browser_accessibility(\.|_manager|_win|_com|_cocoa)'
     },
+    'accessibility_reading': {
+      'filepath': 'read_anything/',
+    },
     'accessibility_service': {
       'filepath': 'services/accessibility/',
     },
@@ -2410,6 +2413,7 @@
                                            'shannc+watch@chromium.org'],
     'accessibility_features_ash': ['katie+watch@chromium.org'],
     'accessibility_minimal_core': ['aleventhal+watcha11y@chromium.org'],
+    'accessibility_reading': ['lwinston+watch-readinga11y@google.com'],
     'accessibility_service': ['katie+watch@chromium.org'],
     'add_to_homescreen': ['dominickn+watch-a2hs@chromium.org',
                           'pkotwicz+watch@chromium.org',
