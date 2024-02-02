@@ -2,21 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_UI_POPUP_TYPES_H_
-#define COMPONENTS_AUTOFILL_CORE_BROWSER_UI_POPUP_TYPES_H_
+#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_UI_POPUP_HIDING_REASONS_H_
+#define COMPONENTS_AUTOFILL_CORE_BROWSER_UI_POPUP_HIDING_REASONS_H_
 
 namespace autofill {
-
-// The list of all Autofill popup types that can be presented to the user.
-enum class PopupType {
-  // Address form with address-related fields.
-  kAddresses,
-  kAutocomplete,
-  kCreditCards,
-  kIbans,
-  kPasswords,
-  kUnspecified,
-};
 
 // This reason is passed whenever a popup needs to be closed.
 // These values are persisted to logs. Entries should not be renumbered and
@@ -90,4 +79,4 @@ enum class PopupHidingReason {
 
 }  // namespace autofill
 
-#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_UI_POPUP_TYPES_H_
+#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_UI_POPUP_HIDING_REASONS_H_

@@ -19,7 +19,7 @@
 #include "chrome/browser/ui/autofill/popup_controller_common.h"
 #include "components/autofill/content/browser/scoped_autofill_managers_observation.h"
 #include "components/autofill/core/browser/autofill_manager.h"
-#include "components/autofill/core/browser/ui/popup_types.h"
+#include "components/autofill/core/browser/ui/popup_hiding_reasons.h"
 #include "components/autofill/core/common/aliases.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "content/public/browser/render_widget_host.h"

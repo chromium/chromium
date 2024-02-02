@@ -6,7 +6,6 @@
 
 #include "base/test/metrics/histogram_tester.h"
 #include "components/autofill/core/browser/filling_product.h"
-#include "components/autofill/core/browser/ui/popup_types.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill::autofill_metrics {

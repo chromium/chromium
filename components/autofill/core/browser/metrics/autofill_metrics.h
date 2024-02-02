@@ -26,7 +26,7 @@
 #include "components/autofill/core/browser/form_types.h"
 #include "components/autofill/core/browser/metrics/form_events/form_events.h"
 #include "components/autofill/core/browser/metrics/log_event.h"
-#include "components/autofill/core/browser/ui/popup_types.h"
+#include "components/autofill/core/browser/ui/popup_hiding_reasons.h"
 #include "components/autofill/core/common/dense_set.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-forward.h"
 #include "components/autofill/core/common/signatures.h"

@@ -16,7 +16,7 @@
 #include "components/autofill/core/browser/form_types.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/browser/ui/fast_checkout_client.h"
-#include "components/autofill/core/browser/ui/popup_types.h"
+#include "components/autofill/core/browser/ui/popup_hiding_reasons.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_internals/log_message.h"
 #include "components/autofill/core/common/autofill_internals/logging_scope.h"
