@@ -241,26 +241,6 @@ TEST(SandboxNtUtil, ValidParameter) {
   EXPECT_TRUE(verify_buffer());
 }
 
-TEST(SandboxNtUtil, NtGetPathFromHandle) {
-  base::FilePath exe;
-  ASSERT_TRUE(base::PathService::Get(base::FILE_EXE, &exe));
-  base::File exe_file(exe, base::File::FLAG_OPEN);
-  ASSERT_TRUE(exe_file.IsValid());
-  std::unique_ptr<wchar_t, NtAllocDeleter> path;
-  EXPECT_TRUE(NtGetPathFromHandle(exe_file.GetPlatformFile(), &path));
-
-  // Basic sanity test, the functionality of NtGetPathFromHandle to return
-  // the correct value is already tested from win_utils_unittest.cc.
-  EXPECT_TRUE(base::EndsWith(base::AsStringPiece16(path.get()),
-                             base::AsStringPiece16(exe.BaseName().value()),
-                             base::CompareCase::INSENSITIVE_ASCII));
-
-  // Compare to GetNtPathFromWin32Path for extra check.
-  auto nt_path = GetNtPathFromWin32Path(exe.value());
-  EXPECT_TRUE(nt_path);
-  EXPECT_STREQ(path.get(), nt_path->c_str());
-}
-
 TEST(SandboxNtUtil, CopyNameAndAttributes) {
   OBJECT_ATTRIBUTES object_attributes;
   InitializeObjectAttributes(&object_attributes, nullptr, 0, nullptr, nullptr);

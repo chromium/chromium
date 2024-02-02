@@ -4709,13 +4709,6 @@ bool ChromeContentBrowserClient::PreSpawnChild(
       break;
   }
 
-#if !defined(OFFICIAL_BUILD)
-  // Disable renderer code integrity when Application Verifier or pageheap are
-  // enabled for chrome.exe to avoid renderer crashes. https://crbug.com/1004989
-  if (base::win::IsAppVerifierEnabled(chrome::kBrowserProcessExecutableName))
-    enforce_code_integrity = false;
-#endif  // !defined(OFFICIAL_BUILD)
-
   if (!enforce_code_integrity)
     return true;
 

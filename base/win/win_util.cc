@@ -778,28 +778,6 @@ bool IsCurrentSessionRemote() {
   return current_session_id != glass_session_id;
 }
 
-#if !defined(OFFICIAL_BUILD)
-bool IsAppVerifierEnabled(const std::wstring& process_name) {
-  RegKey key;
-
-  // Look for GlobalFlag in the IFEO\chrome.exe key. If it is present then
-  // Application Verifier or gflags.exe are configured. Most GlobalFlag
-  // settings are experimentally determined to be incompatible with renderer
-  // code integrity and a safe set is not known so any GlobalFlag entry is
-  // assumed to mean that Application Verifier (or pageheap) are enabled.
-  // The settings are propagated to both 64-bit WOW6432Node versions of the
-  // registry on 64-bit Windows, so only one check is needed.
-  return key.Open(
-             HKEY_LOCAL_MACHINE,
-             (L"SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Image File "
-              L"Execution Options\\" +
-              process_name)
-                 .c_str(),
-             KEY_READ | KEY_WOW64_64KEY) == ERROR_SUCCESS &&
-         key.HasValue(L"GlobalFlag");
-}
-#endif  // !defined(OFFICIAL_BUILD)
-
 bool IsAppVerifierLoaded() {
   return GetModuleHandleA(kApplicationVerifierDllName);
 }
