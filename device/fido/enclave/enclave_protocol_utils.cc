@@ -48,9 +48,6 @@ constexpr std::array<uint8_t, 16> kAaguid = {0xea, 0x9b, 0x8d, 0x66, 0x4d, 0x01,
 const size_t kSyncIdSize = 16;
 const size_t kCredentialIdSize = 16;
 
-// JSON keys for front-end service HTTP request bodies.
-const char kCommandRequestCommandKey[] = "command";
-
 // JSON keys for request fields used for both GetAssertion and MakeCredential.
 const char kRequestDataKey[] = "request";
 const char kRequestClientDataJSONKey[] = "client_data_json";
@@ -71,13 +68,6 @@ const char kMakeCredentialResponsePubKeyKey[] = "pub_key";
 // Specific command names recognizable by the enclave processor.
 const char kGetAssertionCommandName[] = "passkeys/assert";
 const char kMakeCredentialCommandName[] = "passkeys/create";
-
-// JSON value keys (obsolete, but still referenced by the out-of-date service
-// implementation).
-const char kUserDisplayNameKey[] = "user-display-name";
-const char kUserEntityKey[] = "user-entity";
-const char kUserIdKey[] = "user-id";
-const char kUserNameKey[] = "user-name";
 
 cbor::Value toCbor(const base::Value& json) {
   switch (json.type()) {
@@ -151,49 +141,6 @@ base::Value CborValueToBaseValue(const cbor::Value& cbor_value) {
   }
 }
 
-bool ParseCommandListEntry(const cbor::Value& entry,
-                           sync_pb::WebauthnCredentialSpecifics* out_passkey,
-                           base::Value* out_request) {
-  if (!entry.is_map()) {
-    FIDO_LOG(ERROR) << "Command list entry is not a map.";
-    return false;
-  }
-
-  const auto& tag_it = entry.GetMap().find(cbor::Value(kRequestCommandKey));
-  if (tag_it == entry.GetMap().end() || !tag_it->second.is_string()) {
-    FIDO_LOG(ERROR) << base::StrCat(
-        {"Invalid command list entry field: ", kRequestCommandKey});
-    return false;
-  }
-  if (tag_it->second.GetString() != std::string("navigator.credentials.get")) {
-    FIDO_LOG(ERROR) << "Command tag does not match getAssertion.";
-    return false;
-  }
-
-  const auto& data_it = entry.GetMap().find(cbor::Value(kRequestDataKey));
-  if (data_it == entry.GetMap().end()) {
-    FIDO_LOG(ERROR) << base::StrCat(
-        {"Invalid command list entry field: ", kRequestDataKey});
-    return false;
-  }
-  *out_request = CborValueToBaseValue(data_it->second);
-
-  const auto& entity_it =
-      entry.GetMap().find(cbor::Value(kGetAssertionRequestProtobufKey));
-  if (entity_it == entry.GetMap().end() || !entity_it->second.is_bytestring()) {
-    FIDO_LOG(ERROR) << base::StrCat({"Invalid command list entry field: ",
-                                     kGetAssertionRequestProtobufKey});
-    return false;
-  }
-  if (!out_passkey->ParseFromArray(entity_it->second.GetBytestring().data(),
-                                   entity_it->second.GetBytestring().size())) {
-    FIDO_LOG(ERROR) << "Failed to parse passkey entity.";
-    return false;
-  }
-
-  return true;
-}
-
 const char* ToString(ClientKeyType key_type) {
   switch (key_type) {
     case ClientKeyType::kHardware:
@@ -204,32 +151,6 @@ const char* ToString(ClientKeyType key_type) {
 }
 
 }  // namespace
-
-std::string AuthenticatorGetAssertionResponseToJson(
-    const AuthenticatorGetAssertionResponse& response) {
-  base::Value::Dict response_values;
-
-  if (response.user_entity) {
-    base::Value::Dict user_entity_values;
-    std::string encoded_entity_value;
-    base::Base64UrlEncode(response.user_entity->id,
-                          base::Base64UrlEncodePolicy::OMIT_PADDING,
-                          &encoded_entity_value);
-    user_entity_values.Set(kUserIdKey, encoded_entity_value);
-    if (response.user_entity->name) {
-      user_entity_values.Set(kUserNameKey, *response.user_entity->name);
-    }
-    if (response.user_entity->display_name) {
-      user_entity_values.Set(kUserDisplayNameKey,
-                             *response.user_entity->display_name);
-    }
-    response_values.Set(kUserEntityKey, std::move(user_entity_values));
-  }
-
-  std::string response_json;
-  base::JSONWriter::Write(response_values, &response_json);
-  return response_json;
-}
 
 std::pair<absl::optional<AuthenticatorGetAssertionResponse>, std::string>
 ParseGetAssertionResponse(cbor::Value response_value,
@@ -491,68 +412,6 @@ void BuildCommandRequestBody(
           std::move(signing_callback), signed_message),
       base::BindOnce(append_signature_and_finish, std::move(request_body_map),
                      std::move(complete_callback)));
-}
-
-bool ParseGetAssertionRequestBody(
-    const std::string& request_body,
-    sync_pb::WebauthnCredentialSpecifics* out_passkey,
-    base::Value* out_request) {
-  absl::optional<base::Value> request_json =
-      base::JSONReader::Read(request_body);
-  if (!request_json || !request_json->is_dict()) {
-    FIDO_LOG(ERROR) << "Decrypt command was not valid JSON.";
-    return false;
-  }
-
-  std::string* encoded_request_command =
-      request_json->GetDict().FindString(kCommandRequestCommandKey);
-  if (!encoded_request_command) {
-    FIDO_LOG(ERROR) << "Command not found in request JSON.";
-    return false;
-  }
-
-  absl::optional<std::vector<uint8_t>> serialized_request =
-      base::Base64UrlDecode(*encoded_request_command,
-                            base::Base64UrlDecodePolicy::DISALLOW_PADDING);
-  if (!serialized_request) {
-    FIDO_LOG(ERROR) << "Base64 decoding of command failed.";
-    return false;
-  }
-
-  absl::optional<cbor::Value> request_cbor =
-      cbor::Reader::Read(*serialized_request);
-  if (!request_cbor || !request_cbor->is_map()) {
-    FIDO_LOG(ERROR) << "Decoded command was not valid CBOR.";
-    return false;
-  }
-
-  const auto& it =
-      request_cbor->GetMap().find(cbor::Value(kCommandEncodedRequestsKey));
-  if (it == request_cbor->GetMap().end() || !it->second.is_bytestring()) {
-    FIDO_LOG(ERROR) << "Invalid command array found in the decoded CBOR.";
-    return false;
-  }
-
-  absl::optional<cbor::Value> command_list =
-      cbor::Reader::Read(it->second.GetBytestring());
-  if (!command_list || !command_list->is_array() ||
-      command_list->GetArray().size() != 1) {
-    FIDO_LOG(ERROR) << "Command array list not valid.";
-    return false;
-  }
-
-  // Currently this only handles a single command which must be a getAssertion.
-  if (!command_list->GetArray()[0].is_map()) {
-    FIDO_LOG(ERROR) << "Element in the CBOR command array is invalid.";
-    return false;
-  }
-
-  if (!ParseCommandListEntry(command_list->GetArray()[0], out_passkey,
-                             out_request)) {
-    return false;
-  }
-
-  return true;
 }
 
 }  // namespace device::enclave

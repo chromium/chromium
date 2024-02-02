@@ -46,15 +46,22 @@ class COMPONENT_EXPORT(DEVICE_FIDO) EnclaveAuthenticator
   EnclaveAuthenticator(const EnclaveAuthenticator&) = delete;
   EnclaveAuthenticator& operator=(const EnclaveAuthenticator&) = delete;
 
-  // TODO(kenrb): Make these private when no longer embedded in test app.
+  void SetOauthToken(absl::optional<std::string_view> token);
+
+  // FidoAuthenticator:
   void GetAssertion(CtapGetAssertionRequest request,
                     CtapGetAssertionOptions options,
                     GetAssertionCallback callback) override;
   void MakeCredential(CtapMakeCredentialRequest request,
                       MakeCredentialOptions options,
                       MakeCredentialCallback callback) override;
-
-  void SetOauthToken(absl::optional<std::string_view> token);
+  void InitializeAuthenticator(base::OnceClosure callback) override;
+  void Cancel() override;
+  AuthenticatorType GetType() const override;
+  std::string GetId() const override;
+  const AuthenticatorSupportedOptions& Options() const override;
+  absl::optional<FidoTransportProtocol> AuthenticatorTransport() const override;
+  base::WeakPtr<FidoAuthenticator> GetWeakPtr() override;
 
  private:
   struct PendingGetAssertionRequest {
@@ -84,15 +91,6 @@ class COMPONENT_EXPORT(DEVICE_FIDO) EnclaveAuthenticator
     MakeCredentialOptions options;
     MakeCredentialCallback callback;
   };
-
-  // FidoAuthenticator:
-  void InitializeAuthenticator(base::OnceClosure callback) override;
-  void Cancel() override;
-  AuthenticatorType GetType() const override;
-  std::string GetId() const override;
-  const AuthenticatorSupportedOptions& Options() const override;
-  absl::optional<FidoTransportProtocol> AuthenticatorTransport() const override;
-  base::WeakPtr<FidoAuthenticator> GetWeakPtr() override;
 
   void ProcessMakeCredentialResponse(absl::optional<cbor::Value> response);
   void ProcessGetAssertionResponse(absl::optional<cbor::Value> response);
