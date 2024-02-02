@@ -304,9 +304,11 @@ void ServiceWorkerMainResourceLoader::StartRequest(
       response_head_->service_worker_router_info = std::move(router_info);
 
       const auto& sources = eval_result->sources;
+      auto source_type = sources[0].type;
+      set_used_router_source_type(source_type);
       // TODO(crbug.com/1371756): support other sources in the full form.
       // https://github.com/yoshisatoyanagisawa/service-worker-static-routing-api/blob/main/final-form.md
-      switch (sources[0].type) {
+      switch (source_type) {
         case blink::ServiceWorkerRouterSource::Type::kNetwork:
           // Network fallback is requested.
           // URLLoader in |fallback_callback_|, in other words |url_loader_|
@@ -927,10 +929,12 @@ void ServiceWorkerMainResourceLoader::StartResponse(
   response_head_->load_timing.receive_headers_end =
       response_head_->load_timing.receive_headers_start;
   response_source_ = response->response_source;
-  response_head_->load_timing.service_worker_fetch_start =
-      fetch_event_timing_->dispatch_event_time;
-  response_head_->load_timing.service_worker_respond_with_settled =
-      fetch_event_timing_->respond_with_settled_time;
+  if (!ShouldAvoidRecordingServiceWorkerTimingInfo()) {
+    response_head_->load_timing.service_worker_fetch_start =
+        fetch_event_timing_->dispatch_event_time;
+    response_head_->load_timing.service_worker_respond_with_settled =
+        fetch_event_timing_->respond_with_settled_time;
+  }
 
   if (resource_request_.request_initiator &&
       (resource_request_.request_initiator->IsSameOriginWith(
@@ -1177,6 +1181,10 @@ bool ServiceWorkerMainResourceLoader::IsEligibleForRecordingTimingMetrics() {
   // Don't record metrics when DevTools specify force_update_on_page_load to
   // reduce noise.
   if (find_registration_start_time_.is_null()) {
+    return false;
+  }
+
+  if (ShouldAvoidRecordingServiceWorkerTimingInfo()) {
     return false;
   }
 
