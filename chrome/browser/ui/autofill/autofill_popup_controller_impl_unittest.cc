@@ -516,6 +516,15 @@ TEST_F(AutofillPopupControllerImplTest, RemoveSuggestion) {
       AutofillMetrics::SingleEntryRemovalMethod::kKeyboardShiftDeletePressed));
 }
 
+// Regression test for (crbug.com/1513574): Showing an Autofill Compose
+// suggestion twice does not crash.
+TEST_F(AutofillPopupControllerImplTest, ShowTwice) {
+  ShowSuggestions(manager(),
+                  {Suggestion(u"Help me write", PopupItemId::kCompose)});
+  ShowSuggestions(manager(),
+                  {Suggestion(u"Help me write", PopupItemId::kCompose)});
+}
+
 TEST_F(AutofillPopupControllerImplTest,
        RemoveAutocompleteSuggestion_AnnounceText) {
   ShowSuggestions(manager(),
