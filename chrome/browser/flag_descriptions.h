@@ -4060,9 +4060,6 @@ extern const char kShimlessRMASkuDescriptionDescription[];
 extern const char kShimlessRMAOsUpdateName[];
 extern const char kShimlessRMAOsUpdateDescription[];
 
-extern const char kShortcutCustomizationJellyName[];
-extern const char kShortcutCustomizationJellyDescription[];
-
 extern const char kSchedulerConfigurationName[];
 extern const char kSchedulerConfigurationDescription[];
 

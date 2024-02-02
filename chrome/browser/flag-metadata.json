@@ -7382,11 +7382,6 @@
     "expiry_milestone": 120
   },
   {
-    "name": "shortcut-customization-jelly",
-    "owners": [ "jimmyxgong@chromium.org", "zentaro@chromium.org", "cros-peripherals@google.com" ],
-    "expiry_milestone": 122
-  },
-  {
     "name": "show-autofill-type-predictions",
     "owners": [ "ftirelo@chromium.org", "mathp@chromium.org" ],
     // This is used by autofill devs to debug on Android.
