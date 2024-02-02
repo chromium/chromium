@@ -280,7 +280,7 @@ void FeaturePromoLifecycle::RecordShown() {
 
   // Record Promo type
   UMA_HISTOGRAM_ENUMERATION("UserEducation.MessageShown.Type", promo_type_);
-  UMA_HISTOGRAM_ENUMERATION("UserEducation.MessageShown.SubType",
+  UMA_HISTOGRAM_ENUMERATION("UserEducation.MessageShown.Subtype",
                             promo_subtype_);
   std::string type_action_name = "UserEducation.MessageShown.";
   switch (promo_subtype_) {

@@ -161,7 +161,7 @@ class FeaturePromoLifecycleTest : public testing::Test {
         "UserEducation.MessageShown.Type",
         static_cast<int>(lifecycle->promo_type()), shown_count);
     histogram_tester_.ExpectBucketCount(
-        "UserEducation.MessageShown.SubType",
+        "UserEducation.MessageShown.Subtype",
         static_cast<int>(lifecycle->promo_subtype()), shown_count);
   }
 
