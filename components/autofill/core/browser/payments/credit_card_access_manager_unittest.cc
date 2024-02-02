@@ -504,7 +504,8 @@ class CreditCardAccessManagerTest : public testing::Test {
             u"a******b@google.com");
         break;
       case CardUnmaskChallengeOptionType::kThreeDomainSecure:
-        // TODO(crbug.com/1521960): Add kThreeDomainSecure logic.
+        // TODO(crbug.com/1521960): Verify kThreeDomainSecure fields.
+        break;
       case CardUnmaskChallengeOptionType::kUnknownType:
         NOTREACHED();
         break;
@@ -3702,16 +3703,42 @@ TEST_F(CreditCardAccessManagerTest,
   // TODO(crbug/1370329): Add metrics checks for Virtual Card CVC auth result.
 }
 
+// Ensures the virtual card risk-based unmasking flow type is set to
+// kThreeDomainSecure when only the 3DS challenge option is returned.
+TEST_F(CreditCardAccessManagerTest,
+       RiskBasedVirtualCardUnmasking_only3dsChallengeReturned) {
+  CreateServerCard(kTestGUID, kTestNumber, /*masked=*/false, kTestServerId);
+  CreditCard* virtual_card = personal_data().GetCreditCardByGUID(kTestGUID);
+  virtual_card->set_record_type(CreditCard::RecordType::kVirtualCard);
+  credit_card_access_manager().FetchCreditCard(
+      virtual_card, base::BindOnce(&TestAccessor::OnCreditCardFetched,
+                                   accessor_->GetWeakPtr()));
+
+  // Mock server response with information regarding VCN auth.
+  payments::PaymentsNetworkInterface::UnmaskResponseDetails response;
+  response.context_token = "fake_context_token";
+  response.card_unmask_challenge_options = test::GetCardUnmaskChallengeOptions(
+      {CardUnmaskChallengeOptionType::kThreeDomainSecure});
+  credit_card_access_manager()
+      .OnVirtualCardRiskBasedAuthenticationResponseReceived(
+          AutofillClient::PaymentsRpcResult::kSuccess, response);
+
+  // If VCN 3DS is the only challenge option returned, verify that flow type is
+  // kThreeDomainSecure.
+  EXPECT_EQ(getUnmaskAuthFlowType(), UnmaskAuthFlowType::kThreeDomainSecure);
+}
+
 // Ensures the virtual card risk-based unmasking response is handled correctly
 // and authentication is delegated to the correct authenticator when multiple
 // challenge options are returned.
 TEST_F(CreditCardAccessManagerTest,
-       RiskBasedVirtualCardUnmasking_AuthenticationRequired_OtpAndCvc) {
+       RiskBasedVirtualCardUnmasking_AuthenticationRequired_OtpAndCvcAnd3ds) {
   base::HistogramTester histogram_tester;
   std::vector<CardUnmaskChallengeOption> challenge_options =
       test::GetCardUnmaskChallengeOptions(
           {CardUnmaskChallengeOptionType::kSmsOtp,
-           CardUnmaskChallengeOptionType::kCvc});
+           CardUnmaskChallengeOptionType::kCvc,
+           CardUnmaskChallengeOptionType::kThreeDomainSecure});
 
   for (size_t selected_index = 0; selected_index < challenge_options.size();
        selected_index++) {
@@ -3740,7 +3767,12 @@ TEST_F(CreditCardAccessManagerTest,
         break;
       }
       case CardUnmaskChallengeOptionType::kThreeDomainSecure:
-      // TODO(crbug.com/1521960): Add kThreeDomainSecure logic.
+        // VCN 3DS is one of the challenge options returned in the challenge
+        // selection dialog, and user selected the 3DS challenge option. Verify
+        // that flow type is kThreeDomainSecureConsentAlreadyGiven.
+        EXPECT_EQ(getUnmaskAuthFlowType(),
+                  UnmaskAuthFlowType::kThreeDomainSecureConsentAlreadyGiven);
+        break;
       case CardUnmaskChallengeOptionType::kEmailOtp:
       case CardUnmaskChallengeOptionType::kUnknownType:
         NOTREACHED();
@@ -3756,7 +3788,7 @@ TEST_F(CreditCardAccessManagerTest,
 
   // Expect the metrics are logged correctly.
   histogram_tester.ExpectUniqueSample(
-      "Autofill.ServerCardUnmask.VirtualCard.Attempt", true, 2);
+      "Autofill.ServerCardUnmask.VirtualCard.Attempt", true, 3);
   histogram_tester.ExpectUniqueSample(
       "Autofill.ServerCardUnmask.VirtualCard.Result.Otp",
       autofill_metrics::ServerCardUnmaskResult::kAuthenticationUnmasked, 1);

@@ -590,8 +590,15 @@ std::vector<CardUnmaskChallengeOption> GetCardUnmaskChallengeOptions(
             /*challenge_info=*/u"a******b@google.com",
             /*challenge_input_length=*/6U);
         break;
-      case CardUnmaskChallengeOptionType::kThreeDomainSecure:
-        // TODO(crbug.com/1521960): Add kThreeDomainSecure logic.
+      case CardUnmaskChallengeOptionType::kThreeDomainSecure: {
+        CardUnmaskChallengeOption challenge_option;
+        challenge_option.id =
+            CardUnmaskChallengeOption::ChallengeOptionId("456");
+        challenge_option.type = type;
+        challenge_option.url_to_open = GURL("https://www.example.com");
+        challenge_options.emplace_back(std::move(challenge_option));
+        break;
+      }
       default:
         NOTREACHED();
         break;
