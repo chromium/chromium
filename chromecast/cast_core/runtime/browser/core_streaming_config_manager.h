@@ -6,6 +6,7 @@
 #define CHROMECAST_CAST_CORE_RUNTIME_BROWSER_CORE_STREAMING_CONFIG_MANAGER_H_
 
 #include <memory>
+#include <string_view>
 
 #include "base/functional/callback.h"
 #include "base/sequence_checker.h"
@@ -41,7 +42,7 @@ class CoreStreamingConfigManager
       cast_receiver::RuntimeApplication::StatusCallback error_cb);
 
   // cast_api_bindings::MessagePort::Receiver overrides.
-  bool OnMessage(base::StringPiece message,
+  bool OnMessage(std::string_view message,
                  std::vector<std::unique_ptr<cast_api_bindings::MessagePort>>
                      ports) override;
   void OnPipeError() override;

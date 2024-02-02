@@ -5,6 +5,7 @@
 #include "chromecast/cast_core/runtime/browser/cast_runtime_histogram_flattener.h"
 
 #include <memory>
+#include <string_view>
 
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/statistics_recorder.h"
@@ -15,7 +16,7 @@ namespace chromecast {
 namespace {
 
 const cast::metrics::Histogram* LookupHistogram(
-    base::StringPiece name,
+    std::string_view name,
     const std::vector<cast::metrics::Histogram>& deltas) {
   for (const auto& histogram : deltas) {
     if (histogram.name() == name) {

@@ -6,6 +6,8 @@
 #define CHROMECAST_CAST_CORE_RUNTIME_BROWSER_GRPC_RESOURCE_DATA_SOURCE_H_
 
 #include <optional>
+#include <string_view>
+
 #include "base/task/sequenced_task_runner.h"
 #include "content/public/browser/url_data_source.h"
 #include "third_party/cast_core/public/src/proto/v2/core_application_service.castcore.pb.h"
@@ -55,7 +57,7 @@ class GrpcResourceDataSource : public content::URLDataSource {
       content::URLDataSource::GotDataCallback callback,
       cast::utils::GrpcStatusOr<cast::v2::GetWebUIResourceResponse>
           response_or);
-  void ReadResourceFile(base::StringPiece path,
+  void ReadResourceFile(std::string_view path,
                         content::URLDataSource::GotDataCallback callback);
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_;

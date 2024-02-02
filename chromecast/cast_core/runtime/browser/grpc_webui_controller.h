@@ -6,6 +6,7 @@
 #define CHROMECAST_CAST_CORE_RUNTIME_BROWSER_GRPC_WEBUI_CONTROLLER_H_
 
 #include <memory>
+#include <string_view>
 
 #include "base/containers/flat_map.h"
 #include "base/containers/span.h"
@@ -60,7 +61,7 @@ class GrpcWebUIController : public content::WebUIController {
   void RecordAction(const base::Value::List& args);
   void LaunchTutorial(const base::Value::List& args);
   void GetQRCode(const base::Value::List& args);
-  void CallJavascriptFunction(base::StringPiece function,
+  void CallJavascriptFunction(std::string_view function,
                               base::span<const base::ValueView> args);
 
   // Pointer to the generic message handler owned by the ctor provided|webui|.

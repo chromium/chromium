@@ -4,6 +4,7 @@
 
 #include "chromecast/cast_core/runtime/browser/core_streaming_config_manager.h"
 
+#include <string_view>
 #include <utility>
 
 #include "base/containers/contains.h"
@@ -203,7 +204,7 @@ CoreStreamingConfigManager::CoreStreamingConfigManager(
 CoreStreamingConfigManager::~CoreStreamingConfigManager() = default;
 
 bool CoreStreamingConfigManager::OnMessage(
-    base::StringPiece message,
+    std::string_view message,
     std::vector<std::unique_ptr<cast_api_bindings::MessagePort>> ports) {
   DLOG(INFO) << "AV Settings Response Received: " << message;
 

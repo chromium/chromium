@@ -7,6 +7,7 @@
 
 #include <deque>
 #include <memory>
+#include <string_view>
 
 #include "base/cancelable_callback.h"
 #include "base/memory/scoped_refptr.h"
@@ -86,7 +87,7 @@ class MessagePortHandler final
       cast::utils::GrpcStatusOr<cast::web::MessagePortStatus> response_or);
 
   // cast_api_bindings::MessagePort::Receiver overrides.
-  bool OnMessage(base::StringPiece message,
+  bool OnMessage(std::string_view message,
                  std::vector<std::unique_ptr<cast_api_bindings::MessagePort>>
                      ports) override;
   void OnPipeError() override;
