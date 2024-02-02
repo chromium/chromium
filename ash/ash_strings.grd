@@ -5076,6 +5076,14 @@ Some features are limited to increase battery life.
         Need help?
       </message>
 
+      <!-- Mahi -->
+      <message name="IDS_ASH_MAHI_DISCLAIMER_LABEL_TEXT" translateable="false" desc="Text for the disclaimer label in the Mahi panel">
+        Disclaimer: this is only used for experimental.
+      </message>
+      <message name="IDS_ASH_MAHI_LEARN_MORE_LINK_LABEL_TEXT" desc="Text for the learn more link that user can navigate to learn more about the project information">
+        Learn more
+      </message>
+
       <!-- Multi-profiles intro dialog -->
       <message name="IDS_ASH_MULTIPROFILES_INTRO_HEADLINE" desc="Describes which feature multi-profiles intro dialog presents.">
         Multiple sign-in
