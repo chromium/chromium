@@ -306,11 +306,24 @@ void BrowserServiceLacros::NewWindowForDetachingTab(
                                       browser->profile());
 }
 
-void BrowserServiceLacros::NewTab(NewTabCallback callback) {
+void BrowserServiceLacros::NewTab(std::optional<uint64_t> profile_id,
+                                  NewTabCallback callback) {
   if (g_browser_process->IsShuttingDown()) {
     std::move(callback).Run(crosapi::mojom::CreationResult::kBrowserShutdown);
     return;
   }
+
+  if (profile_id.has_value()) {
+    LoadProfileWithId(
+        base::BindOnce(&BrowserServiceLacros::LaunchOrNewTabWithProfile,
+                       weak_ptr_factory_.GetWeakPtr(),
+                       /*should_trigger_session_restore=*/false, -1,
+                       std::move(callback),
+                       /*is_new_tab=*/true),
+        /*can_trigger_fre=*/true, profile_id.value());
+    return;
+  }
+
   if (ShowProfilePickerIfNeeded(false)) {
     std::move(callback).Run(
         crosapi::mojom::CreationResult::kBrowserWindowUnavailable);

@@ -698,7 +698,8 @@ void BrowserManager::NewGuestWindow() {
 }
 
 void BrowserManager::NewTab() {
-  PerformOrEnqueue(BrowserAction::NewTab());
+  PerformOrEnqueue(
+      BrowserAction::NewTab(ash::desks_util::GetActiveDeskLacrosProfileId()));
 }
 
 void BrowserManager::Launch() {
@@ -1078,7 +1079,7 @@ void BrowserManager::StartWithLogFile(
   CHECK(lacros_selection_.has_value());
 
   // Lacros-chrome starts with kNormal type
-  // TODO(crbug.com/1289736):When `LacrosThreadTypeDelegate` becomes usable,
+  // TODO(crbug.com/1289736): When `LacrosThreadTypeDelegate` becomes usable,
   // `options.pre_exec_delegate` should be assigned a `LacrosThreadTypeDelegate`
   // object.
   std::optional<BrowserLauncher::LaunchResults> launch_results =

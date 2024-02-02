@@ -74,6 +74,10 @@ class MockBrowserService : public mojom::BrowserServiceInterceptorForTesting {
                std::optional<uint64_t> profile_id,
                LaunchCallback callback),
               (override));
+  MOCK_METHOD(void,
+              NewTab,
+              (std::optional<uint64_t> profile_id, NewTabCallback callback),
+              (override));
   MOCK_METHOD(void, OpenForFullRestore, (bool skip_crash_restore), (override));
   MOCK_METHOD(void, UpdateKeepAlive, (bool enabled), (override));
 };
@@ -558,6 +562,18 @@ TEST_F(BrowserManagerTest, VerifyProfileIdForLaunch) {
   EXPECT_CALL(mock_browser_service_, Launch(_, _, _)).Times(0);
   fake_browser_manager_->Launch();
   EXPECT_CALL(mock_browser_service_, Launch(_, testing::Eq(std::nullopt), _))
+      .Times(1);
+  fake_browser_manager_->SimulateLacrosStart(&mock_browser_service_);
+}
+
+TEST_F(BrowserManagerTest, VerifyProfileIdForNewTab) {
+  AddUser(UserType::kRegularUser);
+  ExpectCallingLoad();
+  fake_browser_manager_->InitializeAndStartIfNeeded();
+
+  EXPECT_CALL(mock_browser_service_, NewTab(_, _)).Times(0);
+  fake_browser_manager_->NewTab();
+  EXPECT_CALL(mock_browser_service_, NewTab(testing::Eq(std::nullopt), _))
       .Times(1);
   fake_browser_manager_->SimulateLacrosStart(&mock_browser_service_);
 }

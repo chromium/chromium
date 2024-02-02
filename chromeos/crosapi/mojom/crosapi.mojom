@@ -1723,7 +1723,7 @@ struct OpenUrlParams {
 // has accidentally become a kitchen sink for different features. This was not
 // intentional.
 //
-// Next MinVersion: 76.
+// Next MinVersion: 77.
 // Next ID: 23
 //
 [Stable, Uuid="4e04dc16-b34c-40fd-9e3f-3c55c2c6cf91",
@@ -1775,18 +1775,19 @@ interface BrowserService {
   NewGuestWindow@14([MinVersion=72] int64 target_display_id)
       => ([MinVersion=73] CreationResult result);
 
-  // Opens a new tab in the browser with, currently, the main profile. This may
-  // open a new window, if there's no window. If a new browser is opened and
-  // `should_trigger_session_restore` is set, the new browser will open with the
-  // profile's session startup pref. If this is not set the browser will open
-  // without considering the user's session startup pref. Please see also the
-  // Chrome's NewTab command for details.
+  // Opens a new tab in the browser with the profile that matches `profile_id`.
+  // This may open a new window, if there's no window. If a new browser is
+  // opened and `should_trigger_session_restore` is set, the new browser will
+  // open with the profile's session startup pref. If this is not set the
+  // browser will open without considering the user's session startup pref.
+  // Please see also the Chrome's NewTab command for details.
   // The callback is called on the command execution.
   // This is designed to be equivalent of CTRL+T behavior. By default, this
   // opens a new-tab-page, but extensions may override the behavior.
   // Added in M91.
   [MinVersion=71]
-  NewTab@20() => ([MinVersion=73] CreationResult result);
+  NewTab@20([MinVersion=76] uint64? profile_id)
+      => ([MinVersion=73] CreationResult result);
   // The `should_trigger_session_restore` parameter was deprecated in M108 and
   // is no longer supported. See Launch for something similar.
   [MinVersion=10]
