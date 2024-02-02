@@ -107,6 +107,10 @@
 #include "ui/compositor/layer.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/constants/chromeos_features.h"
+#endif
+
 using content::NavigationController;
 using content::RenderWidgetHost;
 using content::WebContents;
@@ -968,7 +972,17 @@ class SessionRestoreImpl : public BrowserListObserver {
 #endif
 
     params.initial_show_state = show_state;
+
+    // Do not restore workspace if lacros and Desk Profiles are enabled, i.e. it
+    // uses the profile from the current desk, and should always stay within
+    // that desk.
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    params.initial_workspace =
+        chromeos::features::IsDeskProfilesEnabled() ? std::string() : workspace;
+#else
     params.initial_workspace = workspace;
+#endif
+
     params.initial_visible_on_all_workspaces_state = visible_on_all_workspaces;
     params.creation_source = Browser::CreationSource::kSessionRestore;
     Browser* browser = Browser::Create(params);
