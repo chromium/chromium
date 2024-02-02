@@ -10913,6 +10913,7 @@ if (!is_android && !is_chromeos_device) {
         "../browser/ui/commerce/mock_commerce_ui_tab_helper.h",
         "../browser/ui/toolbar/app_menu_fullscreen_interactive_uitest.cc",
         "../browser/ui/toolbar/app_menu_model_interactive_uitest.cc",
+        "../browser/ui/user_education/show_promo_in_page_interactive_uitest.cc",
         "../browser/ui/views/autofill/payments/mandatory_reauth_bubble_view_uitest.cc",
         "../browser/ui/views/autofill/payments/offer_notification_bubble_views_interactive_uitest.cc",
         "../browser/ui/views/autofill/payments/offer_notification_icon_view_interactive_uitest.cc",

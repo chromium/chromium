@@ -109,6 +109,7 @@ export class HelpBubbleElement extends PolymerElement {
   debouncedUpdate: (() => void)|null = null;
   padding: InsetsF = {top: 0, bottom: 0, left: 0, right: 0};
   fixed: boolean = false;
+  focusAnchor: boolean = false;
 
   /**
    * HTMLElement corresponding to |this.nativeId|.
@@ -233,12 +234,26 @@ export class HelpBubbleElement extends PolymerElement {
    * Focuses a button in the bubble.
    */
   override focus() {
+    // First try to focus either the default button or any action button.
     this.$.buttonlist.render();
-    const button: HTMLElement =
+    const defaultButton =
         this.$.buttons.querySelector('cr-button.default-button') ||
-        this.$.buttons.querySelector('cr-button') || this.$.close;
-    assert(button);
-    button.focus();
+        this.$.buttons.querySelector('cr-button');
+    if (defaultButton instanceof HTMLElement) {
+      defaultButton.focus();
+      return;
+    }
+
+    // As a fallback, focus the close button before trying to focus the anchor;
+    // this will allow the focus to stay on the close button if the anchor
+    // cannot be focused.
+    this.$.close!.focus();
+
+    // Maybe try to focus the anchor. This is preferable to focusing the close
+    // button, but not every element can be focused.
+    if (this.anchorElement_ && this.focusAnchor) {
+      this.anchorElement_.focus();
+    }
   }
 
   /**

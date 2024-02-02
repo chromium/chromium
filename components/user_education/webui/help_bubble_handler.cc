@@ -218,6 +218,7 @@ std::unique_ptr<HelpBubbleWebUI> HelpBubbleHandlerBase::CreateHelpBubble(
     mojom_params->body_icon_name = GetFileNameFromIcon(data.params->body_icon);
   mojom_params->body_icon_alt_text =
       base::UTF16ToUTF8(data.params->body_icon_alt_text);
+  mojom_params->focus_on_show_hint = data.params->focus_on_show_hint;
   mojom_params->position = HelpBubbleArrowToPosition(data.params->arrow);
   if (data.params->progress) {
     mojom_params->progress = help_bubble::mojom::Progress::New();
