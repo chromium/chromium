@@ -896,6 +896,11 @@ id<GREYMatcher> ManualFallbackPasswordButtonMatcher() {
   return [ChromeMatchersAppInterface manualFallbackPasswordButtonMatcher];
 }
 
+id<GREYMatcher> ManualFallbackPasswordTableViewWindowMatcher() {
+  return
+      [ChromeMatchersAppInterface manualFallbackPasswordTableViewWindowMatcher];
+}
+
 id<GREYMatcher> ManualFallbackProfilesIconMatcher() {
   return [ChromeMatchersAppInterface manualFallbackProfilesIconMatcher];
 }

@@ -10,7 +10,6 @@
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
-#import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/testing/earl_grey/app_launch_configuration.h"
@@ -529,8 +528,6 @@ BOOL WaitForKeyboardToAppear() {
   // Dismiss the warning alert.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::OKButton()]
       performAction:grey_tap()];
-
-  [ChromeEarlGreyUI cleanupAfterShowingAlert];
 }
 
 // Tests an alert is shown warning the user when trying to fill a credit card
@@ -545,8 +542,6 @@ BOOL WaitForKeyboardToAppear() {
   // Dismiss the alert.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::OKButton()]
       performAction:grey_tap()];
-
-  [ChromeEarlGreyUI cleanupAfterShowingAlert];
 }
 
 // Tests that credit card cardholder is injected.
