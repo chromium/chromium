@@ -107,7 +107,7 @@ class WebApkSyncBridge : public syncer::ModelTypeSyncBridge {
   void AddOrModifyAppInSync(std::unique_ptr<WebApkProto> app);
   void DeleteAppFromSync(const webapps::AppId& app_id);
 
-  std::unique_ptr<WebApkDatabase> database_;
+  WebApkDatabase database_;
   Registry registry_;
   std::unique_ptr<base::Clock> clock_;
   std::unique_ptr<AbstractWebApkSpecificsFetcher> webapk_specifics_fetcher_;

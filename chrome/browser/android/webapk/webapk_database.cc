@@ -25,7 +25,9 @@ namespace webapk {
 WebApkDatabase::WebApkDatabase(AbstractWebApkDatabaseFactory* database_factory,
                                ReportErrorCallback error_callback)
     : database_factory_(database_factory),
-      error_callback_(std::move(error_callback)) {}
+      error_callback_(std::move(error_callback)) {
+  CHECK(database_factory_);
+}
 
 WebApkDatabase::~WebApkDatabase() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
