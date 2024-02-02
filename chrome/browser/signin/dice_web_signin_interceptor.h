@@ -61,7 +61,7 @@ enum class ShouldShowChromeSigninBubbleWithReason {
   // priority.
   kShouldNotShowMaxShownCountReached = 1,
   kShouldNotShowAlreadySignedIn = 2,
-  kShouldNotShowSecondaryAccount = 3,
+  // Deprecated: kShouldNotShowSecondaryAccount = 3,
   kShouldNotShowUnknownAccessPoint = 4,
   kShouldNotShowNotFromWebSignin = 5,
 

@@ -443,9 +443,12 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorBrowserTest, SwitchAlreadyOpen) {
 // in the new profile (regression test for https://crbug.com/1153321).
 IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorBrowserTest, CloseSourceTab) {
   // Setup profile for interception.
-  identity_test_env()->MakeAccountAvailable("alice@example.com");
-  AccountInfo account_info =
-      MakeAccountInfoAvailableAndUpdate("bob@example.com");
+  AccountInfo primary_account_info =
+      identity_test_env()->MakePrimaryAccountAvailable(
+          "alice@gmail.com", signin::ConsentLevel::kSignin);
+
+  AccountInfo account_info = MakeAccountInfoAvailableAndUpdate(
+      "bob@example.com", kNoHostedDomainFound);
 
   // Add a tab.
   GURL intercepted_url = embedded_test_server()->GetURL("/defaultresponse");
@@ -1645,7 +1648,7 @@ IN_PROC_BROWSER_TEST_F(
 
   CheckHistograms(
       histogram_tester,
-      SigninInterceptionHeuristicOutcome::kAbortAccountInfoNotCompatible);
+      SigninInterceptionHeuristicOutcome::kAbortAccountNotNew);
 }
 
 // Tests the complete profile switch flow when the profile is not loaded.

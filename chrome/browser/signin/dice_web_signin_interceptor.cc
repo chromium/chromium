@@ -133,41 +133,13 @@ bool IsFirstAccount(signin::IdentityManager* manager,
           gaia::AreEmailsSame(email, accounts_in_chrome[0].email));
 }
 
-// If the access_point is not set, this function may return
-// `ShouldShowChromeSigninBubbleWithReason::kShouldNotShowUnknownAccessPoint`.
+// Returns `ShouldShowChromeSigninBubbleWithReason::kShouldShow` if sign in
+// happens through the web and Chrome isn't already signed in.
 ShouldShowChromeSigninBubbleWithReason MaybeShouldShowChromeSigninBubble(
     signin::IdentityManager* manager,
     const std::string& intercepted_email,
     signin_metrics::AccessPoint access_point,
     size_t bubble_shown_count) {
-  // Do not show the bubble more than `kMaxChromeSigninInterceptionShownCount`
-  // times.
-  if (bubble_shown_count >= kMaxChromeSigninInterceptionShownCount) {
-    return ShouldShowChromeSigninBubbleWithReason::
-        kShouldNotShowMaxShownCountReached;
-  }
-
-  // Check if an account is already signed in to Chrome.
-  //
-  // If Uno is disabled, we ignore this condition since the primary account will
-  // be set prior to this call (keeping the check on the right email address).
-  // This is done for metric purposes, this is safe since the bubble will not be
-  // shown in that case any way.
-  if (manager->HasPrimaryAccount(signin::ConsentLevel::kSignin) &&
-      (switches::IsExplicitBrowserSigninUIOnDesktopEnabled(
-           switches::ExplicitBrowserSigninPhase::kExperimental) ||
-       manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin).email !=
-           intercepted_email)) {
-    return ShouldShowChromeSigninBubbleWithReason::
-        kShouldNotShowAlreadySignedIn;
-  }
-
-  // Only show the Chrome Sign in bubble for the first account being signed in.
-  if (!IsFirstAccount(manager, intercepted_email)) {
-    return ShouldShowChromeSigninBubbleWithReason::
-        kShouldNotShowSecondaryAccount;
-  }
-
   // If the access point is not set, we cannot accurately know if we have to
   // show the bubble or not, so we will not show it.
   if (access_point == signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN) {
@@ -180,6 +152,26 @@ ShouldShowChromeSigninBubbleWithReason MaybeShouldShowChromeSigninBubble(
   if (access_point != signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN) {
     return ShouldShowChromeSigninBubbleWithReason::
         kShouldNotShowNotFromWebSignin;
+  }
+
+  // Check if an account is already signed in to Chrome.
+  //
+  // If Uno is disabled, we ignore this condition since the primary account will
+  // be set prior to this call (keeping the check on the right email address).
+  // This is done for metric purposes, this is safe since the bubble will not be
+  // shown in that case any way.
+  if (switches::IsExplicitBrowserSigninUIOnDesktopEnabled(
+          switches::ExplicitBrowserSigninPhase::kExperimental) &&
+      manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
+    return ShouldShowChromeSigninBubbleWithReason::
+        kShouldNotShowAlreadySignedIn;
+  }
+
+  // Do not show the bubble more than `kMaxChromeSigninInterceptionShownCount`
+  // times.
+  if (bubble_shown_count >= kMaxChromeSigninInterceptionShownCount) {
+    return ShouldShowChromeSigninBubbleWithReason::
+        kShouldNotShowMaxShownCountReached;
   }
 
   return ShouldShowChromeSigninBubbleWithReason::kShouldShow;
@@ -369,43 +361,38 @@ DiceWebSigninInterceptor::GetHeuristicOutcome(
   // If we do not have all the information to enforce or not enterprise profile
   // separation, return `std::nullopt` so that we can try and get more info on
   // the intercepted account.
-  if (!enforce_enterprise_separation) {
+  if (!enforce_enterprise_separation.has_value()) {
     return std::nullopt;
-  }
-
-  if (!enforce_enterprise_separation.value()) {
-    // If interception is disabled abort, unless we need to enforce enterprise
-    // profile separation.
-    if (!signin_interception_enabled) {
-      return SigninInterceptionHeuristicOutcome::kAbortInterceptionDisabled;
-    }
-    // Do not intercept reauth.
-    if (!is_new_account) {
-      return SigninInterceptionHeuristicOutcome::kAbortAccountNotNew;
-    }
   }
 
   const ProfileAttributesEntry* switch_to_entry = ShouldShowProfileSwitchBubble(
       email,
       &g_browser_process->profile_manager()->GetProfileAttributesStorage());
-  if (switch_to_entry) {
-    if (entry) {
-      *entry = switch_to_entry;
-    }
-    if (enforce_enterprise_separation.value()) {
-      return SigninInterceptionHeuristicOutcome::
-          kInterceptEnterpriseForcedProfileSwitch;
-    }
-    DCHECK(is_new_account) << "Reauths were already handled above";
-    return SigninInterceptionHeuristicOutcome::kInterceptProfileSwitch;
+  if (switch_to_entry && entry) {
+    *entry = switch_to_entry;
   }
 
   if (enforce_enterprise_separation.value()) {
-    return SigninInterceptionHeuristicOutcome::kInterceptEnterpriseForced;
+    return switch_to_entry
+               ? SigninInterceptionHeuristicOutcome::
+                     kInterceptEnterpriseForcedProfileSwitch
+               : SigninInterceptionHeuristicOutcome::kInterceptEnterpriseForced;
   }
 
-  DCHECK(signin_interception_enabled && !enforce_enterprise_separation.value());
+  CHECK(!enforce_enterprise_separation.value());
 
+  // If interception is disabled and there are no enforce enterprise
+  // profile separation policies abort.
+  if (!signin_interception_enabled) {
+    return SigninInterceptionHeuristicOutcome::kAbortInterceptionDisabled;
+  }
+
+  // Don't show profile switch for reauth.
+  if (switch_to_entry && is_new_account) {
+    return SigninInterceptionHeuristicOutcome::kInterceptProfileSwitch;
+  }
+
+  // Chrome sign in bubble is shown if chrome isn't signed in.
   ShouldShowChromeSigninBubbleWithReason should_show_chrome_signin_bubble =
       MaybeShouldShowChromeSigninBubble(identity_manager_, email,
                                         state_->access_point_,
@@ -423,8 +410,15 @@ DiceWebSigninInterceptor::GetHeuristicOutcome(
     return SigninInterceptionHeuristicOutcome::kInterceptChromeSignin;
   }
 
-  // From this point the remaining possible interceptions involve creating a
-  // new profile.
+  // Do not intercept reauth.
+  // Reauth is subject to chrome sign in bubble which is checked earlier in this
+  // function.
+  if (!is_new_account) {
+    return SigninInterceptionHeuristicOutcome::kAbortAccountNotNew;
+  }
+
+  // From this point the remaining possible interceptions involve creating a new
+  // profile.
   if (!profiles::IsProfileCreationAllowed()) {
     return SigninInterceptionHeuristicOutcome::kAbortProfileCreationDisallowed;
   }
@@ -812,6 +806,7 @@ void DiceWebSigninInterceptor::OnInterceptionReadyToBeProcessed(
 
   bool force_profile_separation =
       ShouldEnforceEnterpriseProfileSeparation(info);
+  bool reauth = !state_->new_account_interception_;
   bool show_link_data_option = false;
 
   if (force_profile_separation) {
@@ -849,7 +844,7 @@ void DiceWebSigninInterceptor::OnInterceptionReadyToBeProcessed(
         SigninInterceptionHeuristicOutcome::kAbortInterceptionDisabled);
     Reset();
     return;
-  } else if (switch_to_entry) {
+  } else if (!reauth && switch_to_entry) {
     // Propose account switching if we skipped in GetHeuristicOutcome because we
     // returned a nullptr to get more information about forced enterprise
     // profile separation.
@@ -870,6 +865,11 @@ void DiceWebSigninInterceptor::OnInterceptionReadyToBeProcessed(
     base::UmaHistogramCounts100(
         "Signin.Intercept.ChromeSignin.BubbleShownCount",
         GetChromeSigninBubbleShownCount(info.email));
+  } else if (reauth) {
+    RecordSigninInterceptionHeuristicOutcome(
+        SigninInterceptionHeuristicOutcome::kAbortAccountNotNew);
+    Reset();
+    return;
   } else if (HasUserDeclinedProfileCreation(info.email)) {
     RecordSigninInterceptionHeuristicOutcome(
         SigninInterceptionHeuristicOutcome::
