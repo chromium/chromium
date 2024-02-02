@@ -265,7 +265,7 @@ TEST_F(AutofillAcrossIframesTest, WithChildFrames) {
   EXPECT_EQ(form.fields.size(), 2u);
   for (const FormFieldData& field : form.fields) {
     EXPECT_EQ(field.host_frame, form.host_frame);
-    EXPECT_EQ(field.host_form_id, form.unique_renderer_id);
+    EXPECT_EQ(field.host_form_id, form.renderer_id);
     EXPECT_EQ(field.origin, url::Origin::Create(form.url));
     EXPECT_EQ(field.host_form_signature, form_signature);
   }

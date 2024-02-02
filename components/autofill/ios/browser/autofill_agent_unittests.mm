@@ -147,7 +147,7 @@ TEST_F(AutofillAgentTests,
   form.url = GURL("https://myform.com");
   form.action = GURL("https://myform.com/submit");
   form.name = u"CC form";
-  form.unique_renderer_id = FormRendererId(1);
+  form.renderer_id = FormRendererId(1);
 
   autofill::FormFieldData field;
   field.form_control_type = autofill::FormControlType::kInputText;
@@ -157,7 +157,7 @@ TEST_F(AutofillAgentTests,
   field.id_attribute = u"number";
   field.value = u"number_value";
   field.is_autofilled = true;
-  field.unique_renderer_id = FieldRendererId(2);
+  field.renderer_id = FieldRendererId(2);
   form.fields.push_back(field);
   field.label = u"Name on Card";
   field.name = u"name";
@@ -165,7 +165,7 @@ TEST_F(AutofillAgentTests,
   field.id_attribute = u"name";
   field.value = u"name_value";
   field.is_autofilled = true;
-  field.unique_renderer_id = FieldRendererId(3);
+  field.renderer_id = FieldRendererId(3);
   form.fields.push_back(field);
   field.label = u"Expiry Month";
   field.name = u"expiry_month";
@@ -173,7 +173,7 @@ TEST_F(AutofillAgentTests,
   field.id_attribute = u"expiry_month";
   field.value = u"01";
   field.is_autofilled = false;
-  field.unique_renderer_id = FieldRendererId(4);
+  field.renderer_id = FieldRendererId(4);
   form.fields.push_back(field);
   field.label = u"Unknown field";
   field.name = u"unknown";
@@ -181,7 +181,7 @@ TEST_F(AutofillAgentTests,
   field.id_attribute = u"unknown";
   field.value = u"";
   field.is_autofilled = true;
-  field.unique_renderer_id = FieldRendererId(5);
+  field.renderer_id = FieldRendererId(5);
   form.fields.push_back(field);
   [autofill_agent_ fillFormData:form
                         inFrame:fake_web_frames_manager_->GetMainWebFrame()];
@@ -208,10 +208,10 @@ TEST_F(AutofillAgentTests, FillSpecificFormField) {
   field.id_attribute = u"number";
   field.value = u"number_value";
   field.is_autofilled = true;
-  field.unique_renderer_id = FieldRendererId(2);
+  field.renderer_id = FieldRendererId(2);
 
   [autofill_agent_
-      fillSpecificFormField:field.unique_renderer_id
+      fillSpecificFormField:field.renderer_id
                   withValue:u"mattwashere"
                     inFrame:fake_web_frames_manager_->GetMainWebFrame()];
   fake_web_state_.WasShown();
@@ -235,7 +235,7 @@ TEST_F(AutofillAgentTests, DriverFillSpecificFormField) {
   field.id_attribute = u"number";
   field.value = u"number_value";
   field.is_autofilled = true;
-  field.unique_renderer_id = FieldRendererId(2);
+  field.renderer_id = FieldRendererId(2);
 
   autofill::AutofillDriverIOS* main_frame_driver =
       autofill::AutofillDriverIOS::FromWebStateAndWebFrame(
@@ -266,7 +266,7 @@ TEST_F(AutofillAgentTests, DriverPreviewSpecificFormField) {
   field.id_attribute = u"number";
   field.value = u"number_value";
   field.is_autofilled = true;
-  field.unique_renderer_id = FieldRendererId(2);
+  field.renderer_id = FieldRendererId(2);
 
   autofill::AutofillDriverIOS* main_frame_driver =
       autofill::AutofillDriverIOS::FromWebStateAndWebFrame(

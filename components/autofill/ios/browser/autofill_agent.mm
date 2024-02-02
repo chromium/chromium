@@ -96,7 +96,7 @@ void GetFormField(autofill::FormFieldData* field,
                   const autofill::FormData& form,
                   FieldRendererId fieldIdentifier) {
   for (const auto& currentField : form.fields) {
-    if (currentField.unique_renderer_id == fieldIdentifier &&
+    if (currentField.renderer_id == fieldIdentifier &&
         currentField.is_focusable) {
       *field = currentField;
       break;
@@ -541,9 +541,8 @@ constexpr base::TimeDelta kA11yAnnouncementQueueDelay = base::Seconds(1);
              inFrame:(web::WebFrame*)frame {
   base::Value::Dict autofillData;
   autofillData.Set("formName", base::Value(base::UTF16ToUTF8(form.name)));
-  autofillData.Set(
-      "formRendererID",
-      base::Value(static_cast<int>(form.unique_renderer_id.value())));
+  autofillData.Set("formRendererID",
+                   base::Value(static_cast<int>(form.renderer_id.value())));
 
   base::Value::Dict fieldsData;
   for (const auto& field : form.fields) {
@@ -554,7 +553,7 @@ constexpr base::TimeDelta kA11yAnnouncementQueueDelay = base::Seconds(1);
     base::Value::Dict fieldData;
     fieldData.Set("value", field.value);
     fieldData.Set("section", field.section.ToString());
-    fieldsData.Set(NumberToString(field.unique_renderer_id.value()),
+    fieldsData.Set(NumberToString(field.renderer_id.value()),
                    std::move(fieldData));
   }
   autofillData.Set("fields", std::move(fieldsData));
@@ -624,9 +623,8 @@ constexpr base::TimeDelta kA11yAnnouncementQueueDelay = base::Seconds(1);
     base::Value::Dict fieldData;
     DCHECK(form.fields.size() == form.data.fields.size());
     for (size_t i = 0; i < form.fields.size(); i++) {
-      fieldData.Set(
-          NumberToString(form.data.fields[i].unique_renderer_id.value()),
-          base::Value(form.fields[i].overall_type));
+      fieldData.Set(NumberToString(form.data.fields[i].renderer_id.value()),
+                    base::Value(form.fields[i].overall_type));
     }
     predictionData.Set(base::UTF16ToUTF8(form.data.name), std::move(fieldData));
   }

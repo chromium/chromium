@@ -316,7 +316,7 @@ void AutofillBottomSheetTabHelper::OnFieldTypesDetermined(
   std::vector<autofill::FieldRendererId> renderer_ids;
   for (const auto& field : form_structure->fields()) {
     if (IsPaymentsBottomSheetTriggeringField(field->Type().GetStorableType())) {
-      renderer_ids.push_back(field->unique_renderer_id);
+      renderer_ids.push_back(field->renderer_id);
     }
   }
   if (renderer_ids.empty()) {

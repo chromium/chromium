@@ -209,12 +209,12 @@ const char kFrameIdKey[] = "frame_id";
             // Find the maximum extracted value.
             uint32_t maxID = 0;
             for (const auto& form : forms) {
-              if (form.unique_renderer_id) {
-                maxID = std::max(maxID, form.unique_renderer_id.value());
+              if (form.renderer_id) {
+                maxID = std::max(maxID, form.renderer_id.value());
               }
               for (const auto& field : form.fields) {
-                if (field.unique_renderer_id) {
-                  maxID = std::max(maxID, field.unique_renderer_id.value());
+                if (field.renderer_id) {
+                  maxID = std::max(maxID, field.renderer_id.value());
                 }
               }
             }
