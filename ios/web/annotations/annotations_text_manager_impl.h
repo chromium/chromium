@@ -37,6 +37,7 @@ class AnnotationsTextManagerImpl : public AnnotationsTextManager,
   void RemoveDecorations() override;
   void RemoveDecorationsWithType(const std::string& type) override;
   void RemoveHighlight() override;
+  void SetSupportedTypes(NSTextCheckingType supported_types) override;
 
   // JS callback methods.
   void OnTextExtracted(WebState* web_state,
@@ -73,6 +74,9 @@ class AnnotationsTextManagerImpl : public AnnotationsTextManager,
 
   // Is true when kEnableViewportIntents feature is enabled.
   bool is_viewport_extraction_;
+
+  // The supported types for the annotations extraction.
+  NSTextCheckingType supported_types_ = 0;
 
   // Must be last member to ensure it is destroyed last.
   base::WeakPtrFactory<AnnotationsTextManagerImpl> weak_factory_{this};
