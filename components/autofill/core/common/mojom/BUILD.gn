@@ -84,6 +84,10 @@ mojom("mojo_types") {
           mojom = "autofill.mojom.PasswordGenerationUIData"
           cpp = "::autofill::password_generation::PasswordGenerationUIData"
         },
+        {
+          mojom = "autofill.mojom.PasswordSuggestionRequest"
+          cpp = "::autofill::PasswordSuggestionRequest"
+        },
       ]
       traits_headers = [ "autofill_types_mojom_traits.h" ]
       traits_sources = [ "autofill_types_mojom_traits.cc" ]

@@ -500,6 +500,19 @@ struct PasswordGenerationUIData {
   bool input_field_empty;
 };
 
+// autofill::PasswordSuggestionRequest
+// (components/autofill/core/common/password_form_fill_data.h)
+struct PasswordSuggestionRequest {
+  FieldRendererId element_id;
+  FormData form_data;
+  uint64 username_field_index;
+  uint64 password_field_index;
+  mojo_base.mojom.TextDirection text_direction;
+  mojo_base.mojom.String16 typed_username;
+  int32 options;
+  gfx.mojom.RectF bounds;
+};
+
 // autofill::ParsingResult
 // (components/autofill/core/common/password_form_fill_data.h)
 struct ParsingResult {

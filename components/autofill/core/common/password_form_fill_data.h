@@ -35,6 +35,48 @@ struct PasswordAndMetadata {
   bool uses_account_store = false;
 };
 
+// Structure used to trigger password suggestion generation.
+struct PasswordSuggestionRequest {
+  PasswordSuggestionRequest(FieldRendererId element_id,
+                            const FormData& form_data,
+                            uint64_t username_field_index,
+                            uint64_t password_field_index,
+                            base::i18n::TextDirection text_direction,
+                            const std::u16string& typed_username,
+                            int options,
+                            const gfx::RectF& bounds);
+
+  PasswordSuggestionRequest();
+  PasswordSuggestionRequest(const PasswordSuggestionRequest&);
+  PasswordSuggestionRequest& operator=(const PasswordSuggestionRequest&);
+  PasswordSuggestionRequest(PasswordSuggestionRequest&&);
+  PasswordSuggestionRequest& operator=(PasswordSuggestionRequest&&);
+  ~PasswordSuggestionRequest();
+
+  // The unique renderer id of the field that the user has clicked.
+  FieldRendererId element_id;
+  // A web form extracted from the DOM that contains the triggering field.
+  FormData form_data;
+  // The index of the username field in the `form_data.fields`. If the password
+  // form doesn't contain the username field, this value will be equal to
+  // `form_data.fields.size()`.
+  uint64_t username_field_index;
+  // The index of the password field in the `form_data.fields`. If the password
+  // form doesn't contain the password field, this value will be equal to
+  // `form_data.fields.size()`.
+  uint64_t password_field_index;
+  // Direction of the text for the triggering field.
+  base::i18n::TextDirection text_direction;
+  // The value of the username field. This will be empty if the suggestion
+  // generation is triggered on a password field.
+  std::u16string typed_username;
+  // Options for password suggestion generation, see
+  // `ShowPasswordSuggestionsOptions` for more details.
+  int options;
+  // Location at which to display the popup.
+  gfx::RectF bounds;
+};
+
 // Structure used for autofilling password forms. Note that the realms in this
 // struct are only set when the password's realm differs from the realm of the
 // form that we are filling.
