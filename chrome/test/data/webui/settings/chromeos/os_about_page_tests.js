@@ -1486,54 +1486,6 @@ suite('<os-about-page> AllBuilds EditHostnameDialogTest', function() {
   });
 });
 
-suite(
-    '<os-about-page> AllBuilds Consumer auto update dialog popup', function() {
-      let dialog = null;
-      let browserProxy = null;
-      let events;
-
-      setup(function() {
-        events = [];
-        browserProxy = new TestAboutPageBrowserProxy();
-        AboutPageBrowserProxyImpl.setInstanceForTesting(browserProxy);
-        clearBody();
-        dialog = document.createElement(
-            'settings-consumer-auto-update-toggle-dialog');
-        document.body.appendChild(dialog);
-      });
-
-      teardown(function() {
-        dialog.remove();
-      });
-
-      function getButtonEventPromise() {
-        return new Promise(
-            (resolve) =>
-                dialog.addEventListener('set-consumer-auto-update', (e) => {
-                  events.push(e);
-                  resolve();
-                }));
-      }
-
-      async function clickButton(buttonId, shouldEnable) {
-        const ButtonEventPromise = getButtonEventPromise();
-        const button = dialog.shadowRoot.querySelector(buttonId);
-        assertTrue(!!button);
-        button.click();
-        await ButtonEventPromise;
-        assertEquals(1, events.length);
-        assertEquals(shouldEnable, events[0].detail.item);
-      }
-
-      test('click turn off button fires disable event', async function() {
-        await clickButton('#turnOffButton', false);
-      });
-
-      test('click keep updates button fires enable event', async function() {
-        await clickButton('#keepUpdatesButton', true);
-      });
-    });
-
 suite('<os-about-page> OfficialBuild', function() {
   let page = null;
   let browserProxy = null;

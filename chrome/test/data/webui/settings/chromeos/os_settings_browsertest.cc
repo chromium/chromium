@@ -1015,6 +1015,11 @@ IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, OsAboutPageChannelSwitcherDialog) {
   RunSettingsTest("os_about_page/channel_switcher_dialog_test.js");
 }
 
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest,
+                       OsAboutPageConsumerAutoUpdateToggleDialog) {
+  RunSettingsTest("os_about_page/consumer_auto_update_toggle_dialog_test.js");
+}
+
 IN_PROC_BROWSER_TEST_F(OSSettingsMochaTestRevampDisabled, OsAppsPage) {
   RunSettingsTest("os_apps_page/os_apps_page_test.js");
 }
