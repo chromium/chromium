@@ -49,6 +49,7 @@ class ServiceWorkerHost;
 class ServiceWorkerObjectHost;
 class ServiceWorkerRegistrationObjectHost;
 class ServiceWorkerVersion;
+struct SubresourceLoaderParams;
 
 // ServiceWorkerContainerHost is the host of a service worker client (a window,
 // dedicated worker, or shared worker) or service worker execution context in
@@ -488,11 +489,6 @@ class CONTENT_EXPORT ServiceWorkerContainerHost final
   // registration.
   ServiceWorkerRegistration* controller_registration() const;
 
-  // Should be called only when `controller()` is non-null.
-  // Callers should fill `ControllerServiceWorkerInfo::object_info` when needed.
-  blink::mojom::ControllerServiceWorkerInfoPtr
-  CreateControllerServiceWorkerInfo();
-
   // For service worker execution contexts.
   void set_service_worker_host(ServiceWorkerHost* service_worker_host);
   ServiceWorkerHost* service_worker_host();
@@ -526,6 +522,13 @@ class CONTENT_EXPORT ServiceWorkerContainerHost final
   // created with a blob URL.
   void InheritControllerFrom(ServiceWorkerContainerHost& creator_host,
                              const GURL& blob_url);
+
+  // Returns params with the ControllerServiceWorkerInfoPtr if we have found
+  // a matching controller service worker for non-null |container_host|.
+  // Otherwise this returns std::nullopt.
+  static std::optional<SubresourceLoaderParams>
+  MaybeCreateSubresourceLoaderParams(
+      base::WeakPtr<ServiceWorkerContainerHost> container_host);
 
   base::WeakPtr<ServiceWorkerContainerHost> GetWeakPtr();
 
@@ -585,6 +588,11 @@ class CONTENT_EXPORT ServiceWorkerContainerHost final
   void StartControllerComplete(
       mojo::PendingReceiver<blink::mojom::ControllerServiceWorker> receiver,
       blink::ServiceWorkerStatusCode status);
+
+  // Should be called only when `controller()` is non-null.
+  // Callers should fill `ControllerServiceWorkerInfo::object_info` when needed.
+  blink::mojom::ControllerServiceWorkerInfoPtr
+  CreateControllerServiceWorkerInfo();
 
   // Callback for ServiceWorkerContextCore::RegisterServiceWorker().
   void RegistrationComplete(const GURL& script_url,
