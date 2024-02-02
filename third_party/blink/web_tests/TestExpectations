@@ -6656,9 +6656,9 @@ crbug.com/1421694 http/tests/devtools/extensions/extensions-api.js [ Failure Pas
 crbug.com/626703 external/wpt/webauthn/public-key-credential-to-json.https.window.html [ Failure ]
 crbug.com/626703 external/wpt/clipboard-apis/async-promise-write-blobs-read-blobs.https.html [ Failure Pass ]
 crbug.com/1519053 external/wpt/webnn/pad.https.any.html [ Crash Pass ]
-crbug.com/1519053 external/wpt/webnn/pad.https.any.worker.html [ Crash Pass ]
+crbug.com/1519053 [ Release Win11-arm64 ] external/wpt/webnn/pad.https.any.worker.html [ Crash Pass ]
 crbug.com/1519053 [ Release Win11-arm64 ] external/wpt/webnn/softmax.https.any.html [ Crash Pass ]
-crbug.com/1519053 external/wpt/webnn/softmax.https.any.worker.html [ Crash Pass ]
+crbug.com/1519053 [ Release Win11-arm64 ] external/wpt/webnn/softmax.https.any.worker.html [ Crash Pass ]
 
 # Gardener: 2024-01-19
 crbug.com/1511285 virtual/force-eager/external/wpt/measure-memory/redirect.client.https.window.html [ Skip Timeout ]

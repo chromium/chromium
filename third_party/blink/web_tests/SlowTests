@@ -1363,7 +1363,12 @@ crbug.com/1494119 [ Mac11 Release ] virtual/fedcm-login-status/external/wpt/cred
 crbug.com/1494119 [ Mac12 Release ] virtual/fedcm-login-status/external/wpt/credential-management/fedcm-login-status/confirm-idp-login.https.html [ Slow ]
 crbug.com/1494119 [ Mac13 ] virtual/fedcm-login-status/external/wpt/credential-management/fedcm-login-status/confirm-idp-login.https.html [ Slow ]
 crbug.com/1494119 [ Win ] virtual/fedcm-login-status/external/wpt/credential-management/fedcm-login-status/confirm-idp-login.https.html [ Slow ]
-crbug.com/1489239 virtual/fedcm-authz/external/wpt/credential-management/fedcm-authz/fedcm-continue-on.https.html [ Slow ]
+crbug.com/1489239 [ Debug Mac13-arm64 ] virtual/fedcm-authz/external/wpt/credential-management/fedcm-authz/fedcm-continue-on.https.html [ Slow ]
+crbug.com/1489239 [ Linux ] virtual/fedcm-authz/external/wpt/credential-management/fedcm-authz/fedcm-continue-on.https.html [ Slow ]
+crbug.com/1489239 [ Mac11 Release ] virtual/fedcm-authz/external/wpt/credential-management/fedcm-authz/fedcm-continue-on.https.html [ Slow ]
+crbug.com/1489239 [ Mac12 Release ] virtual/fedcm-authz/external/wpt/credential-management/fedcm-authz/fedcm-continue-on.https.html [ Slow ]
+crbug.com/1489239 [ Mac13 ] virtual/fedcm-authz/external/wpt/credential-management/fedcm-authz/fedcm-continue-on.https.html [ Slow ]
+crbug.com/1489239 [ Release Win ] virtual/fedcm-authz/external/wpt/credential-management/fedcm-authz/fedcm-continue-on.https.html [ Slow ]
 
 # Slow because it contains thousands of subtests
 crbug.com/1423483 [ Linux ] external/wpt/css/css-color/parsing/color-computed-hsl.html [ Slow ]
