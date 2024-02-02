@@ -210,13 +210,13 @@ public class CustomTabActivity extends BaseCustomTabActivity {
 
     @Override
     protected void handleFinishAndClose() {
-        mOpenTimeRecorder.updateCloseCause();
+        if (mOpenTimeRecorder != null) mOpenTimeRecorder.updateCloseCause();
         super.handleFinishAndClose();
     }
 
     @Override
     protected void onUserLeaveHint() {
-        mOpenTimeRecorder.onUserLeaveHint();
+        if (mOpenTimeRecorder != null) mOpenTimeRecorder.onUserLeaveHint();
         super.onUserLeaveHint();
     }
 
