@@ -134,7 +134,7 @@ public class CookieControlsBridgeTest {
                     UserPrefs.get(profile).clearPref(PrefNames.COOKIE_CONTROLS_MODE);
                     WebsitePreferenceBridge.setDefaultContentSetting(
                             profile, ContentSettingsType.COOKIES, ContentSettingValues.DEFAULT);
-                    BrowsingDataBridge.getInstance()
+                    BrowsingDataBridge.getForProfile(profile)
                             .clearBrowsingData(
                                     helper::notifyCalled,
                                     new int[] {BrowsingDataType.COOKIES},

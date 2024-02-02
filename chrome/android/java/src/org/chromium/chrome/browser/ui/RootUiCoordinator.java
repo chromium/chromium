@@ -1444,7 +1444,8 @@ public class RootUiCoordinator
                             () -> {
                                 new QuickDeleteController(
                                         mActivity,
-                                        new QuickDeleteDelegateImpl(mTabSwitcherSupplier),
+                                        new QuickDeleteDelegateImpl(
+                                                mProfileSupplier, mTabSwitcherSupplier),
                                         mModalDialogManagerSupplier.get(),
                                         mSnackbarManagerSupplier.get(),
                                         mLayoutManager,

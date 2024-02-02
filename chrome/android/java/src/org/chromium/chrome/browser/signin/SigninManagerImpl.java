@@ -781,7 +781,7 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager, Acco
                     @Override
                     public void run() {
                         model.removeAllUserBookmarks();
-                        BrowsingDataBridge.getInstance()
+                        BrowsingDataBridge.getForProfile(mProfile)
                                 .clearBrowsingData(
                                         new BrowsingDataBridge.OnClearBrowsingDataListener() {
                                             @Override

@@ -112,6 +112,7 @@ public abstract class ClearBrowsingDataFragment extends PreferenceFragmentCompat
             mCheckbox = checkbox;
             mCounter =
                     new BrowsingDataCounterBridge(
+                            parent.getProfile(),
                             this,
                             ClearBrowsingDataFragment.getDataType(mOption),
                             mParent.getClearBrowsingDataTabType());
@@ -146,7 +147,7 @@ public abstract class ClearBrowsingDataFragment extends PreferenceFragmentCompat
 
             mParent.updateButtonState();
             mShouldAnnounceCounterResult = true;
-            BrowsingDataBridge.getInstance()
+            BrowsingDataBridge.getForProfile(mParent.getProfile())
                     .setBrowsingDataDeletionPreference(
                             ClearBrowsingDataFragment.getDataType(mOption),
                             mParent.getClearBrowsingDataTabType(),
@@ -403,7 +404,7 @@ public abstract class ClearBrowsingDataFragment extends PreferenceFragmentCompat
         @TimePeriod int timePeriod = ((TimePeriodSpinnerOption) spinnerSelection).getTimePeriod();
         int[] dataTypesArray = CollectionUtil.integerCollectionToIntArray(dataTypes);
         if (excludedDomains != null && excludedDomains.length != 0) {
-            BrowsingDataBridge.getInstance()
+            BrowsingDataBridge.getForProfile(mProfile)
                     .clearBrowsingDataExcludingDomains(
                             this,
                             dataTypesArray,
@@ -413,7 +414,8 @@ public abstract class ClearBrowsingDataFragment extends PreferenceFragmentCompat
                             ignoredDomains,
                             ignoredDomainReasons);
         } else {
-            BrowsingDataBridge.getInstance().clearBrowsingData(this, dataTypesArray, timePeriod);
+            BrowsingDataBridge.getForProfile(mProfile)
+                    .clearBrowsingData(this, dataTypesArray, timePeriod);
         }
 
         // Clear all reported entities.
@@ -440,7 +442,7 @@ public abstract class ClearBrowsingDataFragment extends PreferenceFragmentCompat
      * @return boolean Whether the given option should be preselected.
      */
     private boolean isOptionSelectedByDefault(@DialogOption int option) {
-        return BrowsingDataBridge.getInstance()
+        return BrowsingDataBridge.getForProfile(mProfile)
                 .getBrowsingDataDeletionPreference(
                         getDataType(option), getClearBrowsingDataTabType());
     }
@@ -530,7 +532,7 @@ public abstract class ClearBrowsingDataFragment extends PreferenceFragmentCompat
                 item.setShouldAnnounceCounterResult(false);
             }
 
-            BrowsingDataBridge.getInstance()
+            BrowsingDataBridge.getForProfile(mProfile)
                     .setBrowsingDataDeletionTimePeriod(
                             getClearBrowsingDataTabType(),
                             ((TimePeriodSpinnerOption) value).getTimePeriod());
@@ -573,8 +575,8 @@ public abstract class ClearBrowsingDataFragment extends PreferenceFragmentCompat
         if (!isSuppliedFromOutside) {
             assert mFetcher == null : "Fetcher previously re-assigned";
             mFetcher = new ClearBrowsingDataFetcher();
-            mFetcher.fetchImportantSites();
-            mFetcher.requestInfoAboutOtherFormsOfBrowsingHistory();
+            mFetcher.fetchImportantSites(mProfile);
+            mFetcher.requestInfoAboutOtherFormsOfBrowsingHistory(mProfile);
         }
     }
 
@@ -586,6 +588,8 @@ public abstract class ClearBrowsingDataFragment extends PreferenceFragmentCompat
         mSigninManager = IdentityServicesProvider.get().getSigninManager(mProfile);
         List<Integer> options = getDialogOptions();
         mItems = new Item[options.size()];
+
+        BrowsingDataBridge browsingDataBridge = BrowsingDataBridge.getForProfile(mProfile);
         for (int i = 0; i < options.size(); i++) {
             @DialogOption int option = options.get(i);
             boolean enabled = true;
@@ -594,16 +598,12 @@ public abstract class ClearBrowsingDataFragment extends PreferenceFragmentCompat
             if (option == DialogOption.CLEAR_HISTORY
                     && !UserPrefs.get(mProfile).getBoolean(Pref.ALLOW_DELETING_BROWSER_HISTORY)) {
                 enabled = false;
-                BrowsingDataBridge.getInstance()
-                        .setBrowsingDataDeletionPreference(
-                                getDataType(DialogOption.CLEAR_HISTORY),
-                                ClearBrowsingDataTab.BASIC,
-                                false);
-                BrowsingDataBridge.getInstance()
-                        .setBrowsingDataDeletionPreference(
-                                getDataType(DialogOption.CLEAR_HISTORY),
-                                ClearBrowsingDataTab.ADVANCED,
-                                false);
+                browsingDataBridge.setBrowsingDataDeletionPreference(
+                        getDataType(DialogOption.CLEAR_HISTORY), ClearBrowsingDataTab.BASIC, false);
+                browsingDataBridge.setBrowsingDataDeletionPreference(
+                        getDataType(DialogOption.CLEAR_HISTORY),
+                        ClearBrowsingDataTab.ADVANCED,
+                        false);
             }
 
             mItems[i] =
@@ -630,8 +630,7 @@ public abstract class ClearBrowsingDataFragment extends PreferenceFragmentCompat
         TimePeriodSpinnerOption[] spinnerOptions = getTimePeriodSpinnerOptions(getActivity());
         @TimePeriod
         int selectedTimePeriod =
-                BrowsingDataBridge.getInstance()
-                        .getBrowsingDataDeletionTimePeriod(getClearBrowsingDataTabType());
+                browsingDataBridge.getBrowsingDataDeletionTimePeriod(getClearBrowsingDataTabType());
         int spinnerOptionIndex = getSpinnerIndex(selectedTimePeriod, spinnerOptions);
         // If there is no previously-selected value, use last hour as the default.
         if (spinnerOptionIndex == -1) {

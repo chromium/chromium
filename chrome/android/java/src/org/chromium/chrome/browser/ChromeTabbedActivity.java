@@ -2979,7 +2979,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
 
             new QuickDeleteController(
                     this,
-                    new QuickDeleteDelegateImpl(mTabSwitcherSupplier),
+                    new QuickDeleteDelegateImpl(mTabModelProfileSupplier, mTabSwitcherSupplier),
                     getModalDialogManager(),
                     getSnackbarManager(),
                     getLayoutManager(),

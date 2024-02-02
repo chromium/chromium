@@ -17,6 +17,7 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
@@ -56,7 +57,7 @@ public class BrowsingDataTest {
         CallbackHelper helper = new CallbackHelper();
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    BrowsingDataBridge.getInstance()
+                    BrowsingDataBridge.getForProfile(Profile.getLastUsedRegularProfile())
                             .clearBrowsingData(
                                     helper::notifyCalled, new int[] {dataType}, timePeriod);
                 });
@@ -77,6 +78,7 @@ public class BrowsingDataTest {
                 () -> {
                     counter[0] =
                             new BrowsingDataCounterBridge(
+                                    Profile.getLastUsedRegularProfile(),
                                     callback,
                                     BrowsingDataType.COOKIES,
                                     ClearBrowsingDataTab.ADVANCED);
@@ -159,7 +161,7 @@ public class BrowsingDataTest {
         CallbackHelper helper = new CallbackHelper();
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    BrowsingDataBridge.getInstance()
+                    BrowsingDataBridge.getForProfile(Profile.getLastUsedRegularProfile())
                             .clearBrowsingDataIncognitoForTesting(
                                     helper::notifyCalled,
                                     new int[] {

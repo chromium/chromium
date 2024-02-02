@@ -57,6 +57,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.layouts.LayoutTestUtils;
 import org.chromium.chrome.browser.layouts.LayoutType;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.SettingsActivity;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabTestUtils;
@@ -149,7 +150,7 @@ public class QuickDeleteControllerTest {
         CallbackHelper helper = new CallbackHelper();
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    BrowsingDataBridge.getInstance()
+                    BrowsingDataBridge.getForProfile(Profile.getLastUsedRegularProfile())
                             .clearBrowsingData(
                                     helper::notifyCalled,
                                     new int[] {BrowsingDataType.COOKIES},

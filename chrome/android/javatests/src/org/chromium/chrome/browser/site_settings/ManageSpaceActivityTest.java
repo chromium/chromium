@@ -116,7 +116,8 @@ public class ManageSpaceActivityTest {
         // Now we set the origin as important, and check that we don't clear it.
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    BrowsingDataBridge.markOriginAsImportantForTesting(serverOrigin);
+                    BrowsingDataBridge.getForProfile(mActivityTestRule.getProfile(false))
+                            .markOriginAsImportantForTesting(serverOrigin);
                 });
 
         ManageSpaceActivity manageSpaceActivity = startManageSpaceActivity();
