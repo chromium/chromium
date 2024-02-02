@@ -449,7 +449,8 @@ def _compile_target(*, name, label = None, skip_usage_check = False):
     only be built, not executed.
 
     Args:
-        name: The name that can be used to refer to the target.
+        name: The ninja target name. This is the name that can be used
+            to refer to the target in other starlark declarations.
         label: The GN label for the ninja target.
         skip_usage_check: Disables checking that the target is actually
             referenced in a targets spec for some builder.
@@ -485,7 +486,9 @@ def _console_test_launcher(
     not need Xvfb.
 
     Args:
-        name: The name that can be used to refer to the target.
+        name: The ninja target name. This is the name that can be used
+            to refer to the target/binary in other starlark
+            declarations.
         label: The GN label for the ninja target.
         label_type: The type of the label. This is used by MB to find
             the generated runtime files in the correct place if the
@@ -522,7 +525,9 @@ def _generated_script(
     Windows).
 
     Args:
-        name: The name that can be used to refer to the target.
+        name: The ninja target name. This is the name that can be used
+            to refer to the target/binary in other starlark
+            declarations.
         label: The GN label for the ninja target.
         skip_usage_check: Disables checking that the target is actually
             referenced in a targets spec for some builder.
@@ -562,7 +567,9 @@ def _script(
     A script target is a test that is executed via a python script.
 
     Args:
-        name: The name that can be used to refer to the target.
+        name: The ninja target name. This is the name that can be used
+            to refer to the target/binary in other starlark
+            declarations.
         label: The GN label for the ninja target.
         script: The GN path (e.g. //testing/scripts/foo.py" to the python
             script to run.
@@ -605,7 +612,9 @@ def _windowed_test_launcher(
     Ozone CrOS).
 
     Args:
-        name: The name that can be used to refer to the target.
+        name: The ninja target name. This is the name that can be used
+            to refer to the target/binary in other starlark
+            declarations.
         label: The GN label for the ninja target.
         label_type: The type of the label. This is used by MB to find
             the generated runtime files in the correct place if the
