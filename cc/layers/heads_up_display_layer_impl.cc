@@ -304,7 +304,6 @@ void HeadsUpDisplayLayerImpl::UpdateHudTexture(
       backing->texture_target = raster_caps.tile_texture_target;
 
       uint32_t flags = gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
-                       gpu::SHARED_IMAGE_USAGE_RASTER_READ |
                        gpu::SHARED_IMAGE_USAGE_RASTER_WRITE;
       if (raster_caps.use_gpu_rasterization) {
         flags |= gpu::SHARED_IMAGE_USAGE_OOP_RASTERIZATION;
