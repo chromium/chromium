@@ -5423,8 +5423,6 @@ static_library("ui") {
       "views/intent_picker_bubble_view.h",
       "views/javascript_tab_modal_dialog_view_views.cc",
       "views/javascript_tab_modal_dialog_view_views.h",
-      "views/layout/interpolating_layout_manager.cc",
-      "views/layout/interpolating_layout_manager.h",
       "views/location_bar/content_setting_image_view.cc",
       "views/location_bar/content_setting_image_view.h",
       "views/location_bar/cookie_controls/cookie_controls_bubble_coordinator.cc",
