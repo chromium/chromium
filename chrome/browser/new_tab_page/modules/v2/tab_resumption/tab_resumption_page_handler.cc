@@ -74,8 +74,9 @@ history::mojom::TabPtr SessionTabToMojom(const ::sessions::SessionTab& tab,
   tab_mojom->url = GURL(*dictionary.FindString("url"));
   tab_mojom->title = *dictionary.FindString("title");
 
-  tab_mojom->relative_time =
+  tab_mojom->relative_time_text =
       base::UTF16ToUTF8(FormatRelativeTime(tab.timestamp));
+  tab_mojom->relative_time = base::Time::Now() - tab.timestamp;
 
   return tab_mojom;
 }

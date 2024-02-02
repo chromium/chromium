@@ -22,6 +22,9 @@ struct Tab {
   // String to display.
   string title;
 
-  // Relative time to display. e.g. 2 hours ago
-  string relative_time;
+  // Relative time in milliseconds.
+  mojo_base.mojom.TimeDelta relative_time;
+
+  // Relative time to display on UI (i.e. 2 hours ago)
+  string relative_time_text;
 };
