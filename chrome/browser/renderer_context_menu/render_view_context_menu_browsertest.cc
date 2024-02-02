@@ -1273,7 +1273,6 @@ struct ContextMenuForComposeTestCase {
   uint64_t field_renderer_id;
   bool should_trigger_compose_context_menu;
   bool expected;
-  bool enabled;
 };
 
 class ContextMenuForComposeBrowserTest
@@ -1301,7 +1300,6 @@ IN_PROC_BROWSER_TEST_P(ContextMenuForComposeBrowserTest,
   menu->Init();
 
   ASSERT_EQ(menu->IsItemPresent(IDC_CONTEXT_COMPOSE), test_case.expected);
-  ASSERT_EQ(menu->IsItemEnabled(IDC_CONTEXT_COMPOSE), test_case.enabled);
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -1311,18 +1309,15 @@ INSTANTIATE_TEST_SUITE_P(
         {.test_name = "Enabled",
          .is_editable = true,
          .should_trigger_compose_context_menu = true,
-         .expected = true,
-         .enabled = true},
+         .expected = true},
         {.test_name = "NotEditable",
          .is_editable = false,
          .should_trigger_compose_context_menu = true,
-         .expected = false,
-         .enabled = false},
-        {.test_name = "Disabled",
+         .expected = false},
+        {.test_name = "ShouldNotOffer",
          .is_editable = true,
          .should_trigger_compose_context_menu = false,
-         .expected = true,
-         .enabled = false},
+         .expected = false},
     }),
     [](const testing::TestParamInfo<
         ContextMenuForComposeBrowserTest::ParamType>& info) {
