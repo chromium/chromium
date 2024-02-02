@@ -76,6 +76,7 @@ build_webui("build") {
     non_web_component_files += [
       "cr_auto_img/cr_auto_img.ts",
       "cr_container_shadow_mixin.ts",
+      "cr_container_shadow_mixin_lit.ts",
       "cr_lazy_render/cr_lazy_render.ts",
       "cr_menu_selector/cr_menu_selector.ts",
       "cr_radio_button/cr_radio_button_mixin.ts",
@@ -95,7 +96,9 @@ build_webui("build") {
       "action_link.css",
       "cr_actionable_row_style.css",
       "cr_hidden_style.css",
+      "cr_hidden_style_lit.css",
       "cr_icons.css",
+      "cr_icons_lit.css",
       "cr_nav_menu_item_style.css",
       "cr_page_host_style.css",
       "cr_radio_button/cr_radio_button_style.css",
@@ -108,6 +111,7 @@ build_webui("build") {
       "mwb_shared_vars.css",
       "search_highlight_style.css",
       "cr_action_menu/cr_action_menu.css",
+      "cr_dialog/cr_dialog.css",
       "cr_input/cr_input_style.css",
     ]
 

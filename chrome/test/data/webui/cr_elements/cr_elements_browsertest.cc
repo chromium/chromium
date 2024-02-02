@@ -21,6 +21,10 @@ IN_PROC_BROWSER_TEST_F(CrElementsTest, CrContainerShadowMixin) {
   RunTest("cr_elements/cr_container_shadow_mixin_test.js", "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(CrElementsTest, CrContainerShadowMixinLit) {
+  RunTest("cr_elements/cr_container_shadow_mixin_lit_test.js", "mocha.run()");
+}
+
 IN_PROC_BROWSER_TEST_F(CrElementsTest, CrDialog) {
   RunTest("cr_elements/cr_dialog_test.js", "mocha.run()");
 }
