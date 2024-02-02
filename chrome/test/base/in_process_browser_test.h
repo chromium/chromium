@@ -240,6 +240,9 @@ class InProcessBrowserTest : public content::BrowserTestBase {
       const std::string& bug_number_and_reason);
 #endif
 
+  // Returns true if crosapi is enabled for the test.
+  static bool IsCrosapiEnabled();
+
  protected:
   // Closes the given browser and waits for it to release all its resources.
   void CloseBrowserSynchronously(Browser* browser);

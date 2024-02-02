@@ -45,6 +45,10 @@ class FilePath;
 class TimeDelta;
 }  // namespace base
 
+namespace chromeos {
+class ScopedDisableCrosapiForTesting;
+}
+
 namespace ui {
 class ScopedAnimationDurationScaleMode;
 }
@@ -289,6 +293,10 @@ class BrowserTestBase : public ::testing::Test {
   // class to ensure that SetUp was called. If it's not called, the test will
   // not run and report a false positive result.
   bool set_up_called_ = false;
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  std::unique_ptr<chromeos::ScopedDisableCrosapiForTesting> disable_crosapi_;
+#endif
 
   std::unique_ptr<storage::QuotaSettings> quota_settings_;
 

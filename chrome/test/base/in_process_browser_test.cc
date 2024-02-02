@@ -161,7 +161,6 @@
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
 #include "chromeos/crosapi/mojom/test_controller.mojom-test-utils.h"
 #include "chromeos/lacros/lacros_service.h"
-#include "chromeos/startup/browser_params_proxy.h"
 #include "components/account_manager_core/chromeos/account_manager.h"
 #include "components/account_manager_core/chromeos/account_manager_facade_factory.h"  // nogncheck
 #include "components/account_manager_core/chromeos/fake_account_manager_ui.h"  // nogncheck
@@ -292,14 +291,18 @@ void EnsureBrowserContextKeyedServiceFactoriesForTestingBuilt() {
 // Try to find a better name.
 bool WaitForWindowCreation(Browser* browser) {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (!chromeos::BrowserParamsProxy::IsCrosapiDisabledForTesting()) {
-    CHECK(IsTestControllerAvailable());
+  // TODO(crbug.com/1508245): Get rid of the IsTestControllerAvailable condition
+  // by making it always true (when crosapi is enabled). Moreover, propagate the
+  // WaitForWindowCreation return value. This requires fixing some tests that
+  // improperly override init params.
+  if (InProcessBrowserTest::IsCrosapiEnabled() && IsTestControllerAvailable()) {
     // Wait for window creation to complete in Ash in order to avoid
     // wayland-crosapi race conditions in subsequent test steps.
     aura::Window* window = browser->window()->GetNativeWindow();
     std::string id =
         lacros_window_utility::GetRootWindowUniqueId(window->GetRootWindow());
-    return browser_test_util::WaitForWindowCreation(id);
+    std::ignore = browser_test_util::WaitForWindowCreation(id);
+    return true;
   }
 #endif
   return true;
@@ -350,6 +353,12 @@ void InProcessBrowserTest::RunScheduledLayouts() {
 FakeAccountManagerUI* InProcessBrowserTest::GetFakeAccountManagerUI() const {
   return static_cast<FakeAccountManagerUI*>(
       MaybeGetAshAccountManagerUIForTests());
+}
+
+bool InProcessBrowserTest::IsCrosapiEnabled() {
+  return !base::CommandLine::ForCurrentProcess()
+              ->GetSwitchValuePath("lacros-mojo-socket-for-testing")
+              .empty();
 }
 
 base::Version InProcessBrowserTest::GetAshChromeVersion() {
@@ -925,8 +934,7 @@ void InProcessBrowserTest::PreRunTestOnMainThread() {
   content::NetworkConnectionChangeSimulator network_change_simulator;
   network_change_simulator.InitializeChromeosConnectionType();
 
-  if (!chromeos::BrowserParamsProxy::IsCrosapiDisabledForTesting()) {
-    CHECK(IsTestControllerAvailable());
+  if (IsCrosapiEnabled() && IsTestControllerAvailable()) {
     // There should NOT be any open ash browser window UI at this point.
     VerifyNoAshBrowserWindowOpenRightNow();
   }
@@ -1002,8 +1010,7 @@ void InProcessBrowserTest::PostRunTestOnMainThread() {
   CHECK(BrowserList::GetInstance()->empty());
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (!chromeos::BrowserParamsProxy::IsCrosapiDisabledForTesting()) {
-    CHECK(IsTestControllerAvailable());
+  if (IsCrosapiEnabled() && IsTestControllerAvailable()) {
     // At this point, there should NOT be any ash browser UIs(e.g. SWA, etc)
     // open; otherwise, the tests running after the current one could be
     // polluted if the tests are running against the shared Ash (by default).
@@ -1072,10 +1079,10 @@ void InProcessBrowserTest::StartUniqueAshChrome(
     const std::vector<std::string>& additional_cmdline_switches,
     const std::string& bug_number_and_reason) {
   DCHECK(!bug_number_and_reason.empty());
-  CHECK(!chromeos::BrowserParamsProxy::IsCrosapiDisabledForTesting())
+  base::CommandLine* cmdline = base::CommandLine::ForCurrentProcess();
+  CHECK(IsCrosapiEnabled())
       << "You can only start unique ash chrome when crosapi is enabled. "
       << "It should not be necessary otherwise.";
-  base::CommandLine* cmdline = base::CommandLine::ForCurrentProcess();
   base::FilePath ash_dir_holder = cmdline->GetSwitchValuePath("unique-ash-dir");
   CHECK(!ash_dir_holder.empty());
   CHECK(unique_ash_user_data_dir_.CreateUniqueTempDirUnderPath(ash_dir_holder));

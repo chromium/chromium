@@ -145,7 +145,7 @@ void LacrosBrowserShortcutsController::RegisterControllerOnRegistryReady() {
   if (service->GetInterfaceVersion<crosapi::mojom::AppShortcutPublisher>() <
           int{crosapi::mojom::AppShortcutPublisher::MethodMinVersions::
                   kRegisterAppShortcutControllerMinVersion} &&
-      !chromeos::BrowserParamsProxy::IsCrosapiDisabledForTesting()) {
+      !chromeos::BrowserParamsProxy::Get()->IsCrosapiDisabledForTesting()) {
     LOG(WARNING)
         << "Ash AppShortcutPublisher version "
         << service->GetInterfaceVersion<crosapi::mojom::AppShortcutPublisher>()
@@ -184,7 +184,7 @@ void LacrosBrowserShortcutsController::MaybePublishBrowserShortcuts(
   if (service->GetInterfaceVersion<crosapi::mojom::AppShortcutPublisher>() <
           int{crosapi::mojom::AppShortcutPublisher::MethodMinVersions::
                   kPublishShortcutsMinVersion} &&
-      !chromeos::BrowserParamsProxy::IsCrosapiDisabledForTesting()) {
+      !chromeos::BrowserParamsProxy::Get()->IsCrosapiDisabledForTesting()) {
     LOG(WARNING)
         << "Ash AppShortcutPublisher version "
         << service->GetInterfaceVersion<crosapi::mojom::AppShortcutPublisher>()
@@ -289,7 +289,7 @@ void LacrosBrowserShortcutsController::OnWebAppUninstalled(
   if (service->GetInterfaceVersion<crosapi::mojom::AppShortcutPublisher>() <
           int{crosapi::mojom::AppShortcutPublisher::MethodMinVersions::
                   kShortcutRemovedMinVersion} &&
-      !chromeos::BrowserParamsProxy::IsCrosapiDisabledForTesting()) {
+      !chromeos::BrowserParamsProxy::Get()->IsCrosapiDisabledForTesting()) {
     LOG(WARNING)
         << "Ash AppShortcutPublisher version "
         << service->GetInterfaceVersion<crosapi::mojom::AppShortcutPublisher>()

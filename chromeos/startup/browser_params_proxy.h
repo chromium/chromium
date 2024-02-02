@@ -25,11 +25,8 @@ class COMPONENT_EXPORT(CHROMEOS_STARTUP) BrowserParamsProxy {
   // Returns true if the user has logged in, false if not.
   static bool IsLoggedIn();
 
-  // See documentation in browser_init_params.h.
-  static bool IsCrosapiDisabledForTesting();
-  static void DisableCrosapiForTesting();
-
   // Init and post-login parameters' accessors are listed starting from here.
+  bool IsCrosapiDisabledForTesting() const;
 
   uint32_t CrosapiVersion() const;
 

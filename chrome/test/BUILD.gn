@@ -10451,7 +10451,6 @@ if (!is_android) {
         ":lacros_test_support_ui",
         "//chromeos/lacros",
         "//chromeos/lacros:test_support",
-        "//chromeos/startup:startup",
         "//components/account_manager_core",
         "//components/account_manager_core:test_support",
       ]
