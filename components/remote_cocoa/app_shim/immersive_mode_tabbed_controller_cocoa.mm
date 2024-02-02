@@ -94,7 +94,11 @@ void ImmersiveModeTabbedControllerCocoa::Init() {
 }
 
 void ImmersiveModeTabbedControllerCocoa::UpdateToolbarVisibility(
-    mojom::ToolbarVisibilityStyle style) {
+    std::optional<mojom::ToolbarVisibilityStyle> style) {
+  if (!style.has_value()) {
+    return;
+  }
+
   // Don't make changes when a reveal lock is active. Do update the
   // `last_used_style` so the style will be updated once all outstanding reveal
   // locks are released.
@@ -108,7 +112,7 @@ void ImmersiveModeTabbedControllerCocoa::UpdateToolbarVisibility(
   // using the `hidden` property. Instead we must entirely remove the view
   // controller to make the view hide. Switch to using the `hidden` property
   // once Apple resolves this bug.
-  switch (style) {
+  switch (style.value()) {
     case mojom::ToolbarVisibilityStyle::kAlways:
       AddController();
       TitlebarReveal();

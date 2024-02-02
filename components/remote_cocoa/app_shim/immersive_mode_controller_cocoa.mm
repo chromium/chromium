@@ -4,6 +4,8 @@
 
 #include "components/remote_cocoa/app_shim/immersive_mode_controller_cocoa.h"
 
+#include <utility>
+
 #include "base/apple/foundation_util.h"
 #include "base/auto_reset.h"
 #include "base/check.h"
@@ -260,8 +262,7 @@ void ImmersiveModeControllerCocoa::Init() {
 
 void ImmersiveModeControllerCocoa::FullscreenTransitionCompleted() {
   fullscreen_transition_complete_ = true;
-  UpdateToolbarVisibility(last_used_style_);
-
+  ForceToolbarVisibilityUpdate();
   //  Establish reveal locks for windows that exist before entering fullscreen,
   //  such as permission popups and the find bar. Do this after the fullscreen
   //  transition has ended to avoid graphical flashes during the animation.
@@ -309,30 +310,33 @@ void ImmersiveModeControllerCocoa::OnTopViewBoundsChanged(
     [overlay_view setFrameSize:size];
   }
 
-  UpdateToolbarVisibility(last_used_style_);
-
   // If the toolbar is always visible, update the fullscreen min height.
   // Also update the fullscreen min height if the toolbar auto hides, but only
   // if the toolbar is currently revealed.
-  if (last_used_style_ == mojom::ToolbarVisibilityStyle::kAlways ||
-      (last_used_style_ == mojom::ToolbarVisibilityStyle::kAutohide &&
-       reveal_lock_count_ > 0)) {
+  if (fullscreen_transition_complete_ &&
+      (last_used_style_ == mojom::ToolbarVisibilityStyle::kAlways ||
+       (last_used_style_ == mojom::ToolbarVisibilityStyle::kAutohide &&
+        reveal_lock_count_ > 0))) {
     [immersive_mode_titlebar_view_controller_
         setVisibility:mojom::ToolbarVisibilityStyle::kAlways];
   }
 }
 
 void ImmersiveModeControllerCocoa::UpdateToolbarVisibility(
-    mojom::ToolbarVisibilityStyle style) {
+    std::optional<mojom::ToolbarVisibilityStyle> style) {
   // Remember the last used style for internal use of UpdateToolbarVisibility.
-  last_used_style_ = style;
+  std::optional<mojom::ToolbarVisibilityStyle> old_style =
+      std::exchange(last_used_style_, style);
+  if (!style.has_value() || old_style == style) {
+    return;
+  }
 
   // Only make changes if there are no outstanding reveal locks.
   if (reveal_lock_count_ > 0) {
     return;
   }
 
-  switch (style) {
+  switch (style.value()) {
     case mojom::ToolbarVisibilityStyle::kAlways:
       SetIgnoreRevealLocks(false);
       [immersive_mode_titlebar_view_controller_
@@ -350,15 +354,15 @@ void ImmersiveModeControllerCocoa::UpdateToolbarVisibility(
       // displayed z-order on top of the content view. This will cover up any
       // perceived jank.
       // TODO(https://crbug.com/1375995): Handle fullscreen exit.
-      if (fullscreen_transition_complete_) {
-        browser_window_.styleMask &= ~NSWindowStyleMaskFullSizeContentView;
-      } else {
-        browser_window_.styleMask |= NSWindowStyleMaskFullSizeContentView;
+      if (!fullscreen_transition_complete_) {
+        break;
       }
 
-      // Toggling the controller will allow the content view to resize below Top
-      // Chrome.
-      [immersive_mode_titlebar_view_controller_ forceVisibilityRefresh];
+      // Only force a visibility refresh if necessary.
+      if (browser_window_.styleMask & NSWindowStyleMaskFullSizeContentView) {
+        browser_window_.styleMask &= ~NSWindowStyleMaskFullSizeContentView;
+        [immersive_mode_titlebar_view_controller_ forceVisibilityRefresh];
+      }
       break;
     case mojom::ToolbarVisibilityStyle::kAutohide:
       SetIgnoreRevealLocks(false);
@@ -373,6 +377,17 @@ void ImmersiveModeControllerCocoa::UpdateToolbarVisibility(
       UpdateThinControllerVisibility();
       break;
   }
+}
+
+void ImmersiveModeControllerCocoa::ForceToolbarVisibilityUpdate() {
+  // If a style has not been set, there is nothing else to do.
+  if (!last_used_style_.has_value()) {
+    return;
+  }
+
+  // Set `last_used_style_` to std::nullopt so that the passed in style and
+  // `last_used_style_` are different, forcing a visibility update.
+  UpdateToolbarVisibility(std::exchange(last_used_style_, std::nullopt));
 }
 
 void ImmersiveModeControllerCocoa::ObserveChildWindows(NSWindow* window) {
@@ -488,7 +503,7 @@ void ImmersiveModeControllerCocoa::RevealLocked() {
 }
 
 void ImmersiveModeControllerCocoa::RevealUnlocked() {
-  UpdateToolbarVisibility(last_used_style_);
+  ForceToolbarVisibilityUpdate();
 }
 
 bool ImmersiveModeControllerCocoa::IsToolbarRevealed() {

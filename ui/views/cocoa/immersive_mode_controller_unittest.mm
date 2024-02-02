@@ -217,8 +217,13 @@ TEST_F(CocoaImmersiveModeControllerTest, ToolbarVisibility) {
                                                            tab_overlay());
   immersive_mode_controller->Init();
 
-  // NSWindowStyleMaskFullSizeContentView is set until the fullscreen transition
-  // is complete.
+  // kAutoHide sets the NSWindowStyleMaskFullSizeContentView bit on the
+  // browser's style mask.
+  immersive_mode_controller->UpdateToolbarVisibility(
+      mojom::ToolbarVisibilityStyle::kAutohide);
+
+  // kAlways typically removes the NSWindowStyleMaskFullSizeContentView bit,
+  // however is set until the fullscreen transition is complete.
   immersive_mode_controller->UpdateToolbarVisibility(
       mojom::ToolbarVisibilityStyle::kAlways);
   EXPECT_TRUE(browser().styleMask & NSWindowStyleMaskFullSizeContentView);
@@ -241,6 +246,8 @@ TEST_F(CocoaImmersiveModeControllerTest, Tabbed) {
       std::make_unique<ImmersiveModeTabbedControllerCocoa>(browser(), overlay(),
                                                            tab_overlay());
   immersive_mode_controller->Init();
+  immersive_mode_controller->UpdateToolbarVisibility(
+      mojom::ToolbarVisibilityStyle::kAutohide);
 
   EXPECT_EQ(browser().titlebarAccessoryViewControllers.count, 3u);
   immersive_mode_controller->UpdateToolbarVisibility(

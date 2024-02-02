@@ -7,6 +7,8 @@
 
 #import <AppKit/AppKit.h>
 
+#include <optional>
+
 #import "components/remote_cocoa/app_shim/bridged_content_view.h"
 #import "components/remote_cocoa/app_shim/native_widget_mac_nswindow.h"
 #include "components/remote_cocoa/app_shim/remote_cocoa_app_shim_export.h"
@@ -54,7 +56,8 @@ class REMOTE_COCOA_APP_SHIM_EXPORT ImmersiveModeControllerCocoa {
 
   virtual void FullscreenTransitionCompleted();
   virtual void OnTopViewBoundsChanged(const gfx::Rect& bounds);
-  virtual void UpdateToolbarVisibility(mojom::ToolbarVisibilityStyle style);
+  virtual void UpdateToolbarVisibility(
+      std::optional<mojom::ToolbarVisibilityStyle> style);
 
   // Reveal top chrome leaving it visible until all outstanding calls to
   // RevealLock() are balanced with RevealUnlock(). Reveal locks will persist
@@ -127,10 +130,12 @@ class REMOTE_COCOA_APP_SHIM_EXPORT ImmersiveModeControllerCocoa {
   // Used by derived classes to manually set last_used_style_. Typically this is
   // used while a RevealLock is active, allowing for a style change after the
   // last RevealLock has been released.
-  void set_last_used_style(mojom::ToolbarVisibilityStyle style) {
+  void set_last_used_style(std::optional<mojom::ToolbarVisibilityStyle> style) {
     last_used_style_ = style;
   }
-  mojom::ToolbarVisibilityStyle last_used_style() { return last_used_style_; }
+  std::optional<mojom::ToolbarVisibilityStyle> last_used_style() {
+    return last_used_style_;
+  }
 
   // Layout the `window` on top of the `anchor_view`. The `window` will occupy
   // the same place on screen as the `anchor_view`, completely occluding the
@@ -158,6 +163,11 @@ class REMOTE_COCOA_APP_SHIM_EXPORT ImmersiveModeControllerCocoa {
   // reveal_lock_count_.
   void ApplyRevealLockState();
 
+  // `UpdateToolbarVisibility(style)` will skip updating if `last_used_style_`
+  // and `style` are the same. `ForceToolbarVisibilityUpdate()` forces a toolbar
+  // visibility update of `last_used_style_`.
+  void ForceToolbarVisibilityUpdate();
+
   bool initialized_ = false;
 
   int reveal_lock_count_ = 0;
@@ -167,9 +177,7 @@ class REMOTE_COCOA_APP_SHIM_EXPORT ImmersiveModeControllerCocoa {
 
   int menu_bar_height_ = 0;
 
-  mojom::ToolbarVisibilityStyle last_used_style_ =
-      mojom::ToolbarVisibilityStyle::kAutohide;
-
+  std::optional<mojom::ToolbarVisibilityStyle> last_used_style_;
   // Keeps the view controllers hidden until the fullscreen transition is
   // complete.
   bool fullscreen_transition_complete_ = false;
