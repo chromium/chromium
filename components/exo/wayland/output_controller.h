@@ -48,13 +48,18 @@ struct OutputController : public display::DisplayManagerObserver,
   // Returns the wl_resource for the wl_output bound to the `client`.
   wl_resource* GetOutputResource(wl_client* client, int64_t display_id);
 
-  WaylandDisplayOutput* GetWaylandDisplayOutputForTesting(int64_t display_id);
-  const DisplayOutputMap& outputs_for_testing() const { return outputs_; }
-
  private:
+  friend class OutputControllerTestApi;
+
   // Returns the WaylandDisplayOutput for the wl_output global associated with
   // the `display_id`.
   WaylandDisplayOutput* GetWaylandDisplayOutput(int64_t display_id);
+
+  // Updates exo to align with the system's currently active window.
+  void UpdateActivatedDisplayIfNecessary();
+
+  // This tracks display-activation-change events dispatched by the controller.
+  int64_t dispatched_activated_display_id_ = display::kInvalidDisplayId;
 
   DisplayOutputMap outputs_;
 

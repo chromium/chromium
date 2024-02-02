@@ -82,6 +82,8 @@ void OutputController::OnDidProcessDisplayChanges(
     }
   }
 
+  UpdateActivatedDisplayIfNecessary();
+
   // Flush updated outputs to clients immediately.
   // TODO(crbug.com/1502682): Exo should be updated to automatically flush
   // buffers at the end of task processing if necessary.
@@ -89,11 +91,7 @@ void OutputController::OnDidProcessDisplayChanges(
 }
 
 void OutputController::OnDisplayForNewWindowsChanged() {
-  const int64_t active_display_id =
-      display::Screen::GetScreen()->GetDisplayForNewWindows().id();
-  auto output_pair = outputs_.find(active_display_id);
-  CHECK(output_pair != outputs_.end());
-  output_pair->second->SendOutputActivated();
+  UpdateActivatedDisplayIfNecessary();
 }
 
 wl_resource* OutputController::GetOutputResource(wl_client* client,
@@ -106,16 +104,31 @@ wl_resource* OutputController::GetOutputResource(wl_client* client,
              : nullptr;
 }
 
-WaylandDisplayOutput* OutputController::GetWaylandDisplayOutputForTesting(
-    int64_t display_id) {
-  return GetWaylandDisplayOutput(display_id);
-}
-
 WaylandDisplayOutput* OutputController::GetWaylandDisplayOutput(
     int64_t display_id) {
   CHECK_NE(display_id, display::kInvalidDisplayId);
   auto iter = outputs_.find(display_id);
   return iter == outputs_.end() ? nullptr : iter->second.get();
+}
+
+void OutputController::UpdateActivatedDisplayIfNecessary() {
+  const int64_t current_active_display_id =
+      display::Screen::GetScreen()->GetDisplayForNewWindows().id();
+  if (dispatched_activated_display_id_ == current_active_display_id) {
+    return;
+  }
+
+  // Since the ordering of observers on the display manager is not well defined
+  // there may be observers that respond to display changes before the
+  // controller, resulting in attempted activations of outputs that have not yet
+  // been created (see b/323403137).
+  // TODO(tluk): Explore solutions that may improve ordering guarantees without
+  // relying on state-tracking within the controller class.
+  auto output_pair = outputs_.find(current_active_display_id);
+  if (output_pair != outputs_.end()) {
+    output_pair->second->SendOutputActivated();
+    dispatched_activated_display_id_ = current_active_display_id;
+  }
 }
 
 }  // namespace exo::wayland

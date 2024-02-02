@@ -290,6 +290,8 @@ source_set("unit_tests") {
   sources = [
     "client_tracker_unittest.cc",
     "clients/security_delegate_binding_test.cc",
+    "output_controller_test_api.cc",
+    "output_controller_test_api.h",
     "output_controller_unittest.cc",
     "output_metrics_unittest.cc",
     "serial_tracker_unittest.cc",
