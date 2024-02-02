@@ -61,10 +61,6 @@ class SyncUserSettingsImpl : public SyncUserSettings {
       SyncFirstSetupCompleteSource source) override;
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
   bool IsSyncEverythingEnabled() const override;
-  // TODO(b/321217859): On Android, temporarily remove kPasswords from the
-  // selected types while the local UPM migration is ongoing. This was
-  // previously implemented via GetPreconditionState() but that only affects
-  // the "active" state of the data type, not the "enabled" one.
   UserSelectableTypeSet GetSelectedTypes() const override;
   bool IsTypeManagedByPolicy(UserSelectableType type) const override;
   bool IsTypeManagedByCustodian(UserSelectableType type) const override;

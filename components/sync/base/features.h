@@ -88,21 +88,9 @@ inline constexpr base::FeatureParam<bool>
         &kSyncEnableContactInfoDataTypeForDasherUsers,
         "enable_for_google_accounts", false};
 
-// For users who support separate "profile" and "account" password stores -
-// see password_manager::features_util::CanCreateAccountStore() - and have
-// sync-the-feature on, enabling this flag means:
-// - New passwords are saved to the account store if the passwords data type is
-//   "selected", and to the profile store otherwise. When the flag is disabled,
-//   saves always happen to the profile store.
-// - The account store is synced. When the flag is disabled, the profile one is.
-BASE_DECLARE_FEATURE(kEnablePasswordsAccountStorageForSyncingUsers);
-// For users who support separate "profile" and "account" password stores -
-// see password_manager::features_util::CanCreateAccountStore() - and have
-// sync-the-transport on, enabling this flag means:
-// - New passwords are saved to the account store if the passwords data type is
-//   "selected", and to the profile store otherwise. When the flag is disabled,
-//   saves always happen to the profile store.
-// - The account store is synced. When the flag is disabled, no store is.
+// Necessary condition for signed-in non-syncing users to be able to exchange
+// passwords with the sync server.
+// TODO(crbug.com/1509058): Expand docs when the other changes have landed.
 BASE_DECLARE_FEATURE(kEnablePasswordsAccountStorageForNonSyncingUsers);
 
 // Enables a separate account-scoped storage for preferences, for syncing users.
