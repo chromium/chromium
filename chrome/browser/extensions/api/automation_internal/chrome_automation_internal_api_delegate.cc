@@ -50,9 +50,6 @@ bool ChromeAutomationInternalApiDelegate::CanRequestAutomation(
     return true;
 
   const GURL& url = contents->GetURL();
-  // TODO(aboxhall): check for webstore URL
-  if (automation_info->matches.MatchesURL(url))
-    return true;
 
   int tab_id = ExtensionTabUtil::GetTabId(contents);
   std::string unused_error;
