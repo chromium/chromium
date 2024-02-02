@@ -7000,9 +7000,11 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "Enabled_20240201",
                     "enable_features": [
-                        "EvictionUnlocksResources"
+                        "BatchMainThreadReleaseCallbacks",
+                        "EvictionUnlocksResources",
+                        "ReclaimResourcesDelayedFlushInBackground"
                     ]
                 }
             ]
