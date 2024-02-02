@@ -152,8 +152,6 @@ async function saveFileDialogClickOkButton(volume, name) {
     await repeatUntil(async () => {
       const element =
           await remoteCall.waitForElement(appId, '#filename-input-textbox');
-      // @ts-ignore: error TS2339: Property 'value' does not exist on type
-      // 'ElementObject'.
       if (element.value !== name) {
         return pending(caller, 'Text field not updated');
       }
@@ -789,8 +787,6 @@ testcase.openFileDialogDefaultFilter = async () => {
   // Check: 'JPEG image' should be selected.
   const selectedFilter =
       await remoteCall.waitForElement(dialog, '.file-type option:checked');
-  // @ts-ignore: error TS2339: Property 'value' does not exist on type
-  // 'ElementObject'.
   chrome.test.assertEq('1', selectedFilter.value);
   chrome.test.assertEq('JPEG image', selectedFilter.text);
 };
@@ -816,8 +812,6 @@ testcase.saveFileDialogDefaultFilter = async () => {
   // Check: 'All files' should be selected.
   const selectedFilter =
       await remoteCall.waitForElement(dialog, '.file-type option:checked');
-  // @ts-ignore: error TS2339: Property 'value' does not exist on type
-  // 'ElementObject'.
   chrome.test.assertEq('0', selectedFilter.value);
   chrome.test.assertEq('All files', selectedFilter.text);
 };
@@ -844,8 +838,6 @@ testcase.saveFileDialogDefaultFilterKeyNavigation = async () => {
   // Check: 'All files' should be selected.
   let selectedFilter =
       await remoteCall.waitForElement(dialog, '.file-type option.selected');
-  // @ts-ignore: error TS2339: Property 'value' does not exist on type
-  // 'ElementObject'.
   chrome.test.assertEq('0', selectedFilter.value);
   chrome.test.assertEq('All files', selectedFilter.text);
 
@@ -857,8 +849,6 @@ testcase.saveFileDialogDefaultFilterKeyNavigation = async () => {
   await remoteCall.fakeKeyDown(dialog, selectControl, ...arrowUpKey);
   selectedFilter =
       await remoteCall.waitForElement(dialog, '.file-type option.selected');
-  // @ts-ignore: error TS2339: Property 'value' does not exist on type
-  // 'ElementObject'.
   chrome.test.assertEq('1', selectedFilter.value);
   chrome.test.assertEq('JPEG image', selectedFilter.text);
 
@@ -869,8 +859,6 @@ testcase.saveFileDialogDefaultFilterKeyNavigation = async () => {
   await remoteCall.fakeKeyDown(dialog, selectControl, ...arrowDownKey);
   selectedFilter =
       await remoteCall.waitForElement(dialog, '.file-type option.selected');
-  // @ts-ignore: error TS2339: Property 'value' does not exist on type
-  // 'ElementObject'.
   chrome.test.assertEq('0', selectedFilter.value);
   chrome.test.assertEq('All files', selectedFilter.text);
 
@@ -880,8 +868,6 @@ testcase.saveFileDialogDefaultFilterKeyNavigation = async () => {
   await remoteCall.fakeKeyDown(dialog, selectControl, ...arrowDownKey);
   selectedFilter =
       await remoteCall.waitForElement(dialog, '.file-type option.selected');
-  // @ts-ignore: error TS2339: Property 'value' does not exist on type
-  // 'ElementObject'.
   chrome.test.assertEq('0', selectedFilter.value);
   chrome.test.assertEq('All files', selectedFilter.text);
 
@@ -892,8 +878,6 @@ testcase.saveFileDialogDefaultFilterKeyNavigation = async () => {
   await remoteCall.fakeKeyDown(dialog, selectControl, ...arrowLeftKey);
   selectedFilter =
       await remoteCall.waitForElement(dialog, '.file-type option.selected');
-  // @ts-ignore: error TS2339: Property 'value' does not exist on type
-  // 'ElementObject'.
   chrome.test.assertEq('1', selectedFilter.value);
   chrome.test.assertEq('JPEG image', selectedFilter.text);
 
@@ -904,8 +888,6 @@ testcase.saveFileDialogDefaultFilterKeyNavigation = async () => {
   await remoteCall.fakeKeyDown(dialog, selectControl, ...arrowRightKey);
   selectedFilter =
       await remoteCall.waitForElement(dialog, '.file-type option.selected');
-  // @ts-ignore: error TS2339: Property 'value' does not exist on type
-  // 'ElementObject'.
   chrome.test.assertEq('0', selectedFilter.value);
   chrome.test.assertEq('All files', selectedFilter.text);
 
@@ -973,8 +955,6 @@ testcase.saveFileDialogDefaultFilterKeyNavigation = async () => {
       dialog, '.file-type div.options[expanded=expanded]');
   selectedFilter =
       await remoteCall.waitForElement(dialog, '.file-type option.selected');
-  // @ts-ignore: error TS2339: Property 'value' does not exist on type
-  // 'ElementObject'.
   chrome.test.assertEq('0', selectedFilter.value);
   chrome.test.assertEq('All files', selectedFilter.text);
   // @ts-ignore: error TS2556: A spread argument must either have a tuple type
@@ -982,8 +962,6 @@ testcase.saveFileDialogDefaultFilterKeyNavigation = async () => {
   await remoteCall.fakeKeyDown(dialog, selectControl, ...arrowUpKey);
   selectedFilter =
       await remoteCall.waitForElement(dialog, '.file-type option.selected');
-  // @ts-ignore: error TS2339: Property 'value' does not exist on type
-  // 'ElementObject'.
   chrome.test.assertEq('1', selectedFilter.value);
   chrome.test.assertEq('JPEG image', selectedFilter.text);
   // @ts-ignore: error TS2556: A spread argument must either have a tuple type
@@ -991,8 +969,6 @@ testcase.saveFileDialogDefaultFilterKeyNavigation = async () => {
   await remoteCall.fakeKeyDown(dialog, selectControl, ...tabKey);
   await remoteCall.waitForElementLost(
       dialog, '.file-type div.options[expanded=expanded]');
-  // @ts-ignore: error TS2339: Property 'value' does not exist on type
-  // 'ElementObject'.
   chrome.test.assertEq('1', selectedFilter.value);
   chrome.test.assertEq('JPEG image', selectedFilter.text);
 
@@ -1004,8 +980,6 @@ testcase.saveFileDialogDefaultFilterKeyNavigation = async () => {
       dialog, '.file-type div.options[expanded=expanded]');
   selectedFilter =
       await remoteCall.waitForElement(dialog, '.file-type option.selected');
-  // @ts-ignore: error TS2339: Property 'value' does not exist on type
-  // 'ElementObject'.
   chrome.test.assertEq('1', selectedFilter.value);
   chrome.test.assertEq('JPEG image', selectedFilter.text);
   // @ts-ignore: error TS2556: A spread argument must either have a tuple type
@@ -1013,8 +987,6 @@ testcase.saveFileDialogDefaultFilterKeyNavigation = async () => {
   await remoteCall.fakeKeyDown(dialog, selectControl, ...arrowDownKey);
   selectedFilter =
       await remoteCall.waitForElement(dialog, '.file-type option.selected');
-  // @ts-ignore: error TS2339: Property 'value' does not exist on type
-  // 'ElementObject'.
   chrome.test.assertEq('0', selectedFilter.value);
   chrome.test.assertEq('All files', selectedFilter.text);
   // @ts-ignore: error TS2556: A spread argument must either have a tuple type
@@ -1022,8 +994,6 @@ testcase.saveFileDialogDefaultFilterKeyNavigation = async () => {
   await remoteCall.fakeKeyDown(dialog, selectControl, ...escapeKey);
   await remoteCall.waitForElementLost(
       dialog, '.file-type div.options[expanded=expanded]');
-  // @ts-ignore: error TS2339: Property 'value' does not exist on type
-  // 'ElementObject'.
   chrome.test.assertEq('0', selectedFilter.value);
   chrome.test.assertEq('All files', selectedFilter.text);
 
@@ -1038,8 +1008,6 @@ testcase.saveFileDialogDefaultFilterKeyNavigation = async () => {
   await remoteCall.fakeKeyDown(dialog, selectControl, ...arrowLeftKey);
   selectedFilter =
       await remoteCall.waitForElement(dialog, '.file-type option.selected');
-  // @ts-ignore: error TS2339: Property 'value' does not exist on type
-  // 'ElementObject'.
   chrome.test.assertEq('0', selectedFilter.value);
   chrome.test.assertEq('All files', selectedFilter.text);
 
@@ -1049,8 +1017,6 @@ testcase.saveFileDialogDefaultFilterKeyNavigation = async () => {
   await remoteCall.fakeKeyDown(dialog, selectControl, ...arrowUpKey);
   selectedFilter =
       await remoteCall.waitForElement(dialog, '.file-type option.selected');
-  // @ts-ignore: error TS2339: Property 'value' does not exist on type
-  // 'ElementObject'.
   chrome.test.assertEq('1', selectedFilter.value);
   chrome.test.assertEq('JPEG image', selectedFilter.text);
   // @ts-ignore: error TS2556: A spread argument must either have a tuple type
@@ -1058,8 +1024,6 @@ testcase.saveFileDialogDefaultFilterKeyNavigation = async () => {
   await remoteCall.fakeKeyDown(dialog, selectControl, ...arrowRightKey);
   selectedFilter =
       await remoteCall.waitForElement(dialog, '.file-type option.selected');
-  // @ts-ignore: error TS2339: Property 'value' does not exist on type
-  // 'ElementObject'.
   chrome.test.assertEq('1', selectedFilter.value);
   chrome.test.assertEq('JPEG image', selectedFilter.text);
 };
@@ -1086,8 +1050,6 @@ testcase.saveFileDialogSingleFilterNoAcceptAll = async () => {
   // Check: 'JPEG image' should be selected.
   const selectedFilter =
       await remoteCall.waitForElement(dialog, '.file-type option:checked');
-  // @ts-ignore: error TS2339: Property 'value' does not exist on type
-  // 'ElementObject'.
   chrome.test.assertEq('1', selectedFilter.value);
   chrome.test.assertEq('JPEG image', selectedFilter.text);
 };

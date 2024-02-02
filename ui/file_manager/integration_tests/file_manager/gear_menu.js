@@ -708,7 +708,7 @@ testcase.showAvailableStorageDrive = async () => {
           ':not([hidden])');
 
   // Check that it correctly indicates the available storage.
-  chrome.test.assertTrue(driveMenuEntry.text.trim() === '1 MB available');
+  chrome.test.assertTrue(driveMenuEntry.text?.trim() === '1 MB available');
 };
 
 /**

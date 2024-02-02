@@ -204,8 +204,6 @@ async function transferBetweenVolumes(transferInfo) {
 
   // If we're expecting a confirmation dialog, confirm that it is shown.
   if (transferInfo.expectedDialogText !== undefined) {
-    // @ts-ignore: error TS2339: Property 'innerText' does not exist on type
-    // 'ElementObject'.
     const {innerText} = await remoteCall.waitForElement(
         appId, '.cr-dialog-container.shown .cr-dialog-text');
     chrome.test.assertEq(transferInfo.expectedDialogText, innerText);
@@ -214,13 +212,9 @@ async function transferBetweenVolumes(transferInfo) {
     const okButton = await remoteCall.waitForElement(
         appId, '.cr-dialog-container.shown .cr-dialog-ok');
     chrome.test.assertEq(
-        // @ts-ignore: error TS2339: Property 'innerText' does not exist on type
-        // 'ElementObject'.
         transferInfo.expectedDialogOkButtonText, okButton.innerText);
     const cancelButton = await remoteCall.waitForElement(
         appId, '.cr-dialog-container.shown .cr-dialog-cancel');
-    // @ts-ignore: error TS2339: Property 'innerText' does not exist on type
-    // 'ElementObject'.
     chrome.test.assertEq('Cancel', cancelButton.innerText);
 
     // Press OK button.

@@ -96,7 +96,7 @@ testcase.formatDialog = async () => {
     '#warning-container:not([hidden]) #warning-message',
   ]);
   chrome.test.assertEq(
-      '51 bytes of files will be deleted', warning.text.trim());
+      '51 bytes of files will be deleted', warning.text?.trim());
 
   // Click format button.
   const formatButtonQuery = ['files-format-dialog', 'cr-button#format-button'];
@@ -344,7 +344,7 @@ testcase.formatDialogGearMenu = async () => {
   // Check the format dialog is open and the title is correct
   const title = await remoteCall.waitForElement(
       appId, ['files-format-dialog', 'cr-dialog[open] div[slot="title"]']);
-  chrome.test.assertEq('Format fake-usb', title.text.trim());
+  chrome.test.assertEq('Format fake-usb', title.text?.trim());
 
   // Click cancel button.
   const cancelButtonQuery = ['files-format-dialog', 'cr-button#cancel'];
@@ -370,7 +370,7 @@ testcase.formatDialogGearMenu = async () => {
   // Check the format dialog is open and the title is correct
   const title2 = await remoteCall.waitForElement(
       appId, ['files-format-dialog', 'cr-dialog[open] div[slot="title"]']);
-  chrome.test.assertEq('Format fake-usb', title2.text.trim());
+  chrome.test.assertEq('Format fake-usb', title2.text?.trim());
 
   // Click cancel button.
   await remoteCall.waitAndClickElement(appId, cancelButtonQuery);

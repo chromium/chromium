@@ -263,8 +263,6 @@ testcase.drivePinMultiple = async () => {
 
   // Additionally select hello.txt.
   await remoteCall.waitAndClickElement(
-      // @ts-ignore: error TS2345: Argument of type '{ shift: true; }' is not
-      // assignable to parameter of type 'KeyModifiers'.
       appId, '#file-list [file-name="hello.txt"]', {shift: true});
   await remoteCall.waitForElement(appId, '[file-name="hello.txt"][selected]');
 
@@ -335,8 +333,6 @@ testcase.drivePinHosted = async () => {
 
   // Additionally select hello.txt.
   await remoteCall.waitAndClickElement(
-      // @ts-ignore: error TS2345: Argument of type '{ shift: true; }' is not
-      // assignable to parameter of type 'KeyModifiers'.
       appId, '#file-list [file-name="hello.txt"]', {shift: true});
   await remoteCall.waitForElement(appId, '[file-name="hello.txt"][selected]');
 
@@ -1358,7 +1354,8 @@ testcase.driveDeleteDialogDoesntMentionPermanentDelete = async () => {
 
   // Check: the dialog has no mention in the text of "permanent".
   const dialogText = await remoteCall.waitForElement(appId, '.cr-dialog-text');
-  chrome.test.assertFalse(dialogText.text.toLowerCase().includes('permanent'));
+  chrome.test.assertFalse(
+      (dialogText.text ?? '').toLowerCase().includes('permanent'));
 
   // The dialog 'Delete' button should be only contain the text "Delete".
   const dialogDeleteButton =

@@ -272,7 +272,7 @@ async function getQuickViewMetadataBoxField(appId, name, hidden = '') {
   if (name === 'Date modified') {
     return sanitizeDate(element.text || '');
   } else {
-    return element.text;
+    return element.text ?? '';
   }
 }
 

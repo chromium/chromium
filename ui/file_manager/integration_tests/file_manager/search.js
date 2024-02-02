@@ -28,7 +28,7 @@ async function getSelectedOptionText(appId, type) {
     `xf-select#${type}-selector`,
     '#selected-option',
   ]);
-  return option.text;
+  return option.text ?? '';
 }
 
 /**
@@ -150,8 +150,6 @@ testcase.searchDownloadsClearSearchKeyDown = async () => {
       // @ts-ignore: error TS2345: Argument of type 'void' is not assignable to
       // parameter of type 'string'.
       await remoteCall.waitForElement(appId, '#search-box [type="search"]');
-  // @ts-ignore: error TS2339: Property 'value' does not exist on type
-  // 'ElementObject'.
   chrome.test.assertEq('', searchInput.value);
 
   // Wait until the search button get the focus.
@@ -325,8 +323,6 @@ testcase.searchQueryLaunchParam = async () => {
   await repeatUntil(async () => {
     const searchBoxInput =
         await remoteCall.waitForElement(appId, '#search-box cr-input');
-    // @ts-ignore: error TS2339: Property 'value' does not exist on type
-    // 'ElementObject'.
     if (searchBoxInput.value !== query) {
       return pending(caller, 'Waiting search box to be filled with the query.');
     }

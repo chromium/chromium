@@ -230,7 +230,7 @@ testcase.dlpShowManagedIcon = async () => {
       'to restrictions by administrator policy.';
   const label = await remoteCall.waitForElement(
       appId, ['files-tooltip[visible=true]', '#label']);
-  chrome.test.assertTrue(label.text.startsWith(labelTextPrefix));
+  chrome.test.assertTrue((label.text ?? '').startsWith(labelTextPrefix));
 };
 
 /**

@@ -8,8 +8,6 @@ preprocess_folder = "$target_gen_dir/preprocessed"
 tsc_folder = "$target_gen_dir/tsc"
 
 js_files = [
-  "element_object.js",
-  "key_modifiers.js",
   "remote_call.js",
   "test_util.js",
 

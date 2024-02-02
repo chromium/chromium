@@ -283,8 +283,6 @@ async function renameFile(appId, fileName, newName) {
   // Input the new name.
   await remoteCall.inputText(appId, textInput, newName);
   const inputElement = await remoteCall.waitForElement(appId, textInput);
-  // @ts-ignore: error TS2339: Property 'value' does not exist on type
-  // 'ElementObject'.
   chrome.test.assertEq(newName, inputElement.value);
   // Press Enter to commit renaming.
   const keyDown = [textInput, 'Enter', false, false, false];

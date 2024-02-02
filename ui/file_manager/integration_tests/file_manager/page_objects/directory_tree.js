@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {ElementObject} from '../../element_object.js';
 import {RemoteCallFilesApp} from '../../remote_call.js';
 import {sendTestMessage} from '../../test_util.js';
 
@@ -105,7 +104,7 @@ export class DirectoryTreePageObject {
    * item with the label.
    *
    * @param {string} label Label of the tree item.
-   * @return {!Promise<!ElementObject>}
+   * @return {!Promise<!import('../../prod/file_manager/shared_types.js').ElementObject>}
    */
   async waitForSelectedItemByLabel(label) {
     return this.remoteCall_.waitForElement(
@@ -133,7 +132,7 @@ export class DirectoryTreePageObject {
    * the old tree implementation) state.
    *
    * @param {string} label Label of the tree item
-   * @return {!Promise<!ElementObject>}
+   * @return {!Promise<!import('../../prod/file_manager/shared_types.js').ElementObject>}
    */
   async waitForFocusedItemByLabel(label) {
     return this.remoteCall_.waitForElement(
@@ -147,7 +146,7 @@ export class DirectoryTreePageObject {
    * the old tree implementation).
    *
    * @param {string} label Label of the tree item
-   * @return {!Promise<!ElementObject>}
+   * @return {!Promise<!import('../../prod/file_manager/shared_types.js').ElementObject>}
    */
   async waitForFocusableItemByLabel(label) {
     if (this.isNewTree) {
@@ -167,7 +166,7 @@ export class DirectoryTreePageObject {
    * old tree implementation) state.
    *
    * @param {string} type Type of the tree item.
-   * @return {!Promise<!ElementObject>}
+   * @return {!Promise<!import('../../prod/file_manager/shared_types.js').ElementObject>}
    */
   async waitForFocusedItemByType(type) {
     return this.remoteCall_.waitForElement(
@@ -183,7 +182,7 @@ export class DirectoryTreePageObject {
    * "selected" in the old tree implementation) state.
    *
    * @param {string} label Label of the tree item
-   * @return {!Promise<!ElementObject>}
+   * @return {!Promise<!import('../../prod/file_manager/shared_types.js').ElementObject>}
    */
   async waitForFocusedShortcutItemByLabel(label) {
     return this.remoteCall_.waitForElement(
@@ -199,7 +198,7 @@ export class DirectoryTreePageObject {
    * aria-description attribute.
    *
    * @param {string} label Label of the tree item
-   * @return {!Promise<!ElementObject>}
+   * @return {!Promise<!import('../../prod/file_manager/shared_types.js').ElementObject>}
    */
   async waitForCurrentDirectoryItemByLabel(label) {
     return this.remoteCall_.waitForElement(
@@ -244,7 +243,7 @@ export class DirectoryTreePageObject {
   /**
    * Get the currently focused tree item.
    *
-   * @return {!Promise<?ElementObject>}
+   * @return {!Promise<?import('../../prod/file_manager/shared_types.js').ElementObject>}
    */
   async getFocusedItem() {
     const focusedItemSelector = this.selectors_.attachModifier(
@@ -262,7 +261,8 @@ export class DirectoryTreePageObject {
   /**
    * Get the label of the tree item.
    *
-   * @param {?ElementObject} item The tree item.
+   * @param {?import('../../prod/file_manager/shared_types.js').ElementObject}
+   *     item The tree item.
    * @returns {string}
    */
   getItemLabel(item) {
@@ -278,7 +278,8 @@ export class DirectoryTreePageObject {
   /**
    * Get the volume type of the tree item.
    *
-   * @param {?ElementObject} item The tree item.
+   * @param {?import('../../prod/file_manager/shared_types.js').ElementObject|undefined}
+   *     item The tree item.
    * @returns {string}
    */
   getItemVolumeType(item) {
@@ -293,7 +294,8 @@ export class DirectoryTreePageObject {
   /**
    * Check if the tree item is disabled or not.
    *
-   * @param {?ElementObject} item The tree item.
+   * @param {?import('../../prod/file_manager/shared_types.js').ElementObject}
+   *     item The tree item.
    */
   assertItemDisabled(item) {
     if (!item) {
@@ -309,7 +311,7 @@ export class DirectoryTreePageObject {
    *
    * @param {string} label Label of the tree item.
    * @param {boolean} hasChildren should the tree item have children or not.
-   * @return {!Promise<!ElementObject>}
+   * @return {!Promise<!import('../../prod/file_manager/shared_types.js').ElementObject>}
    */
   async waitForItemToHaveChildrenByLabel(label, hasChildren) {
     // Expand the item first before checking its children.
@@ -329,7 +331,7 @@ export class DirectoryTreePageObject {
    *
    * @param {string} type Type of the tree item.
    * @param {boolean} hasChildren should the tree item have children or not.
-   * @return {!Promise<!ElementObject>}
+   * @return {!Promise<!import('../../prod/file_manager/shared_types.js').ElementObject>}
    */
   async waitForItemToHaveChildrenByType(type, hasChildren) {
     // Expand the item first before checking its children.
@@ -349,7 +351,7 @@ export class DirectoryTreePageObject {
    * Wait for the item with the label to get the `may-have-children` attribute.
    *
    * @param {string} label Label of the tree item.
-   * @return {!Promise<!ElementObject>}
+   * @return {!Promise<!import('../../prod/file_manager/shared_types.js').ElementObject>}
    */
   async waitForItemToMayHaveChildrenByLabel(label) {
     return this.remoteCall_.waitForElement(
@@ -562,7 +564,7 @@ export class DirectoryTreePageObject {
    * Wait for the tree item by its label.
    *
    * @param {string} label Label of the tree item.
-   * @return {!Promise<!ElementObject>}
+   * @return {!Promise<!import('../../prod/file_manager/shared_types.js').ElementObject>}
    */
   async waitForItemByLabel(label) {
     return this.remoteCall_.waitForElement(
@@ -584,7 +586,7 @@ export class DirectoryTreePageObject {
    * Wait for the tree item by its full path.
    *
    * @param {string} path Path of the tree item.
-   * @return {!Promise<!ElementObject>}
+   * @return {!Promise<!import('../../prod/file_manager/shared_types.js').ElementObject>}
    */
   async waitForItemByPath(path) {
     return this.remoteCall_.waitForElement(
@@ -609,12 +611,14 @@ export class DirectoryTreePageObject {
    */
   async getVisibleItemLabels() {
     const allItems =
-        /** @type {!Array<!ElementObject>} */ (
-            await this.remoteCall_.callRemoteTestUtil(
-                'queryAllElements', this.appId_, [
-                  `${this.selectors_.root} ${this.selectors_.item}`,
-                  ['visibility'],
-                ]));
+        /**
+           @type {!Array<!import('../../prod/file_manager/shared_types.js').ElementObject>}
+             */
+        (await this.remoteCall_.callRemoteTestUtil(
+            'queryAllElements', this.appId_, [
+              `${this.selectors_.root} ${this.selectors_.item}`,
+              ['visibility'],
+            ]));
     return allItems
         // @ts-ignore: error TS18048: 'item.styles' is possibly 'undefined'.
         .filter(item => !item.hidden && item.styles['visibility'] !== 'hidden')
@@ -625,7 +629,7 @@ export class DirectoryTreePageObject {
    * Wait for the tree item by its type.
    *
    * @param {string} type Type of the tree item.
-   * @return {!Promise<!ElementObject>}
+   * @return {!Promise<!import('../../prod/file_manager/shared_types.js').ElementObject>}
    */
   async waitForItemByType(type) {
     return this.remoteCall_.waitForElement(
@@ -649,7 +653,7 @@ export class DirectoryTreePageObject {
    * Wait for the placeholder tree item by its type.
    *
    * @param {string} type Type of the tree item.
-   * @return {!Promise<!ElementObject>}
+   * @return {!Promise<!import('../../prod/file_manager/shared_types.js').ElementObject>}
    */
   async waitForPlaceholderItemByType(type) {
     return this.remoteCall_.waitForElement(
@@ -673,7 +677,7 @@ export class DirectoryTreePageObject {
    * Wait for the shortcut tree item by its label.
    *
    * @param {string} label Label of the tree item.
-   * @return {!Promise<!ElementObject>}
+   * @return {!Promise<!import('../../prod/file_manager/shared_types.js').ElementObject>}
    */
   async waitForShortcutItemByLabel(label) {
     return this.remoteCall_.waitForElement(
@@ -700,7 +704,7 @@ export class DirectoryTreePageObject {
    *
    * @param {string} parentLabel Label of the parent item.
    * @param {string} childLabel Label of the child item.
-   * @return {!Promise<!ElementObject>}
+   * @return {!Promise<!import('../../prod/file_manager/shared_types.js').ElementObject>}
    */
   async waitForChildItemByLabel(parentLabel, childLabel) {
     return this.remoteCall_.waitForElement(
@@ -730,7 +734,7 @@ export class DirectoryTreePageObject {
    * Wait for the group root tree item (e.g. entry list) by its type.
    *
    * @param {string} type Type of the tree item.
-   * @return {!Promise<!ElementObject>}
+   * @return {!Promise<!import('../../prod/file_manager/shared_types.js').ElementObject>}
    */
   async waitForGroupRootItemByType(type) {
     return this.remoteCall_.waitForElement(
@@ -741,7 +745,7 @@ export class DirectoryTreePageObject {
    * Returns the child items of a parent item specified by its label.
    *
    * @param {string} parentLabel Label of the parent item.
-   * @return {!Promise<!Array<!ElementObject>>}
+   * @return {!Promise<!Array<!import('../../prod/file_manager/shared_types.js').ElementObject>>}
    */
   async getChildItemsByParentLabel(parentLabel) {
     const parentItemSelector = this.selectors_.itemByLabel(parentLabel);
@@ -754,7 +758,7 @@ export class DirectoryTreePageObject {
    * Wait for the eject button under the tree item by its type.
    *
    * @param {string} type Type of the tree item.
-   * @return {!Promise<!ElementObject>}
+   * @return {!Promise<!import('../../prod/file_manager/shared_types.js').ElementObject>}
    */
   async waitForItemEjectButtonByType(type) {
     return this.remoteCall_.waitForElement(
@@ -778,7 +782,7 @@ export class DirectoryTreePageObject {
    * Click the eject button under the tree item by its type.
    *
    * @param {string} type Type of the tree item.
-   * @return {!Promise<!ElementObject>}
+   * @return {!Promise<!import('../../prod/file_manager/shared_types.js').ElementObject>}
    */
   async ejectItemByType(type) {
     return this.remoteCall_.waitAndClickElement(
@@ -790,7 +794,7 @@ export class DirectoryTreePageObject {
    * Click the eject button under the tree item by its label.
    *
    * @param {string} label Label of the tree item.
-   * @return {!Promise<!ElementObject>}
+   * @return {!Promise<!import('../../prod/file_manager/shared_types.js').ElementObject>}
    */
   async ejectItemByLabel(label) {
     return this.remoteCall_.waitAndClickElement(
@@ -940,7 +944,7 @@ export class DirectoryTreePageObject {
    * Waits for the rename input to show inside the tree item.
    *
    * @param {string} label Label of the tree item.
-   * @return {!Promise<!ElementObject>}
+   * @return {!Promise<!import('../../prod/file_manager/shared_types.js').ElementObject>}
    */
   async waitForRenameInputByLabel(label) {
     const itemSelector = this.selectors_.itemByLabel(label);

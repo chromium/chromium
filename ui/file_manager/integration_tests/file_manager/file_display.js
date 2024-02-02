@@ -365,8 +365,6 @@ testcase.fileDisplayUsbPartition = async () => {
     const itemEntries =
         await directoryTree.getChildItemsByParentLabel('FAKEUSB');
     chrome.test.assertEq(1, itemEntries.length);
-    // @ts-ignore: error TS2345: Argument of type 'ElementObject | undefined' is
-    // not assignable to parameter of type 'ElementObject | null'.
     const childVolumeType = directoryTree.getItemVolumeType(itemEntries[0]);
     chrome.test.assertTrue('removable' === childVolumeType);
   } else {
@@ -379,8 +377,6 @@ testcase.fileDisplayUsbPartition = async () => {
     const itemEntries =
         await directoryTree.getChildItemsByParentLabel('fake-usb');
     chrome.test.assertEq(1, itemEntries.length);
-    // @ts-ignore: error TS2345: Argument of type 'ElementObject | undefined' is
-    // not assignable to parameter of type 'ElementObject | null'.
     const childVolumeType = directoryTree.getItemVolumeType(itemEntries[0]);
     chrome.test.assertTrue('removable' !== childVolumeType);
   }

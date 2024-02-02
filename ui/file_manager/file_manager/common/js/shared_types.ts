@@ -161,3 +161,32 @@ export class MetadataStats {
   /** Total of calls to function clearAllCache. */
   clearAllCount: number = 0;
 }
+
+export interface ElementObject {
+  attributes: Record<string, string|null>;
+  text: string|null;
+  innerText: string|null;
+  value: string|null;
+  styles?: Record<string, string>;
+  hidden: boolean;
+  hasShadowRoot: boolean;
+  imageWidth?: number;
+  imageHeight?: number;
+  renderedWidth?: number;
+  renderedHeight?: number;
+  renderedTop?: number;
+  renderedLeft?: number;
+  scrollLeft?: number;
+  scrollTop?: number;
+  scrollWidth?: number;
+  scrollHeight?: number;
+}
+
+/**
+ * Object containing common key modifiers: shift, alt, and ctrl.
+ */
+export interface KeyModifiers {
+  shift?: boolean;
+  alt?: boolean;
+  ctrl?: boolean;
+}
