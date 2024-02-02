@@ -218,7 +218,12 @@ const ComputedStyle* GetComputedStyleFromScrollbar(
       scrollable_area = layout_object.View()->GetScrollableArea();
     }
 
-    CHECK(scrollable_area);
+    // TODO(crbug.com/1519197): if the mouse is over a scroll corner, there must
+    // be a scrollable area. Investigate where this is coming from.
+    if (!scrollable_area) {
+      return nullptr;
+    }
+
     LayoutCustomScrollbarPart* scroll_corner_layout_object =
         scrollable_area->ScrollCorner();
     if (scroll_corner_layout_object) {
