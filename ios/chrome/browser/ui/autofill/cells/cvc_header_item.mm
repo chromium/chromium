@@ -120,7 +120,7 @@ BOOL VirtualCardFeatureEnabled() {
                            constant:-HorizontalPadding()],
         [_instructionsLabel.bottomAnchor
             constraintEqualToAnchor:self.contentView.bottomAnchor
-                           constant:-kTableViewVerticalSpacing],
+                           constant:-kTableViewLargeVerticalSpacing],
       ]];
     } else {
       [NSLayoutConstraint activateConstraints:@[
