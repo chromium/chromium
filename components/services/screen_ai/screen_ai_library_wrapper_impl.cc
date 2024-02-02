@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/services/screen_ai/screen_ai_library_wrapper.h"
+#include "components/services/screen_ai/screen_ai_library_wrapper_impl.h"
 
 #include "base/metrics/histogram_functions.h"
 #include "ui/accessibility/accessibility_features.h"
@@ -31,19 +31,11 @@ void HandleLibraryLogging(int severity, const char* message) {
 
 }  // namespace
 
-ScreenAILibraryWrapper::MainContentExtractionModelData::
-    MainContentExtractionModelData(std::vector<char> config,
-                                   std::vector<char> tflite)
-    : config(std::move(config)), tflite(std::move(tflite)) {}
-
-ScreenAILibraryWrapper::MainContentExtractionModelData::
-    ~MainContentExtractionModelData() = default;
-
-ScreenAILibraryWrapper::ScreenAILibraryWrapper() = default;
+ScreenAILibraryWrapperImpl::ScreenAILibraryWrapperImpl() = default;
 
 template <typename T>
-bool ScreenAILibraryWrapper::LoadFunction(T& function_variable,
-                                          const char* function_name) {
+bool ScreenAILibraryWrapperImpl::LoadFunction(T& function_variable,
+                                              const char* function_name) {
   function_variable =
       reinterpret_cast<T>(library_.GetFunctionPointer(function_name));
   if (function_variable == nullptr) {
@@ -53,7 +45,7 @@ bool ScreenAILibraryWrapper::LoadFunction(T& function_variable,
   return true;
 }
 
-bool ScreenAILibraryWrapper::Load(const base::FilePath& library_path) {
+bool ScreenAILibraryWrapperImpl::Load(const base::FilePath& library_path) {
   library_ = base::ScopedNativeLibrary(library_path);
 
 #if BUILDFLAG(IS_WIN)
@@ -116,21 +108,21 @@ bool ScreenAILibraryWrapper::Load(const base::FilePath& library_path) {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 NO_SANITIZE("cfi-icall")
-void ScreenAILibraryWrapper::ScreenAILibraryWrapper::SetLogger() {
+void ScreenAILibraryWrapperImpl::ScreenAILibraryWrapperImpl::SetLogger() {
   CHECK(set_logger_);
   set_logger_(&HandleLibraryLogging);
 }
 #endif
 
 NO_SANITIZE("cfi-icall")
-void ScreenAILibraryWrapper::GetLibraryVersion(uint32_t& major,
-                                               uint32_t& minor) {
+void ScreenAILibraryWrapperImpl::GetLibraryVersion(uint32_t& major,
+                                                   uint32_t& minor) {
   CHECK(get_library_version_);
   get_library_version_(major, minor);
 }
 
 NO_SANITIZE("cfi-icall")
-void ScreenAILibraryWrapper::SetFileContentFunctions(
+void ScreenAILibraryWrapperImpl::SetFileContentFunctions(
     uint32_t (*get_file_content_size)(const char* /*relative_file_path*/),
     void (*get_file_content)(const char* /*relative_file_path*/,
                              uint32_t /*buffer_size*/,
@@ -140,32 +132,32 @@ void ScreenAILibraryWrapper::SetFileContentFunctions(
 }
 
 NO_SANITIZE("cfi-icall")
-void ScreenAILibraryWrapper::EnableDebugMode() {
+void ScreenAILibraryWrapperImpl::EnableDebugMode() {
   CHECK(enable_debug_mode_);
   enable_debug_mode_();
 }
 
 NO_SANITIZE("cfi-icall")
-bool ScreenAILibraryWrapper::InitLayoutExtraction() {
+bool ScreenAILibraryWrapperImpl::InitLayoutExtraction() {
   CHECK(init_layout_extraction_);
   return init_layout_extraction_();
 }
 
 NO_SANITIZE("cfi-icall")
-bool ScreenAILibraryWrapper::InitOCR() {
+bool ScreenAILibraryWrapperImpl::InitOCR() {
   CHECK(init_ocr_);
   return init_ocr_();
 }
 
 NO_SANITIZE("cfi-icall")
-bool ScreenAILibraryWrapper::InitMainContentExtraction() {
+bool ScreenAILibraryWrapperImpl::InitMainContentExtraction() {
   CHECK(init_main_content_extraction_);
   return init_main_content_extraction_();
 }
 
 NO_SANITIZE("cfi-icall")
 std::optional<chrome_screen_ai::VisualAnnotation>
-ScreenAILibraryWrapper::PerformOcr(const SkBitmap& image) {
+ScreenAILibraryWrapperImpl::PerformOcr(const SkBitmap& image) {
   CHECK(perform_ocr_);
   CHECK(free_library_allocated_char_array_);
 
@@ -194,7 +186,7 @@ ScreenAILibraryWrapper::PerformOcr(const SkBitmap& image) {
 
 NO_SANITIZE("cfi-icall")
 std::optional<chrome_screen_ai::VisualAnnotation>
-ScreenAILibraryWrapper::ExtractLayout(const SkBitmap& image) {
+ScreenAILibraryWrapperImpl::ExtractLayout(const SkBitmap& image) {
   CHECK(extract_layout_);
   CHECK(free_library_allocated_char_array_);
 
@@ -221,7 +213,8 @@ ScreenAILibraryWrapper::ExtractLayout(const SkBitmap& image) {
 }
 
 NO_SANITIZE("cfi-icall")
-std::optional<std::vector<int32_t>> ScreenAILibraryWrapper::ExtractMainContent(
+std::optional<std::vector<int32_t>>
+ScreenAILibraryWrapperImpl::ExtractMainContent(
     const std::string& serialized_view_hierarchy) {
   CHECK(extract_main_content_);
   CHECK(free_library_allocated_int32_array_);

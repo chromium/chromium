@@ -27,6 +27,12 @@
 #include "ui/accessibility/ax_tree_id.h"
 #include "ui/gfx/geometry/rect_f.h"
 
+#if defined(MEMORY_SANITIZER)
+#include "components/services/screen_ai/screen_ai_library_wrapper_fake.h"
+#else
+#include "components/services/screen_ai/screen_ai_library_wrapper_impl.h"
+#endif
+
 namespace screen_ai {
 
 namespace {
@@ -129,7 +135,12 @@ ScreenAIService::~ScreenAIService() = default;
 
 void ScreenAIService::LoadLibrary(const base::FilePath& library_path) {
   DCHECK(!content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
-  library_ = std::make_unique<ScreenAILibraryWrapper>();
+
+#if defined(MEMORY_SANITIZER)
+  library_ = std::make_unique<ScreenAILibraryWrapperFake>();
+#else
+  library_ = std::make_unique<ScreenAILibraryWrapperImpl>();
+#endif
 
   bool load_sucessful = library_->Load(library_path);
   base::UmaHistogramBoolean("Accessibility.ScreenAI.Library.Initialized",
