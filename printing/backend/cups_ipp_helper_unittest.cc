@@ -1034,6 +1034,42 @@ TEST_F(PrintBackendCupsIppHelperTest,
            media_info{5800, 4000, 0, 0, 0, 0, {}, false, 0, true, 100000}}));
 }
 
+TEST_F(PrintBackendCupsIppHelperTest,
+       OverrideUnavailableCanonDefaultMediaType) {
+  printer_->SetSupportedOptions(
+      "media-type",
+      MakeStringCollection(ipp_, {"com.canon.unavailable", "stationery"}));
+  printer_->SetOptionDefault("media-type",
+                             MakeString(ipp_, "com.canon.unavailable"));
+
+  printer_->SetLocalizedOptionValueNames({
+      {{"media-type", "com.canon.unavailable"}, "Unavailable Media"},
+      {{"media-type", "stationery"}, "Plain Paper"},
+  });
+
+  PrinterSemanticCapsAndDefaults caps;
+  CapsAndDefaultsFromPrinter(*printer_, &caps);
+  EXPECT_EQ(caps.default_media_type.vendor_id, "stationery");
+}
+
+TEST_F(PrintBackendCupsIppHelperTest,
+       OverrideUnavailableCanonDefaultMediaTypeStationeryUnavailable) {
+  printer_->SetSupportedOptions(
+      "media-type",
+      MakeStringCollection(ipp_, {"com.canon.unavailable", "not.stationery"}));
+  printer_->SetOptionDefault("media-type",
+                             MakeString(ipp_, "com.canon.unavailable"));
+
+  printer_->SetLocalizedOptionValueNames({
+      {{"media-type", "com.canon.unavailable"}, "Unavailable Media"},
+      {{"media-type", "not.stationery"}, "Not Plain Paper"},
+  });
+
+  PrinterSemanticCapsAndDefaults caps;
+  CapsAndDefaultsFromPrinter(*printer_, &caps);
+  EXPECT_EQ(caps.default_media_type.vendor_id, "com.canon.unavailable");
+}
+
 #if BUILDFLAG(IS_CHROMEOS)
 TEST_F(PrintBackendCupsIppHelperTest, PinSupported) {
   printer_->SetSupportedOptions("job-password", MakeInteger(ipp_, 4));
