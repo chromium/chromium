@@ -44,9 +44,6 @@ class UserPerformanceTuningNotifier : public performance_manager::GraphOwned,
     // Called when the current total resident set size of all processes exceeds
     // `resident_set_threshold_kb`.
     virtual void NotifyMemoryThresholdReached() = 0;
-
-    // Called when the memory metrics for a discarded tab is available to read
-    virtual void NotifyMemoryMetricsRefreshed(ProxyAndPmfKbVector) = 0;
   };
 
   UserPerformanceTuningNotifier(std::unique_ptr<Receiver> delegate,
@@ -63,8 +60,6 @@ class UserPerformanceTuningNotifier : public performance_manager::GraphOwned,
   void OnBeforePageNodeRemoved(const PageNode* page_node) override;
   void OnTypeChanged(const PageNode* page_node,
                      PageType previous_type) override;
-  void OnLoadingStateChanged(const PageNode* page_node,
-                             PageNode::LoadingState previous_state) override;
 
   // SystemNode::ObserverDefaultImpl:
   void OnProcessMemoryMetricsAvailable(const SystemNode* system_node) override;
