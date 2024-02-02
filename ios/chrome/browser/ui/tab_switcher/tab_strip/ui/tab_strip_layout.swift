@@ -102,9 +102,16 @@ class TabStripLayout: UICollectionViewFlowLayout {
     -> UICollectionViewLayoutAttributes?
   {
     guard
-      let attributes: UICollectionViewLayoutAttributes =
-        self.layoutAttributesForItem(at: itemIndexPath)
+      var attributes: UICollectionViewLayoutAttributes =
+        super.finalLayoutAttributesForDisappearingItem(at: itemIndexPath)
     else { return nil }
+
+    /// Update `attributes` if the disappearing cell is selected.
+    if let selectedAttributes = self.layoutAttributesForSelectedCell(
+      layoutAttributes: attributes)
+    {
+      attributes = selectedAttributes
+    }
 
     if indexPathsOfDeletingItems.contains(itemIndexPath) {
       // Animate the disappearing item by fading it out and translating it down
