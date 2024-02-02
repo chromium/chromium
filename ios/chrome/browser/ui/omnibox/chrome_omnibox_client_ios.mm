@@ -170,8 +170,6 @@ void ChromeOmniboxClientIOS::OnUserPastedInOmniboxResultingInValidURL() {
       HasRecentValidURLPastesAndRecordsCurrentPaste()) {
     engagement_tracker_->NotifyEvent(
         feature_engagement::events::kBlueDotPromoCriterionMet);
-    engagement_tracker_->NotifyEvent(
-        feature_engagement::events::kDefaultBrowserVideoPromoConditionsMet);
   }
 }
 

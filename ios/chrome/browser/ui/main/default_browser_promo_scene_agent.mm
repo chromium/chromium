@@ -9,7 +9,6 @@
 #import "base/version.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
-#import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/promos_manager/model/constants.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider.h"
@@ -79,12 +78,8 @@
 #pragma mark - BaseDefaultBrowserPromoSchedulerSceneAgent
 
 - (bool)promoCanBeDisplayed {
-  ChromeBrowserState* browserState =
-      self.sceneState.browserProviderInterface.mainBrowserProvider.browser
-          ->GetBrowserState();
-  return ShouldRegisterPromoWithPromoManager(
-      self.signedIn, /*is_omnibox_copy_paste=*/true,
-      feature_engagement::TrackerFactory::GetForBrowserState(browserState));
+  return ShouldRegisterPromoWithPromoManager(self.signedIn,
+                                             /*is_omnibox_copy_paste=*/true);
 }
 
 - (void)resetPromoHandler {
@@ -117,16 +112,10 @@
   // Post Restore promo takes priority over other default browser promos.
   [self maybeRegisterPostRestorePromo];
 
-  ChromeBrowserState* browserState =
-      self.sceneState.browserProviderInterface.mainBrowserProvider.browser
-          ->GetBrowserState();
-
   // Register default browser promo manager to the promo manager.
   DCHECK(self.promosManager);
-  if (ShouldRegisterPromoWithPromoManager(
-          self.signedIn, /*is_omnibox_copy_paste=*/false,
-          feature_engagement::TrackerFactory::GetForBrowserState(
-              browserState))) {
+  if (ShouldRegisterPromoWithPromoManager(self.signedIn,
+                                          /*is_omnibox_copy_paste=*/false)) {
     self.promosManager->RegisterPromoForSingleDisplay(
         promos_manager::Promo::DefaultBrowser);
   } else {

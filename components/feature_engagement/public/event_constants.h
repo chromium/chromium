@@ -193,10 +193,6 @@ extern const char kHistoryOnOverflowMenuUsed[];
 // The share item on the toolbar is used.
 extern const char kShareToolbarItemUsed[];
 
-// The user has met a condition that makes the default browser video promo
-// eligible to be displayed.
-extern const char kDefaultBrowserVideoPromoConditionsMet[];
-
 // The user has triggered the Lens button in the Omnibox keyboard.
 extern const char kLensButtonKeyboardUsed[];
 

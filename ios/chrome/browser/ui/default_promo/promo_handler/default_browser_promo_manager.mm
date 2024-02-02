@@ -22,15 +22,6 @@
 #import "ios/chrome/browser/ui/policy/user_policy_util.h"
 #import "ios/chrome/browser/ui/promos_manager/promos_manager_ui_handler.h"
 
-namespace {
-
-enum class DisplayedVideoPromo {
-  VideoPromo,
-  VideoPromoReminder,
-};
-
-}  // namespace
-
 @interface DefaultBrowserPromoManager () <DefaultBrowserPromoCommands>
 
 // Default browser promo command handler.
@@ -47,11 +38,6 @@ enum class DisplayedVideoPromo {
 
 // Coordinator that manages the tailored promo modals.
 @property(nonatomic, strong) TailoredPromoCoordinator* tailoredPromoCoordinator;
-
-// Tracks whether or not the Video promo Feature Engagement Tracker should be
-// dismissed.
-@property(nonatomic, assign) std::optional<DisplayedVideoPromo>
-    displayedVideoPromoForFET;
 
 // Feature engagement tracker reference.
 @property(nonatomic, assign) feature_engagement::Tracker* tracker;
@@ -97,17 +83,7 @@ enum class DisplayedVideoPromo {
     return;
   }
 
-  // Video promo takes priority over other default browser promos.
-  BOOL isDBVideoPromoEnabled =
-      IsDBVideoPromoHalfscreenEnabled() || IsDBVideoPromoFullscreenEnabled();
-  if (isDBVideoPromoEnabled && [self maybeTriggerVideoPromoWithFET]) {
-    return;
-  }
-
   if (self.promoWasFromRemindMeLater) {
-    // Remind Me Later only shows up on the Video Promo UI, so if this is a
-    // reminder, use the video UI again.
-    self.displayedVideoPromoForFET = DisplayedVideoPromo::VideoPromoReminder;
     [self showPromo:DefaultPromoTypeVideo];
     return;
   }
@@ -121,12 +97,10 @@ enum class DisplayedVideoPromo {
     return;
   }
 
-  // When the default browser video promo with generic triggering conditions is
-  // enabled, the generic default btowser promo is replaced with the video
-  // promo.
-  BOOL isGenericPromoVideo = IsDBVideoPromoWithGenericFullscreenEnabled() ||
-                             IsDBVideoPromoWithGenericHalfscreenEnabled();
-  if (isGenericPromoVideo) {
+  // When the default browser video promo is enabled, show the video promo.
+  BOOL isVideoPromoEnabled =
+      IsDBVideoPromoFullscreenEnabled() || IsDBVideoPromoHalfscreenEnabled();
+  if (isVideoPromoEnabled) {
     [self showPromo:DefaultPromoTypeVideo];
     return;
   }
@@ -136,17 +110,9 @@ enum class DisplayedVideoPromo {
 
 - (void)stop {
   [self.videoDefaultPromoCoordinator stop];
-  if (self.displayedVideoPromoForFET && self.tracker) {
-    switch (self.displayedVideoPromoForFET.value()) {
-      case DisplayedVideoPromo::VideoPromo:
-        self.tracker->Dismissed(
-            feature_engagement::kIPHiOSDefaultBrowserVideoPromoTriggerFeature);
-        break;
-      case DisplayedVideoPromo::VideoPromoReminder:
-        self.tracker->Dismissed(
-            feature_engagement::kIPHiOSPromoDefaultBrowserReminderFeature);
-        break;
-    }
+  if (self.promoWasFromRemindMeLater && self.tracker) {
+    self.tracker->Dismissed(
+        feature_engagement::kIPHiOSPromoDefaultBrowserReminderFeature);
   }
   self.videoDefaultPromoCoordinator = nil;
 
@@ -216,8 +182,7 @@ enum class DisplayedVideoPromo {
                              browser:self.browser];
   self.videoDefaultPromoCoordinator.handler = self;
   self.videoDefaultPromoCoordinator.isHalfScreen =
-      IsDBVideoPromoHalfscreenEnabled() ||
-      IsDBVideoPromoWithGenericHalfscreenEnabled();
+      IsDBVideoPromoHalfscreenEnabled();
   BOOL showRemindMeLater =
       base::FeatureList::IsEnabled(
           feature_engagement::kIPHiOSPromoDefaultBrowserReminderFeature) &&
@@ -242,19 +207,6 @@ enum class DisplayedVideoPromo {
                             type:type];
   self.tailoredPromoCoordinator.handler = self;
   [self.tailoredPromoCoordinator start];
-}
-
-- (BOOL)maybeTriggerVideoPromoWithFET {
-  if (self.tracker && IsVideoPromoEligibleUser(self.tracker)) {
-    if (self.tracker->ShouldTriggerHelpUI(
-            feature_engagement::
-                kIPHiOSDefaultBrowserVideoPromoTriggerFeature)) {
-      self.displayedVideoPromoForFET = DisplayedVideoPromo::VideoPromo;
-      [self showPromo:DefaultPromoTypeVideo];
-      return true;
-    }
-  }
-  return false;
 }
 
 @end

@@ -610,13 +610,6 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
   // start.
   tracker->NotifyEvent(feature_engagement::events::kChromeOpened);
 
-  // Send "default_browser_video_promo_conditions_met" event to the
-  // feature_engagement::Tracker on cold start.
-  if (HasAppLaunchedOnColdStartAndRecordsLaunch()) {
-    tracker->NotifyEvent(
-        feature_engagement::events::kDefaultBrowserVideoPromoConditionsMet);
-  }
-
   _spotlightManager =
       [SpotlightManager spotlightManagerWithBrowserState:chromeBrowserState];
 

@@ -1202,8 +1202,6 @@ void InjectNTP(Browser* browser) {
         feature_engagement::TrackerFactory::GetForBrowserState(browserState);
 
     tracker->NotifyEvent(feature_engagement::events::kBlueDotPromoCriterionMet);
-    tracker->NotifyEvent(
-        feature_engagement::events::kDefaultBrowserVideoPromoConditionsMet);
   }
 }
 

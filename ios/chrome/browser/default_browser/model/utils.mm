@@ -109,11 +109,6 @@ NSString* const kTimestampAppLastOpenedViaFirstPartyIntent =
 // valid URL into the omnibox.
 NSString* const kTimestampLastValidURLPasted = @"TimestampLastValidURLPasted";
 
-// Key in storage containing the timestamp of the last time the user opened the
-// app via first-party intent.
-NSString* const kTimestampAppLaunchOnColdStart =
-    @"TimestampAppLaunchedOnColdStart";
-
 const char kDefaultBrowserPromoForceShowPromo[] =
     "default-browser-promo-force-show-promo";
 
@@ -142,10 +137,6 @@ constexpr base::TimeDelta kPromosShortCoolDown = base::Days(3);
 
 // Maximum time range between first-party app launches to notify the FET.
 constexpr base::TimeDelta kMaximumTimeBetweenFirstPartyAppLaunches =
-    base::Days(7);
-
-// Maximum time range between app launches on cold start to notify the FET.
-constexpr base::TimeDelta kMaximumTimeBetweenAppColdStartLaunches =
     base::Days(7);
 
 // Maximum time range between valid user URL pastes to notify the FET.
@@ -507,14 +498,8 @@ NSString* const kBookmarkUseCount = @"BookmarkUseCount";
 NSString* const kAutofillUseCount = @"AutofillUseCount";
 NSString* const kSpecialTabsUseCount = @"SpecialTabUseCount";
 
-const char kVideoConditionsFullscreenPromo[] =
-    "video_conditions_fullscreen_promo";
-const char kVideoConditionsHalfscreenPromo[] =
-    "video_conditions_halfscreen_promo";
-const char kGenericConditionsFullscreenPromo[] =
-    "generic_conditions_fullscreen_promo";
-const char kGenericConditionsHalfscreenPromo[] =
-    "generic_conditions_halfscreen_promo";
+const char kVideoFullscreenPromo[] = "generic_conditions_fullscreen_promo";
+const char kVideoHalfscreenPromo[] = "generic_conditions_halfscreen_promo";
 const char kDefaultBrowserVideoPromoVariant[] =
     "default_browser_video_promo_variant";
 
@@ -552,11 +537,6 @@ void LogToFETUserPastedURLIntoOmnibox(feature_engagement::Tracker* tracker) {
 
   if (HasRecentValidURLPastesAndRecordsCurrentPaste()) {
     tracker->NotifyEvent(feature_engagement::events::kBlueDotPromoCriterionMet);
-
-    if (IsDefaultBrowserVideoPromoEnabled()) {
-      tracker->NotifyEvent(
-          feature_engagement::events::kDefaultBrowserVideoPromoConditionsMet);
-    }
   }
 }
 
@@ -627,20 +607,12 @@ bool IsFullScreenPromoOnOmniboxCopyPasteEnabled() {
   return base::FeatureList::IsEnabled(kFullScreenPromoOnOmniboxCopyPaste);
 }
 
-bool IsDBVideoPromoHalfscreenEnabled() {
-  return GetVideoPromoVariant().compare(kVideoConditionsHalfscreenPromo) == 0;
-}
-
 bool IsDBVideoPromoFullscreenEnabled() {
-  return GetVideoPromoVariant().compare(kVideoConditionsFullscreenPromo) == 0;
+  return GetVideoPromoVariant().compare(kVideoFullscreenPromo) == 0;
 }
 
-bool IsDBVideoPromoWithGenericFullscreenEnabled() {
-  return GetVideoPromoVariant().compare(kGenericConditionsFullscreenPromo) == 0;
-}
-
-bool IsDBVideoPromoWithGenericHalfscreenEnabled() {
-  return GetVideoPromoVariant().compare(kGenericConditionsHalfscreenPromo) == 0;
+bool IsDBVideoPromoHalfscreenEnabled() {
+  return GetVideoPromoVariant().compare(kVideoHalfscreenPromo) == 0;
 }
 
 bool IsNonModalDefaultBrowserPromoCooldownRefactorEnabled() {
@@ -941,23 +913,8 @@ int GetNonModalDefaultBrowserPromoImpressionLimit() {
   return limit;
 }
 
-bool HasAppLaunchedOnColdStartAndRecordsLaunch() {
-  if (HasRecordedEventForKeyLessThanDelay(
-          kTimestampAppLaunchOnColdStart,
-          kMaximumTimeBetweenAppColdStartLaunches)) {
-    SetObjectIntoStorageForKey(kTimestampAppLaunchOnColdStart, [NSDate date]);
-    return YES;
-  }
-
-  // Add a new timestamp if the timestamp was never recorded or if it was
-  // recorded more than the maximum time between app cold starts.
-  SetObjectIntoStorageForKey(kTimestampAppLaunchOnColdStart, [NSDate date]);
-  return NO;
-}
-
 bool ShouldRegisterPromoWithPromoManager(bool is_signed_in,
-                                         bool is_omnibox_copy_paste,
-                                         feature_engagement::Tracker* tracker) {
+                                         bool is_omnibox_copy_paste) {
   if (ShouldForceDefaultPromoType()) {
     return YES;
   }
@@ -985,8 +942,7 @@ bool ShouldRegisterPromoWithPromoManager(bool is_signed_in,
   // tailored or generic default browser promo.
   return !UserInFullscreenPromoCooldown() &&
          (IsTailoredPromoEligibleUser(is_signed_in) ||
-          IsGeneralPromoEligibleUser(is_signed_in) ||
-          IsVideoPromoEligibleUser(tracker));
+          IsGeneralPromoEligibleUser(is_signed_in));
 }
 
 bool IsTailoredPromoEligibleUser(bool is_signed_in) {
@@ -1009,22 +965,6 @@ bool IsGeneralPromoEligibleUser(bool is_signed_in) {
   return !HasUserInteractedWithFullscreenPromoBefore() &&
          (IsLikelyInterestedDefaultBrowserUser(DefaultPromoTypeGeneral) ||
           is_signed_in);
-}
-
-bool IsVideoPromoEligibleUser(feature_engagement::Tracker* tracker) {
-  BOOL is_db_video_promo_enabled =
-      IsDBVideoPromoHalfscreenEnabled() || IsDBVideoPromoFullscreenEnabled();
-  if (!is_db_video_promo_enabled) {
-    return false;
-  }
-
-  if (!tracker ||
-      !tracker->WouldTriggerHelpUI(
-          feature_engagement::kIPHiOSDefaultBrowserVideoPromoTriggerFeature)) {
-    return false;
-  }
-
-  return true;
 }
 
 bool IsPostRestoreDefaultBrowserEligibleUser() {
