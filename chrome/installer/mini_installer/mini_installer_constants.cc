@@ -18,6 +18,7 @@ const wchar_t kSetupPrefix[] = L"setup";
 
 // Command line switch names for setup.exe.
 const wchar_t kCmdInstallArchive[] = L"install-archive";
+const wchar_t kCmdUncompressedArchive[] = L"uncompressed-archive";
 const wchar_t kCmdUpdateSetupExe[] = L"update-setup-exe";
 const wchar_t kCmdNewSetupExe[] = L"new-setup-exe";
 const wchar_t kCmdPreviousVersion[] = L"previous-version";
@@ -31,6 +32,10 @@ const wchar_t kFullInstallerSuffix[] = L"-full";
 // The resource types that would be unpacked from the mini installer.
 // Uncompressed binary.
 const wchar_t kBinResourceType[] = L"BN";
+#if defined(COMPONENT_BUILD)
+// Uncompressed dependency for component builds.
+const wchar_t kDepResourceType[] = L"BD";
+#endif
 // LZ compressed binary.
 const wchar_t kLZCResourceType[] = L"BL";
 // 7zip archive.

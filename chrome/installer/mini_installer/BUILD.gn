@@ -22,6 +22,16 @@ declare_args() {
   # settings so as to provide quicker build-test cycles. Uncompressed archives
   # are not supported due to size constraints.
   fast_archive_compression = !is_official_build || is_component_build
+
+  # Enables the //chrome/installer/mini_installer:mini_installer_uncompressed
+  # target, which is a variant of the installer containing an uncompressed
+  # Chrome archive and setup.exe. The Chrome archive is compressed by default in
+  # official builds. This archive will then be used to produce both compressed
+  # and uncompressed mini_installer executables. This is done during the signing
+  # step to keep the signed binaries and signatures as close to identical as
+  # possible. This must be ignored for debug builds and is only intended to
+  # allow developers to test the uncompressed installer locally.
+  enable_uncompressed_archive = false
 }
 
 config("mini_installer_compiler_flags") {
@@ -115,6 +125,18 @@ group("setup_runtime_deps") {
 
 packed_files_rc_file = "$target_gen_dir/mini_installer/packed_files.rc"
 
+# Debug builds must not exceed the 2GB limit in order to avoid corrupting the
+# mini_installer, and therefore must be compressed.
+# The `enable_uncompressed_archive` arg is only intended for uncompressed
+# targets, so we assert that this flag is only set when not building for debug:
+# https://crbug.com/1408213.
+assert(!is_debug || !enable_uncompressed_archive)
+
+if (enable_uncompressed_archive) {
+  packed_files_rc_file_uncompressed =
+      "$target_gen_dir/mini_installer/packed_files_uncompressed.rc"
+}
+
 action("mini_installer_archive") {
   script = "//chrome/tools/build/win/create_installer_archive.py"
 
@@ -191,6 +213,14 @@ action("mini_installer_archive") {
     args += [ "--fast_archive_compression" ]
   }
 
+  if (enable_uncompressed_archive) {
+    outputs += [ packed_files_rc_file_uncompressed ]
+    args += [
+      "--resource_file_path_uncompressed",
+      rebase_path(packed_files_rc_file_uncompressed, root_build_dir),
+    ]
+  }
+
   if (icu_use_data_file) {
     inputs += [ "$root_out_dir/icudtl.dat" ]
   } else {
@@ -219,62 +249,79 @@ action("mini_installer_archive") {
   ]
 }
 
-executable("mini_installer") {
-  sources = [
-    "mini_installer_exe_main.cc",
-    packed_files_rc_file,
-  ]
-
-  # This target is special so we manually override most linker flags and
-  # specify our own to keep the size down.
-  configs -= [
-    "//build/config/compiler:cet_shadow_stack",
-
-    # Initialization may insert unexpected memset calls.
-    "//build/config/compiler:default_init_stack_vars",
-    "//build/config:executable_config",
-    "//build/config/win:console",
-  ]
-  configs += [
-    ":mini_installer_compiler_flags",
-    "//build/config/sanitizers:link_executable",
-    "//build/config/win:sdk_link",
-    "//build/config/win:windowed",
-  ]
-
-  ldflags = [
-    "/FIXED:NO",
-    "/ignore:4199",
-    "/NXCOMPAT",
-  ]
-
-  libs = [ "setupapi.lib" ]
-
+source_set("mini_installer_sources") {
+  sources = [ "mini_installer_exe_main.cc" ]
   deps = [
     ":lib",
-    ":mini_installer_archive",
-    ":version",
     "//base:clang_profiling_buildflags",
-    "//build/win:default_exe_manifest",
   ]
+  configs -= [ "//build/config/compiler:default_init_stack_vars" ]
+  configs += [ ":mini_installer_compiler_flags" ]
+}
 
-  # In general, mini_installer tries to avoid depending on the C++ standard
-  # library for size reasons. This is achieved by:
-  #   1. setting a custom entry point which avoids pulling in the standard
-  #      library via a link dependency.
-  #   2. setting no_default_deps=true to avoid including the implicit
-  #      dependency on //buildtools/third_party/libc++ in builds that set
-  #      use_custom_libcxx=true.
-  #
-  # The net result is similar to linking with /NODEFAULTLIB, but more precise
-  # as it just excludes the CRT.
-  #
-  # But in asan and clang profiling builds we need to link against a runtime
-  # library, which in turn depends on the standard library and relies on it
-  # to run initializers.
-  if (!is_asan && !use_clang_profiling) {
-    no_default_deps = true
-    ldflags += [ "/ENTRY:MainEntryPoint" ]
+# Generates a mini_installer executable containing the resources provided in the
+# caller's `rc_file`.
+template("generate_mini_installer") {
+  executable(target_name) {
+    sources = [ invoker.rc_file ]
+
+    # This target is special so we manually override most linker flags and
+    # specify our own to keep the size down.
+    configs -= [
+      "//build/config/compiler:cet_shadow_stack",
+      "//build/config:executable_config",
+      "//build/config/win:console",
+    ]
+    configs += [
+      "//build/config/sanitizers:link_executable",
+      "//build/config/win:sdk_link",
+      "//build/config/win:windowed",
+    ]
+
+    ldflags = [
+      "/FIXED:NO",
+      "/ignore:4199",
+      "/NXCOMPAT",
+    ]
+
+    libs = [ "setupapi.lib" ]
+
+    deps = [
+      ":lib",
+      ":mini_installer_archive",
+      ":mini_installer_sources",
+      ":version",
+      "//build/win:default_exe_manifest",
+    ]
+
+    # In general, mini_installer tries to avoid depending on the C++ standard
+    # library for size reasons. This is achieved by:
+    #   1. setting a custom entry point which avoids pulling in the standard
+    #      library via a link dependency.
+    #   2. setting no_default_deps=true to avoid including the implicit
+    #      dependency on //buildtools/third_party/libc++ in builds that set
+    #      use_custom_libcxx=true.
+    #
+    # The net result is similar to linking with /NODEFAULTLIB, but more precise
+    # as it just excludes the CRT.
+    #
+    # But in asan and clang profiling builds we need to link against a runtime
+    # library, which in turn depends on the standard library and relies on it
+    # to run initializers.
+    if (!is_asan && !use_clang_profiling) {
+      no_default_deps = true
+      ldflags += [ "/ENTRY:MainEntryPoint" ]
+    }
+  }
+}
+
+generate_mini_installer("mini_installer") {
+  rc_file = packed_files_rc_file
+}
+
+if (enable_uncompressed_archive) {
+  generate_mini_installer("mini_installer_uncompressed") {
+    rc_file = packed_files_rc_file_uncompressed
   }
 }
 
