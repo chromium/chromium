@@ -9508,21 +9508,6 @@
             ]
         }
     ],
-    "IOSTabGridAlwaysBounce": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "TabGridAlwaysBounce"
-                    ]
-                }
-            ]
-        }
-    ],
     "IOSTabGridCompositionalLayout": [
         {
             "platforms": [
@@ -9530,8 +9515,9 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "CompositionalWithAlwaysBounce_20240201",
                     "enable_features": [
+                        "TabGridAlwaysBounce",
                         "TabGridCompositionalLayout"
                     ]
                 }
