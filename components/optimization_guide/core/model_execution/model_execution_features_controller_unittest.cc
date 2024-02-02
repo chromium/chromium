@@ -73,6 +73,8 @@ class ModelExecutionFeaturesControllerTest : public testing::Test {
   }
   base::HistogramTester* histogram_tester() { return &histogram_tester_; }
 
+  PrefService* pref_service() { return pref_service_.get(); }
+
  private:
   base::test::TaskEnvironment task_environment_;
   signin::IdentityTestEnvironment identity_test_env_;

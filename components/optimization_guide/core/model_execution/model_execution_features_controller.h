@@ -11,6 +11,7 @@
 #include "base/observer_list_types.h"
 #include "base/scoped_observation.h"
 #include "base/threading/thread_checker.h"
+#include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
 #include "components/optimization_guide/core/model_execution/settings_enabled_observer.h"
 #include "components/optimization_guide/core/optimization_guide_prefs.h"
 #include "components/optimization_guide/proto/model_execution.pb.h"
@@ -113,8 +114,9 @@ class ModelExecutionFeaturesController
   UserValidityResult GetCurrentUserValidityResult(
       proto::ModelExecutionFeature feature) const;
 
-  // Returns whether the `feature` is allowed by enterprise policy.
-  bool IsAllowedByEnterprisePolicy(proto::ModelExecutionFeature feature) const;
+  // Returns the enterprise policy value for the `feature`.
+  model_execution::prefs::ModelExecutionEnterprisePolicyValue
+  GetEnterprisePolicyValue(proto::ModelExecutionFeature feature) const;
 
   // Initializes the state of the different features at startup.
   void InitializeFeatureSettings();
@@ -123,7 +125,8 @@ class ModelExecutionFeaturesController
   // callbacks.
   void InitializePrefListener();
 
-  // Resets the prefs for features that were invalid.
+  // Resets the prefs for features that were enabled back to invalid state, when
+  // the conditions disallow the features.
   void ResetInvalidFeaturePrefs();
 
   // Computed at the time `this` is constructed. Stores the set of features
