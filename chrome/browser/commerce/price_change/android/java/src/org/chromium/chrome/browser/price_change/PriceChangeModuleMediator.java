@@ -78,7 +78,7 @@ public class PriceChangeModuleMediator {
                     if (!sharedPrefs.getBoolean(
                             PriceTrackingUtilities.TRACK_PRICES_ON_TABS,
                             PriceTrackingFeatures.isPriceTrackingEnabled(profile))) {
-                        mModuleDelegate.removeModuleAndDisable(getModuleType());
+                        mModuleDelegate.removeModule(getModuleType());
                     }
                 };
         mSharedPreferences.registerOnSharedPreferenceChangeListener(mPriceAnnotationsPrefListener);
