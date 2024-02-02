@@ -475,21 +475,21 @@ chromium-metrics-reviews@google.com.
   <variant name=".VirtualCardEnrollment" summary="virtual card enrollment"/>
 </variants>
 
-<variants name="CreditCardDataAvailability">
-  <variant name=".WithBothServerAndLocalData"
-      summary="both server and local autofill data"/>
-  <variant name=".WithNoData" summary="no autofill data"/>
-  <variant name=".WithOnlyLocalData" summary="only local autofill data"/>
-  <variant name=".WithOnlyServerData" summary="only server autofill data"/>
-</variants>
-
-<variants name="FieldClassificationMatchesFillingProduct">
+<variants name="ClassificationMatchesFillingProduct">
   <variant name=".TriggeringFieldDoesNotMatchFillingProduct"
       summary="The filling product chosen by the user does not match the
                triggering field type."/>
   <variant name=".TriggeringFieldMatchesFillingProduct"
       summary="The filling product chosen by the user matches the triggering
                field type."/>
+</variants>
+
+<variants name="CreditCardDataAvailability">
+  <variant name=".WithBothServerAndLocalData"
+      summary="both server and local autofill data"/>
+  <variant name=".WithNoData" summary="no autofill data"/>
+  <variant name=".WithOnlyLocalData" summary="only local autofill data"/>
+  <variant name=".WithOnlyServerData" summary="only server autofill data"/>
 </variants>
 
 <variants name="FillingProduct">
@@ -1871,19 +1871,18 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="Autofill.FieldByFieldFilling.FieldTypeUsed{FillingProduct}{FieldClassificationMatchesFillingProduct}"
+    name="Autofill.FieldByFieldFilling.FieldTypeUsed{FillingProduct}{ClassificationMatchesFillingProduct}"
     enum="AutofillFieldByFieldFillingTypes" expires_after="2024-11-03">
   <owner>brunobraga@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
     Recorded when a field-by-field filling suggestion is accepted by the user
-    from a {FillingProduct} popup and the
-    {FieldClassificationMatchesFillingProduct}. Specifies the field type used to
-    fill a specific field.
+    from a {FillingProduct} popup and the {ClassificationMatchesFillingProduct}.
+    Specifies the field type used to fill a specific field.
   </summary>
   <token key="FillingProduct" variants="FillingProduct"/>
-  <token key="FieldClassificationMatchesFillingProduct"
-      variants="FieldClassificationMatchesFillingProduct"/>
+  <token key="ClassificationMatchesFillingProduct"
+      variants="ClassificationMatchesFillingProduct"/>
 </histogram>
 
 <histogram name="Autofill.FieldContextMenuImpressions.ByAutocomplete"
@@ -2071,19 +2070,19 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="Autofill.FillingMethodUsed{FillingProduct}{FieldClassificationMatchesFillingProduct}"
+    name="Autofill.FillingMethodUsed{FillingProduct}{ClassificationMatchesFillingProduct}"
     enum="AutofillFillingMethodMetric" expires_after="2024-11-03">
   <owner>brunobraga@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
     Recorded when a {FillingProduct} suggestion is accepted by the user from a
-    {FieldClassificationMatchesFillingProduct}. The filling method defines
-    whether the user chose to fill the whole form, a specific field or a group
-    of fields (address fields, phone fields, name fields or email fields).
+    {ClassificationMatchesFillingProduct}. The filling method defines whether
+    the user chose to fill the whole form, a specific field or a group of fields
+    (address fields, phone fields, name fields or email fields).
   </summary>
   <token key="FillingProduct" variants="FillingProduct"/>
-  <token key="FieldClassificationMatchesFillingProduct"
-      variants="FieldClassificationMatchesFillingProduct"/>
+  <token key="ClassificationMatchesFillingProduct"
+      variants="ClassificationMatchesFillingProduct"/>
 </histogram>
 
 <histogram name="Autofill.FormContextMenuImpressions.ByNumberOfFields"
