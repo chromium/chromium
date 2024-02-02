@@ -407,6 +407,8 @@ bool CellularNetworkMetricsLogger::HermesResponseStatusIsUserError(
       [[fallthrough]];
     case HermesResponseStatus::kErrorModemMessageProcessing:
       [[fallthrough]];
+    case HermesResponseStatus::kErrorNoResponse:
+      [[fallthrough]];
     case HermesResponseStatus::kErrorUnknownResponse:
       return false;
     case HermesResponseStatus::kErrorAlreadyDisabled:
@@ -422,8 +424,6 @@ bool CellularNetworkMetricsLogger::HermesResponseStatusIsUserError(
     case HermesResponseStatus::kErrorNeedConfirmationCode:
       [[fallthrough]];
     case HermesResponseStatus::kErrorInvalidResponse:
-      [[fallthrough]];
-    case HermesResponseStatus::kErrorNoResponse:
       [[fallthrough]];
     case HermesResponseStatus::kErrorMalformedResponse:
       [[fallthrough]];
