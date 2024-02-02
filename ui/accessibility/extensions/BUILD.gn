@@ -14,6 +14,7 @@ group("extensions") {
   deps = [
     ":caretbrowsing",
     ":colorenhancer",
+    ":highcontrast",
     "chromevoxclassic:chromevox",
   ]
 }
@@ -128,6 +129,39 @@ colorenhancer_files = [
 
 copy("colorenhancer_copy") {
   sources = colorenhancer_files
+  outputs = [ "$root_out_dir/{{source_target_relative}}" ]
+}
+
+group("highcontrast") {
+  deps = [
+    ":highcontrast_copy",
+    ":highcontrast_strings",
+  ]
+}
+
+grit("highcontrast_strings") {
+  source = "strings/accessibility_extensions_strings.grd"
+  outputs = locale_files
+  output_dir = "$root_out_dir/highcontrast"
+  resource_ids = ""
+}
+
+highcontrast_files = [
+  "highcontrast/manifest.json",
+  "highcontrast/background.js",
+  "highcontrast/common.js",
+  "highcontrast/highcontrast-16.png",
+  "highcontrast/highcontrast-19.png",
+  "highcontrast/highcontrast-48.png",
+  "highcontrast/highcontrast-128.png",
+  "highcontrast/highcontrast.js",
+  "highcontrast/popup.html",
+  "highcontrast/popup.js",
+  "highcontrast/storage.js",
+]
+
+copy("highcontrast_copy") {
+  sources = highcontrast_files
   outputs = [ "$root_out_dir/{{source_target_relative}}" ]
 }
 

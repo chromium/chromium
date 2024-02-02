@@ -27,9 +27,17 @@ class Background {
 
   /** @public */
   injectContentScripts() {
-    this.forAllTabs_(tab => chrome.tabs.executeScript(
-        tab.id,
-        {file: 'highcontrast.js', allFrames: true}));
+    this.forAllTabs_(tab => {
+      try {
+        chrome.scripting.executeScript({
+          target: {tabId: tab.id, allFrames: true},
+          files: ['highcontrast.js'],
+        });
+      } catch (err) {
+        // Convert the error to a warning to prevent service worker crash.
+        console.warn(err);
+      }
+    });
   }
 
   /** @private */
@@ -37,9 +45,9 @@ class Background {
     this.forAllTabs_(tab => {
       const msg = {
         'enabled': Storage.enabled,
-        'scheme': Storage.getSiteScheme(siteFromUrl(tab.url))
+        'scheme': Storage.getSiteScheme(siteFromUrl(tab.url)),
       };
-      chrome.tabs.sendRequest(tab.id, msg);
+      chrome.tabs.sendMessage(tab.id, msg);
     });
   }
 
@@ -68,29 +76,29 @@ class Background {
   }
 
   /**
-   * @param {*} request
+   * @param {*} message
    * @param {chrome.runtime.MessageSender} sender
    * @param {function} sendResponse
    * @private
    */
-  handleRequest_(request, sender, sendResponse) {
-    if (request['updateTabs']) {
+  handleRequest_(message, sender, sendResponse) {
+    if (message['updateTabs']) {
       this.updateTabs_();
     }
-    if (request['toggle_global']) {
+    if (message['toggle_global']) {
       this.toggleEnabled_();
     }
-    if (request['toggle_site']) {
+    if (message['toggle_site']) {
       this.toggleSite_(sender.tab ? sender.tab.url : 'www.example.com');
     }
-    if (request['init']) {
+    if (message['init']) {
       let scheme = Storage.scheme;
       if (sender.tab) {
         scheme = Storage.getSiteScheme(siteFromUrl(sender.tab.url));
       }
       const msg = {
         'enabled': Storage.enabled,
-        'scheme': scheme
+        'scheme': scheme,
       };
       sendResponse(msg);
     }
@@ -101,7 +109,7 @@ class Background {
     this.injectContentScripts();
     this.updateTabs_();
 
-    chrome.extension.onRequest.addListener(this.handleRequest_.bind(this));
+    chrome.runtime.onMessage.addListener(this.handleRequest_.bind(this));
 
     chrome.storage.onChanged.addListener(this.updateTabs_.bind(this));
 
