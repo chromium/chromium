@@ -635,17 +635,9 @@ class PasswordAutofillAgent::DeferringPasswordManagerDriver
              renderer_id, value, autocomplete_attribute_has_username,
              is_likely_otp);
   }
-  void ShowPasswordSuggestions(FieldRendererId element_id,
-                               const FormData& form,
-                               uint64_t username_field_index,
-                               uint64_t password_field_index,
-                               ::base::i18n::TextDirection text_direction,
-                               const std::u16string& typed_username,
-                               int32_t options,
-                               const gfx::RectF& bounds) override {
-    DeferMsg(&mojom::PasswordManagerDriver::ShowPasswordSuggestions, element_id,
-             form, username_field_index, password_field_index, text_direction,
-             typed_username, options, bounds);
+  void ShowPasswordSuggestions(
+      const PasswordSuggestionRequest& request) override {
+    DeferMsg(&mojom::PasswordManagerDriver::ShowPasswordSuggestions, request);
   }
 #if BUILDFLAG(IS_ANDROID)
   void ShowKeyboardReplacingSurface(
@@ -1664,11 +1656,11 @@ void PasswordAutofillAgent::ShowSuggestionPopup(
                              &username_element, &password_element,
                              &password_info);
 
-  GetPasswordManagerDriver().ShowPasswordSuggestions(
+  GetPasswordManagerDriver().ShowPasswordSuggestions(PasswordSuggestionRequest(
       field.renderer_id, form, GetIndexOfElement(form, username_element),
       GetIndexOfElement(form, password_element), field.text_direction,
       typed_username, options,
-      render_frame()->ElementBoundsInWindow(user_input));
+      render_frame()->ElementBoundsInWindow(user_input)));
 }
 
 void PasswordAutofillAgent::CleanupOnDocumentShutdown() {

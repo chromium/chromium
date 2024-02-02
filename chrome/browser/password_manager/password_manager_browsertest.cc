@@ -4289,14 +4289,7 @@ class MockPrerenderPasswordManagerDriver
               (override));
   MOCK_METHOD(void,
               ShowPasswordSuggestions,
-              (autofill::FieldRendererId element_id,
-               const autofill::FormData& form,
-               uint64_t username_field_index,
-               uint64_t password_field_index,
-               base::i18n::TextDirection text_direction,
-               const std::u16string& typed_username,
-               int options,
-               const gfx::RectF& bounds),
+              (const autofill::PasswordSuggestionRequest&),
               (override));
 #if BUILDFLAG(IS_ANDROID)
   MOCK_METHOD(void,
@@ -4365,18 +4358,14 @@ class MockPrerenderPasswordManagerDriver
               is_likely_otp);
         });
     ON_CALL(*this, ShowPasswordSuggestions)
-        .WillByDefault([this](autofill::FieldRendererId element_id,
-                              const autofill::FormData& form,
-                              uint64_t username_field_index,
-                              uint64_t password_field_index,
-                              base::i18n::TextDirection text_direction,
-                              const std::u16string& typed_username, int options,
-                              const gfx::RectF& bounds) {
-          const autofill::FormData form_data;
-          impl_->ShowPasswordSuggestions(element_id, form_data, 0, 0,
-                                         text_direction, typed_username,
-                                         options, bounds);
-        });
+        .WillByDefault(
+            [this](const autofill::PasswordSuggestionRequest& request) {
+              autofill::PasswordSuggestionRequest copy = request;
+              copy.form_data = autofill::FormData();
+              copy.username_field_index = 0;
+              copy.password_field_index = 0;
+              impl_->ShowPasswordSuggestions(copy);
+            });
 #if BUILDFLAG(IS_ANDROID)
     ON_CALL(*this, ShowKeyboardReplacingSurface)
         .WillByDefault([this](autofill::mojom::SubmissionReadinessState

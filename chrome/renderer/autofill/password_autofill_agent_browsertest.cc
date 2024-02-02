@@ -80,8 +80,10 @@ using blink::WebInputElement;
 using blink::WebLocalFrame;
 using blink::WebString;
 using testing::_;
+using testing::AllOf;
 using testing::AtMost;
 using testing::Eq;
+using testing::Field;
 using testing::Truly;
 
 // The name of the username/password element in the form.
@@ -769,8 +771,11 @@ class PasswordAutofillAgentTest : public ChromeRenderViewTest {
     };
 
     EXPECT_CALL(fake_driver_,
-                ShowPasswordSuggestions(_, _, _, _, _, Eq(typed_username),
-                                        Truly(show_all_matches), _))
+                ShowPasswordSuggestions(AllOf(
+                    Field(&autofill::PasswordSuggestionRequest::typed_username,
+                          typed_username),
+                    Field(&autofill::PasswordSuggestionRequest::options,
+                          Truly(show_all_matches)))))
         .Times(testing::AtLeast(1));
     base::RunLoop().RunUntilIdle();
   }
@@ -2399,10 +2404,10 @@ TEST_F(PasswordAutofillAgentTest, CredentialsOnClick) {
   CheckSuggestions(std::u16string(), true);
 
   // Now simulate a user typing in a saved username. The list is filtered.
-  EXPECT_CALL(
-      fake_driver_,
-      ShowPasswordSuggestions(form_util::GetFieldRendererId(username_element_),
-                              _, _, _, _, _, 0, _))
+  EXPECT_CALL(fake_driver_,
+              ShowPasswordSuggestions(
+                  Field(&autofill::PasswordSuggestionRequest::element_id,
+                        form_util::GetFieldRendererId(username_element_))))
       .Times(testing::AtLeast(1));
   SimulateUsernameTyping(kAliceUsername);
 }
