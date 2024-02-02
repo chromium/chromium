@@ -474,7 +474,7 @@ export namespace BrowsingContext {
      * @defaultValue `false`
      */
     background?: boolean;
-    userContext?: Browser.UserContext | null;
+    userContext?: Browser.UserContext;
   };
 }
 export namespace BrowsingContext {

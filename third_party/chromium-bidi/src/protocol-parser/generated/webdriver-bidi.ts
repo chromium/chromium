@@ -614,7 +614,7 @@ export namespace BrowsingContext {
       type: BrowsingContext.CreateTypeSchema,
       referenceContext: BrowsingContext.BrowsingContextSchema.optional(),
       background: z.boolean().default(false).optional(),
-      userContext: z.union([Browser.UserContextSchema, z.null()]).optional(),
+      userContext: Browser.UserContextSchema.optional(),
     })
   );
 }
