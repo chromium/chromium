@@ -628,8 +628,10 @@ void LogPresentingErrorPageFailedWithError(NSError* error) {
   if (!context)
     return;
 
-  if (webViewURL.SchemeIs(url::kDataScheme)) {
-    // Redirecting to a data url is always unsafe.
+  // Redirecting to a data url is always unsafe.
+  if (webViewURL.SchemeIs(url::kDataScheme) ||
+      // Block redirects to JavaScript schemes. Ref: crbug.com/1509267
+      webViewURL.SchemeIs(url::kJavaScriptScheme)) {
     self.pendingNavigationInfo.unsafeRedirect = YES;
   } else {
     context->SetUrl(webViewURL);
