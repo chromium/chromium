@@ -488,9 +488,6 @@ void OverviewController::ToggleOverview(OverviewEnterExitType type) {
       }
     }
 
-    // Suspend occlusion tracker until the enter animation is complete.
-    PauseOcclusionTracker();
-
     overview_session_ = std::make_unique<OverviewSession>(this);
     // We may want to slide in the overview grid in some cases, even if not
     // explicitly stated.
@@ -512,6 +509,9 @@ void OverviewController::ToggleOverview(OverviewEnterExitType type) {
           std::make_unique<ForceDelayObserver>(delayed_animation_task_delay_);
       AddEnterAnimationObserver(std::move(force_delay_observer));
     }
+
+    // Suspend occlusion tracker until the enter animation is complete.
+    PauseOcclusionTracker();
 
     if (start_animations_.empty())
       OnStartingAnimationComplete(/*canceled=*/false);
