@@ -1765,6 +1765,11 @@
     "expiry_milestone": 120
   },
   {
+    "name": "disable-lens-camera",
+    "owners": [ "hujasonx@google.com" ],
+    "expiry_milestone": 130
+  },
+  {
     "name": "disable-office-editing-component-app",
     "owners": [
       "quickoffice-chrome-eng@google.com"

@@ -116,6 +116,9 @@ std::optional<LensEntrypoint> LensBrowserAgent::CurrentResultsEntrypoint()
     case LensEntrypoint::Keyboard:
     case LensEntrypoint::NewTabPage:
     case LensEntrypoint::HomeScreenWidget:
+      if (base::FeatureList::IsEnabled(kDisableLensCamera)) {
+        return std::nullopt;
+      }
       return entry_point;
     default:
       return std::nullopt;

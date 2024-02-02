@@ -66,6 +66,8 @@ bool CheckAndLogAvailabilityForLensEntryPoint(
     lens_support_status = LensSupportStatus::NonGoogleSearchEngine;
   } else if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
     lens_support_status = LensSupportStatus::DeviceFormFactorTablet;
+  } else if (base::FeatureList::IsEnabled(kDisableLensCamera)) {
+    lens_support_status = LensSupportStatus::DisabledByFlag;
   } else {
     lens_support_status = LensSupportStatus::LensSearchSupported;
   }
