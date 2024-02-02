@@ -14,7 +14,7 @@
       }));
 
   testRunner.log('Navigating to a different URL');
-  await session.navigate('./resources/simple.html');
+  await session.navigate('/resources/blank.html');
 
   // SensorProxy::ShouldSuspendUpdates() calls FocusController::IsFocused(), so
   // we need to emulate focus on the page.
