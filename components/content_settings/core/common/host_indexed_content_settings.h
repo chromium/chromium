@@ -120,14 +120,11 @@ class HostIndexedContentSettings {
   void Clear();
 
   // Compares the output of the previous lookup algorithm on a flat vector with
-  // the optimized indexed lookup algorithm. Only used within DCHECK calls to
-  // limit use to debug builds and tests.
-#if DCHECK_IS_ON()
-  bool IsSameResultAsLinearLookup(
+  // the optimized indexed lookup algorithm.
+  void DcheckSameResultAsLinearLookup(
       const GURL& primary_url,
       const GURL& secondary_url,
       const ContentSettingsForOneType& linear_settings) const;
-#endif  // DCHECK_IS_ON()
 
  private:
   HostToContentSettings primary_host_indexed_;
