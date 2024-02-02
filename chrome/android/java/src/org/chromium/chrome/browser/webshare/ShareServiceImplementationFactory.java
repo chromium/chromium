@@ -55,24 +55,32 @@ public class ShareServiceImplementationFactory implements InterfaceFactory<Share
                                         ShareOrigin.WEBSHARE_API);
                     }
 
+                    @Override
+                    public WindowAndroid getWindowAndroid() {
+                        if (mWindowAndroid == null || mWindowAndroid.isDestroyed()) {
+                            mWindowAndroid = mWebContents.getTopLevelNativeWindow();
+                        }
+                        return mWindowAndroid;
+                    }
+
                     /**
                      * Returns the current {@link ShareDelegate}, and updates it when the {@link
                      * WindowAndroid} has changed.
                      *
-                     * <p>The {@link WindowAndroid} changes when the theme changes, which necessitates
-                     * getting a new ShareDelegate. See https://crbug.com/1322778.
+                     * <p>The {@link WindowAndroid} changes when the theme changes, which
+                     * necessitates getting a new ShareDelegate. See https://crbug.com/1322778.
                      */
                     private ShareDelegate getShareDelegate() {
                         if (mWindowAndroid.equals(mWebContents.getTopLevelNativeWindow())) {
                             return mShareDelegateSupplier.get();
                         }
-                        mWindowAndroid = mWebContents.getTopLevelNativeWindow();
+                        mWindowAndroid = getWindowAndroid();
                         mShareDelegateSupplier = ShareDelegateSupplier.from(mWindowAndroid);
                         assert mShareDelegateSupplier != null;
                         return mShareDelegateSupplier.get();
                     }
                 };
 
-        return new ShareServiceImpl(mWebContents, delegate);
+        return new ShareServiceImpl(delegate);
     }
 }
