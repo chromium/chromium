@@ -379,6 +379,12 @@ auto EqualsFillFieldLogEvent(const FillFieldLogEvent& expected) {
             expected.filling_prevented_by_iframe_security_policy));
 }
 
+Matcher<Suggestion> IsPlusAddressSuggestion() {
+  return Field(&Suggestion::popup_item_id,
+               AnyOf(PopupItemId::kCreateNewPlusAddress,
+                     PopupItemId::kFillExistingPlusAddress));
+}
+
 // Creates a GUID for testing. For example,
 // MakeGuid(123) = "00000000-0000-0000-0000-000000000123";
 std::string MakeGuid(size_t last_digit) {
@@ -10060,18 +10066,12 @@ TEST_F(BrowserAutofillManagerPlusAddressTest, NoPlusAddressesWithNameFields) {
   FormsSeen({form});
 
   // Check that suggestions are made for the field that has the autocomplete
-  // attribute. Ensure that, despite enabling the plus addresses feature, there
-  // is no plus address option shown, because those options are only applicable
-  // to email fields.
+  // attribute. Ensure that there is no plus address option shown, because those options are
+  // only applicable to email fields.
   GetAutofillSuggestions(form, form.fields[0]);
-  external_delegate()->CheckSuggestions(
-      form.fields[0].global_id(),
-      {Suggestion("Charles", "", Suggestion::Icon::kNoIcon,
-                  PopupItemId::kAddressEntry),
-       Suggestion("Elvis", "", Suggestion::Icon::kNoIcon,
-                  PopupItemId::kAddressEntry),
-       AutofillSuggestionGenerator::CreateSeparator(),
-       AutofillSuggestionGenerator::CreateManageAddressesEntry()});
+  EXPECT_TRUE(external_delegate()->on_suggestions_returned_seen());
+  EXPECT_THAT(external_delegate()->suggestions(),
+              Each(Not(IsPlusAddressSuggestion())));
 
   // Also check that there are no suggestions for the field without the
   // autocomplete attribute, ensuring that unrecognized fields don't get plus
@@ -10101,16 +10101,12 @@ TEST_F(BrowserAutofillManagerPlusAddressTest, PlusAddressSuggestionShown) {
   // Check that suggestions are made for the field that has the autocomplete
   // attribute, and ensure that they are exactly the expected set.
   GetAutofillSuggestions(form, form.fields[0]);
-  external_delegate()->CheckSuggestions(
-      form.fields[0].global_id(),
-      {Suggestion("plus+plus@plus.plus", "", Suggestion::Icon::kPlusAddress,
-                  PopupItemId::kFillExistingPlusAddress),
-       Suggestion("buddy@gmail.com", "", Suggestion::Icon::kNoIcon,
-                  PopupItemId::kAddressEntry),
-       Suggestion("theking@gmail.com", "", Suggestion::Icon::kNoIcon,
-                  PopupItemId::kAddressEntry),
-       AutofillSuggestionGenerator::CreateSeparator(),
-       AutofillSuggestionGenerator::CreateManageAddressesEntry()});
+  EXPECT_TRUE(external_delegate()->on_suggestions_returned_seen());
+  EXPECT_THAT(external_delegate()->suggestions(),
+              ElementsAre(Suggestion("plus+plus@plus.plus", "",
+                                     Suggestion::Icon::kPlusAddress,
+                                     PopupItemId::kFillExistingPlusAddress),
+                          _, _, _, _));
 }
 
 // Ensure that email fields without existing plus addresses for the domain, but
@@ -10137,16 +10133,12 @@ TEST_F(BrowserAutofillManagerPlusAddressTest,
   // Check that suggestions are made for the field that has the autocomplete
   // attribute, and ensure that they are exactly the expected set.
   GetAutofillSuggestions(form, form.fields[0]);
-  external_delegate()->CheckSuggestions(
-      form.fields[0].global_id(),
-      {Suggestion("Create plus address", "", Suggestion::Icon::kPlusAddress,
-                  PopupItemId::kCreateNewPlusAddress),
-       Suggestion("buddy@gmail.com", "", Suggestion::Icon::kNoIcon,
-                  PopupItemId::kAddressEntry),
-       Suggestion("theking@gmail.com", "", Suggestion::Icon::kNoIcon,
-                  PopupItemId::kAddressEntry),
-       AutofillSuggestionGenerator::CreateSeparator(),
-       AutofillSuggestionGenerator::CreateManageAddressesEntry()});
+  EXPECT_TRUE(external_delegate()->on_suggestions_returned_seen());
+  EXPECT_THAT(external_delegate()->suggestions(),
+              ElementsAre(Suggestion("Create plus address", "",
+                                     Suggestion::Icon::kPlusAddress,
+                                     PopupItemId::kCreateNewPlusAddress),
+                          _, _, _, _));
 }
 
 // Test that plus address inputs are forced to !should_autocomplete
