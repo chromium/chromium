@@ -459,7 +459,8 @@ bool OutputQueue::QueueBufferByFrameID(uint64_t frame_id) {
     return true;
   }
 
-  NOTREACHED();
+  VLOGF(1) << "Unable to queue frame id (" << frame_id
+           << ") because no corresponding buffer could be found.";
   return false;
 }
 
