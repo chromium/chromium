@@ -4969,7 +4969,6 @@
 <translation id="4811212958317149293">Аутоматско скенирање тастатуре за приступ помоћу прекидача</translation>
 <translation id="4811503964269049987">Додајте изабрану картицу у групу</translation>
 <translation id="4813512666221746211">Грешка на мрежи</translation>
-<translation id="4813872509679988157">Настави да дозвољаваш овом сајту да користи MIDI уређаје.</translation>
 <translation id="4814114628197290459">Избришите IBAN</translation>
 <translation id="4814327014588285482">Прескочи и подсети ме касније</translation>
 <translation id="4814378367953456825">Унесите назив за овај отисак прста</translation>
@@ -5288,7 +5287,6 @@
 <translation id="5063480226653192405">Коришћење</translation>
 <translation id="5065775832226780415">Smart Lock</translation>
 <translation id="5066100345385738837">Управљајте безбедним DNS-ом у подешавањима Chrome ОС-а</translation>
-<translation id="5066891009360243320">Овом сајту је забрањено да користи MIDI уређаје.</translation>
 <translation id="5067399438976153555">Увек укључено</translation>
 <translation id="5067867186035333991">Питај ме ако <ph name="HOST" /> жели да приступи микрофону</translation>
 <translation id="5068553687099139861">прикаже лозинке</translation>
@@ -6697,7 +6695,6 @@
 <translation id="6171779718418683144">Питај при свакој посети</translation>
 <translation id="617213288191670920">Није додат ниједан језик</translation>
 <translation id="6173623053897475761">Поново унесите PIN</translation>
-<translation id="6174116123142608180">Настави да блокираш коришћење MIDI уређаја за овај сајт.</translation>
 <translation id="6175314957787328458">GUID Microsoft домена</translation>
 <translation id="6175910054050815932">Преузмите линк</translation>
 <translation id="6176701216248282552">Контекстуална помоћ је укључена. Ове функције могу да шаљу отворене странице Google-у.</translation>
@@ -7228,7 +7225,6 @@
 <translation id="6597017209724497268">Узорци</translation>
 <translation id="6597331566371766302">Администратор је блокирао следеће додатке:</translation>
 <translation id="659894938503552850">најновије</translation>
-<translation id="6599934330666882772">Овај сајт користи MIDI уређаје.</translation>
 <translation id="6601262427770154296">Управљање корисничким речницима</translation>
 <translation id="6602173570135186741">Аутоматско попуњавање и лозинке</translation>
 <translation id="6602937173026466876">Приступите штампачима</translation>
@@ -7804,7 +7800,6 @@
 <translation id="7036706669646341689">За Linux се препоручује <ph name="DISK_SIZE" /> простора. Да бисте ослободили простор, избришите датотеке са уређаја.</translation>
 <translation id="7037509989619051237">Текст за преглед</translation>
 <translation id="7038632520572155338">Приступ помоћу прекидача</translation>
-<translation id="7038636380708661517">Увек блокирај коришћење MIDI уређаја за <ph name="HOST" />.</translation>
 <translation id="7038710352229712897">Додајте још један Google налог за: <ph name="USER_NAME" /></translation>
 <translation id="7039326228527141150">Приступ USB уређајима продавца <ph name="VENDOR_NAME" /></translation>
 <translation id="7039912931802252762">Microsoft пријављивање помоћу паметне картице</translation>
@@ -7960,7 +7955,6 @@
 <translation id="7180865173735832675">Прилагоди</translation>
 <translation id="7181117767881540376">Сакриј траку са обележивачима</translation>
 <translation id="7182063559013288142">Инстант хотспот</translation>
-<translation id="718240920439497409">MIDI уређаји су блокирани</translation>
 <translation id="7182791023900310535">Преместите лозинку</translation>
 <translation id="718427252411067142">Да бисте онемогућили другима да користе вашу лозинку, отворите апликацију како бисте променили лозинку</translation>
 <translation id="7186088072322679094">Задржи на траци с алаткама</translation>
@@ -9106,7 +9100,6 @@
 <translation id="8041267120753677077">да стримује апликације на телефону</translation>
 <translation id="8042142357103597104">Непрозирност текста</translation>
 <translation id="8042331986490021244">Лозинке се шифрују на уређају пре него што се сачувају у Google менаџеру лозинки</translation>
-<translation id="8044090981104134791">MIDI уређаји су дозвољени</translation>
 <translation id="8044262338717486897"><ph name="LINUX_APP_NAME" /> не реагује.</translation>
 <translation id="8044899503464538266">Споро</translation>
 <translation id="8045253504249021590">Синхронизација је заустављена преко Google контролне табле.</translation>
@@ -9306,7 +9299,6 @@
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Уређаји<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195265224453131880">Интензитет</translation>
 <translation id="8195854162863398249">Онемогући <ph name="FEATURE_NAME" /></translation>
-<translation id="8197151971904389091">Увек дозволи коришћење MIDI уређаја за <ph name="HOST" />.</translation>
 <translation id="8197673340773315084">Додајте назив или ознаку као што су Пословни или Лични</translation>
 <translation id="8198456017687137612">Пребацује се картица</translation>
 <translation id="8198457270656084773">Тражите страницу евиденције уређаја о систему? Посетите<ph name="BEGIN_LINK" /><ph name="OS_DEVICE_LOG_LINK" /><ph name="END_LINK" />.</translation>

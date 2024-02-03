@@ -1037,7 +1037,6 @@
 <translation id="3005723025932146533">Прикажи сачувану копију</translation>
 <translation id="300580149047131921">Недавно коришћена</translation>
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />, притисните Tab да бисте прегледали доступне радње, па Enter да бисте извршили изабрану радњу.</translation>
-<translation id="3013291976881901233">MIDI уређаји</translation>
 <translation id="3014553260345122294">Пословне вести</translation>
 <translation id="3014726756341138577">Напредне функције штампача</translation>
 <translation id="301521992641321250">Аутоматски је блокирано</translation>
@@ -3595,7 +3594,6 @@
 <translation id="8038817883578389970">Аутомобилске трке</translation>
 <translation id="8041089156583427627">Пошаљи повратне информације</translation>
 <translation id="8041940743680923270">Користи глобалну подразумевану вредност (Питај)</translation>
-<translation id="8042577181291637092">Желите да користите MIDI уређаје?</translation>
 <translation id="8043255123207491407">Погледајте услове и одредбе продавца</translation>
 <translation id="8046360364391076336">Индустријски материјали и опрема</translation>
 <translation id="8052898407431791827">Копирано је у привремену меморију</translation>
@@ -3800,7 +3798,6 @@
 <translation id="8428213095426709021">Подешавања</translation>
 <translation id="8428634594422941299">Важи</translation>
 <translation id="8431194080598727332"><ph name="MANAGE_COOKIES_FOCUSED_FRIENDLY_MATCH_TEXT" />, притисните Tab, па Enter да бисте управљали подешавањима колачића у подешавањима Chrome-а</translation>
-<translation id="8432419784006585012">Може да тражи да користи MIDI уређаје</translation>
 <translation id="8433057134996913067">Овако ћете се одјавити са већине веб-сајтова.</translation>
 <translation id="8434014327286137412">Да бисте следећи пут платили брже, сачувајте IBAN на Google налогу</translation>
 <translation id="8434840396568290395">Кућни љубимци</translation>
@@ -3893,7 +3890,6 @@
 <translation id="860043288473659153">Име власника картице</translation>
 <translation id="8601027005147870853"><ph name="BEGIN_BOLD" />Који подаци се користе:<ph name="END_BOLD" /> Активности на сајту који посећујете помоћу Chrome-а на овом уређају.</translation>
 <translation id="8601456038554914806">Опрема за водене спортове</translation>
-<translation id="8606726445206553943">користи MIDI уређаје</translation>
 <translation id="8606988009912891950">Теме огласа помажу сајтовима да вам приказују релевантне огласе док штите вашу историју прегледања и идентитет. Chrome може да бележи теме које вас интересују на основу недавне историје прегледања. Касније, сајт који посетите може да затражи од Chrome-а релевантне теме да би персонализовао огласе који вам се приказују.</translation>
 <translation id="8617269623452051934">коришћење уређаја</translation>
 <translation id="861775596732816396">Величина 4</translation>

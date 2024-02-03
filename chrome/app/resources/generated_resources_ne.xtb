@@ -4968,7 +4968,6 @@
 <translation id="4811212958317149293">स्विचमार्फत पहुँच राख्ने सुविधाको किबोर्ड स्वतः स्क्यान गर्ने सेटिङ</translation>
 <translation id="4811503964269049987">चयन गरिएको ट्याब कुनै समूहमा थप्नुहोस्</translation>
 <translation id="4813512666221746211">सञ्जाल त्रुटि</translation>
-<translation id="4813872509679988157">यो साइटलाई तपाईंका MIDI डिभाइसहरू प्रयोग गर्ने अनुमति दिइराखियोस्</translation>
 <translation id="4814114628197290459">IBAN मेटाउनुहोस्</translation>
 <translation id="4814327014588285482">स्किप गरियोस् र मलाई फेरि सम्झाइयोस्</translation>
 <translation id="4814378367953456825">यो फिंगरप्रिन्टको नाम हाल्नुहोस्</translation>
@@ -5287,7 +5286,6 @@
 <translation id="5063480226653192405">उपयोग</translation>
 <translation id="5065775832226780415">Smart Lock</translation>
 <translation id="5066100345385738837">ChromeOS का सेटिङमा गई Secure DNS व्यवस्थापन गर्नुहोस्</translation>
-<translation id="5066891009360243320">यो साइटलाई तपाईंका MIDI डिभाइसहरू प्रयोग गर्न नपाउने गरी ब्लक गरिएको छ।</translation>
 <translation id="5067399438976153555">सधैं सक्रिय</translation>
 <translation id="5067867186035333991"><ph name="HOST" /> तपाईंको माइक्रोफोनको पहुँच गर्न चाहन्छ कि चाहँदैन भनि सोध्नुहोस्</translation>
 <translation id="5068553687099139861">पासवर्डहरू देखाइयोस्</translation>
@@ -6695,7 +6693,6 @@
 <translation id="6171779718418683144">हरेक पटक साइटमा जाँदा सोधियोस्</translation>
 <translation id="617213288191670920">कुनै पनि भाषा थपिएको छैन</translation>
 <translation id="6173623053897475761">आफ्नो PIN फेरि टाइप गर्नुहोस्</translation>
-<translation id="6174116123142608180">यो साइटलाई तपाईंका MIDI डिभाइसहरू प्रयोग गर्न नपाउने गरी ब्लक गरिराखियोस्।</translation>
 <translation id="6175314957787328458">Microsoft डोमेन GUID</translation>
 <translation id="6175910054050815932">लिंक प्राप्त गर्नुहोस्</translation>
 <translation id="6176701216248282552">सान्दर्भिक मद्दत अफ छ। यी सुविधाहरूले खुला पेजहरू Google मा पठाउन सक्छन्।</translation>
@@ -7222,7 +7219,6 @@
 <translation id="6597017209724497268">नमूनाहरू</translation>
 <translation id="6597331566371766302">तपाईंका एड्मिनले निम्न एक्स्टेन्सनहरू ब्लक गरेका छन्:</translation>
 <translation id="659894938503552850">सबैभन्दा नयाँ</translation>
-<translation id="6599934330666882772">यो साइटले तपाईंका MIDI डिभाइसहरू प्रयोग गरिरहेको छ।</translation>
 <translation id="6601262427770154296">प्रयोगकर्ताले तयार पारेको शब्दकोश व्यवस्थापन गर्नुहोस्</translation>
 <translation id="6602173570135186741">अटोफिल तथा पासवर्डहरू</translation>
 <translation id="6602937173026466876">आफ्ना प्रिन्टरहरूमाथि पहुँच राख्नुहोस्</translation>
@@ -7797,7 +7793,6 @@
 <translation id="7036706669646341689">Linux प्रयोग गर्न <ph name="DISK_SIZE" /> ठाउँ खाली राख्न सिफारिस गरिन्छ। थप ठाउँ खाली गर्न आफ्नो यन्त्रमा भएका फाइलहरू मेटाउनुहोस्।</translation>
 <translation id="7037509989619051237">पाठवाचकको पूर्वावलोकन</translation>
 <translation id="7038632520572155338">स्विचमार्फत पहुँच राख्ने सुविधा</translation>
-<translation id="7038636380708661517"><ph name="HOST" /> लाई सधैँ तपाईंका MIDI डिभाइसहरू प्रयोग गर्न नपाउने गरी ब्लक गरियोस्।</translation>
 <translation id="7038710352229712897"><ph name="USER_NAME" /> का लागि अर्को Google Account हाल्नुहोस्</translation>
 <translation id="7039326228527141150"><ph name="VENDOR_NAME" /> बाट USB उपकरणहरूको पहुँच गर्नुहोस्</translation>
 <translation id="7039912931802252762">Microsoft स्मार्ट कार्ड लगअन</translation>
@@ -7953,7 +7948,6 @@
 <translation id="7180865173735832675">कस्टमाइज गर्नुहोस्</translation>
 <translation id="7181117767881540376">बुकमार्क बार लुकाइयोस्</translation>
 <translation id="7182063559013288142">इन्स्टेन्ट हटस्पट</translation>
-<translation id="718240920439497409">MIDI डिभाइसहरू ब्लक गरिएका छन्</translation>
 <translation id="7182791023900310535">आफ्नो पासवर्ड खातामा सार्नुहोस्</translation>
 <translation id="718427252411067142">अन्य व्यक्तिहरूलाई तपाईंको पासवर्ड प्रयोग गर्न नदिन एप खोल्नुहोस् र आफ्नो पासवर्ड बदल्नुहोस्</translation>
 <translation id="7186088072322679094">उपकरणपट्टीमा राख्नुहोस्</translation>
@@ -9098,7 +9092,6 @@
 <translation id="8041267120753677077">आफ्नो फोनका एपहरू चलाउनुहोस्</translation>
 <translation id="8042142357103597104">पाठको अपारदर्शिता</translation>
 <translation id="8042331986490021244">तपाईंका पासवर्डहरू तपाईंको डिभाइसमा इन्क्रिप्ट गरेपछि मात्र Google पासवर्ड म्यानेजरमा सेभ गरिन्छ</translation>
-<translation id="8044090981104134791">MIDI डिभाइसहरू प्रयोग गर्ने अनुमति दिइएको छ</translation>
 <translation id="8044262338717486897"><ph name="LINUX_APP_NAME" /> ले प्रतिक्रिया जनाइरहेको छैन।</translation>
 <translation id="8044899503464538266">मन्द</translation>
 <translation id="8045253504249021590">Google Dashboard मार्फत सिंक असक्षम पारिएको छ।</translation>
@@ -9298,7 +9291,6 @@
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />तपाईंका डिभाइसहरू<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195265224453131880">तीव्रता</translation>
 <translation id="8195854162863398249"><ph name="FEATURE_NAME" /> अफ गर्नुहोस्</translation>
-<translation id="8197151971904389091"><ph name="HOST" /> लाई सधैँ तपाईंका MIDI डिभाइसहरू प्रयोग गर्ने अनुमति दिइयोस्।</translation>
 <translation id="8197673340773315084">"कार्य" वा "व्यक्तिगत" जस्तो कुनै नाम वा लेबल हाल्नुहोस्</translation>
 <translation id="8198456017687137612">ट्याब कास्ट गरिँदै छ</translation>
 <translation id="8198457270656084773">सिस्टमसम्बन्धी जानकारी भएको डिभाइसको लग पेज खोज्दै हुनुहुन्छ? <ph name="BEGIN_LINK" /><ph name="OS_DEVICE_LOG_LINK" /><ph name="END_LINK" /> मा जानुहोस्।</translation>

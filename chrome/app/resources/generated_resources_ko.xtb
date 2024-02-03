@@ -4987,7 +4987,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4811212958317149293">스위치 제어 키보드 자동 스캔</translation>
 <translation id="4811503964269049987">선택한 탭 그룹화</translation>
 <translation id="4813512666221746211">네트워크 오류</translation>
-<translation id="4813872509679988157">이 사이트에서 MIDI 기기를 사용하도록 계속 허용합니다.</translation>
 <translation id="4814114628197290459">IBAN 삭제</translation>
 <translation id="4814327014588285482">건너뛰고 나중에 알림</translation>
 <translation id="4814378367953456825">지문 이름 입력</translation>
@@ -5306,7 +5305,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5063480226653192405">사용</translation>
 <translation id="5065775832226780415">Smart Lock</translation>
 <translation id="5066100345385738837">ChromeOS 설정에서 보안 DNS 관리</translation>
-<translation id="5066891009360243320">이 사이트는 MIDI 기기 사용이 차단되었습니다.</translation>
 <translation id="5067399438976153555">항상 사용</translation>
 <translation id="5067867186035333991"><ph name="HOST" />에서 마이크에 액세스하려는 경우 메시지 표시</translation>
 <translation id="5068553687099139861">비밀번호 표시</translation>
@@ -6715,7 +6713,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6171779718418683144">방문할 때마다 확인</translation>
 <translation id="617213288191670920">추가된 언어 없음</translation>
 <translation id="6173623053897475761">PIN을 다시 입력하세요</translation>
-<translation id="6174116123142608180">이 사이트에서 MIDI 기기를 사용하지 못하도록 계속 차단합니다.</translation>
 <translation id="6175314957787328458">Microsoft Domain GUID</translation>
 <translation id="6175910054050815932">링크 가져오기</translation>
 <translation id="6176701216248282552">문맥 도움말이 사용 설정되었습니다. 이 기능을 사용하면 열린 페이지를 Google에 전송할 수 있습니다.</translation>
@@ -7242,7 +7239,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6597017209724497268">샘플</translation>
 <translation id="6597331566371766302">관리자가 다음 확장 프로그램을 차단했습니다.</translation>
 <translation id="659894938503552850">가장 최근 날짜</translation>
-<translation id="6599934330666882772">이 사이트에서 MIDI 기기를 사용 중입니다.</translation>
 <translation id="6601262427770154296">사용자 사전 관리</translation>
 <translation id="6602173570135186741">자동 완성 및 비밀번호</translation>
 <translation id="6602937173026466876">프린터에 액세스</translation>
@@ -7818,7 +7814,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7036706669646341689">Linux를 사용하려면 <ph name="DISK_SIZE" />의 여유 공간이 권장됩니다. 여유 공간을 늘리려면 기기에서 파일을 삭제하세요.</translation>
 <translation id="7037509989619051237">텍스트 미리보기</translation>
 <translation id="7038632520572155338">스위치 제어</translation>
-<translation id="7038636380708661517"><ph name="HOST" />에서 MIDI 기기를 사용하지 못하도록 항상 차단합니다.</translation>
 <translation id="7038710352229712897"><ph name="USER_NAME" />님의 다른 Google 계정 추가</translation>
 <translation id="7039326228527141150"><ph name="VENDOR_NAME" />의 USB 기기에 액세스</translation>
 <translation id="7039912931802252762">Microsoft Smart Card Logon</translation>
@@ -7974,7 +7969,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7180865173735832675">맞춤설정</translation>
 <translation id="7181117767881540376">북마크바 숨기기</translation>
 <translation id="7182063559013288142">인스턴트 핫스팟</translation>
-<translation id="718240920439497409">MIDI 기기 차단됨</translation>
 <translation id="7182791023900310535">비밀번호 이동</translation>
 <translation id="718427252411067142">다른 사람이 내 비밀번호를 사용하지 못하도록 하려면 앱을 열어 비밀번호를 변경하세요.</translation>
 <translation id="7186088072322679094">툴바에 보관</translation>
@@ -9120,7 +9114,6 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8041267120753677077">휴대전화의 앱을 스트리밍합니다.</translation>
 <translation id="8042142357103597104">텍스트 불투명도</translation>
 <translation id="8042331986490021244">비밀번호가 Google 비밀번호 관리자에 저장되기 전에 기기에서 암호화됩니다</translation>
-<translation id="8044090981104134791">MIDI 기기 허용됨</translation>
 <translation id="8044262338717486897"><ph name="LINUX_APP_NAME" />이(가) 응답하지 않음</translation>
 <translation id="8044899503464538266">느리게</translation>
 <translation id="8045253504249021590">Google 대시보드를 통해 동기화가 중지되었습니다.</translation>
@@ -9320,7 +9313,6 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />내 기기<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195265224453131880">강도</translation>
 <translation id="8195854162863398249"><ph name="FEATURE_NAME" /> 사용 안함</translation>
-<translation id="8197151971904389091"><ph name="HOST" />에서 MIDI 기기를 사용하도록 항상 허용합니다.</translation>
 <translation id="8197673340773315084">'직장', '개인'과 같은 이름 또는 라벨 추가</translation>
 <translation id="8198456017687137612">탭 전송 중</translation>
 <translation id="8198457270656084773">시스템 기기 로그 페이지를 찾고 계신가요? <ph name="BEGIN_LINK" /><ph name="OS_DEVICE_LOG_LINK" /><ph name="END_LINK" />에서 확인하세요.</translation>

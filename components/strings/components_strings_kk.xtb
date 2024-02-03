@@ -1037,7 +1037,6 @@
 <translation id="3005723025932146533">Сақталған көшірмені көрсету</translation>
 <translation id="300580149047131921">Соңғы қолданылған</translation>
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />, қолжетімді әрекеттерді шолу үшін Tab пернесін басып, таңдалған әрекетті орындау үшін Enter пернесін басыңыз.</translation>
-<translation id="3013291976881901233">MIDI құрылғылары</translation>
 <translation id="3014553260345122294">Бизнес жаңалықтары</translation>
 <translation id="3014726756341138577">Озық принтер функциялары</translation>
 <translation id="301521992641321250">Автоматты түрде блокталған</translation>
@@ -3595,7 +3594,6 @@
 <translation id="8038817883578389970">Көлік жарысы</translation>
 <translation id="8041089156583427627">Пікір жіберу</translation>
 <translation id="8041940743680923270">Ғаламдық әдепкі мәнді (Сұрау) пайдалану</translation>
-<translation id="8042577181291637092">MIDI құрылғыларын пайдалану керек пе?</translation>
 <translation id="8043255123207491407">Сатушының шарттары мен талаптарын көру</translation>
 <translation id="8046360364391076336">Өнеркәсіптік материалдар мен жабдық</translation>
 <translation id="8052898407431791827">Буферге көшірілді.</translation>
@@ -3800,7 +3798,6 @@
 <translation id="8428213095426709021">Параметрлер</translation>
 <translation id="8428634594422941299">Түсінікті</translation>
 <translation id="8431194080598727332"><ph name="MANAGE_COOKIES_FOCUSED_FRIENDLY_MATCH_TEXT" />. Chrome параметрлеріне кіріп, cookie файлдарын басқару үшін Tab, сосын Enter пернелерін басыңыз.</translation>
-<translation id="8432419784006585012">MIDI құрылғыларыңызды пайдалануға рұқсат сұрай алады</translation>
 <translation id="8433057134996913067">Бұл — көп веб-сайттардан шығарады.</translation>
 <translation id="8434014327286137412">Келесі жолы жылдамырақ төлеу үшін IBAN нөміріңізді Google аккаунтыңызға сақтаңыз.</translation>
 <translation id="8434840396568290395">Үй жануарлары</translation>
@@ -3892,7 +3889,6 @@
 <translation id="860043288473659153">Карта иесінің аты-жөні</translation>
 <translation id="8601027005147870853"><ph name="BEGIN_BOLD" />Пайдаланылатын деректер:<ph name="END_BOLD" /> осы құрылғыда Chrome көмегімен кірген сайттағы әрекетіңіз.</translation>
 <translation id="8601456038554914806">Су спортының жабдығы</translation>
-<translation id="8606726445206553943">MIDI құрылғыларыңызды пайдалану</translation>
 <translation id="8606988009912891950">Жарнама тақырыптары браузерді қолдану тарихы мен жеке ақпаратыңызды қорғай отырып, сізге сайттардың қатысты жарнамаларды көрсетуіне көмектеседі. Chrome браузерді қолдану тарихы бойынша қызықты тақырыптарды көрсете алады. Кейінірек кірген сайтыңыз сіз көрген жарнамаларды жекелендіру үшін Chrome браузерінен қатысты тақырыптарды сұрауы мүмкін.</translation>
 <translation id="8617269623452051934">құрылғыны пайдалануыңыз</translation>
 <translation id="861775596732816396">Өлшемі: 4</translation>

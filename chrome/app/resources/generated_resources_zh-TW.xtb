@@ -4970,7 +4970,6 @@
 <translation id="4811212958317149293">切換控制功能鍵盤自動掃描</translation>
 <translation id="4811503964269049987">將所選分頁分組</translation>
 <translation id="4813512666221746211">網路錯誤</translation>
-<translation id="4813872509679988157">繼續允許這個網站使用 MIDI 裝置。</translation>
 <translation id="4814114628197290459">刪除 IBAN</translation>
 <translation id="4814327014588285482">略過並稍後提醒我</translation>
 <translation id="4814378367953456825">請輸入這個指紋的名稱</translation>
@@ -5289,7 +5288,6 @@
 <translation id="5063480226653192405">用量</translation>
 <translation id="5065775832226780415">Smart Lock</translation>
 <translation id="5066100345385738837">在 Chrome OS 設定中管理安全 DNS</translation>
-<translation id="5066891009360243320">已拒絕這個網站使用 MIDI 裝置。</translation>
 <translation id="5067399438976153555">一律啟用</translation>
 <translation id="5067867186035333991">當 <ph name="HOST" /> 要求存取麥克風時詢問我。</translation>
 <translation id="5068553687099139861">顯示密碼</translation>
@@ -6694,7 +6692,6 @@
 <translation id="6171779718418683144">每次造訪時都詢問</translation>
 <translation id="617213288191670920">尚未新增語言</translation>
 <translation id="6173623053897475761">重新輸入 PIN 碼</translation>
-<translation id="6174116123142608180">繼續禁止這個網站使用 MIDI 裝置。</translation>
 <translation id="6175314957787328458">Microsoft 網域 GUID</translation>
 <translation id="6175910054050815932">取得連結</translation>
 <translation id="6176701216248282552">內容相關說明已開啟。這些功能可能會將開啟的網頁傳送給 Google。</translation>
@@ -7221,7 +7218,6 @@
 <translation id="6597017209724497268">個樣本</translation>
 <translation id="6597331566371766302">系統管理員已封鎖下列擴充功能：</translation>
 <translation id="659894938503552850">由新到舊</translation>
-<translation id="6599934330666882772">這個網站正在使用 MIDI 裝置。</translation>
 <translation id="6601262427770154296">管理使用者字典</translation>
 <translation id="6602173570135186741">自動填入和密碼</translation>
 <translation id="6602937173026466876">存取印表機</translation>
@@ -7797,7 +7793,6 @@
 <translation id="7036706669646341689">建議你為 Linux 保留 <ph name="DISK_SIZE" /> 的空間。如要增加可用空間，請刪除裝置中的檔案。</translation>
 <translation id="7037509989619051237">要預覽的文字</translation>
 <translation id="7038632520572155338">切換控制功能</translation>
-<translation id="7038636380708661517">一律禁止 <ph name="HOST" /> 使用 MIDI 裝置。</translation>
 <translation id="7038710352229712897">為<ph name="USER_NAME" />新增其他 Google 帳戶</translation>
 <translation id="7039326228527141150">存取由 <ph name="VENDOR_NAME" /> 製造的 USB 裝置</translation>
 <translation id="7039912931802252762">Microsoft 智慧卡登入</translation>
@@ -7953,7 +7948,6 @@
 <translation id="7180865173735832675">自訂</translation>
 <translation id="7181117767881540376">隱藏書籤列(&amp;H)</translation>
 <translation id="7182063559013288142">即時無線基地台</translation>
-<translation id="718240920439497409">已禁止使用 MIDI 裝置</translation>
 <translation id="7182791023900310535">轉移你的密碼</translation>
 <translation id="718427252411067142">如果不希望他人使用你的密碼，請開啟應用程式變更密碼</translation>
 <translation id="7186088072322679094">固定在工具列中</translation>
@@ -9099,7 +9093,6 @@
 <translation id="8041267120753677077">串流手機的應用程式</translation>
 <translation id="8042142357103597104">文字不透明度</translation>
 <translation id="8042331986490021244">系統會先在裝置上將密碼加密，再儲存至 Google 密碼管理員</translation>
-<translation id="8044090981104134791">已允許使用 MIDI 裝置</translation>
 <translation id="8044262338717486897">「<ph name="LINUX_APP_NAME" />」沒有回應。</translation>
 <translation id="8044899503464538266">慢</translation>
 <translation id="8045253504249021590">已透過 Google 資訊主頁停止同步功能。</translation>
@@ -9299,7 +9292,6 @@
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />你的裝置<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195265224453131880">強度</translation>
 <translation id="8195854162863398249">停用<ph name="FEATURE_NAME" /></translation>
-<translation id="8197151971904389091">一律允許 <ph name="HOST" /> 使用 MIDI 裝置。</translation>
 <translation id="8197673340773315084">新增名稱或標籤，例如「工作」或「個人」</translation>
 <translation id="8198456017687137612">正在投放分頁</translation>
 <translation id="8198457270656084773">要查看系統的裝置記錄頁面嗎？請造訪 <ph name="BEGIN_LINK" /><ph name="OS_DEVICE_LOG_LINK" /><ph name="END_LINK" />。</translation>

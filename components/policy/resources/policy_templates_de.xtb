@@ -449,7 +449,6 @@ Ist die Richtlinie deaktiviert oder nicht konfiguriert, wird anhand der Einstell
 <translation id="1361661842732478894">„Home“-Schaltfläche in der Symbolleiste anzeigen</translation>
 <translation id="1363275621236827384">Abfragen an Quirks-Server für Hardwareprofile aktivieren</translation>
 <translation id="1369698103169067223">Glanceables sind für Nutzer nicht aktiviert.</translation>
-<translation id="1370341503636288922">Erweiterte automatische Updates aktivieren</translation>
 <translation id="1371626834351873151">Die Verringerung des User-Agents ist für alle Ursprünge aktiviert.</translation>
 <translation id="1371851989348083665">Verwendung von <ph name="ASSISTANT_PRODUCT_NAME" /> im Web zulassen</translation>
 <translation id="1372618949173323717">JavaScript deaktivieren</translation>
@@ -1270,7 +1269,6 @@ Zu den URL-Messwerten gehören auch die IDs und Nutzungsstatistiken anderer Brow
 
 Ist die Richtlinie auf „unzulässig“ gesetzt, können Nutzer das Erfassen von URL-Messwerten nicht aktivieren.</translation>
 <translation id="2012296492055302633">Privatsphärefunktion immer aktivieren</translation>
-<translation id="2013002651531781796">Erweiterte automatische Updates nicht aktivieren</translation>
 <translation id="2014757022750736514">Legt das Verhalten des Anmeldebildschirms fest, auf dem Nutzer sich in ihren Konten anmelden. Über die Einstellungen wird gesteuert, wer sich anmelden darf, welche Typen von Konten zulässig sind und welche Authentifizierungsmethoden verwendet werden sollen. Außerdem schließen sie allgemeine Bedienungshilfen, Eingabemethode und Sprache ein.</translation>
 <translation id="201557587962247231">Häufigkeit von Uploads mit Berichten zum Gerätestatus</translation>
 <translation id="2016031354108680330">Root-Zugriff auf virtuelle Maschinen mit Linux aktivieren</translation>
@@ -7983,11 +7981,6 @@ Wenn die Richtlinie leer bleibt, sind keine Ausnahmen zu „<ph name="FLOATING_S
 <translation id="7635106595080609261">Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, kann Chrome Dialogfelder zur Dateiauswahl anzeigen und Nutzer können diese öffnen.
 
       Wird die Richtlinie deaktiviert, erscheint stattdessen eine Meldung, wenn Nutzer mit einer Aktion ein Dialogfeld zur Dateiauswahl öffnen würden, etwa beim Importieren von Lesezeichen, Hochladen von Dateien und Speichern von Links. Es wird angenommen, dass der Nutzer im Dialogfeld zur Dateiauswahl auf „Abbrechen“ geklickt hat.</translation>
-<translation id="7637839788175449523">Wenn die Richtlinie auf „true“ gesetzt ist, werden erweiterte automatische Updates für die Geräte aktiviert.
-
-Wenn die Richtlinie auf „false“ gesetzt oder nicht konfiguriert ist, erhalten Geräte nach dem Ende der automatischen Updates keine Updates mehr.
-
-Erweiterte automatische Updates und automatische Updates sind unter https://support.google.com/chrome/a?p=auto-update-policy dokumentiert.</translation>
 <translation id="7638300388094655454">Google Cast</translation>
 <translation id="7638764766629234761">Verwendung von Systembenachrichtigungen zulassen</translation>
 <translation id="7643151458117317518">Durch diese Richtlinie wird festgelegt, ob die <ph name="PRIVACY_SANDBOX_NAME" />-Einstellung für die Anzeigenanalyse für Nutzer deaktiviert werden kann.

@@ -26,6 +26,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="1087110696012418426">Boa tarde, <ph name="GIVEN_NAME" />,</translation>
 <translation id="1088231044944504242">Pesquise na categoria <ph name="CATEGORY" />, ficheiros, apps e muito mais. Use as teclas de seta para navegar nas suas apps.</translation>
 <translation id="1093645050124056515">ctrl + alt + seta para baixo</translation>
+<translation id="1094756674036064790">Desativar o Bluetooth?</translation>
 <translation id="109942774857561566">Estou aborrecido</translation>
 <translation id="1104084341931202936">Mostrar definições de acessibilidade</translation>
 <translation id="1104621072296271835">Os seus dispositivos funcionam ainda melhor juntos</translation>
@@ -660,6 +661,7 @@ Ligue o dispositivo à corrente.</translation>
 <translation id="3660860940251915011">Ativar/desativar alta visibilidade da funcionalidade <ph name="FEATURE_NAME" /></translation>
 <translation id="366222428570480733">Utilizador gerido por <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="3666266999138159418">Deslize rapidamente para ocultar a janela flutuante</translation>
+<translation id="3673898235958558034">Quando desativar o Bluetooth, vai desassociar os dispositivos "<ph name="DEVICE_NAME_1" />" e "<ph name="DEVICE_NAME_2" />" do Chromebook.</translation>
 <translation id="367531336287639526">Selecionar o primeiro ícone à esquerda da barra de endereço</translation>
 <translation id="3677931086890821290">Isto permite que todas as apps e Websites com a autorização de acesso à localização e o ChromeOS usem a localização de redes móveis e Wi-Fi.</translation>
 <translation id="3679827876008292680">Aceder ao último separador na janela</translation>
@@ -915,6 +917,7 @@ Algumas funcionalidades são limitadas para aumentar a autonomia da bateria.</tr
 <translation id="4666911709726371538">Mais apps</translation>
 <translation id="4667099493359681081">A transferir <ph name="FILENAME" /></translation>
 <translation id="4672539464599646374">Poupança de bateria ativada</translation>
+<translation id="4673427585974421255">Manter</translation>
 <translation id="468293128311738995">Apps do telemóvel</translation>
 <translation id="4690510401873698237">Prateleira na parte inferior</translation>
 <translation id="4696813013609194136">Desbloquear o dispositivo com o código parental</translation>
@@ -1215,6 +1218,7 @@ Algumas funcionalidades são limitadas para aumentar a autonomia da bateria.</tr
 <translation id="5802516411616338943">Abrir Definições rápidas</translation>
 <translation id="5804651031882187592">Desative a definição "Bloquear SIM"</translation>
 <translation id="5805809050170488595">Clicar para ativar <ph name="NETWORK_NAME" /></translation>
+<translation id="5816222150329690597">Quando desativar o Bluetooth, vai desassociar os dispositivos "<ph name="DEVICE_NAME_1" />", "<ph name="DEVICE_NAME_2" />" e mais <ph name="DEVICE_COUNT" /> do Chromebook.</translation>
 <translation id="5823239091726045201">Google Tasks na Web</translation>
 <translation id="5825969630400862129">Definições de dispositivos associados</translation>
 <translation id="5837036133683224804">Parar o <ph name="ROUTE_TITLE" /> no recetor <ph name="RECEIVER_NAME" /></translation>
@@ -1395,6 +1399,7 @@ Algumas funcionalidades são limitadas para aumentar a autonomia da bateria.</tr
 <translation id="6539852571005954999">A analisar a transferência <ph name="FILENAME" /></translation>
 <translation id="6542521951477560771">A transmitir para <ph name="RECEIVER_NAME" /></translation>
 <translation id="6546062506073634094">Pesquisa de imagens por conteúdo e pré-visualizações de imagens</translation>
+<translation id="6547795021703527064">Quando desativar o Bluetooth, vai desassociar o dispositivo "<ph name="DEVICE_NAME" />" do Chromebook.</translation>
 <translation id="6555373427270923730">Introduza um endereço Web na barra de endereço e, em seguida, prima <ph name="MODIFIER" /><ph name="KEY" /></translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 Nova instalação</translation>

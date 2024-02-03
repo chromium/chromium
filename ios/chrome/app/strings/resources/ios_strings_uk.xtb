@@ -176,6 +176,7 @@
 <translation id="189531189292803889">Ваш пристрій iPad нещодавно було відновлено, тому веб-переглядач за умовчанням міг змінитися.</translation>
 <translation id="1904580727789512086">URL-адреси, на які ви переходите, зберігаються в обліковому записі Google</translation>
 <translation id="1911619930368729126">Завантажити на Google Диск</translation>
+<translation id="1919752845298942932">З’єднання незахищене</translation>
 <translation id="1923342640370224680">Остання година</translation>
 <translation id="1930989359703290198">Ваша організація дозволяє входити лише в певні облікові записи. Недозволені облікові записи приховано. <ph name="BEGIN_LINK" />Докладніше<ph name="END_LINK" /></translation>
 <translation id="1941314575388338491">Двічі торкніться, щоб скопіювати.</translation>
@@ -418,6 +419,7 @@
 <translation id="3130863904455712965">Історія та інші переваги</translation>
 <translation id="3131206671572504478">Заблокувати всі</translation>
 <translation id="313283613037595347">Створити нову анонімну вкладку.</translation>
+<translation id="314837624430314508">Будьте в курсі останніх новин, оновлень відстежуваних цін тощо.</translation>
 <translation id="3148946345238989659">Деякі функції більше не доступні</translation>
 <translation id="3153862085237805241">Зберегти картку</translation>
 <translation id="3157387275655328056">Додати в список читання</translation>
@@ -462,6 +464,7 @@
 <translation id="3371831930909698441">Доступний Перекладач. Параметри можна знайти внизу екрана</translation>
 <translation id="3377063233124932127">Тепер ваші збережені закладки, паролі тощо відображаються вгорі екрана.</translation>
 <translation id="3393920035788932672">Спливаючі вікна дозволені</translation>
+<translation id="3398509000872871492">З’єднання захищене</translation>
 <translation id="3404232721752787413">Зберегти в Google Фото</translation>
 <translation id="3404744938087714423">Якщо вийти з облікового запису, синхронізацію буде вимкнено.</translation>
 <translation id="3409785640040772790">Карти</translation>
@@ -584,6 +587,7 @@
 <translation id="4045648459118332842">Входьте одним дотиком у додатки за допомогою збережених паролів</translation>
 <translation id="4049507953662678203">Переконайтеся, що з’єднання з мережею встановлено, і повторіть спробу.</translation>
 <translation id="4054572406751135230">Будьте в курсі новин, спортивних подій тощо.</translation>
+<translation id="4057531989585132525">Безпека з’єднання</translation>
 <translation id="4066639687323968621">Увійдіть в обліковий запис Google, щоб синхронізувати закладки, історію тощо.</translation>
 <translation id="4092655288299341041">Показати довідку</translation>
 <translation id="4105841739161771091">{count,plural, =1{Видалити адресу}one{Видалити адреси}few{Видалити адреси}many{Видалити адреси}other{Видалити адреси}}</translation>
@@ -648,6 +652,7 @@
 <translation id="4431224949908513835">Виберіть спосіб оплати.</translation>
 <translation id="4442550905108052454">Відкрийте <ph name="BEGIN_BOLD" />Налаштування<ph name="END_BOLD" /></translation>
 <translation id="4454246407045105932">Додати мову</translation>
+<translation id="4455710003856931944">Щоб перейти назад або вперед, проведіть пальцем за край.</translation>
 <translation id="4460014764210899310">Розгрупувати</translation>
 <translation id="4461286950227634995">Пропонувати зберігати паролі</translation>
 <translation id="4462491365653392320">Відстежувати ціни на вкладках</translation>
@@ -1214,6 +1219,7 @@
 <translation id="7291368939935408496">Готуються паролі…</translation>
 <translation id="7302503784943202842">Використовувати паролі на всіх пристроях</translation>
 <translation id="7313347584264171202">Тут відображатимуться ваші анонімні вкладки</translation>
+<translation id="7335132237885014335">Отримувати сповіщення</translation>
 <translation id="7336264872878993241">Завантажено <ph name="PERCENT" />%</translation>
 <translation id="7340958967809483333">Налаштування рекомендацій</translation>
 <translation id="7346909386216857016">OK</translation>

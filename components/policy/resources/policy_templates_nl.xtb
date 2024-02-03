@@ -448,7 +448,6 @@ Als je het beleid niet toepast of niet instelt, wordt op basis van de instelling
 <translation id="1361661842732478894">Startknop op de werkbalk tonen</translation>
 <translation id="1363275621236827384">Query's naar Quirks Server sturen voor hardwareprofielen</translation>
 <translation id="1369698103169067223">Glanceables staan niet aan voor gebruikers.</translation>
-<translation id="1370341503636288922">Aanmelden voor uitgebreide automatische updates</translation>
 <translation id="1371626834351873151">Inkorting van user-agent wordt aangezet voor alle origins.</translation>
 <translation id="1371851989348083665">Het gebruik van <ph name="ASSISTANT_PRODUCT_NAME" /> op internet toestaan</translation>
 <translation id="1372618949173323717">JavaScript uitzetten</translation>
@@ -1273,7 +1272,6 @@ URL-sleutelstatistieken omvatten ook de ID's en gebruiksstatistieken van andere 
 
 Als je dit beleid instelt op niet toegestaan, kunnen gebruikers de verzameling van URL-sleutelstatistieken niet aanzetten.</translation>
 <translation id="2012296492055302633">Het privacyscherm altijd aanzetten</translation>
-<translation id="2013002651531781796">Uitgebreide automatische updates niet toestaan</translation>
 <translation id="2014757022750736514">Beheert het gedrag van het inlogscherm, waar gebruikers inloggen op hun accounts. Instellingen zijn onder andere wie kan inloggen, welke typen accounts zijn toegestaan, welke verificatiemethoden moeten worden gebruikt, en algemene instellingen voor toegankelijkheid, invoermethoden en taal.</translation>
 <translation id="201557587962247231">De frequentie van uploads van rapporten over de apparaatstatus</translation>
 <translation id="2016031354108680330">Roottoegang tot virtuele Linux-machines aanzetten</translation>
@@ -7979,11 +7977,6 @@ Als je geen beleid opgeeft, zijn er geen uitzonderingen toegestaan op <ph name="
 <translation id="7635106595080609261">Als je dit beleid toepast of niet instelt, kan Chrome dialoogvensters voor het selecteren van bestanden bekijken en kunnen gebruikers deze openen.
 
       Als je het beleid niet toepast, wordt er in plaats daarvan altijd een bericht getoond als gebruikers acties uitvoeren die een dialoogvenster voor het selecteren van bestanden aanroepen, zoals bookmarks importeren, bestanden uploaden en links opslaan. Er wordt vanuit gegaan dat de gebruiker op Annuleren heeft geklikt in het dialoogvenster voor het selecteren van bestanden.</translation>
-<translation id="7637839788175449523">Als je het beleid instelt op Waar, worden apparaten aangemeld voor uitgebreide automatische updates.
-
-Als je het beleid instelt op Onwaar of niet instelt, krijgen apparaten geen updates meer nadat de automatische update is verlopen.
-
-Uitgebreide automatische updates en automatische updates worden beschreven op https://support.google.com/chrome/a?p=auto-update-policy.</translation>
 <translation id="7638300388094655454">Google Cast</translation>
 <translation id="7638764766629234761">Systeemmeldingen toestaan</translation>
 <translation id="7643151458117317518">Beleid om te bepalen of de <ph name="PRIVACY_SANDBOX_NAME" />-instelling voor advertentiemeting kan worden uitgezet voor je gebruikers.

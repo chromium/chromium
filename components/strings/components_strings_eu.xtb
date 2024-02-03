@@ -1037,7 +1037,6 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="3005723025932146533">Erakutsi gordetako kopia</translation>
 <translation id="300580149047131921">Duela gutxi erabilia</translation>
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />, sakatu tabuladorea gauza daitezkeen ekintzak arakatzeko. Gero, sakatu Sartu hautatutako ekintza exekutatzeko.</translation>
-<translation id="3013291976881901233">MIDI gailuak</translation>
 <translation id="3014553260345122294">Enpresei buruzko albisteak</translation>
 <translation id="3014726756341138577">Inprimagailuaren ezarpen aurreratuak</translation>
 <translation id="301521992641321250">Automatikoki blokeatuta</translation>
@@ -3591,7 +3590,6 @@ Xehetasun gehiago:
 <translation id="8038817883578389970">Auto-lasterketak</translation>
 <translation id="8041089156583427627">Bidali oharrak</translation>
 <translation id="8041940743680923270">Erabili balio lehenetsi orokorra (galdetzea)</translation>
-<translation id="8042577181291637092">MIDI gailuak erabili nahi dituzu?</translation>
 <translation id="8043255123207491407">Ikusi saltzailearen zehaztapenak eta baldintzak</translation>
 <translation id="8046360364391076336">Material industrialak eta ekipamenduak</translation>
 <translation id="8052898407431791827">Kopiatu da arbelean</translation>
@@ -3796,7 +3794,6 @@ Xehetasun gehiago:
 <translation id="8428213095426709021">Ezarpenak</translation>
 <translation id="8428634594422941299">Ados</translation>
 <translation id="8431194080598727332"><ph name="MANAGE_COOKIES_FOCUSED_FRIENDLY_MATCH_TEXT" />, sakatu tabuladorea eta, ondoren, sakatu Sartu Chrome-ren ezarpenetara joan, eta cookieen hobespenak kudeatzeko</translation>
-<translation id="8432419784006585012">MIDI gailuak erabiltzeko eska dezake</translation>
 <translation id="8433057134996913067">Hori eginez gero, webgune gehienetako saioa amaituko duzu.</translation>
 <translation id="8434014327286137412">Hurrengoan bizkorrago ordaintzeko, gorde IBANa Google-ko kontuan</translation>
 <translation id="8434840396568290395">Konpainia-animaliak</translation>
@@ -3888,7 +3885,6 @@ Xehetasun gehiago:
 <translation id="860043288473659153">Txartelaren titularraren izena</translation>
 <translation id="8601027005147870853"><ph name="BEGIN_BOLD" />Zein datu erabiltzen dira?<ph name="END_BOLD" /> Gailu honetan Chrome-ren bidez bisitatutako webgune batean egin dituzun jarduerak.</translation>
 <translation id="8601456038554914806">Ur-kiroletarako ekipamendua</translation>
-<translation id="8606726445206553943">Erabili MIDI gailuak</translation>
 <translation id="8606988009912891950">Iragarkien gaiei esker, webguneek iragarki egokiak erakusten dizkizute, eta zure arakatze-historia eta identitatea babesten. Azkenaldiko arakatze-historian oinarrituta har ditzake kontuan Chrome-k interesatzen zaizkizun gaiak. Geroago, bisitatzen dituzun webguneek zuretzako gai egokiak zein diren galde diezaiokete Chrome-ri, ikusten dituzun iragarkiak pertsonalizatzeko.</translation>
 <translation id="8617269623452051934">gailuaren erabilera</translation>
 <translation id="861775596732816396">Tamaina: 4</translation>

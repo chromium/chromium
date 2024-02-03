@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ru">
 <translation id="1213425325105380833">Восстановите веб-приложения, которые недавно использовались на устройствах, связанных с этим аккаунтом.</translation>
+<translation id="1786044937610313874">Ярлыки будут открываться в Chrome</translation>
 <translation id="204914487372604757">Создать ярлык</translation>
 <translation id="2065911435109240297">Восстановление веб-приложений</translation>
 <translation id="2111649875343992405">Проверьте список веб-приложений для восстановления</translation>
@@ -14,6 +15,7 @@
 <translation id="4338600611020922010">Добавить на главный экран</translation>
 <translation id="4665282149850138822">Сайт <ph name="NAME" /> добавлен на главный экран</translation>
 <translation id="5250483651202458397">Скриншот. Нажмите, чтобы закрыть.</translation>
+<translation id="5684726956335420505">Выберите способ добавления приложения на главный экран</translation>
 <translation id="5972844218283131174">Отменить выбор</translation>
 <translation id="6838423508083736333">Веб-приложения, использовавшиеся в прошлом месяце</translation>
 <translation id="6990079615885386641">Приложение в Google Play Маркете: <ph name="APP_ACTION" /></translation>

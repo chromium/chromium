@@ -1037,7 +1037,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3005723025932146533">Show saved copy</translation>
 <translation id="300580149047131921">Recently used</translation>
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />, press Tab to browse available actions, then Enter to execute selected action.</translation>
-<translation id="3013291976881901233">MIDI devices</translation>
 <translation id="3014553260345122294">Business News</translation>
 <translation id="3014726756341138577">Advanced printer features</translation>
 <translation id="301521992641321250">Automatically blocked</translation>
@@ -3596,7 +3595,6 @@ Additional details:
 <translation id="8038817883578389970">Auto racing</translation>
 <translation id="8041089156583427627">Send Feedback</translation>
 <translation id="8041940743680923270">Use global default (Ask)</translation>
-<translation id="8042577181291637092">Use MIDI devices?</translation>
 <translation id="8043255123207491407">See seller's terms and conditions</translation>
 <translation id="8046360364391076336">Industrial Materials and Equipment</translation>
 <translation id="8052898407431791827">Copied to clipboard</translation>
@@ -3801,7 +3799,6 @@ Additional details:
 <translation id="8428213095426709021">Settings</translation>
 <translation id="8428634594422941299">Got it</translation>
 <translation id="8431194080598727332"><ph name="MANAGE_COOKIES_FOCUSED_FRIENDLY_MATCH_TEXT" />, press Tab then Enter to manage your cookie preferences in Chrome settings</translation>
-<translation id="8432419784006585012">Can ask to use your MIDI devices</translation>
 <translation id="8433057134996913067">This will sign you out of most websites.</translation>
 <translation id="8434014327286137412">To pay faster next time, save your IBAN to your Google Account</translation>
 <translation id="8434840396568290395">Pets</translation>
@@ -3893,7 +3890,6 @@ Additional details:
 <translation id="860043288473659153">Cardholder name</translation>
 <translation id="8601027005147870853"><ph name="BEGIN_BOLD" />What data is used:<ph name="END_BOLD" /> Your activity on a site that you visit using Chrome on this device.</translation>
 <translation id="8601456038554914806">Water Sports Equipment</translation>
-<translation id="8606726445206553943">Use your MIDI devices</translation>
 <translation id="8606988009912891950">Ad topics help sites show you relevant ads while protecting your browsing history and identity. Chrome can note topics of interest based on your recent browsing history. Later, a site that you visit can ask Chrome for relevant topics to personalise the ads that you see.</translation>
 <translation id="8617269623452051934">your device use</translation>
 <translation id="861775596732816396">Size 4</translation>

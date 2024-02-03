@@ -4987,7 +4987,6 @@
 <translation id="4811212958317149293">Αυτόματη σάρωση πληκτρολογίου πρόσβασης με διακόπτη</translation>
 <translation id="4811503964269049987">Ομαδοποίηση επιλεγμένων καρτελών</translation>
 <translation id="4813512666221746211">Σφάλμα δικτύου</translation>
-<translation id="4813872509679988157">Να εξακολουθήσει αυτός ο ιστότοπος να έχει τη δυνατότητα χρήσης των συσκευών MIDI.</translation>
 <translation id="4814114628197290459">Διαγραφή IBAN</translation>
 <translation id="4814327014588285482">Παράβλεψη και υπενθύμιση αργότερα</translation>
 <translation id="4814378367953456825">Εισαγάγετε ένα όνομα για αυτό το μοναδικό χαρακτηριστικό</translation>
@@ -5306,7 +5305,6 @@
 <translation id="5063480226653192405">Χρήση</translation>
 <translation id="5065775832226780415">Smart Lock</translation>
 <translation id="5066100345385738837">Διαχείριση ασφαλούς DNS στις ρυθμίσεις του Chrome OS</translation>
-<translation id="5066891009360243320">Έχει αποκλειστεί η χρήση των συσκευών σας MIDI για αυτόν τον ιστότοπο.</translation>
 <translation id="5067399438976153555">Πάντα ενεργό</translation>
 <translation id="5067867186035333991">Ερώτηση αν το <ph name="HOST" /> επιθυμεί να αποκτήσει πρόσβαση στο μικρόφωνό σας</translation>
 <translation id="5068553687099139861">εμφάνιση κωδικών πρόσβασης</translation>
@@ -6716,7 +6714,6 @@
 <translation id="6171779718418683144">Να γίνεται ερώτηση σε κάθε επίσκεψη</translation>
 <translation id="617213288191670920">Δεν έχουν προστεθεί γλώσσες</translation>
 <translation id="6173623053897475761">Πληκτρολογήστε το PIN ξανά</translation>
-<translation id="6174116123142608180">Να συνεχιστεί ο αποκλεισμός της χρήσης των συσκευών MIDI για αυτόν τον ιστότοπο.</translation>
 <translation id="6175314957787328458">Microsoft Domain GUID</translation>
 <translation id="6175910054050815932">Λήψη συνδέσμου</translation>
 <translation id="6176701216248282552">Η βοήθεια με βάση τα συμφραζόμενα είναι ενεργοποιημένη. Αυτές οι λειτουργίες μπορούν να στέλνουν ανοιχτές σελίδες στην Google.</translation>
@@ -7243,7 +7240,6 @@
 <translation id="6597017209724497268">Δείγματα</translation>
 <translation id="6597331566371766302">Οι παρακάτω επεκτάσεις αποκλείστηκαν από τον διαχειριστή σας:</translation>
 <translation id="659894938503552850">νεότερα</translation>
-<translation id="6599934330666882772">Αυτός ο ιστότοπος χρησιμοποιεί τις συσκευές MIDI που διαθέτετε.</translation>
 <translation id="6601262427770154296">Διαχείριση λεξικών χρήστη</translation>
 <translation id="6602173570135186741">Αυτόματη συμπλήρωση και κωδικοί πρόσβασης</translation>
 <translation id="6602937173026466876">Αποκτήστε πρόσβαση στους εκτυπωτές σας</translation>
@@ -7819,7 +7815,6 @@
 <translation id="7036706669646341689">Για το Linux συνιστώνται <ph name="DISK_SIZE" /> αποθηκευτικού χώρου. Για να αυξήσετε τον δωρεάν αποθηκευτικό χώρο, διαγράψτε αρχεία από τη συσκευή σας.</translation>
 <translation id="7037509989619051237">Κείμενο για προεπισκόπηση</translation>
 <translation id="7038632520572155338">Πρόσβαση με διακόπτη</translation>
-<translation id="7038636380708661517">Να αποκλείεται πάντα η χρήση των συσκευών MIDI για τον ιστότοπο <ph name="HOST" />.</translation>
 <translation id="7038710352229712897">Προσθήκη άλλου Λογαριασμού Google για τον χρήστη <ph name="USER_NAME" /></translation>
 <translation id="7039326228527141150">Πρόσβαση σε συσκευές USB από τον πάροχο υπηρεσιών <ph name="VENDOR_NAME" /></translation>
 <translation id="7039912931802252762">Microsoft Smart Card Logon</translation>
@@ -7975,7 +7970,6 @@
 <translation id="7180865173735832675">Προσαρμογή</translation>
 <translation id="7181117767881540376">&amp;Απόκρυψη γραμμής σελιδοδεικτών</translation>
 <translation id="7182063559013288142">Άμεσο σημείο πρόσβασης Wi-Fi</translation>
-<translation id="718240920439497409">Οι συσκευές MIDI έχουν αποκλειστεί</translation>
 <translation id="7182791023900310535">Μετακίνηση του κωδικού πρόσβασής σας</translation>
 <translation id="718427252411067142">Για να αποτρέψετε τη χρήση του κωδικού πρόσβασής σας από άλλους, ανοίξτε την εφαρμογή για να αλλάξετε τον κωδικό πρόσβασής σας.</translation>
 <translation id="7186088072322679094">Διατήρηση στη γραμμή εργαλείων</translation>
@@ -9121,7 +9115,6 @@
 <translation id="8041267120753677077">Μετάδοση σε ροή των εφαρμογών του τηλεφώνου σας</translation>
 <translation id="8042142357103597104">Αδιαφάνεια κειμένου</translation>
 <translation id="8042331986490021244">Οι κωδικοί πρόσβασης κρυπτογραφούνται στη συσκευή σας προτού αποθηκευτούν στον Διαχειριστή κωδικών πρόσβασης Google</translation>
-<translation id="8044090981104134791">Επιτρέπονται οι συσκευές MIDI</translation>
 <translation id="8044262338717486897">Η εφαρμογή <ph name="LINUX_APP_NAME" /> δεν αποκρίνεται.</translation>
 <translation id="8044899503464538266">Αργά</translation>
 <translation id="8045253504249021590">Ο συγχρονισμός έχει διακοπεί μέσω του Πίνακα ελέγχου Google.</translation>
@@ -9321,7 +9314,6 @@
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Οι συσκευές σας<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195265224453131880">Ένταση</translation>
 <translation id="8195854162863398249">Απενεργοποίηση της λειτουργίας <ph name="FEATURE_NAME" /></translation>
-<translation id="8197151971904389091">Να επιτρέπεται πάντα στον ιστότοπο <ph name="HOST" /> να χρησιμοποιεί τις συσκευές MIDI.</translation>
 <translation id="8197673340773315084">Προσθέστε ένα όνομα ή μια ετικέτα, όπως Εργασία ή Προσωπικό</translation>
 <translation id="8198456017687137612">Καρτέλα μετάδοσης</translation>
 <translation id="8198457270656084773">Αναζητάτε τη σελίδα καταγραφής συσκευής του συστήματος; Μεταβείτε στο <ph name="BEGIN_LINK" /><ph name="OS_DEVICE_LOG_LINK" /><ph name="END_LINK" />.</translation>

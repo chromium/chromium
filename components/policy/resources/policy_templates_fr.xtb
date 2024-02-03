@@ -449,7 +449,6 @@ Si cette règle est désactivée ou n'est pas configurée, les paramètres de re
 <translation id="1361661842732478894">Afficher le bouton Accueil dans la barre d'outils</translation>
 <translation id="1363275621236827384">Activer l'envoi de requêtes de profils matériels à Quirks Server</translation>
 <translation id="1369698103169067223">Les Glanceables ne sont pas activés pour les utilisateurs.</translation>
-<translation id="1370341503636288922">Activer les mises à jour automatiques étendues</translation>
 <translation id="1371626834351873151">La réduction user-agent sera activée pour toutes les origines.</translation>
 <translation id="1371851989348083665">Autoriser l'utilisation de l'<ph name="ASSISTANT_PRODUCT_NAME" /> sur le Web</translation>
 <translation id="1372618949173323717">Désactiver JavaScript</translation>
@@ -1275,7 +1274,6 @@ Les métriques incluant les URL comprennent également les identifiants et les s
 
 Si cette règle est définie sur "Non autorisée", les utilisateurs ne peuvent pas activer la collecte de métriques incluant les URL.</translation>
 <translation id="2012296492055302633">Toujours activer l'écran de confidentialité</translation>
-<translation id="2013002651531781796">Ne pas activer les mises à jour automatiques étendues</translation>
 <translation id="2014757022750736514">Contrôle le comportement de l'écran de connexion, où les internautes se connectent à leur compte. Les paramètres incluent qui peut se connecter, quels types de comptes sont autorisés, quelles méthodes d'authentification doivent être utilisées, ainsi que l'accessibilité générale, le mode de saisie et les paramètres régionaux.</translation>
 <translation id="201557587962247231">Fréquence d'importation des rapports sur l'état de l'appareil</translation>
 <translation id="2016031354108680330">Activer l'accès racine aux machines virtuelles Linux</translation>
@@ -8014,11 +8012,6 @@ On attend de cette règle qu'elle soit utilisée dans le cadre de la modificatio
 <translation id="7635106595080609261">Si cette règle est activée ou qu'elle n'est pas configurée, Chrome est autorisé à afficher des boîtes de dialogue de sélection de fichiers, et l'utilisateur peut ouvrir ces boîtes de dialogue normalement.
 
       Si cette règle est désactivée, chaque fois que l'utilisateur effectue une action qui devrait entraîner l'ouverture d'une boîte de dialogue de sélection de fichiers (par exemple, pour enregistrer des liens, ou importer des favoris ou des fichiers), un message s'affiche à la place. L'utilisateur est supposé avoir cliqué sur "Annuler" dans la boîte de dialogue de sélection de fichiers.</translation>
-<translation id="7637839788175449523">Si la règle est définie sur "True", les appareils activent les mises à jour automatiques étendues.
-
-Si cette règle est définie sur "False" ou n'est pas configurée, les appareils ne reçoivent plus de mises à jour après l'expiration de la mise à jour automatique.
-
-Les mises à jour automatiques étendues et les mises à jour automatiques sont décrites sur https://support.google.com/chrome/a?p=auto-update-policy.</translation>
 <translation id="7638300388094655454">Google Cast</translation>
 <translation id="7638764766629234761">Autoriser l'utilisation des notifications système</translation>
 <translation id="7643151458117317518">Règle permettant de décider si le paramètre de mesure des performances des annonces de <ph name="PRIVACY_SANDBOX_NAME" /> peut être désactivé pour vos utilisateurs.

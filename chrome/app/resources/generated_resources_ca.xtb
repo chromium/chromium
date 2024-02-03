@@ -4970,7 +4970,6 @@ Fes servir Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="4811212958317149293">Cerca automàtica del teclat d'accés amb interruptors</translation>
 <translation id="4811503964269049987">Agrupa la pestanya seleccionada</translation>
 <translation id="4813512666221746211">Error de la xarxa</translation>
-<translation id="4813872509679988157">Continua permetent que aquest lloc web utilitzi els teus dispositius MIDI.</translation>
 <translation id="4814114628197290459">Suprimeix l'IBAN</translation>
 <translation id="4814327014588285482">Omet i recorda-m'ho més tard</translation>
 <translation id="4814378367953456825">Introdueix un nom per a aquesta empremta digital</translation>
@@ -5289,7 +5288,6 @@ Fes servir Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="5063480226653192405">Ús</translation>
 <translation id="5065775832226780415">Smart Lock</translation>
 <translation id="5066100345385738837">Gestiona el DNS segur a la configuració de Chrome OS</translation>
-<translation id="5066891009360243320">No es permet que aquest lloc web utilitzi els teus dispositius MIDI.</translation>
 <translation id="5067399438976153555">Sempre activat</translation>
 <translation id="5067867186035333991">Pregunta si <ph name="HOST" /> vol accedir al micròfon</translation>
 <translation id="5068553687099139861">mostrar les contrasenyes</translation>
@@ -6697,7 +6695,6 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6171779718418683144">Pregunta en cada visita</translation>
 <translation id="617213288191670920">No s'ha afegit cap idioma</translation>
 <translation id="6173623053897475761">Torna a escriure el PIN</translation>
-<translation id="6174116123142608180">Continua impedint que aquest lloc web utilitzi els teus dispositius MIDI.</translation>
 <translation id="6175314957787328458">GUID de domini de Microsoft</translation>
 <translation id="6175910054050815932">Obtén un enllaç</translation>
 <translation id="6176701216248282552">L'ajuda contextual està activada. Aquestes funcions poden enviar pàgines obertes a Google.</translation>
@@ -7224,7 +7221,6 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="6597017209724497268">Mostres</translation>
 <translation id="6597331566371766302">L'administrador ha bloquejat les extensions següents:</translation>
 <translation id="659894938503552850">la més recent</translation>
-<translation id="6599934330666882772">Aquest lloc web fa servir els teus dispositius MIDI.</translation>
 <translation id="6601262427770154296">Gestiona els diccionaris de l'usuari</translation>
 <translation id="6602173570135186741">Emplenament automàtic i contrasenyes</translation>
 <translation id="6602937173026466876">Accedir a les teves impressores</translation>
@@ -7800,7 +7796,6 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="7036706669646341689">Es recomana tenir <ph name="DISK_SIZE" /> d'espai lliure per a Linux. Per augmentar l'espai lliure, suprimeix fitxers del dispositiu.</translation>
 <translation id="7037509989619051237">Text de prova</translation>
 <translation id="7038632520572155338">Accés amb interruptors</translation>
-<translation id="7038636380708661517">Impedeix sempre que <ph name="HOST" /> utilitzi els teus dispositius MIDI.</translation>
 <translation id="7038710352229712897">Afegeix un altre Compte de Google per a <ph name="USER_NAME" /></translation>
 <translation id="7039326228527141150">Accedir a dispositius USB del proveïdor <ph name="VENDOR_NAME" /></translation>
 <translation id="7039912931802252762">Inici de sessió de targeta intel·ligent de Microsoft</translation>
@@ -7956,7 +7951,6 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="7180865173735832675">Personalitza</translation>
 <translation id="7181117767881540376">Amaga la barra d'adreces d'interès</translation>
 <translation id="7182063559013288142">Punt d'accés Wi‑Fi instantani</translation>
-<translation id="718240920439497409">Dispositius MIDI bloquejats</translation>
 <translation id="7182791023900310535">Mou la contrasenya</translation>
 <translation id="718427252411067142">Per evitar que altres persones utilitzin la teva contrasenya, obre l'aplicació i canvia la contrasenya</translation>
 <translation id="7186088072322679094">Conserva a la barra d'eines</translation>
@@ -9102,7 +9096,6 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8041267120753677077">Reprodueix en continu aplicacions del telèfon</translation>
 <translation id="8042142357103597104">Opacitat del text</translation>
 <translation id="8042331986490021244">Les contrasenyes s'encripten al dispositiu abans de desar-les al gestor de contrasenyes de Google</translation>
-<translation id="8044090981104134791">Dispositius MIDI permesos</translation>
 <translation id="8044262338717486897"><ph name="LINUX_APP_NAME" /> no respon.</translation>
 <translation id="8044899503464538266">Lenta</translation>
 <translation id="8045253504249021590">La sincronització s'ha aturat a través del Tauler de control de Google.</translation>
@@ -9302,7 +9295,6 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Els teus dispositius<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195265224453131880">Intensitat</translation>
 <translation id="8195854162863398249">Desactiva <ph name="FEATURE_NAME" /></translation>
-<translation id="8197151971904389091">Permet sempre que <ph name="HOST" /> utilitzi els teus dispositius MIDI.</translation>
 <translation id="8197673340773315084">Afegeix un nom o una etiqueta, com ara Feina o Personal</translation>
 <translation id="8198456017687137612">S'està emetent la pestanya</translation>
 <translation id="8198457270656084773">Busques la pàgina de registre de dispositius del sistema? Ves a <ph name="BEGIN_LINK" /><ph name="OS_DEVICE_LOG_LINK" /><ph name="END_LINK" />.</translation>

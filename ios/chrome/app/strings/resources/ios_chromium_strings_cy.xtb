@@ -25,6 +25,7 @@
 <translation id="1617663976202781617">Data o gysoni Chromium</translation>
 <translation id="1647558790457890304">Gosodiadau Chromium</translation>
 <translation id="164952285225495380">Mae'r pecyn hwn wedi'i olrhain eisoes ar Chromium.</translation>
+<translation id="1707458603865303524">Defnyddiwch Chromium unrhyw bryd y byddwch yn tapio dolenni mewn negeseuon neu apiau eraill.</translation>
 <translation id="1722370509450468186">Bydd eich cyfrinair yn cael ei gadw yn eich Cyfrif (<ph name="EMAIL" />).</translation>
 <translation id="1736662517232558588">Cliriwyd data Chromium</translation>
 <translation id="1791845338122684020">Yn Agor Eich Tudalen Hanes Chromium.</translation>
@@ -40,6 +41,7 @@
 <translation id="2054703085270098503">Cadwch yn ddiogel gyda Chromium</translation>
 <translation id="2098023844024447022">Agor Fy Nhab Diweddaraf yn Chromium.</translation>
 <translation id="2109439615198500433">Awgrym Chromium</translation>
+<translation id="2147210759439165826">Cael y diweddaraf am gynnwys ac awgrymiadau defnyddiol Chromium.</translation>
 <translation id="2168108852149185974">Mae rhai ychwanegion yn achosi i Chromium dorri. Dadosodwch:</translation>
 <translation id="2178608107313874732">Ni all Chromium ddefnyddio'ch camera ar hyn o bryd</translation>
 <translation id="2195025571279539885">Ydych chi am i Chromium gynnig cyfieithu tudalennau <ph name="LANGUAGE_NAME" /> o'r wefan hon y tro nesaf?</translation>
@@ -96,6 +98,7 @@ Am ragor o osodiadau sy'n defnyddio data i wella'ch profiad Chromium, ewch i <ph
 <translation id="3805899903892079518">Nid oes gan Chromium fynediad at eich lluniau na'ch fideos. Galluogi mynediad yn Gosodiadau iOS &gt; Preifatrwydd &gt; Lluniau.</translation>
 <translation id="3827545470516145620">Rydych yn cael diogelwch safonol ar y ddyfais hon</translation>
 <translation id="3833326979834193417">Mae Chromium yn cynnal Gwiriad Diogelwch yn awtomatig bob dydd i'ch cadw'n ddiogel rhag toriadau data, gwefannau anniogel a rhagor. Gallwch ddysgu rhagor am Wiriad Diogelwch yn y Gosodiadau.</translation>
+<translation id="3855938650519180865">Beth sy'n newydd yn Chromium</translation>
 <translation id="3886689467633467988">Mewngofnodwch i'r wefan hon a Chromium i gael eich nodau tudalen a rhagor ar eich holl ddyfeisiau.</translation>
 <translation id="394413318816989199">Nid yw amgryptio cyfrinymadrodd yn cynnwys dulliau talu a chyfeiriadau.
 
@@ -108,6 +111,7 @@ I newid y gosodiad hwn, <ph name="BEGIN_LINK" />cliriwch y data Chromium yn eich
 <translation id="4106512142782407609">Wedi mewngofnodi fel <ph name="EMAIL" />.
 
 Mae eich data wedi'u hamgryptio â'ch cyfrinymadrodd. Rhowch ef i ddefnyddio a chadw data Chromium yn eich Cyfrif Google.</translation>
+<translation id="4118287192800900567">Awgrym Chromium: Mewngofnodwch i Chromium</translation>
 <translation id="4195557071150719219">Gweld Tabiau Diweddar Chromium</translation>
 <translation id="4200712796753248893">Defnyddiwch Gweithredoedd Chromium ar iOS</translation>
 <translation id="420541179527342563">I analluogi Modd Cloi i Lawr yn Chromium diffoddwch ef ar eich iPad.</translation>
@@ -159,6 +163,7 @@ Mae eich data wedi'u hamgryptio â'ch cyfrinymadrodd. Rhowch ef i ddefnyddio a c
 <translation id="5688047395118852662">Mae'r cerdyn hwn yn dangos awgrymiadau i chi ar sut i fanteisio i'r eithaf ar Chromium.</translation>
 <translation id="5700709190537129682">Ni all Chromium wirio'ch cyfrineiriau</translation>
 <translation id="5777187867430702742">Tudalen Chromium</translation>
+<translation id="584239279770005676">Awgrym Chromium: Defnyddiwch Chromium yn ddiofyn</translation>
 <translation id="584550191241316896">Wedi mewngofnodi i Chromium</translation>
 <translation id="5889847953983052353">Pan fydd ymlaen:
 <ph name="BEGIN_INDENT" />  • Helpwch i wneud Chromium yn well i bobl sy'n ei ddefnyddio yn yr un ffordd â chi.<ph name="END_INDENT" />
@@ -173,6 +178,7 @@ Pethau i'w hystyried:
 <translation id="5951593919357934226">Manteisio i'r eithaf ar Chrome.</translation>
 <translation id="5983312940147103417">Gwella Chromium</translation>
 <translation id="5985102273857091344">Dewiswch "Chromium."</translation>
+<translation id="5985254578475526217">I dderbyn hysbysiadau gan Chromium, trowch hysbysiadau ymlaen yn eich Gosodiadau iOS.</translation>
 <translation id="6062449165341879460">Bydd gan <ph name="DOMAIN" /> eich sefydliad fynediad at eich data Chromium, nodau tudalen, hanes, cyfrineiriau a gosodiadau eraill rydych yn eu storio yn y cyfrif hwn. Pan fyddwch yn allgofnodi, bydd eich data yn cael eu clirio o'r ddyfais hon.  Fodd bynnag, bydd eich data yn parhau i gael ei storio yn eich Cyfrif Google a reolir a bydd ar gael i'ch sefydliad. Gall eich sefydliad hefyd osod polisïau defnyddwyr sy'n benodol i'r cyfrif hwnnw a all newid ymddygiad Chromium.</translation>
 <translation id="6093744543579359059">Rheoli Cyfrineiriau yn Chromium</translation>
 <translation id="6104024151682120539">Agor yn Chromium</translation>
@@ -181,6 +187,7 @@ Pethau i'w hystyried:
 1. Agorwch y gosodiadau
 2. Tapiwch Ap Pori Diofyn
 3. Dewiswch Chromium.</translation>
+<translation id="6132149203299792222">Mewngofnodwch gyda'ch Cyfrif Google i gysoni'ch cyfrineiriau, nodau tudalen a rhagor.</translation>
 <translation id="6154098560469640583">Defnyddiwch Chromium unrhyw bryd y byddwch yn clicio dolenni mewn negeseuon, dogfennau ac apiau eraill.</translation>
 <translation id="6170619162539716595">Caniatáu i Chromium ddefnyddio Google Maps i roi cyfarwyddiadau a gwybodaeth leol i chi am gyfeiriadau a ganfuwyd.</translation>
 <translation id="6175967839221456271">Rhannu Chromium</translation>
@@ -259,6 +266,7 @@ Dim ond rhywun sydd â'ch cyfrinymadrodd all ddarllen eich data sydd wedi'u hamg
 <translation id="8234150821523419638">Agorwch y ddewislen Chromium</translation>
 <translation id="8235427517854598594">Gwneud Chromium yn Borwr Diofyn i chi?</translation>
 <translation id="8240981428553046115">Ni allai Chromium wirio am ddiweddariadau. Rhowch gynnig arall arni'n nes ymlaen.</translation>
+<translation id="8254729934443216898">Archwiliwch nodweddion newydd sy'n eich helpu i fanteisio i'r eithaf ar Chromium.</translation>
 <translation id="8303579360494576778">Rheoli Dulliau Talu yn Chromium</translation>
 <translation id="830951810931292870">Yn agor y cyfeiriadau URL sydd wedi'u mewnbynnu yn Chromium yn y modd Anhysbys.</translation>
 <translation id="8386869251364507178">Gweithredoedd Chromium</translation>

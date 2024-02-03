@@ -1342,6 +1342,7 @@ Algunas funciones están limitadas para aumentar la duración de la batería.</t
 <translation id="6298183524022479114">Personaliza este dispositivo en la app</translation>
 <translation id="6309219492973062892">Hacer clic o presionar los íconos de la barra del 1 al 8</translation>
 <translation id="6315170314923504164">Voz</translation>
+<translation id="6319058840130157106">Se desplaza hacia atrás entre la esquina inferior derecha, el Selector, la barra de direcciones, la barra de favoritos, el sitio web abierto y las descargas</translation>
 <translation id="6324916366299863871">Editar acceso directo</translation>
 <translation id="6330012934079202188">Se muestran las ventanas de todos los escritorios. Para ver solo las del escritorio actual, presiona la flecha hacia arriba.</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> es una sesión administrada por <ph name="MANAGER" /></translation>
@@ -1927,6 +1928,7 @@ Para apagarlo, vuelve a mantener presionado el botón de encendido.</translation
 <translation id="878215960996152260"><ph name="APP_NAME" />, app instalada, bloqueada</translation>
 <translation id="8785070478575117577">Conectar a <ph name="NETWORK_NAME" /></translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
+<translation id="8790632710469941716">Se desplaza hacia adelante entre la esquina inferior derecha, el Selector, la barra de direcciones, la barra de favoritos, el sitio web abierto y las descargas</translation>
 <translation id="8792626944327216835">micrófono</translation>
 <translation id="8801802992492329306">5G</translation>
 <translation id="8806053966018712535">Carpeta <ph name="FOLDER_NAME" /></translation>

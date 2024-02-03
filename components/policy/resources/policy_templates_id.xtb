@@ -461,7 +461,6 @@ Jika kebijakan disetel ke Nonaktif atau tidak disetel, setelan pemulihan penuh a
 <translation id="1361661842732478894">Tampilkan tombol Layar Utama di toolbar</translation>
 <translation id="1363275621236827384">Mengaktifkan kueri ke Quirks Server untuk profil hardware</translation>
 <translation id="1369698103169067223">Widget Sekilas Info tidak diaktifkan untuk pengguna.</translation>
-<translation id="1370341503636288922">Mengaktifkan Perpanjangan Update Otomatis</translation>
 <translation id="1371626834351873151">Pengurangan Agen Pengguna akan diaktifkan untuk semua asal.</translation>
 <translation id="1371851989348083665">Izinkan penggunaan <ph name="ASSISTANT_PRODUCT_NAME" /> di web</translation>
 <translation id="1372618949173323717">Nonaktifkan JavaScript</translation>
@@ -1311,7 +1310,6 @@ Metrik yang menyertakan URL juga mencakup statistik penggunaan dan ID komponen b
 
 Jika kebijakan ini disetel ke tidak diizinkan, pengguna tidak dapat mengaktifkan pengumpulan metrik yang menyertakan URL.</translation>
 <translation id="2012296492055302633">Selalu aktifkan layar privasi</translation>
-<translation id="2013002651531781796">Jangan mengaktifkan Perpanjangan Update Otomatis</translation>
 <translation id="2014757022750736514">Mengontrol perilaku layar login tempat pengguna login ke akun. Setelan mencakup siapa saja yang dapat login, jenis akun yang diizinkan, metode autentikasi yang harus digunakan, serta aksesibilitas umum, metode masukan, dan setelan lokal.</translation>
 <translation id="201557587962247231">Frekuensi upload laporan status perangkat</translation>
 <translation id="2016031354108680330">Aktifkan akses root ke mesin virtual Linux</translation>
@@ -8305,13 +8303,6 @@ Cara yang diharapkan terkait penggunaan kebijakan ini adalah merotasi konfiguras
 <translation id="7635106595080609261">Jika kebijakan disetel ke Aktif atau tidak disetel, Chrome akan dapat menampilkan dialog pemilihan file, dan pengguna dapat membukanya.
 
       Jika kebijakan disetel ke Nonaktif, pesan akan muncul setiap kali pengguna melakukan tindakan yang memicu dialog pemilihan file, seperti mengimpor bookmark, mengupload file, atau menyimpan link. Pengguna dianggap telah mengklik Batal pada dialog pemilihan file.</translation>
-<translation id="7637839788175449523">Jika kebijakan disetel ke benar (true), perangkat akan menerima Perpanjangan Update Otomatis.
-
-Jika kebijakan disetel ke salah (false) atau tidak disetel, perangkat akan berhenti menerima update
-setelah Batas Akhir Update Otomatis.
-
-Dokumentasi terkait Perpanjangan Update Otomatis dan Update Otomatis dapat dilihat di
-https://support.google.com/chrome/a?p=auto-update-policy.</translation>
 <translation id="7638300388094655454">Google Cast</translation>
 <translation id="7638764766629234761">Izinkan penggunaan notifikasi sistem</translation>
 <translation id="7643151458117317518">Kebijakan untuk mengontrol apakah setelan Pengukuran iklan <ph name="PRIVACY_SANDBOX_NAME" /> dapat dinonaktifkan untuk pengguna Anda.

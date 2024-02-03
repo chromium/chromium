@@ -449,7 +449,6 @@ Se il criterio viene disattivato o se non viene configurato, gli elementi da avv
 <translation id="1361661842732478894">Mostra il pulsante Pagina iniziale nella barra degli strumenti</translation>
 <translation id="1363275621236827384">Attiva le query in Quirks Server per i profili hardware</translation>
 <translation id="1369698103169067223">I Glanceables non sono attivati per gli utenti.</translation>
-<translation id="1370341503636288922">Attiva gli aggiornamenti automatici estesi</translation>
 <translation id="1371626834351873151">La riduzione dello user agent verrà attivata per tutte le origini.</translation>
 <translation id="1371851989348083665">Consenti l'utilizzo di <ph name="ASSISTANT_PRODUCT_NAME" /> sul Web</translation>
 <translation id="1372618949173323717">Viene disattivato JavaScript</translation>
@@ -1283,7 +1282,6 @@ Le metriche con chiave URL includono anche gli identificatori e le statistiche s
 
 Se questo criterio non viene consentito, gli utenti non possono attivare la raccolta di metriche con chiave URL.</translation>
 <translation id="2012296492055302633">Attiva sempre la Schermata privata</translation>
-<translation id="2013002651531781796">Non attivare gli aggiornamenti automatici estesi</translation>
 <translation id="2014757022750736514">Consente di stabilire il comportamento della schermata di accesso, da cui gli utenti possono accedere ai propri account. Le impostazioni consentono di decidere chi può accedere, che tipi di account sono consentiti, quali metodi di autenticazione devono essere usati. Sono disponibili anche impostazioni generali relative ad accessibilità, metodo di immissione e lingue.</translation>
 <translation id="201557587962247231">Frequenza dei caricamenti del rapporto sullo stato del dispositivo</translation>
 <translation id="2016031354108680330">Attiva l'accesso root alle macchine virtuali Linux</translation>
@@ -8078,13 +8076,6 @@ Se il criterio viene lasciato vuoto, non sono consentite eccezioni a <ph name="F
 <translation id="7635106595080609261">La mancata configurazione o l'impostazione del criterio su Attivato consente a Chrome di mostrare finestre di dialogo di selezione dei file che gli utenti possono aprire.
 
       Se il criterio viene impostato su Disattivato, quando gli utenti eseguono delle azioni che comportano l'apertura di una finestra di dialogo di selezione dei file, come importare preferiti, caricare file e salvare link, viene visualizzato un messaggio. Il browser presuppone che l'utente abbia fatto clic su Annulla nella finestra di dialogo di selezione dei file.</translation>
-<translation id="7637839788175449523">Se il criterio viene impostato su true, i dispositivi autorizzano gli aggiornamenti automatici estesi.
-
-Se il criterio viene impostato su false o se non viene configurato, i dispositivi non riceveranno più aggiornamenti
-dopo la scadenza degli aggiornamenti automatici.
-
-Gli aggiornamenti automatici estesi e gli aggiornamenti automatici sono documentati all'indirizzo
-https://support.google.com/chrome/a?p=auto-update-policy.</translation>
 <translation id="7638300388094655454">Google Cast</translation>
 <translation id="7638764766629234761">Consenti l'uso delle notifiche di sistema</translation>
 <translation id="7643151458117317518">Un criterio per stabilire se i tuoi utenti possono o meno disattivare l'impostazione di <ph name="PRIVACY_SANDBOX_NAME" /> relativa alla misurazione degli annunci.

@@ -4987,7 +4987,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="4811212958317149293">Switch access баскычтоп менен авто-скандоо</translation>
 <translation id="4811503964269049987">Тандалган топтун өтмөгү</translation>
 <translation id="4813512666221746211">Тармактык ката</translation>
-<translation id="4813872509679988157">Бул сайтка MIDI түзмөктөрүңүздү мындан ары да колдонууга уруксат берүү.</translation>
 <translation id="4814114628197290459">IBAN кодун өчүрүү</translation>
 <translation id="4814327014588285482">Өткөрүп жиберип, кийинчерээк эстетип коюу</translation>
 <translation id="4814378367953456825">Бул манжа изине ат коюңуз</translation>
@@ -5306,7 +5305,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="5063480226653192405">Колдонулушу</translation>
 <translation id="5065775832226780415">Smart Lock</translation>
 <translation id="5066100345385738837">ChromeOS параметрлеринен Коопсуз DNS'ти башкаруу</translation>
-<translation id="5066891009360243320">Бул сайтка MIDI түзмөктөрүңүздү колдонууга тыюу салынды.</translation>
 <translation id="5067399438976153555">Ар дайым күйүк</translation>
 <translation id="5067867186035333991"><ph name="HOST" /> микрофонуңузду колдоно тургандыгын сураңыз</translation>
 <translation id="5068553687099139861">сырсөздөрдү көрсөтүү</translation>
@@ -6715,7 +6713,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="6171779718418683144">Сайтка кирген сайын суралсын</translation>
 <translation id="617213288191670920">Тилдер кошулган жок</translation>
 <translation id="6173623053897475761">PIN кодуңузду кайра териңиз</translation>
-<translation id="6174116123142608180">Бул сайтка MIDI түзмөктөрүңүздү колдонууга мындан ары да тыюу салуу.</translation>
 <translation id="6175314957787328458">Microsoft Domain GUID</translation>
 <translation id="6175910054050815932">Шилтеме алуу</translation>
 <translation id="6176701216248282552">Контексттик жардам күйүк. Бул функциялар Google'га ачык барактарды жөнөтө алат.</translation>
@@ -7242,7 +7239,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="6597017209724497268">Үлгүлөр</translation>
 <translation id="6597331566371766302">Төмөнкү кеңейтүүлөрдү администраторуңуз бөгөттөп койду:</translation>
 <translation id="659894938503552850">эң жаңы</translation>
-<translation id="6599934330666882772">Бул сайт MIDI түзмөктөрүңүздү колдонуп жатат.</translation>
 <translation id="6601262427770154296">Колдонуучунун сөздүктөрүн тескөө</translation>
 <translation id="6602173570135186741">Автотолтуруу жана сырсөздөр</translation>
 <translation id="6602937173026466876">Принтерлериңизди колдонуңуз</translation>
@@ -7817,7 +7813,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="7036706669646341689">Linux үчүн <ph name="DISK_SIZE" /> орун сунушталат. Орун бошотуу үчүн түзмөгүңүздөн файлдарды жок кылыңыз.</translation>
 <translation id="7037509989619051237">Үндүн үлгүсү</translation>
 <translation id="7038632520572155338">Switch Access функциясы</translation>
-<translation id="7038636380708661517"><ph name="HOST" /> сайтына MIDI түзмөктөрүңүздү колдонууга ар дайым тыюу салуу.</translation>
 <translation id="7038710352229712897"><ph name="USER_NAME" /> үчүн башка Google аккаунтун кошуу</translation>
 <translation id="7039326228527141150">USB түзмөктөрүнө <ph name="VENDOR_NAME" /> аркылуу кирүү</translation>
 <translation id="7039912931802252762">Microsoft Смарт карта менен кирүү</translation>
@@ -7973,7 +7968,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="7180865173735832675">Өзгөчөлөштүрүү</translation>
 <translation id="7181117767881540376">&amp;Кыстармалар тилкесин жашыруу</translation>
 <translation id="7182063559013288142">Ыкчам хотспот</translation>
-<translation id="718240920439497409">MIDI түзмөктөрү бөгөттөлдү</translation>
 <translation id="7182791023900310535">Сырсөздү жылдыруу</translation>
 <translation id="718427252411067142">Башкаларга сырсөзүңүздү колдонууга тыюу салуу үчүн колдонмону ачып, сырсөзүңүздү өзгөртүңүз</translation>
 <translation id="7186088072322679094">Куралдар тилкесинде калтыруу</translation>
@@ -9118,7 +9112,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="8041267120753677077">Телефондогу колдонмолорду алып ойнотуу</translation>
 <translation id="8042142357103597104">Тексттин тунук эместиги</translation>
 <translation id="8042331986490021244">Google Сырсөздөрдү башкаргычка сакталганга чейин сырсөздөрүңүз түзмөгүңүздө шифрленет</translation>
-<translation id="8044090981104134791">MIDI түзмөктөрүнө уруксат берилди</translation>
 <translation id="8044262338717486897"><ph name="LINUX_APP_NAME" /> жооп бербей жатат.</translation>
 <translation id="8044899503464538266">Жай</translation>
 <translation id="8045253504249021590">Шайкештирүү Google Жеке кеңсеси аркылуу токтотулду.</translation>
@@ -9318,7 +9311,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Түзмөктөрүңүз<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195265224453131880">Жарыктыгы</translation>
 <translation id="8195854162863398249"><ph name="FEATURE_NAME" /> өчүрүү</translation>
-<translation id="8197151971904389091"><ph name="HOST" /> сайтына MIDI түзмөктөрүңүздү колдонууга ар дайым уруксат берүү.</translation>
 <translation id="8197673340773315084">Жумуш же Жеке сыяктуу белги же аталыш кошуңуз</translation>
 <translation id="8198456017687137612">Өтмөктү тышкы экранга чыгаруу</translation>
 <translation id="8198457270656084773">Тутумдун түзмөк таржымалын издеп жатасызбы? <ph name="BEGIN_LINK" /><ph name="OS_DEVICE_LOG_LINK" /><ph name="END_LINK" /> барагына өтүңүз.</translation>

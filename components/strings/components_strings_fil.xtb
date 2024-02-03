@@ -1037,7 +1037,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="3005723025932146533">Ipakita ang naka-save na kopya</translation>
 <translation id="300580149047131921">Ginamit kamakailan</translation>
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />, pindutin ang Tab para i-browse ang mga available na pagkilos, pagkatapos ay ang Enter para i-execute ang napiling pagkilos.</translation>
-<translation id="3013291976881901233">Mga MIDI device</translation>
 <translation id="3014553260345122294">Balita sa Negosyo</translation>
 <translation id="3014726756341138577">Mga advanced na feature ng printer</translation>
 <translation id="301521992641321250">Awtomatikong na-block</translation>
@@ -3596,7 +3595,6 @@ Mga karagdagang detalye:
 <translation id="8038817883578389970">Karera ng sasakyan</translation>
 <translation id="8041089156583427627">Magpadala ng Feedback</translation>
 <translation id="8041940743680923270">Gamitin ang pangkalahatang default (Tanungin)</translation>
-<translation id="8042577181291637092">Gumamit ng mga MIDI device?</translation>
 <translation id="8043255123207491407">Tingnan ang mga tuntunin at kundisyon ng nagbebenta</translation>
 <translation id="8046360364391076336">Mga Materyales at Kagamitang Pang-industriya</translation>
 <translation id="8052898407431791827">Kinopya sa clipboard</translation>
@@ -3801,7 +3799,6 @@ Mga karagdagang detalye:
 <translation id="8428213095426709021">Mga Setting</translation>
 <translation id="8428634594422941299">OK</translation>
 <translation id="8431194080598727332"><ph name="MANAGE_COOKIES_FOCUSED_FRIENDLY_MATCH_TEXT" />, pindutin ang Tab pagkatapos ay ang Enter para pamahalaan ang iyong mga kagustuhan sa cookie sa mga setting ng Chrome</translation>
-<translation id="8432419784006585012">Puwedeng humiling na gamitin ang iyong mga MIDI device</translation>
 <translation id="8433057134996913067">Masa-sign out ka sa karamihan ng mga website.</translation>
 <translation id="8434014327286137412">Para mas mabilis na makapagbayad sa susunod, i-save ang iyong IBAN sa Google Account mo</translation>
 <translation id="8434840396568290395">Mga alagang hayop</translation>
@@ -3893,7 +3890,6 @@ Mga karagdagang detalye:
 <translation id="860043288473659153">Pangalan ng cardholder</translation>
 <translation id="8601027005147870853"><ph name="BEGIN_BOLD" />Anong data ang ginagamit:<ph name="END_BOLD" /> Iyong aktibidad sa site na binisita mo gamit ang Chrome sa device na ito.</translation>
 <translation id="8601456038554914806">Kagamitan sa Water Sports</translation>
-<translation id="8606726445206553943">Gamitin ang iyong mga MIDI device</translation>
 <translation id="8606988009912891950">Tinutulungan ng mga paksa ng ad ang mga site na magpakita sa iyo ng mga may kaugnayang ad habang pinoprotektahan ang pagkakakilanlan at history ng pag-browse mo. Posibleng magtala ang Chrome ng mga paksa kung saan ka interesado batay sa kamakailan mong history ng pag-browse. Sa ibang pagkakataon, puwedeng humiling sa Chrome ang site na binibisita mo ng mga nauugnay na paksa para ma-personalize ang mga ad na nakikita mo.</translation>
 <translation id="8617269623452051934">iyong paggamit ng device</translation>
 <translation id="861775596732816396">Laki 4</translation>

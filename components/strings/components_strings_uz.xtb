@@ -1036,7 +1036,6 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="3005723025932146533">Saqlangan nusxani ko‘rsatish</translation>
 <translation id="300580149047131921">Yaqinda ishlatilgan</translation>
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />, mavjud amallarni kezish uchun Tab, tanlangan amalni bajarish uchun Enter tugmasini bosing.</translation>
-<translation id="3013291976881901233">MIDI qurilmalar</translation>
 <translation id="3014553260345122294">Biznes yangiliklari</translation>
 <translation id="3014726756341138577">Kengaytirilgan printer funksiyalari</translation>
 <translation id="301521992641321250">Avtomatik bloklangan</translation>
@@ -3590,7 +3589,6 @@ Batafsil axborot:
 <translation id="8038817883578389970">Avtopoyga</translation>
 <translation id="8041089156583427627">Fikr-mulohaza</translation>
 <translation id="8041940743680923270">Global parametrdan foydalanish (so‘ralsin)</translation>
-<translation id="8042577181291637092">MIDI qurilmalardan foydalanilsinmi?</translation>
 <translation id="8043255123207491407">Sotuvchining foydalanish shartlari</translation>
 <translation id="8046360364391076336">Sanoat materiallari va jihozlari</translation>
 <translation id="8052898407431791827">Vaqtinchalik xotiraga nusxalandi</translation>
@@ -3795,7 +3793,6 @@ Batafsil axborot:
 <translation id="8428213095426709021">Sozlamalar</translation>
 <translation id="8428634594422941299">OK</translation>
 <translation id="8431194080598727332"><ph name="MANAGE_COOKIES_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome sozlamalari orqali cookie parametrlarini boshqarish uchun avval Tab, keyin Enter tugmasini bosing</translation>
-<translation id="8432419784006585012">Saytlar MIDI qurilamalardan foydalanishga rxsat soʻrashi mumkin</translation>
 <translation id="8433057134996913067">Bu amal sizni ko‘p saytlardagi hisoblaringizdan chiqarib yuboradi.</translation>
 <translation id="8434014327286137412">Keyingi safar tezroq toʻlash uchun IBAN Google hisobingizga saqlanishi kerak</translation>
 <translation id="8434840396568290395">Uy hayvonlari</translation>
@@ -3887,7 +3884,6 @@ Batafsil axborot:
 <translation id="860043288473659153">Karta egasining ismi</translation>
 <translation id="8601027005147870853"><ph name="BEGIN_BOLD" />Qanday maʼlumotlar ishlatiladi:<ph name="END_BOLD" /> Bu qurilmadan Chrome orqali ochilgan biror saytdagi harakatlaringiz.</translation>
 <translation id="8601456038554914806">Suv sporti jihozlari</translation>
-<translation id="8606726445206553943">MIDI qurilmalaridan foydalanish</translation>
 <translation id="8606988009912891950">Reklama mavzulari saytlarga shaxsingiz va brauzerdan foydalanish tarixiga oid maʼlumotlarni himoyalagan holda sizga mos reklamalarni chiqarishga yordam beradi. Chrome yaqinda ochilgan veb-sahifalar asosida qiziq mavzularni qayd qiladi. Keyinchalik siz foydalanadigan ilova sizga chiqadigan reklamalarni moslashtirish uchun Chrome brauzeridan mos mavzularni olishi mumkin.</translation>
 <translation id="8617269623452051934">qurilmadan foydalanish</translation>
 <translation id="861775596732816396">Hajmi: 4</translation>

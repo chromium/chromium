@@ -4974,7 +4974,6 @@
 <translation id="4811212958317149293">المسح التلقائي في لوحة المفاتيح ضمن ميزة "الوصول عبر مفتاح التحويل"</translation>
 <translation id="4811503964269049987">إضافة علامة التبويب المحدّدة إلى مجموعة جديدة</translation>
 <translation id="4813512666221746211">حدث خطأ في الشبكة</translation>
-<translation id="4813872509679988157">‏مواصلة السماح لهذا الموقع الإلكتروني باستخدام أجهزة MIDI</translation>
 <translation id="4814114628197290459">‏حذف رقم الحساب بصيغة IBAN</translation>
 <translation id="4814327014588285482">التخطّي وتذكيري لاحقًا</translation>
 <translation id="4814378367953456825">يُرجى إدخال اسم لبصمة الإصبع هذه</translation>
@@ -5293,7 +5292,6 @@
 <translation id="5063480226653192405">الاستخدام</translation>
 <translation id="5065775832226780415">Smart Lock</translation>
 <translation id="5066100345385738837">‏إدارة "نظام أسماء النطاقات" (DNS) الآمن من خلال إعدادات نظام التشغيل Chrome</translation>
-<translation id="5066891009360243320">‏تم حظر هذا الموقع الإلكتروني من استخدام أجهزة MIDI.</translation>
 <translation id="5067399438976153555">قيد التفعيل دائمًا</translation>
 <translation id="5067867186035333991">الرجوع إليك عند رغبة <ph name="HOST" /> في الدخول إلى الميكروفون</translation>
 <translation id="5068553687099139861">عرض كلمات المرور</translation>
@@ -6702,7 +6700,6 @@
 <translation id="6171779718418683144">السؤال عند كل زيارة للموقع الإلكتروني</translation>
 <translation id="617213288191670920">لم تتمّ إضافة أيّ لغة.</translation>
 <translation id="6173623053897475761">كتابة رقم التعريف الشخصي مرة أخرى</translation>
-<translation id="6174116123142608180">‏مواصلة حظر هذا الموقع الإلكتروني من استخدام أجهزة MIDI</translation>
 <translation id="6175314957787328458">‏المعرّف الفريد العمومي لنطاق Microsoft</translation>
 <translation id="6175910054050815932">الحصول على رابط</translation>
 <translation id="6176701216248282552">‏ميزة "المساعدة المتعلقة بالمحتوى" مفعّلة. يمكن أن ترسل هذه الميزات الصفحات المفتوحة إلى Google.</translation>
@@ -7237,7 +7234,6 @@
 <translation id="6597017209724497268">نماذج</translation>
 <translation id="6597331566371766302">حظر المشرف الإضافات التالية:</translation>
 <translation id="659894938503552850">الإشارات المرجعية الأحدث</translation>
-<translation id="6599934330666882772">‏يستخدم هذا الموقع الإلكتروني أجهزة MIDI.</translation>
 <translation id="6601262427770154296">إدارة قواميس المستخدم</translation>
 <translation id="6602173570135186741">الملء التلقائي وكلمات المرور</translation>
 <translation id="6602937173026466876">الوصول إلى الطابعات</translation>
@@ -7813,7 +7809,6 @@
 <translation id="7036706669646341689">‏يُنصَح بتوفير <ph name="DISK_SIZE" /> من المساحة لنظام التشغيل Linux. ولزيادة المساحة الخالية، يجب حذف ملفات من جهازك.</translation>
 <translation id="7037509989619051237">نص للمعاينة</translation>
 <translation id="7038632520572155338">الوصول عبر مفتاح تبديل</translation>
-<translation id="7038636380708661517">‏حظر <ph name="HOST" /> دائمًا من استخدام أجهزة MIDI</translation>
 <translation id="7038710352229712897">‏إضافة حساب آخر على Google للمستخدم "<ph name="USER_NAME" />"</translation>
 <translation id="7039326228527141150">‏الدخول إلى أجهزة USB من <ph name="VENDOR_NAME" /></translation>
 <translation id="7039912931802252762">‏تسجيل دخول البطاقة الذكية لـ Microsoft</translation>
@@ -7970,7 +7965,6 @@
 <translation id="7180865173735832675">تخصيص</translation>
 <translation id="7181117767881540376">إخفاء شريط الإشارات</translation>
 <translation id="7182063559013288142">نقطة اتصال فورية</translation>
-<translation id="718240920439497409">‏تم حظر أجهزة MIDI</translation>
 <translation id="7182791023900310535">نقل كلمة المرور الخاصة بك</translation>
 <translation id="718427252411067142">لمنع الآخرين من استخدام كلمة مرورك، عليك فتح التطبيق لتغييرها.</translation>
 <translation id="7186088072322679094">البقاء مثبتًا في شريط الأدوات</translation>
@@ -9115,7 +9109,6 @@
 <translation id="8041267120753677077">بث تطبيقات هاتفك</translation>
 <translation id="8042142357103597104">درجة تعتيم النص</translation>
 <translation id="8042331986490021244">‏يتم تشفير كلمات المرور على جهازك قبل حفظها في "مدير كلمات المرور" من Google.</translation>
-<translation id="8044090981104134791">‏أجهزة MIDI المسموح بها</translation>
 <translation id="8044262338717486897"><ph name="LINUX_APP_NAME" /> لا يستجيب.</translation>
 <translation id="8044899503464538266">بطيء</translation>
 <translation id="8045253504249021590">‏تم إيقاف المزامنة عبر لوحة تحكم Google.</translation>
@@ -9315,7 +9308,6 @@
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />أجهزتك<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195265224453131880">الكثافة</translation>
 <translation id="8195854162863398249">إيقاف ميزة "<ph name="FEATURE_NAME" />"</translation>
-<translation id="8197151971904389091">‏السماح لـ <ph name="HOST" /> دائمًا باستخدام أجهزة MIDI</translation>
 <translation id="8197673340773315084">يُرجى إضافة اسم أو تصنيف، مثل "مخصّص للعمل" أو "شخصي".</translation>
 <translation id="8198456017687137612">جارٍ إرسال محتوى علامة التبويب</translation>
 <translation id="8198457270656084773">هل تبحث عن صفحة سجلّ الجهاز الخاصة بالنظام؟ انتقِل إلى <ph name="BEGIN_LINK" /><ph name="OS_DEVICE_LOG_LINK" /><ph name="END_LINK" />.</translation>

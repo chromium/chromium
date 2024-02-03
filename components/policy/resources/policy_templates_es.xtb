@@ -449,7 +449,6 @@ Si se inhabilita la política o se deja sin definir, la configuración de restau
 <translation id="1361661842732478894">Mostrar el botón de inicio en la barra de herramientas</translation>
 <translation id="1363275621236827384">Habilitar consultas a Quirks Server para los perfiles de hardware</translation>
 <translation id="1369698103169067223">Los widgets Glanceables no están habilitados para los usuarios.</translation>
-<translation id="1370341503636288922">Aceptar las actualizaciones automáticas ampliadas</translation>
 <translation id="1371626834351873151">La reducción de user-agent se habilitará para todos los orígenes.</translation>
 <translation id="1371851989348083665">Permitir el uso de <ph name="ASSISTANT_PRODUCT_NAME" /> en la Web</translation>
 <translation id="1372618949173323717">Inhabilitar JavaScript</translation>
@@ -1273,7 +1272,6 @@ Las métricas con clave de URL también incluyen identificadores y estadísticas
 
 Si no se permite esta política, los usuarios no podrán habilitar la recogida de métricas con clave de URL.</translation>
 <translation id="2012296492055302633">Habilitar siempre la pantalla de privacidad</translation>
-<translation id="2013002651531781796">No aceptar las actualizaciones automáticas ampliadas</translation>
 <translation id="2014757022750736514">Controla el comportamiento de la pantalla de inicio de sesión, donde los usuarios acceden a sus cuentas. Entre los ajustes se incluyen los siguientes: quién puede iniciar sesión, qué tipos de cuentas se permiten y qué métodos de autenticación se deben usar, así como ajustes de accesibilidad general, método de introducción y configuración regional.</translation>
 <translation id="201557587962247231">Frecuencia de subida de informes de estado del dispositivo</translation>
 <translation id="2016031354108680330">Habilitar el acceso root a las máquinas virtuales de Linux</translation>
@@ -8055,11 +8053,6 @@ Si no se define esta política, no se permitirán excepciones de <ph name="FLOAT
 <translation id="7635106595080609261">Si se habilita esta política o no se le asigna ningún valor, Chrome podrá mostrar cuadros de diálogo de selección de archivos, y los usuarios podrán abrirlos.
 
       Si se inhabilita esta política, cuando un usuario ejecute una acción que abra un cuadro de diálogo de selección de archivos (por ejemplo, importar marcadores, subir archivos, guardar enlaces, etc.), aparecerá un mensaje en su lugar. Se asume que el usuario habrá hecho clic en Cancelar en el cuadro de diálogo de selección de archivos.</translation>
-<translation id="7637839788175449523">Si se le asigna el valor true a esta política, los dispositivos aceptarán las actualizaciones automáticas ampliadas.
-
-Si se le asigna el valor false o no se define, los dispositivos dejarán de recibir actualizaciones tras el vencimiento de las actualizaciones automáticas.
-
-Puedes consultar información sobre las actualizaciones automáticas ampliadas y las actualizaciones automáticas en https://support.google.com/chrome/a?p=auto-update-policy.</translation>
 <translation id="7638300388094655454">Google Cast</translation>
 <translation id="7638764766629234761">Permitir que se usen notificaciones del sistema</translation>
 <translation id="7643151458117317518">Política para controlar si se puede inhabilitar la opción de medición de anuncios de <ph name="PRIVACY_SANDBOX_NAME" /> para los usuarios.

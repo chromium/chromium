@@ -124,6 +124,7 @@
 <translation id="1745577949879301685">ምስሎችን መጫን አልተቻለም። የአውታረ መረብ ግንኙነትዎን ይፈትሹ ወይም ምስሎቹን እንደገና ለመጫን ይሞክሩ።</translation>
 <translation id="1751249301761991853">የግል</translation>
 <translation id="1753496554272155572">ከልጣፍ ቅድመ-ዕይታ ይውጡ</translation>
+<translation id="1754578112426924640">ለ<ph name="ACCELERATOR_INFO" /> የአርትዕ አዝራር።</translation>
 <translation id="1755556344721611131">የምርመራ መተግበሪያ</translation>
 <translation id="175763766237925754">ጥሩ (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
@@ -625,6 +626,7 @@
 <translation id="5502931783115429516">Android እያሄደ አይደለም</translation>
 <translation id="551689408806449779">መሣሪያው ግንኙነቱ ተቋርጧል። ለመሞከር ዳግም ማገናኘትን ይሞክሩ</translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5543701552415191873">ተቆልፏል።</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5559898619118303662">ፀሐይ ስትጠልቅ በራስ-ሰር ወደ ጠቆር ያለ ገጽታ ቀይር</translation>
 <translation id="5578477003638479617">ዩኤምቲኤስ</translation>
@@ -645,6 +647,7 @@
 <translation id="5701381305118179107">መሃከል</translation>
 <translation id="5703716265115423771">ድምፅ ቀንስ</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> ከ<ph name="TOTAL_PAGES" /></translation>
+<translation id="572854785834323605">ለ<ph name="SHORTCUT_DESCRIPTION" /> የአርትዕ አዝራር።</translation>
 <translation id="5733298426544876109"><ph name="DEVICE_NAME" />ን አዘምን</translation>
 <translation id="574392208103952083">መካከለኛ</translation>
 <translation id="5757187557809630523">ቀጣይ ትራክ</translation>
@@ -675,6 +678,7 @@
 <translation id="5916084858004523819">የተከለከሉ</translation>
 <translation id="5916664084637901428">በርቷል</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{የእርስዎ ፋይል በተሳካ ሁኔታ ተቃኝቶ <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> ላይ ተቀምጧል።}one{የእርስዎ ፋይሎች በተሳካ ሁኔታ ተቃኝቶ <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> ላይ ተቀምጧል።}other{የእርስዎ ፋይሎች በተሳካ ሁኔታ ተቃኝቶ <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> ላይ ተቀምጧል።}}</translation>
+<translation id="5928411637936685857">ለ<ph name="ACCELERATOR_INFO" /> የሰርዝ አዝራር።</translation>
 <translation id="5931523347251946569">ፋይል አልተገኘም</translation>
 <translation id="593880865674747800">በዚህ ቅጥ ውስጥ ተጨማሪ ይፍጠሩ</translation>
 <translation id="5939518447894949180">ዳግም አስጀምር</translation>
@@ -802,6 +806,7 @@
 <translation id="6766275201586212568">ያልተሳኩ የዲኤንኤስ ጥራቶች</translation>
 <translation id="6768237774506518020">ከፍተኛ የዲኤንኤስ ጥራት አለመሳካት ብዛት</translation>
 <translation id="6791471867139427246">የቁልፍ ሰሌዳ ብርሃን ቀለም</translation>
+<translation id="6796229976413584781">አቋራጭ ተሰርዟል</translation>
 <translation id="6798678288485555829">የጽሁፍ አሰሳ</translation>
 <translation id="680983167891198932">ቁልፍ</translation>
 <translation id="6816797338148849397">ከሚገኘው የእርስዎ ምርጫ ጋር የተገናኘ መረጃ ለመድረስ የላይ ቀስት ቁልፍን ይጠቀሙ።</translation>
@@ -856,6 +861,7 @@
 <translation id="7212547870105584639">የአውታረ መረብ ኤፒኤን ቅንብሮችን ያስተዳድሩ። ኤፒኤንኦች በተንቀሳቃሽ ስልክ አውታረ መረብ እና በይነመረብ መካከል ግንኙነት ይመሰርታሉ። <ph name="BEGIN_LINK_LEARN_MORE" />የበለጠ ለመረዳት<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">ለውጫዊ መሳሪያዎች የፊርምዌር ዝማኔዎች</translation>
 <translation id="7216409898977639127">የተንቀሳቃሽ ስልክ አገልግሎት አቅራቢ</translation>
+<translation id="7233782086689993269">አቋራጭ ወደነበረበት ተመልሷል</translation>
 <translation id="725133483556299729">ኢሜይል ይምረጡ</translation>
 <translation id="7271040990581020067">ቃኚ በአሁኑ ጊዜ ጥቅም ላይ እየዋለ ነው። ቆይተው እንደገና ይሞክሩ።</translation>
 <translation id="7271932918253517778">ከላይ ረድፍ ቁልፎች ያለው አቋራጭ የ<ph name="META_KEY" /> ቁልፍን ማካተት ያስፈልገዋል።</translation>
@@ -917,6 +923,7 @@
 <translation id="7648838807254605802">ከፍተኛ የHTTPS የስርዓተ ምላሽ ጊዜ</translation>
 <translation id="7656388927906093505">መሣሪያ መዳፊት ነው።</translation>
 <translation id="7658239707568436148">ይቅር</translation>
+<translation id="7663672983483557630"><ph name="DESCRIPTION" />፣ <ph name="ACCELERATOR_INFO" />፣ <ph name="ROW_STATUS" />።</translation>
 <translation id="7665800271478495366">አምሳያን ቀይር</translation>
 <translation id="7683228889864052081">የቁልፍ ሰሌዳ ለዪ ቀለም</translation>
 <translation id="7690294790491645610">አዲስ የይለፍ ቃል ያረጋግጡ</translation>
@@ -926,6 +933,7 @@
 <translation id="7718231387947923843">የቁልፍ ሰሌዳ ብርሃን</translation>
 <translation id="7730077286107534951">የተወሰነ የመለያ እና የሥርዓት መረጃ ለGoogle ሊላክ ይችላል። ቴክኒካዊ ችግሮችን ለመፍታት እና የእኛን አገልግሎቶች ለማሻሻል እንዲያግዝ በእኛ <ph name="BEGIN_LINK2" />የግላዊነት መመሪያ<ph name="END_LINK2" /> እና <ph name="BEGIN_LINK3" />የአገልግሎት ውል<ph name="END_LINK3" /> መሰረት ይህን መረጃ እንጠቀማለን። የይዘት ለውጦችን ለመጠየቅ፣ ወደ <ph name="BEGIN_LINK1" />ሕጋዊ እገዛ<ph name="END_LINK1" /> ይሂዱ።</translation>
 <translation id="773153675489693198">የዑደት ብዛት</translation>
+<translation id="7746357909584236306">አርትዖት ሊደረግበት የሚችል</translation>
 <translation id="7747039790905080783">ቅድሚያ የተጋራ ቁልፍ</translation>
 <translation id="7752963721013053477">ከንጋት እስከ ጨለማ - ለሚመለከተው የተወሰነ</translation>
 <translation id="7762130827864645708">የይለፍ ቃልዎ ለውጥ ተሳክቷል። እባክዎ ከአሁን በኋላ አዲሱን የይለፍ ቃል ይጠቀሙ።</translation>

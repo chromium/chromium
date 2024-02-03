@@ -26,6 +26,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="1087110696012418426">Dzień dobry <ph name="GIVEN_NAME" />,</translation>
 <translation id="1088231044944504242">Szukaj elementów takich jak np. <ph name="CATEGORY" />, pliki lub aplikacje. Aby poruszać się po aplikacjach, użyj klawiszy strzałek.</translation>
 <translation id="1093645050124056515">Ctrl + Alt + strzałka w dół</translation>
+<translation id="1094756674036064790">Wyłączyć Bluetooth?</translation>
 <translation id="109942774857561566">Nudzi mi się</translation>
 <translation id="1104084341931202936">Pokaż ustawienia ułatwień dostępu</translation>
 <translation id="1104621072296271835">Razem Twoje urządzenia mogą jeszcze więcej</translation>
@@ -660,6 +661,7 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="3660860940251915011">Przełącz dużą widoczność funkcji <ph name="FEATURE_NAME" /></translation>
 <translation id="366222428570480733">Użytkownik zarządzany <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="3666266999138159418">Przesuń, aby ukryć pływające okno</translation>
+<translation id="3673898235958558034">Gdy wyłączysz Bluetooth, urządzenia „<ph name="DEVICE_NAME_1" />” i „<ph name="DEVICE_NAME_2" />” rozłączą się z Chromebookiem.</translation>
 <translation id="367531336287639526">Wybierz pierwszą ikonę na lewo od paska adresu</translation>
 <translation id="3677931086890821290">Ta funkcja sprawia, że wszystkie aplikacje i strony, które mają dostęp do lokalizacji, a także ChromeOS, mogą korzystać z Wi-Fi i sieci komórkowych do geolokalizacji.</translation>
 <translation id="3679827876008292680">Przejdź do ostatniej karty w oknie</translation>
@@ -915,6 +917,7 @@ W celu wydłużenia czasu pracy na baterii niektóre funkcje zostały ograniczo
 <translation id="4666911709726371538">Więcej aplikacji</translation>
 <translation id="4667099493359681081">Pobieram <ph name="FILENAME" /></translation>
 <translation id="4672539464599646374">Oszczędzanie baterii jest włączone</translation>
+<translation id="4673427585974421255">Nie wyłączaj</translation>
 <translation id="468293128311738995">Aplikacje z telefonu</translation>
 <translation id="4690510401873698237">Półka na dole</translation>
 <translation id="4696813013609194136">Odblokuj urządzenie kodem rodzica</translation>
@@ -1215,6 +1218,7 @@ W celu wydłużenia czasu pracy na baterii niektóre funkcje zostały ograniczo
 <translation id="5802516411616338943">Otwórz Szybkie ustawienia</translation>
 <translation id="5804651031882187592">Wyłączanie ustawienia „Zablokuj kartę SIM”</translation>
 <translation id="5805809050170488595">Kliknij, aby włączyć sieć <ph name="NETWORK_NAME" /></translation>
+<translation id="5816222150329690597">Gdy wyłączysz Bluetooth, urządzenia „<ph name="DEVICE_NAME_1" />”, „<ph name="DEVICE_NAME_2" />” i jeszcze <ph name="DEVICE_COUNT" /> rozłączą się z Chromebookiem.</translation>
 <translation id="5823239091726045201">Lista zadań Google w przeglądarce</translation>
 <translation id="5825969630400862129">Ustawienia połączonych urządzeń</translation>
 <translation id="5837036133683224804">Zatrzymaj usługę <ph name="ROUTE_TITLE" /> na urządzeniu <ph name="RECEIVER_NAME" /></translation>
@@ -1395,6 +1399,7 @@ W celu wydłużenia czasu pracy na baterii niektóre funkcje zostały ograniczo
 <translation id="6539852571005954999">Skanuję pobierany plik <ph name="FILENAME" /></translation>
 <translation id="6542521951477560771">Przesyłam do: <ph name="RECEIVER_NAME" /></translation>
 <translation id="6546062506073634094">Wyszukiwanie obrazów według zawartości i podglądy obrazów</translation>
+<translation id="6547795021703527064">Gdy wyłączysz Bluetooth, „<ph name="DEVICE_NAME" />” rozłączy się z Chromebookiem.</translation>
 <translation id="6555373427270923730">Wpisz adres internetowy w pasku adresu i naciśnij <ph name="MODIFIER" /> + <ph name="KEY" /></translation>
 <translation id="655633303491376835"><ph name="APP_NAME" /> – nowa instalacja</translation>
 <translation id="6559976592393364813">Poproś administratora</translation>
