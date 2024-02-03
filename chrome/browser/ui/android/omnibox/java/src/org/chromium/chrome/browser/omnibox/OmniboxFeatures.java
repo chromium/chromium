@@ -157,4 +157,10 @@ public class OmniboxFeatures {
     public static boolean shouldTruncateVisibleUrlV2() {
         return ChromeFeatureList.sVisibleUrlTruncationV2.isEnabled();
     }
+
+    /** Returns whether to show the incognito status for tablet. */
+    public static boolean showIncognitoStatusForTablet() {
+        return ChromeFeatureList.sTabletToolbarIncognitoStatus.isEnabled()
+                || ChromeFeatureList.sDynamicTopChrome.isEnabled();
+    }
 }

@@ -19,6 +19,9 @@ found in the LICENSE file.
   <dimen name="location_bar_status_view_left_space_width_bigger">0dp</dimen>
   <dimen name="location_bar_icon_end_padding_focused">4dp</dimen>
 
+  <dimen name="incognito_badge_lateral_padding_start">8dp</dimen>
+  <dimen name="incognito_badge_lateral_padding_end">0dp</dimen>
+
   <dimen name="omnibox_suggestion_icon_area_size">40dp</dimen>
   <dimen name="omnibox_suggestion_icon_area_size_modern">56dp</dimen>
   <dimen name="omnibox_suggestion_start_padding">4dp</dimen>
