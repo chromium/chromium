@@ -57,6 +57,7 @@ class ScopedMultiSourceObservation {
 
   // Adds the object passed to the constructor as an observer on |source|.
   void AddObservation(Source* source) {
+    CHECK(!IsObservingSource(source));
     sources_.push_back(source);
     Traits::AddObserver(source, observer_);
   }
