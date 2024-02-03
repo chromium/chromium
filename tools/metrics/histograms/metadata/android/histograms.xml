@@ -2311,6 +2311,21 @@ chromium-metrics-reviews@google.com.
       variants="ActivityIndexMismatchAssignmentState"/>
 </histogram>
 
+<histogram
+    name="Android.MultiWindowMode.MismatchedIndices.ActivityCreationTimeDelta"
+    units="ms" expires_after="2024-06-30">
+  <owner>aishwaryarj@google.com</owner>
+  <owner>clank-large-form-factors@google.com</owner>
+  <summary>
+    When the TabWindowManager allocates a different tab model index than the
+    window Id selected by MultiInstanceManagerApi31, it means the requested tab
+    model Id was assigned to a different Activity.
+
+    When this mismatch happened, record the difference in creation timestamps of
+    both activities that are attempting to use the same index.
+  </summary>
+</histogram>
+
 <histogram name="Android.MultiWindowMode.TotalDuration" units="ms"
     expires_after="2024-06-30">
   <owner>skavuluru@google.com</owner>

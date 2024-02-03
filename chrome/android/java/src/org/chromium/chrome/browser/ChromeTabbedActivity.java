@@ -313,7 +313,8 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
     private static final String TAG_MULTI_INSTANCE = "MultiInstance";
     private static final String SOURCE_ACTIVITY_REFERRER_OS = "android-app://android";
 
-    private static final long BACK_TO_BACK_CTA_CREATION_TIMESTAMP_DIFF_THRESHOLD_MS = 1000;
+    static final String HISTOGRAM_MISMATCHED_INDICES_ACTIVITY_CREATION_TIME_DELTA =
+            "Android.MultiWindowMode.MismatchedIndices.ActivityCreationTimeDelta";
 
     /**
      * Identifies a histogram to use in {@link #maybeDispatchExplicitMainViewIntent(Intent, int)}.
@@ -3914,17 +3915,17 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         // If the two activities launched within a short span, simply destroy the persistent store
         // instance of the activity at the requested index, assuming no changes have been made to
         // the tab state during this time.
-        // TODO (crbug.com/1520923): Add a histogram to track the time difference to possibly refine
-        // the threshold value, and also make this Finch configurable.
-        long onCreateTimeDelta =
-                Math.abs(
-                        tabbedActivityAtRequestedIndex.getOnCreateTimestampMs()
-                                - this.getOnCreateTimestampMs());
+        long onCreateTimeDeltaMs =
+                getOnCreateTimestampMs() - tabbedActivityAtRequestedIndex.getOnCreateTimestampMs();
+        RecordHistogram.recordTimesHistogram(
+                HISTOGRAM_MISMATCHED_INDICES_ACTIVITY_CREATION_TIME_DELTA, onCreateTimeDeltaMs);
         boolean shouldSaveState =
                 tabbedActivityAtRequestedIndex.getLifecycleDispatcher().getCurrentActivityState()
                         < ActivityState.STOPPED_WITH_NATIVE;
         if (shouldSaveState
-                && onCreateTimeDelta > BACK_TO_BACK_CTA_CREATION_TIMESTAMP_DIFF_THRESHOLD_MS) {
+                && onCreateTimeDeltaMs
+                        > MultiWindowUtils.BACK_TO_BACK_CTA_CREATION_TIMESTAMP_DIFF_THRESHOLD_MS
+                                .getValue()) {
             // Save state only if #onStopWithNative() that invokes this, has not run yet.
             tabModelOrchestrator.getTabPersistentStore().saveState();
         }

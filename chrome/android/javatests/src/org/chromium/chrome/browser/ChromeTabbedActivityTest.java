@@ -289,6 +289,13 @@ public class ChromeTabbedActivityTest {
     @MinAndroidSdkLevel(VERSION_CODES.S)
     @EnableFeatures(ChromeFeatureList.TAB_WINDOW_MANAGER_INDEX_REASSIGNMENT_ACTIVITY_FINISHING)
     public void testHandleMismatchedIndices_ActivityFinishing() throws ExecutionException {
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectAnyRecordTimes(
+                                ChromeTabbedActivity
+                                        .HISTOGRAM_MISMATCHED_INDICES_ACTIVITY_CREATION_TIME_DELTA,
+                                1)
+                        .build();
         // Create two new ChromeTabbedActivity's.
         ChromeTabbedActivity activity1 = createActivityForMismatchedIndicesTest();
         ChromeTabbedActivity activity2 = createActivityForMismatchedIndicesTest();
@@ -310,6 +317,7 @@ public class ChromeTabbedActivityTest {
                         .getTabModelOrchestratorSupplier()
                         .get()
                         .getTabPersistentStoreDestroyedEarlyForTesting());
+        histogramWatcher.assertExpected();
     }
 
     @Test
@@ -317,6 +325,14 @@ public class ChromeTabbedActivityTest {
     @MinAndroidSdkLevel(VERSION_CODES.S)
     @EnableFeatures(ChromeFeatureList.TAB_WINDOW_MANAGER_INDEX_REASSIGNMENT_ACTIVITY_IN_SAME_TASK)
     public void testHandleMismatchedIndices_ActivityInSameTask() throws ExecutionException {
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectAnyRecordTimes(
+                                ChromeTabbedActivity
+                                        .HISTOGRAM_MISMATCHED_INDICES_ACTIVITY_CREATION_TIME_DELTA,
+                                1)
+                        .build();
+
         // Create two new ChromeTabbedActivity's.
         ChromeTabbedActivity activity1 = createActivityForMismatchedIndicesTest();
         ChromeTabbedActivity activity2 = createActivityForMismatchedIndicesTest();
@@ -338,6 +354,8 @@ public class ChromeTabbedActivityTest {
 
         // activity1 should be subsequently destroyed.
         ApplicationTestUtils.waitForActivityState(activity1, Stage.DESTROYED);
+
+        histogramWatcher.assertExpected();
     }
 
     @Test
@@ -346,6 +364,14 @@ public class ChromeTabbedActivityTest {
     @EnableFeatures(
             ChromeFeatureList.TAB_WINDOW_MANAGER_INDEX_REASSIGNMENT_ACTIVITY_NOT_IN_APP_TASKS)
     public void testHandleMismatchedIndices_ActivityNotInAppTasks() throws ExecutionException {
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectAnyRecordTimes(
+                                ChromeTabbedActivity
+                                        .HISTOGRAM_MISMATCHED_INDICES_ACTIVITY_CREATION_TIME_DELTA,
+                                1)
+                        .build();
+
         // Create two new ChromeTabbedActivity's.
         ChromeTabbedActivity activity1 = createActivityForMismatchedIndicesTest();
         ChromeTabbedActivity activity2 = createActivityForMismatchedIndicesTest();
@@ -367,6 +393,8 @@ public class ChromeTabbedActivityTest {
 
         // activity1 should be subsequently destroyed.
         ApplicationTestUtils.waitForActivityState(activity1, Stage.DESTROYED);
+
+        histogramWatcher.assertExpected();
     }
 
     private ChromeTabbedActivity createActivityForMismatchedIndicesTest() {
