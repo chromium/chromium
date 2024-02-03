@@ -1946,6 +1946,14 @@ const char kCastStreamingVp9Description[] =
     "Offers the VP9 video codec when negotiating Cast Streaming, and uses VP9 "
     "if selected for the session.";
 
+#if BUILDFLAG(IS_MAC)
+const char kCastStreamingMacHardwareH264Name[] =
+    "Enable hardware H264 video encoding on for Cast Streaming on macOS";
+const char kCastStreamingMacHardwareH264Description[] =
+    "Offers the H264 video codec when negotiating Cast Streaming, and uses "
+    "hardware-accelerated H264 encoding if selected for the session";
+#endif
+
 const char kCastEnableStreamingWithHiDPIName[] =
     "HiDPI tab capture support for Cast Streaming";
 const char kCastEnableStreamingWithHiDPIDescription[] =

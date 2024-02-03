@@ -21561,6 +21561,7 @@ from previous Chrome versions.
   <int value="394034914"
       label="kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration:disabled"/>
   <int value="394384982" label="GaiaIdCacheInAccountManagerFacade:enabled"/>
+  <int value="394452052" label="CastStreamingMacHardwareH264:enabled"/>
   <int value="395148768" label="AutofillFillIbanFields:disabled"/>
   <int value="397275669" label="QuickCommands:disabled"/>
   <int value="398903399" label="GenericSensorExtraClasses:disabled"/>
@@ -24254,6 +24255,7 @@ from previous Chrome versions.
   <int value="1662466302" label="NtpRealboxUseGoogleGIcon:enabled"/>
   <int value="1662543761" label="PdfOopif:disabled"/>
   <int value="1663574600" label="WebViewDisplayCutout:enabled"/>
+  <int value="1664154056" label="CastStreamingMacHardwareH264:disabled"/>
   <int value="1664401033" label="ColorCorrectRendering:enabled"/>
   <int value="1664463407" label="FirstPartySets:enabled"/>
   <int value="1664710107" label="BorealisScaleClientByDPI:enabled"/>

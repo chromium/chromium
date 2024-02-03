@@ -1688,6 +1688,13 @@ BASE_FEATURE(kCastStreamingVp9,
              "CastStreamingVp9",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+#if BUILDFLAG(IS_MAC)
+// Controls whether hardware H264 is default enabled on macOS.
+BASE_FEATURE(kCastStreamingMacHardwareH264,
+             "CastStreamingMacHardwareH264",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#endif
+
 #if BUILDFLAG(IS_FUCHSIA)
 // Enables use of Fuchsia's Mediacodec service for encoding.
 BASE_FEATURE(kFuchsiaMediacodecVideoEncoder,

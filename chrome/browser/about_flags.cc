@@ -4996,6 +4996,13 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kCastStreamingAv1Description, kOsDesktop,
      FEATURE_VALUE_TYPE(media::kCastStreamingAv1)},
 
+#if BUILDFLAG(IS_MAC)
+    {"enable-cast-streaming-mac-hardware-h264",
+     flag_descriptions::kCastStreamingMacHardwareH264Name,
+     flag_descriptions::kCastStreamingMacHardwareH264Description, kOsDesktop,
+     FEATURE_VALUE_TYPE(media::kCastStreamingMacHardwareH264)},
+#endif
+
     {"enable-cast-streaming-vp9", flag_descriptions::kCastStreamingVp9Name,
      flag_descriptions::kCastStreamingVp9Description, kOsDesktop,
      FEATURE_VALUE_TYPE(media::kCastStreamingVp9)},

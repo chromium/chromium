@@ -1091,6 +1091,11 @@ extern const char kCastStreamingPerformanceOverlayDescription[];
 extern const char kCastStreamingVp9Name[];
 extern const char kCastStreamingVp9Description[];
 
+#if BUILDFLAG(IS_MAC)
+extern const char kCastStreamingMacHardwareH264Name[];
+extern const char kCastStreamingMacHardwareH264Description[];
+#endif
+
 extern const char kCastEnableStreamingWithHiDPIName[];
 extern const char kCastEnableStreamingWithHiDPIDescription[];
 

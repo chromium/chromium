@@ -169,19 +169,12 @@ source_set("encoding") {
     "//third_party/opus",
   ]
 
-  # iOS and OS X encoders
+  # Necessary for AAC audio encoding.
   if (is_apple) {
-    sources += [
-      "encoding/h264_vt_encoder.cc",
-      "encoding/h264_vt_encoder.h",
-    ]
-
     frameworks = [
       "AudioToolbox.framework",
       "CoreFoundation.framework",
       "CoreMedia.framework",
-      "CoreVideo.framework",
-      "VideoToolbox.framework",
     ]
   }
 
@@ -414,12 +407,6 @@ test("cast_unittests") {
       "//media/base/android:media_java",
       "//testing/android/native_test:native_test_native_code",
     ]
-  }
-
-  if (is_apple) {
-    sources += [ "encoding/h264_vt_encoder_unittest.cc" ]
-
-    deps += [ "//third_party/ffmpeg" ]
   }
 }
 

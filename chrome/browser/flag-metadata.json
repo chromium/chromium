@@ -2224,6 +2224,11 @@
     "expiry_milestone": 135
   },
   {
+    "name": "enable-cast-streaming-mac-hardware-h264",
+    "owners": [ "jophba@chromium.org", "openscreen-eng@chromium.org" ],
+    "expiry_milestone": 148
+  },
+  {
     "name": "enable-cast-streaming-vp9",
     "owners": [ "jophba@chromium.org", "openscreen-eng@chromium.org" ],
     "expiry_milestone": 135

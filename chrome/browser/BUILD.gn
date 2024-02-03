@@ -6270,6 +6270,10 @@ static_library("browser") {
       "SafariServices.framework",
       "SecurityInterface.framework",
       "UserNotifications.framework",
+
+      # Used for the Thumbnail capturer on macOS.
+      "CoreVideo.framework",
+      "VideoToolbox.framework",
     ]
     weak_frameworks = [
       "ScreenCaptureKit.framework",  # Available in macOS 12.3, stable in 13.2.

@@ -67,8 +67,15 @@ bool IsHardwareH264EncodingEnabled(
     return false;
   }
 
-  // TODO(crbug.com/1015482): hardware encoder broken on Windows, Apple OSes.
-  bool is_enabled_on_platform = !BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_WIN);
+  // TODO(crbug.com/1015482): the hardware encoder is broken on Windows.
+  const bool is_enabled_on_platform =
+#if BUILDFLAG(IS_MAC)
+      base::FeatureList::IsEnabled(kCastStreamingMacHardwareH264);
+#elif BUILDFLAG(IS_WIN)
+      false;
+#else
+      true;
+#endif
 
   const bool is_force_enabled =
       command_line.HasSwitch(switches::kCastStreamingForceEnableHardwareH264);
