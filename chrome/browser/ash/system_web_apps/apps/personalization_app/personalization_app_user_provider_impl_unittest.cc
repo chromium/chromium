@@ -14,11 +14,12 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted_memory.h"
+#include "base/path_service.h"
+#include "base/scoped_observation.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ash/login/users/avatar/fake_user_image_file_selector.h"
-#include "chrome/browser/ash/login/users/avatar/mock_user_image_manager.h"
 #include "chrome/browser/ash/login/users/avatar/user_image_manager.h"
 #include "chrome/browser/ash/login/users/avatar/user_image_manager_impl.h"
 #include "chrome/browser/ash/login/users/avatar/user_image_prefs.h"
@@ -26,6 +27,7 @@
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/login/users/scoped_test_user_manager.h"
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_utils.h"
+#include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -42,6 +44,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
+#include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/webui/web_ui_util.h"
@@ -129,6 +132,26 @@ class TestUserImageObserver
   ash::personalization_app::mojom::UserImagePtr current_user_image_;
   GURL current_profile_image_;
   bool is_enterprise_managed_ = false;
+};
+
+// Blocks until LocalState is updated by UserManager.
+class LocalStateUpdateWaiter : public user_manager::UserManager::Observer {
+ public:
+  LocalStateUpdateWaiter() {
+    observation_.Observe(user_manager::UserManager::Get());
+  }
+
+  void Wait() { run_loop_.Run(); }
+
+  void LocalStateChanged(user_manager::UserManager* user_manager) override {
+    run_loop_.Quit();
+  }
+
+ private:
+  base::ScopedObservation<user_manager::UserManager,
+                          user_manager::UserManager::Observer>
+      observation_{this};
+  base::RunLoop run_loop_;
 };
 
 }  // namespace
@@ -244,11 +267,18 @@ class PersonalizationAppUserProviderImplTest : public testing::Test {
 
   const base::HistogramTester& histogram_tester() { return histogram_tester_; }
 
+  base::FilePath GetTestFilePath() {
+    base::FilePath test_data_dir;
+    EXPECT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, &test_data_dir));
+    return test_data_dir.AppendASCII("chromeos/avatars/avatar1.jpg");
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
   content::BrowserTaskEnvironment task_environment_;
   user_manager::ScopedUserManager scoped_user_manager_;
   TestingProfileManager profile_manager_;
+  data_decoder::test::InProcessDataDecoder data_decoder_;
   content::TestWebUI web_ui_;
   std::unique_ptr<content::WebContents> web_contents_;
   raw_ptr<TestingProfile> profile_;
@@ -557,41 +587,27 @@ TEST_F(PersonalizationAppUserProviderImplTest, SelectImageFromDiskDisabled) {
             "Not allowed to select image file");
 }
 
-class PersonalizationAppUserProviderImplWithMockTest
-    : public PersonalizationAppUserProviderImplTest {
- protected:
-  void SetUp() override {
-    GetFakeUserManager()->SetMockUserImageManagerForTesting();
-    PersonalizationAppUserProviderImplTest::SetUp();
-  }
+TEST_F(PersonalizationAppUserProviderImplTest, SelectImageFromDisk) {
+  ASSERT_EQ(user_manager::UserManager::Get()
+                ->FindUser(GetAccountId(profile()))
+                ->image_index(),
+            user_manager::User::USER_IMAGE_PROFILE);
 
-  ash::MockUserImageManager* mock_user_image_manager() {
-    return static_cast<ash::MockUserImageManager*>(
-        ash::ChromeUserManager::Get()->GetUserImageManager(
-            GetAccountId(profile())));
-  }
-
-  base::FilePath GetTestFilePath() {
-    const base::FilePath base_file_path("/this/is/a/test/directory/Base Name");
-    const base::FilePath dir_path = base_file_path.AppendASCII("dir1");
-    return dir_path.AppendASCII("file1.jpg");
-  }
-};
-
-TEST_F(PersonalizationAppUserProviderImplWithMockTest, SelectImageFromDisk) {
   base::FilePath file_path = GetTestFilePath();
-  EXPECT_CALL(*mock_user_image_manager(), SaveUserImageFromFile(file_path));
-
   auto fake_file_selector =
       std::make_unique<ash::FakeUserImageFileSelector>(web_ui());
   fake_file_selector->SetFilePath(file_path);
   user_provider()->SetUserImageFileSelectorForTesting(
       std::move(fake_file_selector));
   user_provider_remote()->get()->SelectImageFromDisk();
-  user_provider_remote()->FlushForTesting();
+  LocalStateUpdateWaiter().Wait();
+  EXPECT_EQ(user_manager::UserManager::Get()
+                ->FindUser(GetAccountId(profile()))
+                ->image_index(),
+            user_manager::User::USER_IMAGE_EXTERNAL);
 }
 
-TEST_F(PersonalizationAppUserProviderImplWithMockTest,
+TEST_F(PersonalizationAppUserProviderImplTest,
        RecordsSelectImageFromDiskChangeHistogram) {
   // No external image set yet.
   histogram_tester().ExpectBucketCount(

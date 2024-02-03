@@ -4756,8 +4756,6 @@ static_library("test_support") {
     "login/ui/mock_signin_ui.h",
     "login/users/avatar/fake_user_image_file_selector.cc",
     "login/users/avatar/fake_user_image_file_selector.h",
-    "login/users/avatar/mock_user_image_manager.cc",
-    "login/users/avatar/mock_user_image_manager.h",
     "login/users/fake_chrome_user_manager.cc",
     "login/users/fake_chrome_user_manager.h",
     "login/version_updater/mock_version_updater_delegate.cc",
