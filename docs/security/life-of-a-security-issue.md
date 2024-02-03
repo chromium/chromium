@@ -45,7 +45,7 @@ sequenceDiagram
 A security bug begins when a reporter [
 discloses](https://www.chromium.org/Home/chromium-security/reporting-security-bugs/)
 a bug in the [Chromium issue
-tracker](https://code.google.com/p/chromium/issues/entry?template=Security%20Bug).
+tracker](https://issues.chromium.org/issues/new?noWizard=true&component=1363614&template=1922342).
 The new bug is placed in a queue of other incoming security bugs, and it is
 view-restricted to the reporter and select individuals on a need-to-know
 basis.
@@ -95,11 +95,12 @@ the bug can help code review and land it.
 
 Once the CL has landed, the developer should set the bug's status to *Fixed*.
 When the bug moves into the *Fixed* state, the security team's automation
-systems begin processing the bug report. In particular, the tools will add
-[merge request](../process/merge_request.md) labels, based on the severity and
-impact assessed by the shepherd during triage.
+systems begin processing the bug report. In particular, the tools will update
+[merge request](../process/merge_request.md) the *Merge* fields with the
+appropriate merge request tags, based on the severity and impact assessed by
+the shepherd during triage.
 
-VRP reports also are updated with the reward-topanel label by the automation.
+VRP reports also are updated with the reward-topanel hotlist by the automation.
 This allows the report to be included in the VRP Panel queue for
 evaluation and consideration of a potential VRP reward at a future VRP Panel
 session.
@@ -129,8 +130,8 @@ assign any reward amount for the bug.
 ## 9. Assign and pay reward
 
 After the VRP panel meets, the reporter will be notified of the VRP reward
-decision through the bug report, and a label will be applied with the VRP reward
-amount.
+decision through the bug report, and the *vrp-reward* field will be updated to
+reflect the VRP reward amount.
 
 Payments are not handled by the security team. A member of the Google finance
 team working on VRP payments (p2p-vrp) will reach out to arrange payment. The
