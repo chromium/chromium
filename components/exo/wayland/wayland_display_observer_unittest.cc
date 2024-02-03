@@ -56,7 +56,7 @@ class WaylandDisplayObserverTest : public test::ExoTestBase {
         wl_resource_create(client_, &wl_output_interface, 2, 0);
     xdg_output_resource_ =
         wl_resource_create(client_, &zxdg_output_v1_interface, 2, 0);
-    output_ = std::make_unique<WaylandDisplayOutput>(GetPrimaryDisplay().id());
+    output_ = std::make_unique<WaylandDisplayOutput>(GetPrimaryDisplay());
     handler_ = std::make_unique<::testing::NiceMock<MockWaylandDisplayHandler>>(
         output_.get(), wl_output_resource_);
     handler_->OnXdgOutputCreated(xdg_output_resource_);

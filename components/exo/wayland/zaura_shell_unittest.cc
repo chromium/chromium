@@ -767,8 +767,7 @@ class ZAuraOutputTest : public test::ExoTestBase {
     for (auto& display : display_list) {
       auto output_holder = std::make_unique<OutputHolder>();
       output_holder->client = client_;
-      output_holder->output =
-          std::make_unique<WaylandDisplayOutput>(display.id());
+      output_holder->output = std::make_unique<WaylandDisplayOutput>(display);
 
       wl_resource* output_resource = wl_resource_create(
           client_, &wl_output_interface, kWlOutputVersion, 0);
