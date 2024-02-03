@@ -69,10 +69,10 @@ using metrics::OmniboxEventProto;
 
 namespace {
 
-// Increments the appropriate value in the histogram by one.
-void LogOmniboxSuggestRequest(RemoteRequestHistogramValue request_value) {
-  base::UmaHistogramEnumeration("Omnibox.SuggestRequests", request_value,
-                                RemoteRequestHistogramValue::kMaxValue);
+// Increments the appropriate event in the histogram by one.
+void LogOmniboxSuggestRequest(RemoteRequestEvent request_event) {
+  base::UmaHistogramEnumeration("Omnibox.SearchSuggest.Requests",
+                                request_event);
 }
 
 bool HasMultipleWords(const std::u16string& text) {
@@ -514,8 +514,7 @@ void SearchProvider::SortResults(bool is_keyword,
 }
 
 void SearchProvider::LogLoadComplete(bool success, bool is_keyword) {
-  LogOmniboxSuggestRequest(
-      RemoteRequestHistogramValue::kRemoteResponseReceived);
+  LogOmniboxSuggestRequest(RemoteRequestEvent::kResponseReceived);
   // Record response time for suggest requests sent to Google.  We care
   // only about the common case: the Google default provider used in
   // non-keyword mode.
@@ -762,7 +761,7 @@ void SearchProvider::StartOrStopSuggestQuery(bool minimal_changes) {
 void SearchProvider::CancelLoader(
     std::unique_ptr<network::SimpleURLLoader>* loader) {
   if (*loader) {
-    LogOmniboxSuggestRequest(RemoteRequestHistogramValue::kRequestInvalidated);
+    LogOmniboxSuggestRequest(RemoteRequestEvent::kRequestInvalidated);
     loader->reset();
   }
 }
@@ -924,7 +923,7 @@ std::unique_ptr<network::SimpleURLLoader> SearchProvider::CreateSuggestLoader(
     search_term_args.current_page_url = input.current_url().spec();
   }
 
-  LogOmniboxSuggestRequest(RemoteRequestHistogramValue::kRequestSent);
+  LogOmniboxSuggestRequest(RemoteRequestEvent::kRequestSent);
 
   // If the request is from omnibox focus, send empty search term args. The
   // purpose of such a request is to signal the server to warm up; no info
@@ -932,6 +931,8 @@ std::unique_ptr<network::SimpleURLLoader> SearchProvider::CreateSuggestLoader(
   return client()
       ->GetRemoteSuggestionsService(/*create_if_necessary=*/true)
       ->StartSuggestionsRequest(
+          input.IsZeroSuggest() ? RemoteRequestType::kSearchWarmup
+                                : RemoteRequestType::kSearch,
           template_url,
           input.IsZeroSuggest() ? TemplateURLRef::SearchTermsArgs()
                                 : search_term_args,

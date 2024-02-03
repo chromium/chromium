@@ -43,7 +43,7 @@
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/omnibox_prefs.h"
 #include "components/omnibox/browser/remote_suggestions_service.h"
-#include "components/omnibox/browser/search_provider.h"
+#include "components/omnibox/browser/search_suggestion_parser.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
@@ -87,10 +87,9 @@ enum class DocumentProviderAllowedReason : int {
   kMaxValue = kInputLooksLikeUrl
 };
 
-void LogOmniboxDocumentRequest(RemoteRequestHistogramValue request_value) {
+void LogOmniboxDocumentRequest(RemoteRequestEvent request_event) {
   base::UmaHistogramEnumeration("Omnibox.DocumentSuggest.Requests",
-                                request_value,
-                                RemoteRequestHistogramValue::kMaxValue);
+                                request_event);
 }
 
 void LogTotalTime(base::TimeTicks start_time, bool interrupted) {
@@ -514,7 +513,7 @@ void DocumentProvider::Stop(bool clear_cached_results,
     loader_.reset();
     LogRequestTime(time_request_sent_, true);
     time_request_sent_ = base::TimeTicks();
-    LogOmniboxDocumentRequest(RemoteRequestHistogramValue::kRequestInvalidated);
+    LogOmniboxDocumentRequest(RemoteRequestEvent::kRequestInvalidated);
   }
 
   // If `Run()` has been invoked, log its duration. It's possible `Stop()` is
@@ -565,8 +564,7 @@ void DocumentProvider::OnURLLoadComplete(
   DCHECK_EQ(loader_.get(), source);
 
   LogRequestTime(time_request_sent_, false);
-  LogOmniboxDocumentRequest(
-      RemoteRequestHistogramValue::kRemoteResponseReceived);
+  LogOmniboxDocumentRequest(RemoteRequestEvent::kResponseReceived);
   base::UmaHistogramSparse("Omnibox.DocumentSuggest.HttpResponseCode",
                            response_code);
 
@@ -621,7 +619,7 @@ void DocumentProvider::OnDocumentSuggestionsLoaderAvailable(
     std::unique_ptr<network::SimpleURLLoader> loader) {
   time_request_sent_ = base::TimeTicks::Now();
   loader_ = std::move(loader);
-  LogOmniboxDocumentRequest(RemoteRequestHistogramValue::kRequestSent);
+  LogOmniboxDocumentRequest(RemoteRequestEvent::kRequestSent);
 }
 
 // static

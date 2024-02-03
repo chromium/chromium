@@ -21,7 +21,6 @@
 #include "components/history/core/browser/history_types.h"
 #include "components/omnibox/browser/autocomplete_provider.h"
 #include "components/omnibox/browser/autocomplete_provider_debouncer.h"
-#include "components/omnibox/browser/search_provider.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 
 class AutocompleteProviderListener;

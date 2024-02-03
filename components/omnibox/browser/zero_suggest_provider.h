@@ -14,7 +14,6 @@
 
 #include "base/gtest_prod_util.h"
 #include "components/omnibox/browser/base_search_provider.h"
-#include "components/omnibox/browser/search_provider.h"
 
 class AutocompleteProviderListener;
 class PrefRegistrySimple;
