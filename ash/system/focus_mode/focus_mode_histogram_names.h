@@ -29,6 +29,8 @@ enum class StartSessionSource {
 };
 
 // Histogram names start session.
+constexpr char kHasSelectedTaskOnSessionStartHistogramName[] =
+    "Ash.FocusMode.StartSession.HasSelectedTask";
 constexpr char kInitialDurationOnSessionStartsHistogramName[] =
     "Ash.FocusMode.StartSession.InitialDuration";
 constexpr char kStartSessionSourceHistogramName[] =

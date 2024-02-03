@@ -3361,6 +3361,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.FocusMode.StartSession.HasSelectedTask" enum="Boolean"
+    expires_after="2025-02-01">
+  <owner>hongyulong@chromium.org</owner>
+  <owner>richui@chromium.org</owner>
+  <owner>nupurjain@google.com</owner>
+  <owner>chromeos-wms@google.com</owner>
+  <summary>
+    Emits true when a task is selected on a session start; otherwise, emits
+    false.
+  </summary>
+</histogram>
+
 <histogram name="Ash.FocusMode.StartSession.InitialDuration" units="minutes"
     expires_after="2024-12-31">
   <owner>hongyulong@chromium.org</owner>

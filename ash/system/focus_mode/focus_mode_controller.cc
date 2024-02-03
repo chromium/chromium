@@ -295,6 +295,9 @@ void FocusModeController::StartFocusSession(
     focus_mode_histogram_names::ToggleSource source) {
   RecordInitialDurationHistogram(/*session_duration=*/session_duration_);
   RecordStartSessionSourceHistogram(source);
+  base::UmaHistogramBoolean(/*name=*/focus_mode_histogram_names::
+                                kHasSelectedTaskOnSessionStartHistogramName,
+                            /*sample=*/HasSelectedTask());
 
   current_session_ = FocusModeSession(session_duration_,
                                       session_duration_ + base::Time::Now());

@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/api/tasks/tasks_types.h"
 #include "ash/capture_mode/capture_mode_test_util.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
@@ -773,6 +774,47 @@ TEST_F(FocusModeDetailedViewTest, CheckInitialDurationHistograms) {
   histogram_tester.ExpectTotalCount(
       focus_mode_histogram_names::kInitialDurationOnSessionStartsHistogramName,
       2);
+}
+
+// Verify that we start a focus session, the histogram will record whether there
+// is a selected task.
+TEST_F(FocusModeDetailedViewTest, CheckHasSelectedTaskHistogram) {
+  base::HistogramTester histogram_tester;
+
+  auto* controller = FocusModeController::Get();
+  EXPECT_FALSE(controller->in_focus_session());
+  histogram_tester.ExpectTotalCount(
+      focus_mode_histogram_names::kHasSelectedTaskOnSessionStartHistogramName,
+      0);
+
+  // 1. Start a focus session without a selected task.
+  EXPECT_FALSE(controller->HasSelectedTask());
+  controller->ToggleFocusMode();
+  EXPECT_TRUE(controller->in_focus_session());
+  histogram_tester.ExpectBucketCount(
+      focus_mode_histogram_names::kHasSelectedTaskOnSessionStartHistogramName,
+      false, 1);
+  controller->ToggleFocusMode();
+  EXPECT_FALSE(controller->in_focus_session());
+
+  // 2. Start a focus session with a selected task.
+  int id = 0;
+  const std::string title = "Focus Task";
+  controller->SetSelectedTask(std::make_unique<api::Task>(
+                                  /*id=*/base::NumberToString(id), title,
+                                  /*completed=*/false,
+                                  /*due=*/absl::nullopt, /*has_subtasks=*/false,
+                                  /*has_email_link=*/false,
+                                  /*has_notes=*/false,
+                                  /*updated=*/base::Time::Now())
+                                  .get());
+  EXPECT_TRUE(controller->HasSelectedTask());
+
+  controller->ToggleFocusMode();
+  EXPECT_TRUE(controller->in_focus_session());
+  histogram_tester.ExpectBucketCount(
+      focus_mode_histogram_names::kHasSelectedTaskOnSessionStartHistogramName,
+      true, 1);
 }
 
 }  // namespace ash
