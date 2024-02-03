@@ -8990,9 +8990,9 @@ TEST_F(SplitViewOverviewSessionInClamshellTest, BasicFunctionalitiesTest) {
   EXPECT_FALSE(GetOverviewController()->InOverviewSession());
   EXPECT_FALSE(split_view_controller()->InSplitViewMode());
 
-  // 5. Test if one window is snapped, the other window are showing in overview,
-  // activating an new window will not auto-snap the new window. Overview and
-  // splitview should be ended.
+  // 5. Test if one window is snapped, the other windows are showing in
+  // overview, activating an new window will not auto-snap the new window.
+  // Overview and splitview should be ended.
   ToggleOverview();
   overview_item1 = GetOverviewItemForWindow(window1.get());
   DragWindowTo(overview_item1, gfx::PointF(0, 0));

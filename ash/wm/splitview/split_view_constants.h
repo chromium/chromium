@@ -23,6 +23,9 @@ ASH_EXPORT constexpr float kHighlightScreenEdgePaddingDp = 12;
 constexpr int kSplitviewLabelHorizontalInsetDp = 16;
 constexpr int kSplitviewLabelVerticalInsetDp = 8;
 
+// App cannot snap toast id.
+constexpr char kAppCannotSnapToastId[] = "split_view_app_cannot_snap";
+
 // The preferred height of a split view label.
 constexpr int kSplitviewLabelPreferredHeightDp = 36;
 

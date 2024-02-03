@@ -2098,7 +2098,6 @@ void SplitViewController::OnWindowSnapped(
     WindowSnapActionSource snap_action_source) {
   RestoreTransformIfApplicable(window);
   UpdateStateAndNotifyObservers();
-
   RefreshSnapGroup();
 
   // If the snapped window was removed from overview and was the active window

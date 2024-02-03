@@ -34,12 +34,13 @@ std::optional<float> CalculateAutoSnapRatio(
     return split_view_controller->ComputeAutoSnapRatio(window);
   }
 
+  auto* window_state = WindowState::Get(window);
   if (auto* split_view_overview_session =
           RootWindowController::ForWindow(window)
               ->split_view_overview_session();
       split_view_overview_session &&
       split_view_overview_session->window() != window) {
-    if (!WindowState::Get(window)->CanSnap()) {
+    if (!window_state->CanSnap()) {
       return std::nullopt;
     }
 
@@ -50,7 +51,7 @@ std::optional<float> CalculateAutoSnapRatio(
     return std::make_optional<float>(snap_ratio);
   }
 
-  return std::nullopt;
+  return window_state->snap_ratio();
 }
 
 }  // namespace

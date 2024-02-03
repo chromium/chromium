@@ -62,9 +62,6 @@ constexpr base::TimeDelta kLabelAnimation = base::Milliseconds(83);
 // The delay before the indicator labels start fading in.
 constexpr base::TimeDelta kLabelAnimationDelay = base::Milliseconds(167);
 
-// Toast data.
-constexpr char kAppCannotSnapToastId[] = "split_view_app_cannot_snap";
-
 constexpr char kHistogramPrefix[] = "Ash.SplitViewOverviewSession.";
 
 constexpr char kWindowLayoutCompleteOnSessionExitRootWord[] =

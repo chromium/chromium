@@ -18,6 +18,7 @@
 #include "ash/screen_util.h"
 #include "ash/shell.h"
 #include "ash/style/close_button.h"
+#include "ash/system/toast/toast_manager_impl.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/ash_test_util.h"
 #include "ash/wm/desks/desks_test_util.h"
@@ -582,6 +583,25 @@ TEST_F(FasterSplitScreenTest, StartPartialOverviewForMinimizedWindow) {
   // overview.
   SnapOneTestWindow(w2.get(), chromeos::WindowStateType::kSecondarySnapped);
   VerifySplitViewOverviewSession(w2.get());
+}
+
+// Tests that when activating an already snapped window, cannot snap toast will
+// not show by mistake. See b/323391799 for details.
+TEST_F(FasterSplitScreenTest,
+       DoNotShowCannotSnapToastWhenActivatingTheSnappedWindow) {
+  UpdateDisplay("800x600");
+  std::unique_ptr<aura::Window> w1(CreateAppWindow());
+  SnapOneTestWindow(w1.get(), chromeos::WindowStateType::kPrimarySnapped,
+                    WindowSnapActionSource::kKeyboardShortcutToSnap);
+  ASSERT_TRUE(WindowState::Get(w1.get())->IsSnapped());
+
+  std::unique_ptr<aura::Window> w2(CreateAppWindow());
+  SnapOneTestWindow(w2.get(), chromeos::WindowStateType::kSecondarySnapped,
+                    WindowSnapActionSource::kDragWindowToEdgeToSnap);
+  EXPECT_FALSE(IsInOverviewSession());
+
+  wm::ActivateWindow(w1.get());
+  EXPECT_FALSE(ToastManager::Get()->IsToastShown(kAppCannotSnapToastId));
 }
 
 TEST_F(FasterSplitScreenTest, DontStartPartialOverviewForFloatedWindow) {
