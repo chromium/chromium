@@ -3,30 +3,27 @@
 //! All the following commentary is based on the latest nightly at the time:
 //! rustc 1.55.0 (c8dfcfe04 2021-09-06).
 //!
-//! Some of these benchmarks are just a few instructions, so we put our own for
-//! loop inside the criterion::Bencher::iter call. This seems to improve the
-//! stability of measurements, and it has the wonderful side effect of making
-//! the emitted assembly easier to follow. Some of these benchmarks are totally
-//! inlined so that there are no calls at all in the hot path, so finding
+//! Some of these benchmarks are just a few instructions, so we put our own for loop inside
+//! the criterion::Bencher::iter call. This seems to improve the stability of measurements, and it
+//! has the wonderful side effect of making the emitted assembly easier to follow. Some of these
+//! benchmarks are totally inlined so that there are no calls at all in the hot path, so finding
 //! this for loop is an easy way to find your way around the emitted assembly.
 //!
-//! The clear method is cheaper to call for arrays of elements without a Drop
-//! impl, so wherever possible we reuse a single object in the benchmark loop,
-//! with a clear + black_box on each iteration in an attempt to not make that
-//! visible to the optimizer.
+//! The clear method is cheaper to call for arrays of elements without a Drop impl, so wherever
+//! possible we reuse a single object in the benchmark loop, with a clear + black_box on each
+//! iteration in an attempt to not make that visible to the optimizer.
 //!
-//! We always call black_box(&v), instead of v = black_box(v) because the latter
-//! does a move of the inline array, which is linear in the size of the array
-//! and thus varies based on the array type being benchmarked, and this move can
-//! be more expensive than the function we're trying to benchmark.
+//! We always call black_box(&v), instead of v = black_box(v) because the latter does a move of the
+//! inline array, which is linear in the size of the array and thus varies based on the array type
+//! being benchmarked, and this move can be more expensive than the function we're trying to
+//! benchmark.
 //!
-//! We also black_box the input to each method call. This has a significant
-//! effect on the assembly emitted, for example if we do not black_box the range
-//! we iterate over in the ::push benchmarks, the loop is unrolled. It's not
-//! entirely clear if it's better to black_box the iterator that yields the
-//! items being pushed, or to black_box at a deeper level: v.push(black_box(i))
-//! for example. Anecdotally, it seems like the latter approach produces
-//! unreasonably bad assembly.
+//! We also black_box the input to each method call. This has a significant effect on the assembly
+//! emitted, for example if we do not black_box the range we iterate over in the ::push benchmarks,
+//! the loop is unrolled. It's not entirely clear if it's better to black_box the iterator that
+//! yields the items being pushed, or to black_box at a deeper level: v.push(black_box(i)) for
+//! example. Anecdotally, it seems like the latter approach produces unreasonably bad assembly.
+//!
 
 use criterion::{black_box, criterion_group, criterion_main, Criterion};
 use smallvec::SmallVec;

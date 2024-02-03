@@ -202,7 +202,8 @@ where
   /// Returns the replaced item, if any. Fails when there is no matching item
   /// and the backing array is full, preventing insertion.
   pub fn replace(
-    &mut self, mut elt: A::Item,
+    &mut self,
+    mut elt: A::Item,
   ) -> Result<Option<A::Item>, InsertError> {
     let len: usize = self.len.into();
     let arr = self.arr.as_slice_mut();

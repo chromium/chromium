@@ -72,19 +72,34 @@ criteria = ["safe-to-deploy", "does-not-implement-crypto"]
 notes = "Grandparented-in when setting up `cargo vet` in Jan 2024"
 
 [[exemptions.cxx]]
-version = "1.0.110"
+version = "1.0.115"
 criteria = ["safe-to-deploy", "ub-risk-2"]
-notes = "Grandparented-in when setting up `cargo vet` in Jan 2024"
+notes = """
+Grandparented-in when setting up `cargo vet` in Jan 2024
+
+Delta audit of 1.0.110 -> 1.0.115 has been done in Jan 2024, but because of a
+lack of a fully-audited baseline nothing was recorded in audits.toml
+"""
 
 [[exemptions.cxxbridge-flags]]
-version = "1.0.110"
+version = "1.0.115"
 criteria = ["safe-to-deploy", "ub-risk-2"]
-notes = "Grandparented-in when setting up `cargo vet` in Jan 2024"
+notes = """
+Grandparented-in when setting up `cargo vet` in Jan 2024
+
+Delta audit of 1.0.110 -> 1.0.115 has been done in Jan 2024, but because of a
+lack of a fully-audited baseline nothing was recorded in audits.toml
+"""
 
 [[exemptions.cxxbridge-macro]]
-version = "1.0.110"
+version = "1.0.115"
 criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
-notes = "Grandparented-in when setting up `cargo vet` in Jan 2024"
+notes = """
+Grandparented-in when setting up `cargo vet` in Jan 2024
+
+Delta audit of 1.0.110 -> 1.0.115 has been done in Jan 2024, but because of a
+lack of a fully-audited baseline nothing was recorded in audits.toml
+"""
 
 [[exemptions.font-types]]
 version = "0.4.2"
@@ -97,9 +112,14 @@ criteria = "safe-to-deploy"
 notes = "Grandparented-in when setting up `cargo vet` in Jan 2024"
 
 [[exemptions.itoa]]
-version = "1.0.9"
+version = "1.0.10"
 criteria = ["safe-to-deploy", "ub-risk-2"]
-notes = "Grandparented-in when setting up `cargo vet` in Jan 2024"
+notes = """
+Grandparented-in when setting up `cargo vet` in Jan 2024.
+
+Delta audit of 1.0.9 -> 1.0.10 has been done in Jan 2024, but because of a lack
+of a fully-audited baseline nothing was recorded in audits.toml
+"""
 
 [[exemptions.lazy_static]]
 version = "1.4.0"
@@ -107,14 +127,27 @@ criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
 notes = "Grandparented-in when setting up `cargo vet` in Jan 2024"
 
 [[exemptions.libc]]
-version = "0.2.150"
+version = "0.2.152"
 criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
-notes = "Grandparented-in when setting up `cargo vet` in Jan 2024"
+notes = """
+Grandparented-in when setting up `cargo vet` in Jan 2024
+
+Unsoundness was found in 0.2.152 behind a crate feature (called \"extra_traits\")
+that is unused by Chromium.  https://crbug.com/1524111 tracks ensuring that we
+don't accidentally start depending on this feature.
+"""
 
 [[exemptions.memchr]]
-version = "2.6.4"
+version = "2.7.1"
 criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
-notes = "Grandparented-in when setting up `cargo vet` in Jan 2024"
+notes = """
+Grandparented-in when setting up `cargo vet` in Jan 2024
+
+Bumped up the exemptions to 2.7.1 when updating the crates.  When removing
+the exemptions in the future we may want to look at the notes in cl/568617493
+but even with those notes a review of the whole crate (rather than just the
+delta) may be needed for `ub-risk-2`.
+"""
 
 [[exemptions.memoffset]]
 version = "0.6.5"
@@ -122,14 +155,15 @@ criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
 notes = "Grandparented-in when setting up `cargo vet` in Jan 2024"
 
 [[exemptions.proc-macro2]]
-version = "1.0.69"
+version = "1.0.76"
 criteria = ["safe-to-deploy", "ub-risk-2"]
-notes = "Grandparented-in when setting up `cargo vet` in Jan 2024"
+notes = """
+Grandparented-in when setting up `cargo vet` in Jan 2024
 
-[[exemptions.quote]]
-version = "1.0.33"
-criteria = ["safe-to-deploy", "does-not-implement-crypto"]
-notes = "Grandparented-in when setting up `cargo vet` in Jan 2024"
+Delta audit of 1.0.9 -> 1.0.10 has been done in Jan 2024 (including an `unsafe`
+review done at https://crrev.com/c/5178771), but because of a lack of a
+fully-audited baseline nothing was recorded in audits.toml
+"""
 
 [[exemptions.rand_chacha]]
 version = "0.3.1"
@@ -152,19 +186,24 @@ criteria = ["safe-to-deploy", "does-not-implement-crypto"]
 notes = "Grandparented-in when setting up `cargo vet` in Jan 2024"
 
 [[exemptions.ryu]]
-version = "1.0.15"
+version = "1.0.16"
 criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
-notes = "Grandparented-in when setting up `cargo vet` in Jan 2024"
+notes = """
+Grandparented-in when setting up `cargo vet` in Jan 2024.
+
+Delta audit of 1.0.15 -> 1.0.16 has been done in Jan 2024, but because of a
+lack of a fully-audited baseline nothing was recorded in audits.toml
+"""
 
 [[exemptions.serde]]
-version = "1.0.193"
+version = "1.0.195"
 criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
-notes = "Grandparented-in when setting up `cargo vet` in Jan 2024"
+notes = """
+Grandparented-in when setting up `cargo vet` in Jan 2024.
 
-[[exemptions.serde_derive]]
-version = "1.0.193"
-criteria = ["safe-to-deploy", "does-not-implement-crypto"]
-notes = "Grandparented-in when setting up `cargo vet` in Jan 2024"
+Delta audit of 1.0.193 -> 1.0.195 has been done in Jan 2024, but because of a
+lack of a fully-audited baseline nothing was recorded in audits.toml
+"""
 
 [[exemptions.serde_json_lenient]]
 version = "0.1.8"
@@ -182,9 +221,15 @@ criteria = ["safe-to-deploy", "ub-risk-2"]
 notes = "Grandparented-in when setting up `cargo vet` in Jan 2024"
 
 [[exemptions.syn]]
-version = "2.0.39"
+version = "2.0.48"
 criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
-notes = "Grandparented-in when setting up `cargo vet` in Jan 2024"
+notes = """
+Grandparented-in when setting up `cargo vet` in Jan 2024
+
+Delta audit of 2.0.39 -> syn-2.0.48 has been done in Jan 2024 (including an
+`unsafe` review done at https://crrev.com/c/5178771), but because of a lack of
+a fully-audited baseline nothing was recorded in audits.toml
+"""
 
 [[exemptions.tinyvec]]
 version = "1.6.0"

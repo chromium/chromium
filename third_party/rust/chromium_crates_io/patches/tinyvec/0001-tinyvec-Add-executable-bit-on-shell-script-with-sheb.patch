@@ -1,0 +1,16 @@
+From d4179b5bbd6eeba08b874936b32882665996b503 Mon Sep 17 00:00:00 2001
+From: danakj <danakj@chromium.org>
+Date: Tue, 9 Jan 2024 13:49:54 -0500
+Subject: [PATCH 2/2] tinyvec: Add executable bit on shell script with shebang
+
+---
+ .../chromium_crates_io/vendor/tinyvec-1.6.0/gen-array-impls.sh    | 0
+ 1 file changed, 0 insertions(+), 0 deletions(-)
+ mode change 100644 => 100755 third_party/rust/chromium_crates_io/vendor/tinyvec-1.6.0/gen-array-impls.sh
+
+diff --git a/third_party/rust/chromium_crates_io/vendor/tinyvec-1.6.0/gen-array-impls.sh b/third_party/rust/chromium_crates_io/vendor/tinyvec-1.6.0/gen-array-impls.sh
+old mode 100644
+new mode 100755
+-- 
+2.43.0.472.g3155946c3a-goog
+
