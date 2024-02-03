@@ -1189,7 +1189,8 @@ HRESULT DoUpdate(UpdaterScope scope,
                  const base::win::ScopedBstr& appid,
                  AppBundleWebCreateMode app_bundle_web_create_mode,
                  int expected_final_state,
-                 HRESULT expected_error_code) {
+                 HRESULT expected_error_code,
+                 bool cancel_when_downloading) {
   Microsoft::WRL::ComPtr<IAppBundleWeb> bundle;
   InitializeBundle(scope, bundle);
   EXPECT_TRUE(bundle);
@@ -1291,11 +1292,7 @@ HRESULT DoUpdate(UpdaterScope scope,
             bytes_downloaded, total_bytes_to_download,
             download_time_remaining_ms));
 
-        // `IntegrationInstallerResultsTestNewInstalls.OnDemandCancel`.
-        // TODO(crbug.com/1523813): perhaps parameterize this to be more
-        // specific.
-        if (app_bundle_web_create_mode == AppBundleWebCreateMode::kCreateApp &&
-            expected_final_state == STATE_ERROR) {
+        if (cancel_when_downloading) {
           EXPECT_HRESULT_SUCCEEDED(bundle->cancel());
         }
 
@@ -1379,10 +1376,12 @@ void ExpectLegacyUpdate3WebSucceeds(
     const std::string& app_id,
     AppBundleWebCreateMode app_bundle_web_create_mode,
     int expected_final_state,
-    int expected_error_code) {
-  EXPECT_HRESULT_SUCCEEDED(DoUpdate(
-      scope, base::win::ScopedBstr(base::UTF8ToWide(app_id).c_str()),
-      app_bundle_web_create_mode, expected_final_state, expected_error_code));
+    int expected_error_code,
+    bool cancel_when_downloading) {
+  EXPECT_HRESULT_SUCCEEDED(
+      DoUpdate(scope, base::win::ScopedBstr(base::UTF8ToWide(app_id).c_str()),
+               app_bundle_web_create_mode, expected_final_state,
+               expected_error_code, cancel_when_downloading));
 }
 
 void SetupLaunchCommandElevated(const std::wstring& app_id,

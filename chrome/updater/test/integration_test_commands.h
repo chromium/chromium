@@ -124,7 +124,8 @@ class IntegrationTestCommands
       const std::string& app_id,
       AppBundleWebCreateMode app_bundle_web_create_mode,
       int expected_final_state,
-      int expected_error_code) const = 0;
+      int expected_error_code,
+      bool cancel_when_downloading) const = 0;
   virtual void ExpectLegacyProcessLauncherSucceeds() const = 0;
   virtual void ExpectLegacyAppCommandWebSucceeds(
       const std::string& app_id,
