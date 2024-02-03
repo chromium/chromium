@@ -211,7 +211,6 @@ steps:
     depends_on:
       - "build-chromium-linux-x86_64"
     build:
-      branch: dominik/run-3113
       env:
         RECORD_REPLAY_METADATA_SOURCE_COMMIT_TITLE: "${BUILDKITE_MESSAGE}"
         RECORD_REPLAY_METADATA_SOURCE_COMMIT_ID: "${BUILDKITE_COMMIT}"
