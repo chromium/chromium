@@ -589,7 +589,7 @@ class PdfPluginContextMenuBrowserTest : public PDFExtensionTestBase {
     // frame.
     content::RenderFrameHost* frame;
     if (UseOopif()) {
-      test_pdf_viewer_stream_manager->DeprecatedWaitUntilPdfLoaded();
+      test_pdf_viewer_stream_manager->WaitUntilPdfLoadedInFirstChild();
       frame = pdf_extension_test_util::GetOnlyPdfExtensionHost(web_contents);
     } else {
       auto* guest_view =
