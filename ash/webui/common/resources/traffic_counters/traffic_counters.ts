@@ -100,7 +100,7 @@ const TrafficCountersElementBase = I18nMixin(PolymerElement);
 
 export class TrafficCountersElement extends TrafficCountersElementBase {
   static get is() {
-    return 'traffic-counters';
+    return 'traffic-counters' as const;
   }
 
   static get template() {
@@ -225,6 +225,12 @@ export class TrafficCountersElement extends TrafficCountersElementBase {
       return '';
     }
     return convertMojoTimeToJS(network.lastResetTime).toLocaleString();
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    [TrafficCountersElement.is]: TrafficCountersElement;
   }
 }
 

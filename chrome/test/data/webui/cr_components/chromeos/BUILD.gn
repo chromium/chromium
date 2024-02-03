@@ -77,17 +77,24 @@ ts_library("build_ts") {
     "network_health/network_diagnostics_test.js",
     "network_health/network_health_test_utils.js",
     "network_health/routine_group_test.js",
-    "traffic_counters/traffic_counters_test.js",
+    "traffic_counters/traffic_counters_test.ts",
   ]
 
   deps = [
     "//ash/webui/common/resources:build_ts",
     "//ash/webui/common/resources/cellular_setup:build_ts",
     "//chrome/test/data/webui/chromeos:build_ts",
+    "//chrome/test/data/webui:build_ts",
     "//third_party/polymer/v3_0:library",
     "//ash/webui/common/resources/cr_elements:build_ts",
     "//ui/webui/resources/js:build_ts",
     "//ui/webui/resources/mojo:build_ts",
+  ]
+
+  path_mappings = [
+    "chrome://webui-test/*|" +
+        rebase_path("$root_gen_dir/chrome/test/data/webui/tsc/*",
+                    target_gen_dir),
   ]
   definitions = [ "//tools/typescript/definitions/pending.d.ts" ]
   extra_deps = [ "//ash/webui/common/resources:generate_definitions" ]
