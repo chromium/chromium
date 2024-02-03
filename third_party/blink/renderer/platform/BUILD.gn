@@ -2627,6 +2627,16 @@ fuzzer_test("blink_png_decoder_fuzzer") {
   ]
 }
 
+fuzzer_test("blink_jpeg_decoder_fuzzer") {
+  sources = [ "image-decoders/jpeg/jpeg_image_decoder_fuzzer.cc" ]
+  deps = [
+    ":blink_fuzzer_test_support",
+    ":platform",
+  ]
+  seed_corpuses = [ "//third_party/blink/web_tests/images/resources/jpegfuzz" ]
+  libfuzzer_options = [ "rss_limit_mb=8192" ]
+}
+
 # Fuzzer for blink::DateTimeFormat.
 fuzzer_test("blink_date_time_format_fuzzer") {
   sources = [ "text/date_time_format_fuzzer.cc" ]
