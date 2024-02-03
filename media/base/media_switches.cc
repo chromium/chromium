@@ -691,6 +691,18 @@ BASE_FEATURE(kDedicatedMediaServiceThread,
 #endif
 );
 
+// Defer requesting persistent audio focus until the WebContents is audible.
+// The goal is to prevent silent playback from taking audio focus from
+// background apps on android, where focus is typically exclusive.
+BASE_FEATURE(kDeferAudioFocusUntilAudible,
+             "DeferAudioFocusUntilAudible",
+#if BUILDFLAG(IS_ANDROID)
+             base::FEATURE_ENABLED_BY_DEFAULT
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+);
+
 // Allows document picture-in-picture pages to request capture.
 BASE_FEATURE(kDocumentPictureInPictureCapture,
              "DocumentPictureInPictureCapture",
