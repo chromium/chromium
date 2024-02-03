@@ -148,6 +148,7 @@ class TargetDeviceBootstrapControllerTest : public testing::Test {
     std::unique_ptr<FakeTargetDeviceConnectionBroker>
         fake_target_device_connection_broker =
             std::make_unique<FakeTargetDeviceConnectionBroker>(
+                &bootstrap_controller_->session_context_,
                 fake_quick_start_connectivity_service_.get());
     fake_target_device_connection_broker_ =
         fake_target_device_connection_broker.get();

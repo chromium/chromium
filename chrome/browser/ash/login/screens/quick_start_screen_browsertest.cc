@@ -540,6 +540,28 @@ IN_PROC_BROWSER_TEST_F(QuickStartBrowserTest, CancelOnQRCode) {
   EnsureFlowNotActive();
 }
 
+IN_PROC_BROWSER_TEST_F(QuickStartBrowserTest, CancelAndRestartWithNewSession) {
+  EnterQuickStartFlowFromWelcomeScreen();
+  uint64_t first_session_id = connection_broker()->session_id();
+
+  SimulatePhoneConnection();
+  SimulateUserVerification();
+
+  // Cancel flow.
+  test::OobeJS()
+      .CreateVisibilityWaiter(/*visibility=*/true,
+                              kCancelButtonVerificationDialog)
+      ->Wait();
+  test::OobeJS().ClickOnPath(kCancelButtonVerificationDialog);
+  OobeScreenWaiter(WelcomeView::kScreenId).Wait();
+  EnsureFlowNotActive();
+
+  // Enter again and check that session info is different.
+  EnterQuickStartFlowFromWelcomeScreen();
+  uint64_t second_session_id = connection_broker()->session_id();
+  EXPECT_NE(first_session_id, second_session_id);
+}
+
 IN_PROC_BROWSER_TEST_F(QuickStartBrowserTest, EndToEndWithMetrics) {
   SetUpDisconnectedWifiNetwork();
   base::HistogramTester histogram_tester;

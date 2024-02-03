@@ -50,7 +50,7 @@ TargetDeviceBootstrapController::TargetDeviceBootstrapController(
       accessibility_manager_wrapper_(std::move(accessibility_manager_wrapper)),
       quick_start_connectivity_service_(quick_start_connectivity_service) {
   connection_broker_ = TargetDeviceConnectionBrokerFactory::Create(
-      session_context_, quick_start_connectivity_service_);
+      &session_context_, quick_start_connectivity_service_);
 }
 
 TargetDeviceBootstrapController::~TargetDeviceBootstrapController() {
@@ -342,6 +342,7 @@ void TargetDeviceBootstrapController::AttemptGoogleAccountTransfer() {
 
 void TargetDeviceBootstrapController::Cleanup() {
   status_ = Status();
+  session_context_.ResetSession();
   CleanupIfNeeded();
 }
 
