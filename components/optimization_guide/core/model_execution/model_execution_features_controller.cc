@@ -166,36 +166,12 @@ bool ModelExecutionFeaturesController::ShouldFeatureBeCurrentlyEnabledForUser(
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   ScopedFeatureCurrentlyEnabledHistogramRecorder metrics_recorder;
-
-  switch (GetCurrentUserValidityResult(feature)) {
-    case ModelExecutionFeaturesController::UserValidityResult::
-        kInvalidUnsignedUser:
-      metrics_recorder.SetResult(
-          feature, FeatureCurrentlyEnabledResult::kNotEnabledUnsignedUser);
-      return false;
-    case ModelExecutionFeaturesController::UserValidityResult::
-        kInvalidEnterprisePolicy:
-      metrics_recorder.SetResult(
-          feature, FeatureCurrentlyEnabledResult::kNotEnabledEnterprisePolicy);
-      return false;
-    case ModelExecutionFeaturesController::UserValidityResult::
-        kInvalidModelExecutionCapability:
-      metrics_recorder.SetResult(
-          feature,
-          FeatureCurrentlyEnabledResult::kNotEnabledModelExecutionCapability);
-      return false;
-    case ModelExecutionFeaturesController::UserValidityResult::kValid:
-      break;
-  }
-
-  bool result = features_enabled_at_startup_.find(static_cast<int>(feature)) !=
-                features_enabled_at_startup_.end();
-
+  bool is_enabled = GetPrefState(feature) == prefs::FeatureOptInState::kEnabled;
   metrics_recorder.SetResult(
-      feature, result ? FeatureCurrentlyEnabledResult::kEnabledAtStartup
-                      : FeatureCurrentlyEnabledResult::kNotEnabledAtStartup);
-
-  return result;
+      feature, is_enabled
+                   ? FeatureCurrentlyEnabledResult::kEnabledAtStartup
+                   : FeatureCurrentlyEnabledResult::kNotEnabledAtStartup);
+  return is_enabled;
 }
 
 bool ModelExecutionFeaturesController::
@@ -340,47 +316,52 @@ void ModelExecutionFeaturesController::OnFeatureSettingPrefChanged(
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   auto pref_value = GetPrefState(feature);
+  bool is_enabled = ShouldFeatureBeCurrentlyEnabledForUser(feature);
+
+  // When the feature is enabled, check the user is valid to enable the
+  // feature.
+  CHECK(!is_enabled ||
+            GetCurrentUserValidityResult(feature) ==
+                ModelExecutionFeaturesController::UserValidityResult::kValid,
+        base::NotFatalUntil::M125);
+
   if (pref_value != prefs::FeatureOptInState::kNotInitialized) {
     base::UmaHistogramBoolean(
         base::StrCat(
             {"OptimizationGuide.ModelExecution.FeatureEnabledAtSettingsChange.",
              GetStringNameForModelExecutionFeature(feature)}),
-        pref_value == prefs::FeatureOptInState::kEnabled);
+        is_enabled);
   }
-
-  if (GetCurrentUserValidityResult(feature) !=
-      ModelExecutionFeaturesController::UserValidityResult::kValid) {
-    return;
-  }
-
   for (SettingsEnabledObserver& obs : observers_) {
     if (obs.feature() != feature) {
       continue;
     }
-    if (pref_value == prefs::FeatureOptInState::kEnabled) {
-      obs.PrepareToEnableOnRestart();
-    }
+    obs.OnChangeInFeatureCurrentlyEnabledState(is_enabled);
   }
 }
 
+void ModelExecutionFeaturesController::OnFeatureEnterprisePolicyPrefChanged(
+    proto::ModelExecutionFeature feature) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  // When enterprise policy changes from allowed to disallowed, the feature
+  // settings prefs need to be cleared. This in turn triggers
+  // `OnFeatureSettingPrefChanged` to notify the observers of settings change,
+  // when the pref is reset.
+  ResetInvalidFeaturePrefs();
+}
+
 void ModelExecutionFeaturesController::InitializeFeatureSettings() {
-  features_enabled_at_startup_.clear();
   for (int i = 0; i < proto::ModelExecutionFeature_ARRAYSIZE; ++i) {
     proto::ModelExecutionFeature feature = proto::ModelExecutionFeature(i);
     if (!ShouldCheckSettingForFeature(feature)) {
       continue;
     }
 
-    bool is_enabled =
-        GetPrefState(feature) == prefs::FeatureOptInState::kEnabled;
     base::UmaHistogramBoolean(
         base::StrCat(
             {"OptimizationGuide.ModelExecution.FeatureEnabledAtStartup.",
              GetStringNameForModelExecutionFeature(feature)}),
-        is_enabled);
-    if (is_enabled) {
-      features_enabled_at_startup_.insert(static_cast<int>(feature));
-    }
+        ShouldFeatureBeCurrentlyEnabledForUser(feature));
   }
 }
 
@@ -520,11 +501,12 @@ void ModelExecutionFeaturesController::InitializePrefListener() {
         base::BindRepeating(
             &ModelExecutionFeaturesController::OnFeatureSettingPrefChanged,
             base::Unretained(this), feature));
+    pref_change_registrar_.Add(
+        model_execution::prefs::GetEnterprisePolicyPrefName(feature),
+        base::BindRepeating(&ModelExecutionFeaturesController::
+                                OnFeatureEnterprisePolicyPrefChanged,
+                            base::Unretained(this), feature));
   }
-}
-
-void ModelExecutionFeaturesController::SimulateBrowserRestartForTesting() {
-  InitializeFeatureSettings();
 }
 
 }  // namespace optimization_guide

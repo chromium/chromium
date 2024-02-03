@@ -627,15 +627,15 @@ class ModelExecutionEnterprisePolicyBrowserTest
 
 IN_PROC_BROWSER_TEST_F(ModelExecutionEnterprisePolicyBrowserTest,
                        DisableThenEnable) {
+  EnableSignin();
+
   auto* prefs = browser()->profile()->GetPrefs();
   prefs->SetInteger(
       prefs::GetSettingEnabledPrefName(
           optimization_guide::proto::ModelExecutionFeature::
               MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION),
       static_cast<int>(optimization_guide::prefs::FeatureOptInState::kEnabled));
-  GetOptGuideKeyedService()->SimulateBrowserRestartForControllerTesting();
-
-  EnableSignin();
+  base::RunLoop().RunUntilIdle();
 
   // Default policy value allows the feature.
   EXPECT_TRUE(IsSettingVisible(
@@ -679,6 +679,11 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionEnterprisePolicyBrowserTest,
           model_execution::prefs::ModelExecutionEnterprisePolicyValue::kAllow)),
       nullptr);
   policy_provider_.UpdateChromePolicy(policies);
+  prefs->SetInteger(
+      prefs::GetSettingEnabledPrefName(
+          optimization_guide::proto::ModelExecutionFeature::
+              MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION),
+      static_cast<int>(optimization_guide::prefs::FeatureOptInState::kEnabled));
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(IsSettingVisible(
       proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION));
@@ -694,15 +699,15 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionEnterprisePolicyBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(ModelExecutionEnterprisePolicyBrowserTest,
                        DisableThenEnableCompose) {
+  EnableSignin();
+
   auto* prefs = browser()->profile()->GetPrefs();
   prefs->SetInteger(
       prefs::GetSettingEnabledPrefName(
           optimization_guide::proto::ModelExecutionFeature::
               MODEL_EXECUTION_FEATURE_COMPOSE),
       static_cast<int>(optimization_guide::prefs::FeatureOptInState::kEnabled));
-  GetOptGuideKeyedService()->SimulateBrowserRestartForControllerTesting();
-
-  EnableSignin();
+  base::RunLoop().RunUntilIdle();
 
   // Default policy value allows the feature.
   EXPECT_TRUE(IsSettingVisible(
@@ -733,6 +738,11 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionEnterprisePolicyBrowserTest,
           model_execution::prefs::ModelExecutionEnterprisePolicyValue::kAllow)),
       nullptr);
   policy_provider_.UpdateChromePolicy(policies);
+  prefs->SetInteger(
+      prefs::GetSettingEnabledPrefName(
+          optimization_guide::proto::ModelExecutionFeature::
+              MODEL_EXECUTION_FEATURE_COMPOSE),
+      static_cast<int>(optimization_guide::prefs::FeatureOptInState::kEnabled));
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(IsSettingVisible(
       proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_COMPOSE));
@@ -742,15 +752,15 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionEnterprisePolicyBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(ModelExecutionEnterprisePolicyBrowserTest,
                        DisableThenEnableWallpaperSearch) {
+  EnableSignin();
+
   auto* prefs = browser()->profile()->GetPrefs();
   prefs->SetInteger(
       prefs::GetSettingEnabledPrefName(
           optimization_guide::proto::ModelExecutionFeature::
               MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH),
       static_cast<int>(optimization_guide::prefs::FeatureOptInState::kEnabled));
-  GetOptGuideKeyedService()->SimulateBrowserRestartForControllerTesting();
-
-  EnableSignin();
+  base::RunLoop().RunUntilIdle();
 
   // Default policy value allows the feature.
   EXPECT_TRUE(IsSettingVisible(
@@ -782,6 +792,11 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionEnterprisePolicyBrowserTest,
           model_execution::prefs::ModelExecutionEnterprisePolicyValue::kAllow)),
       nullptr);
   policy_provider_.UpdateChromePolicy(policies);
+  prefs->SetInteger(
+      prefs::GetSettingEnabledPrefName(
+          optimization_guide::proto::ModelExecutionFeature::
+              MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH),
+      static_cast<int>(optimization_guide::prefs::FeatureOptInState::kEnabled));
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(IsSettingVisible(
       proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH));
@@ -791,15 +806,15 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionEnterprisePolicyBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(ModelExecutionEnterprisePolicyBrowserTest,
                        EnableWithoutLogging) {
+  EnableSignin();
+
   auto* prefs = browser()->profile()->GetPrefs();
   prefs->SetInteger(
       prefs::GetSettingEnabledPrefName(
           optimization_guide::proto::ModelExecutionFeature::
               MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION),
       static_cast<int>(optimization_guide::prefs::FeatureOptInState::kEnabled));
-  GetOptGuideKeyedService()->SimulateBrowserRestartForControllerTesting();
-
-  EnableSignin();
+  base::RunLoop().RunUntilIdle();
 
   // EnableWithoutLogging via the enterprise policy.
   policy::PolicyMap policies;
@@ -811,6 +826,11 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionEnterprisePolicyBrowserTest,
                        kAllowWithoutLogging)),
                nullptr);
   policy_provider_.UpdateChromePolicy(policies);
+  prefs->SetInteger(
+      prefs::GetSettingEnabledPrefName(
+          optimization_guide::proto::ModelExecutionFeature::
+              MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION),
+      static_cast<int>(optimization_guide::prefs::FeatureOptInState::kEnabled));
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(IsSettingVisible(
       proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION));

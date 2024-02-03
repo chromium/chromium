@@ -250,16 +250,6 @@ OptimizationGuideKeyedService::MaybeCreatePushNotificationManager(
   return nullptr;
 }
 
-void OptimizationGuideKeyedService::
-    SimulateBrowserRestartForControllerTesting() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  if (!model_execution_features_controller_) {
-    return;
-  }
-  model_execution_features_controller_
-      ->SimulateBrowserRestartForTesting();  // IN-TEST
-}
-
 // static
 // We're using a weakptr here for testing purposes. We need to allow
 // OnDeviceModelComponentStateManager to be destroyed along with a test harness.

@@ -80,8 +80,6 @@ class ModelExecutionFeaturesController
   // Removes `observer`.
   void RemoveObserver(SettingsEnabledObserver* observer);
 
-  void SimulateBrowserRestartForTesting();
-
  private:
   // Enumerates the reasons an user is invalid.
   enum class UserValidityResult {
@@ -96,6 +94,10 @@ class ModelExecutionFeaturesController
 
   // Called when the feature-specific toggle pref is changed.
   void OnFeatureSettingPrefChanged(proto::ModelExecutionFeature feature);
+
+  // Called when the feature-specific enterprise policy pref is changed.
+  void OnFeatureEnterprisePolicyPrefChanged(
+      proto::ModelExecutionFeature feature);
 
   void StartObservingAccountChanges();
 
@@ -128,10 +130,6 @@ class ModelExecutionFeaturesController
   // Resets the prefs for features that were enabled back to invalid state, when
   // the conditions disallow the features.
   void ResetInvalidFeaturePrefs();
-
-  // Computed at the time `this` is constructed. Stores the set of features
-  // that were enabled at the time when browser started.
-  std::unordered_set<int> features_enabled_at_startup_;
 
   base::ScopedObservation<signin::IdentityManager,
                           ModelExecutionFeaturesController>
