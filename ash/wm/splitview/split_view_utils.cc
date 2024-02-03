@@ -526,10 +526,12 @@ bool ShouldAllowSplitView() {
   if (Shell::Get()->screen_pinning_controller()->IsPinned())
     return false;
 
-  // TODO(crubg.com/853588): Disallow window dragging and split screen while
-  // ChromeVox is on until they are in a usable state.
-  if (Shell::Get()->accessibility_controller()->spoken_feedback().enabled())
+  // Disallow window dragging and split screen while ChromeVox is on in tablet
+  // mode.
+  if (display::Screen::GetScreen()->InTabletMode() &&
+      Shell::Get()->accessibility_controller()->spoken_feedback().enabled()) {
     return false;
+  }
 
   return true;
 }
