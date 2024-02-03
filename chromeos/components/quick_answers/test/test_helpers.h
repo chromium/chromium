@@ -9,12 +9,20 @@
 #include "chromeos/components/quick_answers/quick_answers_model.h"
 #include "chromeos/components/quick_answers/result_loader.h"
 #include "chromeos/components/quick_answers/utils/quick_answers_utils.h"
+#include "chromeos/components/quick_answers/utils/unit_conversion_constants.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace quick_answers {
 
 std::string GetQuickAnswerTextForTesting(
     const std::vector<std::unique_ptr<QuickAnswerUiElement>>& elements);
+
+// Build a dict representing a unit, given the provided fields.
+base::Value::Dict CreateUnit(const std::string& name,
+                             double rate_a = kInvalidRateTermValue,
+                             double rate_b = kInvalidRateTermValue,
+                             const std::string& category = std::string(),
+                             double rate_c = kInvalidRateTermValue);
 
 class MockQuickAnswersDelegate : public QuickAnswersDelegate {
  public:

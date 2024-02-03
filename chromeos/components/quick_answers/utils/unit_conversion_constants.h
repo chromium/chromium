@@ -31,6 +31,8 @@ inline constexpr char kUnitsPath[] = "units";
 
 inline constexpr double kInvalidRateTermValue = 0;
 
+inline constexpr char kPoundName[] = "Pound";
+
 std::string GetUnitDisplayText(const std::string& name);
 
 }  // namespace quick_answers

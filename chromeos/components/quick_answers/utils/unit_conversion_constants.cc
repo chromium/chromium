@@ -11,16 +11,17 @@
 
 namespace quick_answers {
 
-// TODO(b/182389513): Handle the proper plural case for the display text.
+// TODO(b/323408178): Handle the proper plural case for the display text.
+// Also update to pluralize dependent on unit amount (i.e. >= 1).
 std::string GetUnitDisplayText(const std::string& name) {
-  static constexpr char kPoundName[] = "Pound";
   constexpr auto kUnitDisplayTextMap =
       base::MakeFixedFlatMap<base::StringPiece, int>(
           {{kPoundName, IDS_UNIT_CONVERSION_POUND_DISPLAY_TEXT}});
 
   const auto* it = kUnitDisplayTextMap.find(name);
-  if (it == kUnitDisplayTextMap.end())
+  if (it == kUnitDisplayTextMap.end()) {
     return name;
+  }
 
   return l10n_util::GetStringUTF8(it->second);
 }
