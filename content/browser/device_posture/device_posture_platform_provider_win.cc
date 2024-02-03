@@ -38,16 +38,6 @@ DevicePosturePlatformProviderWin::DevicePosturePlatformProviderWin() {
 
 DevicePosturePlatformProviderWin::~DevicePosturePlatformProviderWin() = default;
 
-DevicePostureType
-DevicePosturePlatformProviderWin::GetDevicePosture() {
-  return current_posture_;
-}
-
-const std::vector<gfx::Rect>&
-DevicePosturePlatformProviderWin::GetViewportSegments() {
-  return current_viewport_segments_;
-}
-
 void DevicePosturePlatformProviderWin::StartListening() {
   if (registry_key_) {
     return;

@@ -4,25 +4,51 @@
 
 #include "content/browser/device_posture/device_posture_platform_provider_android.h"
 
+#include "content/browser/web_contents/web_contents_android.h"
+#include "content/browser/web_contents/web_contents_impl.h"
+#include "content/public/android/content_jni_headers/DevicePosturePlatformProviderAndroid_jni.h"
+
 namespace content {
 
-DevicePosturePlatformProviderAndroid::DevicePosturePlatformProviderAndroid() =
-    default;
+using base::android::AttachCurrentThread;
 
-DevicePosturePlatformProviderAndroid::~DevicePosturePlatformProviderAndroid() =
-    default;
-
-blink::mojom::DevicePostureType
-DevicePosturePlatformProviderAndroid::GetDevicePosture() {
-  return blink::mojom::DevicePostureType::kContinuous;
-}
-const std::vector<gfx::Rect>&
-DevicePosturePlatformProviderAndroid::GetViewportSegments() {
-  return current_viewport_segments_;
+DevicePosturePlatformProviderAndroid::DevicePosturePlatformProviderAndroid(
+    WebContents* web_contents) {
+  DCHECK(web_contents);
+  WebContentsAndroid* web_contents_android =
+      static_cast<WebContentsImpl*>(web_contents)->GetWebContentsAndroid();
+  java_device_posture_provider_.Reset(
+      Java_DevicePosturePlatformProviderAndroid_create(
+          AttachCurrentThread(), reinterpret_cast<intptr_t>(this),
+          web_contents_android->GetJavaObject()));
 }
 
-void DevicePosturePlatformProviderAndroid::StartListening() {}
+DevicePosturePlatformProviderAndroid::~DevicePosturePlatformProviderAndroid() {
+  Java_DevicePosturePlatformProviderAndroid_destroy(
+      AttachCurrentThread(), java_device_posture_provider_);
+}
 
-void DevicePosturePlatformProviderAndroid::StopListening() {}
+void DevicePosturePlatformProviderAndroid::StartListening() {
+  Java_DevicePosturePlatformProviderAndroid_startListening(
+      AttachCurrentThread(), java_device_posture_provider_);
+}
+
+void DevicePosturePlatformProviderAndroid::StopListening() {
+  Java_DevicePosturePlatformProviderAndroid_stopListening(
+      AttachCurrentThread(), java_device_posture_provider_);
+}
+
+void DevicePosturePlatformProviderAndroid::SetDeviceFolded(JNIEnv* env,
+                                                           bool is_folded) {
+  blink::mojom::DevicePostureType new_posture =
+      is_folded ? blink::mojom::DevicePostureType::kFolded
+                : blink::mojom::DevicePostureType::kContinuous;
+  if (current_posture_ == new_posture) {
+    return;
+  }
+
+  current_posture_ = new_posture;
+  NotifyDevicePostureChanged(current_posture_);
+}
 
 }  // namespace content

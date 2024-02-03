@@ -17,11 +17,11 @@ namespace content {
 
 // static
 std::unique_ptr<DevicePosturePlatformProvider>
-DevicePosturePlatformProvider::Create() {
+DevicePosturePlatformProvider::Create(WebContents* web_contents) {
 #if BUILDFLAG(IS_WIN)
   return std::make_unique<DevicePosturePlatformProviderWin>();
 #elif BUILDFLAG(IS_ANDROID)
-  return std::make_unique<DevicePosturePlatformProviderAndroid>();
+  return std::make_unique<DevicePosturePlatformProviderAndroid>(web_contents);
 #else
   return std::make_unique<DevicePosturePlatformProviderDefault>();
 #endif
@@ -30,6 +30,16 @@ DevicePosturePlatformProvider::Create() {
 DevicePosturePlatformProvider::DevicePosturePlatformProvider() = default;
 
 DevicePosturePlatformProvider::~DevicePosturePlatformProvider() = default;
+
+blink::mojom::DevicePostureType
+DevicePosturePlatformProvider::GetDevicePosture() {
+  return current_posture_;
+}
+
+const std::vector<gfx::Rect>&
+DevicePosturePlatformProvider::GetViewportSegments() {
+  return current_viewport_segments_;
+}
 
 void DevicePosturePlatformProvider::AddObserver(Observer* observer) {
   if (observers_.empty()) {

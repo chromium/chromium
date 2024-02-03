@@ -5,6 +5,9 @@
 #ifndef CONTENT_BROWSER_DEVICE_POSTURE_DEVICE_POSTURE_PLATFORM_PROVIDER_ANDROID_H_
 #define CONTENT_BROWSER_DEVICE_POSTURE_DEVICE_POSTURE_PLATFORM_PROVIDER_ANDROID_H_
 
+#include <jni.h>
+
+#include "base/android/scoped_java_ref.h"
 #include "content/browser/device_posture/device_posture_platform_provider.h"
 
 namespace content {
@@ -12,7 +15,7 @@ namespace content {
 class DevicePosturePlatformProviderAndroid
     : public DevicePosturePlatformProvider {
  public:
-  DevicePosturePlatformProviderAndroid();
+  explicit DevicePosturePlatformProviderAndroid(WebContents* web_contents);
   ~DevicePosturePlatformProviderAndroid() override;
 
   DevicePosturePlatformProviderAndroid(
@@ -20,13 +23,13 @@ class DevicePosturePlatformProviderAndroid
   DevicePosturePlatformProviderAndroid& operator=(
       const DevicePosturePlatformProviderAndroid&) = delete;
 
-  blink::mojom::DevicePostureType GetDevicePosture() override;
-  const std::vector<gfx::Rect>& GetViewportSegments() override;
   void StartListening() override;
   void StopListening() override;
 
+  void SetDeviceFolded(JNIEnv* env, bool device_posture);
+
  private:
-  std::vector<gfx::Rect> current_viewport_segments_;
+  base::android::ScopedJavaGlobalRef<jobject> java_device_posture_provider_;
 };
 
 }  // namespace content

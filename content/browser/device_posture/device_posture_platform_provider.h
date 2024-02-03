@@ -14,6 +14,8 @@
 
 namespace content {
 
+class WebContents;
+
 // This the base class for platform-specific device posture provider
 // implementations. In typical usage a single instance is owned by
 // DeviceService.
@@ -28,12 +30,13 @@ class DevicePosturePlatformProvider {
   };
 
   // Returns a DevicePostureProvider for the current platform.
-  static std::unique_ptr<DevicePosturePlatformProvider> Create();
+  static std::unique_ptr<DevicePosturePlatformProvider> Create(
+      WebContents* web_contents);
 
   virtual ~DevicePosturePlatformProvider();
 
-  virtual blink::mojom::DevicePostureType GetDevicePosture() = 0;
-  virtual const std::vector<gfx::Rect>& GetViewportSegments() = 0;
+  blink::mojom::DevicePostureType GetDevicePosture();
+  const std::vector<gfx::Rect>& GetViewportSegments();
 
   DevicePosturePlatformProvider(const DevicePosturePlatformProvider&) = delete;
   DevicePosturePlatformProvider& operator=(
@@ -51,6 +54,10 @@ class DevicePosturePlatformProvider {
   void NotifyDevicePostureChanged(
       const blink::mojom::DevicePostureType& posture);
   void NotifyWindowSegmentsChanged(const std::vector<gfx::Rect>& segments);
+
+  blink::mojom::DevicePostureType current_posture_ =
+      blink::mojom::DevicePostureType::kContinuous;
+  std::vector<gfx::Rect> current_viewport_segments_;
 
  private:
   // DevicePosturePlatformProvider observers are expected to unregister

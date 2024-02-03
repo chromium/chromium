@@ -737,5 +737,6 @@
         android:visibleToInstantApps="true">
     </service>  # DIFF-ANCHOR: e2f3bbbd
     <uses-library android:name="android.ext.adservices" android:required="false"/>
+    <uses-library android:name="androidx.window.extensions" android:required="false"/>
   </application>
 </manifest>

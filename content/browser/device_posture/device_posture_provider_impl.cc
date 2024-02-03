@@ -23,7 +23,7 @@ DevicePostureProviderImpl* DevicePostureProviderImpl::GetOrCreate(
 
 DevicePostureProviderImpl::DevicePostureProviderImpl(WebContents* web_contents)
     : WebContentsUserData<DevicePostureProviderImpl>(*web_contents) {
-  platform_provider_ = DevicePosturePlatformProvider::Create();
+  platform_provider_ = DevicePosturePlatformProvider::Create(web_contents);
   // We need to  listen to disconnections so that if there is nobody interested
   // in posture changes we can shutdown the native backends.
   posture_clients_.set_disconnect_handler(base::BindRepeating(

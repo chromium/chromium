@@ -12,16 +12,6 @@ DevicePosturePlatformProviderDefault::DevicePosturePlatformProviderDefault() =
 DevicePosturePlatformProviderDefault::~DevicePosturePlatformProviderDefault() =
     default;
 
-blink::mojom::DevicePostureType
-DevicePosturePlatformProviderDefault::GetDevicePosture() {
-  return blink::mojom::DevicePostureType::kContinuous;
-}
-
-const std::vector<gfx::Rect>&
-DevicePosturePlatformProviderDefault::GetViewportSegments() {
-  return current_viewport_segments_;
-}
-
 void DevicePosturePlatformProviderDefault::StartListening() {}
 
 void DevicePosturePlatformProviderDefault::StopListening() {}

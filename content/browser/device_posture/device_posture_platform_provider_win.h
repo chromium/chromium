@@ -27,9 +27,6 @@ class DevicePosturePlatformProviderWin : public DevicePosturePlatformProvider {
   DevicePosturePlatformProviderWin& operator=(
       const DevicePosturePlatformProviderWin&) = delete;
 
-  blink::mojom::DevicePostureType GetDevicePosture() override;
-  const std::vector<gfx::Rect>& GetViewportSegments() override;
-
  private:
   friend class DevicePosturePlatformProviderWinTest;
 
@@ -43,9 +40,6 @@ class DevicePosturePlatformProviderWin : public DevicePosturePlatformProvider {
   CONTENT_EXPORT static std::optional<blink::mojom::DevicePostureType>
   ParsePosture(std::string_view posture_state);
 
-  blink::mojom::DevicePostureType current_posture_ =
-      blink::mojom::DevicePostureType::kContinuous;
-  std::vector<gfx::Rect> current_viewport_segments_;
   // This member is used to watch the registry after StartListening is called.
   // It will be destroyed when calling StopListening.
   std::optional<base::win::RegKey> registry_key_;

@@ -494,6 +494,7 @@
         android:visibleToInstantApps="true">
     </service>  # DIFF-ANCHOR: e2f3bbbd
     <uses-library android:name="android.ext.adservices" android:required="false"/>
+    <uses-library android:name="androidx.window.extensions" android:required="false"/>
     <uses-static-library android:name="org.chromium.trichromelibrary" android:certDigest="32a2fc74d731105859e5a85df16d95f102d85b22099b8064c5d8915c61dad1e0" android:version="OFFSET=33"/>
   </application>
 </manifest>
