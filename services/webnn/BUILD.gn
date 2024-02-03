@@ -5,6 +5,18 @@
 import("//mojo/public/tools/fuzzers/mojolpm.gni")
 import("//third_party/protobuf/proto_library.gni")
 
+source_set("coreml_graph_builder") {
+  sources = [
+    "coreml/graph_builder.cc",
+    "coreml/graph_builder.h",
+  ]
+  deps = [
+    "//base",
+    "//services/webnn/public/mojom",
+    "//third_party/coremltools:modelformat_proto",
+  ]
+}
+
 component("webnn_service") {
   sources = [
     "error.h",
@@ -53,8 +65,6 @@ component("webnn_service") {
     sources += [
       "coreml/context_impl.h",
       "coreml/context_impl.mm",
-      "coreml/graph_builder.cc",
-      "coreml/graph_builder.h",
       "coreml/graph_impl.h",
       "coreml/graph_impl.mm",
     ]
@@ -63,7 +73,7 @@ component("webnn_service") {
       "CoreML.framework",
       "Foundation.framework",
     ]
-    deps += [ "//third_party/coremltools:modelformat_proto" ]
+    deps += [ ":coreml_graph_builder" ]
   }
 
   if (is_win) {
@@ -134,6 +144,7 @@ mojolpm_fuzzer_test("webnn_graph_mojolpm_fuzzer") {
   proto_deps = [ "//services/webnn/public/mojom:mojom_mojolpm" ]
 
   deps = [
+    ":coreml_graph_builder",
     ":webnn_service",
     "//base",
     "//base/test:test_support",
